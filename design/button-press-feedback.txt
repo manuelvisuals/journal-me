@@ -1,0 +1,27 @@
+Feedback tattile al tap sui bottoni -- concetto da implementare
+
+Obiettivo: replicare il "feel" iOS Apple della pressione. Quando l'utente preme un bottone, deve visivamente affondare dentro la superficie, non solo cambiare colore. Stesso tema vino + ambra che stai gia usando.
+
+L'effetto e una combo di 4 cose applicate sullo stato :active, tutte insieme.
+
+1) Scale down
+Il bottone si rimpicciolisce leggermente, intorno al 3 percento. Visivamente "si schiaccia" sotto il dito.
+
+2) Shadow flatten
+L'alone esterno del bottone si riduce drasticamente e si aggiunge un'ombra interna scura in alto. Questo e il pezzo chiave: il bottone non e piu SOPRA la superficie con la sua ombra, ma DENTRO la superficie. Senza l'inset shadow scura, lo scale da solo sembra un bug di rendering.
+
+3) Color sink (solo bottoni con fondo pieno, tipo il CTA gold)
+Il colore di fondo si scurisce di un tono -- ambra chiaro verso ambra piu profondo. Effetto "la luce non ci batte piu sopra perche il bottone e incassato". Sui ghost button non serve perche il fondo era trasparente: basta riempirlo col surface color su active.
+
+4) Timing snappy
+Transizione veloce ma non istantanea: 80 millisecondi, curva cubic-bezier(0.4, 0, 0.2, 1). Stessa curva su tutte le proprieta che animano (transform, background, box-shadow), per coerenza. Se e troppo veloce sembra uno scatto, se e troppo lento sembra che il bottone "pensi".
+
+Piu due requisiti per il mobile:
+- Rimuovere il flash blu di Safari su tap (proprieta -webkit-tap-highlight-color impostata a transparent).
+- Rimuovere il delay di 300ms del doppio-tap zoom (proprieta touch-action impostata a manipulation).
+
+Tutto in CSS puro sullo stato :active. Zero JavaScript. Funziona identicamente su iOS Safari, Android Chrome, desktop.
+
+Importante: wrappa l'implementazione in un componente Button riusabile, cosi il feedback e centralizzato e tutti i bottoni dell'app lo ereditano automaticamente -- CTA principali, ghost, nav, modal actions, dialog confirms. Domani per cambiare intensita o timing della pressione, tocchi un solo posto.
+
+Aggiornami quando hai applicato la modifica, segnalando cosa eventualmente non e stato possibile fare nello stato attuale del codice.
