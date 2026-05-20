@@ -411,8 +411,18 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex flex-col"
-      style={{ background: "var(--color-bg-phone)", height: "100dvh" }}
+      className="flex flex-col"
+      style={{
+        // Inline styles to beat the `body > * { position: relative; z-index: 1 }`
+        // rule in globals.css (kept there so normal body children stack above
+        // the decorative body::before/::after layers). Tailwind classes lose
+        // to that selector by specificity once the overlay is a body child.
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        background: "var(--color-bg-phone)",
+        height: "100dvh",
+      }}
     >
       <div
         className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
