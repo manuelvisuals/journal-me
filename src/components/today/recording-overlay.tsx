@@ -87,6 +87,8 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
   const cleanedUpRef = useRef<boolean>(false);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTranscriptAtRef = useRef<number>(0);
+  const transcriptScrollRef = useRef<HTMLDivElement | null>(null);
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   // Setup the realtime connection once on mount.
   useEffect(() => {
@@ -181,6 +183,8 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
         if (cancelled) return;
         setState("recording");
         startTimer();
+        // Keep the screen awake so iOS doesn't sleep mid-recording.
+        void acquireWakeLock();
       } catch (err) {
         if (cancelled) return;
         const msg = err instanceof Error ? err.message : String(err);
@@ -269,10 +273,61 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
     }
   }
 
+  async function acquireWakeLock() {
+    try {
+      const wl = (navigator as Navigator & { wakeLock?: WakeLock }).wakeLock;
+      if (!wl) return; // unsupported (older Safari)
+      const sentinel = await wl.request("screen");
+      wakeLockRef.current = sentinel;
+      sentinel.addEventListener("release", () => {
+        wakeLockRef.current = null;
+      });
+    } catch {
+      // Wake lock can fail (permission, low battery, page not visible).
+      // Best-effort only.
+    }
+  }
+
+  function releaseWakeLock() {
+    const sentinel = wakeLockRef.current;
+    wakeLockRef.current = null;
+    if (sentinel && !sentinel.released) {
+      void sentinel.release().catch(() => {
+        // ignore
+      });
+    }
+  }
+
+  // Re-acquire wake lock when the tab returns to foreground (iOS sometimes
+  // releases it on background, and recording continues in foreground).
+  useEffect(() => {
+    if (state !== "recording") return;
+    const onVisChange = () => {
+      if (document.visibilityState === "visible" && !wakeLockRef.current) {
+        void acquireWakeLock();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisChange);
+    return () => document.removeEventListener("visibilitychange", onVisChange);
+  }, [state]);
+
+  // Auto-scroll the transcript area to the bottom whenever new content
+  // arrives, so the user can always see the latest words (otherwise the
+  // current word slides under the waveform/controls).
+  useEffect(() => {
+    const el = transcriptScrollRef.current;
+    if (!el) return;
+    // Slight delay to let the DOM paint the new chunk before measuring.
+    requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight;
+    });
+  }, [transcript, interim]);
+
   function cleanup() {
     if (cleanedUpRef.current) return;
     cleanedUpRef.current = true;
     stopTimer();
+    releaseWakeLock();
     try {
       dcRef.current?.close();
     } catch {
@@ -449,6 +504,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
         ) : (
           <>
             <div
+              ref={transcriptScrollRef}
               className="flex-1 overflow-y-auto"
               style={{
                 padding: "12px 4px",
