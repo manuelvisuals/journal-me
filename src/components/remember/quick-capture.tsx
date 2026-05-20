@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
 import { todayISO } from "@/lib/format";
 import type { DataMode } from "@/lib/data/entries";
@@ -26,6 +26,10 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
   const [kind, setKind] = useState<RememberKind>(defaultKind);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
   const [recorderOpen, setRecorderOpen] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  // Ref guard against the rare double-fire race where two tap events arrive
+  // in the same tick before submitting state has propagated through React.
+  const submittingRef = useRef<boolean>(false);
 
   const handleVoiceStop = (transcript: string) => {
     setRecorderOpen(false);
@@ -41,10 +45,18 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
   // For now we accept that local override sticks until the user reopens.
 
   const submit = async () => {
+    if (submittingRef.current) return;
     const t = text.trim();
     if (!t) return;
-    await onAdd(t, kind);
-    setText("");
+    submittingRef.current = true;
+    setSubmitting(true);
+    try {
+      await onAdd(t, kind);
+      setText("");
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -96,7 +108,8 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
           type="submit"
           className="jm-qc-add"
           aria-label="Aggiungi"
-          disabled={!text.trim()}
+          disabled={!text.trim() || submitting}
+          aria-busy={submitting}
         >
           +
         </button>
