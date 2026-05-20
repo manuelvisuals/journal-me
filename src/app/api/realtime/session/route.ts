@@ -35,13 +35,14 @@ export async function POST(req: NextRequest) {
           prompt:
             "Trascrizione di un diario personale parlato in italiano colloquiale. Include nomi propri di persone, luoghi, brand. Punteggiatura naturale.",
         },
-        // Server-side voice activity detection so partial transcripts are
-        // emitted as the user pauses, not only at the end.
+        // Server-side voice activity detection. Lower silence_duration_ms
+        // means chunks close faster -> transcript arrives with less perceived
+        // lag, at the cost of more fragmentation if the user pauses mid-sentence.
         turn_detection: {
           type: "server_vad",
           threshold: 0.5,
-          prefix_padding_ms: 300,
-          silence_duration_ms: 700,
+          prefix_padding_ms: 200,
+          silence_duration_ms: 350,
         },
       },
     },

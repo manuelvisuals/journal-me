@@ -93,16 +93,40 @@ export function TodayClient({ mode, initialEntry }: Props) {
           {dayHeader}
         </span>
         {view === "filled" && (
-          <span
-            style={{
-              fontSize: 12,
-              color: "var(--color-accent)",
-              fontWeight: 600,
-              opacity: 0.7,
-            }}
-          >
-            originale &#8599;
-          </span>
+          <div className="flex items-center" style={{ gap: 14 }}>
+            <span
+              style={{
+                fontSize: 12,
+                color: "var(--color-accent)",
+                fontWeight: 600,
+                opacity: 0.7,
+              }}
+            >
+              originale &#8599;
+            </span>
+            <button
+              type="button"
+              onClick={handleStartRecording}
+              aria-label="Registra di nuovo"
+              className="jm-rerecord-btn"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                width="18"
+                height="18"
+                aria-hidden="true"
+              >
+                <rect x="9" y="3" width="6" height="12" rx="3" />
+                <path d="M5 11a7 7 0 0 0 14 0" />
+                <path d="M12 18v3" />
+              </svg>
+            </button>
+          </div>
         )}
       </header>
 
