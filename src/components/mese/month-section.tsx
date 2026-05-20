@@ -1,17 +1,32 @@
 "use client";
 
 import { DayRow } from "@/components/mese/day-row";
-import { dateKey, daysInMonth, todayISO } from "@/lib/format";
+import {
+  dateKey,
+  daysInMonth,
+  formatMonthTitle,
+  todayISO,
+} from "@/lib/format";
 import type { Entry } from "@/lib/types";
 
 type Props = {
   year: number;
   month: number; // 1-based
   entries: Entry[];
+  /** When true, render an inline "MESE YYYY" divider header at the top of
+   *  this section. Suppressed for the first/most-recent month because the
+   *  sticky page header already shows that label. */
+  showHeader?: boolean;
   onDayClick?: (year: number, month: number, day: number) => void;
 };
 
-export function MonthSection({ year, month, entries, onDayClick }: Props) {
+export function MonthSection({
+  year,
+  month,
+  entries,
+  showHeader = false,
+  onDayClick,
+}: Props) {
   const total = daysInMonth(year, month);
   const today = todayISO();
   const todayParts = today.split("-").map(Number);
@@ -31,6 +46,11 @@ export function MonthSection({ year, month, entries, onDayClick }: Props) {
 
   return (
     <section data-jm-month={`${year}-${String(month).padStart(2, "0")}`}>
+      {showHeader && (
+        <div className="jm-month-section-header" suppressHydrationWarning>
+          {formatMonthTitle(year, month)}
+        </div>
+      )}
       {days.map((d) => {
         const k = dateKey(year, month, d);
         const entry = byDate.get(k) ?? null;

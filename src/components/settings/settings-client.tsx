@@ -125,7 +125,7 @@ export function SettingsClient({ mode, email, initialGlossary }: Props) {
         </section>
       </div>
 
-      <TabBar active="today" />
+      <TabBar active="settings" />
     </main>
   );
 }

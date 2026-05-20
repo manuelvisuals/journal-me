@@ -216,12 +216,15 @@ export function MeseClient({ mode, initialMonth }: Props) {
 
       {/* Day list */}
       <div className="jm-day-list">
-        {loaded.map((m) => (
+        {loaded.map((m, idx) => (
           <MonthSection
             key={`${m.year}-${m.month}`}
             year={m.year}
             month={m.month}
             entries={m.entries}
+            // The first (most recent) month is implicitly labeled by the
+            // sticky page header. Subsequent months get an inline divider.
+            showHeader={idx > 0}
           />
         ))}
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />

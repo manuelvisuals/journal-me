@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 
-export type TabKey = "today" | "month" | "mic" | "recap" | "remember";
+export type TabKey =
+  | "today"
+  | "month"
+  | "mic"
+  | "recap"
+  | "remember"
+  | "settings";
 
 type Props = {
   active: TabKey;
@@ -93,6 +99,22 @@ const SIDE_TABS_RIGHT: Tab[] = [
       </svg>
     ),
   },
+  {
+    key: "settings",
+    label: "Altro",
+    href: "/settings",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <circle cx="5" cy="12" r="2" />
+        <circle cx="12" cy="12" r="2" />
+        <circle cx="19" cy="12" r="2" />
+      </svg>
+    ),
+  },
 ];
 
 export function TabBar({ active }: Props) {
@@ -100,7 +122,7 @@ export function TabBar({ active }: Props) {
     <nav
       className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur"
       style={{
-        gridTemplateColumns: "repeat(5, 1fr)",
+        gridTemplateColumns: "repeat(6, 1fr)",
         borderColor: "var(--color-line)",
         background: "rgba(10, 5, 7, 0.50)",
         paddingTop: 12,

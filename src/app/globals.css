@@ -742,6 +742,24 @@ body > * {
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
 }
+.jm-qc-mic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  color: var(--color-accent);
+  border: 1px solid rgba(227, 161, 95, 0.30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-qc-mic:active {
+  background: var(--color-surface);
+  border-color: rgba(227, 161, 95, 0.55);
+}
 .jm-qc-add {
   width: 36px;
   height: 36px;
@@ -1447,6 +1465,25 @@ body > * {
 .jm-day-list {
   flex: 1;
   padding: 4px 0 8px;
+}
+
+.jm-month-section-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 18px 24px 10px;
+  background: linear-gradient(
+    to bottom,
+    var(--color-bg-phone) 0%,
+    var(--color-bg-phone) 70%,
+    transparent 100%
+  );
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--color-line);
 }
 
 .jm-day-row {
