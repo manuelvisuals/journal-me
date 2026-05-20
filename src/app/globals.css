@@ -270,3 +270,256 @@ body > * {
   padding: 1px 5px;
   border-radius: 4px;
 }
+
+/* =============================================================
+   Mese view (jm- prefix to avoid collisions with future utilities)
+   ============================================================= */
+
+.jm-month-header {
+  padding: 16px 24px 12px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  background: var(--color-bg-phone);
+  border-bottom: 1px solid var(--color-line);
+  z-index: 3;
+}
+.jm-month-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-month-chevron {
+  font-size: 11px;
+  color: var(--color-accent);
+  opacity: 0.85;
+  transform: translateY(2px);
+}
+.jm-month-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-day-list {
+  flex: 1;
+  padding: 4px 0 8px;
+}
+
+.jm-day-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--color-line);
+  cursor: pointer;
+  transition: background-color 80ms ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-day-row:active {
+  background: rgba(255, 255, 255, 0.02);
+}
+.jm-day-row.is-today {
+  background: linear-gradient(
+    90deg,
+    rgba(227, 161, 95, 0.06) 0%,
+    transparent 60%
+  );
+}
+.jm-day-row.is-today::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: var(--color-accent);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(227, 161, 95, 0.45);
+}
+
+.jm-day-num {
+  text-align: right;
+}
+.jm-day-num .n {
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.jm-day-row.is-today .jm-day-num .n {
+  color: var(--color-accent-hi);
+}
+.jm-day-num .wd {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.jm-day-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 2px;
+}
+.jm-day-headline {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.jm-day-empty {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.01em;
+}
+.jm-day-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.jm-meta-chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.jm-meta-chip .v {
+  color: var(--color-ink-muted);
+}
+.jm-meta-mood {
+  font-size: 13px;
+  line-height: 1;
+}
+.jm-dots-mini {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+.jm-dot-mini {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: inline-block;
+}
+.jm-dot-mini.on {
+  background: var(--color-accent);
+  border-color: rgba(227, 161, 95, 0.5);
+  box-shadow: 0 0 4px rgba(227, 161, 95, 0.35);
+}
+
+/* Jump picker overlay */
+.jm-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 5, 7, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 110px;
+}
+.jm-picker {
+  width: min(320px, calc(100vw - 32px));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+}
+.jm-picker-year {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 14px;
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 12px;
+}
+.jm-picker-year .y {
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-picker-year .nav {
+  font-size: 18px;
+  color: var(--color-accent);
+  font-weight: 500;
+  padding: 0 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.jm-picker-cell {
+  padding: 14px 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-picker-cell:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+.jm-picker-cell.future,
+.jm-picker-cell:disabled {
+  color: var(--color-ink-faint);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.jm-picker-cell.current {
+  background: rgba(227, 161, 95, 0.12);
+  color: var(--color-accent-hi);
+  border-color: rgba(227, 161, 95, 0.35);
+}

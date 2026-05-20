@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Mese (wine premium)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-page: #050304;
+  --bg-phone: #0E0709;
+  --surface: #1D1013;
+  --surface-2: #241418;
+  --line: rgba(255,229,214,.075);
+  --accent: #E3A15F;
+  --accent-pressed: #D08F4D;
+  --accent-hi: #F0B875;
+  --text: #F4E7DE;
+  --text-2: #CDB7AE;
+  --text-3: #8E7770;
+  --success: #A8C9B0;
+  --danger: #F87171;
+  --font: "Inter", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font);
+  padding: 40px 20px;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  font-feature-settings: "cv11", "ss01";
+}
+.label {
+  font-size: 11px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.20em; text-transform: uppercase;
+  text-align: center; margin-bottom: 32px;
+}
+.screens { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+.phone {
+  position: relative; width: 380px; height: 800px;
+  background: var(--bg-phone); color: var(--text);
+  border-radius: 44px; overflow: hidden;
+  box-shadow: 0 34px 90px rgba(0,0,0,.82), 0 0 0 1px rgba(255,255,255,.045);
+}
+.phone::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(circle at 50% -4%, rgba(227,161,95,.075), transparent 34%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,.16), transparent 28%);
+  opacity: .85;
+}
+.phone::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+  opacity: .028; mix-blend-mode: screen;
+}
+.inner {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  height: 100%;
+}
+.statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: var(--text-3); padding: 12px 24px 0;
+}
+.statusbar .time { font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+.statusbar .notch { width: 92px; height: 24px; background: #0A0507; border-radius: 14px; }
+.statusbar .right { color: var(--text); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; }
+
+/* ====== Sticky month header ====== */
+.month-header {
+  position: relative;
+  padding: 16px 24px 12px;
+  display: flex; align-items: baseline; justify-content: space-between;
+  background: var(--bg-phone);
+  border-bottom: 1px solid var(--line);
+  z-index: 3;
+}
+.month-title {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 22px; font-weight: 650; letter-spacing: -0.025em;
+  color: var(--text);
+}
+.month-chevron {
+  font-size: 11px; color: var(--accent); opacity: 0.85;
+  transform: translateY(2px);
+}
+.month-count {
+  font-size: 10px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.18em; text-transform: uppercase;
+}
+
+/* ====== Day list ====== */
+.day-list {
+  flex: 1; overflow-y: auto;
+  padding: 4px 0 8px;
+}
+.day-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background-color 80ms ease;
+}
+.day-row:active { background: rgba(255,255,255,.02); }
+.day-row.is-today {
+  background: linear-gradient(90deg, rgba(227,161,95,.06) 0%, transparent 60%);
+}
+.day-row.is-today::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 14px; bottom: 14px; width: 2px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(227,161,95,.45);
+}
+
+.day-num {
+  text-align: right;
+}
+.day-num .n {
+  font-size: 30px; font-weight: 300; line-height: 1;
+  color: var(--text); letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.day-row.is-today .day-num .n {
+  color: var(--accent-hi);
+}
+.day-num .wd {
+  font-size: 9px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.day-body {
+  min-width: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  padding-top: 2px;
+}
+.day-headline {
+  font-size: 14px; font-weight: 500; color: var(--text);
+  line-height: 1.35; letter-spacing: -0.005em;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.day-empty {
+  font-size: 13px; font-style: italic; color: var(--text-3);
+  letter-spacing: 0.01em;
+}
+.day-meta {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 2px;
+}
+.meta-chip {
+  font-size: 11px; font-weight: 500; color: var(--text-3);
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.meta-chip .v { color: var(--text-2); }
+.meta-mood { font-size: 13px; line-height: 1; }
+.dots-mini {
+  display: flex; gap: 4px; margin-left: auto;
+}
+.dot-mini {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.05);
+}
+.dot-mini.on {
+  background: var(--accent); border-color: rgba(227,161,95,.5);
+  box-shadow: 0 0 4px rgba(227,161,95,.35);
+}
+
+/* ====== Tab bar (identical to today) ====== */
+.tabbar {
+  position: relative; z-index: 2;
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 14px 0 22px;
+  border-top: 1px solid var(--line);
+  background: rgba(10,5,7,.40);
+  backdrop-filter: blur(20px);
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.tab.on { color: var(--accent); }
+.tab svg { width: 22px; height: 22px; }
+
+.home-indicator {
+  width: 134px; height: 5px; background: var(--text);
+  border-radius: 3px; margin: 0 auto 8px;
+  opacity: 0.35;
+}
+
+/* ====== Jump picker (state 2) ====== */
+.picker-overlay {
+  position: absolute; inset: 0;
+  background: rgba(10,5,7,.55);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 110px;
+}
+.picker {
+  width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 24px 48px rgba(0,0,0,.6);
+}
+.picker-year {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 6px 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+.picker-year .y {
+  font-size: 16px; font-weight: 650; letter-spacing: -0.01em;
+  color: var(--text);
+}
+.picker-year .nav {
+  font-size: 18px; color: var(--accent); font-weight: 500;
+  padding: 0 8px; cursor: pointer;
+}
+.picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.picker-cell {
+  padding: 14px 6px;
+  text-align: center;
+  font-size: 12px; font-weight: 600; color: var(--text-2);
+  letter-spacing: 0.10em; text-transform: uppercase;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+}
+.picker-cell:hover { background: var(--surface-2); }
+.picker-cell.future { color: var(--text-3); opacity: 0.45; }
+.picker-cell.current {
+  background: rgba(227,161,95,.12);
+  color: var(--accent-hi);
+  border-color: rgba(227,161,95,.35);
+}
+.picker-cell.selected {
+  background: var(--accent);
+  color: #1A0E0F;
+  border-color: rgba(255,241,221,.3);
+  box-shadow: 0 0 18px rgba(227,161,95,.30);
+}
+
+.state-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.20em;
+  text-transform: uppercase; color: var(--text-3); text-align: center;
+}
+.state-label .accent { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="label">Mockup . Mese . infinite scroll + jump picker . wine premium</div>
+
+<div class="screens">
+
+  <!-- ========== STATE 1: SCROLL VIEW ========== -->
+  <div class="col">
+    <div class="phone">
+      <div class="inner">
+        <div class="statusbar">
+          <span class="time">9:41</span>
+          <span class="notch"></span>
+          <span class="right">5G &nbsp; 100%</span>
+        </div>
+
+        <div class="month-header">
+          <div class="month-title">
+            Maggio 2026
+            <span class="month-chevron">&#9662;</span>
+          </div>
+          <div class="month-count">14 / 20</div>
+        </div>
+
+        <div class="day-list">
+
+          <!-- 20 MER (oggi, highlighted) -->
+          <div class="day-row is-today">
+            <div class="day-num"><div class="n">20</div><div class="wd">Mer</div></div>
+            <div class="day-body">
+              <div class="day-headline">Giornata di transizione: lavoro avanza, umore vacilla</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,2</span> kg</span>
+                <span class="meta-chip"><span class="v">7h12</span></span>
+                <span class="meta-mood">&#128528;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                  <span class="dot-mini"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 19 MAR -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">19</div><div class="wd">Mar</div></div>
+            <div class="day-body">
+              <div class="day-empty">&mdash; giornata vuota &mdash;</div>
+            </div>
+          </div>
+
+          <!-- 18 LUN -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">18</div><div class="wd">Lun</div></div>
+            <div class="day-body">
+              <div class="day-headline">Deck Marco chiuso. Lite con Giulia. 8 km al tramonto.</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,5</span> kg</span>
+                <span class="meta-chip"><span class="v">6h45</span></span>
+                <span class="meta-mood">&#128522;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 17 DOM -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">17</div><div class="wd">Dom</div></div>
+            <div class="day-body">
+              <div class="day-headline">Domenica lenta: brunch con Sara, lettura pomeriggio in giardino.</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,7</span> kg</span>
+                <span class="meta-chip"><span class="v">8h30</span></span>
+                <span class="meta-mood">&#128578;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini"></span>
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 16 SAB -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">16</div><div class="wd">Sab</div></div>
+            <div class="day-body">
+              <div class="day-headline">Cena fuori, troppo vino. Conversazione lunga con Andrea sul futuro.</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">79,1</span> kg</span>
+                <span class="meta-chip"><span class="v">5h20</span></span>
+                <span class="meta-mood">&#128523;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini"></span><span class="dot-mini"></span>
+                  <span class="dot-mini"></span><span class="dot-mini on"></span><span class="dot-mini"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 15 VEN -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">15</div><div class="wd">Ven</div></div>
+            <div class="day-body">
+              <div class="day-empty">&mdash; giornata vuota &mdash;</div>
+            </div>
+          </div>
+
+          <!-- 14 GIO -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">14</div><div class="wd">Gio</div></div>
+            <div class="day-body">
+              <div class="day-headline">Standup tagliato corto. Sara propone retrospettiva, Marco scettico.</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,8</span> kg</span>
+                <span class="meta-chip"><span class="v">7h00</span></span>
+                <span class="meta-mood">&#128528;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                  <span class="dot-mini"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 13 MER -->
+          <div class="day-row">
+            <div class="day-num"><div class="n">13</div><div class="wd">Mer</div></div>
+            <div class="day-body">
+              <div class="day-headline">Run mattina, sbloccato il bug del payment flow. Mamma al telefono.</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,6</span> kg</span>
+                <span class="meta-chip"><span class="v">6h50</span></span>
+                <span class="meta-mood">&#128522;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="tabbar">
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Oggi</span>
+          </div>
+          <div class="tab on">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Mese</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zM18 14h-8M15 18h-5M10 6h8v4h-8V6z"/></svg>
+            <span>Recap</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span>Remember</span>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="state-label">Stato 1 . <span class="accent">scroll</span> (oggi evidenziato, riga vuota italic)</div>
+  </div>
+
+
+  <!-- ========== STATE 2: JUMP PICKER OPEN ========== -->
+  <div class="col">
+    <div class="phone">
+      <div class="inner">
+        <div class="statusbar">
+          <span class="time">9:41</span>
+          <span class="notch"></span>
+          <span class="right">5G &nbsp; 100%</span>
+        </div>
+
+        <div class="month-header">
+          <div class="month-title">
+            Maggio 2026
+            <span class="month-chevron" style="transform: translateY(2px) rotate(180deg);">&#9662;</span>
+          </div>
+          <div class="month-count">14 / 20</div>
+        </div>
+
+        <div class="day-list">
+          <!-- behind picker, dimmed -->
+          <div class="day-row is-today">
+            <div class="day-num"><div class="n">20</div><div class="wd">Mer</div></div>
+            <div class="day-body">
+              <div class="day-headline">Giornata di transizione: lavoro avanza, umore vacilla</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,2</span> kg</span>
+                <span class="meta-chip"><span class="v">7h12</span></span>
+                <span class="meta-mood">&#128528;</span>
+                <span class="dots-mini">
+                  <span class="dot-mini on"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                  <span class="dot-mini"></span><span class="dot-mini on"></span><span class="dot-mini on"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-num"><div class="n">19</div><div class="wd">Mar</div></div>
+            <div class="day-body">
+              <div class="day-empty">&mdash; giornata vuota &mdash;</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Picker overlay -->
+        <div class="picker-overlay">
+          <div class="picker">
+            <div class="picker-year">
+              <span class="nav">&#8249;</span>
+              <span class="y">2026</span>
+              <span class="nav">&#8250;</span>
+            </div>
+            <div class="picker-grid">
+              <div class="picker-cell">Gen</div>
+              <div class="picker-cell">Feb</div>
+              <div class="picker-cell">Mar</div>
+              <div class="picker-cell">Apr</div>
+              <div class="picker-cell current">Mag</div>
+              <div class="picker-cell future">Giu</div>
+              <div class="picker-cell future">Lug</div>
+              <div class="picker-cell future">Ago</div>
+              <div class="picker-cell future">Set</div>
+              <div class="picker-cell future">Ott</div>
+              <div class="picker-cell future">Nov</div>
+              <div class="picker-cell future">Dic</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Oggi</span>
+          </div>
+          <div class="tab on">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Mese</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zM18 14h-8M15 18h-5M10 6h8v4h-8V6z"/></svg>
+            <span>Recap</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span>Remember</span>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="state-label">Stato 2 . <span class="accent">jump picker</span> (tap su mese: salta + scroll)</div>
+  </div>
+
+</div>
+
+<div style="max-width: 760px; margin: 60px auto 0; padding: 24px; border: 1px solid var(--line); border-radius: 14px; background: rgba(29,16,19,.5);">
+  <div style="font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.20em; text-transform: uppercase; margin-bottom: 12px;">Note implementative</div>
+  <ul style="font-size: 13px; color: var(--text-2); line-height: 1.7; padding-left: 18px;">
+    <li><strong style="color: var(--text); font-weight: 600;">Infinite scroll</strong>: parte da oggi (20 mag), scrolla all'infinito verso il passato. Header mese sticky in cima che si aggiorna quando attraversi il confine tra due mesi.</li>
+    <li><strong style="color: var(--text); font-weight: 600;">Jump picker</strong>: tap sul nome mese o sulla chevron apre overlay. Tap su un mese chiude e scrolla a quella sezione (smooth). Mesi futuri disabilitati. Anno corrente di default, frecce per cambiare anno.</li>
+    <li><strong style="color: var(--text); font-weight: 600;">Oggi</strong>: border-left amber 2px + glow + sfondo gradient leggermente caldo. Numero giorno in colore accent-hi invece del solito ink.</li>
+    <li><strong style="color: var(--text); font-weight: 600;">Empty days</strong>: testo italic "— giornata vuota —" in muted, no metriche, no dots. Tap apre comunque empty state Today di quel giorno (per backfill).</li>
+    <li><strong style="color: var(--text); font-weight: 600;">Headline troncata</strong>: max 2 righe con CSS line-clamp. La versione completa la vedi tappando la riga (apre filled view di quel giorno).</li>
+    <li><strong style="color: var(--text); font-weight: 600;">Counter "14 / 20"</strong> nell'header: giorni raccontati / giorni passati del mese. Soft accountability senza shame.</li>
+    <li><strong style="color: var(--text); font-weight: 600;">Desktop</strong>: layout identico, container max-w 440px centrato. Niente vista 2-colonne per ora (potremo aggiungerla dopo se senti l'esigenza).</li>
+  </ul>
+</div>
+
+</body>
+</html>

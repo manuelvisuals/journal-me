@@ -71,3 +71,47 @@ export function formatDurationMmSs(totalSeconds: number): string {
   const ss = String(s % 60).padStart(2, "0");
   return `${mm}:${ss}`;
 }
+
+/** "Maggio 2026" — full Italian month name + year. */
+export function formatMonthTitle(year: number, month: number): string {
+  const d = new Date(year, month - 1, 1);
+  const m = new Intl.DateTimeFormat(LOCALE, { month: "long" }).format(d);
+  const cap = m.charAt(0).toUpperCase() + m.slice(1);
+  return `${cap} ${year}`;
+}
+
+/** Italian short month abbreviation, capitalized, no trailing dot: "Mag". */
+export function shortMonthAbbr(year: number, month: number): string {
+  const d = new Date(year, month - 1, 1);
+  const m = new Intl.DateTimeFormat(LOCALE, { month: "short" })
+    .format(d)
+    .replace(/\.$/, "");
+  return m.charAt(0).toUpperCase() + m.slice(1).toLowerCase();
+}
+
+/** Italian short weekday for a given date: "Mer", "Gio", etc. */
+export function shortWeekday(d: Date): string {
+  const w = new Intl.DateTimeFormat(LOCALE, { weekday: "short" })
+    .format(d)
+    .replace(/\.$/, "");
+  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+}
+
+/** Number of days in the given (1-based) month. */
+export function daysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
+
+/** Build "YYYY-MM-DD" key from year/month(1-based)/day. */
+export function dateKey(year: number, month: number, day: number): string {
+  const m = String(month).padStart(2, "0");
+  const d = String(day).padStart(2, "0");
+  return `${year}-${m}-${d}`;
+}
+
+/** Format a sleep duration in fractional hours as "Xh YY" (e.g. 7.2 -> "7h 12"). */
+export function formatSleep(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  return `${h}h ${String(m).padStart(2, "0")}`;
+}

@@ -144,3 +144,75 @@ export async function saveTodayEntry(
     ? saveDemoEntry(input, dateISO)
     : saveAuthEntry(input, dateISO);
 }
+
+/* ----------------- Month range loader ----------------- */
+
+function monthBounds(year: number, month: number): { start: string; end: string } {
+  const m = String(month).padStart(2, "0");
+  const lastDay = new Date(year, month, 0).getDate();
+  return {
+    start: `${year}-${m}-01`,
+    end: `${year}-${m}-${String(lastDay).padStart(2, "0")}`,
+  };
+}
+
+async function loadDemoMonth(year: number, month: number): Promise<Entry[]> {
+  if (typeof window === "undefined") return [];
+  const { start, end } = monthBounds(year, month);
+  const out: Entry[] = [];
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const k = window.localStorage.key(i);
+      if (!k || !k.startsWith(DEMO_KEY_PREFIX)) continue;
+      const date = k.slice(DEMO_KEY_PREFIX.length);
+      if (date < start || date > end) continue;
+      const raw = window.localStorage.getItem(k);
+      if (!raw) continue;
+      try {
+        out.push(JSON.parse(raw) as Entry);
+      } catch {
+        // ignore corrupted entries
+      }
+    }
+  } catch {
+    return [];
+  }
+  out.sort((a, b) => (a.entryDate < b.entryDate ? 1 : -1));
+  return out;
+}
+
+async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
+  const supabase = createClient();
+  const { start, end } = monthBounds(year, month);
+  const { data, error } = await supabase
+    .from("entries")
+    .select(
+      "id, entry_date, transcript, headline, snippet, mood, weight_kg, sleep_hours, sleep_label, created_at",
+    )
+    .gte("entry_date", start)
+    .lte("entry_date", end)
+    .order("entry_date", { ascending: false });
+  if (error || !data) return [];
+  return data.map((d) => ({
+    id: d.id as string,
+    entryDate: d.entry_date as string,
+    transcript: (d.transcript as string) ?? "",
+    durationSeconds: 0,
+    headline: (d.headline as string) ?? null,
+    snippet: (d.snippet as string) ?? null,
+    areas: [],
+    metrics: null,
+    goals: [],
+    createdAt: d.created_at as string,
+  }));
+}
+
+export async function loadMonthEntries(
+  mode: DataMode,
+  year: number,
+  month: number,
+): Promise<Entry[]> {
+  return mode === "demo"
+    ? loadDemoMonth(year, month)
+    : loadAuthMonth(year, month);
+}
