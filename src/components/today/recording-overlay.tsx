@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import {
   compactDayDate,
   formatDurationMmSs,
@@ -11,6 +12,12 @@ import {
 import { DatePickerPopover } from "@/components/today/date-picker-popover";
 import { loadGlossary } from "@/lib/data/glossary";
 import type { DataMode } from "@/lib/data/entries";
+
+// useSyncExternalStore needs a stable subscribe function; we never notify
+// because the snapshot is constant after hydration.
+function subscribeNoop(): () => void {
+  return () => {};
+}
 
 // Module-level cache of the mic MediaStream so the browser doesn't re-prompt
 // the user for permission every single time they open the recording overlay
@@ -76,6 +83,16 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
   );
   const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
   const [silenceWarning, setSilenceWarning] = useState<boolean>(false);
+  // Mount flag for the document.body portal — avoids SSR mismatch and
+  // ensures the overlay escapes any ancestor stacking context (e.g. the
+  // fixed-positioned quick-capture bar on /remember which would otherwise
+  // trap the overlay below the bottom tab bar). useSyncExternalStore avoids
+  // the React 19 lint rule against setState-in-useEffect.
+  const portalReady = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
 
   // Refs to objects that must survive across renders without triggering effects.
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -388,7 +405,11 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
   const liveDotOpacity =
     state === "recording" ? 1 : state === "paused" ? 0.45 : 0.6;
 
-  return (
+  if (!portalReady || typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex flex-col"
       style={{ background: "var(--color-bg-phone)", height: "100dvh" }}
@@ -676,7 +697,8 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
         }}
         onClose={() => setDatePickerOpen(false)}
       />
-    </div>
+    </div>,
+    document.body,
   );
 }
 
