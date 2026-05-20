@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Journal.me . Brandbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-page: #050304;
+  --bg-phone: #0E0709;
+  --surface: #1D1013;
+  --surface-2: #241418;
+  --line: rgba(255,229,214,0.075);
+  --line-strong: rgba(255,229,214,0.15);
+  --accent: #E3A15F;
+  --accent-pressed: #D08F4D;
+  --accent-hi: #F0B875;
+  --ink: #F4E7DE;
+  --ink-muted: #CDB7AE;
+  --ink-faint: #8E7770;
+  --success: #A8C9B0;
+  --danger: #F87171;
+  --font: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Spectral", Georgia, "Times New Roman", serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: var(--bg-page);
+  color: var(--ink);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+body {
+  position: relative;
+  min-height: 100vh;
+  padding: 0;
+  line-height: 1.5;
+}
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(227,161,95,0.06), transparent 35%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,0.12), transparent 30%);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.025; mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+}
+.page { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 0 56px; }
+@media (max-width: 640px) {
+  .page { padding: 0 24px; }
+}
+
+/* ============== COVER ============== */
+.cover {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 96px 0 64px;
+}
+.cover-top {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 11px; font-weight: 600; color: var(--ink-faint);
+  letter-spacing: 0.26em; text-transform: uppercase;
+}
+.cover-top .dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 12px rgba(227,161,95,0.7);
+}
+.cover-title {
+  font-family: var(--font-serif);
+  font-size: clamp(54px, 9vw, 96px);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin-top: 28px;
+}
+.cover-title .em {
+  font-style: italic; color: var(--accent-hi);
+}
+.cover-tag {
+  font-family: var(--font-serif);
+  font-size: 19px; font-style: italic; color: var(--ink-muted);
+  line-height: 1.5; max-width: 540px; margin-top: 22px;
+}
+.cover-bottom {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+  font-size: 11px; color: var(--ink-faint);
+  letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+}
+.cover-bottom .meta { display: flex; gap: 36px; }
+
+/* ============== SECTION FRAME ============== */
+section.chapter {
+  padding: 72px 0;
+  border-top: 1px solid var(--line);
+}
+.ch-num {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  letter-spacing: 0.30em; text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.ch-num::after {
+  content: ""; flex: 1; height: 1px; max-width: 80px;
+  background: linear-gradient(90deg, rgba(227,161,95,0.45), transparent);
+}
+.ch-title {
+  font-family: var(--font-serif);
+  font-size: 42px; font-weight: 400; line-height: 1.08;
+  letter-spacing: -0.022em; color: var(--ink);
+  margin-bottom: 12px;
+}
+.ch-lede {
+  font-family: var(--font-serif);
+  font-size: 18px; font-style: italic; color: var(--ink-muted);
+  line-height: 1.5; max-width: 620px;
+  margin-bottom: 40px;
+}
+
+/* ============== PROSE ============== */
+.prose {
+  max-width: 680px;
+}
+.prose p {
+  font-size: 15px; line-height: 1.7; color: var(--ink-muted);
+  margin-bottom: 18px;
+}
+.prose p b { color: var(--ink); font-weight: 600; }
+.prose h3 {
+  font-family: var(--font-serif);
+  font-size: 22px; font-weight: 500; color: var(--ink);
+  margin: 36px 0 12px; letter-spacing: -0.012em;
+}
+.prose h4 {
+  font-size: 11px; font-weight: 650; color: var(--accent);
+  letter-spacing: 0.22em; text-transform: uppercase;
+  margin: 26px 0 10px;
+}
+.prose ul { padding-left: 24px; margin-bottom: 18px; }
+.prose li {
+  font-size: 14px; line-height: 1.7; color: var(--ink-muted);
+  margin-bottom: 6px;
+}
+.prose li::marker { color: var(--accent); }
+blockquote.pull {
+  font-family: var(--font-serif);
+  font-size: 21px; font-style: italic; color: var(--ink);
+  border-left: 2px solid var(--accent);
+  padding: 4px 0 4px 22px; margin: 28px 0;
+  line-height: 1.45; max-width: 580px;
+}
+
+/* ============== CODE ============== */
+code, .code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: var(--ink);
+}
+pre.code-block {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px; line-height: 1.6;
+  color: var(--ink-muted);
+  margin: 20px 0;
+}
+pre.code-block .com { color: var(--ink-faint); font-style: italic; }
+pre.code-block .key { color: var(--accent); }
+pre.code-block .str { color: var(--success); }
+pre.code-block .num { color: var(--accent-hi); }
+
+/* ============== COLOR SWATCHES ============== */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 28px;
+}
+.swatch {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.swatch .chip {
+  height: 110px;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+.swatch .body { padding: 14px 16px 16px; }
+.swatch .name {
+  font-size: 13px; font-weight: 650; color: var(--ink);
+  margin-bottom: 4px; letter-spacing: -0.01em;
+}
+.swatch .var {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px; color: var(--ink-faint); margin-bottom: 8px;
+}
+.swatch .hex {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px; color: var(--accent); letter-spacing: 0.04em;
+}
+.swatch .note {
+  margin-top: 8px; font-size: 11px; color: var(--ink-muted); line-height: 1.45;
+}
+
+/* ============== TYPE SPECIMEN ============== */
+.spec {
+  display: grid; grid-template-columns: 180px 1fr; gap: 32px;
+  padding: 22px 0; border-bottom: 1px solid var(--line);
+  align-items: baseline;
+}
+.spec:last-child { border-bottom: none; }
+.spec .meta {
+  font-size: 11px; color: var(--ink-faint);
+  letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600;
+  line-height: 1.5;
+}
+.spec .meta span { display: block; color: var(--accent); margin-top: 4px; font-size: 10px; }
+.spec .demo {
+  font-family: var(--font);
+  color: var(--ink);
+}
+.spec .demo.serif { font-family: var(--font-serif); }
+
+/* ============== EXAMPLE FRAMES (phone preview) ============== */
+.examples {
+  display: flex; gap: 24px; flex-wrap: wrap; margin-top: 32px;
+}
+.phone-mini {
+  position: relative; width: 280px; min-height: 460px;
+  background: var(--bg-phone);
+  border-radius: 32px; overflow: hidden; padding: 18px;
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+}
+.phone-mini::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% -4%, rgba(227,161,95,0.06), transparent 34%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,0.14), transparent 28%);
+}
+.phone-mini-caption {
+  font-size: 10px; color: var(--ink-faint);
+  letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+  margin-top: 12px; text-align: center;
+}
+
+/* ============== BUTTON DEMOS — interactive ============== */
+.demo-btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin: 24px 0; }
+.btn-primary-demo {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #1A0E0F;
+  border: 1px solid rgba(255,241,221,0.34);
+  font-family: var(--font); font-size: 15px; font-weight: 650;
+  padding: 14px 24px; border-radius: 14px; cursor: pointer;
+  letter-spacing: -0.005em;
+  box-shadow:
+    0 0 22px rgba(227,161,95,0.28),
+    0 12px 24px rgba(0,0,0,0.50),
+    inset 0 1px 1px rgba(255,255,255,0.32);
+  transition:
+    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.btn-primary-demo:hover {
+  background: var(--accent-hi);
+  box-shadow:
+    0 0 26px rgba(227,161,95,0.38),
+    0 14px 26px rgba(0,0,0,0.52),
+    inset 0 1px 1px rgba(255,255,255,0.36);
+}
+.btn-primary-demo:active {
+  transform: scale(0.97);
+  background: var(--accent-pressed);
+  box-shadow:
+    0 0 6px rgba(227,161,95,0.10),
+    0 2px 6px rgba(0,0,0,0.45),
+    inset 0 2px 5px rgba(0,0,0,0.28);
+}
+.btn-ghost-demo {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--ink-muted);
+  border: 1px solid var(--line);
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  padding: 12px 22px; border-radius: 14px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+  transition:
+    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.btn-ghost-demo:hover {
+  border-color: rgba(227,161,95,0.30);
+  color: var(--ink);
+}
+.btn-ghost-demo:active {
+  transform: scale(0.97);
+  background: var(--surface);
+  border-color: rgba(227,161,95,0.20);
+  color: var(--ink);
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.25);
+}
+.btn-danger-demo {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--danger);
+  border: 1px solid rgba(248,113,113,0.30);
+  font-family: var(--font); font-size: 14px; font-weight: 600;
+  padding: 12px 22px; border-radius: 12px;
+  letter-spacing: 0.02em; cursor: pointer;
+  transition:
+    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+.btn-danger-demo:hover {
+  background: rgba(248,113,113,0.06);
+}
+.btn-danger-demo:active {
+  transform: scale(0.97);
+  background: rgba(248,113,113,0.14);
+}
+
+/* ============== LIFECYCLE — 4 frames frozen + auto-cycle loop ============== */
+.lifecycle-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  margin: 28px 0;
+}
+@media (max-width: 720px) {
+  .lifecycle-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.lc-cell {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 18px 20px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 18px;
+  position: relative;
+}
+.lc-cell .frame-label {
+  font-size: 9px; font-weight: 650; color: var(--ink-faint);
+  letter-spacing: 0.22em; text-transform: uppercase;
+}
+.lc-cell.is-active .frame-label { color: var(--accent); }
+.lc-cell .frame-spec {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px; color: var(--ink-muted); line-height: 1.5;
+  text-align: center;
+}
+.lc-cell .frame-spec b { color: var(--accent); font-weight: 600; }
+
+/* Frozen frames — each shows one specific state */
+.btn-frame {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #1A0E0F;
+  border: 1px solid rgba(255,241,221,0.34);
+  font-family: var(--font); font-size: 14px; font-weight: 650;
+  padding: 12px 22px; border-radius: 14px;
+  letter-spacing: -0.005em;
+}
+.btn-frame.rest {
+  box-shadow:
+    0 0 22px rgba(227,161,95,0.28),
+    0 12px 24px rgba(0,0,0,0.50),
+    inset 0 1px 1px rgba(255,255,255,0.32);
+}
+.btn-frame.hover {
+  background: var(--accent-hi);
+  box-shadow:
+    0 0 26px rgba(227,161,95,0.38),
+    0 14px 26px rgba(0,0,0,0.52),
+    inset 0 1px 1px rgba(255,255,255,0.36);
+}
+.btn-frame.press {
+  transform: scale(0.97);
+  background: var(--accent-pressed);
+  box-shadow:
+    0 0 6px rgba(227,161,95,0.10),
+    0 2px 6px rgba(0,0,0,0.45),
+    inset 0 2px 5px rgba(0,0,0,0.28);
+}
+.btn-frame.release {
+  transform: scale(0.99);
+  background: var(--accent);
+  box-shadow:
+    0 0 14px rgba(227,161,95,0.20),
+    0 6px 14px rgba(0,0,0,0.45),
+    inset 0 1px 1px rgba(255,255,255,0.20);
+}
+
+/* Auto-playing lifecycle stage with a single button that cycles
+   through all 4 states forever, in real time. The timeline keeps
+   the 80ms transition explicit so you can read the easing. */
+.cycle-stage {
+  margin: 32px 0;
+  background: var(--bg-phone);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 56px 24px 28px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 22px;
+  position: relative;
+  overflow: hidden;
+}
+.cycle-stage::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(227,161,95,0.05), transparent 40%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,0.10), transparent 30%);
+  pointer-events: none;
+}
+.cycle-pointer {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 14px; height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  border: 2px solid rgba(255,255,255,0.40);
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.12), 0 4px 14px rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  animation: cursor-cycle 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes cursor-cycle {
+  /* The pointer is invisible until it enters at ~30% (after rest),
+     stays visible during hover + press + release, then leaves. */
+  0%, 28%   { opacity: 0; transform: translate(60px, -32px) scale(1.2); }
+  32%       { opacity: 1; transform: translate(20px, -8px) scale(1.15); }
+  46%       { opacity: 1; transform: translate(0, 0) scale(1.10); }
+  /* Hover phase: pointer sits on the button */
+  50%       { opacity: 1; transform: translate(0, 0) scale(1.10); }
+  /* Press: pointer compresses with the button */
+  56%       { opacity: 1; transform: translate(0, 1px) scale(0.92); }
+  62%       { opacity: 1; transform: translate(0, 1px) scale(0.92); }
+  /* Release: pointer hovers again, then leaves */
+  68%       { opacity: 1; transform: translate(0, 0) scale(1.10); }
+  82%       { opacity: 0.6; transform: translate(20px, -8px) scale(1.15); }
+  100%      { opacity: 0; transform: translate(60px, -32px) scale(1.2); }
+}
+.cycle-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--accent); color: #1A0E0F;
+  border: 1px solid rgba(255,241,221,0.34);
+  font-family: var(--font); font-size: 15px; font-weight: 650;
+  padding: 14px 32px; border-radius: 14px;
+  letter-spacing: -0.005em;
+  z-index: 1;
+  /* Initial state mirrors the keyframe 0% so there's no first-frame jump. */
+  box-shadow:
+    0 0 22px rgba(227,161,95,0.28),
+    0 12px 24px rgba(0,0,0,0.50),
+    inset 0 1px 1px rgba(255,255,255,0.32);
+  animation: cycle-button 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes cycle-button {
+  /* 0-30%  REST: glow ambra ambient, scale 1 */
+  0%, 30% {
+    transform: scale(1);
+    background: #E3A15F;
+    box-shadow:
+      0 0 22px rgba(227,161,95,0.28),
+      0 12px 24px rgba(0,0,0,0.50),
+      inset 0 1px 1px rgba(255,255,255,0.32);
+  }
+  /* 30-50%  HOVER: glow piu' acceso, shift verso accent-hi, lift sutile */
+  50% {
+    transform: scale(1);
+    background: #F0B875;
+    box-shadow:
+      0 0 26px rgba(227,161,95,0.38),
+      0 14px 26px rgba(0,0,0,0.52),
+      inset 0 1px 1px rgba(255,255,255,0.36);
+  }
+  /* 50-65%  PRESS: scale 0.97, accent-pressed scuro, ombra schiacciata + inner shadow */
+  55% {
+    transform: scale(0.97);
+    background: #D08F4D;
+    box-shadow:
+      0 0 6px rgba(227,161,95,0.10),
+      0 2px 6px rgba(0,0,0,0.45),
+      inset 0 2px 5px rgba(0,0,0,0.28);
+  }
+  65% {
+    transform: scale(0.97);
+    background: #D08F4D;
+    box-shadow:
+      0 0 6px rgba(227,161,95,0.10),
+      0 2px 6px rgba(0,0,0,0.45),
+      inset 0 2px 5px rgba(0,0,0,0.28);
+  }
+  /* 65-80%  RELEASE: torna in posizione, glow ricarica */
+  80% {
+    transform: scale(1);
+    background: #E3A15F;
+    box-shadow:
+      0 0 22px rgba(227,161,95,0.28),
+      0 12px 24px rgba(0,0,0,0.50),
+      inset 0 1px 1px rgba(255,255,255,0.32);
+  }
+  /* 80-100%  REST loop */
+  100% {
+    transform: scale(1);
+    background: #E3A15F;
+    box-shadow:
+      0 0 22px rgba(227,161,95,0.28),
+      0 12px 24px rgba(0,0,0,0.50),
+      inset 0 1px 1px rgba(255,255,255,0.32);
+  }
+}
+.cycle-track {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  height: 22px;
+  display: flex; align-items: center;
+}
+.cycle-track .rail {
+  position: absolute; left: 0; right: 0; top: 10px; height: 2px;
+  background: var(--line);
+  border-radius: 1px;
+}
+.cycle-track .fill {
+  position: absolute; left: 0; top: 10px; height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  width: 0%;
+  animation: cycle-fill 5s linear infinite;
+}
+@keyframes cycle-fill {
+  0%   { width: 0%; }
+  100% { width: 100%; }
+}
+.cycle-marks {
+  position: absolute; inset: 0;
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--ink-faint);
+  letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600;
+}
+.cycle-marks span { position: relative; top: 18px; }
+.cycle-marks span.now { color: var(--accent); }
+.cycle-pin {
+  position: absolute; top: 6px; width: 8px; height: 8px;
+  background: var(--accent); border-radius: 50%;
+  box-shadow: 0 0 12px rgba(227,161,95,0.7);
+  margin-left: -4px;
+  left: 0;
+  animation: cycle-fill 5s linear infinite;
+}
+.cycle-caption {
+  font-size: 11px; color: var(--ink-muted);
+  text-align: center; line-height: 1.5;
+  max-width: 480px;
+  font-style: italic;
+}
+
+/* ============== SPACING SCALE ============== */
+.space-row { display: flex; align-items: center; gap: 24px; margin: 12px 0; }
+.space-bar {
+  background: var(--accent); height: 8px; border-radius: 4px;
+}
+.space-label {
+  font-size: 11px; font-family: ui-monospace, monospace;
+  color: var(--ink-muted); width: 80px;
+}
+.space-note {
+  font-size: 12px; color: var(--ink-faint); flex: 1;
+}
+
+/* ============== SHADOW DEMO ============== */
+.shadow-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px; margin: 28px 0;
+}
+.shadow-tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 18px 18px;
+  text-align: center;
+}
+.shadow-tile .box {
+  width: 56px; height: 56px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px; margin: 0 auto 18px;
+}
+.shadow-tile .label {
+  font-size: 11px; font-weight: 650; color: var(--accent);
+  letter-spacing: 0.20em; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.shadow-tile .desc { font-size: 11px; color: var(--ink-muted); line-height: 1.5; }
+
+.shadow-tile.amber .box {
+  background: var(--accent);
+  box-shadow:
+    0 0 22px rgba(227,161,95,0.28),
+    0 12px 24px rgba(0,0,0,0.50),
+    inset 0 1px 1px rgba(255,255,255,0.32);
+}
+.shadow-tile.card .box {
+  box-shadow:
+    inset 0 1px 0 rgba(255,229,214,0.06),
+    0 14px 30px rgba(0,0,0,0.30);
+}
+.shadow-tile.float .box {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    0 6px 14px rgba(0,0,0,0.30);
+}
+.shadow-tile.modal .box {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.50);
+}
+
+/* ============== TWO-COL ============== */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  margin-top: 32px;
+}
+@media (max-width: 720px) {
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* ============== DO / DON'T ============== */
+.do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+@media (max-width: 720px) { .do-dont { grid-template-columns: 1fr; } }
+.dd-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.dd-card.do { border-color: rgba(168,201,176,0.32); }
+.dd-card.dont { border-color: rgba(248,113,113,0.32); }
+.dd-card .tag {
+  font-size: 10px; font-weight: 650; letter-spacing: 0.22em;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.dd-card.do .tag { color: var(--success); }
+.dd-card.dont .tag { color: var(--danger); }
+.dd-card .txt { font-size: 13px; color: var(--ink); line-height: 1.55; }
+
+/* ============== TOC ============== */
+.toc {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 28px;
+  margin-top: 28px; max-width: 720px;
+}
+.toc a {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 12px; padding: 8px 0;
+  font-size: 13px; color: var(--ink-muted); text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+.toc a .name { color: var(--ink); font-weight: 500; }
+.toc a:hover { color: var(--accent); }
+.toc a:hover .name { color: var(--accent-hi); }
+.toc a .num {
+  font-family: ui-monospace, monospace; font-size: 10px;
+  color: var(--ink-faint); letter-spacing: 0.10em;
+}
+.toc a .dot {
+  flex: 1; border-bottom: 1px dotted var(--line-strong); margin-bottom: 4px;
+}
+
+/* ============== TOKEN TABLE ============== */
+table.tokens {
+  width: 100%; border-collapse: collapse; margin-top: 24px;
+  font-size: 12px;
+}
+table.tokens th, table.tokens td {
+  text-align: left; padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+table.tokens th {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-faint); font-weight: 650;
+}
+table.tokens td.tok {
+  font-family: ui-monospace, monospace; color: var(--accent);
+}
+table.tokens td.val {
+  font-family: ui-monospace, monospace; color: var(--ink-muted);
+}
+table.tokens td.use { color: var(--ink-muted); font-size: 11px; line-height: 1.5; }
+
+/* ============== CLOSING ============== */
+.closing {
+  padding: 80px 0; text-align: center;
+  border-top: 1px solid var(--line);
+}
+.closing .mark {
+  font-family: var(--font-serif); font-size: 36px;
+  font-style: italic; color: var(--accent-hi);
+}
+.closing .signoff {
+  font-size: 11px; color: var(--ink-faint); margin-top: 18px;
+  letter-spacing: 0.20em; text-transform: uppercase; font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<!-- ============================== COVER ============================== -->
+<section class="cover">
+  <div>
+    <div class="cover-top">
+      <span class="dot"></span>
+      Brandbook . v0.1 . Maggio 2026
+    </div>
+    <h1 class="cover-title">
+      Journal<span class="em">.me</span>
+    </h1>
+    <p class="cover-tag">
+      Un'app intima per parlare a se stessi alla fine di una giornata. Calda
+      come una stanza al tramonto. Silenziosa quanto basta. Niente coaching,
+      niente notifiche urgenti, niente palette stock-tech. Questa e' la
+      grammatica visiva che la tiene insieme.
+    </p>
+  </div>
+  <div class="cover-bottom">
+    <div class="meta">
+      <span>Per: chi ricostruisce</span>
+      <span>Da zero, senza CSS</span>
+    </div>
+    <span>Roma . 2026</span>
+  </div>
+</section>
+
+<!-- ============================== TOC ============================== -->
+<section class="chapter">
+  <div class="ch-num">Indice</div>
+  <h2 class="ch-title">Cosa c'e' dentro</h2>
+  <div class="toc">
+    <a href="#ch01"><span class="num">01</span><span class="name">Filosofia</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch02"><span class="num">02</span><span class="name">Colore</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch03"><span class="num">03</span><span class="name">Tipografia</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch04"><span class="num">04</span><span class="name">Superfici e profondita'</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch05"><span class="num">05</span><span class="name">Spazio e ritmo</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch06"><span class="num">06</span><span class="name">Forme e raggi</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch07"><span class="num">07</span><span class="name">Ombra ed elevazione</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch08"><span class="num">08</span><span class="name">Bottoni</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch09"><span class="num">09</span><span class="name">Input e form</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch10"><span class="num">10</span><span class="name">Card e liste</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch11"><span class="num">11</span><span class="name">Navigazione</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch12"><span class="num">12</span><span class="name">Registrazione</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch13"><span class="num">13</span><span class="name">Editoriale (Recap)</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch14"><span class="num">14</span><span class="name">Movimento</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch15"><span class="num">15</span><span class="name">Icone</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch16"><span class="num">16</span><span class="name">Voce e tono</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch17"><span class="num">17</span><span class="name">Stati</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch18"><span class="num">18</span><span class="name">Da non fare</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch19"><span class="num">19</span><span class="name">Tokens (export)</span><span class="dot"></span><span class="num">pag</span></a>
+  </div>
+</section>
+
+<!-- ============================== CH 01 . FILOSOFIA ============================== -->
+<section class="chapter" id="ch01">
+  <div class="ch-num">Capitolo 01</div>
+  <h2 class="ch-title">Filosofia</h2>
+  <p class="ch-lede">
+    Prima ancora dei colori, una scelta di registro. L'app non e' un
+    dashboard. Non e' un coach. E' una stanza con una poltrona e una lampada
+    accesa, di sera.
+  </p>
+
+  <div class="prose">
+    <p>Journal.me esiste per una persona alla volta. La fine della giornata
+    incontra una superficie calda, scura, che non chiede metriche prima di
+    aver chiesto come sono andate le cose. La trascrizione e' fedele:
+    nessuna interpretazione, nessuna ottimizzazione. L'AI scrive titoli
+    asciutti come <em>notizie di borsa</em> per le giornate; e prose
+    letterarie per i recap mensili. Due registri, mai mischiati.</p>
+
+    <blockquote class="pull">
+      Calda non significa sentimentale. Premium non significa fredda.
+      Cerchiamo un wine bar di legno scuro a luci basse, non una hall
+      d'albergo bianca.
+    </blockquote>
+
+    <h3>I cinque principi non negoziabili</h3>
+
+    <h4>01 . Privacy della superficie</h4>
+    <p>Lo sfondo non grida mai. E' un fondo scuro caldo, mai nero puro,
+    mai blu. Un radial gradient sottilissimo di calore aggiunge profondita'
+    senza creare gerarchia visiva contro il contenuto. Il rumore
+    (grain SVG) e' al <b>2.5% di opacita'</b>. Lo vedi solo se sai che c'e'.</p>
+
+    <h4>02 . Una sola accent</h4>
+    <p>L'ambra (<code>#E3A15F</code>) e' l'unico colore caldo che parla.
+    Tutto il resto e' inchiostro su carta scura. Niente blu, niente verdi
+    di stato (tranne success/danger semantici a moderazione). La regola:
+    se ti viene voglia di un secondo accent, hai sbagliato gerarchia.</p>
+
+    <h4>03 . Tipografia come architettura</h4>
+    <p>Due font, mai una terza. <b>Inter</b> per la UI e i numeri (con
+    le variant alternative <code>cv11</code> e <code>ss01</code>
+    abilitate). <b>Spectral</b> per la prosa letteraria: recap, citazioni,
+    titoli editoriali. Il contrasto si fa col peso e la spaziatura, non
+    con cose nuove.</p>
+
+    <h4>04 . Touch first, sempre</h4>
+    <p>Ogni elemento interattivo ha <b>tap feedback a 80ms</b> con
+    <code>scale(0.97)</code> e shadow flatten. <code>-webkit-tap-
+    highlight-color: transparent</code> e <code>touch-action:
+    manipulation</code> su tutto. Niente focus ring desktop a colori
+    metallici. I bottoni rispondono al dito come legno: una piccola
+    cedevolezza, niente di piu'.</p>
+
+    <h4>05 . Italiano, sempre</h4>
+    <p>Numeri formattati <code>it-IT</code>. Date con weekday corti
+    italiani (LUN, MAR). Punti come separatori, mai middot ne' tipografici
+    sofisticati nelle UI (nei testi serif si'). Locale e' un'estensione
+    del brand.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 02 . COLORE ============================== -->
+<section class="chapter" id="ch02">
+  <div class="ch-num">Capitolo 02</div>
+  <h2 class="ch-title">Colore</h2>
+  <p class="ch-lede">
+    Wine premium. Sfondi caldi a base scura, inchiostro cremoso anziche'
+    bianco freddo, ambra come unica voce calda.
+  </p>
+
+  <div class="prose">
+    <p>Tutti i colori vivono come CSS custom properties in
+    <code>globals.css</code> sotto <code>@theme inline</code>. Non
+    inventarne mai di nuovi a runtime: se non e' nella palette, non
+    appartiene al brand.</p>
+  </div>
+
+  <h4 style="font-size:11px; font-weight:650; color: var(--accent); letter-spacing:0.22em; text-transform:uppercase; margin: 32px 0 10px;">Backgrounds</h4>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="chip" style="background: #050304;"></div>
+      <div class="body">
+        <div class="name">Page outer</div>
+        <div class="var">--color-bg</div>
+        <div class="hex">#050304</div>
+        <div class="note">Sfondo della pagina esterna. Quasi nero, con micro-tinta wine. Mai usato per superfici dentro la app.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #0E0709;"></div>
+      <div class="body">
+        <div class="name">Phone body</div>
+        <div class="var">--color-bg-phone</div>
+        <div class="hex">#0E0709</div>
+        <div class="note">Corpo dell'app (il "telefono"). Riceve sopra il warmth gradient e il grain noise.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #1D1013;"></div>
+      <div class="body">
+        <div class="name">Surface</div>
+        <div class="var">--color-surface</div>
+        <div class="hex">#1D1013</div>
+        <div class="note">Card, input, bottoni ghost, chip. Il "primo strato" sopra il body.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #241418;"></div>
+      <div class="body">
+        <div class="name">Surface 2</div>
+        <div class="var">--color-surface-2</div>
+        <div class="hex">#241418</div>
+        <div class="note">Stato selezionato / pressed di card e chip. Il "secondo strato".</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="font-size:11px; font-weight:650; color: var(--accent); letter-spacing:0.22em; text-transform:uppercase; margin: 40px 0 10px;">Inks</h4>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="chip" style="background: #F4E7DE;"></div>
+      <div class="body">
+        <div class="name">Ink</div>
+        <div class="var">--color-ink</div>
+        <div class="hex">#F4E7DE</div>
+        <div class="note">Testo primario. Cremoso, mai bianco puro. Il bianco freddo rovina la warmth.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #CDB7AE;"></div>
+      <div class="body">
+        <div class="name">Ink muted</div>
+        <div class="var">--color-ink-muted</div>
+        <div class="hex">#CDB7AE</div>
+        <div class="note">Testo secondario, descrizioni, corpo della prosa serif nei recap.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #8E7770;"></div>
+      <div class="body">
+        <div class="name">Ink faint</div>
+        <div class="var">--color-ink-faint</div>
+        <div class="hex">#8E7770</div>
+        <div class="note">Caption, label all-caps, hint, transcript "older" (gia' detto da un po'). Bisbigliato.</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="font-size:11px; font-weight:650; color: var(--accent); letter-spacing:0.22em; text-transform:uppercase; margin: 40px 0 10px;">Accent — l'unica voce calda</h4>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="chip" style="background: #E3A15F;"></div>
+      <div class="body">
+        <div class="name">Accent</div>
+        <div class="var">--color-accent</div>
+        <div class="hex">#E3A15F</div>
+        <div class="note">Bottoni primari, mic centrale, label di sezione, focus glow. Una sola voce.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #D08F4D;"></div>
+      <div class="body">
+        <div class="name">Accent pressed</div>
+        <div class="var">--color-accent-pressed</div>
+        <div class="hex">#D08F4D</div>
+        <div class="note">Stato :active del bottone primary. Una virgola piu' scuro e satura.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #F0B875;"></div>
+      <div class="body">
+        <div class="name">Accent hi</div>
+        <div class="var">--color-accent-hi</div>
+        <div class="hex">#F0B875</div>
+        <div class="note">Hover sutile / decorazioni (drop cap dei recap). Da usare con misura.</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 style="font-size:11px; font-weight:650; color: var(--accent); letter-spacing:0.22em; text-transform:uppercase; margin: 40px 0 10px;">Semantica</h4>
+  <div class="swatch-grid">
+    <div class="swatch">
+      <div class="chip" style="background: #A8C9B0;"></div>
+      <div class="body">
+        <div class="name">Success</div>
+        <div class="var">--color-success</div>
+        <div class="hex">#A8C9B0</div>
+        <div class="note">Stati positivi rari (goal dot acceso, success badge). Verde polveroso, non vivido.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: #F87171;"></div>
+      <div class="body">
+        <div class="name">Danger</div>
+        <div class="var">--color-danger</div>
+        <div class="hex">#F87171</div>
+        <div class="note">LIVE recording, errori, cancel/delete, logout. Caldo ma fermo.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="chip" style="background: rgba(255,229,214,0.075);"></div>
+      <div class="body">
+        <div class="name">Line</div>
+        <div class="var">--color-line</div>
+        <div class="hex">rgba(255,229,214, .075)</div>
+        <div class="note">Bordi, separatori. Bianco-cremoso a opacita' bassissima, mai grigio neutro.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prose" style="margin-top: 36px;">
+    <h3>Warmth overlay (body decorations)</h3>
+    <p>Il <code>body</code> ha due pseudo-elementi che danno calore senza
+    competere col contenuto:</p>
+    <pre class="code-block"><span class="com">/* body::before — warmth radial */</span>
+background:
+  radial-gradient(circle at 50% 0%, rgba(227,161,95,0.06), transparent 35%),
+  radial-gradient(circle at 12% 22%, rgba(126,80,80,0.12), transparent 30%);
+
+<span class="com">/* body::after — film grain noise via SVG fractalNoise */</span>
+opacity: 0.025;
+mix-blend-mode: screen;
+background-image: url("data:image/svg+xml;utf8,&lt;svg&gt;...feTurbulence type='fractalNoise'.../&gt;");</pre>
+    <p>I figli del body sono forzati a <code>position: relative; z-index:
+    1</code> per stare sopra questi layer.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 03 . TIPOGRAFIA ============================== -->
+<section class="chapter" id="ch03">
+  <div class="ch-num">Capitolo 03</div>
+  <h2 class="ch-title">Tipografia</h2>
+  <p class="ch-lede">
+    Inter per la UI. Spectral per la prosa. Due famiglie, infinita variazione
+    nel peso e nel tracking. Niente terze parti.
+  </p>
+
+  <div class="prose">
+    <p><b>Inter</b> e' il pane quotidiano: numeri allineati, leggibilita'
+    a 11px, ottime weight tra 400 e 700. Abilitiamo le features <code>cv11</code>
+    (single-storey a) e <code>ss01</code> (open digits) per un'identita'
+    leggermente piu' calda di Inter standard.</p>
+    <p><b>Spectral</b> e' la voce letteraria. Compare nei recap mensili,
+    nelle citazioni, nei titoli editoriali (es. card Recap dentro Altro),
+    e nei numeri grossi delle metriche dove vogliamo carattere ma non
+    chiasso. Italic e' usato per il tono intimo (sottotitoli, drop cap).</p>
+  </div>
+
+  <pre class="code-block">--font-sans:  <span class="key">var(--font-inter)</span>, system-ui, -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+--font-serif: <span class="key">var(--font-spectral)</span>, Georgia, "Times New Roman", serif;
+font-feature-settings: <span class="str">"cv11", "ss01"</span>;
+-webkit-font-smoothing: antialiased;</pre>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 36px 0 12px;">Scala — Display</h3>
+  <div class="spec">
+    <div class="meta">Hero serif<span>54-96 / 400 / -.025em</span></div>
+    <div class="demo serif" style="font-size: 64px; font-weight: 400; line-height: 1.02; letter-spacing: -0.025em;">Journal<em style="color: var(--accent-hi);">.me</em></div>
+  </div>
+  <div class="spec">
+    <div class="meta">Chapter title<span>42 / 400 / serif</span></div>
+    <div class="demo serif" style="font-size: 42px; font-weight: 400; line-height: 1.08; letter-spacing: -0.022em;">Le tue giornate, raccontate.</div>
+  </div>
+  <div class="spec">
+    <div class="meta">Page header<span>26 / 650 / -.02em</span></div>
+    <div class="demo" style="font-size: 26px; font-weight: 650; letter-spacing: -0.02em;">Altro</div>
+  </div>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 36px 0 12px;">Scala — Body</h3>
+  <div class="spec">
+    <div class="meta">Recap card title<span>22 / serif / 400 / -.01em</span></div>
+    <div class="demo serif" style="font-size: 22px; font-weight: 400; line-height: 1.18; letter-spacing: -0.01em;">Un mese in cui hai imparato a non rincorrere</div>
+  </div>
+  <div class="spec">
+    <div class="meta">Headline (today)<span>22-26 / 650 / -.015em</span></div>
+    <div class="demo" style="font-size: 24px; font-weight: 650; line-height: 1.18; letter-spacing: -0.015em;">la giornata ha tenuto, anna ha riscritto</div>
+  </div>
+  <div class="spec">
+    <div class="meta">Body 17 (transcript)<span>17 / 400 / 1.6</span></div>
+    <div class="demo" style="font-size: 17px; line-height: 1.6;">ieri sera sono uscito con marco e abbiamo fatto due passi al fiume</div>
+  </div>
+  <div class="spec">
+    <div class="meta">Body 14<span>14 / 500</span></div>
+    <div class="demo" style="font-size: 14px; font-weight: 500;">Aggiungi un nome ricorrente per migliorare la trascrizione.</div>
+  </div>
+  <div class="spec">
+    <div class="meta">Caption italic serif<span>13 / 400 / italic serif</span></div>
+    <div class="demo serif" style="font-size: 13px; font-style: italic; color: var(--ink-muted);">Aprile 2026 . Un mese in cui hai imparato a non rincorrere</div>
+  </div>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 36px 0 12px;">Scala — Label all-caps</h3>
+  <div class="spec">
+    <div class="meta">Section label<span>10-11 / 650 / .20-.24em</span></div>
+    <div class="demo" style="font-size: 10px; font-weight: 650; color: var(--accent); letter-spacing: 0.24em; text-transform: uppercase;">Recap . Mensili . Aprile 2026</div>
+  </div>
+  <div class="spec">
+    <div class="meta">Tab label<span>9 / 600 / .10em</span></div>
+    <div class="demo" style="font-size: 9px; font-weight: 600; color: var(--ink-faint); letter-spacing: 0.10em; text-transform: uppercase;">Oggi . Mese . Remember . Altro</div>
+  </div>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 36px 0 12px;">Scala — Numeri</h3>
+  <div class="spec">
+    <div class="meta">Metric value<span>32-38 / 300 / tabular</span></div>
+    <div class="demo" style="font-size: 36px; font-weight: 300; letter-spacing: -0.02em; font-variant-numeric: tabular-nums;">78,2 <span style="font-size: 16px; color: var(--ink-faint); font-weight: 500;">kg</span></div>
+  </div>
+  <div class="spec">
+    <div class="meta">Mono timer<span>18 / SF Mono / .06em</span></div>
+    <div class="demo" style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 18px; font-weight: 500; letter-spacing: 0.06em;">00:13</div>
+  </div>
+
+  <div class="prose" style="margin-top: 28px;">
+    <h3>Regole d'oro</h3>
+    <ul>
+      <li>Mai sottolineato.</li>
+      <li>Mai grassetto sul corpo della prosa serif (serve l'italic).</li>
+      <li>I numeri in italiano: separatore decimale <b>virgola</b>, mai punto. Si formatta via <code>Intl.NumberFormat("it-IT")</code>.</li>
+      <li>Tracking negativo (<code>-0.01em</code> .. <code>-0.025em</code>) sulle headline. Tracking positivo (<code>0.10em</code> .. <code>0.30em</code>) sulle label all-caps.</li>
+      <li>Line-height: 1.02 sui titoli display, 1.18 sui titoli editoriali, 1.45 sulla prosa serif, 1.6 sul body 17.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================== CH 04 . SUPERFICI ============================== -->
+<section class="chapter" id="ch04">
+  <div class="ch-num">Capitolo 04</div>
+  <h2 class="ch-title">Superfici e profondita'</h2>
+  <p class="ch-lede">
+    Tre strati che salgono dal nero al rame. Aggiunti gradient di calore
+    e una pellicola di grana per togliere la sterilita' digitale.
+  </p>
+
+  <div class="prose">
+    <p>La gerarchia delle superfici e' lineare e prevedibile:</p>
+    <ul>
+      <li><b>Page outer</b> (<code>--color-bg</code>) sotto tutto, visibile come margine sui display larghi.</li>
+      <li><b>Phone body</b> (<code>--color-bg-phone</code>) che riceve i due pseudo-elementi decorativi (warmth + grain).</li>
+      <li><b>Surface</b> (<code>--color-surface</code>) per card, input, chip, modali.</li>
+      <li><b>Surface 2</b> (<code>--color-surface-2</code>) per stati interni (pressed, selezionato, hover sutile).</li>
+    </ul>
+
+    <h3>Gradient editoriali</h3>
+    <p>Alcune card "premium" (es. Recap card dentro Altro) hanno un
+    gradient multi-strato sopra il <code>--color-surface</code> per
+    rompere la piattezza:</p>
+    <pre class="code-block">background:
+  linear-gradient(180deg, rgba(227,161,95,0.045) 0%, rgba(227,161,95,0.008) 60%, transparent 100%),
+  linear-gradient(140deg, rgba(126,80,80,0.18) 0%, transparent 55%),
+  <span class="key">var(--color-surface)</span>;
+<span class="com">/* top edge: linea ambra che sfuma ai lati */</span>
+::before {
+  position: absolute; top: 0; left: 22px; right: 22px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(227,161,95,.40), transparent);
+}</pre>
+  </div>
+</section>
+
+<!-- ============================== CH 05 . SPAZIO ============================== -->
+<section class="chapter" id="ch05">
+  <div class="ch-num">Capitolo 05</div>
+  <h2 class="ch-title">Spazio e ritmo</h2>
+  <p class="ch-lede">
+    Larghezza canonica mobile 440px. Padding orizzontale standard 24px.
+    Verticale: respira.
+  </p>
+
+  <div class="prose">
+    <p>Ogni pagina ha un container centrale <code>max-w-[440px]</code>
+    flex-column con <code>minHeight: 100dvh</code>. I touch target
+    rispettano la regola iOS 44px.</p>
+
+    <h3>Scala spaziale (px)</h3>
+    <div class="space-row"><div class="space-label">4</div><div class="space-bar" style="width: 4px;"></div><div class="space-note">Gap micro: tra svg+label di un tab.</div></div>
+    <div class="space-row"><div class="space-label">6</div><div class="space-bar" style="width: 6px;"></div><div class="space-note">Padding interno chip glossary.</div></div>
+    <div class="space-row"><div class="space-label">8</div><div class="space-bar" style="width: 8px;"></div><div class="space-note">Margin tra elementi correlati (titolo + sub).</div></div>
+    <div class="space-row"><div class="space-label">10</div><div class="space-bar" style="width: 10px;"></div><div class="space-note">Border-radius small (chip, popup row).</div></div>
+    <div class="space-row"><div class="space-label">12</div><div class="space-bar" style="width: 12px;"></div><div class="space-note">Padding verticale set-row.</div></div>
+    <div class="space-row"><div class="space-label">14</div><div class="space-bar" style="width: 14px;"></div><div class="space-note">Border-radius standard (button, input).</div></div>
+    <div class="space-row"><div class="space-label">16</div><div class="space-bar" style="width: 16px;"></div><div class="space-note">Padding interno card grande.</div></div>
+    <div class="space-row"><div class="space-label">18</div><div class="space-bar" style="width: 18px;"></div><div class="space-note">Border-radius card editoriale.</div></div>
+    <div class="space-row"><div class="space-label">20-22</div><div class="space-bar" style="width: 22px;"></div><div class="space-note">Padding superiore header pagina.</div></div>
+    <div class="space-row"><div class="space-label">24</div><div class="space-bar" style="width: 24px;"></div><div class="space-note">Padding orizzontale standard sezioni.</div></div>
+    <div class="space-row"><div class="space-label">28</div><div class="space-bar" style="width: 28px;"></div><div class="space-note">Gap tra i 3 bottoni della recording overlay.</div></div>
+    <div class="space-row"><div class="space-label">36-44</div><div class="space-bar" style="width: 44px;"></div><div class="space-note">Diametro bottoni .rec-ctl. Anche min touch target.</div></div>
+    <div class="space-row"><div class="space-label">56</div><div class="space-bar" style="width: 56px;"></div><div class="space-note">Diametro mic-circle nella tab bar.</div></div>
+    <div class="space-row"><div class="space-label">76</div><div class="space-bar" style="width: 76px;"></div><div class="space-note">Diametro grosso stop button (.rec-ctl-stop).</div></div>
+    <div class="space-row"><div class="space-label">96</div><div class="space-bar" style="width: 96px;"></div><div class="space-note">Big mic empty-state button.</div></div>
+
+    <h3>Safe area iOS</h3>
+    <p>La tab bar in basso usa <code>padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 14px)</code>.
+    Header non hanno safe-area-inset-top esplicito perche' viviamo dentro Safari/PWA standalone
+    che gestisce il notch col viewport-fit=cover del manifest.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 06 . FORME ============================== -->
+<section class="chapter" id="ch06">
+  <div class="ch-num">Capitolo 06</div>
+  <h2 class="ch-title">Forme e raggi</h2>
+  <p class="ch-lede">
+    Niente angoli vivi. Raggi crescenti col contenitore.
+  </p>
+
+  <table class="tokens">
+    <thead><tr><th>Valore</th><th>Uso</th></tr></thead>
+    <tbody>
+      <tr><td class="tok">5px</td><td class="use">Square interno del bottone stop (rec).</td></tr>
+      <tr><td class="tok">8px</td><td class="use">Chip kind picker dentro la quick-capture.</td></tr>
+      <tr><td class="tok">10px</td><td class="use">Popup row, chip glossary, error banner.</td></tr>
+      <tr><td class="tok">12px</td><td class="use">Logout button outline.</td></tr>
+      <tr><td class="tok">14px</td><td class="use">Button primario, input, ghost button — <b>default UI radius</b>.</td></tr>
+      <tr><td class="tok">16px</td><td class="use">Card large, recap card legacy.</td></tr>
+      <tr><td class="tok">18px</td><td class="use">Recap card editoriale (Altro).</td></tr>
+      <tr><td class="tok">32px</td><td class="use">Avatar/back circle (32 x 32 con radius 50%).</td></tr>
+      <tr><td class="tok">999px (pill)</td><td class="use">Date chip, period segmented control, glossary chip.</td></tr>
+      <tr><td class="tok">50% (circle)</td><td class="use">Mic, dot indicators, back arrow, rec-ctl, settings circle.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="prose" style="margin-top:28px;">
+    <h3>Bordi (line treatment)</h3>
+    <p>I bordi non sono mai grigi neutri. Sono <code>rgba(255, 229, 214,
+    0.075)</code>: bianco cremoso a opacita' minima. Cosi' su superfici
+    diverse il bordo rimane percepibile senza diventare "tecnico".</p>
+    <p>I bordi del danger zone sono <code>rgba(248,113,113,0.30)</code>
+    (es. cancel trash, logout outline). Stato pressed scende a 0.14.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 07 . SHADOW ============================== -->
+<section class="chapter" id="ch07">
+  <div class="ch-num">Capitolo 07</div>
+  <h2 class="ch-title">Ombra ed elevazione</h2>
+  <p class="ch-lede">
+    Ombre lunghe e calde verso il basso. Nessuna ombra ambient grigia.
+  </p>
+
+  <div class="shadow-grid">
+    <div class="shadow-tile amber">
+      <div class="box"></div>
+      <div class="label">Primary glow</div>
+      <div class="desc">Btn primary, mic-circle, big mic empty state. Amber spread + drop nero + inner highlight.</div>
+    </div>
+    <div class="shadow-tile card">
+      <div class="box"></div>
+      <div class="label">Editorial card</div>
+      <div class="desc">Recap card. Highlight interno + drop nero soft.</div>
+    </div>
+    <div class="shadow-tile float">
+      <div class="box"></div>
+      <div class="label">Floating control</div>
+      <div class="desc">Rec-ctl (cancel, pause). Drop sutile per separarsi dal body.</div>
+    </div>
+    <div class="shadow-tile modal">
+      <div class="box"></div>
+      <div class="label">Modal / popup</div>
+      <div class="desc">Kind picker popup, quick-capture card. Drop forte nero per autorita'.</div>
+    </div>
+  </div>
+
+  <pre class="code-block"><span class="com">/* Amber primary glow */</span>
+box-shadow:
+  0 0 22px rgba(227, 161, 95, 0.28),
+  0 12px 24px rgba(0, 0, 0, 0.50),
+  inset 0 1px 1px rgba(255, 255, 255, 0.32);
+
+<span class="com">/* Editorial card */</span>
+box-shadow:
+  inset 0 1px 0 rgba(255, 229, 214, 0.06),
+  0 14px 30px rgba(0, 0, 0, 0.30);
+
+<span class="com">/* Floating rec-ctl */</span>
+box-shadow:
+  inset 0 1px 0 rgba(255, 255, 255, 0.03),
+  0 6px 14px rgba(0, 0, 0, 0.30);
+
+<span class="com">/* Modal/popup card */</span>
+box-shadow: 0 14px 28px rgba(0, 0, 0, 0.50);</pre>
+
+  <div class="prose" style="margin-top: 28px;">
+    <h3>Glow del danger (stop button)</h3>
+    <pre class="code-block">background: <span class="key">var(--color-danger)</span>;
+box-shadow:
+  0 0 24px rgba(248, 113, 113, 0.45),
+  0 14px 28px rgba(0, 0, 0, 0.50),
+  inset 0 1px 1px rgba(255, 255, 255, 0.30);</pre>
+    <p>Il bottone STOP della registrazione e' l'unica eccezione al
+    monopolio dell'ambra come glow: rosso danger come segnale "questa
+    e' la presa di posizione".</p>
+  </div>
+</section>
+
+<!-- ============================== CH 08 . BOTTONI ============================== -->
+<section class="chapter" id="ch08">
+  <div class="ch-num">Capitolo 08</div>
+  <h2 class="ch-title">Bottoni</h2>
+  <p class="ch-lede">
+    Tre famiglie: primary (azione), ghost (secondaria), danger (distruttiva).
+    Tutte rispondono al tap a 80ms con scale(0.97).
+  </p>
+
+  <div class="demo-btn-row">
+    <button class="btn-primary-demo">Conferma giornata</button>
+    <button class="btn-ghost-demo">Annulla</button>
+    <button class="btn-danger-demo">Esci dall'account</button>
+  </div>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 28px 0 12px;">Primary</h3>
+  <pre class="code-block"><span class="com">.btn-primary</span>
+background: <span class="key">var(--color-accent)</span>;
+color: #1A0E0F;
+border: 1px solid rgba(255, 241, 221, 0.34);
+font-size: 15px; font-weight: 650; letter-spacing: -0.005em;
+padding: 16px; border-radius: 14px;
+box-shadow: 0 0 22px rgba(227,161,95,0.28), 0 12px 24px rgba(0,0,0,0.50), inset 0 1px 1px rgba(255,255,255,0.32);
+transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1);
+-webkit-tap-highlight-color: transparent;
+touch-action: manipulation;
+
+<span class="com">:active { transform: scale(0.97); background: var(--color-accent-pressed); }</span></pre>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 28px 0 12px;">Ghost</h3>
+  <pre class="code-block"><span class="com">.btn-ghost</span>
+background: transparent;
+color: <span class="key">var(--color-ink-muted)</span>;
+border: 1px solid <span class="key">var(--color-line)</span>;
+font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+text-transform: uppercase;
+padding: 14px; border-radius: 14px;
+box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+
+<span class="com">:active { background: var(--color-surface); border-color: rgba(227,161,95,0.20); color: var(--color-ink); }</span></pre>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 28px 0 12px;">Danger outline</h3>
+  <pre class="code-block"><span class="com">.jm-logout-btn — outline danger (azione irreversibile)</span>
+background: transparent;
+color: <span class="key">var(--color-danger)</span>;
+border: 1px solid rgba(248, 113, 113, 0.30);
+padding: 14px; border-radius: 12px;
+font-size: 14px; font-weight: 600;</pre>
+
+  <div class="prose">
+    <h3>Microcerchi (back, dot, rec-ctl)</h3>
+    <p>Tutti i bottoni "icona pura" condividono lo stesso DNA: <b>diametro
+    multiplo di 4</b> (30, 32, 44, 56, 76, 96), <code>border-radius: 50%</code>,
+    background surface, border line, color ink-muted; quando sono danger
+    passano a tint rosso (bg <code>rgba(248,113,113,0.06)</code>, border
+    <code>rgba(248,113,113,0.30)</code>, color <code>--color-danger</code>).</p>
+
+    <h3>Stato disabled</h3>
+    <p>Opacita' tra 0.45 (ghost) e 0.55 (primary). Cursor not-allowed.
+    Nessun cambio di colore o glow.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 09 . INPUT ============================== -->
+<section class="chapter" id="ch09">
+  <div class="ch-num">Capitolo 09</div>
+  <h2 class="ch-title">Input e form</h2>
+  <p class="ch-lede">
+    Input larghi, centrati, con focus glow ambra invece del classico ring blu.
+  </p>
+
+  <div class="prose">
+    <pre class="code-block"><span class="com">.input-base — input primario (login email, settings)</span>
+background: <span class="key">var(--color-surface)</span>;
+border: 1px solid <span class="key">var(--color-line)</span>;
+border-radius: 14px;
+font-size: 16px; font-weight: 500;
+color: <span class="key">var(--color-ink)</span>;
+padding: 16px 18px;
+text-align: center;
+box-shadow:
+  inset 0 1px 0 rgba(255, 255, 255, 0.04),
+  0 12px 24px rgba(0, 0, 0, 0.30);
+
+:focus {
+  border-color: rgba(227, 161, 95, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(227, 161, 95, 0.20),
+    0 0 22px rgba(227, 161, 95, 0.18);
+}
+
+::placeholder { color: <span class="key">var(--color-ink-faint)</span>; }</pre>
+
+    <h3>Quick capture input (Remember)</h3>
+    <p>Input compatto in line con bottoni inline. Niente bordo proprio:
+    e' il bordo della card che contiene tutto. Font-size: 14px,
+    padding: 10px 0.</p>
+
+    <h3>Editor textarea</h3>
+    <p>Transcript editor e recap editor usano stesso stile dei card-input:
+    sfondo surface, bordo line, focus glow ambra. Font family
+    <code>--font-serif</code> per la prosa e <code>--font-sans</code>
+    per i campi UI.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 10 . CARD ============================== -->
+<section class="chapter" id="ch10">
+  <div class="ch-num">Capitolo 10</div>
+  <h2 class="ch-title">Card e liste</h2>
+  <p class="ch-lede">
+    La card standard e' il mattone. Padding 16-18px, radius 14-16px,
+    bordo line, ombra editoriale.
+  </p>
+
+  <div class="prose">
+    <h3>Card standard</h3>
+    <pre class="code-block">background: <span class="key">var(--color-surface)</span>;
+border: 1px solid <span class="key">var(--color-line)</span>;
+border-radius: 14px;
+padding: 16px 18px;
+box-shadow:
+  inset 0 1px 0 rgba(255, 229, 214, 0.06),
+  0 14px 30px rgba(0, 0, 0, 0.30);</pre>
+
+    <h3>Day row (Mese)</h3>
+    <p>Numero giornata grande a sinistra (28-32px, peso 300), weekday
+    breve sopra in label all-caps. Body con headline 14-15px medium,
+    meta chip (peso, sonno, mood emoji) sotto in micro-pill.
+    Goal dots mini in fila (filled / empty con <code>--color-success</code>
+    e <code>--color-line</code>).</p>
+
+    <h3>Recap card (Altro - editoriale)</h3>
+    <p>Vedi capitolo 13. La card piu' "premium" del sistema, con gradient
+    multi-strato, titolo Spectral, top edge accent, teaser italic
+    serif.</p>
+
+    <h3>Empty state pattern</h3>
+    <ul>
+      <li>Icona ambra in cerchio surface 64px.</li>
+      <li>Headline 17-18px peso 650.</li>
+      <li>Description body 13px ink-muted.</li>
+      <li>Eventuale CTA primary.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================== CH 11 . NAVIGAZIONE ============================== -->
+<section class="chapter" id="ch11">
+  <div class="ch-num">Capitolo 11</div>
+  <h2 class="ch-title">Navigazione</h2>
+  <p class="ch-lede">
+    Tab bar a 5 colonne con mic centrale rialzato. Niente hamburger menu,
+    niente drawer.
+  </p>
+
+  <div class="prose">
+    <h3>Tab bar — anatomia</h3>
+    <ul>
+      <li><b>Grid template</b>: <code>repeat(5, 1fr)</code>.</li>
+      <li><b>Tab order</b>: Oggi . Mese . Mic . Remember . Altro.</li>
+      <li><b>Sticky bottom</b>, <code>z-index: 10</code>, padding-top 12px, padding-bottom <code>calc(env(safe-area-inset-bottom, 0px) + 14px)</code>.</li>
+      <li><b>Background</b> <code>rgba(10,5,7,0.50)</code> + <code>backdrop-blur</code>.</li>
+      <li><b>Border-top</b> 1px <code>--color-line</code>.</li>
+      <li><b>Mic centrale</b>: cerchio 56px ambra con glow primary, contrasto col resto della barra (tab laterali sono solo icona+label muted).</li>
+      <li><b>Tap target</b> minimo 44px per tab. Label sotto icona, 9-10px all-caps, 0.10em tracking.</li>
+      <li><b>Stato active</b>: color <code>--color-accent</code>, label inclusa.</li>
+    </ul>
+
+    <h3>Header back arrow</h3>
+    <p>Quando si entra in una sub-view (giorno detail, recap detail),
+    in alto a sinistra c'e' un cerchio 32px con chevron sinistra
+    (<code>M15 18l-6-6 6-6</code>). Background surface, border line,
+    color ink-muted. Stato :active: background surface-2.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 12 . RECORDING ============================== -->
+<section class="chapter" id="ch12">
+  <div class="ch-num">Capitolo 12</div>
+  <h2 class="ch-title">Registrazione</h2>
+  <p class="ch-lede">
+    Una schermata in full-takeover. Riduce il mondo a tre azioni: cancella,
+    ferma, pausa. Il transcript scorre piano.
+  </p>
+
+  <div class="prose">
+    <h3>Anatomia overlay</h3>
+    <ol>
+      <li><b>Header</b>: indicator LIVE rosso (dot 8px + label "LIVE" all-caps 11px 650 letter-spacing 0.20em color danger) a sinistra, timer mono <code>00:00</code> 18px 500 a destra.</li>
+      <li><b>Date chip</b>: pill con icona calendario ambra + "Oggi . Mer 20 Mag" (label relativo + compact day). Tap apre il date picker.</li>
+      <li><b>Transcript area</b>: flex-1 overflow-y-auto. Tre tonalita': <code>older</code> ink-faint, <code>recent</code> ink-muted, <code>interim</code> ink (con caret blink). Font-size 17px line-height 1.6.</li>
+      <li><b>Status strip</b> (sopra waveform): placeholder "Mi sto connettendo..." / "Parla pure..." italic 14px ink-faint center, OR silence warning bordo+bg danger 12px italic.</li>
+      <li><b>Waveform</b>: 13 barre rosse animate, gap 3px, height massima 30px. Inactivo a opacita' bassa.</li>
+      <li><b>Controls</b>: 3 bottoni in row con gap 28px. Cancel (cestino rosso) 44px . Stop (rosso, glow) 76px centrale . Pause 44px.</li>
+      <li><b>Footer tip</b>: "audio in streaming a openai . solo il testo viene salvato" 11px ink-faint.</li>
+    </ol>
+
+    <h3>Portal & stacking</h3>
+    <p>L'overlay e' montato via <code>createPortal(..., document.body)</code>
+    per evitare problemi di stacking context con genitori in <code>position:
+    fixed</code> (es. quick-capture bar di Remember). Inline style su
+    <code>position: fixed</code>, <code>inset: 0</code>, <code>zIndex: 50</code>,
+    <code>height: 100dvh</code> per battere il selettore <code>body &gt;
+    *</code> nei globals.</p>
+
+    <h3>Ciclo audio</h3>
+    <ul>
+      <li>Su mount, fresh <code>getUserMedia</code> ogni volta. <b>Niente cache module-level</b> (su iOS Safari produce pipe stantia).</li>
+      <li>Su cleanup, <code>track.stop()</code> su tutti i tracks. Niente <code>track.enabled = false</code> come unico cleanup.</li>
+      <li>Pause usa <code>track.enabled = false/true</code>: la pipe resta viva, l'audio non passa.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================== CH 13 . EDITORIALE ============================== -->
+<section class="chapter" id="ch13">
+  <div class="ch-num">Capitolo 13</div>
+  <h2 class="ch-title">Editoriale (Recap)</h2>
+  <p class="ch-lede">
+    I recap non sono dashboard. Sono prose mensili. Spectral serif, drop
+    cap, righe lunghe, leading generoso.
+  </p>
+
+  <div class="prose">
+    <h3>Recap detail page</h3>
+    <ul>
+      <li><b>Titolo</b>: Spectral 500 28-30px line-height 1.15 letter-spacing -0.015em.</li>
+      <li><b>Paragrafi</b>: Spectral 400 16px line-height 1.65 color ink-muted. Margin-bottom 16px.</li>
+      <li><b>Drop cap</b>: prima lettera del primo paragrafo Spectral 600 48px color <code>--color-accent-hi</code> float left margin 4px 8px 0 0.</li>
+      <li><b>Pull quote</b>: Spectral italic 14px ink-faint con border-left 2px accent.</li>
+      <li><b>Edit button</b>: ghost ambra in alto a destra dell'header.</li>
+    </ul>
+
+    <h3>Recap card (Altro)</h3>
+    <p>Vedi mockup <code>altro.html</code>. Gradient multi-strato +
+    top edge linea ambra + titolo Spectral 22px + sub Inter 12px +
+    riga "Ultimo" con label all-caps ambra + nome serif italic +
+    chevron cerchiato ambra.</p>
+
+    <h3>Voce editoriale (AI prompt)</h3>
+    <blockquote class="pull">
+      Scrivi come uno scrittore intimista che rilegge il diario
+      dell'utente. Niente moralismo. Niente coaching. Costruisci una prosa
+      narrativa di 300-450 parole che onori l'esperienza senza
+      interpretarla.
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============================== CH 14 . MOVIMENTO ============================== -->
+<section class="chapter" id="ch14">
+  <div class="ch-num">Capitolo 14</div>
+  <h2 class="ch-title">Movimento</h2>
+  <p class="ch-lede">
+    Tutto risponde a 80ms con scale leggero. Niente animazioni decorative.
+  </p>
+
+  <h3 style="font-family: var(--font-serif); font-size: 22px; font-weight: 500; margin: 0 0 14px;">
+    Lifecycle del bottone primary (autoplay)
+  </h3>
+  <p style="font-size: 14px; color: var(--ink-muted); line-height: 1.6; max-width: 620px;">
+    Il bottone qui sotto cicla in loop ogni 5 secondi attraverso i quattro
+    momenti: <b style="color: var(--ink);">rest</b>, <b style="color: var(--ink);">hover</b>,
+    <b style="color: var(--ink);">press</b>, <b style="color: var(--ink);">release</b>. Il puntatore
+    bianco entra, sosta, schiaccia, rilascia, esce. Ogni transizione tra
+    stati prende 80ms, easing <code>cubic-bezier(0.4, 0, 0.2, 1)</code>.
+  </p>
+
+  <div class="cycle-stage" aria-hidden="true">
+    <div class="cycle-btn">Conferma giornata</div>
+    <span class="cycle-pointer"></span>
+
+    <div class="cycle-track" role="presentation">
+      <div class="rail"></div>
+      <div class="fill"></div>
+      <span class="cycle-pin"></span>
+      <div class="cycle-marks">
+        <span>rest</span>
+        <span>hover</span>
+        <span>press</span>
+        <span>release</span>
+        <span>rest</span>
+      </div>
+    </div>
+    <div class="cycle-caption">
+      Stesso codice usato in produzione. Le proprieta' animate sono solo
+      tre: <code>transform</code>, <code>background-color</code>, <code>box-shadow</code>.
+    </div>
+  </div>
+
+  <h3 style="font-family: var(--font-serif); font-size: 22px; font-weight: 500; margin: 36px 0 14px;">
+    Frame per frame
+  </h3>
+  <div class="lifecycle-grid">
+    <div class="lc-cell">
+      <span class="frame-label">01 . Rest</span>
+      <button type="button" class="btn-frame rest">Conferma</button>
+      <div class="frame-spec">
+        scale <b>1.00</b><br>
+        bg <b>#E3A15F</b><br>
+        glow ambra ambient
+      </div>
+    </div>
+    <div class="lc-cell">
+      <span class="frame-label">02 . Hover</span>
+      <button type="button" class="btn-frame hover">Conferma</button>
+      <div class="frame-spec">
+        scale <b>1.00</b><br>
+        bg <b>#F0B875</b><br>
+        glow piu' acceso, lift sutile
+      </div>
+    </div>
+    <div class="lc-cell">
+      <span class="frame-label">03 . Press</span>
+      <button type="button" class="btn-frame press">Conferma</button>
+      <div class="frame-spec">
+        scale <b>0.97</b><br>
+        bg <b>#D08F4D</b><br>
+        inner shadow, glow soffocato
+      </div>
+    </div>
+    <div class="lc-cell">
+      <span class="frame-label">04 . Release</span>
+      <button type="button" class="btn-frame release">Conferma</button>
+      <div class="frame-spec">
+        scale <b>0.99</b><br>
+        bg <b>#E3A15F</b><br>
+        glow risale (transizione 80ms)
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size: 13px; color: var(--ink-faint); margin: 10px 0 24px; font-style: italic;">
+    Tocca o passa con il mouse sui bottoni del Capitolo 08 per testarli dal vivo: rispondono con lo stesso script che usa la app.
+  </p>
+
+  <div class="prose">
+    <h3>Tap feedback (universale)</h3>
+    <pre class="code-block">transition:
+  transform     80ms cubic-bezier(0.4, 0, 0.2, 1),
+  background    80ms cubic-bezier(0.4, 0, 0.2, 1),
+  box-shadow    80ms cubic-bezier(0.4, 0, 0.2, 1);
+
+:active {
+  transform: scale(0.97);  <span class="com">/* 0.96 sul big mic, 0.95 sullo stop */</span>
+  background: <span class="key">var(--color-accent-pressed)</span>;
+  box-shadow: <span class="com">/* drop "schiacciato" + inner shadow per simulare pressione */</span>
+    0 0 6px rgba(227,161,95,0.10),
+    0 2px 6px rgba(0,0,0,0.45),
+    inset 0 2px 5px rgba(0,0,0,0.28);
+}
+-webkit-tap-highlight-color: transparent;
+touch-action: manipulation;</pre>
+
+    <h3>Caret blink</h3>
+    <pre class="code-block">.live-caret {
+  display: inline-block; width: 2px; height: 16px;
+  background: <span class="key">var(--color-ink)</span>;
+  vertical-align: middle;
+  animation: caret-blink 1s steps(2, end) infinite;
+}
+@keyframes caret-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}</pre>
+
+    <h3>Waveform</h3>
+    <p>13 barre rosse con altezze random 6-30px. Ognuna ha un delay
+    individuale (0, 30, 60, ... 240ms) e fa un <code>scaleY</code>
+    in loop. Stato pausa: opacity 0.3, no animazione.</p>
+
+    <h3>Rules</h3>
+    <ul>
+      <li>Nessuna animazione di ingresso/uscita per modali. Compaiono.</li>
+      <li>Nessun parallax.</li>
+      <li>Niente fade transition tra route — Next.js navigation diretta.</li>
+      <li>Scroll smooth solo per <code>scrollIntoView</code> esplicito (jump picker in Mese).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================== CH 15 . ICONE ============================== -->
+<section class="chapter" id="ch15">
+  <div class="ch-num">Capitolo 15</div>
+  <h2 class="ch-title">Icone</h2>
+  <p class="ch-lede">
+    Stroke leggero 1.6-1.8. Lucide-style. Niente icon font. Tutto inline SVG.
+  </p>
+
+  <div class="prose">
+    <ul>
+      <li><b>Stroke width</b>: 1.6 (settings cog) . 1.7 (default tab/mic) . 1.8 (controls del recorder) . 2 (back arrow) . 2.4 (chevron piccolo).</li>
+      <li><b>Stroke linecap</b>: <code>round</code> sempre.</li>
+      <li><b>Stroke linejoin</b>: <code>round</code> sempre.</li>
+      <li><b>Fill</b>: <code>none</code> per default; <code>currentColor</code> solo per icone "solide" come il dots-altro o il mood emoji.</li>
+      <li><b>ViewBox</b>: 24x24.</li>
+      <li><b>Size standard</b>: 16px (in row con testo), 18px (controls), 22px (tab bar).</li>
+      <li><b>Color</b>: ereditato da <code>color</code> del parent (currentColor).</li>
+    </ul>
+    <h3>Famiglia</h3>
+    <p>Lucide come riferimento stilistico (non come dipendenza), ma
+    ridisegnate inline. Cestino: 4 path (linea trasversale, manico,
+    contenitore, 2 verticali interne). Calendario: rettangolo + linee
+    superiori + traversa orizzontale. Mic: rettangolo arrotondato +
+    arco + asta verticale.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 16 . VOCE ============================== -->
+<section class="chapter" id="ch16">
+  <div class="ch-num">Capitolo 16</div>
+  <h2 class="ch-title">Voce e tono</h2>
+  <p class="ch-lede">
+    Italiano colloquiale, minuscolo, senza esclamazioni. L'app parla a
+    chi parla a se stesso.
+  </p>
+
+  <div class="prose">
+    <h3>Regole di scrittura UI</h3>
+    <ul>
+      <li><b>Minuscolo</b> per CTA neutre, headline AI, hint placeholder. Maiuscolo solo per label all-caps (sezioni, tab).</li>
+      <li><b>Niente esclamazioni</b>, mai. Nessun "Ottimo!", nessun "Fantastico!".</li>
+      <li><b>Niente emoji nei testi di sistema</b>. Eccezione: mood badges (le 5 facce).</li>
+      <li><b>Punto come separatore</b> nelle label (es. "Aprile 2026 . Un mese..."), non middot ne' bullet.</li>
+      <li><b>Tone</b>: descrittivo, senza giudizio. "Giornata raccontata in 3 minuti" — non "Bravissimo, hai parlato 3 minuti!".</li>
+      <li><b>Bottoni</b>: verbo all'imperativo informale, lowercase. "registra", "salva", "esci".</li>
+    </ul>
+
+    <h3>Microcopy esemplificativa</h3>
+    <blockquote class="pull">
+      "audio in streaming a openai . solo il testo viene salvato"<br>
+      "non ho ancora sentito parole. avvicinati al microfono o riduci il rumore di sottofondo."<br>
+      "le tue giornate, raccontate."
+    </blockquote>
+
+    <h3>AI prompts (vivono in <code>/api/*/route.ts</code>)</h3>
+    <ul>
+      <li><b>Daily</b>: tono "notizie di borsa", 4-12 parole, asciutto.</li>
+      <li><b>Recap</b>: tono "scrittore intimista", 300-450 parole, niente coaching.</li>
+      <li><b>Classify remember</b>: 5 buckets stretti, senza fantasia.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================== CH 17 . STATI ============================== -->
+<section class="chapter" id="ch17">
+  <div class="ch-num">Capitolo 17</div>
+  <h2 class="ch-title">Stati</h2>
+  <p class="ch-lede">
+    Empty, loading, error, success: ogni schermata ha tutti e quattro.
+  </p>
+
+  <div class="prose">
+    <h3>Empty</h3>
+    <p>Sempre con: icona ambra in cerchio surface, headline 17-18px,
+    description ink-muted 13px, eventuale CTA primary. Mai pagine
+    bianche o "Nessun dato".</p>
+
+    <h3>Loading</h3>
+    <p>Per liste: testo "carico..." centrato in micro all-caps ink-faint
+    16px. Niente spinner generici.</p>
+    <p>Per AI processing: messaggi nominali e contestuali. Es. "Sto
+    leggendo le tue giornate..." per il recap. Mai "Loading".</p>
+
+    <h3>Error</h3>
+    <p>Sempre con stessa anatomia: padding 10px, background
+    <code>var(--color-surface)</code>, border 1px <code>var(--color-danger)</code>,
+    radius 10px, color danger, font-size 12px. Quando bloccante: full-screen
+    con icona alert in cerchio.</p>
+
+    <h3>Success</h3>
+    <p>Quasi mai. Niente toast "Salvato!". L'azione e' la conferma:
+    il dato appare, la card si popola, l'UI cambia stato.</p>
+  </div>
+</section>
+
+<!-- ============================== CH 18 . DONT ============================== -->
+<section class="chapter" id="ch18">
+  <div class="ch-num">Capitolo 18</div>
+  <h2 class="ch-title">Da non fare</h2>
+  <p class="ch-lede">
+    L'identita' si difende anche per sottrazione. Ecco cosa Journal.me
+    non e'.
+  </p>
+
+  <div class="do-dont">
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Usa l'ambra come unica voce calda. Tutto il resto e' inchiostro su carta scura.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">Introdurre un blu, un verde brillante o un viola. Niente palette stock-tech.</div>
+    </div>
+
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Inter per UI, Spectral per la prosa editoriale. Niente di piu'.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">Aggiungere una terza famiglia (mono per code conta come font UI, sta dentro Inter brand).</div>
+    </div>
+
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Tap feedback a 80ms con scale 0.97 su ogni tappabile.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">Lasciare il blu nativo iOS sul tap. <code>-webkit-tap-highlight-color: transparent</code> ovunque.</div>
+    </div>
+
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Minuscolo nelle CTA. Tono colloquiale.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">"Salva!", "Continua &gt;", "Iscriviti ORA". Niente urgenza fabbricata.</div>
+    </div>
+
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Ombre lunghe e calde verso il basso, glow ambra sui primary.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">Ombre grigie neutre tipo Material 3. Nessun "flat design".</div>
+    </div>
+
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Italiano sempre, numeri it-IT, weekday corti italiani.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">"7.5kg" col punto, "MON" come weekday, "Today" hardcoded.</div>
+    </div>
+
+    <div class="dd-card do">
+      <div class="tag">Fai</div>
+      <div class="txt">Empty states con icona ambra, headline, description, CTA.</div>
+    </div>
+    <div class="dd-card dont">
+      <div class="tag">Non fare</div>
+      <div class="txt">Schermate vuote con solo "Nessun dato disponibile". Inammissibile.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CH 19 . TOKEN ============================== -->
+<section class="chapter" id="ch19">
+  <div class="ch-num">Capitolo 19</div>
+  <h2 class="ch-title">Tokens — export pronto all'uso</h2>
+  <p class="ch-lede">
+    Tutto il sistema in un blocco. Copia e incolla in <code>globals.css</code>
+    di un nuovo progetto e hai gia' la base.
+  </p>
+
+  <pre class="code-block">@theme inline {
+  <span class="com">/* Backgrounds */</span>
+  --color-bg:           <span class="num">#050304</span>;
+  --color-bg-phone:     <span class="num">#0E0709</span>;
+  --color-surface:      <span class="num">#1D1013</span>;
+  --color-surface-2:    <span class="num">#241418</span>;
+
+  <span class="com">/* Inks */</span>
+  --color-ink:          <span class="num">#F4E7DE</span>;
+  --color-ink-muted:    <span class="num">#CDB7AE</span>;
+  --color-ink-faint:    <span class="num">#8E7770</span>;
+
+  <span class="com">/* Accent — unica voce calda */</span>
+  --color-accent:         <span class="num">#E3A15F</span>;
+  --color-accent-pressed: <span class="num">#D08F4D</span>;
+  --color-accent-hi:      <span class="num">#F0B875</span>;
+
+  <span class="com">/* Semantica */</span>
+  --color-success: <span class="num">#A8C9B0</span>;
+  --color-danger:  <span class="num">#F87171</span>;
+
+  <span class="com">/* Line / divider */</span>
+  --color-line: rgba(255, 229, 214, 0.075);
+
+  <span class="com">/* Font families */</span>
+  --font-sans:  var(--font-inter), system-ui, -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+  --font-serif: var(--font-spectral), Georgia, "Times New Roman", serif;
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: <span class="str">"cv11", "ss01"</span>;
+  -webkit-font-smoothing: antialiased;
+}
+
+<span class="com">/* Warmth + grain layers on body (decorative, behind all content) */</span>
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(227,161,95,0.06), transparent 35%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,0.12), transparent 30%);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  opacity: 0.025; mix-blend-mode: screen;
+  background-image: url(<span class="str">"data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'&gt;&lt;filter id='n'&gt;&lt;feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/&gt;&lt;/filter&gt;&lt;rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/&gt;&lt;/svg&gt;"</span>);
+}
+body &gt; * { position: relative; z-index: 1; }</pre>
+
+  <h3 style="font-family: var(--font-serif); font-size:22px; font-weight:500; margin: 28px 0 12px;">Mapping completo</h3>
+  <table class="tokens">
+    <thead>
+      <tr><th>Token</th><th>Valore</th><th>Uso primario</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tok">--color-bg</td><td class="val">#050304</td><td class="use">Sfondo pagina esterno.</td></tr>
+      <tr><td class="tok">--color-bg-phone</td><td class="val">#0E0709</td><td class="use">Corpo app, base del warmth+grain layers.</td></tr>
+      <tr><td class="tok">--color-surface</td><td class="val">#1D1013</td><td class="use">Card, input, chip, button ghost background pressed, modali.</td></tr>
+      <tr><td class="tok">--color-surface-2</td><td class="val">#241418</td><td class="use">Surface elevata: stato pressed, popup row selezionata.</td></tr>
+      <tr><td class="tok">--color-ink</td><td class="val">#F4E7DE</td><td class="use">Testo primario, numeri prominenti.</td></tr>
+      <tr><td class="tok">--color-ink-muted</td><td class="val">#CDB7AE</td><td class="use">Testo secondario, prosa serif body.</td></tr>
+      <tr><td class="tok">--color-ink-faint</td><td class="val">#8E7770</td><td class="use">Caption, label, hint, placeholder.</td></tr>
+      <tr><td class="tok">--color-accent</td><td class="val">#E3A15F</td><td class="use">Btn primary, mic centrale, label sezioni, focus.</td></tr>
+      <tr><td class="tok">--color-accent-pressed</td><td class="val">#D08F4D</td><td class="use">Stato :active del primary.</td></tr>
+      <tr><td class="tok">--color-accent-hi</td><td class="val">#F0B875</td><td class="use">Hover sottile, drop cap recap.</td></tr>
+      <tr><td class="tok">--color-success</td><td class="val">#A8C9B0</td><td class="use">Goal dot acceso, badge positivi rari.</td></tr>
+      <tr><td class="tok">--color-danger</td><td class="val">#F87171</td><td class="use">LIVE recording, errori, cancel/delete, logout outline.</td></tr>
+      <tr><td class="tok">--color-line</td><td class="val">rgba(255,229,214,.075)</td><td class="use">Bordi, divider, separator hairlines.</td></tr>
+      <tr><td class="tok">--font-sans</td><td class="val">Inter + fallbacks</td><td class="use">UI, body 12-17px, numeri.</td></tr>
+      <tr><td class="tok">--font-serif</td><td class="val">Spectral + fallbacks</td><td class="use">Prosa editoriale, titoli recap card, citazioni, drop cap.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================== CLOSING ============================== -->
+<section class="closing">
+  <div class="mark">. fin .</div>
+  <div class="signoff">Brandbook v0.1 . Journal.me . per chi ricostruisce</div>
+</section>
+
+</div>
+
+</body>
+</html>

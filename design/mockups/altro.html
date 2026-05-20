@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Altro (Recap link + Impostazioni + Logout) . wine premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Spectral:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-page: #050304;
+  --bg-phone: #0E0709;
+  --surface: #1D1013;
+  --surface-2: #241418;
+  --line: rgba(255,229,214,.075);
+  --accent: #E3A15F;
+  --accent-pressed: #D08F4D;
+  --accent-hi: #F0B875;
+  --text: #F4E7DE;
+  --text-2: #CDB7AE;
+  --text-3: #8E7770;
+  --success: #A8C9B0;
+  --danger: #F87171;
+  --font: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Spectral", Georgia, serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font);
+  padding: 40px 20px;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  font-feature-settings: "cv11", "ss01";
+}
+.label {
+  font-size: 11px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.20em; text-transform: uppercase;
+  text-align: center; margin-bottom: 32px;
+}
+.screens { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.phone {
+  position: relative; width: 380px; height: 800px;
+  background: var(--bg-phone); color: var(--text);
+  border-radius: 44px; overflow: hidden;
+  box-shadow: 0 34px 90px rgba(0,0,0,.82), 0 0 0 1px rgba(255,255,255,.045);
+}
+.phone::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(circle at 50% -4%, rgba(227,161,95,.075), transparent 34%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,.16), transparent 28%);
+}
+.phone::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+  opacity: .025; mix-blend-mode: screen;
+}
+.app { position: relative; z-index: 1; padding: 22px 22px 0; height: 100%; display: flex; flex-direction: column; }
+
+/* Header */
+.page-h {
+  font-size: 26px; font-weight: 650; letter-spacing: -0.02em;
+  margin-bottom: 22px;
+}
+
+/* Scroll body */
+.scroll { flex: 1; overflow-y: auto; padding-bottom: 12px; }
+
+/* Section */
+.section { margin-bottom: 26px; }
+.section-h {
+  font-size: 10px; font-weight: 600; color: var(--accent);
+  letter-spacing: 0.24em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* Recap card — editorial / premium */
+.recap-card {
+  position: relative;
+  width: 100%;
+  background:
+    linear-gradient(180deg, rgba(227,161,95,.045) 0%, rgba(227,161,95,.008) 60%, transparent 100%),
+    linear-gradient(140deg, rgba(126,80,80,.18) 0%, transparent 55%),
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px 22px 22px;
+  cursor: pointer; text-align: left;
+  font-family: inherit;
+  color: var(--text);
+  box-shadow:
+    inset 0 1px 0 rgba(255,229,214,.06),
+    0 14px 30px rgba(0,0,0,.30);
+  overflow: hidden;
+}
+/* Subtle top accent line */
+.recap-card::before {
+  content: ""; position: absolute; top: 0; left: 22px; right: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(227,161,95,.40), transparent);
+}
+.recap-card .row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 14px;
+}
+.recap-card .meta {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10px; font-weight: 650; color: var(--accent);
+  letter-spacing: 0.24em; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.recap-card .meta::after {
+  content: ""; height: 1px; flex: 1; max-width: 36px;
+  background: linear-gradient(90deg, rgba(227,161,95,.5), transparent);
+}
+.recap-card .title {
+  font-family: var(--font-serif);
+  font-size: 22px; font-weight: 400; line-height: 1.18;
+  letter-spacing: -0.01em; color: var(--text);
+  margin-bottom: 8px;
+}
+.recap-card .sub {
+  font-size: 12px; color: var(--text-2); line-height: 1.5;
+  margin-bottom: 14px;
+}
+.recap-card .last {
+  display: flex; align-items: center; gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,229,214,.05);
+}
+.recap-card .last .label {
+  font-size: 9px; font-weight: 650; color: var(--text-3);
+  letter-spacing: 0.22em; text-transform: uppercase;
+}
+.recap-card .last .name {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: 13px; color: var(--text-2);
+  font-style: italic; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.recap-card .chev {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(227,161,95,.10);
+  border: 1px solid rgba(227,161,95,.20);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); flex-shrink: 0;
+}
+.recap-card .chev svg { width: 12px; height: 12px; }
+
+/* Glossary chips */
+.glos-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.glos-chip {
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 10px;
+  font-size: 11px; font-weight: 500; color: var(--text);
+}
+.glos-add {
+  display: flex; gap: 6px; align-items: center;
+  margin-top: 10px;
+}
+.glos-add input {
+  flex: 1; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 12px;
+  color: var(--text); font-family: inherit; font-size: 12px;
+  outline: none;
+}
+.glos-add button {
+  background: var(--surface-2); color: var(--accent);
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 14px; cursor: pointer; font-family: inherit;
+  font-size: 14px; font-weight: 600;
+}
+
+/* Account rows */
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.set-row:last-child { border-bottom: none; }
+.set-row .lbl { color: var(--text-2); font-weight: 500; }
+.set-row .v { color: var(--text); font-weight: 500; }
+.set-row .v.muted { color: var(--text-3); }
+
+/* Logout */
+.logout-section { margin-top: 14px; margin-bottom: 20px; }
+.logout-btn {
+  width: 100%;
+  background: transparent; color: var(--danger);
+  border: 1px solid rgba(248,113,113,.30); border-radius: 12px;
+  padding: 14px; cursor: pointer; font-family: inherit;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.02em;
+}
+
+/* Tab bar (5 items, Altro on) */
+.tab-bar {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  align-items: center; padding: 12px 0 18px;
+  border-top: 1px solid var(--line);
+  background: rgba(10,5,7,.50);
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--text-3); cursor: pointer; text-decoration: none;
+}
+.tab.on { color: var(--accent); }
+.tab svg { width: 22px; height: 22px; }
+.tab .lbl {
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.10em; text-transform: uppercase;
+}
+.tab .mic-circle {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 24px rgba(227,161,95,.55), 0 8px 16px rgba(0,0,0,.4);
+}
+.tab .mic-circle svg { width: 22px; height: 22px; color: #1A0E0F; }
+</style>
+</head>
+<body>
+<div class="label">Mockup . Altro (Recap link + Glossario + Account + Logout)</div>
+<div class="screens">
+  <div class="col">
+    <div class="phone">
+      <div class="app">
+        <h1 class="page-h">Altro</h1>
+
+        <div class="scroll">
+          <!-- Recap card: editorial, premium feel. Opens /recap. -->
+          <button class="recap-card">
+            <div class="meta">Recap</div>
+            <div class="row">
+              <div style="flex: 1; min-width: 0;">
+                <div class="title">Le tue giornate, raccontate.</div>
+                <div class="sub">Mensili, semestrali, annuali. Una prosa narrativa che rilegge i tuoi mesi senza giudizio.</div>
+              </div>
+            </div>
+            <div class="last">
+              <span class="label">Ultimo</span>
+              <span class="name">Aprile 2026 . Un mese in cui hai imparato a non rincorrere</span>
+              <span class="chev">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </span>
+            </div>
+          </button>
+
+          <div style="height: 24px;"></div>
+
+          <!-- Glossario inline -->
+          <div class="section">
+            <div class="section-h">Glossario</div>
+            <div style="font-size: 11px; color: var(--text-3); line-height: 1.4; margin-bottom: 8px;">
+              Nomi propri ricorrenti. Aiutano la trascrizione a non sbagliarli.
+            </div>
+            <div class="glos-chips">
+              <span class="glos-chip">Anna</span>
+              <span class="glos-chip">Marco</span>
+              <span class="glos-chip">Stripe</span>
+              <span class="glos-chip">Lara</span>
+              <span class="glos-chip">Trastevere</span>
+            </div>
+            <div class="glos-add">
+              <input type="text" placeholder="Aggiungi un nome..." />
+              <button>+</button>
+            </div>
+          </div>
+
+          <!-- Account -->
+          <div class="section">
+            <div class="section-h">Account</div>
+            <div class="set-row">
+              <span class="lbl">Email</span>
+              <span class="v">madh52@gmail.com</span>
+            </div>
+            <div class="set-row">
+              <span class="lbl">Versione</span>
+              <span class="v muted">0.5.0</span>
+            </div>
+          </div>
+
+          <!-- Logout -->
+          <div class="logout-section">
+            <button class="logout-btn">Esci dall'account</button>
+          </div>
+        </div>
+
+        <!-- Tab bar 5 items, no Recap -->
+        <div class="tab-bar">
+          <a class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="lbl">Oggi</span>
+          </a>
+          <a class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span class="lbl">Mese</span>
+          </a>
+          <a class="tab" style="color: var(--accent);">
+            <span class="mic-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+            </span>
+          </a>
+          <a class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span class="lbl">Remember</span>
+          </a>
+          <a class="tab on">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+            <span class="lbl">Altro</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="label" style="margin: 8px 0 0; font-size: 9px;">Altro - riga Recap (apre /recap) + glossario + account + logout</div>
+  </div>
+</div>
+</body>
+</html>

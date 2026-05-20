@@ -59,7 +59,18 @@ Workflow split:
 
 ## 4. Identità visiva (validata, NON cambiare senza nuovo OK)
 
-Tema "wine premium" + Inter. Tutte le tokens in `src/app/globals.css`:
+> **FONTE DI VERITÀ → `design/brandbook.html`**
+> Il brandbook è il documento canonico del look dell'app: pensato perché un'altra
+> persona/AI possa ricostruire l'intera UI da zero anche se sparisse tutto il CSS.
+> Contiene 19 capitoli (filosofia, colore, tipografia, superfici, spazio, raggi,
+> ombre, bottoni, input, card, navigazione, registrazione, editoriale/recap,
+> movimento, icone, voce&tono, stati, da-non-fare, export tokens) con esempi dal
+> vivo e l'export `@theme inline` pronto al copia-incolla. Apri come `computer://`
+> link. **Prima di qualsiasi cambio visivo, leggi il brandbook + il mockup
+> relativo in `design/mockups/`, poi proponi un mockup nuovo.** I token qui sotto
+> sono un estratto rapido; in caso di conflitto vince il brandbook.
+
+Tema "wine premium" + Inter (UI) / Spectral (prosa editoriale). Tutte le tokens in `src/app/globals.css`:
 
 ```
 --color-bg            #050304   (page outer)
@@ -80,7 +91,7 @@ Tema "wine premium" + Inter. Tutte le tokens in `src/app/globals.css`:
 
 Body globale ha radial-gradient di warmth in alto-sinistra (wine) + film grain noise via SVG fractalNoise a opacity 2.8%. Vedere `globals.css` body::before e body::after.
 
-Tipografia: Inter sola, niente serif. Contrasto via peso (300 thin per numeri grossi, 650 bold per headline, 400-500 per body) + tracking negativo (-0.025em sulle headline).
+Tipografia: **Inter** per la UI/numeri, **Spectral** per la prosa editoriale (recap, citazioni, titoli editoriali tipo la card Recap dentro Altro, drop cap). Contrasto via peso (300 thin per numeri grossi, 650 bold per headline, 400-500 per body) + tracking negativo (-0.025em sulle headline). Dettaglio scala completa nel brandbook cap. 03.
 
 Buttons hanno feedback al tap già definito in `globals.css` (`.btn-primary` + `.btn-ghost`):
 - scale(0.97) + shadow flatten + color sink + 80ms cubic-bezier(0.4, 0, 0.2, 1)
@@ -89,7 +100,8 @@ Buttons hanno feedback al tap già definito in `globals.css` (`.btn-primary` + `
 
 Input: `.input-base` class, focus genera amber-glow border.
 
-Mockup di riferimento: `design/mockups/login.html` e `design/mockups/today.html`.
+Brandbook: `design/brandbook.html` (fonte di verità, vedi callout sopra).
+Mockup di riferimento in `design/mockups/`: `login.html`, `today.html`, `mese.html`, `recap.html`, `remember.html`, `settings.html`, `metrics-editable.html`, `recording-flow-v2.html`, `altro.html` (Recap card + glossario + logout, approvato), `recording-overlay-v3.html` (status sopra waveform + X come cestino rosso, approvato).
 
 ---
 
