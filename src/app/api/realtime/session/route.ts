@@ -72,6 +72,20 @@ export async function POST(req: NextRequest) {
 
   // Realtime transcription session: streams Italian text deltas from the
   // user's microphone, no model voice response (we only want transcript).
+  //
+  // ANTI-HALLUCINATION PROMPT: gpt-4o-transcribe (like whisper) tends to
+  // "complete" silence or unclear audio with plausible content matching
+  // the prompt's stylistic bias. We explicitly tell it to be literal and
+  // emit nothing on silence. Glossary is appended at the end as a hint,
+  // not as creative context.
+  const antiHallucinationPrompt = [
+    "Trascrivi LETTERALMENTE in italiano solo le parole che senti chiaramente nell'audio.",
+    "Se l'audio e silenzioso, contiene solo rumore o e incomprensibile, restituisci stringa vuota.",
+    "NON inventare contenuto plausibile. NON parafrasare. NON completare frasi mai dette.",
+    "Mantieni le concordanze grammaticali in base a quello che senti — NON assumere genere o numero.",
+    "Punteggiatura naturale solo se la pausa lo suggerisce.",
+  ].join(" ");
+
   const sessionConfig = {
     type: "transcription",
     audio: {
@@ -79,13 +93,14 @@ export async function POST(req: NextRequest) {
         transcription: {
           model: "gpt-4o-transcribe",
           language: "it",
-          prompt:
-            "Trascrizione di un diario personale parlato in italiano colloquiale. Include nomi propri di persone, luoghi, brand. Punteggiatura naturale." +
-            glossaryHint,
+          prompt: antiHallucinationPrompt + glossaryHint,
         },
-        // Server-side voice activity detection. Lower silence_duration_ms
-        // means chunks close faster -> transcript arrives with less perceived
-        // lag, at the cost of more fragmentation if the user pauses mid-sentence.
+        // Background noise reduction — helps the VAD distinguish speech
+        // from environmental noise so we don't transcribe coughs/clicks.
+        noise_reduction: { type: "near_field" },
+        // Server-side voice activity detection. threshold 0.3 keeps us
+        // sensitive in noisy rooms; the anti-hallucination prompt above
+        // is what prevents fabricated content on borderline chunks.
         turn_detection: {
           type: "server_vad",
           threshold: 0.3,
