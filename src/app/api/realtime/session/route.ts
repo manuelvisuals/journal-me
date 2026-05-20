@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
         // lag, at the cost of more fragmentation if the user pauses mid-sentence.
         turn_detection: {
           type: "server_vad",
-          threshold: 0.5,
+          threshold: 0.3,
           prefix_padding_ms: 150,
           silence_duration_ms: 250,
         },

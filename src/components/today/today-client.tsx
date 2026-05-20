@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/components/today/empty-state";
@@ -20,7 +21,13 @@ import {
 } from "@/lib/data/entries";
 import type { Entry, EntryMetrics } from "@/lib/types";
 
-type View = "empty" | "recording" | "review" | "processing" | "filled";
+type View =
+  | "empty"
+  | "recording"
+  | "no-capture"
+  | "review"
+  | "processing"
+  | "filled";
 
 type PendingRecording = {
   transcript: string;
@@ -36,10 +43,25 @@ type Props = {
 };
 
 export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
   const [view, setView] = useState<View>(
     autoRecord ? "recording" : initialEntry ? "filled" : "empty",
   );
+
+  // Watch for ?record=1 changes coming from clicking the mic in the tab bar
+  // while we're already on /. Without this the tab-bar mic looks dummy.
+  // Defer the setState via queueMicrotask so React 19's
+  // react-hooks/set-state-in-effect rule is satisfied.
+  useEffect(() => {
+    if (searchParams.get("record") !== "1") return;
+    queueMicrotask(() => {
+      setView((current) => (current === "recording" ? current : "recording"));
+      router.replace("/", { scroll: false });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [savedDates, setSavedDates] = useState<string[]>([]);
@@ -79,8 +101,10 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
     targetDate: string,
   ) => {
     if (!transcript.trim()) {
-      // Nothing was captured — bail back to previous view.
-      setView(entry ? "filled" : "empty");
+      // Nothing was captured — surface a recoverable dialog instead of
+      // silently dropping the recording (Manuel feedback).
+      setPending({ transcript: "", durationSeconds, targetDate });
+      setView("no-capture");
       return;
     }
     setPending({ transcript, durationSeconds, targetDate });
@@ -355,6 +379,80 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
           onConfirm={handleConfirmReview}
           onCancel={handleCancelReview}
         />
+      )}
+
+      {/* No-capture: stop was tapped but the transcript was empty */}
+      {view === "no-capture" && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+          style={{ background: "rgba(10,5,7,0.92)", backdropFilter: "blur(8px)" }}
+        >
+          <div
+            style={{
+              maxWidth: 320,
+              padding: "0 28px",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 650,
+                color: "var(--color-danger)",
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                marginBottom: 14,
+              }}
+            >
+              niente catturato
+            </div>
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 650,
+                color: "var(--color-ink)",
+                lineHeight: 1.2,
+                letterSpacing: "-0.015em",
+                marginBottom: 12,
+              }}
+            >
+              Non ho sentito nulla.
+            </h2>
+            <p
+              style={{
+                fontSize: 14,
+                color: "var(--color-ink-muted)",
+                lineHeight: 1.55,
+                marginBottom: 26,
+              }}
+            >
+              Forse il microfono era spento o c&apos;era troppo rumore. Riprova
+              da un posto tranquillo.
+            </p>
+            <div className="flex flex-col" style={{ gap: 10 }}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => {
+                  setPending(null);
+                  setView("recording");
+                }}
+              >
+                Riprova
+              </button>
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => {
+                  setPending(null);
+                  setView(entry ? "filled" : "empty");
+                }}
+              >
+                Esci
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Processing overlay (AI summarization in progress) */}

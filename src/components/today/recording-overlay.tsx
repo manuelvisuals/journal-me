@@ -12,6 +12,36 @@ import { DatePickerPopover } from "@/components/today/date-picker-popover";
 import { loadGlossary } from "@/lib/data/glossary";
 import type { DataMode } from "@/lib/data/entries";
 
+// Module-level cache of the mic MediaStream so the browser doesn't re-prompt
+// the user for permission every single time they open the recording overlay
+// within the same page session.
+let cachedMicStream: MediaStream | null = null;
+
+async function acquireMicStream(): Promise<MediaStream> {
+  if (
+    cachedMicStream &&
+    cachedMicStream.active &&
+    cachedMicStream
+      .getAudioTracks()
+      .some((t) => t.readyState === "live" && t.enabled !== false)
+  ) {
+    // Re-enable all tracks (in case pause/cleanup disabled them).
+    cachedMicStream.getAudioTracks().forEach((t) => {
+      t.enabled = true;
+    });
+    return cachedMicStream;
+  }
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+    },
+  });
+  cachedMicStream = stream;
+  return stream;
+}
+
 type Props = {
   /** Default date for segments without explicit temporal markers (YYYY-MM-DD). */
   defaultDate?: string;
@@ -45,6 +75,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
     defaultDate ?? todayISO(),
   );
   const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
+  const [silenceWarning, setSilenceWarning] = useState<boolean>(false);
 
   // Refs to objects that must survive across renders without triggering effects.
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -54,6 +85,8 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
   const finalRef = useRef<string>("");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cleanedUpRef = useRef<boolean>(false);
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTranscriptAtRef = useRef<number>(0);
 
   // Setup the realtime connection once on mount.
   useEffect(() => {
@@ -61,16 +94,10 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
 
     const setup = async () => {
       try {
-        // 1. Mic permission
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
-        });
+        // 1. Mic permission (re-uses cached stream when possible)
+        const stream = await acquireMicStream();
         if (cancelled) {
-          stream.getTracks().forEach((t) => t.stop());
+          // Don't stop the cached stream — we want to re-use it next time.
           return;
         }
         localStreamRef.current = stream;
@@ -186,21 +213,47 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
     }
     if (!ev.type) return;
     if (ev.type === "conversation.item.input_audio_transcription.delta") {
-      // Interim — append to local interim buffer
       setInterim((prev) => prev + (ev.delta ?? ""));
+      lastTranscriptAtRef.current = Date.now();
+      setSilenceWarning(false);
     } else if (
       ev.type === "conversation.item.input_audio_transcription.completed"
     ) {
-      // Final chunk — append to accumulator, clear interim
       const text = ev.transcript ?? "";
       if (text) {
         finalRef.current = (finalRef.current + " " + text).trim();
         setTranscript(finalRef.current);
       }
       setInterim("");
+      lastTranscriptAtRef.current = Date.now();
+      setSilenceWarning(false);
     }
-    // We ignore other event types (errors, ping, etc.) — could log if needed.
   }
+
+  // Silence detector: once we're recording, if 8s pass without any
+  // transcript event, surface a hint that the mic / environment is not
+  // working. Clears once any event arrives.
+  useEffect(() => {
+    if (state !== "recording") {
+      if (silenceTimerRef.current) {
+        clearInterval(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+      return;
+    }
+    lastTranscriptAtRef.current = Date.now();
+    silenceTimerRef.current = setInterval(() => {
+      if (Date.now() - lastTranscriptAtRef.current > 8000) {
+        setSilenceWarning(true);
+      }
+    }, 1000);
+    return () => {
+      if (silenceTimerRef.current) {
+        clearInterval(silenceTimerRef.current);
+        silenceTimerRef.current = null;
+      }
+    };
+  }, [state]);
 
   function startTimer() {
     if (timerRef.current) return;
@@ -230,8 +283,13 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
     } catch {
       // ignore
     }
+    // Intentionally do NOT stop the cached mic tracks — they are shared
+    // across overlay open/close so the browser doesn't re-prompt for
+    // permission. The tracks get stopped on page unload by the browser.
     try {
-      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+      localStreamRef.current?.getAudioTracks().forEach((t) => {
+        t.enabled = false; // mute while overlay is closed
+      });
     } catch {
       // ignore
     }
@@ -278,15 +336,15 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col"
-      style={{ background: "var(--color-bg-phone)" }}
+      style={{ background: "var(--color-bg-phone)", height: "100dvh" }}
     >
       <div
         className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
-        style={{ padding: "24px 24px 0" }}
+        style={{ padding: "24px 24px 0", minHeight: 0 }}
       >
         {/* Live indicator + timer */}
         <div
-          className="flex items-center justify-between"
+          className="flex items-center justify-between shrink-0"
           style={{ marginBottom: 20 }}
         >
           <div className="flex items-center" style={{ gap: 7 }}>
@@ -332,7 +390,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
 
         {/* Date chip — defaults to today, tap to override */}
         <div
-          className="flex justify-center"
+          className="flex justify-center shrink-0"
           style={{ paddingBottom: 6 }}
         >
           <button
@@ -392,7 +450,12 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
           <>
             <div
               className="flex-1 overflow-y-auto"
-              style={{ padding: "12px 4px", fontSize: 17, lineHeight: 1.6 }}
+              style={{
+                padding: "12px 4px",
+                fontSize: 17,
+                lineHeight: 1.6,
+                minHeight: 0,
+              }}
             >
               {older && (
                 <p style={{ color: "var(--color-ink-faint)", marginBottom: 10 }}>
@@ -422,15 +485,34 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
                       : ""}
                 </p>
               )}
+              {silenceWarning && state === "recording" && (
+                <p
+                  style={{
+                    color: "var(--color-danger)",
+                    fontSize: 12,
+                    fontStyle: "italic",
+                    marginTop: 14,
+                    padding: 10,
+                    background: "rgba(248,113,113,0.08)",
+                    border: "1px solid rgba(248,113,113,0.25)",
+                    borderRadius: 10,
+                  }}
+                >
+                  non ho ancora sentito parole. avvicinati al microfono o riduci
+                  il rumore di sottofondo.
+                </p>
+              )}
             </div>
 
-            <Waveform active={state === "recording"} />
+            <div className="shrink-0">
+              <Waveform active={state === "recording"} />
+            </div>
           </>
         )}
 
-        {/* Controls */}
+        {/* Controls — fixed at bottom of overlay */}
         <div
-          className="flex items-center justify-center"
+          className="flex items-center justify-center shrink-0"
           style={{ gap: 28, padding: "16px 0 10px" }}
         >
           <button
@@ -516,7 +598,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
         </div>
 
         <p
-          className="text-center"
+          className="text-center shrink-0"
           style={{
             fontSize: 11,
             color: "var(--color-ink-faint)",
