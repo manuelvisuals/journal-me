@@ -19,34 +19,23 @@ function subscribeNoop(): () => void {
   return () => {};
 }
 
-// Module-level cache of the mic MediaStream so the browser doesn't re-prompt
-// the user for permission every single time they open the recording overlay
-// within the same page session.
-let cachedMicStream: MediaStream | null = null;
-
+// We deliberately do NOT cache the MediaStream module-level. On iOS Safari
+// re-using a stream across overlay open/close sessions produces a "stale"
+// audio pipe: tracks report readyState=live and enabled=true, but the actual
+// audio frames stop reaching WebRTC after the first close. The symptom is
+// connection OK, state=recording, but OpenAI sees only silence (timer ticks
+// up but zero transcription events). Modern browsers (incl. iOS Safari)
+// don't re-prompt for permission on subsequent getUserMedia calls with the
+// same constraints once the user has granted it for the origin, so a fresh
+// acquisition per overlay session is safe and avoids the stale-pipe bug.
 async function acquireMicStream(): Promise<MediaStream> {
-  if (
-    cachedMicStream &&
-    cachedMicStream.active &&
-    cachedMicStream
-      .getAudioTracks()
-      .some((t) => t.readyState === "live" && t.enabled !== false)
-  ) {
-    // Re-enable all tracks (in case pause/cleanup disabled them).
-    cachedMicStream.getAudioTracks().forEach((t) => {
-      t.enabled = true;
-    });
-    return cachedMicStream;
-  }
-  const stream = await navigator.mediaDevices.getUserMedia({
+  return navigator.mediaDevices.getUserMedia({
     audio: {
       echoCancellation: true,
       noiseSuppression: true,
       autoGainControl: true,
     },
   });
-  cachedMicStream = stream;
-  return stream;
 }
 
 type Props = {
@@ -355,16 +344,25 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
     } catch {
       // ignore
     }
-    // Intentionally do NOT stop the cached mic tracks — they are shared
-    // across overlay open/close so the browser doesn't re-prompt for
-    // permission. The tracks get stopped on page unload by the browser.
+    // Fully stop the mic tracks. Browsers don't re-prompt for permission
+    // on subsequent getUserMedia calls for the same origin after the user
+    // has granted it, so stopping cleanly here gives us a fresh, healthy
+    // audio pipe next time the overlay opens. Disabling-only (as we did
+    // before) leaves iOS Safari's audio session in a weird state where
+    // subsequent sessions silently fail to deliver audio frames to WebRTC.
     try {
-      localStreamRef.current?.getAudioTracks().forEach((t) => {
-        t.enabled = false; // mute while overlay is closed
+      localStreamRef.current?.getTracks().forEach((t) => {
+        try {
+          t.stop();
+        } catch {
+          // ignore individual track stop errors
+        }
       });
     } catch {
       // ignore
     }
+    localStreamRef.current = null;
+    audioTrackRef.current = null;
   }
 
   function handleStop() {
