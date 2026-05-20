@@ -271,6 +271,20 @@ body > * {
   border-radius: 4px;
 }
 
+/* Spinner used during AI processing of a recorded entry */
+.jm-spinner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 229, 214, 0.10);
+  border-top-color: var(--color-accent);
+  animation: jm-spin 0.9s linear infinite;
+  box-shadow: 0 0 22px rgba(227, 161, 95, 0.20);
+}
+@keyframes jm-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* =============================================================
    Mese view (jm- prefix to avoid collisions with future utilities)
    ============================================================= */

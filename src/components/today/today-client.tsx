@@ -13,7 +13,7 @@ import {
 } from "@/lib/data/entries";
 import type { Entry } from "@/lib/types";
 
-type View = "empty" | "recording" | "filled";
+type View = "empty" | "recording" | "processing" | "filled";
 
 type Props = {
   mode: DataMode;
@@ -55,6 +55,7 @@ export function TodayClient({ mode, initialEntry }: Props) {
       setView("empty");
       return;
     }
+    setView("processing");
     try {
       const saved = await saveTodayEntry(mode, { transcript, durationSeconds });
       setEntry(saved);
@@ -132,6 +133,7 @@ export function TodayClient({ mode, initialEntry }: Props) {
         <FilledView
           headline={entry?.headline ?? null}
           snippet={entry?.snippet ?? null}
+          areas={entry?.areas ?? []}
         />
       )}
 
@@ -143,6 +145,40 @@ export function TodayClient({ mode, initialEntry }: Props) {
       {/* Recording overlay sits above everything */}
       {view === "recording" && (
         <RecordingOverlay onStop={handleStop} onCancel={handleCancel} />
+      )}
+
+      {/* Processing overlay (AI summarization in progress) */}
+      {view === "processing" && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+          style={{ background: "rgba(10,5,7,0.85)", backdropFilter: "blur(8px)" }}
+        >
+          <div className="jm-spinner" aria-hidden="true" />
+          <div
+            style={{
+              marginTop: 28,
+              fontSize: 11,
+              fontWeight: 600,
+              color: "var(--color-ink-faint)",
+              letterSpacing: "0.20em",
+              textTransform: "uppercase",
+            }}
+          >
+            elaborazione
+          </div>
+          <div
+            style={{
+              marginTop: 12,
+              fontSize: 14,
+              color: "var(--color-ink-muted)",
+              maxWidth: 280,
+              textAlign: "center",
+              lineHeight: 1.5,
+            }}
+          >
+            sto leggendo quello che hai detto e tiro fuori il succo
+          </div>
+        </div>
       )}
     </main>
   );

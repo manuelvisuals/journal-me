@@ -1,17 +1,20 @@
 "use client";
 
 import { formatDecimal } from "@/lib/format";
+import type { AreaSummary } from "@/lib/types";
 
 type Props = {
   /** Optional: override headline/snippet with real entry data. */
   headline?: string | null;
   snippet?: string | null;
+  /** Macro-area summaries from AI. If empty/undefined, fake placeholders are used. */
+  areas?: AreaSummary[];
 };
 
 // MVP: hard-coded mockup-like fake data for areas / metrics / dots.
 // Will be swapped for real AI-generated content + persisted metrics later.
 
-const FAKE_AREAS = [
+const FAKE_AREAS: AreaSummary[] = [
   {
     label: "Lavoro",
     text: "Deck per Marco chiuso a meta pomeriggio. Call Sara spostata a giovedi.",
@@ -45,9 +48,11 @@ const FAKE_HEADLINE = "Giornata di transizione: lavoro avanza, umore vacilla";
 const FAKE_SNIPPET =
   "Deck Marco chiuso. Lite con Giulia. Corsa al tramonto rimette in pari.";
 
-export function FilledView({ headline, snippet }: Props) {
+export function FilledView({ headline, snippet, areas }: Props) {
   const displayHeadline = headline ?? FAKE_HEADLINE;
   const displaySnippet = snippet ?? FAKE_SNIPPET;
+  const displayAreas =
+    areas && areas.length > 0 ? areas : FAKE_AREAS;
 
   return (
     <div className="flex flex-1 flex-col" style={{ padding: "0 24px" }}>
@@ -79,7 +84,7 @@ export function FilledView({ headline, snippet }: Props) {
       <Separator />
 
       {/* Macro areas */}
-      {FAKE_AREAS.map((area) => (
+      {displayAreas.map((area) => (
         <div key={area.label} style={{ padding: "14px 0" }}>
           <div
             style={{

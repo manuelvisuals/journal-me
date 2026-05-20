@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatDurationMmSs } from "@/lib/format";
 
 type Props = {
@@ -8,163 +8,236 @@ type Props = {
   onCancel: () => void;
 };
 
-type RecState = "idle" | "recording" | "paused";
+type RecState = "connecting" | "recording" | "paused" | "error";
 
+/**
+ * Records the user's voice using OpenAI Realtime API (transcription-only)
+ * over WebRTC. The mic audio is streamed to OpenAI; transcript deltas and
+ * completions arrive on a data channel.
+ *
+ * The `/api/realtime/session` endpoint relays the SDP handshake so the
+ * OPENAI_API_KEY never reaches the browser.
+ */
 export function RecordingOverlay({ onStop, onCancel }: Props) {
   const [transcript, setTranscript] = useState<string>("");
   const [interim, setInterim] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(0);
-  // Overlay only mounts after the user clicks the mic, so the initial state
-  // is always "recording" — no need to flip it synchronously in an effect.
-  const [state, setState] = useState<RecState>("recording");
-  // Lazy initializer: run support check on first render (client-only, since
-  // this component never mounts on the server — it's behind a user click).
-  const [supportError] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    return Ctor
-      ? null
-      : "Il microfono non e disponibile su questo browser. Prova con Safari o Chrome.";
-  });
+  const [state, setState] = useState<RecState>("connecting");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Refs that survive re-renders without retriggering effects.
-  const recognitionRef = useRef<ReturnType<typeof createRecognition> | null>(
-    null,
-  );
-  const shouldRunRef = useRef<boolean>(false);
+  // Refs to objects that must survive across renders without triggering effects.
+  const pcRef = useRef<RTCPeerConnection | null>(null);
+  const dcRef = useRef<RTCDataChannel | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const audioTrackRef = useRef<MediaStreamTrack | null>(null);
   const finalRef = useRef<string>("");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const cleanedUpRef = useRef<boolean>(false);
 
-  const startTimer = useCallback(() => {
-    if (timerRef.current) return;
-    timerRef.current = setInterval(() => {
-      setSeconds((s) => s + 1);
-    }, 1000);
-  }, []);
-
-  const stopTimer = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }, []);
-
-  // Build the recognition instance once on mount.
+  // Setup the realtime connection once on mount.
   useEffect(() => {
-    if (supportError) return;
-    const rec = createRecognition();
-    if (!rec) return;
-    rec.lang = "it-IT";
-    rec.continuous = true;
-    rec.interimResults = true;
-    rec.maxAlternatives = 1;
+    let cancelled = false;
 
-    rec.onresult = (event) => {
-      let interimText = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        const text = result[0]?.transcript ?? "";
-        if (result.isFinal) {
-          finalRef.current = (finalRef.current + " " + text).trim();
-          setTranscript(finalRef.current);
-        } else {
-          interimText += text;
+    const setup = async () => {
+      try {
+        // 1. Mic permission
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        });
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
         }
-      }
-      setInterim(interimText);
-    };
+        localStreamRef.current = stream;
+        audioTrackRef.current = stream.getAudioTracks()[0] ?? null;
 
-    rec.onend = () => {
-      // iOS Safari auto-stops after ~60s. Restart if we still want to record.
-      if (shouldRunRef.current) {
-        try {
-          rec.start();
-        } catch {
-          // already started — ignore
+        // 2. Peer connection + data channel
+        const pc = new RTCPeerConnection();
+        pcRef.current = pc;
+
+        // Add mic as a transceiver so SDP includes audio
+        if (audioTrackRef.current) {
+          pc.addTrack(audioTrackRef.current, stream);
         }
+
+        const dc = pc.createDataChannel("oai-events");
+        dcRef.current = dc;
+
+        dc.onmessage = (e) => {
+          handleEvent(e.data);
+        };
+        dc.onopen = () => {
+          // Data channel is ready — we're effectively live.
+        };
+
+        pc.oniceconnectionstatechange = () => {
+          if (
+            pc.iceConnectionState === "failed" ||
+            pc.iceConnectionState === "disconnected"
+          ) {
+            if (!cleanedUpRef.current) {
+              setErrorMessage(
+                "Connessione persa con il servizio di trascrizione.",
+              );
+              setState("error");
+            }
+          }
+        };
+
+        // 3. SDP offer + handshake
+        const offer = await pc.createOffer({
+          offerToReceiveAudio: false,
+          offerToReceiveVideo: false,
+        });
+        await pc.setLocalDescription(offer);
+
+        if (cancelled) return;
+
+        const resp = await fetch("/api/realtime/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/sdp" },
+          body: offer.sdp ?? "",
+        });
+
+        if (!resp.ok) {
+          const errTxt = await resp.text().catch(() => "");
+          throw new Error(
+            `Errore dal server (${resp.status}). ${errTxt.slice(0, 160)}`,
+          );
+        }
+
+        const answerSdp = await resp.text();
+        if (cancelled) return;
+
+        await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
+
+        if (cancelled) return;
+        setState("recording");
+        startTimer();
+      } catch (err) {
+        if (cancelled) return;
+        const msg = err instanceof Error ? err.message : String(err);
+        setErrorMessage(
+          msg.toLowerCase().includes("permission") ||
+            msg.toLowerCase().includes("denied")
+            ? "Permesso microfono negato. Vai nelle impostazioni del browser e abilitalo."
+            : msg,
+        );
+        setState("error");
       }
     };
 
-    rec.onerror = (event) => {
-      if (event.error === "no-speech" || event.error === "aborted") return;
-      // Other errors: stop gracefully.
-      shouldRunRef.current = false;
-      setState("idle");
-      stopTimer();
-    };
-
-    recognitionRef.current = rec;
-    // Auto-start as soon as we mount. Initial state is already "recording".
-    shouldRunRef.current = true;
-    try {
-      rec.start();
-    } catch {
-      // start() can throw if already running — that's fine.
-    }
-    startTimer();
+    void setup();
 
     return () => {
-      shouldRunRef.current = false;
-      try {
-        rec.abort();
-      } catch {
-        // ignore
-      }
-      stopTimer();
+      cancelled = true;
+      cleanup();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleStop = () => {
-    shouldRunRef.current = false;
+  function handleEvent(raw: unknown) {
+    if (typeof raw !== "string") return;
+    let ev: { type?: string; delta?: string; transcript?: string };
     try {
-      recognitionRef.current?.stop();
+      ev = JSON.parse(raw);
     } catch {
-      // ignore
-    }
-    stopTimer();
-    setState("idle");
-    const final = finalRef.current.trim() || interim.trim();
-    onStop(final, seconds);
-  };
-
-  const handleCancel = () => {
-    shouldRunRef.current = false;
-    try {
-      recognitionRef.current?.abort();
-    } catch {
-      // ignore
-    }
-    stopTimer();
-    onCancel();
-  };
-
-  const togglePause = () => {
-    if (state === "recording") {
-      shouldRunRef.current = false;
-      try {
-        recognitionRef.current?.stop();
-      } catch {
-        // ignore
-      }
-      stopTimer();
-      setState("paused");
       return;
     }
-    if (state === "paused" && recognitionRef.current) {
-      shouldRunRef.current = true;
-      try {
-        recognitionRef.current.start();
-      } catch {
-        // already running
+    if (!ev.type) return;
+    if (ev.type === "conversation.item.input_audio_transcription.delta") {
+      // Interim — append to local interim buffer
+      setInterim((prev) => prev + (ev.delta ?? ""));
+    } else if (
+      ev.type === "conversation.item.input_audio_transcription.completed"
+    ) {
+      // Final chunk — append to accumulator, clear interim
+      const text = ev.transcript ?? "";
+      if (text) {
+        finalRef.current = (finalRef.current + " " + text).trim();
+        setTranscript(finalRef.current);
       }
-      setState("recording");
-      startTimer();
+      setInterim("");
     }
-  };
+    // We ignore other event types (errors, ping, etc.) — could log if needed.
+  }
 
-  // Split transcript into "older" (everything but last sentence/chunk) and "recent" (last chunk).
+  function startTimer() {
+    if (timerRef.current) return;
+    timerRef.current = setInterval(() => {
+      setSeconds((s) => s + 1);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }
+
+  function cleanup() {
+    if (cleanedUpRef.current) return;
+    cleanedUpRef.current = true;
+    stopTimer();
+    try {
+      dcRef.current?.close();
+    } catch {
+      // ignore
+    }
+    try {
+      pcRef.current?.close();
+    } catch {
+      // ignore
+    }
+    try {
+      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+    } catch {
+      // ignore
+    }
+  }
+
+  function handleStop() {
+    cleanup();
+    setState("connecting"); // transient; parent will switch view away
+    const finalText = finalRef.current.trim() || interim.trim();
+    onStop(finalText, seconds);
+  }
+
+  function handleCancel() {
+    cleanup();
+    onCancel();
+  }
+
+  function togglePause() {
+    const track = audioTrackRef.current;
+    if (!track) return;
+    if (state === "recording") {
+      track.enabled = false;
+      stopTimer();
+      setState("paused");
+    } else if (state === "paused") {
+      track.enabled = true;
+      startTimer();
+      setState("recording");
+    }
+  }
+
   const { older, recent } = splitTranscript(transcript);
+  const liveLabel =
+    state === "paused"
+      ? "pausa"
+      : state === "connecting"
+        ? "connetto"
+        : state === "error"
+          ? "errore"
+          : "live";
+  const liveDotOpacity =
+    state === "recording" ? 1 : state === "paused" ? 0.45 : 0.6;
 
   return (
     <div
@@ -176,7 +249,10 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
         style={{ padding: "24px 24px 0" }}
       >
         {/* Live indicator + timer */}
-        <div className="flex items-center justify-between" style={{ marginBottom: 20 }}>
+        <div
+          className="flex items-center justify-between"
+          style={{ marginBottom: 20 }}
+        >
           <div className="flex items-center" style={{ gap: 7 }}>
             <span
               className="inline-block"
@@ -184,9 +260,12 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background: "var(--color-danger)",
+                background:
+                  state === "error"
+                    ? "var(--color-danger)"
+                    : "var(--color-danger)",
                 boxShadow: "0 0 10px rgba(248,113,113,0.7)",
-                opacity: state === "recording" ? 1 : 0.45,
+                opacity: liveDotOpacity,
               }}
             />
             <span
@@ -198,7 +277,7 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
                 textTransform: "uppercase",
               }}
             >
-              {state === "paused" ? "pausa" : "live"}
+              {liveLabel}
             </span>
           </div>
           <span
@@ -215,7 +294,8 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
           </span>
         </div>
 
-        {supportError ? (
+        {/* Body */}
+        {state === "error" ? (
           <div
             style={{
               padding: 16,
@@ -227,11 +307,10 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
               lineHeight: 1.55,
             }}
           >
-            {supportError}
+            {errorMessage ?? "Errore sconosciuto."}
           </div>
         ) : (
           <>
-            {/* Transcript */}
             <div
               className="flex-1 overflow-y-auto"
               style={{ padding: "12px 4px", fontSize: 17, lineHeight: 1.6 }}
@@ -250,14 +329,22 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
                 {interim}
                 {state === "recording" && <span className="live-caret" />}
               </p>
-              {!transcript && !interim && state === "recording" && (
-                <p style={{ color: "var(--color-ink-faint)", fontStyle: "italic" }}>
-                  Parla pure...
+              {!transcript && !interim && (
+                <p
+                  style={{
+                    color: "var(--color-ink-faint)",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {state === "connecting"
+                    ? "Connessione al servizio di trascrizione..."
+                    : state === "recording"
+                      ? "Parla pure..."
+                      : ""}
                 </p>
               )}
             </div>
 
-            {/* Waveform (CSS-animated bars — visual only) */}
             <Waveform active={state === "recording"} />
           </>
         )}
@@ -294,6 +381,8 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
             onClick={handleStop}
             aria-label="Termina e salva"
             className="rec-ctl rec-ctl-stop"
+            disabled={state === "connecting"}
+            style={state === "connecting" ? { opacity: 0.5 } : undefined}
           >
             <span
               style={{
@@ -311,6 +400,12 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
             onClick={togglePause}
             aria-label={state === "paused" ? "Riprendi" : "Pausa"}
             className="rec-ctl"
+            disabled={state === "connecting" || state === "error"}
+            style={
+              state === "connecting" || state === "error"
+                ? { opacity: 0.5 }
+                : undefined
+            }
           >
             {state === "paused" ? (
               <svg
@@ -350,26 +445,16 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
             padding: "10px 0 22px",
           }}
         >
-          audio sul telefono . solo il testo va al cloud
+          audio in streaming a openai . solo il testo viene salvato
         </p>
       </div>
     </div>
   );
 }
 
-/* ----------------------------- helpers ----------------------------- */
-
-function createRecognition() {
-  if (typeof window === "undefined") return null;
-  const Ctor = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-  if (!Ctor) return null;
-  return new Ctor();
-}
-
 function splitTranscript(text: string): { older: string; recent: string } {
   const trimmed = text.trim();
   if (!trimmed) return { older: "", recent: "" };
-  // Split on sentence boundary, last sentence = "recent".
   const parts = trimmed.split(/(?<=[.!?])\s+/);
   if (parts.length <= 1) return { older: "", recent: trimmed };
   return {

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
-import type { Entry } from "@/lib/types";
+import type { AreaSummary, Entry } from "@/lib/types";
 
 export type DataMode = "demo" | "auth";
 
@@ -17,17 +17,66 @@ function demoKey(dateISO: string) {
   return `${DEMO_KEY_PREFIX}${dateISO}`;
 }
 
-function makeDemoEntry(input: SaveEntryInput, dateISO: string): Entry {
-  const firstSentence = input.transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
-  const minutes = Math.max(1, Math.round(input.durationSeconds / 60));
+/* ----------------- AI processing ----------------- */
+
+type AIFields = {
+  headline: string;
+  snippet: string;
+  areas: AreaSummary[];
+};
+
+function fallbackAIFields(transcript: string, durationSeconds: number): AIFields {
+  const firstSentence = transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
+  const minutes = Math.max(1, Math.round(durationSeconds / 60));
+  return {
+    headline: `Giornata raccontata in ${minutes} minut${minutes === 1 ? "o" : "i"}`,
+    snippet: firstSentence.slice(0, 240),
+    areas: [],
+  };
+}
+
+async function processTranscript(
+  transcript: string,
+  durationSeconds: number,
+): Promise<AIFields> {
+  try {
+    const resp = await fetch("/api/process-entry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript }),
+    });
+    if (!resp.ok) {
+      return fallbackAIFields(transcript, durationSeconds);
+    }
+    const data = (await resp.json()) as Partial<AIFields>;
+    if (!data.headline || !data.snippet) {
+      return fallbackAIFields(transcript, durationSeconds);
+    }
+    return {
+      headline: data.headline,
+      snippet: data.snippet,
+      areas: Array.isArray(data.areas) ? data.areas : [],
+    };
+  } catch {
+    return fallbackAIFields(transcript, durationSeconds);
+  }
+}
+
+/* ----------------- Demo (localStorage) ----------------- */
+
+function buildDemoEntry(
+  input: SaveEntryInput,
+  ai: AIFields,
+  dateISO: string,
+): Entry {
   return {
     id: `demo-${dateISO}`,
     entryDate: dateISO,
     transcript: input.transcript,
     durationSeconds: input.durationSeconds,
-    headline: `Giornata raccontata in ${minutes} minut${minutes === 1 ? "o" : "i"}`,
-    snippet: firstSentence.slice(0, 240),
-    areas: [],
+    headline: ai.headline,
+    snippet: ai.snippet,
+    areas: ai.areas,
     metrics: null,
     goals: [],
     createdAt: new Date().toISOString(),
@@ -39,7 +88,10 @@ async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
   try {
     const raw = window.localStorage.getItem(demoKey(dateISO));
     if (!raw) return null;
-    return JSON.parse(raw) as Entry;
+    const parsed = JSON.parse(raw) as Entry;
+    // Backfill areas for entries persisted before the AI integration.
+    if (!Array.isArray(parsed.areas)) parsed.areas = [];
+    return parsed;
   } catch {
     return null;
   }
@@ -47,14 +99,17 @@ async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
 
 async function saveDemoEntry(
   input: SaveEntryInput,
+  ai: AIFields,
   dateISO: string,
 ): Promise<Entry> {
-  const entry = makeDemoEntry(input, dateISO);
+  const entry = buildDemoEntry(input, ai, dateISO);
   if (typeof window !== "undefined") {
     window.localStorage.setItem(demoKey(dateISO), JSON.stringify(entry));
   }
   return entry;
 }
+
+/* ----------------- Auth (Supabase) ----------------- */
 
 async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
   const supabase = createClient();
@@ -73,7 +128,7 @@ async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
     durationSeconds: 0,
     headline: (data.headline as string) ?? null,
     snippet: (data.snippet as string) ?? null,
-    areas: [],
+    areas: parseAreasJson(data.areas),
     metrics: null,
     goals: [],
     createdAt: data.created_at as string,
@@ -82,6 +137,7 @@ async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
 
 async function saveAuthEntry(
   input: SaveEntryInput,
+  ai: AIFields,
   dateISO: string,
 ): Promise<Entry> {
   const supabase = createClient();
@@ -90,11 +146,6 @@ async function saveAuthEntry(
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const firstSentence = input.transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
-  const minutes = Math.max(1, Math.round(input.durationSeconds / 60));
-  const headline = `Giornata raccontata in ${minutes} minut${minutes === 1 ? "o" : "i"}`;
-  const snippet = firstSentence.slice(0, 240);
-
   const { data, error } = await supabase
     .from("entries")
     .upsert(
@@ -102,8 +153,9 @@ async function saveAuthEntry(
         user_id: user.id,
         entry_date: dateISO,
         transcript: input.transcript,
-        headline,
-        snippet,
+        headline: ai.headline,
+        snippet: ai.snippet,
+        areas: ai.areas,
       },
       { onConflict: "user_id,entry_date" },
     )
@@ -119,20 +171,34 @@ async function saveAuthEntry(
     entryDate: dateISO,
     transcript: input.transcript,
     durationSeconds: input.durationSeconds,
-    headline,
-    snippet,
-    areas: [],
+    headline: ai.headline,
+    snippet: ai.snippet,
+    areas: ai.areas,
     metrics: null,
     goals: [],
     createdAt: data.created_at as string,
   };
 }
 
+function parseAreasJson(raw: unknown): AreaSummary[] {
+  if (!raw) return [];
+  if (Array.isArray(raw)) {
+    return raw.filter(
+      (x): x is AreaSummary =>
+        typeof x === "object" &&
+        x !== null &&
+        typeof (x as { label?: unknown }).label === "string" &&
+        typeof (x as { text?: unknown }).text === "string",
+    );
+  }
+  return [];
+}
+
+/* ----------------- Public API ----------------- */
+
 export async function loadTodayEntry(mode: DataMode): Promise<Entry | null> {
   const dateISO = todayISO();
-  return mode === "demo"
-    ? loadDemoEntry(dateISO)
-    : loadAuthEntry(dateISO);
+  return mode === "demo" ? loadDemoEntry(dateISO) : loadAuthEntry(dateISO);
 }
 
 export async function saveTodayEntry(
@@ -140,9 +206,10 @@ export async function saveTodayEntry(
   input: SaveEntryInput,
 ): Promise<Entry> {
   const dateISO = todayISO();
+  const ai = await processTranscript(input.transcript, input.durationSeconds);
   return mode === "demo"
-    ? saveDemoEntry(input, dateISO)
-    : saveAuthEntry(input, dateISO);
+    ? saveDemoEntry(input, ai, dateISO)
+    : saveAuthEntry(input, ai, dateISO);
 }
 
 /* ----------------- Month range loader ----------------- */
@@ -169,7 +236,9 @@ async function loadDemoMonth(year: number, month: number): Promise<Entry[]> {
       const raw = window.localStorage.getItem(k);
       if (!raw) continue;
       try {
-        out.push(JSON.parse(raw) as Entry);
+        const parsed = JSON.parse(raw) as Entry;
+        if (!Array.isArray(parsed.areas)) parsed.areas = [];
+        out.push(parsed);
       } catch {
         // ignore corrupted entries
       }
@@ -187,7 +256,7 @@ async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
   const { data, error } = await supabase
     .from("entries")
     .select(
-      "id, entry_date, transcript, headline, snippet, mood, weight_kg, sleep_hours, sleep_label, created_at",
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, sleep_label, created_at",
     )
     .gte("entry_date", start)
     .lte("entry_date", end)
@@ -200,7 +269,7 @@ async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
     durationSeconds: 0,
     headline: (d.headline as string) ?? null,
     snippet: (d.snippet as string) ?? null,
-    areas: [],
+    areas: parseAreasJson(d.areas),
     metrics: null,
     goals: [],
     createdAt: d.created_at as string,
