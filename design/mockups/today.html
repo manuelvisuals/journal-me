@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup · Today (wine premium)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-page: #050304;
+  --bg-phone: #0E0709;
+  --surface: #1D1013;
+  --surface-2: #241418;
+  --line: rgba(255,229,214,.075);
+  --accent: #E3A15F;
+  --accent-pressed: #D08F4D;
+  --accent-hi: #F0B875;
+  --text: #F4E7DE;
+  --text-2: #CDB7AE;
+  --text-3: #8E7770;
+  --success: #A8C9B0;
+  --danger: #F87171;
+  --red-live: #F87171;
+  --font: "Inter", system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font);
+  padding: 40px 20px;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  font-feature-settings: "cv11", "ss01";
+}
+.label {
+  font-size: 11px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.20em; text-transform: uppercase;
+  text-align: center; margin-bottom: 32px;
+}
+.screens { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+.phone {
+  position: relative; width: 380px; min-height: 800px;
+  background: var(--bg-phone); color: var(--text);
+  border-radius: 44px; overflow: hidden;
+  box-shadow: 0 34px 90px rgba(0,0,0,.82), 0 0 0 1px rgba(255,255,255,.045);
+}
+.phone::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% -4%, rgba(227,161,95,.075), transparent 34%),
+    radial-gradient(circle at 12% 22%, rgba(126,80,80,.16), transparent 28%);
+  opacity: .85;
+}
+.phone::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+  opacity: .028; mix-blend-mode: screen;
+}
+.inner {
+  position: relative; z-index: 1;
+  padding: 26px 24px 0;
+  display: flex; flex-direction: column;
+  min-height: 800px;
+}
+.statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 13px; color: var(--text-3); margin-bottom: 24px;
+}
+.statusbar .time { font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+.statusbar .notch { width: 92px; height: 24px; background: #0A0507; border-radius: 14px; }
+.statusbar .right { color: var(--text); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; }
+
+.day-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 8px; padding: 0 2px;
+}
+.day-head .date {
+  font-size: 11px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.20em; text-transform: uppercase;
+}
+.day-head .action {
+  font-size: 12px; color: var(--accent); font-weight: 600;
+}
+
+.headline {
+  font-size: 26px; font-weight: 650; line-height: 1.15;
+  letter-spacing: -0.025em; color: var(--text);
+  margin: 4px 0 10px;
+}
+.snippet {
+  font-size: 14px; font-weight: 400; color: var(--text-2);
+  line-height: 1.55; margin-bottom: 18px;
+}
+.sep { height: 1px; background: var(--line); margin: 4px 0; }
+
+.area { padding: 14px 0; }
+.area-label {
+  font-size: 10px; font-weight: 650; color: var(--accent);
+  letter-spacing: 0.20em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.area-text {
+  font-size: 14px; font-weight: 500; color: var(--text);
+  line-height: 1.55;
+}
+
+.metrics {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; gap: 8px;
+}
+.metric {
+  flex: 1; text-align: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 6px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 8px 16px rgba(0,0,0,.30);
+}
+.metric .val {
+  font-size: 18px; font-weight: 600; color: var(--text);
+  letter-spacing: -0.01em; line-height: 1;
+}
+.metric .val .unit { font-size: 10px; color: var(--text-3); font-weight: 500; }
+.metric .lbl {
+  font-size: 9px; font-weight: 600; color: var(--text-3);
+  letter-spacing: 0.18em; text-transform: uppercase; margin-top: 5px;
+}
+.metric .mood { font-size: 22px; line-height: 1; }
+
+.dots { display: flex; gap: 9px; justify-content: center; padding: 14px 0 6px; }
+.dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.dot.on {
+  background: var(--accent);
+  border-color: rgba(227,161,95,.55);
+  box-shadow: 0 0 8px rgba(227,161,95,.40);
+}
+
+.tabbar {
+  position: relative; z-index: 2;
+  margin-top: auto;
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 14px 0 22px;
+  border-top: 1px solid var(--line);
+  background: rgba(10,5,7,.40);
+  backdrop-filter: blur(20px);
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.tab.on { color: var(--accent); }
+.tab svg { width: 22px; height: 22px; }
+
+/* Empty state */
+.empty-content {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding-bottom: 40px;
+}
+.empty-question {
+  font-size: 28px; font-weight: 650; line-height: 1.15;
+  letter-spacing: -0.025em; text-align: center; color: var(--text);
+  margin-bottom: 14px;
+}
+.empty-hint {
+  font-size: 14px; color: var(--text-2); text-align: center;
+  margin-bottom: 64px; padding: 0 24px; line-height: 1.55;
+}
+.mic-big {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: var(--accent); color: #1A0E0F;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,241,221,.34);
+  box-shadow:
+    0 0 36px rgba(227,161,95,.40),
+    0 18px 36px rgba(0,0,0,.55),
+    inset 0 1px 2px rgba(255,255,255,.40);
+}
+
+/* Recording overlay (full screen takeover) */
+.rec-overlay { background: var(--bg-phone); }
+.rec-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 2px; margin-bottom: 20px;
+}
+.live-pill {
+  display: flex; align-items: center; gap: 7px;
+}
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red-live);
+  box-shadow: 0 0 10px rgba(248,113,113,.7);
+}
+.live-text {
+  font-size: 11px; font-weight: 650; color: var(--red-live);
+  letter-spacing: 0.20em; text-transform: uppercase;
+}
+.timer {
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 18px; font-weight: 500; color: var(--text);
+  letter-spacing: 0.06em;
+}
+
+.transcript {
+  flex: 1; padding: 12px 4px; overflow-y: auto;
+  font-size: 17px; line-height: 1.6;
+}
+.transcript p { margin-bottom: 10px; }
+.transcript .older { color: var(--text-3); }
+.transcript .recent { color: var(--text-2); }
+.transcript .now { color: var(--text); }
+.transcript .now .caret {
+  display: inline-block; width: 2px; height: 16px;
+  background: var(--text); vertical-align: middle; margin-left: 3px;
+  animation: blink 1s infinite;
+}
+.tagged {
+  background: rgba(227,161,95,.15);
+  color: var(--accent-hi);
+  padding: 1px 5px; border-radius: 4px;
+}
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+.waveform {
+  display: flex; align-items: center; justify-content: center; gap: 3px;
+  height: 36px; margin: 18px 0 8px;
+}
+.wave-bar {
+  width: 2px; background: var(--red-live); border-radius: 2px;
+}
+.rec-controls {
+  display: flex; justify-content: center; align-items: center;
+  gap: 28px; padding: 16px 0 10px;
+}
+.ctl {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface); color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 6px 14px rgba(0,0,0,.30);
+}
+.ctl svg { width: 18px; height: 18px; }
+.ctl-stop {
+  width: 76px; height: 76px;
+  background: var(--red-live); color: white;
+  border-color: rgba(255,255,255,.20);
+  box-shadow: 0 0 24px rgba(248,113,113,.45), 0 14px 28px rgba(0,0,0,.50), inset 0 1px 1px rgba(255,255,255,.30);
+}
+.ctl-stop .stop-icon {
+  width: 24px; height: 24px; background: white; border-radius: 5px;
+}
+.rec-foot {
+  text-align: center; font-size: 11px; color: var(--text-3);
+  letter-spacing: 0.04em; padding: 10px 0 22px;
+}
+
+.state-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.20em;
+  text-transform: uppercase; color: var(--text-3); text-align: center;
+}
+.state-label .accent { color: var(--accent); }
+
+.home-indicator {
+  width: 134px; height: 5px; background: var(--text);
+  border-radius: 3px; margin: 0 auto 8px;
+  opacity: 0.35;
+}
+</style>
+</head>
+<body>
+
+<div class="label">Mockup · Today · 3 stati · wine premium</div>
+
+<div class="screens">
+
+  <!-- ========== STATE 1: EMPTY ========== -->
+  <div class="col">
+    <div class="phone">
+      <div class="inner">
+        <div class="statusbar">
+          <span class="time">9:41</span>
+          <span class="notch"></span>
+          <span class="right">5G &nbsp; 100%</span>
+        </div>
+
+        <div class="day-head">
+          <span class="date">Lun · 18 Mag</span>
+        </div>
+
+        <div class="empty-content">
+          <h1 class="empty-question">Com&apos;e andata oggi?</h1>
+          <p class="empty-hint">Apri il microfono e racconta.<br>Senza pensarci troppo.</p>
+          <div class="mic-big">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="36" height="36">
+              <rect x="9" y="3" width="6" height="12" rx="3"/>
+              <path d="M5 11a7 7 0 0 0 14 0"/>
+              <path d="M12 18v3"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Oggi</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Mese</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zM18 14h-8M15 18h-5M10 6h8v4h-8V6z"/></svg>
+            <span>Recap</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span>Remember</span>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="state-label">Stato 1 · <span class="accent">vuoto</span> (no entry oggi)</div>
+  </div>
+
+  <!-- ========== STATE 2: RECORDING ========== -->
+  <div class="col">
+    <div class="phone rec-overlay">
+      <div class="inner">
+        <div class="statusbar">
+          <span class="time">9:41</span>
+          <span class="notch"></span>
+          <span class="right">5G &nbsp; 100%</span>
+        </div>
+
+        <div class="rec-bar">
+          <div class="live-pill"><span class="live-dot"></span><span class="live-text">live</span></div>
+          <span class="timer">03:18</span>
+        </div>
+
+        <div class="transcript">
+          <p class="older">Allora oggi e stata tosta. Marco mi ha rotto il cazzo tutto il pomeriggio sul deck.</p>
+          <p class="recent">Pero alla fine l&apos;ho chiuso. Ho litigato con Giulia per il weekend, niente di grave.</p>
+          <p class="now">Ho fatto otto chilometri di corsa al tramonto, e devo ricordarmi che <span class="tagged">la ragazza di Gabo si chiama Francesca</span><span class="caret"></span></p>
+        </div>
+
+        <div class="waveform">
+          <div class="wave-bar" style="height:6px;opacity:.5"></div>
+          <div class="wave-bar" style="height:14px;opacity:.65"></div>
+          <div class="wave-bar" style="height:22px;opacity:.85"></div>
+          <div class="wave-bar" style="height:10px;opacity:.55"></div>
+          <div class="wave-bar" style="height:28px"></div>
+          <div class="wave-bar" style="height:16px;opacity:.70"></div>
+          <div class="wave-bar" style="height:24px;opacity:.85"></div>
+          <div class="wave-bar" style="height:12px;opacity:.60"></div>
+          <div class="wave-bar" style="height:30px"></div>
+          <div class="wave-bar" style="height:18px;opacity:.75"></div>
+          <div class="wave-bar" style="height:22px;opacity:.80"></div>
+          <div class="wave-bar" style="height:10px;opacity:.55"></div>
+          <div class="wave-bar" style="height:16px;opacity:.70"></div>
+        </div>
+
+        <div class="rec-controls">
+          <div class="ctl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <div class="ctl ctl-stop">
+            <div class="stop-icon"></div>
+          </div>
+          <div class="ctl">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </div>
+        </div>
+
+        <p class="rec-foot">audio sul telefono · solo il testo va al cloud</p>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="state-label">Stato 2 · <span class="accent">recording</span> (overlay)</div>
+  </div>
+
+  <!-- ========== STATE 3: FILLED ========== -->
+  <div class="col">
+    <div class="phone">
+      <div class="inner">
+        <div class="statusbar">
+          <span class="time">9:41</span>
+          <span class="notch"></span>
+          <span class="right">5G &nbsp; 100%</span>
+        </div>
+
+        <div class="day-head">
+          <span class="date">Lun · 18 Mag</span>
+          <span class="action">originale &#8599;</span>
+        </div>
+
+        <h1 class="headline">Giornata di transizione: lavoro avanza, umore vacilla</h1>
+        <p class="snippet">Deck Marco chiuso. Lite con Giulia. Corsa al tramonto rimette in pari.</p>
+
+        <div class="sep"></div>
+
+        <div class="area">
+          <div class="area-label">Lavoro</div>
+          <div class="area-text">Deck per Marco chiuso a meta pomeriggio. Call Sara spostata a giovedi.</div>
+        </div>
+
+        <div class="area">
+          <div class="area-label">Relazioni</div>
+          <div class="area-text">Discussione con Giulia sul weekend. Riappacificato a cena.</div>
+        </div>
+
+        <div class="area">
+          <div class="area-label">Corpo</div>
+          <div class="area-text">8 km al tramonto, fiato buono. Cena leggera.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="val">78,2<span class="unit"> kg</span></div>
+            <div class="lbl">peso</div>
+          </div>
+          <div class="metric">
+            <div class="val">7h 12</div>
+            <div class="lbl">sonno</div>
+          </div>
+          <div class="metric">
+            <div class="val mood">&#128528;</div>
+            <div class="lbl">mood</div>
+          </div>
+        </div>
+
+        <div class="dots">
+          <div class="dot on" title="scopato"></div>
+          <div class="dot on" title="no alcol"></div>
+          <div class="dot on" title="no junkfood"></div>
+          <div class="dot" title="no sbirciato ex"></div>
+          <div class="dot on" title="camminato"></div>
+          <div class="dot on" title="visto sunset"></div>
+        </div>
+
+        <div class="tabbar">
+          <div class="tab on">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Oggi</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Mese</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zM18 14h-8M15 18h-5M10 6h8v4h-8V6z"/></svg>
+            <span>Recap</span>
+          </div>
+          <div class="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span>Remember</span>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+    <div class="state-label">Stato 3 · <span class="accent">filled</span> (entry registrata)</div>
+  </div>
+
+</div>
+
+</body>
+</html>

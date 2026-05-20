@@ -1,43 +1,45 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { TodayClient } from "@/components/today/today-client";
+import { todayISO } from "@/lib/format";
+import type { Entry } from "@/lib/types";
 
 export default async function Home() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
   const cookieStore = await cookies();
   const isDemo = cookieStore.get("journalme-demo")?.value === "1";
 
-  const isAuthed = !!user;
-  const displayName = user?.email?.split("@")[0] ?? "ospite";
-  const headingText = isAuthed ? "Bentornato" : "Modalita demo";
+  const mode: "demo" | "auth" = user ? "auth" : isDemo ? "demo" : "demo";
 
-  return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 relative">
-      {isDemo && !isAuthed && (
-        <div className="absolute top-7 left-0 right-0 text-center text-[10px] font-semibold tracking-[0.2em] uppercase text-accent">
-          App tour
-        </div>
-      )}
-      <h1
-        className="text-[48px] tracking-tight text-ink"
-        style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
-      >
-        {headingText}
-        <span
-          className="text-accent"
-          style={{ textShadow: "0 0 12px rgba(227,161,95,0.55)" }}
-        >
-          .
-        </span>
-      </h1>
-      <p className="mt-5 text-[11px] uppercase tracking-[0.2em] text-ink-faint">
-        Today screen · in costruzione
-      </p>
-      <p className="mt-2 text-xs text-ink-muted">
-        ciao {isAuthed ? displayName : "ospite"}
-      </p>
-    </main>
-  );
+  // For auth mode, try to fetch today's entry server-side so the first paint
+  // is correct (filled view if entry exists, empty otherwise).
+  let initialEntry: Entry | null = null;
+  if (user) {
+    const dateISO = todayISO();
+    const { data } = await supabase
+      .from("entries")
+      .select("id, entry_date, transcript, headline, snippet, created_at")
+      .eq("entry_date", dateISO)
+      .maybeSingle();
+    if (data) {
+      initialEntry = {
+        id: data.id as string,
+        entryDate: data.entry_date as string,
+        transcript: (data.transcript as string) ?? "",
+        durationSeconds: 0,
+        headline: (data.headline as string) ?? null,
+        snippet: (data.snippet as string) ?? null,
+        areas: [],
+        metrics: null,
+        goals: [],
+        createdAt: data.created_at as string,
+      };
+    }
+  }
+
+  return <TodayClient mode={mode} initialEntry={initialEntry} />;
 }
