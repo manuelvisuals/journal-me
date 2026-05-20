@@ -1,10 +1,23 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { formatDurationMmSs } from "@/lib/format";
+import {
+  compactDayDate,
+  formatDurationMmSs,
+  parseISODate,
+  relativeDayLabel,
+  todayISO,
+} from "@/lib/format";
+import { DatePickerPopover } from "@/components/today/date-picker-popover";
 
 type Props = {
-  onStop: (transcript: string, durationSeconds: number) => void;
+  /** Default date for segments without explicit temporal markers (YYYY-MM-DD). */
+  defaultDate?: string;
+  onStop: (
+    transcript: string,
+    durationSeconds: number,
+    targetDate: string,
+  ) => void;
   onCancel: () => void;
 };
 
@@ -18,12 +31,16 @@ type RecState = "connecting" | "recording" | "paused" | "error";
  * The `/api/realtime/session` endpoint relays the SDP handshake so the
  * OPENAI_API_KEY never reaches the browser.
  */
-export function RecordingOverlay({ onStop, onCancel }: Props) {
+export function RecordingOverlay({ defaultDate, onStop, onCancel }: Props) {
   const [transcript, setTranscript] = useState<string>("");
   const [interim, setInterim] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(0);
   const [state, setState] = useState<RecState>("connecting");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [targetDate, setTargetDate] = useState<string>(
+    defaultDate ?? todayISO(),
+  );
+  const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
 
   // Refs to objects that must survive across renders without triggering effects.
   const pcRef = useRef<RTCPeerConnection | null>(null);
@@ -205,7 +222,7 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
     cleanup();
     setState("connecting"); // transient; parent will switch view away
     const finalText = finalRef.current.trim() || interim.trim();
-    onStop(finalText, seconds);
+    onStop(finalText, seconds, targetDate);
   }
 
   function handleCancel() {
@@ -292,6 +309,49 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
           >
             {formatDurationMmSs(seconds)}
           </span>
+        </div>
+
+        {/* Date chip — defaults to today, tap to override */}
+        <div
+          className="flex justify-center"
+          style={{ paddingBottom: 6 }}
+        >
+          <button
+            type="button"
+            className="jm-date-chip"
+            onClick={() => setDatePickerOpen(true)}
+            aria-haspopup="dialog"
+            aria-expanded={datePickerOpen}
+          >
+            <svg
+              className="icn"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+            <span suppressHydrationWarning>
+              <span
+                style={{ color: "var(--color-ink)", fontWeight: 600 }}
+              >
+                {relativeDayLabel(
+                  parseISODate(targetDate),
+                  parseISODate(todayISO()),
+                )}
+              </span>
+              <span style={{ marginLeft: 5, color: "var(--color-ink-faint)" }}>
+                {" . "}
+                {compactDayDate(parseISODate(targetDate))}
+              </span>
+            </span>
+            <span className="chev">&#9662;</span>
+          </button>
         </div>
 
         {/* Body */}
@@ -448,6 +508,17 @@ export function RecordingOverlay({ onStop, onCancel }: Props) {
           audio in streaming a openai . solo il testo viene salvato
         </p>
       </div>
+
+      {/* Date picker popover (sits above transcript) */}
+      <DatePickerPopover
+        open={datePickerOpen}
+        selected={targetDate}
+        onSelect={(iso) => {
+          setTargetDate(iso);
+          setDatePickerOpen(false);
+        }}
+        onClose={() => setDatePickerOpen(false)}
+      />
     </div>
   );
 }

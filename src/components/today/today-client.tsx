@@ -5,10 +5,12 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/components/today/empty-state";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
 import { FilledView } from "@/components/today/filled-view";
-import { formatDayHeader } from "@/lib/format";
+import { TranscriptEditor } from "@/components/today/transcript-editor";
+import { formatDayHeader, todayISO } from "@/lib/format";
 import {
   loadTodayEntry,
-  saveTodayEntry,
+  saveRecording,
+  updateEntryTranscript,
   type DataMode,
 } from "@/lib/data/entries";
 import type { Entry } from "@/lib/types";
@@ -18,12 +20,18 @@ type View = "empty" | "recording" | "processing" | "filled";
 type Props = {
   mode: DataMode;
   initialEntry: Entry | null;
+  /** If true, the recording overlay opens immediately on mount (?record=1). */
+  autoRecord?: boolean;
 };
 
-export function TodayClient({ mode, initialEntry }: Props) {
+export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
-  const [view, setView] = useState<View>(initialEntry ? "filled" : "empty");
+  const [view, setView] = useState<View>(
+    autoRecord ? "recording" : initialEntry ? "filled" : "empty",
+  );
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [editorOpen, setEditorOpen] = useState<boolean>(false);
+  const [savedDates, setSavedDates] = useState<string[]>([]);
 
   // Day header is computed at render time. We pass suppressHydrationWarning
   // on the span so SSR/CSR mismatch (server clock vs client clock) is fine.
@@ -34,7 +42,7 @@ export function TodayClient({ mode, initialEntry }: Props) {
     let cancelled = false;
     if (mode !== "demo" || initialEntry) return;
     loadTodayEntry("demo").then((e) => {
-      if (!cancelled && e) {
+      if (!cancelled && e && view === "empty") {
         setEntry(e);
         setView("filled");
       }
@@ -42,24 +50,40 @@ export function TodayClient({ mode, initialEntry }: Props) {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, initialEntry]);
 
   const handleStartRecording = () => {
     setSaveError(null);
+    setSavedDates([]);
     setView("recording");
   };
 
-  const handleStop = async (transcript: string, durationSeconds: number) => {
+  const handleStop = async (
+    transcript: string,
+    durationSeconds: number,
+    targetDate: string,
+  ) => {
     if (!transcript.trim()) {
-      // Nothing was captured — bail back to empty.
-      setView("empty");
+      // Nothing was captured — bail back to previous view.
+      setView(entry ? "filled" : "empty");
       return;
     }
     setView("processing");
     try {
-      const saved = await saveTodayEntry(mode, { transcript, durationSeconds });
-      setEntry(saved);
-      setView("filled");
+      const saved = await saveRecording(mode, {
+        transcript,
+        durationSeconds,
+        defaultDate: targetDate,
+      });
+      // If any of the saved entries is for today, that's the one we show
+      // in the filled view. Otherwise we keep the previous entry (if any)
+      // and just acknowledge the save happened.
+      const today = todayISO();
+      const todayEntry = saved.find((e) => e.entryDate === today);
+      if (todayEntry) setEntry(todayEntry);
+      setSavedDates(saved.map((e) => e.entryDate));
+      setView(todayEntry || entry ? "filled" : "empty");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
       setView("empty");
@@ -69,6 +93,29 @@ export function TodayClient({ mode, initialEntry }: Props) {
   const handleCancel = () => {
     setView(entry ? "filled" : "empty");
   };
+
+  const handleEditorSave = async (newTranscript: string) => {
+    if (!entry) return;
+    setEditorOpen(false);
+    setView("processing");
+    try {
+      const updated = await updateEntryTranscript(
+        mode,
+        entry.entryDate,
+        newTranscript,
+      );
+      setEntry(updated);
+      setView("filled");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+      setView(entry ? "filled" : "empty");
+    }
+  };
+
+  const multiDayNotice =
+    savedDates.length > 1
+      ? `Salvato su ${savedDates.length} giorni`
+      : null;
 
   return (
     <main
@@ -94,16 +141,24 @@ export function TodayClient({ mode, initialEntry }: Props) {
         </span>
         {view === "filled" && (
           <div className="flex items-center" style={{ gap: 14 }}>
-            <span
+            <button
+              type="button"
+              onClick={() => entry && setEditorOpen(true)}
+              disabled={!entry}
               style={{
                 fontSize: 12,
                 color: "var(--color-accent)",
                 fontWeight: 600,
-                opacity: 0.7,
+                background: "transparent",
+                border: "none",
+                padding: 0,
+                cursor: entry ? "pointer" : "default",
+                opacity: entry ? 1 : 0.5,
+                fontFamily: "inherit",
               }}
             >
               originale &#8599;
-            </span>
+            </button>
             <button
               type="button"
               onClick={handleStartRecording}
@@ -129,6 +184,25 @@ export function TodayClient({ mode, initialEntry }: Props) {
           </div>
         )}
       </header>
+
+      {/* Soft notice after a multi-day save */}
+      {multiDayNotice && view === "filled" && (
+        <div
+          style={{
+            margin: "0 24px 8px",
+            padding: "8px 12px",
+            border: "1px solid rgba(168,201,176,0.30)",
+            borderRadius: 10,
+            background: "rgba(168,201,176,0.06)",
+            color: "var(--color-success)",
+            fontSize: 12,
+            fontWeight: 500,
+            letterSpacing: "0.02em",
+          }}
+        >
+          {multiDayNotice}
+        </div>
+      )}
 
       {/* Body */}
       {view === "empty" && (
@@ -168,7 +242,11 @@ export function TodayClient({ mode, initialEntry }: Props) {
 
       {/* Recording overlay sits above everything */}
       {view === "recording" && (
-        <RecordingOverlay onStop={handleStop} onCancel={handleCancel} />
+        <RecordingOverlay
+          defaultDate={todayISO()}
+          onStop={handleStop}
+          onCancel={handleCancel}
+        />
       )}
 
       {/* Processing overlay (AI summarization in progress) */}
@@ -203,6 +281,15 @@ export function TodayClient({ mode, initialEntry }: Props) {
             sto leggendo quello che hai detto e tiro fuori il succo
           </div>
         </div>
+      )}
+
+      {/* Transcript editor modal */}
+      {editorOpen && entry && (
+        <TranscriptEditor
+          initialTranscript={entry.transcript}
+          onSave={handleEditorSave}
+          onCancel={() => setEditorOpen(false)}
+        />
       )}
     </main>
   );

@@ -6,12 +6,15 @@ import type { AreaSummary, Entry } from "@/lib/types";
 
 export type DataMode = "demo" | "auth";
 
-export type SaveEntryInput = {
+export type RecordingInput = {
   transcript: string;
   durationSeconds: number;
+  /** Default date for segments without explicit temporal markers (YYYY-MM-DD). */
+  defaultDate: string;
 };
 
 const DEMO_KEY_PREFIX = "journalme-entry-";
+const SEGMENT_SEP = "\n---\n";
 
 function demoKey(dateISO: string) {
   return `${DEMO_KEY_PREFIX}${dateISO}`;
@@ -25,63 +28,59 @@ type AIFields = {
   areas: AreaSummary[];
 };
 
-function fallbackAIFields(transcript: string, durationSeconds: number): AIFields {
+type DateSegment = { date: string; text: string };
+
+function fallbackAIFields(transcript: string): AIFields {
   const firstSentence = transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
-  const minutes = Math.max(1, Math.round(durationSeconds / 60));
   return {
-    headline: `Giornata raccontata in ${minutes} minut${minutes === 1 ? "o" : "i"}`,
+    headline: "Giornata raccontata",
     snippet: firstSentence.slice(0, 240),
     areas: [],
   };
 }
 
-async function processTranscript(
+async function callSplitByDate(
   transcript: string,
-  durationSeconds: number,
-): Promise<AIFields> {
+  defaultDate: string,
+): Promise<DateSegment[]> {
+  try {
+    const resp = await fetch("/api/split-by-date", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript, defaultDate }),
+    });
+    if (!resp.ok) return [{ date: defaultDate, text: transcript }];
+    const data = (await resp.json()) as { segments?: DateSegment[] };
+    if (!data.segments || data.segments.length === 0) {
+      return [{ date: defaultDate, text: transcript }];
+    }
+    return data.segments;
+  } catch {
+    return [{ date: defaultDate, text: transcript }];
+  }
+}
+
+async function callProcessEntry(transcript: string): Promise<AIFields> {
   try {
     const resp = await fetch("/api/process-entry", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),
     });
-    if (!resp.ok) {
-      return fallbackAIFields(transcript, durationSeconds);
-    }
+    if (!resp.ok) return fallbackAIFields(transcript);
     const data = (await resp.json()) as Partial<AIFields>;
-    if (!data.headline || !data.snippet) {
-      return fallbackAIFields(transcript, durationSeconds);
-    }
+    if (!data.headline || !data.snippet) return fallbackAIFields(transcript);
     return {
       headline: data.headline,
       snippet: data.snippet,
       areas: Array.isArray(data.areas) ? data.areas : [],
     };
   } catch {
-    return fallbackAIFields(transcript, durationSeconds);
+    return fallbackAIFields(transcript);
   }
 }
 
 /* ----------------- Demo (localStorage) ----------------- */
-
-function buildDemoEntry(
-  input: SaveEntryInput,
-  ai: AIFields,
-  dateISO: string,
-): Entry {
-  return {
-    id: `demo-${dateISO}`,
-    entryDate: dateISO,
-    transcript: input.transcript,
-    durationSeconds: input.durationSeconds,
-    headline: ai.headline,
-    snippet: ai.snippet,
-    areas: ai.areas,
-    metrics: null,
-    goals: [],
-    createdAt: new Date().toISOString(),
-  };
-}
 
 async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
   if (typeof window === "undefined") return null;
@@ -89,7 +88,6 @@ async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
     const raw = window.localStorage.getItem(demoKey(dateISO));
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Entry;
-    // Backfill areas for entries persisted before the AI integration.
     if (!Array.isArray(parsed.areas)) parsed.areas = [];
     return parsed;
   } catch {
@@ -98,11 +96,23 @@ async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
 }
 
 async function saveDemoEntry(
-  input: SaveEntryInput,
-  ai: AIFields,
   dateISO: string,
+  transcript: string,
+  ai: AIFields,
+  durationSeconds: number,
 ): Promise<Entry> {
-  const entry = buildDemoEntry(input, ai, dateISO);
+  const entry: Entry = {
+    id: `demo-${dateISO}`,
+    entryDate: dateISO,
+    transcript,
+    durationSeconds,
+    headline: ai.headline,
+    snippet: ai.snippet,
+    areas: ai.areas,
+    metrics: null,
+    goals: [],
+    createdAt: new Date().toISOString(),
+  };
   if (typeof window !== "undefined") {
     window.localStorage.setItem(demoKey(dateISO), JSON.stringify(entry));
   }
@@ -136,9 +146,10 @@ async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
 }
 
 async function saveAuthEntry(
-  input: SaveEntryInput,
-  ai: AIFields,
   dateISO: string,
+  transcript: string,
+  ai: AIFields,
+  durationSeconds: number,
 ): Promise<Entry> {
   const supabase = createClient();
   const {
@@ -152,7 +163,7 @@ async function saveAuthEntry(
       {
         user_id: user.id,
         entry_date: dateISO,
-        transcript: input.transcript,
+        transcript,
         headline: ai.headline,
         snippet: ai.snippet,
         areas: ai.areas,
@@ -169,8 +180,8 @@ async function saveAuthEntry(
   return {
     id: data.id as string,
     entryDate: dateISO,
-    transcript: input.transcript,
-    durationSeconds: input.durationSeconds,
+    transcript,
+    durationSeconds,
     headline: ai.headline,
     snippet: ai.snippet,
     areas: ai.areas,
@@ -197,19 +208,60 @@ function parseAreasJson(raw: unknown): AreaSummary[] {
 /* ----------------- Public API ----------------- */
 
 export async function loadTodayEntry(mode: DataMode): Promise<Entry | null> {
-  const dateISO = todayISO();
+  return loadEntryForDate(mode, todayISO());
+}
+
+export async function loadEntryForDate(
+  mode: DataMode,
+  dateISO: string,
+): Promise<Entry | null> {
   return mode === "demo" ? loadDemoEntry(dateISO) : loadAuthEntry(dateISO);
 }
 
-export async function saveTodayEntry(
+/**
+ * Save a recording. Default behavior: append to the entry of `defaultDate`
+ * (the chip-selected target), regenerate AI summary on the full transcript.
+ * If the AI detects relative date markers (ieri, stamattina, ...), the
+ * transcript is split and dispatched silently to multiple days.
+ */
+export async function saveRecording(
   mode: DataMode,
-  input: SaveEntryInput,
+  input: RecordingInput,
+): Promise<Entry[]> {
+  const segments = await callSplitByDate(input.transcript, input.defaultDate);
+  const saved: Entry[] = [];
+
+  // Process in series so that two segments on the same date don't race.
+  for (const seg of segments) {
+    const existing = await loadEntryForDate(mode, seg.date);
+    const fullTranscript = existing?.transcript
+      ? existing.transcript + SEGMENT_SEP + seg.text.trim()
+      : seg.text.trim();
+    const ai = await callProcessEntry(fullTranscript);
+    const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
+    const entry =
+      mode === "demo"
+        ? await saveDemoEntry(seg.date, fullTranscript, ai, dur)
+        : await saveAuthEntry(seg.date, fullTranscript, ai, dur);
+    saved.push(entry);
+  }
+
+  return saved;
+}
+
+/**
+ * Re-process an already-saved entry after the user manually edits its
+ * transcript (transcript editor flow). Replaces — does NOT append.
+ */
+export async function updateEntryTranscript(
+  mode: DataMode,
+  dateISO: string,
+  newTranscript: string,
 ): Promise<Entry> {
-  const dateISO = todayISO();
-  const ai = await processTranscript(input.transcript, input.durationSeconds);
+  const ai = await callProcessEntry(newTranscript);
   return mode === "demo"
-    ? saveDemoEntry(input, ai, dateISO)
-    : saveAuthEntry(input, ai, dateISO);
+    ? saveDemoEntry(dateISO, newTranscript, ai, 0)
+    : saveAuthEntry(dateISO, newTranscript, ai, 0);
 }
 
 /* ----------------- Month range loader ----------------- */

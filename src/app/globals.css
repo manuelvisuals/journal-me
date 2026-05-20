@@ -271,6 +271,224 @@ body > * {
   border-radius: 4px;
 }
 
+/* Tab bar central mic (premium iOS-like, always reachable) */
+.jm-mic-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #1A0E0F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 241, 221, 0.34);
+  box-shadow:
+    0 0 22px rgba(227, 161, 95, 0.40),
+    0 8px 18px rgba(0, 0, 0, 0.50),
+    inset 0 1px 1px rgba(255, 255, 255, 0.40);
+  transition:
+    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-mic-circle:active {
+  transform: scale(0.94);
+  background: var(--color-accent-pressed);
+}
+
+/* Date chip used in the recording overlay header */
+.jm-date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  padding: 7px 14px 7px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  font-family: var(--font-sans);
+}
+.jm-date-chip:active {
+  background: var(--color-surface-2);
+  border-color: rgba(227, 161, 95, 0.30);
+}
+.jm-date-chip .icn {
+  width: 14px;
+  height: 14px;
+  color: var(--color-accent);
+}
+.jm-date-chip .v {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.jm-date-chip .chev {
+  font-size: 9px;
+  color: var(--color-ink-faint);
+  margin-left: 2px;
+}
+
+/* Date picker popover (inside recording overlay) */
+.jm-date-pop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 5, 7, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 90px;
+}
+.jm-date-pop-card {
+  width: min(320px, calc(100vw - 32px));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: 10px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+}
+.jm-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-date-row:hover {
+  background: var(--color-surface-2);
+}
+.jm-date-row.selected {
+  background: rgba(227, 161, 95, 0.10);
+}
+.jm-date-row .pr-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: left;
+}
+.jm-date-row.selected .pr-label {
+  color: var(--color-accent-hi);
+  font-weight: 600;
+}
+.jm-date-row .pr-meta {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.jm-date-row.dim .pr-label {
+  color: var(--color-ink-muted);
+}
+.jm-date-divider {
+  height: 1px;
+  background: var(--color-line);
+  margin: 6px 14px;
+}
+.jm-date-row.other .pr-label {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Transcript editor modal */
+.jm-editor-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 5, 7, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 70;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.jm-editor-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--color-bg-phone);
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+.jm-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-editor-title {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+.jm-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+.jm-editor-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-editor-btn.cancel {
+  color: var(--color-ink-muted);
+}
+.jm-editor-btn.save {
+  color: #1A0E0F;
+  background: var(--color-accent);
+}
+.jm-editor-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.jm-editor-textarea {
+  flex: 1;
+  background: transparent;
+  color: var(--color-ink);
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 18px 20px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  width: 100%;
+}
+.jm-editor-hint {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 8px 20px 14px;
+  border-top: 1px solid var(--color-line);
+  text-align: center;
+}
+
 /* Re-record button shown in the filled-view header */
 .jm-rerecord-btn {
   width: 36px;

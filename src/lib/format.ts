@@ -115,3 +115,44 @@ export function formatSleep(hours: number): string {
   const m = Math.round((hours - h) * 60);
   return `${h}h ${String(m).padStart(2, "0")}`;
 }
+
+/** Parse "YYYY-MM-DD" into a Date at local midday (timezone-safe for display). */
+export function parseISODate(iso: string): Date {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1, 12, 0, 0, 0);
+}
+
+/** Compact display "Mer . 20 Mag" for a Date. */
+export function compactDayDate(d: Date): string {
+  const wd = new Intl.DateTimeFormat(LOCALE, { weekday: "short" })
+    .format(d)
+    .replace(/\.$/, "");
+  const day = d.getDate();
+  const month = new Intl.DateTimeFormat(LOCALE, { month: "short" })
+    .format(d)
+    .replace(/\.$/, "");
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  return `${cap(wd)} ${day} ${cap(month)}`;
+}
+
+/** Italian full weekday name, capitalized: "Lunedi". */
+export function fullWeekday(d: Date): string {
+  const w = new Intl.DateTimeFormat(LOCALE, { weekday: "long" }).format(d);
+  return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+}
+
+/**
+ * Relative label for a date vs today:
+ *   target === today           -> "Oggi"
+ *   target === today - 1 day   -> "Ieri"
+ *   else within last 6 days    -> full weekday name ("Lunedi")
+ *   else                       -> compactDayDate fallback
+ */
+export function relativeDayLabel(target: Date, today: Date): string {
+  const ms = today.setHours(12, 0, 0, 0) - new Date(target).setHours(12, 0, 0, 0);
+  const days = Math.round(ms / (24 * 60 * 60 * 1000));
+  if (days === 0) return "Oggi";
+  if (days === 1) return "Ieri";
+  if (days >= 2 && days <= 6) return fullWeekday(target);
+  return compactDayDate(target);
+}
