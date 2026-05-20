@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { RecapClient } from "@/components/recap/recap-client";
 import type { Recap, RecapPeriod } from "@/lib/types";
@@ -8,11 +7,6 @@ export default async function RecapPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const cookieStore = await cookies();
-  const isDemo = cookieStore.get("journalme-demo")?.value === "1";
-
-  const mode: "demo" | "auth" = user ? "auth" : isDemo ? "demo" : "demo";
 
   let initialRecaps: Recap[] = [];
   if (user) {
@@ -36,5 +30,5 @@ export default async function RecapPage() {
     }
   }
 
-  return <RecapClient mode={mode} initialRecaps={initialRecaps} />;
+  return <RecapClient mode="auth" initialRecaps={initialRecaps} />;
 }

@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { RecapDetail } from "@/components/recap/recap-detail";
 import {
   generateAndSaveRecap,
-  loadRecaps,
   monthBoundaries,
 } from "@/lib/data/recaps";
 import type { DataMode } from "@/lib/data/entries";
@@ -35,16 +34,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   // For demo mode hydrate from localStorage on mount.
-  useEffect(() => {
-    if (mode !== "demo") return;
-    let cancelled = false;
-    loadRecaps("demo").then((rs) => {
-      if (!cancelled && rs.length > 0) setRecaps(rs);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [mode]);
+  // initialRecaps is always populated server-side now.
 
   const filtered = recaps.filter((r) => r.periodType === period);
 

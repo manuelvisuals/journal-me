@@ -154,7 +154,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
           "Content-Type": "application/sdp",
         };
         try {
-          const terms = await loadGlossary(mode ?? "demo");
+          const terms = await loadGlossary(mode ?? "auth");
           if (terms.length > 0) {
             headers["X-JM-Glossary"] = encodeURIComponent(terms.join(","));
           }

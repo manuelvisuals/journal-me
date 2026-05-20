@@ -12,7 +12,6 @@ import { ReviewScreen } from "@/components/today/review-screen";
 import { formatDayHeader, todayISO } from "@/lib/format";
 import {
   deleteEntry,
-  loadTodayEntry,
   saveRecording,
   toggleGoal,
   updateEntryTranscript,
@@ -71,21 +70,8 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
   // on the span so SSR/CSR mismatch (server clock vs client clock) is fine.
   const dayHeader = formatDayHeader(new Date());
 
-  // For demo mode, the server has no localStorage — check it on mount.
-  useEffect(() => {
-    let cancelled = false;
-    if (mode !== "demo" || initialEntry) return;
-    loadTodayEntry("demo").then((e) => {
-      if (!cancelled && e && view === "empty") {
-        setEntry(e);
-        setView("filled");
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, initialEntry]);
+  // initialEntry is always populated by the server now (everything lives in
+  // Supabase). Keeping a no-op effect placeholder for future hydration needs.
 
   const handleStartRecording = () => {
     setSaveError(null);

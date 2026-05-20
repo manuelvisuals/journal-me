@@ -42,30 +42,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
-  // Demo mode: server can't pre-fetch from localStorage, so hydrate on mount.
-  useEffect(() => {
-    if (mode !== "demo") return;
-    let cancelled = false;
-    loadMonthEntries("demo", initialMonth.year, initialMonth.month).then(
-      (entries) => {
-        if (cancelled || entries.length === 0) return;
-        setLoaded((prev) => {
-          const head = prev[0];
-          if (
-            head &&
-            head.year === initialMonth.year &&
-            head.month === initialMonth.month
-          ) {
-            return [{ ...head, entries }, ...prev.slice(1)];
-          }
-          return prev;
-        });
-      },
-    );
-    return () => {
-      cancelled = true;
-    };
-  }, [mode, initialMonth.year, initialMonth.month]);
+  // initialMonth.entries is always populated server-side now.
 
   const loadOlder = useCallback(async () => {
     if (loadingMore) return;

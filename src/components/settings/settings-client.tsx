@@ -1,35 +1,28 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { GlossarySection } from "@/components/settings/glossary-section";
 import { createClient } from "@/lib/supabase/client";
-import { loadGlossary } from "@/lib/data/glossary";
 import type { DataMode } from "@/lib/data/entries";
 
 type Props = {
   mode: DataMode;
   email: string | null;
+  isAnonymous: boolean;
   initialGlossary: string[];
 };
 
-export function SettingsClient({ mode, email, initialGlossary }: Props) {
+export function SettingsClient({
+  mode,
+  email,
+  isAnonymous,
+  initialGlossary,
+}: Props) {
   const router = useRouter();
   const [glossary, setGlossary] = useState<string[]>(initialGlossary);
   const [signingOut, setSigningOut] = useState<boolean>(false);
-
-  // For demo mode, the server can't pre-fetch from localStorage; hydrate on mount.
-  useEffect(() => {
-    if (mode !== "demo") return;
-    let cancelled = false;
-    loadGlossary("demo").then((terms) => {
-      if (!cancelled && terms.length > 0) setGlossary(terms);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [mode]);
 
   const handleBack = () => {
     router.back();
@@ -38,11 +31,9 @@ export function SettingsClient({ mode, email, initialGlossary }: Props) {
   const handleLogout = async () => {
     if (signingOut) return;
     setSigningOut(true);
-    if (mode === "auth") {
-      const supabase = createClient();
-      await supabase.auth.signOut();
-    }
-    // Always clear the demo cookie too (best-effort)
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    // Legacy demo cookie cleanup, just in case.
     document.cookie =
       "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     router.push("/login");
@@ -91,10 +82,10 @@ export function SettingsClient({ mode, email, initialGlossary }: Props) {
               <span className="v">{email}</span>
             </div>
           )}
-          {mode === "demo" && (
+          {isAnonymous && (
             <div className="jm-set-row">
-              <span className="lbl">Modalita</span>
-              <span className="v">Demo (app tour)</span>
+              <span className="lbl">Account</span>
+              <span className="v">Ospite (cloud)</span>
             </div>
           )}
           <button
@@ -120,7 +111,7 @@ export function SettingsClient({ mode, email, initialGlossary }: Props) {
           <div className="jm-set-section-h">Info</div>
           <div className="jm-set-row">
             <span className="lbl">Versione</span>
-            <span className="v">0.4.0</span>
+            <span className="v">0.5.0</span>
           </div>
         </section>
       </div>

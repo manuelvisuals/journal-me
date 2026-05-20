@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { QuickCapture } from "@/components/remember/quick-capture";
 import { RememberItem } from "@/components/remember/remember-item";
-import { addRemember, deleteRemember, loadRemembers } from "@/lib/data/remembers";
+import { addRemember, deleteRemember } from "@/lib/data/remembers";
 import type { DataMode } from "@/lib/data/entries";
 import type { Remember, RememberKind } from "@/lib/types";
 
@@ -31,16 +31,7 @@ export function RememberClient({ mode, initial }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   // Demo: hydrate from localStorage
-  useEffect(() => {
-    if (mode !== "demo") return;
-    let cancelled = false;
-    loadRemembers("demo").then((rs) => {
-      if (!cancelled && rs.length > 0) setItems(rs);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [mode]);
+  // initial is always populated server-side now.
 
   const visible =
     filter === "all" ? items : items.filter((r) => r.kind === filter);

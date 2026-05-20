@@ -30,7 +30,6 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
-  const isDemo = request.cookies.get("journalme-demo")?.value === "1";
   const isAuthed = user !== null;
 
   const isPublicRoute =
@@ -38,13 +37,13 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/auth") ||
     pathname.startsWith("/api/demo");
 
-  if (!isAuthed && !isDemo && !isPublicRoute) {
+  if (!isAuthed && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
-  if ((isAuthed || isDemo) && pathname === "/login") {
+  if (isAuthed && pathname === "/login") {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);

@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { SettingsClient } from "@/components/settings/settings-client";
 
@@ -7,11 +6,6 @@ export default async function SettingsPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const cookieStore = await cookies();
-  const isDemo = cookieStore.get("journalme-demo")?.value === "1";
-
-  const mode: "demo" | "auth" = user ? "auth" : isDemo ? "demo" : "demo";
 
   let initialGlossary: string[] = [];
   if (user) {
@@ -27,10 +21,14 @@ export default async function SettingsPage() {
     }
   }
 
+  // Anonymous Supabase users have no email; we treat that as a special label.
+  const isAnonymous = !!user && !user.email;
+
   return (
     <SettingsClient
-      mode={mode}
+      mode="auth"
       email={user?.email ?? null}
+      isAnonymous={isAnonymous}
       initialGlossary={initialGlossary}
     />
   );

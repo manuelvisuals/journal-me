@@ -5,36 +5,7 @@ import type { DataMode } from "@/lib/data/entries";
 import { loadMonthEntries } from "@/lib/data/entries";
 import type { Entry, Recap, RecapPeriod } from "@/lib/types";
 
-const DEMO_KEY = "journalme-recaps";
-
-function parseRecaps(raw: unknown): Recap[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter(
-    (r): r is Recap =>
-      typeof r === "object" &&
-      r !== null &&
-      typeof (r as { id?: unknown }).id === "string" &&
-      typeof (r as { title?: unknown }).title === "string",
-  );
-}
-
-async function loadDemo(): Promise<Recap[]> {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(DEMO_KEY);
-    if (!raw) return [];
-    return parseRecaps(JSON.parse(raw));
-  } catch {
-    return [];
-  }
-}
-
-async function saveDemo(recaps: Recap[]): Promise<void> {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(DEMO_KEY, JSON.stringify(recaps));
-}
-
-async function loadAuth(): Promise<Recap[]> {
+export async function loadRecaps(_mode: DataMode): Promise<Recap[]> {
   const supabase = createClient();
   const { data } = await supabase
     .from("recaps")
@@ -55,40 +26,11 @@ async function loadAuth(): Promise<Recap[]> {
   }));
 }
 
-export async function loadRecaps(mode: DataMode): Promise<Recap[]> {
-  return mode === "demo" ? loadDemo() : loadAuth();
-}
-
-/**
- * Update an existing recap. Patch any combination of title / snippet / body.
- */
 export async function updateRecap(
-  mode: DataMode,
+  _mode: DataMode,
   id: string,
   patch: { title?: string; snippet?: string; body?: string },
 ): Promise<Recap> {
-  if (mode === "demo") {
-    const list = await loadDemo();
-    const idx = list.findIndex((r) => r.id === id);
-    if (idx < 0) throw new Error("Recap not found");
-    const updated: Recap = {
-      ...list[idx],
-      ...("title" in patch && patch.title !== undefined
-        ? { title: patch.title }
-        : {}),
-      ...("snippet" in patch && patch.snippet !== undefined
-        ? { snippet: patch.snippet }
-        : {}),
-      ...("body" in patch && patch.body !== undefined
-        ? { body: patch.body }
-        : {}),
-    };
-    const next = [...list];
-    next[idx] = updated;
-    await saveDemo(next);
-    return updated;
-  }
-
   const supabase = createClient();
   const dbPatch: Record<string, unknown> = {};
   if (patch.title !== undefined) dbPatch.title = patch.title;
@@ -133,13 +75,10 @@ async function loadEntriesForPeriod(
   periodType: RecapPeriod,
   periodStart: string,
 ): Promise<Entry[]> {
-  // For MVP, only monthly is implemented end-to-end. Semester/year
-  // would aggregate across months.
   if (periodType === "month") {
     const [y, m] = periodStart.split("-").map(Number);
     return loadMonthEntries(mode, y, m);
   }
-  // Semester: 6 months including start. Year: 12 months.
   const [y, m] = periodStart.split("-").map(Number);
   const months = periodType === "semester" ? 6 : 12;
   const out: Entry[] = [];
@@ -189,29 +128,6 @@ export async function generateAndSaveRecap(
     body: string;
   };
 
-  const recap: Recap = {
-    id:
-      mode === "demo"
-        ? `demo-${periodType}-${periodStart}`
-        : crypto.randomUUID(),
-    periodType,
-    periodStart,
-    periodEnd,
-    title: ai.title,
-    snippet: ai.snippet,
-    body: ai.body,
-    generatedAt: new Date().toISOString(),
-  };
-
-  if (mode === "demo") {
-    const all = await loadDemo();
-    const without = all.filter(
-      (r) => !(r.periodType === periodType && r.periodStart === periodStart),
-    );
-    await saveDemo([recap, ...without]);
-    return recap;
-  }
-
   const supabase = createClient();
   const {
     data: { user },
@@ -238,8 +154,13 @@ export async function generateAndSaveRecap(
   if (error || !data) throw new Error(error?.message ?? "DB error");
 
   return {
-    ...recap,
     id: data.id as string,
+    periodType,
+    periodStart,
+    periodEnd,
+    title: ai.title,
+    snippet: ai.snippet,
+    body: ai.body,
     generatedAt: data.generated_at as string,
   };
 }

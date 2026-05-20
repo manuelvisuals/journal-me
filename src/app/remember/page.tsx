@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { RememberClient } from "@/components/remember/remember-client";
 import type { Remember, RememberKind, RememberSource } from "@/lib/types";
@@ -17,11 +16,6 @@ export default async function RememberPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const cookieStore = await cookies();
-  const isDemo = cookieStore.get("journalme-demo")?.value === "1";
-
-  const mode: "demo" | "auth" = user ? "auth" : isDemo ? "demo" : "demo";
 
   let initial: Remember[] = [];
   if (user) {
@@ -46,5 +40,5 @@ export default async function RememberPage() {
     }
   }
 
-  return <RememberClient mode={mode} initial={initial} />;
+  return <RememberClient mode="auth" initial={initial} />;
 }

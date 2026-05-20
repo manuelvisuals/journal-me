@@ -10,8 +10,14 @@ import type {
   Mood,
 } from "@/lib/types";
 
-/** Manuel's 6 default micro-goals, in order. Seeded server-side via trigger
- *  for new auth users; hardcoded here as the canonical client-side list. */
+/**
+ * After the move to Supabase Anonymous Auth, every user has a real
+ * user_id (regular or anon). DataMode is kept as a type alias for
+ * call-site compatibility but always equals "auth" in practice — there
+ * is no longer a localStorage path.
+ */
+export type DataMode = "auth";
+
 export const DEFAULT_GOAL_LABELS = [
   "scopato",
   "no alcol",
@@ -21,8 +27,6 @@ export const DEFAULT_GOAL_LABELS = [
   "visto sunset",
 ] as const;
 
-export type DataMode = "demo" | "auth";
-
 export type RecordingInput = {
   transcript: string;
   durationSeconds: number;
@@ -30,12 +34,7 @@ export type RecordingInput = {
   defaultDate: string;
 };
 
-const DEMO_KEY_PREFIX = "journalme-entry-";
 const SEGMENT_SEP = "\n---\n";
-
-function demoKey(dateISO: string) {
-  return `${DEMO_KEY_PREFIX}${dateISO}`;
-}
 
 /* ----------------- AI processing ----------------- */
 
@@ -97,131 +96,7 @@ async function callProcessEntry(transcript: string): Promise<AIFields> {
   }
 }
 
-/* ----------------- Demo (localStorage) ----------------- */
-
-async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(demoKey(dateISO));
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Entry;
-    if (!Array.isArray(parsed.areas)) parsed.areas = [];
-    if (!parsed.metrics) {
-      parsed.metrics = { weightKg: null, sleepHours: null, mood: null };
-    }
-    if (!Array.isArray(parsed.goals) || parsed.goals.length !== DEFAULT_GOAL_LABELS.length) {
-      const onLabels = Array.isArray(parsed.goals)
-        ? parsed.goals.filter((g) => g.on).map((g) => g.label)
-        : [];
-      parsed.goals = buildGoals(onLabels);
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-}
-
-async function saveDemoEntry(
-  dateISO: string,
-  transcript: string,
-  ai: AIFields,
-  durationSeconds: number,
-): Promise<Entry> {
-  // Preserve metrics + goals if an entry already exists for this date.
-  const existing = await loadDemoEntry(dateISO);
-  const entry: Entry = {
-    id: existing?.id ?? `demo-${dateISO}`,
-    entryDate: dateISO,
-    transcript,
-    durationSeconds,
-    headline: ai.headline,
-    snippet: ai.snippet,
-    areas: ai.areas,
-    metrics: existing?.metrics ?? {
-      weightKg: null,
-      sleepHours: null,
-      mood: null,
-    },
-    goals: existing?.goals ?? buildGoals([]),
-    createdAt: existing?.createdAt ?? new Date().toISOString(),
-  };
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(demoKey(dateISO), JSON.stringify(entry));
-  }
-  return entry;
-}
-
-/* ----------------- Auth (Supabase) ----------------- */
-
-async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("entries")
-    .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
-    )
-    .eq("entry_date", dateISO)
-    .maybeSingle();
-  if (error || !data) return null;
-  return {
-    id: data.id as string,
-    entryDate: data.entry_date as string,
-    transcript: (data.transcript as string) ?? "",
-    durationSeconds: 0,
-    headline: (data.headline as string) ?? null,
-    snippet: (data.snippet as string) ?? null,
-    areas: parseAreasJson(data.areas),
-    metrics: buildMetrics(data.weight_kg, data.sleep_hours, data.mood),
-    goals: buildGoals(parseStringArray(data.goals_on)),
-    createdAt: data.created_at as string,
-  };
-}
-
-async function saveAuthEntry(
-  dateISO: string,
-  transcript: string,
-  ai: AIFields,
-  durationSeconds: number,
-): Promise<Entry> {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  const { data, error } = await supabase
-    .from("entries")
-    .upsert(
-      {
-        user_id: user.id,
-        entry_date: dateISO,
-        transcript,
-        headline: ai.headline,
-        snippet: ai.snippet,
-        areas: ai.areas,
-      },
-      { onConflict: "user_id,entry_date" },
-    )
-    .select("id, created_at")
-    .single();
-
-  if (error || !data) {
-    throw new Error(error?.message ?? "Failed to save entry");
-  }
-
-  return {
-    id: data.id as string,
-    entryDate: dateISO,
-    transcript,
-    durationSeconds,
-    headline: ai.headline,
-    snippet: ai.snippet,
-    areas: ai.areas,
-    metrics: null,
-    goals: [],
-    createdAt: data.created_at as string,
-  };
-}
+/* ----------------- Shared helpers ----------------- */
 
 function parseAreasJson(raw: unknown): AreaSummary[] {
   if (!raw) return [];
@@ -276,73 +151,163 @@ function buildMetrics(
   };
 }
 
+function blankMetrics(): EntryMetrics {
+  return { weightKg: null, sleepHours: null, mood: null };
+}
+
+function blankEntryShell(dateISO: string): Entry {
+  return {
+    id: `pending-${dateISO}`,
+    entryDate: dateISO,
+    transcript: "",
+    durationSeconds: 0,
+    headline: null,
+    snippet: null,
+    areas: [],
+    metrics: blankMetrics(),
+    goals: buildGoals([]),
+    createdAt: new Date().toISOString(),
+  };
+}
+
+/* ----------------- Load ----------------- */
+
+async function loadEntryRow(dateISO: string): Promise<Entry | null> {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("entries")
+    .select(
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
+    )
+    .eq("entry_date", dateISO)
+    .maybeSingle();
+  if (error || !data) return null;
+  return {
+    id: data.id as string,
+    entryDate: data.entry_date as string,
+    transcript: (data.transcript as string) ?? "",
+    durationSeconds: 0,
+    headline: (data.headline as string) ?? null,
+    snippet: (data.snippet as string) ?? null,
+    areas: parseAreasJson(data.areas),
+    metrics: buildMetrics(data.weight_kg, data.sleep_hours, data.mood),
+    goals: buildGoals(parseStringArray(data.goals_on)),
+    createdAt: data.created_at as string,
+  };
+}
+
+/* ----------------- Save (recording) ----------------- */
+
+async function saveEntryRow(
+  dateISO: string,
+  transcript: string,
+  ai: AIFields,
+  durationSeconds: number,
+): Promise<Entry> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data, error } = await supabase
+    .from("entries")
+    .upsert(
+      {
+        user_id: user.id,
+        entry_date: dateISO,
+        transcript,
+        headline: ai.headline,
+        snippet: ai.snippet,
+        areas: ai.areas,
+      },
+      { onConflict: "user_id,entry_date" },
+    )
+    .select("id, created_at")
+    .single();
+
+  if (error || !data) {
+    throw new Error(error?.message ?? "Failed to save entry");
+  }
+
+  return {
+    id: data.id as string,
+    entryDate: dateISO,
+    transcript,
+    durationSeconds,
+    headline: ai.headline,
+    snippet: ai.snippet,
+    areas: ai.areas,
+    metrics: null,
+    goals: [],
+    createdAt: data.created_at as string,
+  };
+}
+
 /* ----------------- Public API ----------------- */
 
-export async function loadTodayEntry(mode: DataMode): Promise<Entry | null> {
-  return loadEntryForDate(mode, todayISO());
+export async function loadTodayEntry(_mode?: DataMode): Promise<Entry | null> {
+  return loadEntryRow(todayISO());
 }
 
 export async function loadEntryForDate(
-  mode: DataMode,
+  _mode: DataMode,
   dateISO: string,
 ): Promise<Entry | null> {
-  return mode === "demo" ? loadDemoEntry(dateISO) : loadAuthEntry(dateISO);
+  return loadEntryRow(dateISO);
 }
 
-/**
- * Save a recording. Default behavior: append to the entry of `defaultDate`
- * (the chip-selected target), regenerate AI summary on the full transcript.
- * If the AI detects relative date markers (ieri, stamattina, ...), the
- * transcript is split and dispatched silently to multiple days.
- */
 export async function saveRecording(
-  mode: DataMode,
+  _mode: DataMode,
   input: RecordingInput,
 ): Promise<Entry[]> {
   const segments = await callSplitByDate(input.transcript, input.defaultDate);
   const saved: Entry[] = [];
 
-  // Process in series so that two segments on the same date don't race.
   for (const seg of segments) {
-    const existing = await loadEntryForDate(mode, seg.date);
+    const existing = await loadEntryRow(seg.date);
     const fullTranscript = existing?.transcript
       ? existing.transcript + SEGMENT_SEP + seg.text.trim()
       : seg.text.trim();
     const ai = await callProcessEntry(fullTranscript);
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
-    const entry =
-      mode === "demo"
-        ? await saveDemoEntry(seg.date, fullTranscript, ai, dur)
-        : await saveAuthEntry(seg.date, fullTranscript, ai, dur);
-    saved.push(entry);
+    saved.push(await saveEntryRow(seg.date, fullTranscript, ai, dur));
   }
 
   return saved;
 }
 
-/**
- * Update one or more metric fields for a date. If no entry exists for that
- * date yet, an empty one is created.
- */
+export async function updateEntryTranscript(
+  _mode: DataMode,
+  dateISO: string,
+  newTranscript: string,
+): Promise<Entry> {
+  const ai = await callProcessEntry(newTranscript);
+  return saveEntryRow(dateISO, newTranscript, ai, 0);
+}
+
+export async function deleteEntry(
+  _mode: DataMode,
+  dateISO: string,
+): Promise<void> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  const { error } = await supabase
+    .from("entries")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("entry_date", dateISO);
+  if (error) throw new Error(error.message);
+}
+
 export async function updateMetric(
-  mode: DataMode,
+  _mode: DataMode,
   dateISO: string,
   patch: Partial<EntryMetrics>,
 ): Promise<Entry> {
-  if (mode === "demo") {
-    if (typeof window === "undefined") {
-      throw new Error("Cannot update metric on the server");
-    }
-    const existing = (await loadDemoEntry(dateISO)) ?? blankDemoEntry(dateISO);
-    const merged: Entry = {
-      ...existing,
-      metrics: { ...(existing.metrics ?? blankMetrics()), ...patch },
-    };
-    window.localStorage.setItem(demoKey(dateISO), JSON.stringify(merged));
-    return merged;
-  }
-
-  // Auth: upsert only the metric columns.
   const supabase = createClient();
   const {
     data: { user },
@@ -368,32 +333,14 @@ export async function updateMetric(
     );
   if (error) throw new Error(error.message);
 
-  const refreshed = await loadAuthEntry(dateISO);
-  return refreshed ?? blankEntryShell(dateISO);
+  return (await loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
 }
 
-/**
- * Toggle a goal (by label) for a given date.
- */
 export async function toggleGoal(
-  mode: DataMode,
+  _mode: DataMode,
   dateISO: string,
   label: string,
 ): Promise<Entry> {
-  if (mode === "demo") {
-    if (typeof window === "undefined") {
-      throw new Error("Cannot toggle goal on the server");
-    }
-    const existing = (await loadDemoEntry(dateISO)) ?? blankDemoEntry(dateISO);
-    const goals = existing.goals.map((g) =>
-      g.label.toLowerCase() === label.toLowerCase() ? { ...g, on: !g.on } : g,
-    );
-    const merged: Entry = { ...existing, goals };
-    window.localStorage.setItem(demoKey(dateISO), JSON.stringify(merged));
-    return merged;
-  }
-
-  // Auth: read goals_on, flip, write back.
   const supabase = createClient();
   const {
     data: { user },
@@ -421,83 +368,7 @@ export async function toggleGoal(
     );
   if (error) throw new Error(error.message);
 
-  const refreshed = await loadAuthEntry(dateISO);
-  return refreshed ?? blankEntryShell(dateISO);
-}
-
-function blankMetrics(): EntryMetrics {
-  return { weightKg: null, sleepHours: null, mood: null };
-}
-
-function blankDemoEntry(dateISO: string): Entry {
-  return {
-    id: `demo-${dateISO}`,
-    entryDate: dateISO,
-    transcript: "",
-    durationSeconds: 0,
-    headline: null,
-    snippet: null,
-    areas: [],
-    metrics: blankMetrics(),
-    goals: buildGoals([]),
-    createdAt: new Date().toISOString(),
-  };
-}
-
-function blankEntryShell(dateISO: string): Entry {
-  return {
-    id: `pending-${dateISO}`,
-    entryDate: dateISO,
-    transcript: "",
-    durationSeconds: 0,
-    headline: null,
-    snippet: null,
-    areas: [],
-    metrics: blankMetrics(),
-    goals: buildGoals([]),
-    createdAt: new Date().toISOString(),
-  };
-}
-
-/**
- * Permanently delete an entry for a given date.
- * Demo: remove the localStorage key. Auth: delete the row from Supabase.
- */
-export async function deleteEntry(
-  mode: DataMode,
-  dateISO: string,
-): Promise<void> {
-  if (mode === "demo") {
-    if (typeof window === "undefined") return;
-    window.localStorage.removeItem(demoKey(dateISO));
-    return;
-  }
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-  const { error } = await supabase
-    .from("entries")
-    .delete()
-    .eq("user_id", user.id)
-    .eq("entry_date", dateISO);
-  if (error) throw new Error(error.message);
-}
-
-/**
- * Re-process an already-saved entry after the user manually edits its
- * transcript (transcript editor flow). Replaces — does NOT append.
- */
-export async function updateEntryTranscript(
-  mode: DataMode,
-  dateISO: string,
-  newTranscript: string,
-): Promise<Entry> {
-  const ai = await callProcessEntry(newTranscript);
-  return mode === "demo"
-    ? saveDemoEntry(dateISO, newTranscript, ai, 0)
-    : saveAuthEntry(dateISO, newTranscript, ai, 0);
+  return (await loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
 }
 
 /* ----------------- Month range loader ----------------- */
@@ -511,34 +382,11 @@ function monthBounds(year: number, month: number): { start: string; end: string 
   };
 }
 
-async function loadDemoMonth(year: number, month: number): Promise<Entry[]> {
-  if (typeof window === "undefined") return [];
-  const { start, end } = monthBounds(year, month);
-  const out: Entry[] = [];
-  try {
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const k = window.localStorage.key(i);
-      if (!k || !k.startsWith(DEMO_KEY_PREFIX)) continue;
-      const date = k.slice(DEMO_KEY_PREFIX.length);
-      if (date < start || date > end) continue;
-      const raw = window.localStorage.getItem(k);
-      if (!raw) continue;
-      try {
-        const parsed = JSON.parse(raw) as Entry;
-        if (!Array.isArray(parsed.areas)) parsed.areas = [];
-        out.push(parsed);
-      } catch {
-        // ignore corrupted entries
-      }
-    }
-  } catch {
-    return [];
-  }
-  out.sort((a, b) => (a.entryDate < b.entryDate ? 1 : -1));
-  return out;
-}
-
-async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
+export async function loadMonthEntries(
+  _mode: DataMode,
+  year: number,
+  month: number,
+): Promise<Entry[]> {
   const supabase = createClient();
   const { start, end } = monthBounds(year, month);
   const { data, error } = await supabase
@@ -562,14 +410,4 @@ async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
     goals: buildGoals(parseStringArray(d.goals_on)),
     createdAt: d.created_at as string,
   }));
-}
-
-export async function loadMonthEntries(
-  mode: DataMode,
-  year: number,
-  month: number,
-): Promise<Entry[]> {
-  return mode === "demo"
-    ? loadDemoMonth(year, month)
-    : loadAuthMonth(year, month);
 }
