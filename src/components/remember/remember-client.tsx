@@ -4,7 +4,11 @@ import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { QuickCapture } from "@/components/remember/quick-capture";
 import { RememberItem } from "@/components/remember/remember-item";
-import { addRemember, deleteRemember } from "@/lib/data/remembers";
+import {
+  addRemember,
+  deleteRemember,
+  updateRememberKind,
+} from "@/lib/data/remembers";
 import type { DataMode } from "@/lib/data/entries";
 import type { Remember, RememberKind } from "@/lib/types";
 
@@ -18,7 +22,6 @@ type FilterKey = "all" | RememberKind;
 const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "all", label: "Tutti" },
   { key: "persona", label: "Persone" },
-  { key: "libro", label: "Libri" },
   { key: "todo", label: "Todo" },
   { key: "nota", label: "Note" },
   { key: "luogo", label: "Luoghi" },
@@ -41,8 +44,34 @@ export function RememberClient({ mode, initial }: Props) {
     try {
       const r = await addRemember(mode, text, kind);
       setItems((prev) => [r, ...prev]);
+      // If the user didn't pick a specific kind (default 'nota'), ask the
+      // backend to auto-classify into the right bucket. Runs async — the item
+      // appears immediately in 'Note', and re-slots once the AI responds.
+      if (kind === "nota") {
+        void classifyAndReslot(r.id, text);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Errore");
+    }
+  };
+
+  const classifyAndReslot = async (id: string, text: string) => {
+    try {
+      const resp = await fetch("/api/remember/classify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!resp.ok) return;
+      const json = (await resp.json()) as { kind?: RememberKind };
+      const newKind = json.kind;
+      if (!newKind || newKind === "nota") return;
+      await updateRememberKind(mode, id, newKind);
+      setItems((prev) =>
+        prev.map((it) => (it.id === id ? { ...it, kind: newKind } : it)),
+      );
+    } catch {
+      // Classification is best-effort — the note already saved as 'nota'.
     }
   };
 

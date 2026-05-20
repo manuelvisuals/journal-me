@@ -63,7 +63,6 @@ export type Recap = {
 
 export type RememberKind =
   | "persona"
-  | "libro"
   | "todo"
   | "nota"
   | "luogo"

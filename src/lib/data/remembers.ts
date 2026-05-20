@@ -6,7 +6,6 @@ import type { Remember, RememberKind, RememberSource } from "@/lib/types";
 
 const VALID_KINDS: ReadonlySet<RememberKind> = new Set([
   "persona",
-  "libro",
   "todo",
   "nota",
   "luogo",
@@ -79,5 +78,22 @@ export async function deleteRemember(
 ): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.from("remembers").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * Update the kind of an existing remember. Used after AI auto-classification
+ * reclassifies a manually-saved 'nota' into a more specific bucket.
+ */
+export async function updateRememberKind(
+  _mode: DataMode,
+  id: string,
+  kind: RememberKind,
+): Promise<void> {
+  const supabase = createClient();
+  const { error } = await supabase
+    .from("remembers")
+    .update({ kind })
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }

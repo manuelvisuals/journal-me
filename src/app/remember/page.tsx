@@ -4,7 +4,6 @@ import type { Remember, RememberKind, RememberSource } from "@/lib/types";
 
 const VALID_KINDS: ReadonlySet<RememberKind> = new Set([
   "persona",
-  "libro",
   "todo",
   "nota",
   "luogo",

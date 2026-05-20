@@ -792,6 +792,10 @@ body > * {
   padding: 6px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.50);
   z-index: 5;
+  /* Override the pointer-events:none inherited from .jm-qc-bar (set there
+     so empty space around the input doesn't block taps on the page).
+     Without this the kind-picker rows were unclickable. */
+  pointer-events: auto;
 }
 .jm-qc-kind-pop .row {
   display: block;

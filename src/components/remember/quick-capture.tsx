@@ -15,7 +15,6 @@ type Props = {
 const KIND_OPTIONS: { key: RememberKind; label: string }[] = [
   { key: "nota", label: "Nota" },
   { key: "persona", label: "Persona" },
-  { key: "libro", label: "Libro" },
   { key: "todo", label: "Todo" },
   { key: "luogo", label: "Luogo" },
   { key: "idea", label: "Idea" },
