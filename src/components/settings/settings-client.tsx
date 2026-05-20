@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
@@ -12,6 +13,11 @@ type Props = {
   email: string | null;
   isAnonymous: boolean;
   initialGlossary: string[];
+  /** Latest recap across periods — shown as a teaser inside the Recap card. */
+  latestRecap: {
+    title: string;
+    periodLabel: string;
+  } | null;
 };
 
 export function SettingsClient({
@@ -19,14 +25,11 @@ export function SettingsClient({
   email,
   isAnonymous,
   initialGlossary,
+  latestRecap,
 }: Props) {
   const router = useRouter();
   const [glossary, setGlossary] = useState<string[]>(initialGlossary);
   const [signingOut, setSigningOut] = useState<boolean>(false);
-
-  const handleBack = () => {
-    router.back();
-  };
 
   const handleLogout = async () => {
     if (signingOut) return;
@@ -44,30 +47,43 @@ export function SettingsClient({
       className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
-      <header className="jm-set-head">
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label="Indietro"
-          className="jm-set-back"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            width="16"
-            height="16"
-          >
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <div className="jm-set-title">Impostazioni</div>
+      <header className="jm-altro-head">
+        <h1 className="jm-altro-h">Altro</h1>
       </header>
 
-      <div className="flex-1 overflow-y-auto" style={{ padding: "18px 0 22px" }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: "0 0 22px" }}>
+        {/* Recap card — premium editorial entry point. Opens /recap. */}
+        <Link href="/recap" className="jm-recap-card" aria-label="Apri Recap">
+          <div className="meta">Recap</div>
+          <div className="title">Le tue giornate, raccontate.</div>
+          <div className="sub">
+            Mensili, semestrali, annuali. Una prosa narrativa che rilegge i
+            tuoi mesi senza giudizio.
+          </div>
+          <div className="last">
+            <span className="lbl">Ultimo</span>
+            <span className="name">
+              {latestRecap
+                ? `${latestRecap.periodLabel} . ${latestRecap.title}`
+                : "Nessun recap generato ancora"}
+            </span>
+            <span className="chev" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                width="12"
+                height="12"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </span>
+          </div>
+        </Link>
+
         <GlossarySection
           mode={mode}
           initial={glossary}
@@ -88,32 +104,22 @@ export function SettingsClient({
               <span className="v">Ospite (cloud)</span>
             </div>
           )}
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={signingOut}
-            className="jm-set-row action"
-            style={{
-              background: "transparent",
-              border: "none",
-              width: "100%",
-              fontFamily: "inherit",
-              padding: "14px 0",
-              cursor: signingOut ? "not-allowed" : "pointer",
-            }}
-          >
-            <span className="lbl">{signingOut ? "Logout in corso..." : "Logout"}</span>
-            <span className="v">&rsaquo;</span>
-          </button>
-        </section>
-
-        <section className="jm-set-section">
-          <div className="jm-set-section-h">Info</div>
           <div className="jm-set-row">
             <span className="lbl">Versione</span>
             <span className="v">0.5.0</span>
           </div>
         </section>
+
+        <div className="jm-logout-wrap">
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={signingOut}
+            className="jm-logout-btn"
+          >
+            {signingOut ? "Logout in corso..." : "Esci dall'account"}
+          </button>
+        </div>
       </div>
 
       <TabBar active="settings" />

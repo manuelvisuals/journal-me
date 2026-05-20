@@ -112,7 +112,7 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
         })}
       </div>
 
-      <TabBar active="recap" />
+      <TabBar active="settings" />
 
       {editorOpen && (
         <RecapEditor

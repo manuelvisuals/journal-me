@@ -552,19 +552,29 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
                   {recent}
                 </p>
               )}
-              <p style={{ color: "var(--color-ink)", marginBottom: 10 }}>
-                {interim}
-                {state === "recording" && <span className="live-caret" />}
-              </p>
+              {interim && (
+                <p style={{ color: "var(--color-ink)", marginBottom: 10 }}>
+                  {interim}
+                  {state === "recording" && <span className="live-caret" />}
+                </p>
+              )}
+            </div>
+
+            {/* Status strip: placeholders + silence warning sit ABOVE the
+                waveform (Manuel's request — easier to read while talking
+                than buried in the transcript scroll area). */}
+            <div className="shrink-0" style={{ padding: "0 4px 8px", minHeight: 42 }}>
               {!transcript && !interim && (
                 <p
                   style={{
                     color: "var(--color-ink-faint)",
+                    fontSize: 14,
                     fontStyle: "italic",
+                    textAlign: "center",
                   }}
                 >
                   {state === "connecting"
-                    ? "Connessione al servizio di trascrizione..."
+                    ? "Mi sto connettendo al servizio..."
                     : state === "recording"
                       ? "Parla pure..."
                       : ""}
@@ -576,11 +586,12 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
                     color: "var(--color-danger)",
                     fontSize: 12,
                     fontStyle: "italic",
-                    marginTop: 14,
-                    padding: 10,
-                    background: "rgba(248,113,113,0.08)",
-                    border: "1px solid rgba(248,113,113,0.25)",
-                    borderRadius: 10,
+                    padding: "10px 14px",
+                    background: "rgba(248,113,113,0.06)",
+                    border: "1px solid rgba(248,113,113,0.22)",
+                    borderRadius: 12,
+                    lineHeight: 1.4,
+                    textAlign: "center",
                   }}
                 >
                   non ho ancora sentito parole. avvicinati al microfono o riduci
@@ -604,7 +615,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
             type="button"
             onClick={handleCancel}
             aria-label="Annulla registrazione"
-            className="rec-ctl"
+            className="rec-ctl rec-ctl-cancel"
           >
             <svg
               viewBox="0 0 24 24"
@@ -613,12 +624,14 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
-              width="18"
-              height="18"
+              width="20"
+              height="20"
               aria-hidden="true"
             >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+              <path d="M3 6h18" />
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M19 6l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
             </svg>
           </button>
 

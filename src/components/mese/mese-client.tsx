@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { JumpPicker } from "@/components/mese/jump-picker";
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export function MeseClient({ mode, initialMonth }: Props) {
+  const router = useRouter();
   const [loaded, setLoaded] = useState<LoadedMonth[]>([initialMonth]);
   const [currentMonth, setCurrentMonth] = useState<{
     year: number;
@@ -202,6 +204,10 @@ export function MeseClient({ mode, initialMonth }: Props) {
             // The first (most recent) month is implicitly labeled by the
             // sticky page header. Subsequent months get an inline divider.
             showHeader={idx > 0}
+            onDayClick={(year, month, day) => {
+              const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+              router.push(`/giorno/${iso}`);
+            }}
           />
         ))}
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />

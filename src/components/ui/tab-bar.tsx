@@ -6,7 +6,6 @@ export type TabKey =
   | "today"
   | "month"
   | "mic"
-  | "recap"
   | "remember"
   | "settings";
 
@@ -64,24 +63,6 @@ const SIDE_TABS_LEFT: Tab[] = [
 
 const SIDE_TABS_RIGHT: Tab[] = [
   {
-    key: "recap",
-    label: "Recap",
-    href: "/recap",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zM18 14h-8M15 18h-5M10 6h8v4h-8V6z" />
-      </svg>
-    ),
-  },
-  {
     key: "remember",
     label: "Remember",
     href: "/remember",
@@ -122,7 +103,7 @@ export function TabBar({ active }: Props) {
     <nav
       className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur"
       style={{
-        gridTemplateColumns: "repeat(6, 1fr)",
+        gridTemplateColumns: "repeat(5, 1fr)",
         borderColor: "var(--color-line)",
         background: "rgba(10, 5, 7, 0.50)",
         paddingTop: 12,

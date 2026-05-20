@@ -135,7 +135,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
         )}
       </div>
 
-      <TabBar active="recap" />
+      <TabBar active="settings" />
     </main>
   );
 }

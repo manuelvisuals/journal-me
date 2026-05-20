@@ -249,6 +249,17 @@ body > * {
     inset 0 2px 5px rgba(0, 0, 0, 0.30);
 }
 
+/* Cancel button — trash bin styled as danger (Manuel's request: the X looked
+   neutral, now it's a red trash to make the destructive action unambiguous). */
+.rec-ctl-cancel {
+  color: var(--color-danger);
+  background: rgba(248, 113, 113, 0.06);
+  border-color: rgba(248, 113, 113, 0.30);
+}
+.rec-ctl-cancel:active {
+  background: rgba(248, 113, 113, 0.14);
+}
+
 /* Caret blink for live transcript */
 .live-caret {
   display: inline-block;
@@ -959,7 +970,219 @@ body > * {
   box-shadow: 0 0 8px rgba(227, 161, 95, 0.40);
 }
 
-/* Settings page */
+/* Day detail page (/giorno/[date]) — opens when tapping a row in /mese */
+.jm-day-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 24px 14px;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-day-back {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+.jm-day-back:active { background: var(--color-surface-2); }
+.jm-day-head-label {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jm-day-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.jm-day-head-action {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-day-head-del {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(248,113,113,0.06);
+  border: 1px solid rgba(248,113,113,0.25);
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-day-head-del:active { background: rgba(248,113,113,0.14); }
+.jm-day-head-del:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Altro page (formerly Settings — now contains Recap link, Glossario,
+   Account, Logout). The legacy .jm-set-* classes are kept below so the
+   inline sections (Glossary, Account) render as before. */
+.jm-altro-head {
+  padding: 22px 24px 18px;
+}
+.jm-altro-h {
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+/* Recap card — premium editorial CTA inside Altro that opens /recap. */
+.jm-recap-card {
+  position: relative;
+  display: block;
+  margin: 0 24px 24px;
+  padding: 20px 22px 18px;
+  background:
+    linear-gradient(180deg, rgba(227,161,95,0.045) 0%, rgba(227,161,95,0.008) 60%, transparent 100%),
+    linear-gradient(140deg, rgba(126,80,80,0.18) 0%, transparent 55%),
+    var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  text-decoration: none;
+  color: var(--color-ink);
+  box-shadow:
+    inset 0 1px 0 rgba(255,229,214,0.06),
+    0 14px 30px rgba(0,0,0,0.30);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-recap-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(227,161,95,0.40), transparent);
+}
+.jm-recap-card:active {
+  transform: scale(0.99);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.jm-recap-card .meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.jm-recap-card .meta::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  max-width: 36px;
+  background: linear-gradient(90deg, rgba(227,161,95,0.5), transparent);
+}
+.jm-recap-card .title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+.jm-recap-card .sub {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.jm-recap-card .last {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,229,214,0.05);
+}
+.jm-recap-card .last .lbl {
+  font-size: 9px;
+  font-weight: 650;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.jm-recap-card .last .name {
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  font-style: italic;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jm-recap-card .last .chev {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(227,161,95,0.10);
+  border: 1px solid rgba(227,161,95,0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+/* Logout button at bottom of Altro */
+.jm-logout-wrap {
+  padding: 8px 24px 0;
+}
+.jm-logout-btn {
+  width: 100%;
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid rgba(248,113,113,0.30);
+  border-radius: 12px;
+  padding: 14px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
+}
+.jm-logout-btn:active {
+  background: rgba(248,113,113,0.06);
+}
+.jm-logout-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Settings page (legacy classes kept for inline Account/Glossario sections) */
 .jm-set-head {
   display: flex;
   align-items: center;
