@@ -10,6 +10,7 @@ import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { ReviewScreen } from "@/components/today/review-screen";
 import { formatDayHeader, todayISO } from "@/lib/format";
 import {
+  deleteEntry,
   loadTodayEntry,
   saveRecording,
   toggleGoal,
@@ -138,6 +139,19 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
       if (view === "empty") setView("filled");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+    }
+  };
+
+  const handleEditorDelete = async () => {
+    if (!entry) return;
+    try {
+      await deleteEntry(mode, entry.entryDate);
+      setEntry(null);
+      setEditorOpen(false);
+      setSavedDates([]);
+      setView("empty");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Errore eliminazione");
     }
   };
 
@@ -383,6 +397,7 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
           initialTranscript={entry.transcript}
           onSave={handleEditorSave}
           onCancel={() => setEditorOpen(false)}
+          onDelete={handleEditorDelete}
         />
       )}
     </main>

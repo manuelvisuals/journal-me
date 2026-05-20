@@ -59,6 +59,62 @@ export async function loadRecaps(mode: DataMode): Promise<Recap[]> {
   return mode === "demo" ? loadDemo() : loadAuth();
 }
 
+/**
+ * Update an existing recap. Patch any combination of title / snippet / body.
+ */
+export async function updateRecap(
+  mode: DataMode,
+  id: string,
+  patch: { title?: string; snippet?: string; body?: string },
+): Promise<Recap> {
+  if (mode === "demo") {
+    const list = await loadDemo();
+    const idx = list.findIndex((r) => r.id === id);
+    if (idx < 0) throw new Error("Recap not found");
+    const updated: Recap = {
+      ...list[idx],
+      ...("title" in patch && patch.title !== undefined
+        ? { title: patch.title }
+        : {}),
+      ...("snippet" in patch && patch.snippet !== undefined
+        ? { snippet: patch.snippet }
+        : {}),
+      ...("body" in patch && patch.body !== undefined
+        ? { body: patch.body }
+        : {}),
+    };
+    const next = [...list];
+    next[idx] = updated;
+    await saveDemo(next);
+    return updated;
+  }
+
+  const supabase = createClient();
+  const dbPatch: Record<string, unknown> = {};
+  if (patch.title !== undefined) dbPatch.title = patch.title;
+  if (patch.snippet !== undefined) dbPatch.snippet = patch.snippet;
+  if (patch.body !== undefined) dbPatch.body = patch.body;
+  const { data, error } = await supabase
+    .from("recaps")
+    .update(dbPatch)
+    .eq("id", id)
+    .select(
+      "id, period_type, period_start, period_end, title, snippet, body, generated_at",
+    )
+    .single();
+  if (error || !data) throw new Error(error?.message ?? "DB error");
+  return {
+    id: data.id as string,
+    periodType: data.period_type as RecapPeriod,
+    periodStart: data.period_start as string,
+    periodEnd: data.period_end as string,
+    title: data.title as string,
+    snippet: data.snippet as string,
+    body: data.body as string,
+    generatedAt: data.generated_at as string,
+  };
+}
+
 /* ----------------- Period helpers ----------------- */
 
 export function monthBoundaries(year: number, month: number) {

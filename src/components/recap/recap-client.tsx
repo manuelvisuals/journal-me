@@ -85,7 +85,15 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 
   if (selected) {
     return (
-      <RecapDetail recap={selected} onBack={() => setSelected(null)} />
+      <RecapDetail
+        mode={mode}
+        recap={selected}
+        onBack={() => setSelected(null)}
+        onUpdated={(r) => {
+          setSelected(r);
+          setRecaps((prev) => prev.map((x) => (x.id === r.id ? r : x)));
+        }}
+      />
     );
   }
 

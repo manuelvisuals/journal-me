@@ -14,25 +14,6 @@ type Props = {
   onGoalToggle: (label: string) => void;
 };
 
-const FAKE_AREAS: AreaSummary[] = [
-  {
-    label: "Lavoro",
-    text: "Deck per Marco chiuso a meta pomeriggio. Call Sara spostata a giovedi.",
-  },
-  {
-    label: "Relazioni",
-    text: "Discussione con Giulia sul weekend. Riappacificato a cena.",
-  },
-  {
-    label: "Corpo",
-    text: "8 km al tramonto, fiato buono. Cena leggera.",
-  },
-];
-
-const FAKE_HEADLINE = "Giornata di transizione: lavoro avanza, umore vacilla";
-const FAKE_SNIPPET =
-  "Deck Marco chiuso. Lite con Giulia. Corsa al tramonto rimette in pari.";
-
 export function FilledView({
   headline,
   snippet,
@@ -42,65 +23,97 @@ export function FilledView({
   onMetricChange,
   onGoalToggle,
 }: Props) {
-  const displayHeadline = headline ?? FAKE_HEADLINE;
-  const displaySnippet = snippet ?? FAKE_SNIPPET;
-  const displayAreas =
-    areas && areas.length > 0 ? areas : FAKE_AREAS;
+  const hasHeadline = !!headline && headline.trim().length > 0;
+  const hasSnippet = !!snippet && snippet.trim().length > 0;
+  const realAreas = areas?.filter((a) => a.text.trim().length > 0) ?? [];
 
   return (
     <div className="flex flex-1 flex-col" style={{ padding: "0 24px" }}>
-      <h1
-        style={{
-          fontSize: 26,
-          fontWeight: 650,
-          lineHeight: 1.15,
-          letterSpacing: "-0.025em",
-          color: "var(--color-ink)",
-          margin: "4px 0 10px",
-        }}
-      >
-        {displayHeadline}
-      </h1>
-      <p
-        style={{
-          fontSize: 14,
-          fontWeight: 400,
-          color: "var(--color-ink-muted)",
-          lineHeight: 1.55,
-          marginBottom: 18,
-        }}
-      >
-        {displaySnippet}
-      </p>
+      {hasHeadline ? (
+        <h1
+          style={{
+            fontSize: 26,
+            fontWeight: 650,
+            lineHeight: 1.15,
+            letterSpacing: "-0.025em",
+            color: "var(--color-ink)",
+            margin: "4px 0 10px",
+          }}
+        >
+          {headline}
+        </h1>
+      ) : (
+        <h1
+          style={{
+            fontSize: 22,
+            fontWeight: 500,
+            lineHeight: 1.2,
+            color: "var(--color-ink-faint)",
+            fontStyle: "italic",
+            margin: "4px 0 10px",
+          }}
+        >
+          giornata raccontata, l&apos;AI non ha ancora generato un titolo
+        </h1>
+      )}
+
+      {hasSnippet && (
+        <p
+          style={{
+            fontSize: 14,
+            fontWeight: 400,
+            color: "var(--color-ink-muted)",
+            lineHeight: 1.55,
+            marginBottom: 18,
+          }}
+        >
+          {snippet}
+        </p>
+      )}
 
       <Separator />
 
-      {displayAreas.map((area) => (
-        <div key={area.label} style={{ padding: "14px 0" }}>
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 650,
-              color: "var(--color-accent)",
-              letterSpacing: "0.20em",
-              textTransform: "uppercase",
-              marginBottom: 6,
-            }}
-          >
-            {area.label}
+      {realAreas.length > 0 ? (
+        realAreas.map((area) => (
+          <div key={area.label} style={{ padding: "14px 0" }}>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 650,
+                color: "var(--color-accent)",
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                marginBottom: 6,
+              }}
+            >
+              {area.label}
+            </div>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: "var(--color-ink)",
+                lineHeight: 1.55,
+              }}
+            >
+              {area.text}
+            </div>
           </div>
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 500,
-              color: "var(--color-ink)",
-              lineHeight: 1.55,
-            }}
-          >
-            {area.text}
-          </div>
+        ))
+      ) : (
+        <div
+          style={{
+            padding: "20px 0",
+            fontSize: 12,
+            color: "var(--color-ink-faint)",
+            fontStyle: "italic",
+            textAlign: "center",
+            letterSpacing: "0.02em",
+          }}
+        >
+          aree macro non ancora estratte
         </div>
-      ))}
+      )}
 
       <Separator />
 

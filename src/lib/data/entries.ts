@@ -460,6 +460,32 @@ function blankEntryShell(dateISO: string): Entry {
 }
 
 /**
+ * Permanently delete an entry for a given date.
+ * Demo: remove the localStorage key. Auth: delete the row from Supabase.
+ */
+export async function deleteEntry(
+  mode: DataMode,
+  dateISO: string,
+): Promise<void> {
+  if (mode === "demo") {
+    if (typeof window === "undefined") return;
+    window.localStorage.removeItem(demoKey(dateISO));
+    return;
+  }
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  const { error } = await supabase
+    .from("entries")
+    .delete()
+    .eq("user_id", user.id)
+    .eq("entry_date", dateISO);
+  if (error) throw new Error(error.message);
+}
+
+/**
  * Re-process an already-saved entry after the user manually edits its
  * transcript (transcript editor flow). Replaces — does NOT append.
  */
