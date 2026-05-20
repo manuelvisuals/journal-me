@@ -26,30 +26,49 @@ export async function POST(req: NextRequest) {
 
   // Read the user's glossary (proper names they use often) so the
   // transcription model treats them as in-vocabulary.
-  let glossaryHint = "";
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      const { data } = await supabase
-        .from("user_settings")
-        .select("glossary")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      const terms = Array.isArray(data?.glossary)
-        ? (data.glossary as unknown[]).filter(
-            (t): t is string => typeof t === "string" && t.trim().length > 0,
-          )
-        : [];
-      if (terms.length > 0) {
-        glossaryHint = ` Nomi propri ricorrenti dell'utente (rispettare scrittura esatta): ${terms.join(", ")}.`;
-      }
+  // Priority: explicit X-JM-Glossary header from the client (works for
+  // demo users whose glossary lives in localStorage) -> Supabase
+  // user_settings (for auth users) -> none.
+  let glossaryTerms: string[] = [];
+  const headerVal = req.headers.get("x-jm-glossary");
+  if (headerVal) {
+    try {
+      const decoded = decodeURIComponent(headerVal);
+      glossaryTerms = decoded
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+    } catch {
+      // ignore malformed header
     }
-  } catch {
-    // Glossary is best-effort; never block the session on it.
   }
+  if (glossaryTerms.length === 0) {
+    try {
+      const supabase = await createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from("user_settings")
+          .select("glossary")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        const terms = Array.isArray(data?.glossary)
+          ? (data.glossary as unknown[]).filter(
+              (t): t is string => typeof t === "string" && t.trim().length > 0,
+            )
+          : [];
+        glossaryTerms = terms;
+      }
+    } catch {
+      // best-effort
+    }
+  }
+  const glossaryHint =
+    glossaryTerms.length > 0
+      ? ` Nomi propri ricorrenti dell'utente (rispettare scrittura esatta): ${glossaryTerms.join(", ")}.`
+      : "";
 
   // Realtime transcription session: streams Italian text deltas from the
   // user's microphone, no model voice response (we only want transcript).
@@ -70,8 +89,8 @@ export async function POST(req: NextRequest) {
         turn_detection: {
           type: "server_vad",
           threshold: 0.5,
-          prefix_padding_ms: 200,
-          silence_duration_ms: 350,
+          prefix_padding_ms: 150,
+          silence_duration_ms: 250,
         },
       },
     },

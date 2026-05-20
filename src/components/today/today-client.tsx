@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/today/empty-state";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
 import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
+import { ReviewScreen } from "@/components/today/review-screen";
 import { formatDayHeader, todayISO } from "@/lib/format";
 import {
   loadTodayEntry,
@@ -18,7 +19,13 @@ import {
 } from "@/lib/data/entries";
 import type { Entry, EntryMetrics } from "@/lib/types";
 
-type View = "empty" | "recording" | "processing" | "filled";
+type View = "empty" | "recording" | "review" | "processing" | "filled";
+
+type PendingRecording = {
+  transcript: string;
+  durationSeconds: number;
+  targetDate: string;
+};
 
 type Props = {
   mode: DataMode;
@@ -35,6 +42,7 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [savedDates, setSavedDates] = useState<string[]>([]);
+  const [pending, setPending] = useState<PendingRecording | null>(null);
 
   // Day header is computed at render time. We pass suppressHydrationWarning
   // on the span so SSR/CSR mismatch (server clock vs client clock) is fine.
@@ -62,7 +70,9 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
     setView("recording");
   };
 
-  const handleStop = async (
+  // Stop recording -> step into the review screen so the user can
+  // correct typos / proper names before the AI processes the transcript.
+  const handleStop = (
     transcript: string,
     durationSeconds: number,
     targetDate: string,
@@ -72,25 +82,36 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
       setView(entry ? "filled" : "empty");
       return;
     }
+    setPending({ transcript, durationSeconds, targetDate });
+    setView("review");
+  };
+
+  // User confirmed the (possibly corrected) transcript — now run AI.
+  const handleConfirmReview = async (finalTranscript: string) => {
+    if (!pending) return;
     setView("processing");
     try {
       const saved = await saveRecording(mode, {
-        transcript,
-        durationSeconds,
-        defaultDate: targetDate,
+        transcript: finalTranscript,
+        durationSeconds: pending.durationSeconds,
+        defaultDate: pending.targetDate,
       });
-      // If any of the saved entries is for today, that's the one we show
-      // in the filled view. Otherwise we keep the previous entry (if any)
-      // and just acknowledge the save happened.
       const today = todayISO();
       const todayEntry = saved.find((e) => e.entryDate === today);
       if (todayEntry) setEntry(todayEntry);
       setSavedDates(saved.map((e) => e.entryDate));
+      setPending(null);
       setView(todayEntry || entry ? "filled" : "empty");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+      setPending(null);
       setView("empty");
     }
+  };
+
+  const handleCancelReview = () => {
+    setPending(null);
+    setView(entry ? "filled" : "empty");
   };
 
   const handleCancel = () => {
@@ -305,8 +326,20 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
       {view === "recording" && (
         <RecordingOverlay
           defaultDate={todayISO()}
+          mode={mode}
           onStop={handleStop}
           onCancel={handleCancel}
+        />
+      )}
+
+      {/* Review screen after stop, before AI processing */}
+      {view === "review" && pending && (
+        <ReviewScreen
+          initialTranscript={pending.transcript}
+          durationSeconds={pending.durationSeconds}
+          targetDate={pending.targetDate}
+          onConfirm={handleConfirmReview}
+          onCancel={handleCancelReview}
         />
       )}
 

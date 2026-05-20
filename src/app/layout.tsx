@@ -19,10 +19,19 @@ export const metadata: Metadata = {
   title: "Journal.me",
   description: "Diario personale: voce, memoria, recap.",
   applicationName: "Journal.me",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     title: "Journal.me",
     statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 

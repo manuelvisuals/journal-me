@@ -9,10 +9,14 @@ import {
   todayISO,
 } from "@/lib/format";
 import { DatePickerPopover } from "@/components/today/date-picker-popover";
+import { loadGlossary } from "@/lib/data/glossary";
+import type { DataMode } from "@/lib/data/entries";
 
 type Props = {
   /** Default date for segments without explicit temporal markers (YYYY-MM-DD). */
   defaultDate?: string;
+  /** Demo or auth — needed to fetch the glossary client-side. */
+  mode?: DataMode;
   onStop: (
     transcript: string,
     durationSeconds: number,
@@ -31,7 +35,7 @@ type RecState = "connecting" | "recording" | "paused" | "error";
  * The `/api/realtime/session` endpoint relays the SDP handshake so the
  * OPENAI_API_KEY never reaches the browser.
  */
-export function RecordingOverlay({ defaultDate, onStop, onCancel }: Props) {
+export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props) {
   const [transcript, setTranscript] = useState<string>("");
   const [interim, setInterim] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(0);
@@ -114,9 +118,24 @@ export function RecordingOverlay({ defaultDate, onStop, onCancel }: Props) {
 
         if (cancelled) return;
 
+        // Best-effort: include the glossary as a header so the
+        // transcription model treats the user's proper names as
+        // in-vocabulary. Works for demo (localStorage) and auth.
+        const headers: Record<string, string> = {
+          "Content-Type": "application/sdp",
+        };
+        try {
+          const terms = await loadGlossary(mode ?? "demo");
+          if (terms.length > 0) {
+            headers["X-JM-Glossary"] = encodeURIComponent(terms.join(","));
+          }
+        } catch {
+          // ignore — glossary is non-critical
+        }
+
         const resp = await fetch("/api/realtime/session", {
           method: "POST",
-          headers: { "Content-Type": "application/sdp" },
+          headers,
           body: offer.sdp ?? "",
         });
 

@@ -1258,10 +1258,10 @@ body > * {
   text-align: center;
 }
 
-/* Re-record button shown in the filled-view header */
+/* Re-record button shown in the filled-view header (sized for touch) */
 .jm-rerecord-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--color-surface);
   color: var(--color-accent);
@@ -1285,6 +1285,11 @@ body > * {
   transform: scale(0.94);
   background: var(--color-surface-2);
   border-color: rgba(227, 161, 95, 0.55);
+}
+/* Larger tap target for the settings icon too */
+.jm-settings-btn {
+  width: 44px;
+  height: 44px;
 }
 
 /* Spinner used during AI processing of a recorded entry */
