@@ -17,9 +17,11 @@ export type AreaSummary = {
 };
 
 export type EntryMetrics = {
+  /** Body weight in kg. */
   weightKg: number | null;
+  /** Sleep duration in fractional hours (7.2 = 7h 12). */
   sleepHours: number | null;
-  sleepMinutes: number | null;
+  /** Mood emoji bucket. */
   mood: Mood | null;
 };
 
@@ -42,5 +44,38 @@ export type Entry = {
   /** Goal-dot state at the time of the entry. */
   goals: GoalDot[];
   /** ISO timestamp of when the entry was saved. */
+  createdAt: string;
+};
+
+export type RecapPeriod = "month" | "semester" | "year";
+
+export type Recap = {
+  id: string;
+  periodType: RecapPeriod;
+  /** YYYY-MM-DD inclusive. */
+  periodStart: string;
+  periodEnd: string;
+  title: string;
+  snippet: string;
+  body: string;
+  generatedAt: string;
+};
+
+export type RememberKind =
+  | "persona"
+  | "libro"
+  | "todo"
+  | "nota"
+  | "luogo"
+  | "idea";
+
+export type RememberSource = "manual" | "extracted";
+
+export type Remember = {
+  id: string;
+  text: string;
+  kind: RememberKind;
+  source: RememberSource;
+  sourceEntryId: string | null;
   createdAt: string;
 };

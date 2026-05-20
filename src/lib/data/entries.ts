@@ -2,7 +2,24 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
-import type { AreaSummary, Entry } from "@/lib/types";
+import type {
+  AreaSummary,
+  Entry,
+  EntryMetrics,
+  GoalDot,
+  Mood,
+} from "@/lib/types";
+
+/** Manuel's 6 default micro-goals, in order. Seeded server-side via trigger
+ *  for new auth users; hardcoded here as the canonical client-side list. */
+export const DEFAULT_GOAL_LABELS = [
+  "scopato",
+  "no alcol",
+  "no junkfood",
+  "no sbirciato ex",
+  "camminato",
+  "visto sunset",
+] as const;
 
 export type DataMode = "demo" | "auth";
 
@@ -89,6 +106,15 @@ async function loadDemoEntry(dateISO: string): Promise<Entry | null> {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Entry;
     if (!Array.isArray(parsed.areas)) parsed.areas = [];
+    if (!parsed.metrics) {
+      parsed.metrics = { weightKg: null, sleepHours: null, mood: null };
+    }
+    if (!Array.isArray(parsed.goals) || parsed.goals.length !== DEFAULT_GOAL_LABELS.length) {
+      const onLabels = Array.isArray(parsed.goals)
+        ? parsed.goals.filter((g) => g.on).map((g) => g.label)
+        : [];
+      parsed.goals = buildGoals(onLabels);
+    }
     return parsed;
   } catch {
     return null;
@@ -101,17 +127,23 @@ async function saveDemoEntry(
   ai: AIFields,
   durationSeconds: number,
 ): Promise<Entry> {
+  // Preserve metrics + goals if an entry already exists for this date.
+  const existing = await loadDemoEntry(dateISO);
   const entry: Entry = {
-    id: `demo-${dateISO}`,
+    id: existing?.id ?? `demo-${dateISO}`,
     entryDate: dateISO,
     transcript,
     durationSeconds,
     headline: ai.headline,
     snippet: ai.snippet,
     areas: ai.areas,
-    metrics: null,
-    goals: [],
-    createdAt: new Date().toISOString(),
+    metrics: existing?.metrics ?? {
+      weightKg: null,
+      sleepHours: null,
+      mood: null,
+    },
+    goals: existing?.goals ?? buildGoals([]),
+    createdAt: existing?.createdAt ?? new Date().toISOString(),
   };
   if (typeof window !== "undefined") {
     window.localStorage.setItem(demoKey(dateISO), JSON.stringify(entry));
@@ -126,7 +158,7 @@ async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
   const { data, error } = await supabase
     .from("entries")
     .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, sleep_label, created_at",
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
     )
     .eq("entry_date", dateISO)
     .maybeSingle();
@@ -139,8 +171,8 @@ async function loadAuthEntry(dateISO: string): Promise<Entry | null> {
     headline: (data.headline as string) ?? null,
     snippet: (data.snippet as string) ?? null,
     areas: parseAreasJson(data.areas),
-    metrics: null,
-    goals: [],
+    metrics: buildMetrics(data.weight_kg, data.sleep_hours, data.mood),
+    goals: buildGoals(parseStringArray(data.goals_on)),
     createdAt: data.created_at as string,
   };
 }
@@ -205,6 +237,45 @@ function parseAreasJson(raw: unknown): AreaSummary[] {
   return [];
 }
 
+function parseStringArray(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((x): x is string => typeof x === "string");
+}
+
+function buildGoals(labelsOn: string[]): GoalDot[] {
+  const on = new Set(labelsOn.map((s) => s.toLowerCase()));
+  return DEFAULT_GOAL_LABELS.map((label) => ({
+    id: label,
+    label,
+    on: on.has(label.toLowerCase()),
+  }));
+}
+
+const VALID_MOODS: ReadonlySet<string> = new Set([
+  "great",
+  "good",
+  "neutral",
+  "low",
+  "bad",
+]);
+
+function parseMood(raw: unknown): Mood | null {
+  if (typeof raw !== "string") return null;
+  return VALID_MOODS.has(raw) ? (raw as Mood) : null;
+}
+
+function buildMetrics(
+  weightKg: unknown,
+  sleepHours: unknown,
+  mood: unknown,
+): EntryMetrics {
+  return {
+    weightKg: typeof weightKg === "number" ? weightKg : null,
+    sleepHours: typeof sleepHours === "number" ? sleepHours : null,
+    mood: parseMood(mood),
+  };
+}
+
 /* ----------------- Public API ----------------- */
 
 export async function loadTodayEntry(mode: DataMode): Promise<Entry | null> {
@@ -247,6 +318,145 @@ export async function saveRecording(
   }
 
   return saved;
+}
+
+/**
+ * Update one or more metric fields for a date. If no entry exists for that
+ * date yet, an empty one is created.
+ */
+export async function updateMetric(
+  mode: DataMode,
+  dateISO: string,
+  patch: Partial<EntryMetrics>,
+): Promise<Entry> {
+  if (mode === "demo") {
+    if (typeof window === "undefined") {
+      throw new Error("Cannot update metric on the server");
+    }
+    const existing = (await loadDemoEntry(dateISO)) ?? blankDemoEntry(dateISO);
+    const merged: Entry = {
+      ...existing,
+      metrics: { ...(existing.metrics ?? blankMetrics()), ...patch },
+    };
+    window.localStorage.setItem(demoKey(dateISO), JSON.stringify(merged));
+    return merged;
+  }
+
+  // Auth: upsert only the metric columns.
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const dbPatch: Record<string, unknown> = {};
+  if (Object.prototype.hasOwnProperty.call(patch, "weightKg")) {
+    dbPatch.weight_kg = patch.weightKg;
+  }
+  if (Object.prototype.hasOwnProperty.call(patch, "sleepHours")) {
+    dbPatch.sleep_hours = patch.sleepHours;
+  }
+  if (Object.prototype.hasOwnProperty.call(patch, "mood")) {
+    dbPatch.mood = patch.mood;
+  }
+
+  const { error } = await supabase
+    .from("entries")
+    .upsert(
+      { user_id: user.id, entry_date: dateISO, ...dbPatch },
+      { onConflict: "user_id,entry_date" },
+    );
+  if (error) throw new Error(error.message);
+
+  const refreshed = await loadAuthEntry(dateISO);
+  return refreshed ?? blankEntryShell(dateISO);
+}
+
+/**
+ * Toggle a goal (by label) for a given date.
+ */
+export async function toggleGoal(
+  mode: DataMode,
+  dateISO: string,
+  label: string,
+): Promise<Entry> {
+  if (mode === "demo") {
+    if (typeof window === "undefined") {
+      throw new Error("Cannot toggle goal on the server");
+    }
+    const existing = (await loadDemoEntry(dateISO)) ?? blankDemoEntry(dateISO);
+    const goals = existing.goals.map((g) =>
+      g.label.toLowerCase() === label.toLowerCase() ? { ...g, on: !g.on } : g,
+    );
+    const merged: Entry = { ...existing, goals };
+    window.localStorage.setItem(demoKey(dateISO), JSON.stringify(merged));
+    return merged;
+  }
+
+  // Auth: read goals_on, flip, write back.
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { data: existingRow } = await supabase
+    .from("entries")
+    .select("goals_on")
+    .eq("entry_date", dateISO)
+    .maybeSingle();
+
+  const current = parseStringArray(existingRow?.goals_on);
+  const norm = label.toLowerCase();
+  const has = current.some((x) => x.toLowerCase() === norm);
+  const next = has
+    ? current.filter((x) => x.toLowerCase() !== norm)
+    : [...current, label];
+
+  const { error } = await supabase
+    .from("entries")
+    .upsert(
+      { user_id: user.id, entry_date: dateISO, goals_on: next },
+      { onConflict: "user_id,entry_date" },
+    );
+  if (error) throw new Error(error.message);
+
+  const refreshed = await loadAuthEntry(dateISO);
+  return refreshed ?? blankEntryShell(dateISO);
+}
+
+function blankMetrics(): EntryMetrics {
+  return { weightKg: null, sleepHours: null, mood: null };
+}
+
+function blankDemoEntry(dateISO: string): Entry {
+  return {
+    id: `demo-${dateISO}`,
+    entryDate: dateISO,
+    transcript: "",
+    durationSeconds: 0,
+    headline: null,
+    snippet: null,
+    areas: [],
+    metrics: blankMetrics(),
+    goals: buildGoals([]),
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function blankEntryShell(dateISO: string): Entry {
+  return {
+    id: `pending-${dateISO}`,
+    entryDate: dateISO,
+    transcript: "",
+    durationSeconds: 0,
+    headline: null,
+    snippet: null,
+    areas: [],
+    metrics: blankMetrics(),
+    goals: buildGoals([]),
+    createdAt: new Date().toISOString(),
+  };
 }
 
 /**
@@ -308,7 +518,7 @@ async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
   const { data, error } = await supabase
     .from("entries")
     .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, sleep_label, created_at",
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
     )
     .gte("entry_date", start)
     .lte("entry_date", end)
@@ -322,8 +532,8 @@ async function loadAuthMonth(year: number, month: number): Promise<Entry[]> {
     headline: (d.headline as string) ?? null,
     snippet: (d.snippet as string) ?? null,
     areas: parseAreasJson(d.areas),
-    metrics: null,
-    goals: [],
+    metrics: buildMetrics(d.weight_kg, d.sleep_hours, d.mood),
+    goals: buildGoals(parseStringArray(d.goals_on)),
     createdAt: d.created_at as string,
   }));
 }
