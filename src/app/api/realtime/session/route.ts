@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Backend relay for OpenAI Realtime API (transcription-only) over WebRTC.
@@ -23,6 +24,33 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid SDP offer", { status: 400 });
   }
 
+  // Read the user's glossary (proper names they use often) so the
+  // transcription model treats them as in-vocabulary.
+  let glossaryHint = "";
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data } = await supabase
+        .from("user_settings")
+        .select("glossary")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const terms = Array.isArray(data?.glossary)
+        ? (data.glossary as unknown[]).filter(
+            (t): t is string => typeof t === "string" && t.trim().length > 0,
+          )
+        : [];
+      if (terms.length > 0) {
+        glossaryHint = ` Nomi propri ricorrenti dell'utente (rispettare scrittura esatta): ${terms.join(", ")}.`;
+      }
+    }
+  } catch {
+    // Glossary is best-effort; never block the session on it.
+  }
+
   // Realtime transcription session: streams Italian text deltas from the
   // user's microphone, no model voice response (we only want transcript).
   const sessionConfig = {
@@ -33,7 +61,8 @@ export async function POST(req: NextRequest) {
           model: "gpt-4o-transcribe",
           language: "it",
           prompt:
-            "Trascrizione di un diario personale parlato in italiano colloquiale. Include nomi propri di persone, luoghi, brand. Punteggiatura naturale.",
+            "Trascrizione di un diario personale parlato in italiano colloquiale. Include nomi propri di persone, luoghi, brand. Punteggiatura naturale." +
+            glossaryHint,
         },
         // Server-side voice activity detection. Lower silence_duration_ms
         // means chunks close faster -> transcript arrives with less perceived

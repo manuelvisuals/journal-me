@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/components/today/empty-state";
@@ -10,10 +11,12 @@ import { formatDayHeader, todayISO } from "@/lib/format";
 import {
   loadTodayEntry,
   saveRecording,
+  toggleGoal,
   updateEntryTranscript,
+  updateMetric,
   type DataMode,
 } from "@/lib/data/entries";
-import type { Entry } from "@/lib/types";
+import type { Entry, EntryMetrics } from "@/lib/types";
 
 type View = "empty" | "recording" | "processing" | "filled";
 
@@ -92,6 +95,29 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
 
   const handleCancel = () => {
     setView(entry ? "filled" : "empty");
+  };
+
+  const handleMetricChange = async (patch: Partial<EntryMetrics>) => {
+    const dateISO = entry?.entryDate ?? todayISO();
+    try {
+      const updated = await updateMetric(mode, dateISO, patch);
+      setEntry(updated);
+      // If this was a brand-new metric save on an empty day, jump to filled.
+      if (view === "empty") setView("filled");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+    }
+  };
+
+  const handleGoalToggle = async (label: string) => {
+    const dateISO = entry?.entryDate ?? todayISO();
+    try {
+      const updated = await toggleGoal(mode, dateISO, label);
+      setEntry(updated);
+      if (view === "empty") setView("filled");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+    }
   };
 
   const handleEditorSave = async (newTranscript: string) => {
@@ -181,6 +207,26 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
                 <path d="M12 18v3" />
               </svg>
             </button>
+            <Link
+              href="/settings"
+              aria-label="Impostazioni"
+              className="jm-settings-btn"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                width="16"
+                height="16"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+            </Link>
           </div>
         )}
       </header>
@@ -232,6 +278,21 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
           headline={entry?.headline ?? null}
           snippet={entry?.snippet ?? null}
           areas={entry?.areas ?? []}
+          metrics={entry?.metrics ?? null}
+          goals={
+            entry?.goals && entry.goals.length > 0
+              ? entry.goals
+              : [
+                  { id: "scopato", label: "scopato", on: false },
+                  { id: "no alcol", label: "no alcol", on: false },
+                  { id: "no junkfood", label: "no junkfood", on: false },
+                  { id: "no sbirciato ex", label: "no sbirciato ex", on: false },
+                  { id: "camminato", label: "camminato", on: false },
+                  { id: "visto sunset", label: "visto sunset", on: false },
+                ]
+          }
+          onMetricChange={handleMetricChange}
+          onGoalToggle={handleGoalToggle}
         />
       )}
 
