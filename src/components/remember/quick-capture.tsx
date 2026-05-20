@@ -1,9 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { RecordingOverlay } from "@/components/today/recording-overlay";
+import { todayISO } from "@/lib/format";
+import type { DataMode } from "@/lib/data/entries";
 import type { RememberKind } from "@/lib/types";
 
 type Props = {
+  mode: DataMode;
   defaultKind: RememberKind;
   onAdd: (text: string, kind: RememberKind) => void | Promise<void>;
 };
@@ -17,10 +21,20 @@ const KIND_OPTIONS: { key: RememberKind; label: string }[] = [
   { key: "idea", label: "Idea" },
 ];
 
-export function QuickCapture({ defaultKind, onAdd }: Props) {
+export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
   const [text, setText] = useState<string>("");
   const [kind, setKind] = useState<RememberKind>(defaultKind);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
+  const [recorderOpen, setRecorderOpen] = useState<boolean>(false);
+
+  const handleVoiceStop = (transcript: string) => {
+    setRecorderOpen(false);
+    const clean = transcript.trim();
+    if (!clean) return;
+    // Append to existing text (or replace if empty) so the user can keep
+    // typing on top of what they spoke.
+    setText((prev) => (prev.trim() ? prev + " " + clean : clean));
+  };
 
   // If the parent's defaultKind prop changes (filter switch), sync.
   // We use a derived approach: re-key in the parent if we want a hard reset.
@@ -57,6 +71,28 @@ export function QuickCapture({ defaultKind, onAdd }: Props) {
           {labelOf(kind)}
         </button>
         <button
+          type="button"
+          className="jm-qc-mic"
+          aria-label="Aggiungi con voce"
+          onClick={() => setRecorderOpen(true)}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            width="16"
+            height="16"
+            aria-hidden="true"
+          >
+            <rect x="9" y="3" width="6" height="12" rx="3" />
+            <path d="M5 11a7 7 0 0 0 14 0" />
+            <path d="M12 18v3" />
+          </svg>
+        </button>
+        <button
           type="submit"
           className="jm-qc-add"
           aria-label="Aggiungi"
@@ -82,6 +118,15 @@ export function QuickCapture({ defaultKind, onAdd }: Props) {
             </button>
           ))}
         </div>
+      )}
+
+      {recorderOpen && (
+        <RecordingOverlay
+          mode={mode}
+          defaultDate={todayISO()}
+          onStop={(transcript) => handleVoiceStop(transcript)}
+          onCancel={() => setRecorderOpen(false)}
+        />
       )}
     </div>
   );

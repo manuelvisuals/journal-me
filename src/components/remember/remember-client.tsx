@@ -150,7 +150,11 @@ export function RememberClient({ mode, initial }: Props) {
         </div>
       )}
 
-      <QuickCapture defaultKind={defaultKind} onAdd={handleAdd} />
+      <QuickCapture
+        mode={mode}
+        defaultKind={defaultKind}
+        onAdd={handleAdd}
+      />
 
       <TabBar active="remember" />
     </main>
