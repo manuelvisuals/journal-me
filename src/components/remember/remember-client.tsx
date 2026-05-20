@@ -1,0 +1,190 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { TabBar } from "@/components/ui/tab-bar";
+import { QuickCapture } from "@/components/remember/quick-capture";
+import { RememberItem } from "@/components/remember/remember-item";
+import { addRemember, deleteRemember, loadRemembers } from "@/lib/data/remembers";
+import type { DataMode } from "@/lib/data/entries";
+import type { Remember, RememberKind } from "@/lib/types";
+
+type Props = {
+  mode: DataMode;
+  initial: Remember[];
+};
+
+type FilterKey = "all" | RememberKind;
+
+const FILTERS: { key: FilterKey; label: string }[] = [
+  { key: "all", label: "Tutti" },
+  { key: "persona", label: "Persone" },
+  { key: "libro", label: "Libri" },
+  { key: "todo", label: "Todo" },
+  { key: "nota", label: "Note" },
+  { key: "luogo", label: "Luoghi" },
+  { key: "idea", label: "Idee" },
+];
+
+export function RememberClient({ mode, initial }: Props) {
+  const [items, setItems] = useState<Remember[]>(initial);
+  const [filter, setFilter] = useState<FilterKey>("all");
+  const [error, setError] = useState<string | null>(null);
+
+  // Demo: hydrate from localStorage
+  useEffect(() => {
+    if (mode !== "demo") return;
+    let cancelled = false;
+    loadRemembers("demo").then((rs) => {
+      if (!cancelled && rs.length > 0) setItems(rs);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mode]);
+
+  const visible =
+    filter === "all" ? items : items.filter((r) => r.kind === filter);
+
+  const handleAdd = async (text: string, kind: RememberKind) => {
+    setError(null);
+    try {
+      const r = await addRemember(mode, text, kind);
+      setItems((prev) => [r, ...prev]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Errore");
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setError(null);
+    try {
+      await deleteRemember(mode, id);
+      setItems((prev) => prev.filter((r) => r.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Errore");
+    }
+  };
+
+  const defaultKind: RememberKind =
+    filter === "all" ? "nota" : filter;
+
+  // Group by day band for "all" view; flat list for filtered.
+  const groups = filter === "all" ? groupByBand(visible) : null;
+
+  return (
+    <main
+      className="mx-auto flex w-full max-w-[440px] flex-1 flex-col relative"
+      style={{ minHeight: "100dvh" }}
+    >
+      <header className="jm-rem-head">
+        <h1 className="jm-rem-h">Remember</h1>
+        <div className="jm-rem-filter">
+          {FILTERS.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              className={filter === f.key ? "f-chip on" : "f-chip"}
+              onClick={() => setFilter(f.key)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </header>
+
+      <div className="jm-rem-list">
+        {visible.length === 0 ? (
+          <div
+            style={{
+              padding: "40px 24px",
+              textAlign: "center",
+              fontSize: 13,
+              color: "var(--color-ink-faint)",
+              fontStyle: "italic",
+            }}
+          >
+            niente da ricordare in questa categoria.
+          </div>
+        ) : groups ? (
+          groups.map((g) => (
+            <div key={g.label}>
+              <div className="jm-rem-day-header">{g.label}</div>
+              {g.items.map((r) => (
+                <RememberItem
+                  key={r.id}
+                  remember={r}
+                  onDelete={() => handleDelete(r.id)}
+                />
+              ))}
+            </div>
+          ))
+        ) : (
+          visible.map((r) => (
+            <RememberItem
+              key={r.id}
+              remember={r}
+              onDelete={() => handleDelete(r.id)}
+            />
+          ))
+        )}
+      </div>
+
+      {error && (
+        <div
+          role="alert"
+          style={{
+            position: "absolute",
+            bottom: 160,
+            left: 24,
+            right: 24,
+            padding: 10,
+            background: "var(--color-surface)",
+            border: "1px solid var(--color-danger)",
+            borderRadius: 10,
+            color: "var(--color-danger)",
+            fontSize: 12,
+            zIndex: 5,
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      <QuickCapture defaultKind={defaultKind} onAdd={handleAdd} />
+
+      <TabBar active="remember" />
+    </main>
+  );
+}
+
+type DayBand = { label: string; items: Remember[] };
+
+function groupByBand(items: Remember[]): DayBand[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const bands: Record<string, Remember[]> = {
+    Oggi: [],
+    Ieri: [],
+    "Settimana scorsa": [],
+    "Mese scorso": [],
+    "Più indietro": [],
+  };
+
+  for (const r of items) {
+    const created = new Date(r.createdAt);
+    created.setHours(0, 0, 0, 0);
+    const diff = Math.round(
+      (today.getTime() - created.getTime()) / (24 * 60 * 60 * 1000),
+    );
+    if (diff <= 0) bands.Oggi.push(r);
+    else if (diff === 1) bands.Ieri.push(r);
+    else if (diff <= 7) bands["Settimana scorsa"].push(r);
+    else if (diff <= 31) bands["Mese scorso"].push(r);
+    else bands["Più indietro"].push(r);
+  }
+
+  return (Object.entries(bands) as [string, Remember[]][])
+    .filter(([, list]) => list.length > 0)
+    .map(([label, list]) => ({ label, items: list }));
+}
