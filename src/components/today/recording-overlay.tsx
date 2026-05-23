@@ -49,6 +49,8 @@ type Props = {
     targetDate: string,
   ) => void;
   onCancel: () => void;
+  /** Switch from voice to manual typing (tears down the live session first). */
+  onWriteManually?: () => void;
 };
 
 type RecState = "connecting" | "recording" | "paused" | "error";
@@ -61,7 +63,13 @@ type RecState = "connecting" | "recording" | "paused" | "error";
  * The `/api/realtime/session` endpoint relays the SDP handshake so the
  * OPENAI_API_KEY never reaches the browser.
  */
-export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props) {
+export function RecordingOverlay({
+  defaultDate,
+  mode,
+  onStop,
+  onCancel,
+  onWriteManually,
+}: Props) {
   const [transcript, setTranscript] = useState<string>("");
   const [interim, setInterim] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(0);
@@ -377,6 +385,11 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
   function handleCancel() {
     cleanup();
     onCancel();
+  }
+
+  function handleWriteManually() {
+    cleanup();
+    onWriteManually?.();
   }
 
   function togglePause() {
@@ -713,6 +726,19 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
             )}
           </button>
         </div>
+
+        {onWriteManually && state !== "error" && (
+          <div className="text-center shrink-0">
+            <button
+              type="button"
+              onClick={handleWriteManually}
+              className="jm-write-link"
+              style={{ marginTop: 0 }}
+            >
+              Preferisco scrivere a mano
+            </button>
+          </div>
+        )}
 
         <p
           className="text-center shrink-0"
