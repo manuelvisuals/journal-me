@@ -51,7 +51,7 @@ export default async function MesePage() {
       supabase
         .from("entries")
         .select(
-          "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at",
+          "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
         )
         .gte("entry_date", start)
         .lte("entry_date", end)
@@ -93,7 +93,7 @@ export default async function MesePage() {
                 : null,
           },
           goals,
-          people: parseStringArray(d.people),
+          people: [],
           createdAt: d.created_at as string,
         };
       });

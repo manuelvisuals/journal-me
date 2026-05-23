@@ -37,7 +37,12 @@ export default async function Home({
   if (user) {
     const dateISO = todayISO();
 
-    const [{ data: goalsData }, { data }] = await Promise.all([
+    const ENTRY_COLS_FULL =
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at";
+    const ENTRY_COLS_BASE =
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at";
+
+    const [{ data: goalsData }, entryRes] = await Promise.all([
       supabase
         .from("goals")
         .select("id, label, is_ai_suggested, position")
@@ -45,12 +50,22 @@ export default async function Home({
         .order("created_at", { ascending: true }),
       supabase
         .from("entries")
-        .select(
-          "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at",
-        )
+        .select(ENTRY_COLS_FULL)
         .eq("entry_date", dateISO)
         .maybeSingle(),
     ]);
+
+    // Defensive: fall back to base columns if migration 005 (people) is not
+    // applied yet, so the day's entry still loads.
+    let data = entryRes.data as Record<string, unknown> | null;
+    if (entryRes.error) {
+      const base = await supabase
+        .from("entries")
+        .select(ENTRY_COLS_BASE)
+        .eq("entry_date", dateISO)
+        .maybeSingle();
+      data = base.data as Record<string, unknown> | null;
+    }
 
     goalDefs = (goalsData ?? [])
       .filter((g) => typeof g.label === "string" && (g.label as string).trim())

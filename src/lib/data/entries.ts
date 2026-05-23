@@ -172,32 +172,48 @@ function blankEntryShell(dateISO: string): Entry {
 
 /* ----------------- Load ----------------- */
 
+const ENTRY_COLS_FULL =
+  "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at";
+const ENTRY_COLS_BASE =
+  "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at";
+
 async function loadEntryRow(
   dateISO: string,
   defs?: GoalDef[],
 ): Promise<Entry | null> {
   const supabase = createClient();
   const goalDefs = defs ?? (await loadGoalDefs());
-  const { data, error } = await supabase
+  // Defensive: the `people` column ships with migration 005. If it hasn't
+  // been applied yet, the full select errors — fall back to the base columns
+  // so entries still load (Social pills just stay empty until the migration).
+  const full = await supabase
     .from("entries")
-    .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at",
-    )
+    .select(ENTRY_COLS_FULL)
     .eq("entry_date", dateISO)
     .maybeSingle();
-  if (error || !data) return null;
+  let row = full.data as Record<string, unknown> | null;
+  if (full.error) {
+    const base = await supabase
+      .from("entries")
+      .select(ENTRY_COLS_BASE)
+      .eq("entry_date", dateISO)
+      .maybeSingle();
+    if (base.error) return null;
+    row = base.data as Record<string, unknown> | null;
+  }
+  if (!row) return null;
   return {
-    id: data.id as string,
-    entryDate: data.entry_date as string,
-    transcript: (data.transcript as string) ?? "",
+    id: row.id as string,
+    entryDate: row.entry_date as string,
+    transcript: (row.transcript as string) ?? "",
     durationSeconds: 0,
-    headline: (data.headline as string) ?? null,
-    snippet: (data.snippet as string) ?? null,
-    areas: parseAreasJson(data.areas),
-    metrics: buildMetrics(data.weight_kg, data.sleep_hours, data.mood),
-    goals: buildGoals(goalDefs, parseStringArray(data.goals_on)),
-    people: parseStringArray(data.people),
-    createdAt: data.created_at as string,
+    headline: (row.headline as string) ?? null,
+    snippet: (row.snippet as string) ?? null,
+    areas: parseAreasJson(row.areas),
+    metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
+    goals: buildGoals(goalDefs, parseStringArray(row.goals_on)),
+    people: parseStringArray(row.people),
+    createdAt: row.created_at as string,
   };
 }
 
@@ -387,11 +403,11 @@ export async function loadMonthEntries(
   const supabase = createClient();
   const { start, end } = monthBounds(year, month);
   const goalDefs = await loadGoalDefs();
+  // Month rows don't render people, so we skip that column here (also keeps
+  // this query working regardless of migration 005 state).
   const { data, error } = await supabase
     .from("entries")
-    .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at",
-    )
+    .select(ENTRY_COLS_BASE)
     .gte("entry_date", start)
     .lte("entry_date", end)
     .order("entry_date", { ascending: false });
@@ -406,7 +422,7 @@ export async function loadMonthEntries(
     areas: parseAreasJson(d.areas),
     metrics: buildMetrics(d.weight_kg, d.sleep_hours, d.mood),
     goals: buildGoals(goalDefs, parseStringArray(d.goals_on)),
-    people: parseStringArray(d.people),
+    people: [],
     createdAt: d.created_at as string,
   }));
 }
@@ -444,7 +460,12 @@ export async function saveEntryPeople(
       { user_id: user.id, entry_date: dateISO, people: clean },
       { onConflict: "user_id,entry_date" },
     );
-  if (error) throw new Error(error.message);
+  // Tolerate a missing `people` column (migration 005 not yet applied): the
+  // new people are still saved to Remember > Persone by the caller; only the
+  // per-day Social link is deferred until the migration runs.
+  if (error && !/people/i.test(error.message)) {
+    throw new Error(error.message);
+  }
 
   return (await loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
 }

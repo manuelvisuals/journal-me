@@ -57,7 +57,12 @@ export default async function DayPage({
 
   let entry: Entry | null = null;
   if (user) {
-    const [{ data: goalsData }, { data }] = await Promise.all([
+    const COLS_FULL =
+      "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, people, created_at";
+    const COLS_BASE =
+      "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, created_at";
+
+    const [{ data: goalsData }, entryRes] = await Promise.all([
       supabase
         .from("goals")
         .select("id, label, position")
@@ -65,12 +70,22 @@ export default async function DayPage({
         .order("created_at", { ascending: true }),
       supabase
         .from("entries")
-        .select(
-          "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, people, created_at",
-        )
+        .select(COLS_FULL)
         .eq("entry_date", date)
         .maybeSingle(),
     ]);
+
+    // Defensive: fall back to base columns if migration 005 (people) is not
+    // applied yet.
+    let data = entryRes.data as Record<string, unknown> | null;
+    if (entryRes.error) {
+      const base = await supabase
+        .from("entries")
+        .select(COLS_BASE)
+        .eq("entry_date", date)
+        .maybeSingle();
+      data = base.data as Record<string, unknown> | null;
+    }
 
     const goalDefs = (goalsData ?? []).filter(
       (g) => typeof g.label === "string" && (g.label as string).trim().length > 0,
