@@ -38,10 +38,38 @@ export function formatDate(
 }
 
 /**
+ * Manuel's timezone. The app is single-user (Italy), and "today" must be
+ * computed in ONE timezone — otherwise the server (UTC on Vercel) and the
+ * client (Europe/Rome) disagree by a day around UTC midnight, which for a
+ * night-time journaling app means a recording can land on the wrong day and
+ * the Today view can show a different date than the one the entry saved to.
+ */
+export const APP_TZ = "Europe/Rome" as const;
+
+/** Current calendar date in APP_TZ, as numeric parts. Stable on server+client. */
+export function nowAppParts(): { year: number; month: number; day: number } {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: APP_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const val = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  return { year: val("year"), month: val("month"), day: val("day") };
+}
+
+/** A Date positioned at noon of today's APP_TZ calendar date (display-safe). */
+function appNoonDate(): Date {
+  const { year, month, day } = nowAppParts();
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+/**
  * Italian short day header, like "Lun . 18 Mag".
  * Uses non-breaking separator and capitalizes the day/month abbreviations.
+ * With no argument it reflects today's date in APP_TZ (consistent SSR/CSR).
  */
-export function formatDayHeader(d: Date = new Date()): string {
+export function formatDayHeader(d: Date = appNoonDate()): string {
   const weekday = new Intl.DateTimeFormat(LOCALE, { weekday: "short" })
     .format(d)
     .replace(/\.$/, "");
@@ -55,13 +83,19 @@ export function formatDayHeader(d: Date = new Date()): string {
 }
 
 /**
- * Date as YYYY-MM-DD in the local timezone (for DB entry_date keys).
+ * Date as YYYY-MM-DD for DB entry_date keys. With no argument it returns
+ * today's date in APP_TZ (so server and client always agree); with an explicit
+ * Date it formats that date's local parts.
  */
-export function todayISO(d: Date = new Date()): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+export function todayISO(d?: Date): string {
+  if (d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+  const { year, month, day } = nowAppParts();
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 /** Format a duration in seconds as MM:SS (no hours). */

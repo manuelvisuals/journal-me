@@ -5,6 +5,7 @@ import {
   dateKey,
   daysInMonth,
   formatMonthTitle,
+  nowAppParts,
   todayISO,
 } from "@/lib/format";
 import type { Entry } from "@/lib/types";
@@ -33,8 +34,8 @@ export function MonthSection({
   const total = daysInMonth(year, month);
   const today = todayISO();
   const todayParts = today.split("-").map(Number);
-  const now = new Date();
-  const isCurrentMonth = year === now.getFullYear() && month === now.getMonth() + 1;
+  const now = nowAppParts();
+  const isCurrentMonth = year === now.year && month === now.month;
 
   // Index entries by date for O(1) lookup, newest first.
   const byDate = new Map<string, Entry>();
@@ -43,7 +44,7 @@ export function MonthSection({
   // Days: newest at top. If current month, start at today and go down to 1.
   // If past month, start at last day and go down to 1. If future month (shouldn't
   // happen), nothing.
-  const startDay = isCurrentMonth ? now.getDate() : total;
+  const startDay = isCurrentMonth ? now.day : total;
   const days: number[] = [];
   for (let d = startDay; d >= 1; d--) days.push(d);
 

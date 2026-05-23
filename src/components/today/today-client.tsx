@@ -111,7 +111,7 @@ export function TodayClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const dayHeader = formatDayHeader(new Date());
+  const dayHeader = formatDayHeader();
 
   // Goals to render: the entry's own goal state if present, otherwise the
   // live definitions rendered all-off. No hardcoded list anywhere.

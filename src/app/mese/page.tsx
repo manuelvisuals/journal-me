@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { MeseClient } from "@/components/mese/mese-client";
+import { nowAppParts } from "@/lib/format";
 import type { AreaSummary, Entry, GoalDot, Mood } from "@/lib/types";
 
 const VALID_MOODS: ReadonlySet<Mood> = new Set([
@@ -32,9 +33,7 @@ export default async function MesePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
+  const { year, month } = nowAppParts();
 
   let entries: Entry[] = [];
   if (user) {

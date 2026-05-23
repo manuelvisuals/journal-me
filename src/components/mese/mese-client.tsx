@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { JumpPicker } from "@/components/mese/jump-picker";
 import { MonthSection } from "@/components/mese/month-section";
-import { formatMonthTitle, daysInMonth } from "@/lib/format";
+import { formatMonthTitle, daysInMonth, nowAppParts } from "@/lib/format";
 import {
   loadMonthEntries,
   type DataMode,
@@ -39,11 +39,9 @@ export function MeseClient({ mode, initialMonth }: Props) {
 
   // Today, captured once on mount. useState with lazy init so it's stable
   // across renders without triggering the react-hooks/refs rule.
-  const [today] = useState<{ year: number; month: number; day: number }>(() => ({
-    year: initialMonth.year,
-    month: initialMonth.month,
-    day: new Date().getDate(),
-  }));
+  const [today] = useState<{ year: number; month: number; day: number }>(
+    () => nowAppParts(),
+  );
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
