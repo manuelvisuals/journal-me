@@ -8,23 +8,30 @@ import { RecordingOverlay } from "@/components/today/recording-overlay";
 import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { ReviewScreen } from "@/components/today/review-screen";
+import { ManualWrite } from "@/components/today/manual-write";
+import { PeopleReview } from "@/components/today/people-review";
 import { formatDayHeader, todayISO } from "@/lib/format";
+import { warmRealtime } from "@/lib/realtime/prewarm";
 import {
   deleteEntry,
+  saveEntryPeople,
   saveRecording,
   toggleGoal,
   updateEntryTranscript,
   updateMetric,
   type DataMode,
 } from "@/lib/data/entries";
-import type { Entry, EntryMetrics } from "@/lib/types";
+import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
+import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
 type View =
   | "empty"
   | "recording"
+  | "manual"
   | "no-capture"
   | "review"
   | "processing"
+  | "people"
   | "filled";
 
 type PendingRecording = {
@@ -33,61 +40,110 @@ type PendingRecording = {
   targetDate: string;
 };
 
+type PeopleData = {
+  existing: string[];
+  suggested: string[];
+  attachDate: string;
+};
+
 type Props = {
   mode: DataMode;
   initialEntry: Entry | null;
+  /** Live micro-goal definitions from the DB (no hardcoded fallback). */
+  goalDefs: GoalDef[];
   /** If true, the recording overlay opens immediately on mount (?record=1). */
   autoRecord?: boolean;
 };
 
-export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
+async function extractPeople(transcript: string): Promise<string[]> {
+  try {
+    const resp = await fetch("/api/extract-people", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ transcript }),
+    });
+    if (!resp.ok) return [];
+    const data = (await resp.json()) as { people?: string[] };
+    return Array.isArray(data.people) ? data.people : [];
+  } catch {
+    return [];
+  }
+}
+
+export function TodayClient({
+  mode,
+  initialEntry,
+  goalDefs,
+  autoRecord = false,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
   const [view, setView] = useState<View>(
     autoRecord ? "recording" : initialEntry ? "filled" : "empty",
   );
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [editorOpen, setEditorOpen] = useState<boolean>(false);
+  const [savedDates, setSavedDates] = useState<string[]>([]);
+  const [pending, setPending] = useState<PendingRecording | null>(null);
+  const [peopleData, setPeopleData] = useState<PeopleData | null>(null);
+  const [peopleSaving, setPeopleSaving] = useState<boolean>(false);
+
+  // Prewarm the transcription path the moment Today loads, so the mic feels
+  // instant when the user records. Best-effort, never touches the mic.
+  useEffect(() => {
+    warmRealtime();
+  }, []);
 
   // Watch for ?record=1 changes coming from clicking the mic in the tab bar
-  // while we're already on /. Without this the tab-bar mic looks dummy.
-  // Defer the setState via queueMicrotask so React 19's
-  // react-hooks/set-state-in-effect rule is satisfied.
+  // while we're already on /. Defer the setState via queueMicrotask so React
+  // 19's react-hooks/set-state-in-effect rule is satisfied.
   useEffect(() => {
     if (searchParams.get("record") !== "1") return;
     queueMicrotask(() => {
+      warmRealtime();
       setView((current) => (current === "recording" ? current : "recording"));
       router.replace("/", { scroll: false });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const [editorOpen, setEditorOpen] = useState<boolean>(false);
-  const [savedDates, setSavedDates] = useState<string[]>([]);
-  const [pending, setPending] = useState<PendingRecording | null>(null);
 
-  // Day header is computed at render time. We pass suppressHydrationWarning
-  // on the span so SSR/CSR mismatch (server clock vs client clock) is fine.
   const dayHeader = formatDayHeader(new Date());
 
-  // initialEntry is always populated by the server now (everything lives in
-  // Supabase). Keeping a no-op effect placeholder for future hydration needs.
+  // Goals to render: the entry's own goal state if present, otherwise the
+  // live definitions rendered all-off. No hardcoded list anywhere.
+  const goalsForView: GoalDot[] =
+    entry?.goals && entry.goals.length > 0
+      ? entry.goals
+      : goalDefs.map((d) => ({ id: d.id, label: d.label, on: false }));
 
   const handleStartRecording = () => {
     setSaveError(null);
     setSavedDates([]);
+    warmRealtime();
     setView("recording");
   };
 
-  // Stop recording -> step into the review screen so the user can
-  // correct typos / proper names before the AI processes the transcript.
+  const handleWriteManually = () => {
+    setSaveError(null);
+    setSavedDates([]);
+    setView("manual");
+  };
+
+  // Manual text follows the exact same pipeline as a recording.
+  const handleManualContinue = (text: string) => {
+    setPending({ transcript: text, durationSeconds: 0, targetDate: todayISO() });
+    setView("review");
+  };
+
+  // Stop recording -> review screen so the user can correct typos / proper
+  // names before the AI processes the transcript.
   const handleStop = (
     transcript: string,
     durationSeconds: number,
     targetDate: string,
   ) => {
     if (!transcript.trim()) {
-      // Nothing was captured — surface a recoverable dialog instead of
-      // silently dropping the recording (Manuel feedback).
       setPending({ transcript: "", durationSeconds, targetDate });
       setView("no-capture");
       return;
@@ -96,7 +152,8 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
     setView("review");
   };
 
-  // User confirmed the (possibly corrected) transcript — now run AI.
+  // User confirmed the (possibly corrected) transcript — now run AI, then
+  // detect people mentioned today.
   const handleConfirmReview = async (finalTranscript: string) => {
     if (!pending) return;
     setView("processing");
@@ -107,15 +164,52 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         defaultDate: pending.targetDate,
       });
       const today = todayISO();
-      const todayEntry = saved.find((e) => e.entryDate === today);
+      const todayEntry = saved.find((e) => e.entryDate === today) ?? null;
       if (todayEntry) setEntry(todayEntry);
       setSavedDates(saved.map((e) => e.entryDate));
+
+      // People detection — compare against the existing roster.
+      const found = await extractPeople(finalTranscript);
+      if (found.length > 0) {
+        const roster = await loadPersonaNames(mode);
+        const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
+        const existing = found.filter((p) => rosterLower.has(p.toLowerCase()));
+        const suggested = found.filter((p) => !rosterLower.has(p.toLowerCase()));
+        const attachDate = todayEntry
+          ? today
+          : saved[0]?.entryDate ?? pending.targetDate;
+        setPeopleData({ existing, suggested, attachDate });
+        setPending(null);
+        setView("people");
+        return;
+      }
+
       setPending(null);
       setView(todayEntry || entry ? "filled" : "empty");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
       setPending(null);
       setView("empty");
+    }
+  };
+
+  const finishPeople = async (allPeople: string[], newOnes: string[]) => {
+    if (!peopleData) return;
+    setPeopleSaving(true);
+    try {
+      if (newOnes.length > 0) {
+        await addPersonas(mode, newOnes);
+      }
+      const updated = await saveEntryPeople(mode, peopleData.attachDate, allPeople);
+      if (updated.entryDate === todayISO()) setEntry(updated);
+      setPeopleData(null);
+      setPeopleSaving(false);
+      setView(updated.entryDate === todayISO() || entry ? "filled" : "empty");
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Errore salvataggio persone");
+      setPeopleData(null);
+      setPeopleSaving(false);
+      setView(entry ? "filled" : "empty");
     }
   };
 
@@ -133,7 +227,6 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
     try {
       const updated = await updateMetric(mode, dateISO, patch);
       setEntry(updated);
-      // If this was a brand-new metric save on an empty day, jump to filled.
       if (view === "empty") setView("filled");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
@@ -183,16 +276,13 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
   };
 
   const multiDayNotice =
-    savedDates.length > 1
-      ? `Salvato su ${savedDates.length} giorni`
-      : null;
+    savedDates.length > 1 ? `Salvato su ${savedDates.length} giorni` : null;
 
   return (
     <main
       className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
-      {/* Day header */}
       <header
         className="flex items-baseline justify-between"
         style={{ padding: "26px 24px 6px" }}
@@ -255,7 +345,6 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         )}
       </header>
 
-      {/* Soft notice after a multi-day save */}
       {multiDayNotice && view === "filled" && (
         <div
           style={{
@@ -274,7 +363,6 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         </div>
       )}
 
-      {/* Body */}
       {view === "empty" && (
         <>
           {saveError && (
@@ -293,7 +381,10 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
               {saveError}
             </div>
           )}
-          <EmptyState onStartRecording={handleStartRecording} />
+          <EmptyState
+            onStartRecording={handleStartRecording}
+            onWriteManually={handleWriteManually}
+          />
         </>
       )}
 
@@ -303,29 +394,17 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
           snippet={entry?.snippet ?? null}
           areas={entry?.areas ?? []}
           metrics={entry?.metrics ?? null}
-          goals={
-            entry?.goals && entry.goals.length > 0
-              ? entry.goals
-              : [
-                  { id: "scopato", label: "scopato", on: false },
-                  { id: "no alcol", label: "no alcol", on: false },
-                  { id: "no junkfood", label: "no junkfood", on: false },
-                  { id: "no sbirciato ex", label: "no sbirciato ex", on: false },
-                  { id: "camminato", label: "camminato", on: false },
-                  { id: "visto sunset", label: "visto sunset", on: false },
-                ]
-          }
+          people={entry?.people ?? []}
+          goals={goalsForView}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
         />
       )}
 
-      {/* Spacer pushes the tab bar down on filled view */}
       {view === "filled" && <div className="flex-1" />}
 
       <TabBar active="today" />
 
-      {/* Recording overlay sits above everything */}
       {view === "recording" && (
         <RecordingOverlay
           defaultDate={todayISO()}
@@ -335,7 +414,13 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         />
       )}
 
-      {/* Review screen after stop, before AI processing */}
+      {view === "manual" && (
+        <ManualWrite
+          onContinue={handleManualContinue}
+          onCancel={() => setView(entry ? "filled" : "empty")}
+        />
+      )}
+
       {view === "review" && pending && (
         <ReviewScreen
           initialTranscript={pending.transcript}
@@ -346,19 +431,22 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         />
       )}
 
-      {/* No-capture: stop was tapped but the transcript was empty */}
+      {view === "people" && peopleData && (
+        <PeopleReview
+          existing={peopleData.existing}
+          suggested={peopleData.suggested}
+          onConfirm={finishPeople}
+          onSkip={(existingPeople) => finishPeople(existingPeople, [])}
+          saving={peopleSaving}
+        />
+      )}
+
       {view === "no-capture" && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center"
           style={{ background: "rgba(10,5,7,0.92)", backdropFilter: "blur(8px)" }}
         >
-          <div
-            style={{
-              maxWidth: 320,
-              padding: "0 28px",
-              textAlign: "center",
-            }}
-          >
+          <div style={{ maxWidth: 320, padding: "0 28px", textAlign: "center" }}>
             <div
               style={{
                 fontSize: 11,
@@ -420,7 +508,6 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         </div>
       )}
 
-      {/* Processing overlay (AI summarization in progress) */}
       {view === "processing" && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center"
@@ -454,7 +541,6 @@ export function TodayClient({ mode, initialEntry, autoRecord = false }: Props) {
         </div>
       )}
 
-      {/* Transcript editor modal */}
       {editorOpen && entry && (
         <TranscriptEditor
           initialTranscript={entry.transcript}

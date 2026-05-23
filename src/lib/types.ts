@@ -43,8 +43,17 @@ export type Entry = {
   metrics: EntryMetrics | null;
   /** Goal-dot state at the time of the entry. */
   goals: GoalDot[];
+  /** Names of people related to this day (Social section). */
+  people: string[];
   /** ISO timestamp of when the entry was saved. */
   createdAt: string;
+};
+
+/** A configurable micro-goal definition (lives in the `goals` table). */
+export type GoalDef = {
+  id: string;
+  label: string;
+  isAiSuggested: boolean;
 };
 
 export type RecapPeriod = "month" | "semester" | "year";

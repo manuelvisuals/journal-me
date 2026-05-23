@@ -9,6 +9,7 @@ type Props = {
   day: number;
   entry: Entry | null;
   isToday: boolean;
+  loading?: boolean;
   onClick?: () => void;
 };
 
@@ -20,13 +21,22 @@ const MOOD_EMOJI: Record<Mood, string> = {
   bad: "\u{1F641}",
 };
 
-export function DayRow({ year, month, day, entry, isToday, onClick }: Props) {
+export function DayRow({
+  year,
+  month,
+  day,
+  entry,
+  isToday,
+  loading = false,
+  onClick,
+}: Props) {
   const date = new Date(year, month - 1, day);
   const weekday = shortWeekday(date);
 
   const classes = ["jm-day-row"];
   if (isToday) classes.push("is-today");
   if (entry) classes.push("is-filled");
+  if (loading) classes.push("is-loading");
 
   const m = entry?.metrics ?? null;
   const goals = entry?.goals ?? [];
@@ -35,9 +45,10 @@ export function DayRow({ year, month, day, entry, isToday, onClick }: Props) {
     <div
       role="button"
       tabIndex={0}
-      onClick={onClick}
+      aria-busy={loading}
+      onClick={loading ? undefined : onClick}
       onKeyDown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && onClick) {
+        if ((e.key === "Enter" || e.key === " ") && onClick && !loading) {
           e.preventDefault();
           onClick();
         }
@@ -85,6 +96,8 @@ export function DayRow({ year, month, day, entry, isToday, onClick }: Props) {
           <div className="jm-day-empty">&mdash; giornata vuota &mdash;</div>
         )}
       </div>
+
+      {loading && <span className="jm-day-spinner" aria-hidden="true" />}
     </div>
   );
 }

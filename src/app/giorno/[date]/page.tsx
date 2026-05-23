@@ -40,15 +40,6 @@ const VALID_MOODS: ReadonlySet<Mood> = new Set([
   "bad",
 ]);
 
-const DEFAULT_GOAL_LABELS = [
-  "scopato",
-  "no alcol",
-  "no junkfood",
-  "no sbirciato ex",
-  "camminato",
-  "visto sunset",
-];
-
 export default async function DayPage({
   params,
 }: {
@@ -66,13 +57,24 @@ export default async function DayPage({
 
   let entry: Entry | null = null;
   if (user) {
-    const { data } = await supabase
-      .from("entries")
-      .select(
-        "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, created_at",
-      )
-      .eq("entry_date", date)
-      .maybeSingle();
+    const [{ data: goalsData }, { data }] = await Promise.all([
+      supabase
+        .from("goals")
+        .select("id, label, position")
+        .order("position", { ascending: true })
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("entries")
+        .select(
+          "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, people, created_at",
+        )
+        .eq("entry_date", date)
+        .maybeSingle(),
+    ]);
+
+    const goalDefs = (goalsData ?? []).filter(
+      (g) => typeof g.label === "string" && (g.label as string).trim().length > 0,
+    );
 
     if (data) {
       const metrics: EntryMetrics = {
@@ -88,10 +90,12 @@ export default async function DayPage({
             : null,
       };
       const goalsOn = parseStringArray(data.goals_on);
-      const goals: GoalDot[] = DEFAULT_GOAL_LABELS.map((label) => ({
-        id: label,
-        label,
-        on: goalsOn.some((g) => g.toLowerCase() === label.toLowerCase()),
+      const goals: GoalDot[] = goalDefs.map((g) => ({
+        id: g.id as string,
+        label: g.label as string,
+        on: goalsOn.some(
+          (x) => x.toLowerCase() === (g.label as string).toLowerCase(),
+        ),
       }));
       entry = {
         id: data.id as string,
@@ -103,6 +107,7 @@ export default async function DayPage({
         areas: parseAreasField(data.areas),
         metrics,
         goals,
+        people: parseStringArray(data.people),
         createdAt: (data.created_at as string) ?? "",
       };
     }

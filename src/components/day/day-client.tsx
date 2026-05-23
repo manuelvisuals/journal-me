@@ -172,6 +172,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           areas={entry.areas}
           metrics={entry.metrics}
           goals={entry.goals}
+          people={entry.people}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
         />

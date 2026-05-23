@@ -82,6 +82,78 @@ export async function deleteRemember(
 }
 
 /**
+ * Load just the names of saved people (remembers with kind = 'persona').
+ * Used to (a) dedupe AI-extracted people against the user's existing roster,
+ * and (b) feed proper names to the transcription model as in-vocabulary terms
+ * (replacing the removed Glossario).
+ */
+export async function loadPersonaNames(_mode?: DataMode): Promise<string[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("remembers")
+    .select("text")
+    .eq("kind", "persona")
+    .order("created_at", { ascending: false });
+  if (!data) return [];
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const d of data) {
+    const t = typeof d.text === "string" ? d.text.trim() : "";
+    if (!t) continue;
+    const k = t.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    names.push(t);
+  }
+  return names;
+}
+
+/**
+ * Bulk-insert new people into the roster (remembers, kind = 'persona',
+ * source = 'extracted'). Skips names that already exist (case-insensitive).
+ * Returns the names actually inserted.
+ */
+export async function addPersonas(
+  _mode: DataMode,
+  names: string[],
+  sourceEntryId?: string | null,
+): Promise<string[]> {
+  const clean = names.map((n) => n.trim()).filter((n) => n.length > 0);
+  if (clean.length === 0) return [];
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Dedupe against what's already saved.
+  const existing = await loadPersonaNames("auth");
+  const existingLower = new Set(existing.map((e) => e.toLowerCase()));
+
+  const seen = new Set<string>();
+  const toInsert: string[] = [];
+  for (const n of clean) {
+    const k = n.toLowerCase();
+    if (existingLower.has(k) || seen.has(k)) continue;
+    seen.add(k);
+    toInsert.push(n);
+  }
+  if (toInsert.length === 0) return [];
+
+  const rows = toInsert.map((text) => ({
+    user_id: user.id,
+    text,
+    kind: "persona" as const,
+    source: "extracted" as const,
+    source_entry_id: sourceEntryId ?? null,
+  }));
+  const { error } = await supabase.from("remembers").insert(rows);
+  if (error) throw new Error(error.message);
+  return toInsert;
+}
+
+/**
  * Update the kind of an existing remember. Used after AI auto-classification
  * reclassifies a manually-saved 'nota' into a more specific bucket.
  */

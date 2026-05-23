@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { JumpPicker } from "@/components/mese/jump-picker";
 import { MonthSection } from "@/components/mese/month-section";
@@ -32,6 +32,10 @@ export function MeseClient({ mode, initialMonth }: Props) {
   }>({ year: initialMonth.year, month: initialMonth.month });
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
+  // Day currently navigating to its detail view — drives the row spinner so
+  // the tap never feels like a freeze while the server renders the day.
+  const [pendingDate, setPendingDate] = useState<string | null>(null);
+  const [, startNav] = useTransition();
 
   // Today, captured once on mount. useState with lazy init so it's stable
   // across renders without triggering the react-hooks/refs rule.
@@ -204,9 +208,13 @@ export function MeseClient({ mode, initialMonth }: Props) {
             // The first (most recent) month is implicitly labeled by the
             // sticky page header. Subsequent months get an inline divider.
             showHeader={idx > 0}
+            loadingDate={pendingDate}
             onDayClick={(year, month, day) => {
               const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-              router.push(`/giorno/${iso}`);
+              setPendingDate(iso);
+              startNav(() => {
+                router.push(`/giorno/${iso}`);
+              });
             }}
           />
         ))}

@@ -10,7 +10,7 @@ import {
   todayISO,
 } from "@/lib/format";
 import { DatePickerPopover } from "@/components/today/date-picker-popover";
-import { loadGlossary } from "@/lib/data/glossary";
+import { loadPersonaNames } from "@/lib/data/remembers";
 import type { DataMode } from "@/lib/data/entries";
 
 // useSyncExternalStore needs a stable subscribe function; we never notify
@@ -160,12 +160,14 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
           "Content-Type": "application/sdp",
         };
         try {
-          const terms = await loadGlossary(mode ?? "auth");
+          // People saved in Remember feed the transcription model as
+          // in-vocabulary proper names (this replaced the old Glossario).
+          const terms = await loadPersonaNames(mode ?? "auth");
           if (terms.length > 0) {
             headers["X-JM-Glossary"] = encodeURIComponent(terms.join(","));
           }
         } catch {
-          // ignore — glossary is non-critical
+          // ignore — vocabulary hint is non-critical
         }
 
         const resp = await fetch("/api/realtime/session", {
@@ -564,7 +566,28 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
                 waveform (Manuel's request — easier to read while talking
                 than buried in the transcript scroll area). */}
             <div className="shrink-0" style={{ padding: "0 4px 8px", minHeight: 42 }}>
-              {!transcript && !interim && (
+              {!transcript && !interim && state === "connecting" && (
+                <div
+                  className="flex items-center justify-center"
+                  style={{ gap: 9 }}
+                >
+                  <span className="jm-dot-pulse" aria-hidden="true">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                  <span
+                    style={{
+                      color: "var(--color-ink-faint)",
+                      fontSize: 13,
+                      letterSpacing: "0.01em",
+                    }}
+                  >
+                    preparo il microfono
+                  </span>
+                </div>
+              )}
+              {!transcript && !interim && state === "recording" && (
                 <p
                   style={{
                     color: "var(--color-ink-faint)",
@@ -573,11 +596,7 @@ export function RecordingOverlay({ defaultDate, mode, onStop, onCancel }: Props)
                     textAlign: "center",
                   }}
                 >
-                  {state === "connecting"
-                    ? "Mi sto connettendo al servizio..."
-                    : state === "recording"
-                      ? "Parla pure..."
-                      : ""}
+                  Parla pure...
                 </p>
               )}
               {silenceWarning && state === "recording" && (

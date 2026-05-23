@@ -4,15 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
-import { GlossarySection } from "@/components/settings/glossary-section";
+import { GoalsSection } from "@/components/settings/goals-section";
 import { createClient } from "@/lib/supabase/client";
 import type { DataMode } from "@/lib/data/entries";
+import type { GoalDef } from "@/lib/types";
 
 type Props = {
   mode: DataMode;
   email: string | null;
   isAnonymous: boolean;
-  initialGlossary: string[];
+  initialGoals: GoalDef[];
   /** Latest recap across periods — shown as a teaser inside the Recap card. */
   latestRecap: {
     title: string;
@@ -24,11 +25,10 @@ export function SettingsClient({
   mode,
   email,
   isAnonymous,
-  initialGlossary,
+  initialGoals,
   latestRecap,
 }: Props) {
   const router = useRouter();
-  const [glossary, setGlossary] = useState<string[]>(initialGlossary);
   const [signingOut, setSigningOut] = useState<boolean>(false);
 
   const handleLogout = async () => {
@@ -84,11 +84,7 @@ export function SettingsClient({
           </div>
         </Link>
 
-        <GlossarySection
-          mode={mode}
-          initial={glossary}
-          onChange={setGlossary}
-        />
+        <GoalsSection mode={mode} initial={initialGoals} />
 
         <section className="jm-set-section">
           <div className="jm-set-section-h">Account</div>

@@ -2,9 +2,10 @@
 
 type Props = {
   onStartRecording: () => void;
+  onWriteManually: () => void;
 };
 
-export function EmptyState({ onStartRecording }: Props) {
+export function EmptyState({ onStartRecording, onWriteManually }: Props) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 pb-10">
       <h1
@@ -56,6 +57,14 @@ export function EmptyState({ onStartRecording }: Props) {
           <path d="M5 11a7 7 0 0 0 14 0" />
           <path d="M12 18v3" />
         </svg>
+      </button>
+
+      <button
+        type="button"
+        onClick={onWriteManually}
+        className="jm-write-link"
+      >
+        Preferisco scrivere a mano
       </button>
     </div>
   );

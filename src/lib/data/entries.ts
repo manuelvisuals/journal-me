@@ -2,10 +2,12 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
+import { loadGoalDefs } from "@/lib/data/goals";
 import type {
   AreaSummary,
   Entry,
   EntryMetrics,
+  GoalDef,
   GoalDot,
   Mood,
 } from "@/lib/types";
@@ -17,15 +19,6 @@ import type {
  * is no longer a localStorage path.
  */
 export type DataMode = "auth";
-
-export const DEFAULT_GOAL_LABELS = [
-  "scopato",
-  "no alcol",
-  "no junkfood",
-  "no sbirciato ex",
-  "camminato",
-  "visto sunset",
-] as const;
 
 export type RecordingInput = {
   transcript: string;
@@ -117,12 +110,18 @@ function parseStringArray(raw: unknown): string[] {
   return raw.filter((x): x is string => typeof x === "string");
 }
 
-function buildGoals(labelsOn: string[]): GoalDot[] {
+/**
+ * Build the goal-dot list for an entry by merging the user's live goal
+ * definitions (from the `goals` table) with the labels that were "on" for
+ * that day. No hardcoded fallback: if the user has no goal definitions, the
+ * result is an empty list and the dot area renders nothing.
+ */
+function buildGoals(defs: GoalDef[], labelsOn: string[]): GoalDot[] {
   const on = new Set(labelsOn.map((s) => s.toLowerCase()));
-  return DEFAULT_GOAL_LABELS.map((label) => ({
-    id: label,
-    label,
-    on: on.has(label.toLowerCase()),
+  return defs.map((d) => ({
+    id: d.id,
+    label: d.label,
+    on: on.has(d.label.toLowerCase()),
   }));
 }
 
@@ -165,19 +164,24 @@ function blankEntryShell(dateISO: string): Entry {
     snippet: null,
     areas: [],
     metrics: blankMetrics(),
-    goals: buildGoals([]),
+    goals: [],
+    people: [],
     createdAt: new Date().toISOString(),
   };
 }
 
 /* ----------------- Load ----------------- */
 
-async function loadEntryRow(dateISO: string): Promise<Entry | null> {
+async function loadEntryRow(
+  dateISO: string,
+  defs?: GoalDef[],
+): Promise<Entry | null> {
   const supabase = createClient();
+  const goalDefs = defs ?? (await loadGoalDefs());
   const { data, error } = await supabase
     .from("entries")
     .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at",
     )
     .eq("entry_date", dateISO)
     .maybeSingle();
@@ -191,7 +195,8 @@ async function loadEntryRow(dateISO: string): Promise<Entry | null> {
     snippet: (data.snippet as string) ?? null,
     areas: parseAreasJson(data.areas),
     metrics: buildMetrics(data.weight_kg, data.sleep_hours, data.mood),
-    goals: buildGoals(parseStringArray(data.goals_on)),
+    goals: buildGoals(goalDefs, parseStringArray(data.goals_on)),
+    people: parseStringArray(data.people),
     createdAt: data.created_at as string,
   };
 }
@@ -210,7 +215,7 @@ async function saveEntryRow(
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("entries")
     .upsert(
       {
@@ -222,26 +227,18 @@ async function saveEntryRow(
         areas: ai.areas,
       },
       { onConflict: "user_id,entry_date" },
-    )
-    .select("id, created_at")
-    .single();
+    );
 
-  if (error || !data) {
-    throw new Error(error?.message ?? "Failed to save entry");
+  if (error) {
+    throw new Error(error.message ?? "Failed to save entry");
   }
 
-  return {
-    id: data.id as string,
-    entryDate: dateISO,
-    transcript,
-    durationSeconds,
-    headline: ai.headline,
-    snippet: ai.snippet,
-    areas: ai.areas,
-    metrics: null,
-    goals: [],
-    createdAt: data.created_at as string,
-  };
+  // Reload so the returned entry is fully hydrated (metrics, goals from the
+  // live definitions, people) instead of stubbed — fixes metrics/goals not
+  // showing right after a recording until a manual reload.
+  const reloaded = await loadEntryRow(dateISO);
+  if (reloaded) return { ...reloaded, durationSeconds };
+  return blankEntryShell(dateISO);
 }
 
 /* ----------------- Public API ----------------- */
@@ -389,10 +386,11 @@ export async function loadMonthEntries(
 ): Promise<Entry[]> {
   const supabase = createClient();
   const { start, end } = monthBounds(year, month);
+  const goalDefs = await loadGoalDefs();
   const { data, error } = await supabase
     .from("entries")
     .select(
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at",
+      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at",
     )
     .gte("entry_date", start)
     .lte("entry_date", end)
@@ -407,7 +405,46 @@ export async function loadMonthEntries(
     snippet: (d.snippet as string) ?? null,
     areas: parseAreasJson(d.areas),
     metrics: buildMetrics(d.weight_kg, d.sleep_hours, d.mood),
-    goals: buildGoals(parseStringArray(d.goals_on)),
+    goals: buildGoals(goalDefs, parseStringArray(d.goals_on)),
+    people: parseStringArray(d.people),
     createdAt: d.created_at as string,
   }));
+}
+
+/**
+ * Upsert just the `people` column for a day (the Social-section names).
+ * Called after the post-recording people-review step.
+ */
+export async function saveEntryPeople(
+  _mode: DataMode,
+  dateISO: string,
+  people: string[],
+): Promise<Entry> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Normalize: trim, drop empty, dedupe (case-insensitive, keep first casing).
+  const seen = new Set<string>();
+  const clean: string[] = [];
+  for (const p of people) {
+    const t = p.trim();
+    if (!t) continue;
+    const k = t.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    clean.push(t);
+  }
+
+  const { error } = await supabase
+    .from("entries")
+    .upsert(
+      { user_id: user.id, entry_date: dateISO, people: clean },
+      { onConflict: "user_id,entry_date" },
+    );
+  if (error) throw new Error(error.message);
+
+  return (await loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
 }

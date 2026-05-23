@@ -10,6 +10,7 @@ type Props = {
   areas?: AreaSummary[];
   metrics: EntryMetrics | null;
   goals: GoalDot[];
+  people?: string[];
   onMetricChange: (patch: Partial<EntryMetrics>) => void;
   onGoalToggle: (label: string) => void;
 };
@@ -20,12 +21,14 @@ export function FilledView({
   areas,
   metrics,
   goals,
+  people,
   onMetricChange,
   onGoalToggle,
 }: Props) {
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = areas?.filter((a) => a.text.trim().length > 0) ?? [];
+  const peopleList = (people ?? []).filter((p) => p.trim().length > 0);
 
   return (
     <div className="flex flex-1 flex-col" style={{ padding: "0 24px" }}>
@@ -112,6 +115,44 @@ export function FilledView({
           }}
         >
           aree macro non ancora estratte
+        </div>
+      )}
+
+      {peopleList.length > 0 && (
+        <div style={{ padding: "14px 0" }}>
+          <div
+            style={{
+              fontSize: 10,
+              fontWeight: 650,
+              color: "var(--color-accent)",
+              letterSpacing: "0.20em",
+              textTransform: "uppercase",
+              marginBottom: 10,
+            }}
+          >
+            Social
+          </div>
+          <div className="jm-pill-row">
+            {peopleList.map((name) => (
+              <span key={name} className="jm-person-pill">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--color-ink-faint)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  width="12"
+                  height="12"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21a8 8 0 0 1 16 0" />
+                </svg>
+                {name}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

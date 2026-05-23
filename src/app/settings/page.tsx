@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { SettingsClient } from "@/components/settings/settings-client";
+import type { GoalDef } from "@/lib/types";
 
 const MONTH_NAMES_IT = [
   "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
@@ -26,19 +27,21 @@ export default async function SettingsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let initialGlossary: string[] = [];
+  let initialGoals: GoalDef[] = [];
   let latestRecap: { title: string; periodLabel: string } | null = null;
   if (user) {
-    const { data: settingsData } = await supabase
-      .from("user_settings")
-      .select("glossary")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (Array.isArray(settingsData?.glossary)) {
-      initialGlossary = (settingsData.glossary as unknown[]).filter(
-        (t): t is string => typeof t === "string",
-      );
-    }
+    const { data: goalsData } = await supabase
+      .from("goals")
+      .select("id, label, is_ai_suggested, position")
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: true });
+    initialGoals = (goalsData ?? [])
+      .filter((g) => typeof g.label === "string" && (g.label as string).trim())
+      .map((g) => ({
+        id: g.id as string,
+        label: g.label as string,
+        isAiSuggested: !!g.is_ai_suggested,
+      }));
 
     // Most recent recap (across all periods) as a teaser inside the Recap
     // card. Fetched server-side so the card is filled on first paint.
@@ -67,7 +70,7 @@ export default async function SettingsPage() {
       mode="auth"
       email={user?.email ?? null}
       isAnonymous={isAnonymous}
-      initialGlossary={initialGlossary}
+      initialGoals={initialGoals}
       latestRecap={latestRecap}
     />
   );

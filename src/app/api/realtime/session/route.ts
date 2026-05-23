@@ -2,6 +2,38 @@ import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 /**
+ * Warm-up endpoint. Called when the user lands on the Today screen (and when
+ * they tap the mic) so the serverless function is already hot and the
+ * server -> OpenAI TLS/DNS path is primed by the time a real recording starts.
+ *
+ * Deliberately does NOT touch the microphone or open a WebRTC session — we
+ * learned (commit db7f5ac) that holding a mic stream open across sessions
+ * reintroduces the iOS Safari stale-pipe bug, so the mic is only acquired
+ * when the overlay actually opens. This warms only the cheap, safe parts.
+ */
+export async function GET() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return Response.json({ ok: false, reason: "no-key" });
+  }
+  // Best-effort: prime the server -> OpenAI connection. Short timeout, errors
+  // ignored — this is purely a latency optimization, never blocks anything.
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 1500);
+    await fetch("https://api.openai.com/v1/models", {
+      method: "HEAD",
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: ctrl.signal,
+    }).catch(() => {});
+    clearTimeout(t);
+  } catch {
+    // ignore
+  }
+  return Response.json({ ok: true });
+}
+
+/**
  * Backend relay for OpenAI Realtime API (transcription-only) over WebRTC.
  *
  * Flow:
@@ -49,17 +81,40 @@ export async function POST(req: NextRequest) {
         data: { user },
       } = await supabase.auth.getUser();
       if (user) {
+        // Primary source: the people saved in Remember (kind = 'persona').
+        // This replaced the old Glossario as the proper-name vocabulary.
+        const { data: personaRows } = await supabase
+          .from("remembers")
+          .select("text")
+          .eq("kind", "persona");
+        const personaNames = Array.isArray(personaRows)
+          ? personaRows
+              .map((r) => (typeof r.text === "string" ? r.text.trim() : ""))
+              .filter((s) => s.length > 0)
+          : [];
+
+        // Legacy fallback: any leftover glossary from before the migration.
         const { data } = await supabase
           .from("user_settings")
           .select("glossary")
           .eq("user_id", user.id)
           .maybeSingle();
-        const terms = Array.isArray(data?.glossary)
+        const legacy = Array.isArray(data?.glossary)
           ? (data.glossary as unknown[]).filter(
               (t): t is string => typeof t === "string" && t.trim().length > 0,
             )
           : [];
-        glossaryTerms = terms;
+
+        // Merge, dedupe (case-insensitive).
+        const seen = new Set<string>();
+        const merged: string[] = [];
+        for (const term of [...personaNames, ...legacy]) {
+          const k = term.toLowerCase();
+          if (seen.has(k)) continue;
+          seen.add(k);
+          merged.push(term);
+        }
+        glossaryTerms = merged;
       }
     } catch {
       // best-effort

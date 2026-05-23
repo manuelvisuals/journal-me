@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Journal.me - Mockup notte: feedback, persone, scrittura manuale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --color-bg:#050304;
+    --color-bg-phone:#0E0709;
+    --color-surface:#1D1013;
+    --color-surface-2:#241418;
+    --color-line:rgba(255,229,214,.075);
+    --color-line-2:rgba(255,229,214,.14);
+    --color-accent:#E3A15F;
+    --color-accent-pressed:#D08F4D;
+    --color-accent-hi:#F0B875;
+    --color-ink:#F4E7DE;
+    --color-ink-muted:#CDB7AE;
+    --color-ink-faint:#8E7770;
+    --color-success:#A8C9B0;
+    --color-danger:#F87171;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-serif:'Spectral',Georgia,serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;background:var(--color-bg);color:var(--color-ink);
+    font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased;
+    padding:48px 20px 100px;
+  }
+  .page-head{max-width:1180px;margin:0 auto 40px;}
+  .page-head .eyebrow{font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--color-accent);}
+  .page-head h1{font-size:30px;font-weight:650;letter-spacing:-.02em;margin:10px 0 8px;}
+  .page-head p{font-size:15px;color:var(--color-ink-muted);max-width:680px;line-height:1.6;margin:0;}
+  .grid{
+    max-width:1180px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:34px 28px;align-items:start;
+  }
+  .cell{display:flex;flex-direction:column;gap:14px;}
+  .cell .label{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--color-ink-faint);}
+  .cell .label b{color:var(--color-accent);font-weight:700;}
+  .cell .note{font-size:13px;line-height:1.55;color:var(--color-ink-muted);}
+  .cell .note .k{color:var(--color-ink);font-weight:600;}
+
+  /* ---------- phone shell ---------- */
+  .phone{
+    width:340px;max-width:100%;height:710px;
+    background:var(--color-bg-phone);
+    border-radius:42px;
+    border:1px solid var(--color-line-2);
+    box-shadow:0 40px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);
+    position:relative;overflow:hidden;
+    background-image:radial-gradient(140% 90% at 12% -6%, rgba(120,40,46,.20), transparent 55%);
+  }
+  .phone .scroll{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:26px;background:#000;border-bottom-left-radius:14px;border-bottom-right-radius:14px;z-index:40;}
+
+  /* day header */
+  .hdr{display:flex;align-items:baseline;justify-content:space-between;padding:34px 22px 6px;}
+  .hdr .date{font-size:11px;font-weight:600;color:var(--color-ink-faint);letter-spacing:.20em;text-transform:uppercase;}
+  .hdr .actions{display:flex;gap:14px;align-items:center;}
+  .hdr .orig{font-size:12px;color:var(--color-accent);font-weight:600;}
+
+  /* tab bar */
+  .tabbar{margin-top:auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;border-top:1px solid var(--color-line);background:rgba(10,5,7,.55);backdrop-filter:blur(10px);padding:11px 0 18px;}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--color-ink-faint);text-decoration:none;}
+  .tabbar a.on{color:var(--color-accent);}
+  .tabbar svg{width:22px;height:22px;}
+  .tabbar .lbl{font-size:9px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;}
+  .mic-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(120% 120% at 30% 20%, #F0B875, #E3A15F 55%, #C9863F);
+    color:#2a1305;box-shadow:0 8px 20px rgba(227,161,95,.4),inset 0 1px 1px rgba(255,255,255,.5);}
+  .mic-circle svg{width:22px;height:22px;}
+
+  /* pill (jm-gloss-tag clone) */
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 8px 8px 14px;background:var(--color-surface);border:1px solid var(--color-line);border-radius:999px;font-size:13px;font-weight:500;color:var(--color-ink);}
+  .pill .x{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--color-ink-faint);border:none;display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;cursor:pointer;}
+  .pill .x:hover{background:rgba(248,113,113,.16);color:var(--color-danger);}
+  .pill.new{border-color:rgba(227,161,95,.45);background:rgba(227,161,95,.08);}
+  .pill.new .tagdot{width:6px;height:6px;border-radius:50%;background:var(--color-accent);margin-right:1px;}
+  .pill.editing{outline:1px solid var(--color-accent);}
+  .pill .ed{background:transparent;border:none;color:var(--color-ink);font:inherit;outline:none;min-width:30px;width:auto;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;}
+
+  /* generic buttons */
+  .btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:16px;border:none;background:var(--color-accent);color:#2a1305;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:transform 80ms cubic-bezier(.4,0,.2,1),background 80ms;}
+  .btn-primary:active{transform:scale(.97);background:var(--color-accent-pressed);}
+  .btn-ghost{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:16px;border:1px solid var(--color-line-2);background:transparent;color:var(--color-ink-muted);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:transform 80ms,background 80ms;}
+  .btn-ghost:active{transform:scale(.97);background:var(--color-surface);}
+
+  /* mese rows */
+  .mese-hdr{display:flex;align-items:baseline;justify-content:space-between;padding:18px 22px 12px;border-bottom:1px solid var(--color-line);}
+  .mese-hdr .t{font-size:21px;font-weight:600;letter-spacing:-.01em;}
+  .mese-hdr .c{font-size:12px;color:var(--color-ink-faint);font-weight:600;}
+  .day-list{overflow-y:auto;flex:1;}
+  .day-row{display:flex;gap:14px;padding:14px 22px;border-bottom:1px solid var(--color-line);cursor:pointer;align-items:flex-start;transition:transform 110ms cubic-bezier(.4,0,.2,1),background 110ms;}
+  .day-row:active,.day-row.pressed{transform:scale(.975);background:var(--color-surface);}
+  .day-row.is-today{background:linear-gradient(90deg,rgba(227,161,95,.08),transparent 60%);border-left:2px solid var(--color-accent);}
+  .day-num{min-width:34px;text-align:center;}
+  .day-num .n{font-size:28px;font-weight:300;line-height:1;}
+  .day-num .wd{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--color-ink-faint);margin-top:3px;}
+  .day-body{flex:1;min-width:0;}
+  .day-head-txt{font-size:14px;font-weight:500;line-height:1.35;color:var(--color-ink);}
+  .day-meta{display:flex;gap:10px;align-items:center;margin-top:7px;flex-wrap:wrap;}
+  .meta-chip{font-size:11px;color:var(--color-ink-muted);}
+  .meta-chip .v{color:var(--color-ink);font-weight:600;}
+  .dots-mini{display:inline-flex;gap:4px;}
+  .dot-mini{width:6px;height:6px;border-radius:50%;background:var(--color-line-2);}
+  .dot-mini.on{background:var(--color-accent);}
+  .day-empty{font-size:13px;font-style:italic;color:var(--color-ink-faint);}
+
+  /* skeleton */
+  .sk{background:linear-gradient(90deg,var(--color-surface) 25%,var(--color-surface-2) 37%,var(--color-surface) 63%);background-size:400% 100%;animation:sk 1.3s ease infinite;border-radius:8px;}
+  @keyframes sk{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+  /* spinner */
+  .spinner{width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,229,214,.10);border-top-color:var(--color-accent);animation:spin .9s linear infinite;box-shadow:0 0 22px rgba(227,161,95,.20);}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .dot-pulse{display:inline-flex;gap:5px;}
+  .dot-pulse i{width:7px;height:7px;border-radius:50%;background:var(--color-accent);animation:dp 1s ease-in-out infinite;}
+  .dot-pulse i:nth-child(2){animation-delay:.16s}
+  .dot-pulse i:nth-child(3){animation-delay:.32s}
+  @keyframes dp{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+  /* overlays inside phone */
+  .pane{position:absolute;inset:0;background:var(--color-bg-phone);display:flex;flex-direction:column;z-index:30;background-image:radial-gradient(140% 90% at 12% -6%, rgba(120,40,46,.20), transparent 55%);}
+  .pane.hidden{display:none;}
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 28px;text-align:center;}
+
+  /* filled day content */
+  .content{padding:2px 22px;overflow-y:auto;flex:1;}
+  .headline{font-size:25px;font-weight:650;line-height:1.15;letter-spacing:-.025em;margin:6px 0 10px;}
+  .snippet{font-size:14px;color:var(--color-ink-muted);line-height:1.55;margin-bottom:16px;}
+  .sep{height:1px;background:var(--color-line);margin:8px 0;}
+  .area{padding:13px 0;}
+  .area .al{font-size:10px;font-weight:700;color:var(--color-accent);letter-spacing:.20em;text-transform:uppercase;margin-bottom:6px;}
+  .area .at{font-size:14px;font-weight:500;line-height:1.55;color:var(--color-ink);}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0;}
+  .metric{background:var(--color-surface);border:1px solid var(--color-line);border-radius:14px;padding:12px 8px;text-align:center;}
+  .metric .mv{font-size:19px;font-weight:300;}
+  .metric .mu{font-size:9px;color:var(--color-ink-faint);letter-spacing:.10em;text-transform:uppercase;margin-top:3px;}
+  .dots{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+  .gdot{display:flex;flex-direction:column;align-items:center;gap:5px;width:44px;}
+  .gdot .d{width:14px;height:14px;border-radius:50%;border:1px solid var(--color-line-2);}
+  .gdot.on .d{background:var(--color-accent);border-color:var(--color-accent);}
+  .gdot .gl{font-size:8px;color:var(--color-ink-faint);text-align:center;line-height:1.1;}
+
+  /* mic big */
+  .mic-big{width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;color:#2a1305;
+    background:radial-gradient(120% 120% at 30% 20%, #F0B875, #E3A15F 55%, #C9863F);
+    box-shadow:0 0 0 8px rgba(227,161,95,.08),0 0 44px rgba(227,161,95,.35),0 16px 34px rgba(0,0,0,.5);transition:transform 90ms;}
+  .mic-big:active{transform:scale(.96);}
+
+  .text-link{background:none;border:none;color:var(--color-ink-faint);font:inherit;font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;margin-top:30px;}
+  .text-link:hover{color:var(--color-ink-muted);}
+
+  /* recording status */
+  .live{display:flex;align-items:center;gap:7px;}
+  .live .d{width:8px;height:8px;border-radius:50%;background:var(--color-danger);box-shadow:0 0 10px rgba(248,113,113,.7);}
+  .live .l{font-size:11px;font-weight:700;color:var(--color-danger);letter-spacing:.20em;text-transform:uppercase;}
+  .live.ready .d{background:var(--color-success);box-shadow:0 0 10px rgba(168,201,176,.6);}
+  .live.ready .l{color:var(--color-success);}
+  .timer{font-family:'SF Mono',Menlo,monospace;font-size:18px;font-weight:500;letter-spacing:.06em;}
+
+  .textarea{flex:1;width:100%;background:var(--color-surface);border:1px solid var(--color-line);border-radius:16px;padding:16px;color:var(--color-ink);font:inherit;font-size:16px;line-height:1.6;resize:none;outline:none;}
+  .textarea:focus{border-color:rgba(227,161,95,.4);box-shadow:0 0 0 3px rgba(227,161,95,.10);}
+
+  .eyebrow-sm{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--color-accent);}
+  .tip{max-width:1180px;margin:36px auto 0;padding:18px 20px;border:1px dashed var(--color-line-2);border-radius:16px;background:rgba(227,161,95,.04);color:var(--color-ink-muted);font-size:13px;line-height:1.6;}
+  .tip b{color:var(--color-accent);}
+  .footnote{font-size:11px;color:var(--color-ink-faint);}
+  .hint{font-size:12px;color:var(--color-ink-faint);text-align:center;padding:8px 0;}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="eyebrow">Journal.me . mockup notte</div>
+  <h1>Feedback, scrittura manuale e persone</h1>
+  <p>Prototipo cliccabile dei task della notte. Tutto col tema wine attuale e gli stessi componenti (pill = stile Glossario, spinner, mic centrale). Le frecce in arancione indicano cose interattive: provale.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ============ 1. MESE -> DAY con feedback ============ -->
+  <div class="cell">
+    <div class="label">02 . <b>Mese to Day</b> con feedback (clicca un giorno)</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <!-- MESE pane -->
+      <div class="pane" id="mese-pane">
+        <div class="mese-hdr"><span class="t">Maggio</span><span class="c">14 / 23</span></div>
+        <div class="day-list" id="dl">
+          <div class="day-row is-today" data-day="SAB 23" onclick="goDay(this)">
+            <div class="day-num"><div class="n">23</div><div class="wd">Sab</div></div>
+            <div class="day-body">
+              <div class="day-head-txt">giornata raccontata, tocca per aprire</div>
+              <div class="day-meta">
+                <span class="meta-chip"><span class="v">78,2</span> kg</span>
+                <span class="meta-chip"><span class="v">7h 12</span></span>
+                <span class="dots-mini"><i class="dot-mini on"></i><i class="dot-mini on"></i><i class="dot-mini"></i><i class="dot-mini on"></i></span>
+              </div>
+            </div>
+          </div>
+          <div class="day-row" data-day="VEN 22" onclick="goDay(this)">
+            <div class="day-num"><div class="n">22</div><div class="wd">Ven</div></div>
+            <div class="day-body">
+              <div class="day-head-txt">chiuso il progetto, cena con Marco</div>
+              <div class="day-meta"><span class="meta-chip"><span class="v">78,4</span> kg</span><span class="dots-mini"><i class="dot-mini on"></i><i class="dot-mini"></i><i class="dot-mini on"></i></span></div>
+            </div>
+          </div>
+          <div class="day-row" data-day="GIO 21" onclick="goDay(this)">
+            <div class="day-num"><div class="n">21</div><div class="wd">Gio</div></div>
+            <div class="day-body"><div class="day-empty">&mdash; giornata vuota &mdash;</div></div>
+          </div>
+          <div class="day-row" data-day="MER 20" onclick="goDay(this)">
+            <div class="day-num"><div class="n">20</div><div class="wd">Mer</div></div>
+            <div class="day-body">
+              <div class="day-head-txt">corsa al parco, chiamata con Luca</div>
+              <div class="day-meta"><span class="meta-chip"><span class="v">78,1</span> kg</span><span class="dots-mini"><i class="dot-mini on"></i><i class="dot-mini on"></i></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Oggi</span></a>
+          <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="lbl">Mese</span></a>
+          <a><span class="mic-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="lbl">Remember</span></a>
+          <a><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span class="lbl">Altro</span></a>
+        </div>
+      </div>
+
+      <!-- DAY skeleton + filled pane -->
+      <div class="pane hidden" id="day-pane">
+        <div class="hdr">
+          <span class="date" id="day-date">SAB 23 MAGGIO</span>
+          <button class="orig" style="background:none;border:none;cursor:pointer" onclick="backMese()">&#8592; mese</button>
+        </div>
+        <div class="content" id="day-content"></div>
+        <div class="tabbar">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Oggi</span></a>
+          <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="lbl">Mese</span></a>
+          <a><span class="mic-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="lbl">Remember</span></a>
+          <a><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span class="lbl">Altro</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="note"><span class="k">Tap su un giorno:</span> shrink leggero del bottone, poi skeleton mentre carica, poi la giornata. Mai sensazione di freeze. Funziona col 23 (popolato) e coi vuoti.</div>
+  </div>
+
+  <!-- ============ 3+4. RECORD scrittura manuale + connessione anticipata ============ -->
+  <div class="cell">
+    <div class="label">03 + 04 . <b>Record</b>: scrivi a mano + connessione anticipata</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <!-- record empty -->
+      <div class="pane" id="rec-empty">
+        <div class="hdr"><span class="date">SAB 23 MAGGIO</span></div>
+        <div class="center">
+          <h1 style="font-size:27px;font-weight:650;letter-spacing:-.025em;margin-bottom:12px">Com'e andata oggi?</h1>
+          <p style="font-size:14px;color:var(--color-ink-muted);max-width:250px;line-height:1.55;margin:0 0 44px">Apri il microfono e racconta.<br>Senza pensarci troppo.</p>
+          <button class="mic-big" onclick="recReady()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+          </button>
+          <button class="text-link" onclick="showManual()">Preferisco scrivere a mano</button>
+        </div>
+        <div class="tabbar">
+          <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Oggi</span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="lbl">Mese</span></a>
+          <a><span class="mic-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="lbl">Remember</span></a>
+          <a><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span class="lbl">Altro</span></a>
+        </div>
+      </div>
+
+      <!-- record overlay (connessione anticipata) -->
+      <div class="pane hidden" id="rec-over">
+        <div style="padding:24px 22px 0;display:flex;flex-direction:column;height:100%">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+            <div class="live ready" id="liveind"><span class="d"></span><span class="l">pronto</span></div>
+            <span class="timer">00:00</span>
+          </div>
+          <div style="display:flex;justify-content:center;margin-bottom:8px">
+            <span class="pill" style="cursor:default"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> <span style="font-weight:600">Oggi</span> <span style="color:var(--color-ink-faint)">. 23 mag</span></span>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 6px">
+            <p style="color:var(--color-ink-faint);font-size:14px;font-style:italic;text-align:center">Microfono pronto. Parla pure...</p>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:28px;padding:16px 0 10px">
+            <span style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.3);color:var(--color-danger)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></span>
+            <span style="width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--color-danger);box-shadow:0 0 24px rgba(248,113,113,.45)"><span style="width:24px;height:24px;background:#fff;border-radius:5px"></span></span>
+            <span style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--color-surface);border:1px solid var(--color-line);color:var(--color-ink-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></span>
+          </div>
+          <button class="text-link" style="align-self:center;margin-top:2px" onclick="backRecEmpty()">&#8592; torna indietro</button>
+          <p class="hint" style="padding-bottom:18px">audio in streaming a openai . solo il testo viene salvato</p>
+        </div>
+      </div>
+
+      <!-- manual write -->
+      <div class="pane hidden" id="rec-manual">
+        <div class="hdr"><span class="date">SAB 23 MAGGIO</span><button class="orig" style="background:none;border:none;cursor:pointer" onclick="backRecEmpty()">&times; chiudi</button></div>
+        <div style="padding:8px 22px 0;display:flex;flex-direction:column;flex:1">
+          <div class="eyebrow-sm" style="margin-bottom:10px">scrivi la tua giornata</div>
+          <textarea class="textarea" placeholder="Oggi ho visto Mario e ho parlato con Luca al telefono. Chiuso il progetto al lavoro, mi sentivo carico..."></textarea>
+          <div style="padding:16px 0 22px;display:flex;flex-direction:column;gap:10px">
+            <button class="btn-primary" onclick="alert('Mockup: andrebbe a REVISE, poi processamento AI, poi DAY')">Continua</button>
+            <p class="hint" style="padding:0">stesso flow: rileggi, l'AI elabora, apre la giornata</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="note"><span class="k">Mic:</span> al tap mostra subito "pronto" (verde) invece di "connetto" perche la connessione parte al caricamento dell'app. <span class="k">Scrivi a mano:</span> link discreto sotto il mic, porta a un input testo che segue lo stesso flow.</div>
+  </div>
+
+  <!-- ============ 5. PERSONE post-revise ============ -->
+  <div class="cell">
+    <div class="label">05 . <b>Persone di oggi</b> (dedotte dall'AI, editabili)</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="pane">
+        <div class="hdr"><span class="date">DOPO LA REVISIONE</span></div>
+        <div class="content" style="padding-top:6px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="eyebrow-sm">persone di oggi</span>
+          </div>
+          <p style="font-size:14px;color:var(--color-ink-muted);line-height:1.55;margin:0 0 18px">Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver sbagliato lo spelling), poi salvali in Remember.</p>
+
+          <div style="font-size:10px;font-weight:700;color:var(--color-ink-faint);letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px">gia in remember</div>
+          <div class="pill-row" style="margin-bottom:22px">
+            <span class="pill" style="opacity:.7;cursor:default"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Luca</span>
+            <span class="pill" style="opacity:.7;cursor:default"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Marco</span>
+          </div>
+
+          <div style="font-size:10px;font-weight:700;color:var(--color-accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px">nuove . tocca per correggere</div>
+          <div class="pill-row" id="newpills">
+            <span class="pill new" onclick="editPill(this)"><span class="tagdot"></span><span class="ed" contenteditable spellcheck="false">Giulia</span><button class="x" onclick="event.stopPropagation();this.parentElement.remove()">&times;</button></span>
+            <span class="pill new" onclick="editPill(this)"><span class="tagdot"></span><span class="ed" contenteditable spellcheck="false">Karya</span><button class="x" onclick="event.stopPropagation();this.parentElement.remove()">&times;</button></span>
+          </div>
+          <button class="btn-ghost" style="margin-top:14px;width:auto;padding:10px 16px" onclick="addPill()">+ aggiungi persona</button>
+        </div>
+        <div style="padding:14px 22px 22px;display:flex;flex-direction:column;gap:10px">
+          <button class="btn-primary" onclick="alert('Mockup: salva le nuove in Remember > Persone e apre la giornata')">Salva e continua</button>
+          <button class="btn-ghost" onclick="alert('Mockup: salta, apre la giornata senza aggiungere persone')">Salta</button>
+        </div>
+      </div>
+    </div>
+    <div class="note"><span class="k">Logica:</span> nessun duplicato (Luca/Marco gia presenti = solo conferma). Le <span class="k">nuove</span> sono pill editabili inline: correggi lo spelling, rimuovi con la X, aggiungine altre. Al salvataggio finiscono in Remember &gt; Persone.</div>
+  </div>
+
+  <!-- ============ 7. DAY Social ============ -->
+  <div class="cell">
+    <div class="label">07 . <b>Day</b>: persone di oggi nella sezione Social</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="pane">
+        <div class="hdr"><span class="date">SAB 23 MAGGIO</span><div class="actions"><span class="orig">originale &#8599;</span></div></div>
+        <div class="content">
+          <div class="headline">progetto chiuso, serata leggera con gli amici</div>
+          <div class="snippet">Finito il deploy nel pomeriggio. Cena fuori, mi sentivo finalmente scarico dalla tensione.</div>
+          <div class="sep"></div>
+          <div class="area"><div class="al">Lavoro</div><div class="at">Chiuso e rilasciato il progetto su cui spingevo da settimane.</div></div>
+          <div class="area">
+            <div class="al">Social</div>
+            <div class="at" style="margin-bottom:10px">Cena con Marco e Giulia, sentito Luca al telefono.</div>
+            <div class="pill-row">
+              <span class="pill" style="cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg> Marco</span>
+              <span class="pill" style="cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg> Giulia</span>
+              <span class="pill" style="cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg> Luca</span>
+            </div>
+          </div>
+          <div class="sep"></div>
+          <div class="metrics">
+            <div class="metric"><div class="mv">78,2</div><div class="mu">kg</div></div>
+            <div class="metric"><div class="mv">7h 12</div><div class="mu">sonno</div></div>
+            <div class="metric"><div class="mv" style="font-size:22px">&#128522;</div><div class="mu">mood</div></div>
+          </div>
+          <div class="dots">
+            <div class="gdot on"><span class="d"></span><span class="gl">scopato</span></div>
+            <div class="gdot"><span class="d"></span><span class="gl">no alcol</span></div>
+            <div class="gdot on"><span class="d"></span><span class="gl">camminato</span></div>
+            <div class="gdot on"><span class="d"></span><span class="gl">sunset</span></div>
+          </div>
+          <div style="height:20px"></div>
+        </div>
+        <div class="tabbar">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Oggi</span></a>
+          <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="lbl">Mese</span></a>
+          <a><span class="mic-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="lbl">Remember</span></a>
+          <a><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span class="lbl">Altro</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="note"><span class="k">Sezione Social:</span> sotto il testo dell'area, le persone di oggi come pill. Per ora solo visuali (pensate per il futuro tap to report relazione).</div>
+  </div>
+
+  <!-- ============ 08. ALTRO -> micro-goal configurabili ============ -->
+  <div class="cell">
+    <div class="label">08 . <b>Altro</b>: micro-goal configurabili (no hardcode, da DB)</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="pane">
+        <div class="hdr"><span class="date">ALTRO . IMPOSTAZIONI</span></div>
+        <div class="content" style="padding-top:8px">
+
+          <div style="font-size:11px;font-weight:700;color:var(--color-accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">i tuoi micro-goal</div>
+          <p style="font-size:13px;color:var(--color-ink-muted);line-height:1.55;margin:0 0 16px">Tracker neutri, niente voti. Aggiungi o togli quelli che vuoi. Compaiono come dot nella giornata.</p>
+
+          <div class="pill-row" id="goalpills" style="margin-bottom:14px">
+            <span class="pill">scopato<button class="x" onclick="this.parentElement.remove()">&times;</button></span>
+            <span class="pill">no alcol<button class="x" onclick="this.parentElement.remove()">&times;</button></span>
+            <span class="pill">no junkfood<button class="x" onclick="this.parentElement.remove()">&times;</button></span>
+            <span class="pill">no sbirciato ex<button class="x" onclick="this.parentElement.remove()">&times;</button></span>
+            <span class="pill">camminato<button class="x" onclick="this.parentElement.remove()">&times;</button></span>
+            <span class="pill">visto sunset<button class="x" onclick="this.parentElement.remove()">&times;</button></span>
+          </div>
+
+          <form class="jm-gloss-input" style="display:flex;gap:8px;margin-bottom:24px" onsubmit="addGoal(event)">
+            <input id="goalinput" type="text" placeholder="Aggiungi micro-goal..." autocomplete="off" style="flex:1;background:var(--color-surface);border:1px solid var(--color-line);border-radius:12px;padding:12px 14px;color:var(--color-ink);font:inherit;font-size:14px;outline:none" />
+            <button type="submit" style="width:44px;border-radius:12px;border:none;background:var(--color-accent);color:#2a1305;font-size:20px;cursor:pointer">+</button>
+          </form>
+
+          <div style="font-size:11px;font-weight:700;color:var(--color-ink-faint);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px">suggeriti dall'AI</div>
+          <div class="pill-row">
+            <span class="pill new" style="cursor:pointer" onclick="this.outerHTML='&lt;span class=\'pill\'&gt;letto&lt;button class=\'x\' onclick=\'this.parentElement.remove()\'&gt;&times;&lt;/button&gt;&lt;/span&gt;'"><span class="tagdot"></span>+ letto</span>
+            <span class="pill new" style="cursor:pointer"><span class="tagdot"></span>+ meditato</span>
+          </div>
+
+          <div class="sep" style="margin:24px 0"></div>
+          <div style="font-size:13px;color:var(--color-ink-faint);font-style:italic">Il Glossario non c'e piu: i nomi delle Persone in Remember alimentano gia la trascrizione.</div>
+          <div style="height:18px"></div>
+        </div>
+        <div class="tabbar">
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Oggi</span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="lbl">Mese</span></a>
+          <a><span class="mic-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span></a>
+          <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="lbl">Remember</span></a>
+          <a class="on"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span class="lbl">Altro</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="note"><span class="k">DB, no hardcode:</span> i goal vengono dalla tabella <span class="k">goals</span> (gia esistente e seedata). Tolgo la costante DEFAULT_GOAL_LABELS dai 3 file dove e copiata. Niente fallback: se non hai goal, l'area dot resta vuota.</div>
+  </div>
+
+</div>
+
+<div class="tip">
+  <b>Decisione di design (push-back).</b> Il <b>Glossario</b> in Altro alimenta oggi il modello di trascrizione coi tuoi nomi propri, cosi non sbaglia "Karya" ecc. Se lo rimuovo e basta, perdiamo quella precisione. Proposta: quando elimino il Glossario, faccio diventare <b>Remember &gt; Persone</b> la nuova fonte vocabolario per la trascrizione. Cosi togliamo la sezione doppia senza regredire sulla qualita. Confermami se ti torna.
+</div>
+
+<div class="tip" style="border-style:solid;border-color:var(--color-line)">
+  <b>01 . Feedback globale</b> non ha un mockup a parte: lo vedi gia applicato ovunque (shrink dei bottoni, skeleton del Mese to Day, "pronto" verde nel Record, dot-pulse e spinner durante l'AI). E un layer trasversale che applico a ogni azione che richiede tempo: tap shrink immediato, poi skeleton/spinner, mai schermo fermo.
+</div>
+
+<script>
+  function goDay(row){
+    row.classList.add('pressed');
+    var label=row.getAttribute('data-day')+' MAGGIO';
+    var populated=row.querySelector('.day-empty')===null;
+    setTimeout(function(){
+      row.classList.remove('pressed');
+      document.getElementById('mese-pane').classList.add('hidden');
+      var dp=document.getElementById('day-pane');dp.classList.remove('hidden');
+      document.getElementById('day-date').textContent=label;
+      var c=document.getElementById('day-content');
+      // skeleton
+      c.innerHTML='<div style="padding-top:6px"><div class="sk" style="height:26px;width:80%;margin:6px 0 12px"></div><div class="sk" style="height:14px;width:95%;margin-bottom:6px"></div><div class="sk" style="height:14px;width:60%;margin-bottom:20px"></div><div class="sk" style="height:62px;width:100%;margin-bottom:12px"></div><div class="sk" style="height:62px;width:100%"></div></div>';
+      setTimeout(function(){ c.innerHTML = populated ? filledDay() : emptyDay(); },820);
+    },150);
+  }
+  function backMese(){document.getElementById('day-pane').classList.add('hidden');document.getElementById('mese-pane').classList.remove('hidden');}
+  function filledDay(){
+    return '<div class="headline">giornata raccontata, tutto popolato</div>'+
+      '<div class="snippet">Il recap AI e i dati arrivano gia pronti dal server: nessun caricamento extra dopo lo skeleton.</div>'+
+      '<div class="sep"></div>'+
+      '<div class="area"><div class="al">Social</div><div class="at" style="margin-bottom:10px">Persone di oggi:</div>'+
+      '<div class="pill-row"><span class="pill" style="cursor:pointer">Marco</span><span class="pill" style="cursor:pointer">Giulia</span></div></div>'+
+      '<div class="sep"></div>'+
+      '<div class="metrics"><div class="metric"><div class="mv">78,2</div><div class="mu">kg</div></div><div class="metric"><div class="mv">7h 12</div><div class="mu">sonno</div></div><div class="metric"><div class="mv" style="font-size:22px">&#128522;</div><div class="mu">mood</div></div></div>';
+  }
+  function emptyDay(){
+    return '<div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 20px"><div><div style="font-size:14px;color:var(--color-ink-muted);margin-bottom:6px">Nessuna giornata registrata</div><div style="font-size:12px;color:var(--color-ink-faint);line-height:1.5">Vai su Oggi per registrarla.</div></div></div>';
+  }
+
+  // record
+  function recReady(){
+    document.getElementById('rec-empty').classList.add('hidden');
+    document.getElementById('rec-over').classList.remove('hidden');
+    // simulate prewarmed -> instantly ready, then "live"
+    setTimeout(function(){var l=document.getElementById('liveind');l.classList.remove('ready');l.querySelector('.l').textContent='live';},900);
+  }
+  function backRecEmpty(){
+    document.getElementById('rec-over').classList.add('hidden');
+    document.getElementById('rec-manual').classList.add('hidden');
+    var l=document.getElementById('liveind');l.classList.add('ready');l.querySelector('.l').textContent='pronto';
+    document.getElementById('rec-empty').classList.remove('hidden');
+  }
+  function showManual(){
+    document.getElementById('rec-empty').classList.add('hidden');
+    document.getElementById('rec-manual').classList.remove('hidden');
+  }
+
+  // pills
+  function editPill(p){var e=p.querySelector('.ed');e.focus();
+    var r=document.createRange();r.selectNodeContents(e);var s=window.getSelection();s.removeAllRanges();s.addRange(r);}
+  function addPill(){
+    var row=document.getElementById('newpills');
+    var p=document.createElement('span');p.className='pill new';p.setAttribute('onclick','editPill(this)');
+    p.innerHTML='<span class="tagdot"></span><span class="ed" contenteditable spellcheck="false">Nome</span><button class="x" onclick="event.stopPropagation();this.parentElement.remove()">&times;</button>';
+    row.appendChild(p);editPill(p);
+  }
+  function addGoal(e){
+    e.preventDefault();
+    var inp=document.getElementById('goalinput');var v=inp.value.trim();if(!v)return;
+    var row=document.getElementById('goalpills');
+    var p=document.createElement('span');p.className='pill';
+    p.innerHTML=v.replace(/[<>&]/g,'')+'<button class="x" onclick="this.parentElement.remove()">&times;</button>';
+    row.appendChild(p);inp.value='';
+  }
+</script>
+</body>
+</html>

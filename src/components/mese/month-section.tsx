@@ -17,6 +17,8 @@ type Props = {
    *  this section. Suppressed for the first/most-recent month because the
    *  sticky page header already shows that label. */
   showHeader?: boolean;
+  /** ISO date of the day currently navigating to its detail (shows a spinner). */
+  loadingDate?: string | null;
   onDayClick?: (year: number, month: number, day: number) => void;
 };
 
@@ -25,6 +27,7 @@ export function MonthSection({
   month,
   entries,
   showHeader = false,
+  loadingDate = null,
   onDayClick,
 }: Props) {
   const total = daysInMonth(year, month);
@@ -64,6 +67,7 @@ export function MonthSection({
             day={d}
             entry={entry}
             isToday={isToday}
+            loading={loadingDate === k}
             onClick={onDayClick ? () => onDayClick(year, month, d) : undefined}
           />
         );
