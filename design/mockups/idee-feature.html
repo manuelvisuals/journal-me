@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Journal.me - Idee feature da scegliere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --color-bg:#050304;--color-bg-phone:#0E0709;--color-surface:#1D1013;--color-surface-2:#241418;
+    --color-line:rgba(255,229,214,.075);--color-line-2:rgba(255,229,214,.14);
+    --color-accent:#E3A15F;--color-accent-hi:#F0B875;--color-ink:#F4E7DE;--color-ink-muted:#CDB7AE;
+    --color-ink-faint:#8E7770;--color-success:#A8C9B0;--color-danger:#F87171;
+    --font-sans:'Inter',-apple-system,sans-serif;--font-serif:'Spectral',Georgia,serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;background:var(--color-bg);color:var(--color-ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;padding:48px 20px 120px;}
+  .page-head{max-width:1220px;margin:0 auto 40px;}
+  .page-head .eyebrow{font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--color-accent);}
+  .page-head h1{font-size:30px;font-weight:650;letter-spacing:-.02em;margin:10px 0 8px;}
+  .page-head p{font-size:15px;color:var(--color-ink-muted);max-width:720px;line-height:1.6;margin:0;}
+  .grid{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:40px 28px;align-items:start;}
+  .cell{display:flex;flex-direction:column;gap:14px;}
+  .cell .tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--color-ink-faint);}
+  .cell .tag .n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:rgba(227,161,95,.14);color:var(--color-accent-hi);font-size:11px;}
+  .cell h3{font-size:18px;font-weight:650;letter-spacing:-.01em;margin:0;}
+  .cell .desc{font-size:13.5px;line-height:1.6;color:var(--color-ink-muted);}
+  .cell .desc b{color:var(--color-ink);font-weight:600;}
+
+  .phone{width:340px;max-width:100%;height:660px;background:var(--color-bg-phone);border-radius:42px;border:1px solid var(--color-line-2);
+    box-shadow:0 40px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden;
+    background-image:radial-gradient(140% 90% at 12% -6%, rgba(120,40,46,.20), transparent 55%);}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:26px;background:#000;border-bottom-left-radius:14px;border-bottom-right-radius:14px;z-index:40;}
+  .scr{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;}
+  .hd{display:flex;align-items:center;gap:12px;padding:34px 22px 8px;}
+  .hd .back{width:30px;height:30px;border-radius:50%;background:var(--color-surface);border:1px solid var(--color-line);display:flex;align-items:center;justify-content:center;color:var(--color-ink-muted);}
+  .hd .ttl{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--color-ink-faint);}
+  .body{flex:1;overflow-y:auto;padding:6px 22px 16px;}
+  .tabbar{margin-top:auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;border-top:1px solid var(--color-line);background:rgba(10,5,7,.55);padding:11px 0 16px;}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--color-ink-faint);}
+  .tabbar a.on{color:var(--color-accent);}
+  .tabbar svg{width:21px;height:21px;}
+  .tabbar .lbl{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+  .mic{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 120% at 30% 20%, #F0B875, #E3A15F 55%, #C9863F);color:#2a1305;}
+  .eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--color-surface);border:1px solid var(--color-line);border-radius:999px;font-size:12px;font-weight:500;color:var(--color-ink);}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--color-line);}
+  .muted{color:var(--color-ink-muted);}.faint{color:var(--color-ink-faint);}
+  .big{font-size:30px;font-weight:300;letter-spacing:-.02em;}
+  .card{background:var(--color-surface);border:1px solid var(--color-line);border-radius:16px;padding:14px;}
+  .serif{font-family:var(--font-serif);}
+</style>
+</head>
+<body>
+<div class="page-head">
+  <div class="eyebrow">Journal.me . idee</div>
+  <h1>Sei feature da scegliere</h1>
+  <p>Bozze veloci, stesso tema. Dimmi quali ti interessano (anche solo i numeri) e implemento quelle. Sono ordinate da "estende il lavoro di stanotte" a "nuovo territorio".</p>
+</div>
+
+<div class="grid">
+
+  <!-- 1. Scheda persona -->
+  <div class="cell">
+    <div class="tag"><span class="n">1</span> estende le pill di stanotte</div>
+    <h3>Scheda Persona</h3>
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="hd"><span class="back">&#8249;</span><span class="ttl">persona</span></div>
+      <div class="body">
+        <div style="display:flex;align-items:center;gap:14px;margin:6px 0 18px">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#3a2024,#1d1013);border:1px solid var(--color-line-2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:600;color:var(--color-accent-hi)">M</div>
+          <div><div style="font-size:22px;font-weight:650">Mario</div><div class="faint" style="font-size:12px">vista 7 volte . ultima 2 giorni fa</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px">
+          <div class="card" style="text-align:center;padding:12px 6px"><div class="big" style="font-size:22px">7</div><div class="faint" style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px">incontri</div></div>
+          <div class="card" style="text-align:center;padding:12px 6px"><div class="big" style="font-size:22px">2g</div><div class="faint" style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px">fa</div></div>
+          <div class="card" style="text-align:center;padding:12px 6px"><div class="big" style="font-size:22px;color:var(--color-success)">&#8599;</div><div class="faint" style="font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:3px">in crescita</div></div>
+        </div>
+        <div class="eyebrow">timeline</div>
+        <div class="row"><span>Sab 23 mag . caffe e confidenze</span></div>
+        <div class="row"><span>Mar 19 mag . cena fuori</span></div>
+        <div class="row"><span>Gio 14 mag . chiamata veloce</span></div>
+        <div class="row" style="border:none"><span class="faint">Lun 4 mag . progetto insieme</span></div>
+      </div>
+    </div></div>
+    <div class="desc">Tocchi una pill nella sezione Social e vedi <b>quando l'hai vista l'ultima volta</b>, frequenza, andamento del rapporto e la cronologia dei giorni in cui compare. Tutto gia nei dati (entries.people).</div>
+  </div>
+
+  <!-- 2. Andamento -->
+  <div class="cell">
+    <div class="tag"><span class="n">2</span> usa metriche e goal gia salvati</div>
+    <h3>Andamento</h3>
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="hd"><span class="ttl">andamento . maggio</span></div>
+      <div class="body">
+        <div class="eyebrow">peso</div>
+        <div class="card" style="margin-bottom:16px">
+          <svg viewBox="0 0 280 70" style="width:100%;height:70px">
+            <polyline points="0,40 40,38 80,42 120,30 160,34 200,26 240,28 280,22" fill="none" stroke="var(--color-accent)" stroke-width="2"/>
+            <circle cx="280" cy="22" r="3" fill="var(--color-accent-hi)"/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;margin-top:6px"><span class="faint" style="font-size:11px">78,4</span><span style="font-size:11px;color:var(--color-accent-hi)">78,2 kg</span></div>
+        </div>
+        <div class="eyebrow">mood</div>
+        <div class="card" style="margin-bottom:16px;display:flex;align-items:flex-end;gap:5px;height:64px">
+          <div style="flex:1;height:40%;background:var(--color-ink-faint);border-radius:3px"></div>
+          <div style="flex:1;height:60%;background:var(--color-ink-muted);border-radius:3px"></div>
+          <div style="flex:1;height:80%;background:var(--color-accent);border-radius:3px"></div>
+          <div style="flex:1;height:50%;background:var(--color-ink-muted);border-radius:3px"></div>
+          <div style="flex:1;height:90%;background:var(--color-accent-hi);border-radius:3px"></div>
+          <div style="flex:1;height:70%;background:var(--color-accent);border-radius:3px"></div>
+          <div style="flex:1;height:100%;background:var(--color-accent-hi);border-radius:3px"></div>
+        </div>
+        <div class="eyebrow">micro-goal</div>
+        <div class="row"><span>Long Walk</span><span class="muted">18 / 23 giorni</span></div>
+        <div class="row"><span>Alcohol Free</span><span class="muted">21 / 23 giorni</span></div>
+        <div class="row" style="border:none"><span>Sunset</span><span class="muted">9 / 23 giorni</span></div>
+      </div>
+    </div></div>
+    <div class="desc">Una vista che trasforma peso, sonno, mood e i tuoi goal in <b>grafici e percentuali</b> nel tempo. Nessun voto: solo "come sta andando". Raggiungibile da Altro o dal Mese.</div>
+  </div>
+
+  <!-- 3. Cerca -->
+  <div class="cell">
+    <div class="tag"><span class="n">3</span> ritrova qualsiasi cosa</div>
+    <h3>Cerca</h3>
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="hd"><span class="ttl">cerca</span></div>
+      <div class="body">
+        <div class="card" style="display:flex;align-items:center;gap:10px;border-radius:999px;padding:12px 16px;margin-bottom:18px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink-faint)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <span class="muted" style="font-size:14px">quando ho visto Mario?</span>
+        </div>
+        <div class="eyebrow">3 risultati</div>
+        <div class="card" style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;margin-bottom:3px">Sab 23 mag</div><div class="muted" style="font-size:12px;line-height:1.5">...caffe con <span style="color:var(--color-accent-hi)">Mario</span> e confidenze sulle insicurezze...</div></div>
+        <div class="card" style="margin-bottom:10px"><div style="font-size:13px;font-weight:600;margin-bottom:3px">Mar 19 mag</div><div class="muted" style="font-size:12px;line-height:1.5">...cena fuori con <span style="color:var(--color-accent-hi)">Mario</span>, abbiamo riso tanto...</div></div>
+        <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:3px">Gio 14 mag</div><div class="muted" style="font-size:12px;line-height:1.5">...sentito <span style="color:var(--color-accent-hi)">Mario</span> al telefono, sta cambiando lavoro...</div></div>
+      </div>
+    </div></div>
+    <div class="desc">Cerca tra tutte le giornate in linguaggio naturale: <b>"quando ero ansioso", "i giorni di palestra", "l'ultima volta che ho visto X"</b>. Risultati con snippet evidenziato che aprono il giorno.</div>
+  </div>
+
+  <!-- 4. Accaduto oggi -->
+  <div class="cell">
+    <div class="tag"><span class="n">4</span> il bello di un diario</div>
+    <h3>Accaduto oggi</h3>
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="hd"><span class="ttl">accaduto oggi . 23 maggio</span></div>
+      <div class="body">
+        <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(227,161,95,.10),var(--color-surface));border-color:rgba(227,161,95,.25)">
+          <div class="eyebrow">un mese fa</div>
+          <div class="serif" style="font-size:18px;margin:2px 0 6px">giornata storta poi salvata da una cena</div>
+          <div class="muted" style="font-size:12px;line-height:1.55">Avevo iniziato male, ma la serata con gli amici ha ribaltato tutto.</div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">un anno fa</div>
+          <div class="serif" style="font-size:18px;margin:2px 0 6px">il giorno in cui ho deciso di cambiare</div>
+          <div class="muted" style="font-size:12px;line-height:1.55">Stanco della solita routine, ho preso una decisione importante.</div>
+        </div>
+        <div style="text-align:center;margin-top:22px" class="faint">
+          <div style="font-size:12px;font-style:italic">guarda quanto sei cambiato.</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="desc">Ogni giorno l'app ti mostra <b>cosa scrivevi in questo stesso giorno un mese / sei mesi / un anno fa</b>. Un piccolo specchio del tuo percorso, in cima alla schermata Oggi o come card dedicata.</div>
+  </div>
+
+  <!-- 5. Promemoria + backfill -->
+  <div class="cell">
+    <div class="tag"><span class="n">5</span> non perdere giorni</div>
+    <h3>Promemoria serale + recupero</h3>
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="hd"><span class="ttl">oggi</span></div>
+      <div class="body">
+        <div style="margin:2px 0 16px;padding:10px 14px;border:1px solid rgba(168,201,176,.30);border-radius:12px;background:rgba(168,201,176,.06);color:var(--color-success);font-size:12.5px;font-weight:500">
+          Non hai raccontato 2 giorni. Vuoi recuperarli?
+        </div>
+        <div class="eyebrow">giorni saltati</div>
+        <div class="row"><span>Gio 21 mag</span><span class="pill">racconta</span></div>
+        <div class="row" style="border:none"><span>Mer 20 mag</span><span class="pill">racconta</span></div>
+        <div style="margin-top:34px;text-align:center">
+          <div style="display:inline-block;padding:14px 16px;border-radius:14px;background:var(--color-surface);border:1px solid var(--color-line);max-width:250px;text-align:left">
+            <div style="font-size:11px;font-weight:600;color:var(--color-accent)">JOURNAL.ME . 21:30</div>
+            <div style="font-size:13px;margin-top:4px;line-height:1.5">Com'e andata oggi? Bastano due minuti per fermarla.</div>
+          </div>
+          <div class="faint" style="font-size:11px;margin-top:8px">notifica serale, orario scelto da te</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="desc">Una <b>notifica serale</b> all'orario che scegli ("com'e andata oggi?") e un banner che ti fa <b>recuperare i giorni saltati</b> con un tap. Nessuna colpa: solo un invito gentile.</div>
+  </div>
+
+  <!-- 6. Palestra -->
+  <div class="cell">
+    <div class="tag"><span class="n">6</span> nuovo territorio (gia previsto)</div>
+    <h3>Palestra</h3>
+    <div class="phone"><div class="notch"></div><div class="scr">
+      <div class="hd"><span class="ttl">palestra . oggi</span></div>
+      <div class="body">
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:600">Panca piana</span><span class="faint" style="font-size:11px">3 serie</span></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <span class="pill">60kg &times;10</span><span class="pill">65kg &times;8</span><span class="pill">65kg &times;6</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:600">Trazioni</span><span class="faint" style="font-size:11px">4 serie</span></div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <span class="pill">corpo &times;8</span><span class="pill">corpo &times;7</span><span class="pill">corpo &times;6</span>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding:12px 14px;border-radius:12px;border:1px solid rgba(227,161,95,.25);background:rgba(227,161,95,.06)">
+          <div class="eyebrow">coach ai</div>
+          <div style="font-size:12.5px;line-height:1.55;color:var(--color-ink)">Sulla panca hai messo 5kg in due settimane. La prossima volta prova 67,5kg sulla prima serie.</div>
+        </div>
+      </div>
+      <div class="tabbar">
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="3"/></svg><span class="lbl">Oggi</span></a>
+        <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span class="lbl">Mese</span></a>
+        <a><span class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span></a>
+        <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg><span class="lbl">Palestra</span></a>
+        <a><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span class="lbl">Altro</span></a>
+      </div>
+    </div></div>
+    <div class="desc">Logga allenamenti (esercizi, serie, peso, ripetizioni) a voce o a mano, e l'<b>AI fa da personal trainer</b>: nota i progressi e suggerisce il carico. Era gia nella visione del progetto.</div>
+  </div>
+
+</div>
+</body>
+</html>
