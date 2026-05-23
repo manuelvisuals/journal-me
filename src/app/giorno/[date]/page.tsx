@@ -57,10 +57,13 @@ export default async function DayPage({
 
   let entry: Entry | null = null;
   if (user) {
+    // NB: there is no `duration_seconds` column on entries — selecting it made
+    // this query error out and return null, so the day always showed
+    // "Nessuna giornata" even when an entry existed (BUG2).
     const COLS_FULL =
-      "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, people, created_at";
+      "id, entry_date, transcript, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, people, created_at";
     const COLS_BASE =
-      "id, entry_date, transcript, duration_seconds, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, created_at";
+      "id, entry_date, transcript, headline, snippet, areas, weight_kg, sleep_hours, mood, goals_on, created_at";
 
     const [{ data: goalsData }, entryRes] = await Promise.all([
       supabase

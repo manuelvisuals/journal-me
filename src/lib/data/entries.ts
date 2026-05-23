@@ -454,12 +454,14 @@ export async function saveEntryPeople(
     clean.push(t);
   }
 
+  // UPDATE only — never create a blank row here. People are always attached
+  // to an entry that the recording already created; creating a row with only
+  // `people` would show a headline-less "empty" entry (BUG1).
   const { error } = await supabase
     .from("entries")
-    .upsert(
-      { user_id: user.id, entry_date: dateISO, people: clean },
-      { onConflict: "user_id,entry_date" },
-    );
+    .update({ people: clean })
+    .eq("user_id", user.id)
+    .eq("entry_date", dateISO);
   // Tolerate a missing `people` column (migration 005 not yet applied): the
   // new people are still saved to Remember > Persone by the caller; only the
   // per-day Social link is deferred until the migration runs.

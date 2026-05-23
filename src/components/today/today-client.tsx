@@ -44,6 +44,9 @@ type PeopleData = {
   existing: string[];
   suggested: string[];
   attachDate: string;
+  /** The real saved entry for attachDate (has headline) — used as the view
+   *  base after attaching people, so we never render a headline-less shell. */
+  entryForDate: Entry | null;
 };
 
 type Props = {
@@ -178,7 +181,9 @@ export function TodayClient({
         const attachDate = todayEntry
           ? today
           : saved[0]?.entryDate ?? pending.targetDate;
-        setPeopleData({ existing, suggested, attachDate });
+        const entryForDate =
+          saved.find((e) => e.entryDate === attachDate) ?? todayEntry ?? null;
+        setPeopleData({ existing, suggested, attachDate, entryForDate });
         setPending(null);
         setView("people");
         return;
@@ -195,16 +200,23 @@ export function TodayClient({
 
   const finishPeople = async (allPeople: string[], newOnes: string[]) => {
     if (!peopleData) return;
+    const { attachDate, entryForDate } = peopleData;
     setPeopleSaving(true);
     try {
       if (newOnes.length > 0) {
         await addPersonas(mode, newOnes);
       }
-      const updated = await saveEntryPeople(mode, peopleData.attachDate, allPeople);
-      if (updated.entryDate === todayISO()) setEntry(updated);
+      await saveEntryPeople(mode, attachDate, allPeople);
+      // Base the view on the real saved entry (which has the headline/areas),
+      // with people merged in — never a headline-less shell.
+      const base = entryForDate
+        ? { ...entryForDate, people: allPeople }
+        : null;
+      const showToday = attachDate === todayISO();
+      if (base && showToday) setEntry(base);
       setPeopleData(null);
       setPeopleSaving(false);
-      setView(updated.entryDate === todayISO() || entry ? "filled" : "empty");
+      setView((base && showToday) || entry ? "filled" : "empty");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore salvataggio persone");
       setPeopleData(null);
