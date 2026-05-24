@@ -38,6 +38,35 @@ async function acquireMicStream(): Promise<MediaStream> {
   });
 }
 
+// iOS Safari quirk (only on the FIRST permission grant): getUserMedia resolves
+// while the audio track is still `muted: true`, and iOS doesn't actually push
+// audio frames until it fires `unmute` a few hundred ms (sometimes >1s) later.
+// If we add this still-muted track to the peer connection and negotiate, the
+// RTP sender locks into sending silence — OpenAI's VAD never sees speech, so
+// zero transcription events arrive even though the timer ticks (state=recording)
+// and the 8s silence warning fires. On later launches the permission already
+// exists, the track starts unmuted, and everything works. So: if the track is
+// muted, wait for `unmute` before we negotiate. Falls through after a timeout
+// so we never hang if the event somehow doesn't fire.
+async function waitForTrackLive(
+  track: MediaStreamTrack,
+  timeoutMs = 3000,
+): Promise<void> {
+  if (!track.muted) return;
+  await new Promise<void>((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      track.removeEventListener("unmute", finish);
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(finish, timeoutMs);
+    track.addEventListener("unmute", finish);
+  });
+}
+
 type Props = {
   /** Default date for segments without explicit temporal markers (YYYY-MM-DD). */
   defaultDate?: string;
@@ -104,12 +133,42 @@ export function RecordingOverlay({
   const transcriptScrollRef = useRef<HTMLDivElement | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
+  // --- TEMPORARY DIAGNOSTICS (first-launch silent-recording bug) ---------
+  // On-screen log of the recording pipeline so we can see exactly where it
+  // breaks on a fresh iOS permission grant: track state, data-channel open,
+  // ICE/connection state, every event received from OpenAI, and a periodic
+  // getStats() poll of outbound audio (packets/bytes sent + mic audioLevel).
+  // If audio bytes climb but no events arrive, the break is server-side;
+  // if bytes stay flat, the browser isn't sending audio. Remove once fixed.
+  const [debugLines, setDebugLines] = useState<string[]>([]);
+  const [debugOpen, setDebugOpen] = useState<boolean>(true);
+  const debugRef = useRef<string[]>([]);
+  const debugT0Ref = useRef<number>(Date.now());
+  const statsTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const debugBoxRef = useRef<HTMLDivElement | null>(null);
+
+  function dbg(msg: string) {
+    const t = ((Date.now() - debugT0Ref.current) / 1000).toFixed(1);
+    const line = `${t}s ${msg}`;
+    debugRef.current = [...debugRef.current.slice(-120), line];
+    // Defer the state update so the first (synchronous) log during the mount
+    // effect doesn't trip React 19's set-state-in-effect rule.
+    queueMicrotask(() => setDebugLines(debugRef.current));
+    try {
+      // eslint-disable-next-line no-console
+      console.log("[rec]", line);
+    } catch {
+      // ignore
+    }
+  }
+
   // Setup the realtime connection once on mount.
   useEffect(() => {
     let cancelled = false;
 
     const setup = async () => {
       try {
+        dbg("setup start");
         // 1. Mic permission (re-uses cached stream when possible)
         const stream = await acquireMicStream();
         if (cancelled) {
@@ -118,6 +177,27 @@ export function RecordingOverlay({
         }
         localStreamRef.current = stream;
         audioTrackRef.current = stream.getAudioTracks()[0] ?? null;
+        const tk = audioTrackRef.current;
+        dbg(
+          tk
+            ? `getUserMedia ok muted=${tk.muted} enabled=${tk.enabled} ready=${tk.readyState} "${tk.label.slice(0, 24)}"`
+            : "getUserMedia ok but NO audio track",
+        );
+        if (tk) {
+          tk.addEventListener("mute", () => dbg("track MUTE"));
+          tk.addEventListener("unmute", () => dbg("track UNMUTE"));
+          tk.addEventListener("ended", () => dbg("track ENDED"));
+        }
+
+        // On the first permission grant iOS hands back a still-muted track that
+        // delivers no audio frames until it fires `unmute`. Wait for that before
+        // negotiating, otherwise the sender ships silence and OpenAI sees nothing.
+        if (audioTrackRef.current) {
+          if (audioTrackRef.current.muted) dbg("track muted -> waiting unmute");
+          await waitForTrackLive(audioTrackRef.current);
+          dbg(`done waiting muted=${audioTrackRef.current.muted}`);
+        }
+        if (cancelled) return;
 
         // 2. Peer connection + data channel
         const pc = new RTCPeerConnection();
@@ -126,6 +206,7 @@ export function RecordingOverlay({
         // Add mic as a transceiver so SDP includes audio
         if (audioTrackRef.current) {
           pc.addTrack(audioTrackRef.current, stream);
+          dbg("addTrack done");
         }
 
         const dc = pc.createDataChannel("oai-events");
@@ -135,10 +216,17 @@ export function RecordingOverlay({
           handleEvent(e.data);
         };
         dc.onopen = () => {
-          // Data channel is ready — we're effectively live.
+          dbg("datachannel OPEN");
+        };
+        dc.onclose = () => dbg("datachannel close");
+        dc.onerror = () => dbg("datachannel error");
+
+        pc.onconnectionstatechange = () => {
+          dbg(`pc.connectionState=${pc.connectionState}`);
         };
 
         pc.oniceconnectionstatechange = () => {
+          dbg(`ice=${pc.iceConnectionState}`);
           if (
             pc.iceConnectionState === "failed" ||
             pc.iceConnectionState === "disconnected"
@@ -178,11 +266,13 @@ export function RecordingOverlay({
           // ignore — vocabulary hint is non-critical
         }
 
+        dbg("POST /api/realtime/session");
         const resp = await fetch("/api/realtime/session", {
           method: "POST",
           headers,
           body: offer.sdp ?? "",
         });
+        dbg(`session resp ${resp.status}`);
 
         if (!resp.ok) {
           const errTxt = await resp.text().catch(() => "");
@@ -195,10 +285,12 @@ export function RecordingOverlay({
         if (cancelled) return;
 
         await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
+        dbg("remoteDescription set");
 
         if (cancelled) return;
         setState("recording");
         startTimer();
+        startStatsPoll();
         // Keep the screen awake so iOS doesn't sleep mid-recording.
         void acquireWakeLock();
       } catch (err) {
@@ -223,15 +315,57 @@ export function RecordingOverlay({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Poll WebRTC stats so we can see whether the browser is actually SENDING
+  // audio to OpenAI. If packets/bytes climb, the upstream pipe is healthy and
+  // any silence is OpenAI's doing; if they stay flat, the mic track isn't
+  // feeding the sender (the suspected first-launch bug).
+  function startStatsPoll() {
+    if (statsTimerRef.current) return;
+    statsTimerRef.current = setInterval(() => {
+      const pc = pcRef.current;
+      if (!pc) return;
+      void pc
+        .getStats()
+        .then((stats) => {
+          let out = "";
+          let lvl = "";
+          stats.forEach((r) => {
+            const rep = r as unknown as {
+              type: string;
+              kind?: string;
+              packetsSent?: number;
+              bytesSent?: number;
+              audioLevel?: number;
+            };
+            if (rep.type === "outbound-rtp" && rep.kind === "audio") {
+              out = `pkts=${rep.packetsSent ?? "?"} bytes=${rep.bytesSent ?? "?"}`;
+            }
+            if (rep.type === "media-source" && rep.kind === "audio") {
+              lvl =
+                typeof rep.audioLevel === "number"
+                  ? ` lvl=${rep.audioLevel.toFixed(3)}`
+                  : "";
+            }
+          });
+          if (out) dbg(`stats out ${out}${lvl}`);
+        })
+        .catch(() => {});
+    }, 2000);
+  }
+
   function handleEvent(raw: unknown) {
     if (typeof raw !== "string") return;
     let ev: { type?: string; delta?: string; transcript?: string };
     try {
       ev = JSON.parse(raw);
     } catch {
+      dbg("event: non-JSON");
       return;
     }
     if (!ev.type) return;
+    // Log the type of every event so we can confirm OpenAI is talking back at
+    // all (errors, session.created, speech_started, transcription deltas...).
+    dbg(`ev ${ev.type}`);
     if (ev.type === "conversation.item.input_audio_transcription.delta") {
       setInterim((prev) => prev + (ev.delta ?? ""));
       lastTranscriptAtRef.current = Date.now();
@@ -339,10 +473,22 @@ export function RecordingOverlay({
     });
   }, [transcript, interim]);
 
+  // Keep the diagnostic panel scrolled to the newest line.
+  useEffect(() => {
+    const el = debugBoxRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [debugLines]);
+
   function cleanup() {
     if (cleanedUpRef.current) return;
     cleanedUpRef.current = true;
+    dbg("cleanup");
     stopTimer();
+    if (statsTimerRef.current) {
+      clearInterval(statsTimerRef.current);
+      statsTimerRef.current = null;
+    }
     releaseWakeLock();
     try {
       dcRef.current?.close();
@@ -751,6 +897,63 @@ export function RecordingOverlay({
         >
           audio in streaming a openai . solo il testo viene salvato
         </p>
+      </div>
+
+      {/* TEMPORARY on-screen diagnostics panel. Toggle with the badge. */}
+      <div
+        style={{
+          position: "fixed",
+          top: 8,
+          left: 8,
+          right: 8,
+          zIndex: 60,
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ pointerEvents: "auto", maxWidth: 440, margin: "0 auto" }}>
+          <button
+            type="button"
+            onClick={() => setDebugOpen((v) => !v)}
+            style={{
+              fontFamily: "ui-monospace, Menlo, monospace",
+              fontSize: 10,
+              padding: "3px 8px",
+              borderRadius: 6,
+              border: "1px solid rgba(248,113,113,0.4)",
+              background: "rgba(0,0,0,0.6)",
+              color: "var(--color-danger)",
+              letterSpacing: "0.06em",
+            }}
+          >
+            {debugOpen ? "DEBUG ▲" : `DEBUG ▼ (${debugLines.length})`}
+          </button>
+          {debugOpen && (
+            <div
+              ref={debugBoxRef}
+              style={{
+                marginTop: 4,
+                maxHeight: "38vh",
+                overflowY: "auto",
+                background: "rgba(0,0,0,0.82)",
+                border: "1px solid rgba(248,113,113,0.3)",
+                borderRadius: 8,
+                padding: "6px 8px",
+                fontFamily: "ui-monospace, Menlo, monospace",
+                fontSize: 10.5,
+                lineHeight: 1.45,
+                color: "#e8c9c9",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+              }}
+            >
+              {debugLines.length === 0 ? (
+                <span style={{ opacity: 0.6 }}>in attesa di eventi…</span>
+              ) : (
+                debugLines.map((l, i) => <div key={i}>{l}</div>)
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Date picker popover (sits above transcript) */}
