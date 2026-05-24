@@ -136,3 +136,65 @@ il caso "sano".
 - Push fatto via clone fresco in `/tmp` (vedi HANDOVER.md sez. 5-6); la `.git`
   nella workspace folder è solo lo scaffold iniziale, NON è la storia vera.
 - Token PAT usato e poi da revocare (ricordato a Manuel).
+
+---
+
+## 7. Per la chat dietro al commit `db7f5ac` (stale-pipe fix) — cosa ho scoperto
+
+Messaggio diretto alla sessione che ha fatto **`db7f5ac` "Fix iOS Safari mic
+stale-pipe: drop stream cache, stop tracks on cleanup"** (e a chi mette mano al
+ciclo di vita del microfono).
+
+### Cosa diceva il tuo commit
+Per risolvere il "silence al 2°+ recording" hai (1) eliminato la cache
+module-level `cachedMicStream` — ora ogni apertura fa `getUserMedia` fresco — e
+(2) cambiato `cleanup()` da `t.enabled = false` a `t.stop()` su tutte le tracce,
+per chiudere "pulita" la audio session iOS.
+
+### Cosa mostra la diagnostica on-device (21:59, cold launch)
+La pipeline è sanissima fino in fondo: `session resp 200`, `ice=connected`,
+`pc.connectionState=connected`, `datachannel OPEN`, `ev session.created` +
+`session.updated`. MA:
+
+```
+getUserMedia ok muted=false enabled=true ready=ended  "Microfono iPhone"
+stats out pkts=0 bytes=0 lvl=0.000   (ripetuto per 17s)
+```
+
+La traccia mic nasce con **`readyState: "ended"`** → zero frame audio inviati per
+tutta la sessione. Non è il tuo stale-pipe (lì la traccia era `live` ma il pipe
+stantio); qui la traccia è proprio **morta all'acquisizione**.
+
+### Dove guardare / cosa ripristinare — con onestà sul nesso causale
+Il punto da rivedere è il ciclo di vita mic che hai toccato in `db7f5ac`:
+`acquireMicStream()` + il `t.stop()` in `cleanup()`.
+
+Ipotesi: chiudere la audio session iOS con `t.stop()` può lasciare iOS in
+teardown; una `getUserMedia` successiva (o una a freddo) torna con una traccia
+già `ended` finché la sessione audio non è risalita. In pratica avresti scambiato
+un bug iOS (stale-pipe sul reopen) con un altro (ended-track all'apertura).
+
+**Però, onestà piena (non spaccio ipotesi per certezze):** il repro catturato è
+un avvio a freddo SENZA registrazione precedente in quella sessione app, quindi
+in *quella* run non c'era nessun `cleanup()/stop()` tuo a fare teardown. E
+`muted=false` dice che il permesso era già concesso. Quindi l'evidenza **non
+prova** che `db7f5ac` abbia "rotto" il primo avvio: somiglia di più a una race di
+cold-start di Safari iOS che il codice non gestiva. Quello che `db7f5ac` ha
+rimosso (la cache) prima *mascherava* parte di questi casi tenendo un singolo
+stream lungo-vivente.
+
+### Cosa ho fatto io (commit `1a0ab82`)
+Non ho toccato la tua logica di `cleanup()/stop()`: l'ho lasciata perché il tuo
+stale-pipe fix resta valido. Ho aggiunto un **guard di robustezza** in
+acquisizione: se la traccia non è `live`, la scarto e ri-chiamo `getUserMedia`
+(fino a 4 volte, 300ms di pausa) finché non ottengo una traccia viva. Funziona a
+prescindere dalla causa radice. Da confermare col pannello: ci aspettiamo
+`getUserMedia #1 ready=ended` seguito da `#2 ready=live` e poi `stats out` con
+bytes che salgono.
+
+### Raccomandazione
+Quando confermi che il retry risolve, valuta se la coppia `stop()`-on-cleanup +
+no-cache è ancora il tradeoff giusto, o se conviene tenerla MA accoppiata al
+guard di retry (è la combinazione più sicura: chiusura pulita + riacquisizione
+robusta). Non re-introdurre la cache module-level senza il retry, o rischi di
+tornare allo stale-pipe.
