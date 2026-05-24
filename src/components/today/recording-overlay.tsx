@@ -169,29 +169,53 @@ export function RecordingOverlay({
     const setup = async () => {
       try {
         dbg("setup start");
-        // 1. Mic permission (re-uses cached stream when possible)
-        const stream = await acquireMicStream();
-        if (cancelled) {
-          // Don't stop the cached stream — we want to re-use it next time.
-          return;
+        // 1. Acquire a LIVE mic track. On a cold app launch, iOS Safari can
+        // hand back a track that is already `readyState: "ended"` — it produces
+        // zero audio frames (pkts/bytes stay 0, lvl 0), so OpenAI sees only
+        // silence even though the connection and session are healthy. Diagnosed
+        // live on-device (see HANDOVER-recording-bug.md). The fix: if the track
+        // isn't live, discard it and re-call getUserMedia a few times; the
+        // re-acquisition reliably returns a live track.
+        let stream: MediaStream | null = null;
+        for (let attempt = 1; attempt <= 4; attempt++) {
+          const s = await acquireMicStream();
+          if (cancelled) {
+            s.getTracks().forEach((t) => t.stop());
+            return;
+          }
+          const t = s.getAudioTracks()[0] ?? null;
+          dbg(
+            t
+              ? `getUserMedia #${attempt} muted=${t.muted} enabled=${t.enabled} ready=${t.readyState} "${t.label.slice(0, 20)}"`
+              : `getUserMedia #${attempt} NO audio track`,
+          );
+          if (t && t.readyState === "live") {
+            stream = s;
+            break;
+          }
+          // Dead/ended track — throw it away and retry after a short pause so
+          // iOS has a moment to bring the capture session up.
+          s.getTracks().forEach((t2) => t2.stop());
+          await new Promise((r) => setTimeout(r, 300));
+          if (cancelled) return;
+        }
+        if (!stream) {
+          throw new Error(
+            "Il microfono non si è avviato. Chiudi e riapri, oppure riavvia l'app.",
+          );
         }
         localStreamRef.current = stream;
         audioTrackRef.current = stream.getAudioTracks()[0] ?? null;
         const tk = audioTrackRef.current;
-        dbg(
-          tk
-            ? `getUserMedia ok muted=${tk.muted} enabled=${tk.enabled} ready=${tk.readyState} "${tk.label.slice(0, 24)}"`
-            : "getUserMedia ok but NO audio track",
-        );
         if (tk) {
           tk.addEventListener("mute", () => dbg("track MUTE"));
           tk.addEventListener("unmute", () => dbg("track UNMUTE"));
           tk.addEventListener("ended", () => dbg("track ENDED"));
         }
 
-        // On the first permission grant iOS hands back a still-muted track that
-        // delivers no audio frames until it fires `unmute`. Wait for that before
-        // negotiating, otherwise the sender ships silence and OpenAI sees nothing.
+        // On the first permission grant iOS can also hand back a still-muted
+        // (but live) track that delivers no frames until it fires `unmute`.
+        // Wait for that before negotiating so the sender doesn't ship silence.
         if (audioTrackRef.current) {
           if (audioTrackRef.current.muted) dbg("track muted -> waiting unmute");
           await waitForTrackLive(audioTrackRef.current);
