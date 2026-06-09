@@ -134,29 +134,18 @@ export function RecordingOverlay({
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   // --- TEMPORARY DIAGNOSTICS (first-launch silent-recording bug) ---------
-  // On-screen log of the recording pipeline so we can see exactly where it
+  // Console-only log of the recording pipeline so we can see exactly where it
   // breaks on a fresh iOS permission grant: track state, data-channel open,
   // ICE/connection state, every event received from OpenAI, and a periodic
   // getStats() poll of outbound audio (packets/bytes sent + mic audioLevel).
-  // If audio bytes climb but no events arrive, the break is server-side;
-  // if bytes stay flat, the browser isn't sending audio. Remove once fixed.
-  const [debugLines, setDebugLines] = useState<string[]>([]);
-  const [debugOpen, setDebugOpen] = useState<boolean>(true);
-  const debugRef = useRef<string[]>([]);
+  // The on-screen panel has been removed; tail logs from the Safari console.
   const debugT0Ref = useRef<number>(Date.now());
   const statsTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const debugBoxRef = useRef<HTMLDivElement | null>(null);
 
   function dbg(msg: string) {
     const t = ((Date.now() - debugT0Ref.current) / 1000).toFixed(1);
-    const line = `${t}s ${msg}`;
-    debugRef.current = [...debugRef.current.slice(-120), line];
-    // Defer the state update so the first (synchronous) log during the mount
-    // effect doesn't trip React 19's set-state-in-effect rule.
-    queueMicrotask(() => setDebugLines(debugRef.current));
     try {
-      // eslint-disable-next-line no-console
-      console.log("[rec]", line);
+      console.log("[rec]", `${t}s ${msg}`);
     } catch {
       // ignore
     }
@@ -496,13 +485,6 @@ export function RecordingOverlay({
       el.scrollTop = el.scrollHeight;
     });
   }, [transcript, interim]);
-
-  // Keep the diagnostic panel scrolled to the newest line.
-  useEffect(() => {
-    const el = debugBoxRef.current;
-    if (!el) return;
-    el.scrollTop = el.scrollHeight;
-  }, [debugLines]);
 
   function cleanup() {
     if (cleanedUpRef.current) return;
@@ -921,63 +903,6 @@ export function RecordingOverlay({
         >
           audio in streaming a openai . solo il testo viene salvato
         </p>
-      </div>
-
-      {/* TEMPORARY on-screen diagnostics panel. Toggle with the badge. */}
-      <div
-        style={{
-          position: "fixed",
-          top: 8,
-          left: 8,
-          right: 8,
-          zIndex: 60,
-          pointerEvents: "none",
-        }}
-      >
-        <div style={{ pointerEvents: "auto", maxWidth: 440, margin: "0 auto" }}>
-          <button
-            type="button"
-            onClick={() => setDebugOpen((v) => !v)}
-            style={{
-              fontFamily: "ui-monospace, Menlo, monospace",
-              fontSize: 10,
-              padding: "3px 8px",
-              borderRadius: 6,
-              border: "1px solid rgba(248,113,113,0.4)",
-              background: "rgba(0,0,0,0.6)",
-              color: "var(--color-danger)",
-              letterSpacing: "0.06em",
-            }}
-          >
-            {debugOpen ? "DEBUG ▲" : `DEBUG ▼ (${debugLines.length})`}
-          </button>
-          {debugOpen && (
-            <div
-              ref={debugBoxRef}
-              style={{
-                marginTop: 4,
-                maxHeight: "38vh",
-                overflowY: "auto",
-                background: "rgba(0,0,0,0.82)",
-                border: "1px solid rgba(248,113,113,0.3)",
-                borderRadius: 8,
-                padding: "6px 8px",
-                fontFamily: "ui-monospace, Menlo, monospace",
-                fontSize: 10.5,
-                lineHeight: 1.45,
-                color: "#e8c9c9",
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-              }}
-            >
-              {debugLines.length === 0 ? (
-                <span style={{ opacity: 0.6 }}>in attesa di eventi…</span>
-              ) : (
-                debugLines.map((l, i) => <div key={i}>{l}</div>)
-              )}
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Date picker popover (sits above transcript) */}
