@@ -108,7 +108,6 @@ export function RecordingOverlay({
     defaultDate ?? todayISO(),
   );
   const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
-  const [silenceWarning, setSilenceWarning] = useState<boolean>(false);
   // Live mic stream, exposed so the waveform can read the REAL input level
   // (Web Audio AnalyserNode) instead of a fake animation.
   const [micStream, setMicStream] = useState<MediaStream | null>(null);
@@ -133,7 +132,6 @@ export function RecordingOverlay({
   const finalRef = useRef<string>("");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cleanedUpRef = useRef<boolean>(false);
-  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTranscriptAtRef = useRef<number>(0);
   const transcriptScrollRef = useRef<HTMLDivElement | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
@@ -405,7 +403,6 @@ export function RecordingOverlay({
     if (ev.type === "conversation.item.input_audio_transcription.delta") {
       setInterim((prev) => prev + (ev.delta ?? ""));
       lastTranscriptAtRef.current = Date.now();
-      setSilenceWarning(false);
     } else if (
       ev.type === "conversation.item.input_audio_transcription.completed"
     ) {
@@ -416,34 +413,8 @@ export function RecordingOverlay({
       }
       setInterim("");
       lastTranscriptAtRef.current = Date.now();
-      setSilenceWarning(false);
     }
   }
-
-  // Silence detector: once we're recording, if 8s pass without any
-  // transcript event, surface a hint that the mic / environment is not
-  // working. Clears once any event arrives.
-  useEffect(() => {
-    if (state !== "recording") {
-      if (silenceTimerRef.current) {
-        clearInterval(silenceTimerRef.current);
-        silenceTimerRef.current = null;
-      }
-      return;
-    }
-    lastTranscriptAtRef.current = Date.now();
-    silenceTimerRef.current = setInterval(() => {
-      if (Date.now() - lastTranscriptAtRef.current > 8000) {
-        setSilenceWarning(true);
-      }
-    }, 1000);
-    return () => {
-      if (silenceTimerRef.current) {
-        clearInterval(silenceTimerRef.current);
-        silenceTimerRef.current = null;
-      }
-    };
-  }, [state]);
 
   function startTimer() {
     if (timerRef.current) return;
@@ -957,24 +928,10 @@ export function RecordingOverlay({
                   Parla pure...
                 </p>
               )}
-              {silenceWarning && state === "recording" && (
-                <p
-                  style={{
-                    color: "var(--color-danger)",
-                    fontSize: 12,
-                    fontStyle: "italic",
-                    padding: "10px 14px",
-                    background: "rgba(248,113,113,0.06)",
-                    border: "1px solid rgba(248,113,113,0.22)",
-                    borderRadius: 12,
-                    lineHeight: 1.4,
-                    textAlign: "center",
-                  }}
-                >
-                  non ho ancora sentito parole. avvicinati al microfono o riduci
-                  il rumore di sottofondo.
-                </p>
-              )}
+              {/* The old 8s "non ti sento" alert was a false-alarm: it fired on
+                  a timer even when the mic WAS being heard. The real waveform
+                  above is now the honest "am I heard" signal (flat = not heard),
+                  so the misleading text is gone. */}
             </div>
 
             <div className="shrink-0">
