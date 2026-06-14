@@ -1,25 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * Controls the server-rendered #jm-splash overlay.
+ * App splash / preloader.
  *
- * The splash markup itself lives in the root layout (server-rendered) so it
- * paints immediately on the initial HTML — before hydration — covering the
- * cold JS load that made the app feel frozen on launch.
+ * This is a client component but Next still server-renders its markup into the
+ * initial HTML, so it paints immediately — before hydration — covering the cold
+ * JS load that made the app feel frozen on launch.
  *
- * On mount this:
- *  1. prefetches the main tabs so their FIRST visit is warm (combined with the
- *     router cache, revisits are already instant), and
- *  2. fades out and removes the splash.
+ * IMPORTANT: the splash is part of React's render tree, so we hide and remove it
+ * ONLY through React state (never document manipulation). An earlier version
+ * called el.remove() / a manual script to drop the node, which corrupted React's
+ * fiber and crashed the next render that touched <body> (the recording overlay's
+ * body portal) with "insertBefore: node is not a child". State-driven unmount
+ * keeps React consistent.
  *
- * A tiny inline <script> in the layout is an independent failsafe that removes
- * the splash even if React never hydrates, so it can never block the app.
+ * On mount it also prefetches the main tabs so their first visit is warm (the
+ * router cache already makes revisits instant).
  */
-export function SplashController() {
+export function Splash() {
   const router = useRouter();
+  const [visible, setVisible] = useState(true);
+  const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
     const routes = ["/", "/mese", "/remember", "/recap", "/settings"];
@@ -30,18 +34,28 @@ export function SplashController() {
         // best-effort warming
       }
     }
-
-    const el = document.getElementById("jm-splash");
-    if (!el) return;
-    const fade = setTimeout(() => el.classList.add("jm-splash-hide"), 1100);
-    const remove = setTimeout(() => {
-      el.remove();
-    }, 1550);
+    const fade = setTimeout(() => setLeaving(true), 1100);
+    const done = setTimeout(() => setVisible(false), 1500);
     return () => {
       clearTimeout(fade);
-      clearTimeout(remove);
+      clearTimeout(done);
     };
   }, [router]);
 
-  return null;
+  if (!visible) return null;
+
+  return (
+    <div
+      className={leaving ? "jm-splash jm-splash-hide" : "jm-splash"}
+      aria-hidden="true"
+    >
+      <div className="jm-splash-halo" />
+      <div className="jm-splash-mark">
+        Journal<span className="jm-splash-dot">.</span>me
+      </div>
+      <div className="jm-splash-bar">
+        <i />
+      </div>
+    </div>
+  );
 }
