@@ -112,6 +112,8 @@ export function RecordingOverlay({
   // Live mic stream, exposed so the waveform can read the REAL input level
   // (Web Audio AnalyserNode) instead of a fake animation.
   const [micStream, setMicStream] = useState<MediaStream | null>(null);
+  // True while we are rescuing an empty live transcript from the recorded audio.
+  const [recovering, setRecovering] = useState<boolean>(false);
   // Mount flag for the document.body portal — avoids SSR mismatch and
   // ensures the overlay escapes any ancestor stacking context (e.g. the
   // fixed-positioned quick-capture bar on /remember which would otherwise
@@ -135,6 +137,16 @@ export function RecordingOverlay({
   const lastTranscriptAtRef = useRef<number>(0);
   const transcriptScrollRef = useRef<HTMLDivElement | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+  // Safety net: a MediaRecorder captures the raw mic audio in parallel with the
+  // realtime session. MediaRecorder reads the track directly (not via the
+  // WebRTC sender that can ship silence on iOS first-launch), so it records
+  // real audio exactly when the live path fails. If the live transcript comes
+  // back empty, we transcribe this audio via /api/transcribe-fallback so the
+  // user never loses their words.
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  // Guards against double-ending if the stop button is tapped twice.
+  const endingRef = useRef<boolean>(false);
 
   // --- TEMPORARY DIAGNOSTICS (first-launch silent-recording bug) ---------
   // Console-only log of the recording pipeline so we can see exactly where it
@@ -308,6 +320,8 @@ export function RecordingOverlay({
         setState("recording");
         startTimer();
         startStatsPoll();
+        // Start the parallel raw-audio recorder (the safety net).
+        startTape(stream);
         // Keep the screen awake so iOS doesn't sleep mid-recording.
         void acquireWakeLock();
       } catch (err) {
@@ -500,6 +514,15 @@ export function RecordingOverlay({
       statsTimerRef.current = null;
     }
     releaseWakeLock();
+    // Stop the parallel recorder if it's still running (discard path used by
+    // cancel / write-manually; handleStop stops it itself first to keep the blob).
+    try {
+      const r = recorderRef.current;
+      recorderRef.current = null;
+      if (r && r.state !== "inactive") r.stop();
+    } catch {
+      // ignore
+    }
     try {
       dcRef.current?.close();
     } catch {
@@ -531,11 +554,133 @@ export function RecordingOverlay({
     audioTrackRef.current = null;
   }
 
-  function handleStop() {
+  // --- Parallel raw-audio recorder (the safety net) ----------------------
+  function startTape(stream: MediaStream) {
+    try {
+      if (typeof MediaRecorder === "undefined") return; // unsupported -> net off
+      chunksRef.current = [];
+      const candidates = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/mp4",
+        "audio/ogg;codecs=opus",
+      ];
+      let mime = "";
+      for (const c of candidates) {
+        if (MediaRecorder.isTypeSupported(c)) {
+          mime = c;
+          break;
+        }
+      }
+      const rec = mime
+        ? new MediaRecorder(stream, { mimeType: mime })
+        : new MediaRecorder(stream);
+      rec.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      // Emit a chunk every second so we still have audio even if stop is abrupt.
+      rec.start(1000);
+      recorderRef.current = rec;
+    } catch {
+      // The safety net must NEVER break the main recording flow.
+      recorderRef.current = null;
+    }
+  }
+
+  function stopTape(): Promise<Blob | null> {
+    return new Promise((resolve) => {
+      const rec = recorderRef.current;
+      recorderRef.current = null;
+      if (!rec) {
+        resolve(null);
+        return;
+      }
+      const finish = () => {
+        try {
+          if (!chunksRef.current.length) {
+            resolve(null);
+            return;
+          }
+          const type = rec.mimeType || "audio/webm";
+          resolve(new Blob(chunksRef.current, { type }));
+        } catch {
+          resolve(null);
+        }
+      };
+      try {
+        if (rec.state !== "inactive") {
+          rec.onstop = finish;
+          rec.stop();
+        } else {
+          finish();
+        }
+      } catch {
+        finish();
+      }
+    });
+  }
+
+  // Non-realtime rescue: send the recorded clip to the fallback endpoint, which
+  // transcribes the WHOLE audio at once (more robust to noise than streamed
+  // chunks). Returns "" on any failure so the caller can fall back gracefully.
+  async function recoverFromAudio(blob: Blob): Promise<string> {
+    const fd = new FormData();
+    const ext = blob.type.includes("mp4")
+      ? "mp4"
+      : blob.type.includes("ogg")
+        ? "ogg"
+        : "webm";
+    fd.set("audio", blob, `entry.${ext}`);
+    try {
+      const terms = await loadPersonaNames(mode ?? "auth");
+      if (terms.length > 0) fd.set("glossary", terms.join(", "));
+    } catch {
+      // glossary hint is best-effort
+    }
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 30000);
+    try {
+      const resp = await fetch("/api/transcribe-fallback", {
+        method: "POST",
+        body: fd,
+        signal: ctrl.signal,
+      });
+      clearTimeout(timer);
+      if (!resp.ok) return "";
+      const data = (await resp.json().catch(() => null)) as {
+        text?: unknown;
+      } | null;
+      return data && typeof data.text === "string" ? data.text.trim() : "";
+    } catch {
+      clearTimeout(timer);
+      return "";
+    }
+  }
+
+  async function handleStop() {
+    if (endingRef.current) return; // guard against a double tap
+    endingRef.current = true;
+    // Grab the parallel recording BEFORE we tear the mic down.
+    const blob = await stopTape();
     cleanup();
-    setState("connecting"); // transient; parent will switch view away
-    const finalText = finalRef.current.trim() || interim.trim();
-    onStop(finalText, seconds, targetDate);
+    const liveText = (finalRef.current.trim() || interim.trim()).trim();
+    if (liveText) {
+      setState("connecting"); // transient; parent will switch the view away
+      onStop(liveText, seconds, targetDate);
+      return;
+    }
+    // The live path heard nothing — rescue from the recorded audio so the user
+    // never loses their words (this is exactly the iOS first-launch failure).
+    if (blob && blob.size > 1200) {
+      setRecovering(true);
+      const recovered = await recoverFromAudio(blob);
+      setRecovering(false);
+      setState("connecting");
+      onStop(recovered, seconds, targetDate);
+      return;
+    }
+    setState("connecting");
+    onStop(liveText, seconds, targetDate);
   }
 
   function handleCancel() {
@@ -687,7 +832,38 @@ export function RecordingOverlay({
         </div>
 
         {/* Body */}
-        {state === "error" ? (
+        {recovering ? (
+          <div
+            className="flex flex-1 flex-col items-center justify-center"
+            style={{ gap: 14, padding: 24, textAlign: "center" }}
+          >
+            <span className="jm-dot-pulse" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <p
+              style={{
+                color: "var(--color-ink)",
+                fontSize: 16,
+                fontWeight: 600,
+              }}
+            >
+              Recupero quello che hai detto...
+            </p>
+            <p
+              style={{
+                color: "var(--color-ink-faint)",
+                fontSize: 13,
+                lineHeight: 1.5,
+                maxWidth: 280,
+              }}
+            >
+              Il segnale dal vivo era disturbato. Sto ritrascrivendo
+              l&apos;audio registrato.
+            </p>
+          </div>
+        ) : state === "error" ? (
           <div
             style={{
               padding: 16,

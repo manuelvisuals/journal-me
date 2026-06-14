@@ -153,14 +153,19 @@ export async function POST(req: NextRequest) {
         // Background noise reduction — helps the VAD distinguish speech
         // from environmental noise so we don't transcribe coughs/clicks.
         noise_reduction: { type: "near_field" },
-        // Server-side voice activity detection. threshold 0.3 keeps us
-        // sensitive in noisy rooms; the anti-hallucination prompt above
-        // is what prevents fabricated content on borderline chunks.
+        // Server-side voice activity detection. Threshold raised to 0.5 for
+        // noisy environments (cafes, streets, Bali): a low threshold lets
+        // background chatter trip the VAD, which opens segments on noise and
+        // produces wrong/fabricated text. 0.5 means it only fires for the
+        // user speaking close to the phone. silence_duration bumped to 400ms
+        // so brief noise gaps don't fragment a sentence. The parallel
+        // recorder + /api/transcribe-fallback rescue anything the live path
+        // still misses.
         turn_detection: {
           type: "server_vad",
-          threshold: 0.3,
+          threshold: 0.5,
           prefix_padding_ms: 150,
-          silence_duration_ms: 250,
+          silence_duration_ms: 400,
         },
       },
     },
