@@ -940,10 +940,11 @@ export function RecordingOverlay({
           </>
         )}
 
-        {/* Push-to-talk — hold to capture. The mic is closed otherwise, so
-            background voices in the gaps never get transcribed. */}
-        <div className="shrink-0" style={{ padding: "8px 0 2px" }}>
-          <div className="flex flex-col items-center" style={{ gap: 10 }}>
+        {/* Push-to-talk hero — hold to capture. Generous air above and below
+            so the button breathes; the mic is closed otherwise, so background
+            voices in the gaps never get transcribed. */}
+        <div className="shrink-0" style={{ padding: "22px 0 0" }}>
+          <div className="flex flex-col items-center" style={{ gap: 16 }}>
             <button
               type="button"
               aria-label="Tieni premuto per parlare"
@@ -961,11 +962,11 @@ export function RecordingOverlay({
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="1.6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                width="42"
-                height="42"
+                width="46"
+                height="46"
                 aria-hidden="true"
               >
                 <rect x="9" y="3" width="6" height="12" rx="3" />
@@ -975,7 +976,7 @@ export function RecordingOverlay({
             </button>
             <span
               style={{
-                fontSize: 11,
+                fontSize: 12,
                 color: "var(--color-ink-faint)",
                 letterSpacing: "0.04em",
               }}
@@ -989,24 +990,55 @@ export function RecordingOverlay({
           </div>
         </div>
 
-        {/* Annulla / Fine e salva */}
+        {/* Annulla (icona quieta) + Fine e salva (primaria, larga) — separate
+            from the hero with real space so nothing feels cramped. */}
         <div
-          className="flex items-center justify-center shrink-0"
-          style={{ gap: 12, padding: "10px 0 4px" }}
+          className="flex items-center shrink-0"
+          style={{ gap: 12, padding: "30px 0 4px" }}
         >
           <button
             type="button"
             onClick={handleCancel}
+            aria-label="Annulla"
             className="jm-ptt-action jm-ptt-cancel"
+            style={{ flex: "0 0 auto", width: 56, padding: "15px 0" }}
           >
-            Annulla
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="19"
+              height="19"
+              aria-hidden="true"
+            >
+              <path d="M3 6h18" />
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M19 6l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2L5 6" />
+            </svg>
           </button>
           <button
             type="button"
             onClick={handleStop}
             className="jm-ptt-action jm-ptt-save"
             disabled={state === "connecting"}
+            style={{ flex: 1, gap: 8 }}
           >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="19"
+              height="19"
+              aria-hidden="true"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
             Fine e salva
           </button>
         </div>

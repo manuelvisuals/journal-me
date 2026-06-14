@@ -278,8 +278,8 @@ body > * {
 /* Push-to-talk button (recording overlay). Hold to capture; :active gives the
    "holding" amber glow for free while the finger is down. */
 .rec-ptt {
-  width: 116px;
-  height: 116px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   border: 1px solid rgba(255, 241, 221, 0.30);
   background: var(--color-surface-2);
