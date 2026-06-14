@@ -317,10 +317,15 @@ export function RecordingOverlay({
         dbg("remoteDescription set");
 
         if (cancelled) return;
-        setState("recording");
-        startTimer();
+        // Push-to-talk: the session is live but we DON'T capture yet. The mic
+        // track starts disabled (sends silence); it only opens while the user
+        // holds the talk button, so background voices in the gaps are never
+        // transcribed. We land in "paused" (ready) and hold drives capture.
+        if (audioTrackRef.current) audioTrackRef.current.enabled = false;
+        setState("paused");
         startStatsPoll();
-        // Start the parallel raw-audio recorder (the safety net).
+        // Parallel raw-audio recorder (safety net): records silence while not
+        // held, the user's voice while held.
         startTape(stream);
         // Keep the screen awake so iOS doesn't sleep mid-recording.
         void acquireWakeLock();
@@ -693,24 +698,28 @@ export function RecordingOverlay({
     onWriteManually?.();
   }
 
-  function togglePause() {
+  // Push-to-talk: open the mic only while the button is held.
+  function beginTalk() {
+    if (state !== "paused") return; // only once connected & idle
     const track = audioTrackRef.current;
     if (!track) return;
-    if (state === "recording") {
-      track.enabled = false;
-      stopTimer();
-      setState("paused");
-    } else if (state === "paused") {
-      track.enabled = true;
-      startTimer();
-      setState("recording");
-    }
+    track.enabled = true;
+    startTimer();
+    setState("recording");
+  }
+
+  function endTalk() {
+    if (state !== "recording") return;
+    const track = audioTrackRef.current;
+    if (track) track.enabled = false;
+    stopTimer();
+    setState("paused");
   }
 
   const { older, recent } = splitTranscript(transcript);
   const liveLabel =
     state === "paused"
-      ? "pausa"
+      ? "pronto"
       : state === "connecting"
         ? "connetto"
         : state === "error"
@@ -974,96 +983,74 @@ export function RecordingOverlay({
           </>
         )}
 
-        {/* Controls — fixed at bottom of overlay */}
-        <div
-          className="flex items-center justify-center shrink-0"
-          style={{ gap: 28, padding: "16px 0 10px" }}
-        >
-          <button
-            type="button"
-            onClick={handleCancel}
-            aria-label="Annulla registrazione"
-            className="rec-ctl rec-ctl-cancel"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              width="20"
-              height="20"
-              aria-hidden="true"
+        {/* Push-to-talk — hold to capture. The mic is closed otherwise, so
+            background voices in the gaps never get transcribed. */}
+        <div className="shrink-0" style={{ padding: "8px 0 2px" }}>
+          <div className="flex flex-col items-center" style={{ gap: 10 }}>
+            <button
+              type="button"
+              aria-label="Tieni premuto per parlare"
+              className="rec-ptt"
+              disabled={state === "connecting" || state === "error"}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                beginTalk();
+              }}
+              onPointerUp={endTalk}
+              onPointerLeave={endTalk}
+              onPointerCancel={endTalk}
             >
-              <path d="M3 6h18" />
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              <path d="M19 6l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2L5 6" />
-              <path d="M10 11v6M14 11v6" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleStop}
-            aria-label="Termina e salva"
-            className="rec-ctl rec-ctl-stop"
-            disabled={state === "connecting"}
-            style={state === "connecting" ? { opacity: 0.5 } : undefined}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              width="30"
-              height="30"
-              aria-hidden="true"
-            >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </button>
-
-          <button
-            type="button"
-            onClick={togglePause}
-            aria-label={state === "paused" ? "Riprendi" : "Pausa"}
-            className="rec-ctl"
-            disabled={state === "connecting" || state === "error"}
-            style={
-              state === "connecting" || state === "error"
-                ? { opacity: 0.5 }
-                : undefined
-            }
-          >
-            {state === "paused" ? (
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                width="18"
-                height="18"
-                aria-hidden="true"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            ) : (
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.8"
+                strokeWidth="1.7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                width="18"
-                height="18"
+                width="42"
+                height="42"
                 aria-hidden="true"
               >
-                <rect x="6" y="4" width="4" height="16" />
-                <rect x="14" y="4" width="4" height="16" />
+                <rect x="9" y="3" width="6" height="12" rx="3" />
+                <path d="M5 11a7 7 0 0 0 14 0" />
+                <path d="M12 18v3" />
               </svg>
-            )}
+            </button>
+            <span
+              style={{
+                fontSize: 11,
+                color: "var(--color-ink-faint)",
+                letterSpacing: "0.04em",
+              }}
+            >
+              {state === "recording"
+                ? "lascia per fermare"
+                : state === "connecting"
+                  ? "preparo il microfono"
+                  : "tieni premuto per parlare"}
+            </span>
+          </div>
+        </div>
+
+        {/* Annulla / Fine e salva */}
+        <div
+          className="flex items-center justify-center shrink-0"
+          style={{ gap: 12, padding: "10px 0 4px" }}
+        >
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="jm-ptt-action jm-ptt-cancel"
+          >
+            Annulla
+          </button>
+          <button
+            type="button"
+            onClick={handleStop}
+            className="jm-ptt-action jm-ptt-save"
+            disabled={state === "connecting"}
+          >
+            Fine e salva
           </button>
         </div>
 
@@ -1080,17 +1067,7 @@ export function RecordingOverlay({
           </div>
         )}
 
-        <p
-          className="text-center shrink-0"
-          style={{
-            fontSize: 11,
-            color: "var(--color-ink-faint)",
-            letterSpacing: "0.04em",
-            padding: "10px 0 22px",
-          }}
-        >
-          audio in streaming a openai . solo il testo viene salvato
-        </p>
+        <div className="shrink-0" style={{ height: 18 }} />
       </div>
 
       {/* Date picker popover (sits above transcript) */}
