@@ -1,10 +1,52 @@
-import { PageSkeleton } from "@/components/ui/page-skeleton";
 import { TabBar } from "@/components/ui/tab-bar";
 
+/**
+ * Mese-specific loading skeleton. Mirrors the day list (big day number on the
+ * left, entry title to the right) rather than the generic avatar+chips layout,
+ * so the placeholder matches what actually loads. Shown only on a cold/uncached
+ * visit; with the router cache, revisiting Mese is instant and this never flashes.
+ */
 export default function Loading() {
   return (
     <>
-      <PageSkeleton />
+      <div
+        className="flex flex-1 flex-col"
+        style={{ padding: "24px 24px 0", minHeight: 0 }}
+        aria-busy="true"
+        aria-label="Caricamento"
+      >
+        {/* Month title */}
+        <div
+          className="jm-skel"
+          style={{ height: 26, width: 168, marginBottom: 24 }}
+        />
+
+        {/* Day rows */}
+        {Array.from({ length: 11 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center"
+            style={{
+              gap: 16,
+              padding: "16px 0",
+              borderBottom: "1px solid var(--color-line)",
+              opacity: 1 - i * 0.06,
+            }}
+          >
+            <div
+              className="flex flex-col items-center"
+              style={{ width: 34, gap: 6, flexShrink: 0 }}
+            >
+              <div className="jm-skel" style={{ height: 22, width: 24 }} />
+              <div className="jm-skel" style={{ height: 8, width: 20 }} />
+            </div>
+            <div
+              className="jm-skel"
+              style={{ height: 13, width: `${42 + (i % 4) * 11}%` }}
+            />
+          </div>
+        ))}
+      </div>
       <TabBar active="month" />
     </>
   );
