@@ -363,6 +363,108 @@ body > * {
   color: var(--color-ink-faint);
 }
 
+/* App splash / preloader — server-rendered in the layout so it paints before
+   hydration and covers the cold JS load. .jm-splash class beats the
+   `body > * { z-index: 1 }` rule by specificity, so it sits on top. */
+.jm-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  opacity: 1;
+  transition: opacity 380ms ease;
+}
+.jm-splash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(227, 161, 95, 0.1), transparent 42%),
+    radial-gradient(circle at 14% 18%, rgba(126, 80, 80, 0.14), transparent 30%);
+}
+.jm-splash-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+.jm-splash-mark {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: jm-splash-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+.jm-splash-dot {
+  color: var(--color-accent);
+  text-shadow: 0 0 14px rgba(227, 161, 95, 0.6);
+}
+.jm-splash-halo {
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(227, 161, 95, 0.16), transparent 62%);
+  filter: blur(6px);
+  animation: jm-splash-breathe 2.6s ease-in-out infinite;
+}
+.jm-splash-bar {
+  position: absolute;
+  bottom: 84px;
+  width: 120px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 229, 214, 0.1);
+  overflow: hidden;
+}
+.jm-splash-bar i {
+  position: absolute;
+  left: -40%;
+  top: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent),
+    transparent
+  );
+  animation: jm-splash-slide 1.25s ease-in-out infinite;
+}
+@keyframes jm-splash-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes jm-splash-breathe {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+@keyframes jm-splash-slide {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 /* Caret blink for live transcript */
 .live-caret {
   display: inline-block;

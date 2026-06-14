@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Spectral } from "next/font/google";
 import "./globals.css";
+import { SplashController } from "@/components/splash";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -54,7 +55,28 @@ export default function RootLayout({
       lang="it"
       className={`${inter.variable} ${spectral.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* Server-rendered splash: paints instantly to cover the cold load.
+            SplashController prefetches the tabs then fades + removes it; the
+            inline script below is an independent failsafe. */}
+        <div id="jm-splash" className="jm-splash" aria-hidden="true">
+          <div className="jm-splash-halo" />
+          <div className="jm-splash-mark">
+            Journal<span className="jm-splash-dot">.</span>me
+          </div>
+          <div className="jm-splash-bar">
+            <i />
+          </div>
+        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "setTimeout(function(){var e=document.getElementById('jm-splash');if(e){e.style.opacity='0';e.style.pointerEvents='none';setTimeout(function(){if(e&&e.remove)e.remove();},500);}},2600);",
+          }}
+        />
+        <SplashController />
+        {children}
+      </body>
     </html>
   );
 }
