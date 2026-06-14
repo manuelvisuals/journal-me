@@ -229,22 +229,24 @@ body > * {
   transform: scale(0.94);
   background: var(--color-surface-2);
 }
+/* Stop/Save — PRIMARY, safe action. Amber (not red): red is reserved for the
+   destructive cancel below, so the two controls no longer read as twin alarms. */
 .rec-ctl-stop {
   width: 76px;
   height: 76px;
-  background: var(--color-danger);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.20);
+  background: var(--color-accent);
+  color: #1A0E0F;
+  border-color: rgba(255, 241, 221, 0.34);
   box-shadow:
-    0 0 24px rgba(248, 113, 113, 0.45),
+    0 0 24px rgba(227, 161, 95, 0.42),
     0 14px 28px rgba(0, 0, 0, 0.50),
-    inset 0 1px 1px rgba(255, 255, 255, 0.30);
+    inset 0 1px 1px rgba(255, 255, 255, 0.36);
 }
 .rec-ctl-stop:active {
   transform: scale(0.95);
-  background: #E25E5E;
+  background: var(--color-accent-pressed);
   box-shadow:
-    0 0 8px rgba(248, 113, 113, 0.30),
+    0 0 8px rgba(227, 161, 95, 0.30),
     0 4px 10px rgba(0, 0, 0, 0.45),
     inset 0 2px 5px rgba(0, 0, 0, 0.30);
 }
@@ -258,6 +260,19 @@ body > * {
 }
 .rec-ctl-cancel:active {
   background: rgba(248, 113, 113, 0.14);
+}
+
+/* Accessibility: honor the OS "Reduce Motion" setting. Apple HIG requires it;
+   without this the waveform, pulse dots and caret keep animating. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Caret blink for live transcript */

@@ -109,6 +109,9 @@ export function RecordingOverlay({
   );
   const [datePickerOpen, setDatePickerOpen] = useState<boolean>(false);
   const [silenceWarning, setSilenceWarning] = useState<boolean>(false);
+  // Live mic stream, exposed so the waveform can read the REAL input level
+  // (Web Audio AnalyserNode) instead of a fake animation.
+  const [micStream, setMicStream] = useState<MediaStream | null>(null);
   // Mount flag for the document.body portal — avoids SSR mismatch and
   // ensures the overlay escapes any ancestor stacking context (e.g. the
   // fixed-positioned quick-capture bar on /remember which would otherwise
@@ -194,6 +197,7 @@ export function RecordingOverlay({
           );
         }
         localStreamRef.current = stream;
+        setMicStream(stream);
         audioTrackRef.current = stream.getAudioTracks()[0] ?? null;
         const tk = audioTrackRef.current;
         if (tk) {
@@ -566,7 +570,7 @@ export function RecordingOverlay({
         ? "connetto"
         : state === "error"
           ? "errore"
-          : "live";
+          : "in ascolto";
   const liveDotOpacity =
     state === "recording" ? 1 : state === "paused" ? 0.45 : 0.6;
 
@@ -702,6 +706,10 @@ export function RecordingOverlay({
             <div
               ref={transcriptScrollRef}
               className="flex-1 overflow-y-auto"
+              role="log"
+              aria-live="polite"
+              aria-atomic="false"
+              aria-label="Trascrizione in tempo reale"
               style={{
                 padding: "12px 4px",
                 fontSize: 17,
@@ -785,7 +793,7 @@ export function RecordingOverlay({
             </div>
 
             <div className="shrink-0">
-              <Waveform active={state === "recording"} />
+              <Waveform active={state === "recording"} stream={micStream} />
             </div>
           </>
         )}
@@ -827,15 +835,19 @@ export function RecordingOverlay({
             disabled={state === "connecting"}
             style={state === "connecting" ? { opacity: 0.5 } : undefined}
           >
-            <span
-              style={{
-                width: 24,
-                height: 24,
-                background: "white",
-                borderRadius: 5,
-                display: "block",
-              }}
-            />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="30"
+              height="30"
+              aria-hidden="true"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </button>
 
           <button
@@ -931,49 +943,103 @@ function splitTranscript(text: string): { older: string; recent: string } {
   };
 }
 
-function Waveform({ active }: { active: boolean }) {
-  const bars = [
-    { h: 6, delay: 0 },
-    { h: 14, delay: 120 },
-    { h: 22, delay: 60 },
-    { h: 10, delay: 220 },
-    { h: 28, delay: 90 },
-    { h: 16, delay: 160 },
-    { h: 24, delay: 30 },
-    { h: 12, delay: 200 },
-    { h: 30, delay: 140 },
-    { h: 18, delay: 80 },
-    { h: 22, delay: 240 },
-    { h: 10, delay: 110 },
-    { h: 16, delay: 170 },
-  ];
+// Waveform driven by the REAL microphone level via a Web Audio AnalyserNode.
+// Bars rise with your voice and sit flat in silence — honest feedback, which
+// matters in a dictation app where "recording but not heard" is a real failure
+// mode. (The old version was a fixed CSS animation that danced even in silence.)
+function Waveform({
+  active,
+  stream,
+}: {
+  active: boolean;
+  stream: MediaStream | null;
+}) {
+  const N = 13;
+  const barRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!active || !stream) return;
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext?: typeof AudioContext })
+        .webkitAudioContext;
+    if (!AudioCtx) return;
+
+    let cancelled = false;
+    const ctx = new AudioCtx();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.75;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    // Sample the lower half of the spectrum (where speech sits), spread evenly.
+    const step = Math.max(1, Math.floor(analyser.frequencyBinCount / 2 / N));
+
+    const loop = () => {
+      if (cancelled) return;
+      analyser.getByteFrequencyData(data);
+      for (let i = 0; i < N; i++) {
+        const v = (data[i * step] ?? 0) / 255; // 0..1
+        const gated = v < 0.06 ? 0 : v; // noise floor -> truly flat in silence
+        const h = 3 + gated * 30;
+        const el = barRefs.current[i];
+        if (el) {
+          el.style.height = `${h.toFixed(1)}px`;
+          el.style.opacity = gated > 0 ? "1" : "0.3";
+        }
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      cancelled = true;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      try {
+        source.disconnect();
+      } catch {
+        // ignore
+      }
+      try {
+        void ctx.close();
+      } catch {
+        // ignore
+      }
+      barRefs.current.forEach((el) => {
+        if (el) {
+          el.style.height = "3px";
+          el.style.opacity = "0.3";
+        }
+      });
+    };
+  }, [active, stream]);
+
   return (
     <div
       className="flex items-center justify-center"
       style={{ gap: 3, height: 36, margin: "18px 0 8px" }}
+      aria-hidden="true"
     >
-      {bars.map((b, i) => (
+      {Array.from({ length: N }).map((_, i) => (
         <span
           key={i}
+          ref={(el) => {
+            barRefs.current[i] = el;
+          }}
           style={{
             width: 2,
-            height: b.h,
+            height: 3,
             borderRadius: 2,
-            background: "var(--color-danger)",
-            opacity: active ? 1 : 0.25,
-            animation: active
-              ? `jm-wave 0.9s ease-in-out ${b.delay}ms infinite alternate`
-              : "none",
+            background: "var(--color-accent)",
+            opacity: 0.3,
             display: "inline-block",
+            transition: "height 60ms linear, opacity 120ms linear",
           }}
         />
       ))}
-      <style>{`
-        @keyframes jm-wave {
-          0% { transform: scaleY(0.45); }
-          100% { transform: scaleY(1); }
-        }
-      `}</style>
     </div>
   );
 }

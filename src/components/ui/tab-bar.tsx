@@ -35,8 +35,8 @@ const SIDE_TABS_LEFT: Tab[] = [
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        <path d="M12 2v20M2 12h20" />
-        <circle cx="12" cy="12" r="3" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
       </svg>
     ),
   },
@@ -64,7 +64,7 @@ const SIDE_TABS_LEFT: Tab[] = [
 const SIDE_TABS_RIGHT: Tab[] = [
   {
     key: "remember",
-    label: "Remember",
+    label: "Ricorda",
     href: "/remember",
     icon: (
       <svg
@@ -87,12 +87,17 @@ const SIDE_TABS_RIGHT: Tab[] = [
     icon: (
       <svg
         viewBox="0 0 24 24"
-        fill="currentColor"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         aria-hidden="true"
       >
-        <circle cx="5" cy="12" r="2" />
-        <circle cx="12" cy="12" r="2" />
-        <circle cx="19" cy="12" r="2" />
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
       </svg>
     ),
   },
@@ -142,6 +147,16 @@ export function TabBar({ active }: Props) {
             <path d="M5 11a7 7 0 0 0 14 0" />
             <path d="M12 18v3" />
           </svg>
+        </span>
+        <span
+          style={{
+            fontSize: 9,
+            fontWeight: 600,
+            letterSpacing: "0.10em",
+            textTransform: "uppercase",
+          }}
+        >
+          Registra
         </span>
       </Link>
 
