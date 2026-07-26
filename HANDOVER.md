@@ -273,10 +273,32 @@ strumentato e visto risolversi.
 pannello a schermo e stato rimosso (`4d08f6f`), il resto no. Va tolto quando il bug A e
 chiuso.
 
-**C. Demo / App Tour.** L'audit di giugno lo trovava rotto ("Demo non disponibile"): la
-route risponde 500 se `DEMO_USER_PASSWORD` non e configurata su Vercel o se l'utente
-`demo@journal.me` non esiste su Supabase. Da verificare come prima cosa, perche e
-l'unica porta d'ingresso senza account.
+**C. Backend Supabase fermo — l'app e giu (diagnosi 2026-07-26, da chiudere).**
+Il progetto Supabase `sxpijppbedgucdmiitkr` e **in pausa, e vive su un account Supabase
+diverso** da quello che Manuel usa di solito (`spamming.madh52@gmail.com` /
+`manuelvisuals's Org`, dove ci sono solo `propertyscanner` e `stoqfolio`). I dati NON
+sono persi: il progetto va solo riattivato dall'account giusto.
+
+Sintomo osservato dal vivo: `POST /api/demo` **non risponde mai** (>45s, resta appesa) e
+il bottone App tour resta su "APERTURA..." per sempre. Non e un 500 e non e la env var
+mancante: se `DEMO_USER_PASSWORD` non ci fosse, la route risponderebbe 500 subito, al
+primo `if`, senza toccare la rete. Si appende dentro `signInWithPassword`, cioe nella
+chiamata verso un progetto Supabase che non risponde.
+
+Non e solo il demo: con quel backend fermo **niente funziona**, magic link compreso. La
+pagina di login carica veloce lo stesso e puo ingannare — senza cookie di sessione
+`getUser()` nel middleware risponde senza toccare la rete, quindi `/login` e veloce anche
+a database spento.
+
+Quando si riprende: riattivare il progetto dall'account che lo possiede, verificare che le
+env vars su Vercel puntino ancora a quel ref, e ricontrollare che l'utente
+`demo@journal.me` + `DEMO_USER_PASSWORD` esistano.
+
+**C-bis. L'app resta muta quando il backend e giu.** Difetto di prodotto emerso da questa
+indagine: le chiamate server non hanno timeout e il client mostra "Demo non disponibile"
+per qualsiasi fallimento — ma se la richiesta si appende non mostra nemmeno quello. Sono
+passate settimane senza che l'app dicesse niente. Da fare: timeout sulle chiamate al
+backend e messaggio d'errore vero al posto del silenzio.
 
 **D. Migration 004** possibilmente non applicata (vedi §6).
 
@@ -301,7 +323,8 @@ L'audit (designer Apple-style, UX senior, esperto dettatura) e in
 - Push-to-talk: elimina il problema delle voci di sfondo nei silenzi.
 
 **Ancora aperti**
-- P0: demo rotto (§8C); bug mic primo avvio non verificato (§8A).
+- P0: backend Supabase in pausa, app giu (§8C — non era "demo rotto": e tutto il backend);
+  bug mic primo avvio non verificato (§8A).
 - P1: rimuovere logging e poll `getStats` dalla produzione (§8B); conferma o undo
   sull'annulla registrazione (oggi il cestino scarta tutto senza rete).
 - P2: casing tipografico incoerente; glow troppo neon rispetto al linguaggio Apple
