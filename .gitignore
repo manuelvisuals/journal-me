@@ -1,7 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+/node_modules/*
+
+# ...con tre eccezioni. `ios/App/CapApp-SPM/Package.swift` e generato da
+# `cap sync` (dice "DO NOT MODIFY") e referenzia questi tre pacchetti per path
+# relativo dentro node_modules. Su una macchina che non ha fatto `npm install`
+# Xcode fallisce con "Missing package product 'CapApp-SPM'" — che e esattamente
+# come si e presentato il 12 agosto sul Mac di Manuel. Sono ~1 MB in tutto:
+# committarli rende il progetto iOS costruibile da un clone pulito.
+!/node_modules/@capacitor
+/node_modules/@capacitor/*
+!/node_modules/@capacitor/app
+!/node_modules/@capacitor/local-notifications
+!/node_modules/@aparajita
+/node_modules/@aparajita/*
+!/node_modules/@aparajita/capacitor-biometric-auth
+
 /.pnp
 .pnp.*
 .yarn/*
