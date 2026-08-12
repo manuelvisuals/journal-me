@@ -57,7 +57,9 @@ React 19.2.4
 Font: Inter (UI) + Spectral (prosa) via next/font
 
 GitHub:   github.com/manuelvisuals/journal-me
-Vercel:   journal-me-chi.vercel.app          (auto-deploy on push to main)
+Vercel:   journal-me-weld.vercel.app         (team Hodl Inc, auto-deploy on push to main)
+          il vecchio journal-me-chi.vercel.app (team spammingmadh52-3011s) e
+          abbandonato: il suo webhook GitHub era morto dal 14 giugno
 Supabase: fljshsmpmpzapcczsbwc.supabase.co   (nuovo, 12 ago 2026, eu-north-1)
           il vecchio ref sxpijppbedgucdmiitkr e abbandonato: vedi 8C
 ```
@@ -477,9 +479,17 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
   Il mistero di luglio e risolto: il vecchio progetto vive sull'account Supabase
   `karyaaaktas@gmail.com`, non su quello di Manuel. Da li la pausa e l'impossibilita di
   riattivarlo. Non ci sono dati da recuperare.
-- **Da fare su Vercel** (UI, Manuel): aggiornare `NEXT_PUBLIC_SUPABASE_URL` e
-  `NEXT_PUBLIC_SUPABASE_ANON_KEY` sul nuovo progetto, e confermare che `OPENAI_API_KEY`
-  ci sia ancora.
+- ~~Da fare su Vercel~~ **CHIUSO il 12 agosto.** Progetto reimportato nel team
+  **Hodl Inc** (`vercel.com/hodl-inc/journal-me`), dominio
+  **`journal-me-weld.vercel.app`**, con `OPENAI_API_KEY` (chiave nuova),
+  `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  Il progetto vecchio (team `spammingmadh52-3011s-projects`, dominio
+  `journal-me-chi.vercel.app`) e abbandonato: il repo risultava collegato ma il webhook
+  non arrivava piu, ultimo deploy `c1b8d30` del 14 giugno. Le sue env var sono marcate
+  **Sensitive**, quindi la vecchia `OPENAI_API_KEY` non e leggibile da nessuno: per
+  questo se n'e fatta una nuova invece di recuperarla.
+  **Nota sulle env var di Vercel:** vengono lette al build. Aggiungerne una NON aggiorna
+  il deploy gia in produzione — serve un nuovo build.
 - **Migrations e GitHub:** il progetto e collegato al repo ma manca `supabase/config.toml`
   e i file sono `001_...` invece che `<timestamp>_...`, quindi il deploy automatico delle
   migration NON e attivo. Per ora si passa dal SQL Editor.
