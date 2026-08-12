@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { apiUrl } from "@/lib/api";
 import {
   compactDayDate,
   formatDurationMmSs,
@@ -294,7 +295,7 @@ export function RecordingOverlay({
         }
 
         dbg("POST /api/realtime/session");
-        const resp = await fetch("/api/realtime/session", {
+        const resp = await fetch(apiUrl("/api/realtime/session"), {
           method: "POST",
           headers,
           body: offer.sdp ?? "",
@@ -616,7 +617,7 @@ export function RecordingOverlay({
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 30000);
     try {
-      const resp = await fetch("/api/transcribe-fallback", {
+      const resp = await fetch(apiUrl("/api/transcribe-fallback"), {
         method: "POST",
         body: fd,
         signal: ctrl.signal,

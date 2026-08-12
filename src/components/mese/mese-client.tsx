@@ -211,7 +211,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
               const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
               setPendingDate(iso);
               startNav(() => {
-                router.push(`/giorno/${iso}`);
+                router.push(`/giorno?d=${iso}`);
               });
             }}
           />

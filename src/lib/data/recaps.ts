@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { apiUrl } from "@/lib/api";
 import type { DataMode } from "@/lib/data/entries";
 import { loadMonthEntries } from "@/lib/data/entries";
 import type { Entry, Recap, RecapPeriod } from "@/lib/types";
@@ -103,7 +104,7 @@ export async function generateAndSaveRecap(
     throw new Error("Nessuna giornata raccontata in questo periodo.");
   }
 
-  const resp = await fetch("/api/recap/generate", {
+  const resp = await fetch(apiUrl("/api/recap/generate"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -8,6 +8,8 @@
  * Throttled so we don't spam: at most once per WARM_INTERVAL. Never throws,
  * never blocks — purely a latency optimization. Does NOT touch the microphone.
  */
+import { apiUrl } from "@/lib/api";
+
 const WARM_INTERVAL_MS = 60_000;
 let lastWarmedAt = 0;
 
@@ -17,7 +19,7 @@ export function warmRealtime(): void {
   if (now - lastWarmedAt < WARM_INTERVAL_MS) return;
   lastWarmedAt = now;
   try {
-    void fetch("/api/realtime/session", {
+    void fetch(apiUrl("/api/realtime/session"), {
       method: "GET",
       cache: "no-store",
       keepalive: true,

@@ -362,3 +362,94 @@ non c'e stato da preservare fuori da GitHub.
 5. Mockup prima del codice se si tocca il visivo. Push solo dopo tsc + eslint + OK.
 
 Buon lavoro.
+
+---
+
+## 12. Guscio iOS (agosto 2026) — l'app sul telefono
+
+Obiettivo dichiarato da Manuel il 12 agosto 2026: entro il 18 agosto un'app vera
+sull'iPhone, montata con Xcode (account developer Apple gia verificato), che faccia
+cinque cose e basta — registrare bene, trascrivere e salvare la giornata, riassumerla
+con l'AI, Face ID e notifica serale, e partire istantanea.
+
+### La scelta di fondo
+
+Capacitor 8, **senza `server.url`**. Il guscio non carica il sito da Vercel: l'intera
+interfaccia (2 MB di export statico) vive dentro il binario e parte da file locali.
+Dalla rete arrivano solo i dati Supabase e le chiamate AI. Puntare il guscio a
+`journal-me-chi.vercel.app` sarebbe costato un giorno invece di una settimana, ma ogni
+avvio sarebbe rimasto un caricamento di pagina — cioe esattamente il difetto da togliere.
+
+CocoaPods non serve: il progetto e generato con Swift Package Manager
+(`npx cap add ios --packagemanager SPM`), quindi Xcode risolve i plugin da solo.
+
+### Due build da un solo codice
+
+`next.config.ts` cambia forma in base a `JM_MOBILE`:
+
+- `next build` -> il deploy Vercel di sempre. **E lui a servire `/api/*`**: la chiave
+  OpenAI sta li e non entra mai nell'app.
+- `JM_MOBILE=1 next build` -> export statico in `.next-mobile/`, niente server, niente
+  middleware, niente route handler.
+
+Il trucco che tiene fuori le API dall'export e `pageExtensions: ["tsx"]`: ogni route
+handler e un `.ts`, ogni pagina e un `.tsx`. Senza questo l'export fallisce.
+
+Comando unico: `npm run build:ios` (build mobile + `cap sync ios`).
+
+### Cosa e cambiato nel codice, e perche
+
+- **Niente piu pagine server.** Le sei pagine erano server component che leggevano
+  Supabase col cookie di sessione e passavano tutto a un `*Client`. Ora ognuna carica i
+  propri dati nell'app, riusando i loader gia esistenti in `src/lib/data/*` (che erano
+  gia `"use client"`: il refactor e stato quasi tutto cancellare, non scrivere).
+- **`src/proxy.ts` eliminato.** Un bundle statico non ha un server dove far girare il
+  middleware. La stessa regola (niente sessione -> `/login`) vive in
+  `src/components/auth-gate.tsx`.
+- **Sessione in localStorage, non nei cookie.** `src/lib/supabase/client.ts` usa
+  `createClient` di `@supabase/supabase-js` (non piu `createBrowserClient` di
+  `@supabase/ssr`): su schema custom i cookie non sono un archivio affidabile, il
+  localStorage di WKWebView e nel container dell'app e sopravvive ai riavvii.
+- **`/auth/callback` da route handler a pagina client.** Lo scambio PKCE deve avvenire
+  dove sta il verifier, cioe nel browser che ha iniziato il login.
+- **`/giorno/[date]` -> `/giorno?d=YYYY-MM-DD`.** Un segmento dinamico non si
+  prerenderizza senza elencare tutti i giorni possibili.
+- **`src/lib/api.ts`.** Tutte le `fetch("/api/...")` passano da `apiUrl()`: nell'app
+  diventano assolute verso `NEXT_PUBLIC_API_BASE`. Da qui la sezione CORS in
+  `next.config.ts` (l'app e un'origine diversa dalle API).
+- **Font locali.** `next/font/google` -> `next/font/local` con i woff2 in `src/fonts/`
+  (presi dai pacchetti @fontsource). Una build che deve raggiungere Google Fonts e una
+  build che fallisce senza rete.
+- **Splash onesta.** Spariva su un timer fisso di 1,1s: l'app non poteva essere piu
+  veloce di quel timer. Ora esce quando la prima schermata dice di avere i dati
+  (`src/lib/app-ready.ts`), con failsafe a 4s.
+- **Face ID** in `src/components/biometric-lock.tsx`: all'avvio e al rientro da
+  background dopo 3 minuti. Se non c'e ne biometria ne codice, non blocca (sarebbe una
+  porta senza chiave).
+- **Notifica serale** in `src/lib/native/reminders.ts`: `LocalNotifications` alle 21:30,
+  ricorrente, ora locale del telefono. Notifica **locale**, non push: niente APNs,
+  niente tabella di device token, niente cron — e suona anche senza segnale.
+
+### Workflow di build (Manuel non apre il terminale)
+
+`ios/.gitignore` **non** ignora `App/App/public` ne `capacitor.config.json`, al
+contrario del default di Capacitor. Il bundle viene costruito e sincronizzato nel
+sandbox e committato: sul Mac si apre `ios/App/App.xcodeproj` e si preme Run. Il prezzo
+e un diff rumoroso a ogni modifica dell'interfaccia; e voluto.
+
+### Attenzione: le env var finiscono DENTRO il bundle
+
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `NEXT_PUBLIC_API_BASE`
+sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
+**ricostruire e ri-sincronizzare**, non solo aggiornare Vercel.
+
+### Aperti su questo fronte
+
+- **Backend Supabase da ravvivare** (vedi §8C). Manuel, 12 agosto: zero utenti, zero
+  dati utili, si puo cancellare tutto e ripartire pulito.
+- **Registrazione**: il guscio usa ancora la pipeline WebRTC/Realtime dentro WKWebView,
+  bug A compreso. Da valutare il passaggio a registrazione nativa full-clip verso
+  `/api/transcribe-fallback`: perde la trascrizione dal vivo, guadagna affidabilita.
+- **Icona app** provvisoria (l'icona web riscalata a 1024). Merita un mockup vero.
+- **Bundle id** `com.manuelvisuals.journalme`, scelto senza conoscere le convenzioni
+  usate su stoqfolio.

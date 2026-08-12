@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { isReady, onReady } from "@/lib/app-ready";
 
 /**
  * App splash / preloader.
@@ -17,9 +18,14 @@ import { useRouter } from "next/navigation";
  * body portal) with "insertBefore: node is not a child". State-driven unmount
  * keeps React consistent.
  *
- * On mount it also prefetches the main tabs so their first visit is warm (the
- * router cache already makes revisits instant).
+ * It leaves when the first screen says it has its data (`signalReady()`), not on
+ * a fixed timer: a warm launch with the day already cached should not be held
+ * back by an animation. FAILSAFE_MS only covers the case where a screen errors
+ * out before signalling, so the splash can never trap the user.
  */
+const FAILSAFE_MS = 4000;
+const FADE_MS = 320;
+
 export function Splash() {
   const router = useRouter();
   const [visible, setVisible] = useState(true);
@@ -34,11 +40,27 @@ export function Splash() {
         // best-effort warming
       }
     }
-    const fade = setTimeout(() => setLeaving(true), 1100);
-    const done = setTimeout(() => setVisible(false), 1500);
+
+    let done: ReturnType<typeof setTimeout> | undefined;
+    const dismiss = () => {
+      setLeaving(true);
+      done = setTimeout(() => setVisible(false), FADE_MS);
+    };
+
+    if (isReady()) {
+      dismiss();
+      return () => {
+        if (done) clearTimeout(done);
+      };
+    }
+
+    const off = onReady(dismiss);
+    const failsafe = setTimeout(dismiss, FAILSAFE_MS);
+
     return () => {
-      clearTimeout(fade);
-      clearTimeout(done);
+      off();
+      clearTimeout(failsafe);
+      if (done) clearTimeout(done);
     };
   }, [router]);
 

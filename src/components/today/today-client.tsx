@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/components/today/empty-state";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
@@ -60,7 +61,7 @@ type Props = {
 
 async function extractPeople(transcript: string): Promise<string[]> {
   try {
-    const resp = await fetch("/api/extract-people", {
+    const resp = await fetch(apiUrl("/api/extract-people"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),

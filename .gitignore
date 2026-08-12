@@ -16,6 +16,9 @@
 # next.js
 /.next/
 /out/
+# Static export for the iOS shell. The build output is throwaway; what ships to
+# the phone is the copy `cap sync` places in ios/App/App/public, which IS committed.
+/.next-mobile/
 
 # production
 /build

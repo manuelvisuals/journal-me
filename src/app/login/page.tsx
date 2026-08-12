@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { apiUrl } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 const LAST_EMAIL_KEY = "journalme-last-email";
@@ -59,7 +60,7 @@ export default function LoginPage() {
     setDemoLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/demo", { method: "POST" });
+      const res = await fetch(apiUrl("/api/demo"), { method: "POST" });
       if (!res.ok) throw new Error("Demo non disponibile");
       router.push("/");
       router.refresh();

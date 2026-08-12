@@ -1,17 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Spectral } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Splash } from "@/components/splash";
+import { AuthGate } from "@/components/auth-gate";
+import { BiometricLock } from "@/components/biometric-lock";
 
-const inter = Inter({
-  subsets: ["latin"],
+/**
+ * Fonts ship with the app instead of coming from next/font/google.
+ *
+ * Same two typefaces as before (Inter for UI, Spectral for prose), same files
+ * Google would have served — pulled from the @fontsource packages and committed
+ * here. The reason is the iOS shell: a build that has to reach Google Fonts is a
+ * build that fails without network, and a first launch on a mountain connection
+ * should not be waiting on fonts.googleapis.com to know how to draw text.
+ */
+const inter = localFont({
+  src: [
+    {
+      path: "../fonts/inter-latin-wght-normal.woff2",
+      style: "normal",
+      weight: "100 900",
+    },
+  ],
   variable: "--font-inter",
   display: "swap",
 });
 
-const spectral = Spectral({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+const spectral = localFont({
+  src: [
+    { path: "../fonts/spectral-latin-300-normal.woff2", weight: "300", style: "normal" },
+    { path: "../fonts/spectral-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/spectral-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/spectral-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
   variable: "--font-spectral",
   display: "swap",
 });
@@ -60,7 +81,12 @@ export default function RootLayout({
             HTML, so it covers the cold load. It removes itself via React state
             only — never manual DOM removal (that crashed body re-renders). */}
         <Splash />
-        {children}
+        {/* The auth redirect used to live in src/proxy.ts (Next middleware).
+            A statically exported bundle has no server to run middleware, so
+            the same rule is enforced here, in the app. */}
+        <BiometricLock>
+          <AuthGate>{children}</AuthGate>
+        </BiometricLock>
       </body>
     </html>
   );

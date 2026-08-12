@@ -1,137 +1,86 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useEffect, useState } from "react";
 import { TodayClient } from "@/components/today/today-client";
-import { todayISO } from "@/lib/format";
-import type {
-  AreaSummary,
-  Entry,
-  EntryMetrics,
-  GoalDef,
-  GoalDot,
-  Mood,
-} from "@/lib/types";
+import { TabBar } from "@/components/ui/tab-bar";
+import { loadTodayEntry } from "@/lib/data/entries";
+import { loadGoalDefs } from "@/lib/data/goals";
+import { signalReady } from "@/lib/app-ready";
+import type { Entry, GoalDef } from "@/lib/types";
 
-type SearchParams = Promise<{ record?: string }>;
+type Boot = { entry: Entry | null; goalDefs: GoalDef[] };
 
-const VALID_MOODS: ReadonlySet<Mood> = new Set([
-  "great",
-  "good",
-  "neutral",
-  "low",
-  "bad",
-]);
+/**
+ * Today used to be a server component that queried Supabase with the session
+ * cookie and handed the result to TodayClient. The screen now loads its own
+ * data in the app: the bundle ships inside the iOS binary, so there is no
+ * server render to wait for — the shell paints from local files and only the
+ * data crosses the network.
+ */
+export default function Home() {
+  const [boot, setBoot] = useState<Boot | null>(null);
+  const [autoRecord, setAutoRecord] = useState(false);
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  useEffect(() => {
+    // Read once from the URL instead of useSearchParams(): the static export
+    // would otherwise demand a Suspense boundary around the whole page.
+    const params = new URLSearchParams(window.location.search);
+    const wantsRecord = params.get("record") === "1";
 
-  // proxy.ts already redirects unauthenticated users to /login; if we got
-  // here without a user something's odd — render an empty shell.
-  let initialEntry: Entry | null = null;
-  let goalDefs: GoalDef[] = [];
-  if (user) {
-    const dateISO = todayISO();
+    let alive = true;
+    (async () => {
+      const [entry, goalDefs] = await Promise.all([
+        loadTodayEntry(),
+        loadGoalDefs(),
+      ]);
+      if (!alive) return;
+      setAutoRecord(wantsRecord);
+      setBoot({ entry, goalDefs });
+      signalReady();
+    })();
 
-    const ENTRY_COLS_FULL =
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at";
-    const ENTRY_COLS_BASE =
-      "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at";
+    return () => {
+      alive = false;
+    };
+  }, []);
 
-    const [{ data: goalsData }, entryRes] = await Promise.all([
-      supabase
-        .from("goals")
-        .select("id, label, is_ai_suggested, position")
-        .order("position", { ascending: true })
-        .order("created_at", { ascending: true }),
-      supabase
-        .from("entries")
-        .select(ENTRY_COLS_FULL)
-        .eq("entry_date", dateISO)
-        .maybeSingle(),
-    ]);
-
-    // Defensive: fall back to base columns if migration 005 (people) is not
-    // applied yet, so the day's entry still loads.
-    let data = entryRes.data as Record<string, unknown> | null;
-    if (entryRes.error) {
-      const base = await supabase
-        .from("entries")
-        .select(ENTRY_COLS_BASE)
-        .eq("entry_date", dateISO)
-        .maybeSingle();
-      data = base.data as Record<string, unknown> | null;
-    }
-
-    goalDefs = (goalsData ?? [])
-      .filter((g) => typeof g.label === "string" && (g.label as string).trim())
-      .map((g) => ({
-        id: g.id as string,
-        label: g.label as string,
-        isAiSuggested: !!g.is_ai_suggested,
-      }));
-
-    if (data) {
-      const metrics: EntryMetrics = {
-        weightKg: typeof data.weight_kg === "number" ? data.weight_kg : null,
-        sleepHours:
-          typeof data.sleep_hours === "number" ? data.sleep_hours : null,
-        mood:
-          typeof data.mood === "string" && VALID_MOODS.has(data.mood as Mood)
-            ? (data.mood as Mood)
-            : null,
-      };
-      const goalsOn = parseStringArray(data.goals_on);
-      const goals: GoalDot[] = goalDefs.map((d) => ({
-        id: d.id,
-        label: d.label,
-        on: goalsOn.some((g) => g.toLowerCase() === d.label.toLowerCase()),
-      }));
-      initialEntry = {
-        id: data.id as string,
-        entryDate: data.entry_date as string,
-        transcript: (data.transcript as string) ?? "",
-        durationSeconds: 0,
-        headline: (data.headline as string) ?? null,
-        snippet: (data.snippet as string) ?? null,
-        areas: parseAreas(data.areas),
-        metrics,
-        goals,
-        people: parseStringArray(data.people),
-        createdAt: data.created_at as string,
-      };
-    }
-  }
-
-  const sp = await searchParams;
-  const autoRecord = sp.record === "1";
+  if (!boot) return <TodaySkeleton />;
 
   return (
     <TodayClient
       mode="auth"
-      initialEntry={initialEntry}
-      goalDefs={goalDefs}
+      initialEntry={boot.entry}
+      goalDefs={boot.goalDefs}
       autoRecord={autoRecord}
     />
   );
 }
 
-function parseAreas(raw: unknown): AreaSummary[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter(
-    (x): x is AreaSummary =>
-      typeof x === "object" &&
-      x !== null &&
-      typeof (x as { label?: unknown }).label === "string" &&
-      typeof (x as { text?: unknown }).text === "string",
+/**
+ * Placeholder in the shape of the filled day (title, two snippet lines, metric
+ * cards) so the layout does not jump when the entry lands. On a cold launch the
+ * splash still covers this; it shows on a returning-to-Today navigation.
+ */
+function TodaySkeleton() {
+  return (
+    <>
+      <div
+        className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
+        style={{ padding: "24px 24px 0", minHeight: 0 }}
+        aria-busy="true"
+        aria-label="Caricamento"
+      >
+        <div className="jm-skel" style={{ height: 11, width: 104, marginBottom: 20 }} />
+        <div className="jm-skel" style={{ height: 26, width: "84%", marginBottom: 14 }} />
+        <div className="jm-skel" style={{ height: 14, width: "96%", marginBottom: 8 }} />
+        <div className="jm-skel" style={{ height: 14, width: "58%", marginBottom: 26 }} />
+        <div style={{ display: "flex", gap: 8 }}>
+          <div className="jm-skel" style={{ flex: 1, height: 62, borderRadius: 14 }} />
+          <div className="jm-skel" style={{ flex: 1, height: 62, borderRadius: 14 }} />
+          <div className="jm-skel" style={{ flex: 1, height: 62, borderRadius: 14 }} />
+        </div>
+      </div>
+      <TabBar active="today" />
+    </>
   );
-}
-
-function parseStringArray(raw: unknown): string[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((v): v is string => typeof v === "string");
 }

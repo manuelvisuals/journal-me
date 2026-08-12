@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { apiUrl } from "@/lib/api";
 import { todayISO } from "@/lib/format";
 import { loadGoalDefs } from "@/lib/data/goals";
 import type {
@@ -53,7 +54,7 @@ async function callSplitByDate(
   defaultDate: string,
 ): Promise<DateSegment[]> {
   try {
-    const resp = await fetch("/api/split-by-date", {
+    const resp = await fetch(apiUrl("/api/split-by-date"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript, defaultDate }),
@@ -71,7 +72,7 @@ async function callSplitByDate(
 
 async function callProcessEntry(transcript: string): Promise<AIFields> {
   try {
-    const resp = await fetch("/api/process-entry", {
+    const resp = await fetch(apiUrl("/api/process-entry"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),

@@ -1,34 +1,29 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useEffect, useState } from "react";
 import { RecapClient } from "@/components/recap/recap-client";
-import type { Recap, RecapPeriod } from "@/lib/types";
+import RecapLoading from "./loading";
+import { loadRecaps } from "@/lib/data/recaps";
+import { signalReady } from "@/lib/app-ready";
+import type { Recap } from "@/lib/types";
 
-export default async function RecapPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default function RecapPage() {
+  const [initialRecaps, setInitialRecaps] = useState<Recap[] | null>(null);
 
-  let initialRecaps: Recap[] = [];
-  if (user) {
-    const { data } = await supabase
-      .from("recaps")
-      .select(
-        "id, period_type, period_start, period_end, title, snippet, body, generated_at",
-      )
-      .order("period_start", { ascending: false });
-    if (data) {
-      initialRecaps = data.map((d) => ({
-        id: d.id as string,
-        periodType: d.period_type as RecapPeriod,
-        periodStart: d.period_start as string,
-        periodEnd: d.period_end as string,
-        title: d.title as string,
-        snippet: d.snippet as string,
-        body: d.body as string,
-        generatedAt: d.generated_at as string,
-      }));
-    }
-  }
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const recaps = await loadRecaps("auth");
+      if (!alive) return;
+      setInitialRecaps(recaps);
+      signalReady();
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!initialRecaps) return <RecapLoading />;
 
   return <RecapClient mode="auth" initialRecaps={initialRecaps} />;
 }

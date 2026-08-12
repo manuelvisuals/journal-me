@@ -1,5 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useEffect, useState } from "react";
 import { SettingsClient } from "@/components/settings/settings-client";
+import SettingsLoading from "./loading";
+import { createClient } from "@/lib/supabase/client";
+import { loadGoalDefs } from "@/lib/data/goals";
+import { loadRecaps } from "@/lib/data/recaps";
+import { signalReady } from "@/lib/app-ready";
 import type { GoalDef } from "@/lib/types";
 
 const MONTH_NAMES_IT = [
@@ -7,71 +14,68 @@ const MONTH_NAMES_IT = [
   "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
 ];
 
-function periodLabelFor(
-  periodType: string,
-  periodStart: string,
-): string {
+function periodLabelFor(periodType: string, periodStart: string): string {
   const [y, m] = periodStart.split("-").map(Number);
-  if (periodType === "month") {
-    return `${MONTH_NAMES_IT[m - 1]} ${y}`;
-  }
-  if (periodType === "semester") {
-    return `Semestre ${m <= 6 ? 1 : 2} ${y}`;
-  }
+  if (periodType === "month") return `${MONTH_NAMES_IT[m - 1]} ${y}`;
+  if (periodType === "semester") return `Semestre ${m <= 6 ? 1 : 2} ${y}`;
   return `Anno ${y}`;
 }
 
-export default async function SettingsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+type Boot = {
+  email: string | null;
+  isAnonymous: boolean;
+  goals: GoalDef[];
+  latestRecap: { title: string; periodLabel: string } | null;
+};
 
-  let initialGoals: GoalDef[] = [];
-  let latestRecap: { title: string; periodLabel: string } | null = null;
-  if (user) {
-    const { data: goalsData } = await supabase
-      .from("goals")
-      .select("id, label, is_ai_suggested, position")
-      .order("position", { ascending: true })
-      .order("created_at", { ascending: true });
-    initialGoals = (goalsData ?? [])
-      .filter((g) => typeof g.label === "string" && (g.label as string).trim())
-      .map((g) => ({
-        id: g.id as string,
-        label: g.label as string,
-        isAiSuggested: !!g.is_ai_suggested,
-      }));
+export default function SettingsPage() {
+  const [boot, setBoot] = useState<Boot | null>(null);
 
-    // Most recent recap (across all periods) as a teaser inside the Recap
-    // card. Fetched server-side so the card is filled on first paint.
-    const { data: recapData } = await supabase
-      .from("recaps")
-      .select("title, period_type, period_start, generated_at")
-      .order("generated_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (recapData?.title && recapData?.period_type && recapData?.period_start) {
-      latestRecap = {
-        title: recapData.title as string,
-        periodLabel: periodLabelFor(
-          recapData.period_type as string,
-          recapData.period_start as string,
-        ),
-      };
-    }
-  }
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const supabase = createClient();
+      const [{ data: userData }, goals, recaps] = await Promise.all([
+        supabase.auth.getUser(),
+        loadGoalDefs(),
+        loadRecaps("auth"),
+      ]);
+      if (!alive) return;
 
-  // Anonymous Supabase users have no email; we treat that as a special label.
-  const isAnonymous = !!user && !user.email;
+      const user = userData.user;
+      // The newest recap across all periods, as the teaser inside the Recap card.
+      const newest = [...recaps].sort((a, b) =>
+        b.generatedAt.localeCompare(a.generatedAt),
+      )[0];
+
+      setBoot({
+        email: user?.email ?? null,
+        // Anonymous Supabase users have no email; that is a distinct label.
+        isAnonymous: !!user && !user.email,
+        goals,
+        latestRecap: newest
+          ? {
+              title: newest.title,
+              periodLabel: periodLabelFor(newest.periodType, newest.periodStart),
+            }
+          : null,
+      });
+      signalReady();
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!boot) return <SettingsLoading />;
 
   return (
     <SettingsClient
       mode="auth"
-      email={user?.email ?? null}
-      isAnonymous={isAnonymous}
-      initialGoals={initialGoals}
-      latestRecap={latestRecap}
+      email={boot.email}
+      isAnonymous={boot.isAnonymous}
+      initialGoals={boot.goals}
+      latestRecap={boot.latestRecap}
     />
   );
 }
