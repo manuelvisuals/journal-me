@@ -46,6 +46,7 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const email = emailOverride !== null ? emailOverride : (savedEmail ?? "");
@@ -69,6 +70,38 @@ export default function LoginPage() {
     localStorage.setItem(LAST_EMAIL_KEY, email);
     setCode("");
     setSent(true);
+  }
+
+  /**
+   * "App tour": entra senza email.
+   *
+   * Era un login sull'account condiviso `demo@journal.me` via /api/demo, con la
+   * password in una env var. Quell'account non esiste nel database ricreato il
+   * 12 agosto, da cui il "Demo non disponibile". Ora usa l'accesso anonimo di
+   * Supabase: crea un utente vero, con un suo user_id, quindi le RLS valgono
+   * come sempre e il trigger su auth.users semina i micro-obiettivi.
+   *
+   * Le giornate scritte cosi restano su quell'utente anonimo: entrare piu
+   * tardi con l'email significa un altro account e un diario vuoto. Si puo
+   * collegare l'email all'utente anonimo (updateUser) per non perdere niente,
+   * ma non e ancora implementato.
+   */
+  async function enterAsGuest() {
+    setError(null);
+    setGuestLoading(true);
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInAnonymously();
+    if (authError) {
+      setGuestLoading(false);
+      setError(
+        authError.message.toLowerCase().includes("disabled") ||
+          authError.message.toLowerCase().includes("not enabled")
+          ? "L'accesso rapido e disattivato sul progetto Supabase."
+          : authError.message,
+      );
+      return;
+    }
+    router.replace("/");
   }
 
   async function verifyCode(e?: React.FormEvent) {
@@ -222,8 +255,48 @@ export default function LoginPage() {
                 </p>
               )}
             </form>
+            <div className="flex items-center gap-2.5 my-[22px]">
+              <div
+                className="flex-1 h-px"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,229,214,0.075), transparent)",
+                }}
+              ></div>
+              <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-ink-faint">
+                oppure
+              </span>
+              <div
+                className="flex-1 h-px"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255,229,214,0.075), transparent)",
+                }}
+              ></div>
+            </div>
+            <Button
+              variant="ghost"
+              onClick={() => void enterAsGuest()}
+              disabled={guestLoading}
+            >
+              {guestLoading ? "Apertura..." : "App tour"}
+              {!guestLoading && (
+                <span
+                  className="text-[9px] px-[7px] py-[3px] rounded-md text-accent"
+                  style={{
+                    background: "rgba(227,161,95,0.12)",
+                    border: "1px solid rgba(227,161,95,0.20)",
+                    letterSpacing: "0.10em",
+                  }}
+                >
+                  DEMO
+                </span>
+              )}
+            </Button>
             <p className="text-center text-[11px] text-ink-faint leading-[1.6] mt-7">
               Il codice vale un&apos;ora.
+              <br />
+              App tour: entri subito, senza email.
             </p>
           </>
         )}
