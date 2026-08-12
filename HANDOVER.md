@@ -58,7 +58,8 @@ Font: Inter (UI) + Spectral (prosa) via next/font
 
 GitHub:   github.com/manuelvisuals/journal-me
 Vercel:   journal-me-chi.vercel.app          (auto-deploy on push to main)
-Supabase: sxpijppbedgucdmiitkr.supabase.co
+Supabase: fljshsmpmpzapcczsbwc.supabase.co   (nuovo, 12 ago 2026, eu-north-1)
+          il vecchio ref sxpijppbedgucdmiitkr e abbandonato: vedi 8C
 ```
 
 Env vars che il codice legge (tutte su Vercel; `.env.local` per il dev locale):
@@ -445,8 +446,21 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
 
 ### Aperti su questo fronte
 
-- **Backend Supabase da ravvivare** (vedi §8C). Manuel, 12 agosto: zero utenti, zero
-  dati utili, si puo cancellare tutto e ripartire pulito.
+- ~~Backend Supabase da ravvivare~~ **CHIUSO il 12 agosto.** Progetto nuovo
+  `fljshsmpmpzapcczsbwc` (eu-north-1) in `manuelvisuals's Org`, collegato a
+  `manuelvisuals/journal-me`, schema 001..005 applicato in un colpo solo dal SQL Editor
+  e verificato (6 tabelle: entries 15 col., entry_goals, goals, recaps, remembers,
+  user_settings). Chiave usata nel bundle: la **publishable** `sb_publishable_...`,
+  non piu la anon JWT legacy.
+  Il mistero di luglio e risolto: il vecchio progetto vive sull'account Supabase
+  `karyaaaktas@gmail.com`, non su quello di Manuel. Da li la pausa e l'impossibilita di
+  riattivarlo. Non ci sono dati da recuperare.
+- **Da fare su Vercel** (UI, Manuel): aggiornare `NEXT_PUBLIC_SUPABASE_URL` e
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` sul nuovo progetto, e confermare che `OPENAI_API_KEY`
+  ci sia ancora.
+- **Migrations e GitHub:** il progetto e collegato al repo ma manca `supabase/config.toml`
+  e i file sono `001_...` invece che `<timestamp>_...`, quindi il deploy automatico delle
+  migration NON e attivo. Per ora si passa dal SQL Editor.
 - **Registrazione**: il guscio usa ancora la pipeline WebRTC/Realtime dentro WKWebView,
   bug A compreso. Da valutare il passaggio a registrazione nativa full-clip verso
   `/api/transcribe-fallback`: perde la trascrizione dal vivo, guadagna affidabilita.
