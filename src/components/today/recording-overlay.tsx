@@ -533,6 +533,16 @@ export function RecordingOverlay({
           : "in ascolto";
   const liveDotOpacity =
     state === "recording" ? 1 : state === "paused" ? 0.45 : 0.6;
+  // Il rosso significa "sto catturando la tua voce", e nient'altro. Prima era
+  // rosso anche su "pronto" e su "connetto", cioe proprio quando il microfono e
+  // chiuso: un pallino rosso che lampeggia mentre non registra e una bugia, e
+  // per giunta litigava col rosso di Annulla. Fuori dalla registrazione il
+  // colore torna quello dei testi secondari, e l'errore resta rosso perche li
+  // il rosso vuol dire davvero qualcosa.
+  const liveColor =
+    state === "recording" || state === "error"
+      ? "var(--color-danger)"
+      : "var(--color-ink-faint)";
 
   if (!portalReady || typeof document === "undefined") {
     return null;
@@ -555,7 +565,7 @@ export function RecordingOverlay({
     >
       <div
         className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
-        style={{ padding: "24px 24px 0", minHeight: 0 }}
+        style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
       >
         {/* Live indicator + timer */}
         <div
@@ -569,11 +579,11 @@ export function RecordingOverlay({
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background:
-                  state === "error"
-                    ? "var(--color-danger)"
-                    : "var(--color-danger)",
-                boxShadow: "0 0 10px rgba(248,113,113,0.7)",
+                background: liveColor,
+                boxShadow:
+                  state === "recording" || state === "error"
+                    ? "0 0 10px rgba(248,113,113,0.7)"
+                    : "none",
                 opacity: liveDotOpacity,
               }}
             />
@@ -581,7 +591,7 @@ export function RecordingOverlay({
               style={{
                 fontSize: 11,
                 fontWeight: 650,
-                color: "var(--color-danger)",
+                color: liveColor,
                 letterSpacing: "0.20em",
                 textTransform: "uppercase",
               }}

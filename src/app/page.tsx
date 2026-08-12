@@ -66,7 +66,7 @@ function TodaySkeleton() {
     <>
       <div
         className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
-        style={{ padding: "24px 24px 0", minHeight: 0 }}
+        style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
         aria-busy="true"
         aria-label="Caricamento"
       >

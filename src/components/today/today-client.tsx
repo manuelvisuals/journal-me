@@ -298,7 +298,7 @@ export function TodayClient({
     >
       <header
         className="flex items-baseline justify-between"
-        style={{ padding: "26px 24px 6px" }}
+        style={{ padding: "0 24px 6px", paddingTop: "calc(26px + env(safe-area-inset-top, 0px))" }}
       >
         <span
           suppressHydrationWarning

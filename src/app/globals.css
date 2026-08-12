@@ -2344,3 +2344,47 @@ summary:active {
   0%, 100% { opacity: 0.25; transform: scale(0.8); }
   50% { opacity: 1; transform: scale(1); }
 }
+
+/* ---------------------------------------------------------------------------
+   Safe area in cima.
+
+   Nel guscio iOS la webview parte da y=0: `viewportFit: cover` piu
+   `contentInset: "never"` in capacitor.config sono cio che permette allo sfondo
+   di arrivare fino ai bordi, ma lasciano anche il contenuto libero di finire
+   sotto l'orologio e la Dynamic Island. Su Safari non si vedeva perche la barra
+   del browser spingeva tutto piu in basso.
+
+   La correzione sta qui e non nelle singole schermate: ogni intestazione si
+   allunga verso l'alto della misura che iOS dichiara e la copre con il proprio
+   sfondo. Le intestazioni sticky (Mese) restano incollate a top: 0 e coprono la
+   striscia mentre la lista scorre sotto. Sul web `env()` vale 0 e non cambia
+   niente.
+
+   Se aggiungi una schermata nuova, aggiungi qui la sua intestazione: e il
+   difetto piu facile da reintrodurre.
+--------------------------------------------------------------------------- */
+.jm-month-header {
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+}
+
+.jm-day-head,
+.jm-rem-head,
+.jm-altro-head,
+.jm-rec-head {
+  padding-top: calc(22px + env(safe-area-inset-top, 0px));
+}
+
+.jm-det-head {
+  padding-top: calc(18px + env(safe-area-inset-top, 0px));
+}
+
+/* Schermate senza intestazione dedicata (Oggi, scheletri di caricamento,
+   overlay di registrazione): il contenitore si prende l'inset da solo. */
+.jm-safe-top {
+  padding-top: calc(24px + env(safe-area-inset-top, 0px)) !important;
+}
+
+/* Il jump picker di Mese cadeva a 110px dal bordo assoluto dello schermo. */
+.jm-picker-overlay {
+  padding-top: calc(110px + env(safe-area-inset-top, 0px));
+}
