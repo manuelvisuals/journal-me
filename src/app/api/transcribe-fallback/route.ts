@@ -20,6 +20,16 @@ import { NextRequest } from "next/server";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
+/**
+ * Warm-up ping. This function is now on the critical path — it is what turns a
+ * finished recording into words — so the user should never pay its cold start
+ * while staring at "trascrivo...". Called when the Today screen mounts and when
+ * the mic is tapped. Touches nothing: no OpenAI call, no audio, no state.
+ */
+export function GET() {
+  return Response.json({ ok: true, warm: true });
+}
+
 const ANTI_HALLUCINATION =
   "Trascrivi LETTERALMENTE in italiano solo le parole effettivamente pronunciate. " +
   "Se l'audio e silenzioso, contiene solo rumore o e incomprensibile, restituisci stringa vuota. " +

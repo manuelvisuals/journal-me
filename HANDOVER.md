@@ -210,26 +210,44 @@ Il parametro `mode` sopravvive nelle firme solo per stabilita dei call-site ed e
 risultava ancora da eseguire da parte di Manuel nel SQL Editor). Prima di toccare
 Remember, verifica.
 
-### Pipeline di registrazione (com'e adesso, e diversa da come la ricordi)
+### Pipeline di registrazione (riscritta il 12 agosto 2026)
 
-1. Prewarm: `GET /api/realtime/session` scalda lambda e TLS al mount di Today e al tap
-   sul mic. Deliberatamente **non** pre-apre il microfono.
+**Non c'e piu il realtime.** L'audio non viene piu streammato a OpenAI mentre parli: si
+registra in locale e si manda tutto insieme alla fine.
+
+1. Prewarm: `GET /api/transcribe-fallback` al mount di Today e al tap sul mic, per non
+   pagare il cold start di Vercel dopo aver premuto Fine.
 2. `getUserMedia` fresco a ogni sessione, con retry se la traccia nasce non-`live`
-   (fino a 4 tentativi, 300ms). **Nessuna cache module-level dello stream** — reintrodurla
-   senza il retry riporta lo stale-pipe di iOS Safari.
-3. WebRTC verso OpenAI Realtime, `gpt-4o-transcribe`, VAD server-side
-   (`threshold 0.5`, `prefix_padding 150ms`, `silence_duration 400ms`),
-   `noise_reduction: near_field`, prompt anti-allucinazione esplicito ("trascrivi
-   letteralmente, se non senti restituisci stringa vuota").
-4. **Push-to-talk**: si tiene premuto per parlare. Nei silenzi il mic e chiuso, cosi le
-   voci di sfondo non entrano.
-5. Rete di sicurezza: un `MediaRecorder` registra in parallelo; se il realtime torna
-   vuoto, l'audio va a `/api/transcribe-fallback`.
-6. Waveform **reale** (Web Audio `AnalyserNode`): piatta = non ti sente. E l'unico
-   segnale onesto, per questo il vecchio alert "non ti sento" a 8s e stato rimosso.
-7. Wake lock durante la registrazione, riacquisito al ritorno in foreground.
-8. Stop -> schermata **review** (correggi nomi propri) -> AI -> eventuale review persone
-   -> giornata salvata.
+   (fino a 4 tentativi, 300ms) e attesa dell'evento `unmute`. **Nessuna cache
+   module-level dello stream.**
+3. `MediaRecorder` armato ma in pausa. Chunk ogni secondo, cosi uno stop brusco non
+   perde l'ultimo pezzo.
+4. **Push-to-talk**: tieni premuto e il recorder fa `resume()`, lasci e fa `pause()`. I
+   silenzi non entrano proprio nel file, quindi le voci di sfondo nei buchi non esistono
+   per il modello.
+5. Waveform reale (Web Audio `AnalyserNode`): piatta = non ti sente. E l'unico segnale
+   onesto che hai mentre parli, perche non c'e piu testo che scorre.
+6. Wake lock durante la registrazione, riacquisito al ritorno in foreground.
+7. Stop -> il clip va a `/api/transcribe-fallback` (`gpt-4o-transcribe`, timeout 120s)
+   -> schermata **review** (correggi i nomi propri) -> AI -> eventuale review persone ->
+   giornata salvata.
+
+**Perche.** Due motivi, in ordine di importanza. (a) *Qualita*: il realtime tagliava
+l'audio su un VAD server-side a 250ms di silenzio, quindi una pausa mentre pensi poteva
+mangiare una parola e il modello non vedeva mai piu di un frammento; il clip intero gli
+da tutto il contesto, che e esattamente cio che serve per i nomi propri. (b)
+*Affidabilita*: il bug del primo avvio iOS (traccia `ended`, sender WebRTC che spedisce
+silenzio) viveva tutto nel percorso streaming. `MediaRecorder` legge la traccia
+direttamente ed era gia in quel file come rete di sicurezza — la rete e diventata il
+pavimento.
+
+**Cosa si perde:** il testo che scorreva mentre parli. La schermata di review dove
+correggi i nomi c'era gia e resta.
+
+**Cosa resta in giro:** `/api/realtime/session` esiste ancora ed e ancora un relay SDP
+funzionante, ma **nessuno lo chiama piu**. Non e stato cancellato per poter tornare
+indietro senza riscrivere il server. Se dopo il 18 agosto si vuole rimettere il live
+come anteprima sopra la registrazione nativa, si riparte da li.
 
 Vocabolario della trascrizione: arriva da **Remember > Persone** (`remembers` con
 `kind='persona'`), inviato col header `X-JM-Glossary`. Il vecchio Glossario e stato
@@ -260,7 +278,11 @@ eliminato; `user_settings.glossary` resta solo come fallback legacy lato server.
 
 ## 8. Bug aperti e debito noto
 
-**A. Registrazione muta al primo avvio (iOS)** — aperto, mitigato, non verificato.
+**A. Registrazione muta al primo avvio (iOS)** — il percorso che sbagliava e stato
+eliminato il 12 agosto (vedi §6): non si passa piu da WebRTC, e `MediaRecorder` era
+gia la cosa che in quei casi registrava davvero. **Resta comunque da verificare su
+device**: il retry di `getUserMedia` sulla traccia `ended` e ancora l'unica difesa, e
+non e mai stato visto funzionare dal vivo. Storia originale sotto.
 Al primissimo grant del permesso mic, `getUserMedia` a freddo torna una traccia con
 `readyState: "ended"` (zero frame audio) mentre connessione e sessione OpenAI sono sane.
 Mitigazione in `1a0ab82` (retry di acquisizione) piu la rete di sicurezza
@@ -269,10 +291,10 @@ completo in `HANDOVER-recording-bug.md`.
 Regola collegata, imparata a caro prezzo: non dichiarare risolto un bug senza averlo
 strumentato e visto risolversi.
 
-**B. Diagnostica ancora in produzione.** In `recording-overlay.tsx` restano il blocco
-"TEMPORARY DIAGNOSTICS", l'helper di log e `startStatsPoll()` (getStats ogni 2s). Il
-pannello a schermo e stato rimosso (`4d08f6f`), il resto no. Va tolto quando il bug A e
-chiuso.
+**B. ~~Diagnostica ancora in produzione~~ CHIUSO il 12 agosto.** Il blocco "TEMPORARY
+DIAGNOSTICS" e `startStatsPoll()` sono spariti con la riscrittura della registrazione
+(non c'e piu una peer connection di cui leggere le stats). Resta solo un `dbg()`
+console-only di poche righe.
 
 **C. Backend Supabase fermo — l'app e giu (diagnosi 2026-07-26, da chiudere).**
 Il progetto Supabase `sxpijppbedgucdmiitkr` e **in pausa, e vive su un account Supabase

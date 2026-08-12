@@ -22,12 +22,10 @@ function subscribeNoop(): () => void {
 
 // We deliberately do NOT cache the MediaStream module-level. On iOS Safari
 // re-using a stream across overlay open/close sessions produces a "stale"
-// audio pipe: tracks report readyState=live and enabled=true, but the actual
-// audio frames stop reaching WebRTC after the first close. The symptom is
-// connection OK, state=recording, but OpenAI sees only silence (timer ticks
-// up but zero transcription events). Modern browsers (incl. iOS Safari)
-// don't re-prompt for permission on subsequent getUserMedia calls with the
-// same constraints once the user has granted it for the origin, so a fresh
+// audio pipe: tracks report readyState=live and enabled=true, but no audio
+// frames actually flow after the first close. Modern browsers (incl. iOS
+// Safari) don't re-prompt for permission on subsequent getUserMedia calls with
+// the same constraints once the user has granted it for the origin, so a fresh
 // acquisition per overlay session is safe and avoids the stale-pipe bug.
 async function acquireMicStream(): Promise<MediaStream> {
   return navigator.mediaDevices.getUserMedia({
@@ -42,13 +40,12 @@ async function acquireMicStream(): Promise<MediaStream> {
 // iOS Safari quirk (only on the FIRST permission grant): getUserMedia resolves
 // while the audio track is still `muted: true`, and iOS doesn't actually push
 // audio frames until it fires `unmute` a few hundred ms (sometimes >1s) later.
-// If we add this still-muted track to the peer connection and negotiate, the
-// RTP sender locks into sending silence — OpenAI's VAD never sees speech, so
-// zero transcription events arrive even though the timer ticks (state=recording)
-// and the 8s silence warning fires. On later launches the permission already
-// exists, the track starts unmuted, and everything works. So: if the track is
-// muted, wait for `unmute` before we negotiate. Falls through after a timeout
-// so we never hang if the event somehow doesn't fire.
+// A MediaRecorder started on a still-muted track records silence for as long
+// as the mute lasts, which on a first grant is exactly the opening seconds of
+// the story. On later launches the permission already exists, the track starts
+// unmuted, and everything works. So: if the track is muted, wait for `unmute`
+// before arming the recorder. Falls through after a timeout so we never hang if
+// the event somehow doesn't fire.
 async function waitForTrackLive(
   track: MediaStreamTrack,
   timeoutMs = 3000,
@@ -86,12 +83,29 @@ type Props = {
 type RecState = "connecting" | "recording" | "paused" | "error";
 
 /**
- * Records the user's voice using OpenAI Realtime API (transcription-only)
- * over WebRTC. The mic audio is streamed to OpenAI; transcript deltas and
- * completions arrive on a data channel.
+ * Records the user's voice to a local clip and transcribes it in one shot when
+ * he is done, via `/api/transcribe-fallback` (gpt-4o-transcribe).
  *
- * The `/api/realtime/session` endpoint relays the SDP handshake so the
- * OPENAI_API_KEY never reaches the browser.
+ * This replaced a live WebRTC session against the OpenAI Realtime API, which
+ * streamed audio as it was spoken and printed the words on screen as they
+ * arrived. Losing that live text is a real cost, and it was dropped for two
+ * reasons:
+ *
+ * 1. Accuracy. The realtime path cut the audio on a server-side VAD with a
+ *    250ms silence threshold — a pause mid-thought could clip a word, and the
+ *    model never saw more than a fragment at a time. Sending the whole clip
+ *    gives it the full context of the story, which matters most for exactly
+ *    the things that were wrong before: proper names.
+ * 2. Reliability. The first-launch iOS failure (mic track born `ended`, WebRTC
+ *    sender shipping silence, see HANDOVER-recording-bug.md) lived entirely in
+ *    the streaming path. MediaRecorder reads the track directly and was already
+ *    in this file as the safety net that rescued those sessions — so the net
+ *    became the floor.
+ *
+ * Push-to-talk survives unchanged: the recorder pauses between holds, so
+ * background voices in the gaps never make it into the clip. The waveform is
+ * still driven by the real mic level, and it is now the only honest signal
+ * that he is being heard.
  */
 export function RecordingOverlay({
   defaultDate,
@@ -100,8 +114,6 @@ export function RecordingOverlay({
   onCancel,
   onWriteManually,
 }: Props) {
-  const [transcript, setTranscript] = useState<string>("");
-  const [interim, setInterim] = useState<string>("");
   const [seconds, setSeconds] = useState<number>(0);
   const [state, setState] = useState<RecState>("connecting");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -112,7 +124,7 @@ export function RecordingOverlay({
   // Live mic stream, exposed so the waveform can read the REAL input level
   // (Web Audio AnalyserNode) instead of a fake animation.
   const [micStream, setMicStream] = useState<MediaStream | null>(null);
-  // True while we are rescuing an empty live transcript from the recorded audio.
+  // True while the finished clip is being transcribed.
   const [recovering, setRecovering] = useState<boolean>(false);
   // Mount flag for the document.body portal — avoids SSR mismatch and
   // ensures the overlay escapes any ancestor stacking context (e.g. the
@@ -126,46 +138,27 @@ export function RecordingOverlay({
   );
 
   // Refs to objects that must survive across renders without triggering effects.
-  const pcRef = useRef<RTCPeerConnection | null>(null);
-  const dcRef = useRef<RTCDataChannel | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const audioTrackRef = useRef<MediaStreamTrack | null>(null);
-  const finalRef = useRef<string>("");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cleanedUpRef = useRef<boolean>(false);
-  const lastTranscriptAtRef = useRef<number>(0);
-  const transcriptScrollRef = useRef<HTMLDivElement | null>(null);
   const wakeLockRef = useRef<WakeLockSentinel | null>(null);
-  // Safety net: a MediaRecorder captures the raw mic audio in parallel with the
-  // realtime session. MediaRecorder reads the track directly (not via the
-  // WebRTC sender that can ship silence on iOS first-launch), so it records
-  // real audio exactly when the live path fails. If the live transcript comes
-  // back empty, we transcribe this audio via /api/transcribe-fallback so the
-  // user never loses their words.
+  // The recording itself. MediaRecorder reads the mic track directly, which is
+  // why it kept working on the iOS first launch where the WebRTC sender did not.
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   // Guards against double-ending if the stop button is tapped twice.
   const endingRef = useRef<boolean>(false);
 
-  // --- TEMPORARY DIAGNOSTICS (first-launch silent-recording bug) ---------
-  // Console-only log of the recording pipeline so we can see exactly where it
-  // breaks on a fresh iOS permission grant: track state, data-channel open,
-  // ICE/connection state, every event received from OpenAI, and a periodic
-  // getStats() poll of outbound audio (packets/bytes sent + mic audioLevel).
-  // The on-screen panel has been removed; tail logs from the Safari console.
-  const debugT0Ref = useRef<number>(Date.now());
-  const statsTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   function dbg(msg: string) {
-    const t = ((Date.now() - debugT0Ref.current) / 1000).toFixed(1);
     try {
-      console.log("[rec]", `${t}s ${msg}`);
+      console.log("[rec]", msg);
     } catch {
       // ignore
     }
   }
 
-  // Setup the realtime connection once on mount.
+  // Acquire the mic and arm the recorder once, on mount.
   useEffect(() => {
     let cancelled = false;
 
@@ -173,12 +166,11 @@ export function RecordingOverlay({
       try {
         dbg("setup start");
         // 1. Acquire a LIVE mic track. On a cold app launch, iOS Safari can
-        // hand back a track that is already `readyState: "ended"` — it produces
-        // zero audio frames (pkts/bytes stay 0, lvl 0), so OpenAI sees only
-        // silence even though the connection and session are healthy. Diagnosed
-        // live on-device (see HANDOVER-recording-bug.md). The fix: if the track
-        // isn't live, discard it and re-call getUserMedia a few times; the
-        // re-acquisition reliably returns a live track.
+        // hand back a track that is already `readyState: "ended"`: it produces
+        // zero audio frames, so whatever is downstream records silence.
+        // Diagnosed live on-device (see HANDOVER-recording-bug.md). The fix: if
+        // the track isn't live, discard it and re-call getUserMedia a few times;
+        // the re-acquisition reliably returns a live track.
         let stream: MediaStream | null = null;
         for (let attempt = 1; attempt <= 4; attempt++) {
           const s = await acquireMicStream();
@@ -219,7 +211,7 @@ export function RecordingOverlay({
 
         // On the first permission grant iOS can also hand back a still-muted
         // (but live) track that delivers no frames until it fires `unmute`.
-        // Wait for that before negotiating so the sender doesn't ship silence.
+        // Wait for that before arming, or the clip opens with dead air.
         if (audioTrackRef.current) {
           if (audioTrackRef.current.muted) dbg("track muted -> waiting unmute");
           await waitForTrackLive(audioTrackRef.current);
@@ -227,105 +219,17 @@ export function RecordingOverlay({
         }
         if (cancelled) return;
 
-        // 2. Peer connection + data channel
-        const pc = new RTCPeerConnection();
-        pcRef.current = pc;
-
-        // Add mic as a transceiver so SDP includes audio
-        if (audioTrackRef.current) {
-          pc.addTrack(audioTrackRef.current, stream);
-          dbg("addTrack done");
-        }
-
-        const dc = pc.createDataChannel("oai-events");
-        dcRef.current = dc;
-
-        dc.onmessage = (e) => {
-          handleEvent(e.data);
-        };
-        dc.onopen = () => {
-          dbg("datachannel OPEN");
-        };
-        dc.onclose = () => dbg("datachannel close");
-        dc.onerror = () => dbg("datachannel error");
-
-        pc.onconnectionstatechange = () => {
-          dbg(`pc.connectionState=${pc.connectionState}`);
-        };
-
-        pc.oniceconnectionstatechange = () => {
-          dbg(`ice=${pc.iceConnectionState}`);
-          if (
-            pc.iceConnectionState === "failed" ||
-            pc.iceConnectionState === "disconnected"
-          ) {
-            if (!cleanedUpRef.current) {
-              setErrorMessage(
-                "Connessione persa con il servizio di trascrizione.",
-              );
-              setState("error");
-            }
-          }
-        };
-
-        // 3. SDP offer + handshake
-        const offer = await pc.createOffer({
-          offerToReceiveAudio: false,
-          offerToReceiveVideo: false,
-        });
-        await pc.setLocalDescription(offer);
-
-        if (cancelled) return;
-
-        // Best-effort: include the glossary as a header so the
-        // transcription model treats the user's proper names as
-        // in-vocabulary. Works for demo (localStorage) and auth.
-        const headers: Record<string, string> = {
-          "Content-Type": "application/sdp",
-        };
-        try {
-          // People saved in Remember feed the transcription model as
-          // in-vocabulary proper names (this replaced the old Glossario).
-          const terms = await loadPersonaNames(mode ?? "auth");
-          if (terms.length > 0) {
-            headers["X-JM-Glossary"] = encodeURIComponent(terms.join(","));
-          }
-        } catch {
-          // ignore — vocabulary hint is non-critical
-        }
-
-        dbg("POST /api/realtime/session");
-        const resp = await fetch(apiUrl("/api/realtime/session"), {
-          method: "POST",
-          headers,
-          body: offer.sdp ?? "",
-        });
-        dbg(`session resp ${resp.status}`);
-
-        if (!resp.ok) {
-          const errTxt = await resp.text().catch(() => "");
+        // 2. Arm the recorder, paused. There is no network handshake to wait
+        // for any more: the clip is captured locally and only travels once, at
+        // the end. That also means the mic is ready in a few hundred
+        // milliseconds instead of after an SDP round trip.
+        if (!startTape(stream)) {
           throw new Error(
-            `Errore dal server (${resp.status}). ${errTxt.slice(0, 160)}`,
+            "Questo browser non sa registrare l'audio. Prova a scrivere a mano.",
           );
         }
-
-        const answerSdp = await resp.text();
         if (cancelled) return;
-
-        await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
-        dbg("remoteDescription set");
-
-        if (cancelled) return;
-        // Push-to-talk: the session is live but we DON'T capture yet. The mic
-        // track starts disabled (sends silence); it only opens while the user
-        // holds the talk button, so background voices in the gaps are never
-        // transcribed. We land in "paused" (ready) and hold drives capture.
-        if (audioTrackRef.current) audioTrackRef.current.enabled = false;
         setState("paused");
-        startStatsPoll();
-        // Parallel raw-audio recorder (safety net): records silence while not
-        // held, the user's voice while held.
-        startTape(stream);
         // Keep the screen awake so iOS doesn't sleep mid-recording.
         void acquireWakeLock();
       } catch (err) {
@@ -349,73 +253,6 @@ export function RecordingOverlay({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Poll WebRTC stats so we can see whether the browser is actually SENDING
-  // audio to OpenAI. If packets/bytes climb, the upstream pipe is healthy and
-  // any silence is OpenAI's doing; if they stay flat, the mic track isn't
-  // feeding the sender (the suspected first-launch bug).
-  function startStatsPoll() {
-    if (statsTimerRef.current) return;
-    statsTimerRef.current = setInterval(() => {
-      const pc = pcRef.current;
-      if (!pc) return;
-      void pc
-        .getStats()
-        .then((stats) => {
-          let out = "";
-          let lvl = "";
-          stats.forEach((r) => {
-            const rep = r as unknown as {
-              type: string;
-              kind?: string;
-              packetsSent?: number;
-              bytesSent?: number;
-              audioLevel?: number;
-            };
-            if (rep.type === "outbound-rtp" && rep.kind === "audio") {
-              out = `pkts=${rep.packetsSent ?? "?"} bytes=${rep.bytesSent ?? "?"}`;
-            }
-            if (rep.type === "media-source" && rep.kind === "audio") {
-              lvl =
-                typeof rep.audioLevel === "number"
-                  ? ` lvl=${rep.audioLevel.toFixed(3)}`
-                  : "";
-            }
-          });
-          if (out) dbg(`stats out ${out}${lvl}`);
-        })
-        .catch(() => {});
-    }, 2000);
-  }
-
-  function handleEvent(raw: unknown) {
-    if (typeof raw !== "string") return;
-    let ev: { type?: string; delta?: string; transcript?: string };
-    try {
-      ev = JSON.parse(raw);
-    } catch {
-      dbg("event: non-JSON");
-      return;
-    }
-    if (!ev.type) return;
-    // Log the type of every event so we can confirm OpenAI is talking back at
-    // all (errors, session.created, speech_started, transcription deltas...).
-    dbg(`ev ${ev.type}`);
-    if (ev.type === "conversation.item.input_audio_transcription.delta") {
-      setInterim((prev) => prev + (ev.delta ?? ""));
-      lastTranscriptAtRef.current = Date.now();
-    } else if (
-      ev.type === "conversation.item.input_audio_transcription.completed"
-    ) {
-      const text = ev.transcript ?? "";
-      if (text) {
-        finalRef.current = (finalRef.current + " " + text).trim();
-        setTranscript(finalRef.current);
-      }
-      setInterim("");
-      lastTranscriptAtRef.current = Date.now();
-    }
-  }
 
   function startTimer() {
     if (timerRef.current) return;
@@ -469,27 +306,11 @@ export function RecordingOverlay({
     return () => document.removeEventListener("visibilitychange", onVisChange);
   }, [state]);
 
-  // Auto-scroll the transcript area to the bottom whenever new content
-  // arrives, so the user can always see the latest words (otherwise the
-  // current word slides under the waveform/controls).
-  useEffect(() => {
-    const el = transcriptScrollRef.current;
-    if (!el) return;
-    // Slight delay to let the DOM paint the new chunk before measuring.
-    requestAnimationFrame(() => {
-      el.scrollTop = el.scrollHeight;
-    });
-  }, [transcript, interim]);
-
   function cleanup() {
     if (cleanedUpRef.current) return;
     cleanedUpRef.current = true;
     dbg("cleanup");
     stopTimer();
-    if (statsTimerRef.current) {
-      clearInterval(statsTimerRef.current);
-      statsTimerRef.current = null;
-    }
     releaseWakeLock();
     // Stop the parallel recorder if it's still running (discard path used by
     // cancel / write-manually; handleStop stops it itself first to keep the blob).
@@ -497,16 +318,6 @@ export function RecordingOverlay({
       const r = recorderRef.current;
       recorderRef.current = null;
       if (r && r.state !== "inactive") r.stop();
-    } catch {
-      // ignore
-    }
-    try {
-      dcRef.current?.close();
-    } catch {
-      // ignore
-    }
-    try {
-      pcRef.current?.close();
     } catch {
       // ignore
     }
@@ -531,10 +342,13 @@ export function RecordingOverlay({
     audioTrackRef.current = null;
   }
 
-  // --- Parallel raw-audio recorder (the safety net) ----------------------
-  function startTape(stream: MediaStream) {
+  // --- The recording ------------------------------------------------------
+  // Starts armed but paused: nothing is captured until the talk button is held.
+  // Returns false if this browser has no MediaRecorder at all, which is now a
+  // hard failure rather than a missing safety net.
+  function startTape(stream: MediaStream): boolean {
     try {
-      if (typeof MediaRecorder === "undefined") return; // unsupported -> net off
+      if (typeof MediaRecorder === "undefined") return false;
       chunksRef.current = [];
       const candidates = [
         "audio/webm;codecs=opus",
@@ -557,10 +371,20 @@ export function RecordingOverlay({
       };
       // Emit a chunk every second so we still have audio even if stop is abrupt.
       rec.start(1000);
+      // Armed, but silent until he holds the button. iOS needs the recorder to
+      // have actually started before pause() is legal, hence start-then-pause.
+      try {
+        if (rec.state === "recording") rec.pause();
+      } catch {
+        // Safari has shipped builds where pause() throws. Falling through means
+        // the clip also contains the gaps between holds — worse, not broken.
+        dbg("pause unsupported");
+      }
       recorderRef.current = rec;
+      return true;
     } catch {
-      // The safety net must NEVER break the main recording flow.
       recorderRef.current = null;
+      return false;
     }
   }
 
@@ -597,10 +421,11 @@ export function RecordingOverlay({
     });
   }
 
-  // Non-realtime rescue: send the recorded clip to the fallback endpoint, which
-  // transcribes the WHOLE audio at once (more robust to noise than streamed
-  // chunks). Returns "" on any failure so the caller can fall back gracefully.
-  async function recoverFromAudio(blob: Blob): Promise<string> {
+  // Send the finished clip for transcription. The endpoint is still called
+  // /api/transcribe-fallback for historical reasons — it used to be the rescue
+  // path — but it is now the only path. Returns "" on any failure; the caller
+  // decides what to tell him.
+  async function transcribeClip(blob: Blob): Promise<string> {
     const fd = new FormData();
     const ext = blob.type.includes("mp4")
       ? "mp4"
@@ -615,7 +440,9 @@ export function RecordingOverlay({
       // glossary hint is best-effort
     }
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 30000);
+    // A long evening story is a big file on a mountain connection; 30s used to
+    // be plenty for a rescue clip and is not, for the whole recording.
+    const timer = setTimeout(() => ctrl.abort(), 120000);
     try {
       const resp = await fetch(apiUrl("/api/transcribe-fallback"), {
         method: "POST",
@@ -637,27 +464,24 @@ export function RecordingOverlay({
   async function handleStop() {
     if (endingRef.current) return; // guard against a double tap
     endingRef.current = true;
-    // Grab the parallel recording BEFORE we tear the mic down.
+    // Close the recording BEFORE tearing the mic down, or the last chunk is lost.
     const blob = await stopTape();
     cleanup();
-    const liveText = (finalRef.current.trim() || interim.trim()).trim();
-    if (liveText) {
-      setState("connecting"); // transient; parent will switch the view away
-      onStop(liveText, seconds, targetDate);
-      return;
-    }
-    // The live path heard nothing — rescue from the recorded audio so the user
-    // never loses their words (this is exactly the iOS first-launch failure).
-    if (blob && blob.size > 1200) {
-      setRecovering(true);
-      const recovered = await recoverFromAudio(blob);
-      setRecovering(false);
+
+    // Nothing was captured — he tapped Fine without ever holding the button, or
+    // the recorder never produced a chunk. Hand back an empty transcript and let
+    // the review screen say so, rather than shipping silence to the model.
+    if (!blob || blob.size <= 1200) {
       setState("connecting");
-      onStop(recovered, seconds, targetDate);
+      onStop("", seconds, targetDate);
       return;
     }
-    setState("connecting");
-    onStop(liveText, seconds, targetDate);
+
+    setRecovering(true);
+    const text = await transcribeClip(blob);
+    setRecovering(false);
+    setState("connecting"); // transient; the parent switches the view away
+    onStop(text, seconds, targetDate);
   }
 
   function handleCancel() {
@@ -670,25 +494,35 @@ export function RecordingOverlay({
     onWriteManually?.();
   }
 
-  // Push-to-talk: open the mic only while the button is held.
+  // Push-to-talk: capture only while the button is held. Pausing the recorder
+  // (rather than muting the track) means the gaps are absent from the clip
+  // entirely — the model never even sees the silence, let alone the voices in it.
   function beginTalk() {
-    if (state !== "paused") return; // only once connected & idle
-    const track = audioTrackRef.current;
-    if (!track) return;
-    track.enabled = true;
+    if (state !== "paused") return; // only once armed & idle
+    const rec = recorderRef.current;
+    if (!rec) return;
+    try {
+      if (rec.state === "paused") rec.resume();
+    } catch {
+      dbg("resume failed");
+      return;
+    }
     startTimer();
     setState("recording");
   }
 
   function endTalk() {
     if (state !== "recording") return;
-    const track = audioTrackRef.current;
-    if (track) track.enabled = false;
+    const rec = recorderRef.current;
+    try {
+      if (rec && rec.state === "recording") rec.pause();
+    } catch {
+      dbg("pause failed");
+    }
     stopTimer();
     setState("paused");
   }
 
-  const { older, recent } = splitTranscript(transcript);
   const liveLabel =
     state === "paused"
       ? "pronto"
@@ -830,7 +664,7 @@ export function RecordingOverlay({
                 fontWeight: 600,
               }}
             >
-              Recupero quello che hai detto...
+              Trascrivo quello che hai detto...
             </p>
             <p
               style={{
@@ -840,8 +674,8 @@ export function RecordingOverlay({
                 maxWidth: 280,
               }}
             >
-              Il segnale dal vivo era disturbato. Sto ritrascrivendo
-              l&apos;audio registrato.
+              Sto mandando la registrazione intera: cosi i nomi propri vengono
+              scritti giusti.
             </p>
           </div>
         ) : state === "error" ? (
@@ -860,43 +694,34 @@ export function RecordingOverlay({
           </div>
         ) : (
           <>
+            {/* Where the live transcript used to scroll. Nothing arrives here
+                any more: the clip is transcribed in one go at the end, so the
+                only honest thing to show while he talks is how long he has
+                been talking and that he is being heard. */}
             <div
-              ref={transcriptScrollRef}
-              className="flex-1 overflow-y-auto"
-              role="log"
-              aria-live="polite"
-              aria-atomic="false"
-              aria-label="Trascrizione in tempo reale"
-              style={{
-                padding: "12px 4px",
-                fontSize: 17,
-                lineHeight: 1.6,
-                minHeight: 0,
-              }}
+              className="flex flex-1 flex-col items-center justify-center"
+              style={{ padding: "12px 4px", minHeight: 0, textAlign: "center" }}
             >
-              {older && (
-                <p style={{ color: "var(--color-ink-faint)", marginBottom: 10 }}>
-                  {older}
-                </p>
-              )}
-              {recent && (
-                <p style={{ color: "var(--color-ink-muted)", marginBottom: 10 }}>
-                  {recent}
-                </p>
-              )}
-              {interim && (
-                <p style={{ color: "var(--color-ink)", marginBottom: 10 }}>
-                  {interim}
-                  {state === "recording" && <span className="live-caret" />}
-                </p>
-              )}
+              <p
+                style={{
+                  color: "var(--color-ink-faint)",
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  maxWidth: 260,
+                }}
+              >
+                {state === "connecting"
+                  ? "Preparo il microfono."
+                  : seconds > 0
+                    ? "Sto registrando. Le parole arrivano quando premi Fine."
+                    : "Tieni premuto e racconta la giornata. Puoi fermarti e riprendere quante volte vuoi."}
+              </p>
             </div>
 
-            {/* Status strip: placeholders + silence warning sit ABOVE the
-                waveform (Manuel's request — easier to read while talking
-                than buried in the transcript scroll area). */}
+            {/* Status strip above the waveform (Manuel's request — easier to
+                read while talking than buried in the scroll area). */}
             <div className="shrink-0" style={{ padding: "0 4px 8px", minHeight: 42 }}>
-              {!transcript && !interim && state === "connecting" && (
+              {state === "connecting" && (
                 <div
                   className="flex items-center justify-center"
                   style={{ gap: 9 }}
@@ -917,7 +742,7 @@ export function RecordingOverlay({
                   </span>
                 </div>
               )}
-              {!transcript && !interim && state === "recording" && (
+              {state === "recording" && (
                 <p
                   style={{
                     color: "var(--color-ink-faint)",
@@ -1073,17 +898,6 @@ export function RecordingOverlay({
     </div>,
     document.body,
   );
-}
-
-function splitTranscript(text: string): { older: string; recent: string } {
-  const trimmed = text.trim();
-  if (!trimmed) return { older: "", recent: "" };
-  const parts = trimmed.split(/(?<=[.!?])\s+/);
-  if (parts.length <= 1) return { older: "", recent: trimmed };
-  return {
-    older: parts.slice(0, -1).join(" "),
-    recent: parts[parts.length - 1] ?? "",
-  };
 }
 
 // Waveform driven by the REAL microphone level via a Web Audio AnalyserNode.
