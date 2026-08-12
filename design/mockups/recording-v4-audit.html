@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal.me · Registrazione v4 · audit</title>
+<style>
+:root {
+  --bg-page: #050304;
+  --bg-phone: #0E0709;
+  --surface: #1D1013;
+  --line: rgba(255,229,214,0.075);
+  --accent: #E3A15F;
+  --accent-pressed: #D08F4D;
+  --accent-hi: #F0B875;
+  --ink: #F4E7DE;
+  --ink-muted: #CDB7AE;
+  --ink-faint: #8E7770;
+  --danger: #F87171;
+  --font: "Inter", system-ui, -apple-system, "SF Pro Text", sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg-page); color: var(--ink);
+  font-family: var(--font); -webkit-font-smoothing: antialiased;
+  padding: 44px 24px 80px;
+}
+.head { max-width: 1180px; margin: 0 auto 40px; }
+h1 { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; margin: 0 0 10px; }
+.sub { color: var(--ink-muted); font-size: 14px; line-height: 1.6; max-width: 720px; margin: 0; }
+.lab { font-size: 10px; font-weight: 650; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-faint); }
+
+.row { display: flex; gap: 34px; justify-content: center; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; }
+.cell { width: 300px; }
+.cap { margin: 14px 2px 0; }
+.cap b { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+.cap span { font-size: 12px; color: var(--ink-faint); line-height: 1.55; }
+
+/* ---- telefono ---- */
+.phone {
+  width: 300px; height: 640px; border-radius: 42px; background: var(--bg-phone);
+  border: 1px solid rgba(255,229,214,0.10); position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 30px 60px rgba(0,0,0,.55);
+}
+.phone::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 108%, rgba(227,161,95,.10), transparent 46%);
+}
+.island {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 78px; height: 22px; border-radius: 12px; background: #000; z-index: 5;
+}
+.statusbar {
+  height: 44px; flex-shrink: 0; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 20px; font-size: 11px;
+  color: var(--ink); font-weight: 600; opacity: .85;
+}
+.screen { flex: 1; display: flex; flex-direction: column; padding: 0 22px 20px; min-height: 0; position: relative; z-index: 2; }
+
+/* ---- riga di stato unica ---- */
+.statusrow { display: flex; align-items: center; justify-content: space-between; padding-top: 4px; }
+.state { display: inline-flex; align-items: center; gap: 7px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-faint); }
+.dot.rec { background: var(--danger); box-shadow: 0 0 9px rgba(248,113,113,.75); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+.state span { font-size: 10px; font-weight: 650; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-faint); }
+.state.rec span { color: var(--danger); }
+.timer { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 500; letter-spacing: .05em; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.timer.on { color: var(--ink-muted); }
+
+.chip {
+  align-self: center; margin-top: 12px; display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 13px; border-radius: 999px; border: 1px solid var(--line); background: rgba(29,16,19,.5);
+  font-size: 12px; color: var(--ink-faint);
+}
+.chip b { color: var(--ink); font-weight: 600; }
+
+/* ---- blocco centrale: un solo fuoco ---- */
+.hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; min-height: 0; }
+
+.wave { display: flex; align-items: center; justify-content: center; gap: 3px; height: 54px; width: 100%; }
+.wave i {
+  display: block; width: 3px; border-radius: 2px; background: var(--accent);
+  opacity: .9; transition: height .09s ease;
+}
+.wave.idle i { background: var(--ink-faint); opacity: .35; height: 3px !important; }
+
+.mic {
+  width: 128px; height: 128px; border-radius: 50%; position: relative;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.mic .ring {
+  position: absolute; inset: -14px; border-radius: 50%;
+  border: 1px solid rgba(227,161,95,.28);
+}
+.mic .ring2 { position: absolute; inset: -30px; border-radius: 50%; border: 1px solid rgba(227,161,95,.12); }
+.mic .core {
+  width: 128px; height: 128px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--accent-hi), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 44px rgba(227,161,95,.30), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.mic.idle .core {
+  background: transparent; border: 1px solid rgba(227,161,95,.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+}
+.mic.idle .ring, .mic.idle .ring2 { display: none; }
+.mic svg { width: 46px; height: 46px; }
+.mic.idle svg { stroke: var(--accent); }
+.mic .core svg { stroke: #1a0d06; }
+
+.hint { font-size: 13px; color: var(--ink-faint); text-align: center; min-height: 18px; }
+
+/* ---- fondo ---- */
+.foot { flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding-top: 4px; }
+.btn {
+  flex: 1; height: 52px; border-radius: 15px; display: flex; align-items: center;
+  justify-content: center; gap: 8px; font-size: 15px; font-weight: 600;
+  background: transparent; border: 1px solid rgba(227,161,95,.40); color: var(--accent);
+}
+.btn.solid { background: linear-gradient(180deg, var(--accent-hi), var(--accent)); border: none; color: #1a0d06; }
+.icobtn {
+  width: 52px; height: 52px; border-radius: 15px; border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--ink-faint);
+}
+.write { text-align: center; font-size: 12px; color: var(--ink-faint); padding-top: 14px; }
+
+/* ---- pannello analisi ---- */
+.audit { max-width: 1180px; margin: 64px auto 0; }
+.audit h2 { font-size: 18px; font-weight: 650; letter-spacing: -0.015em; margin: 0 0 18px; }
+.items { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.item { border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; background: rgba(29,16,19,.35); }
+.item h3 { font-size: 14px; font-weight: 600; margin: 0 0 8px; color: var(--ink); }
+.item p { font-size: 13px; line-height: 1.65; color: var(--ink-muted); margin: 0 0 8px; }
+.item p.fix { color: var(--accent); margin: 0; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <p class="lab">Journal.me · mockup</p>
+  <h1>Registrazione — proposta v4</h1>
+  <p class="sub">Tre stati della stessa schermata. Il principio: <b>un solo fuoco visivo alla volta</b>, e una sola riga di testo che cambia con lo stato invece di quattro messaggi simultanei. La waveform diventa l'elemento che vedi, perche e l'unica cosa che ti dice davvero che il microfono ti sente.</p>
+</div>
+
+<div class="row">
+
+  <!-- PRONTO -->
+  <div class="cell">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="statusbar"><span>15:27</span><span>▮▮▮ ⌁</span></div>
+      <div class="screen">
+        <div class="statusrow">
+          <span class="state"><i class="dot"></i><span>pronto</span></span>
+          <span class="timer">00:00</span>
+        </div>
+        <div class="chip"><b>Oggi</b> · Mer 12 Ago ▾</div>
+        <div class="hero">
+          <div class="wave idle"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="mic idle">
+            <div class="core"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></div>
+          </div>
+          <p class="hint">Tieni premuto e racconta.</p>
+        </div>
+        <div class="foot">
+          <div class="icobtn"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div>
+          <div class="btn">Fine e salva</div>
+        </div>
+        <p class="write">Preferisco scrivere a mano</p>
+      </div>
+    </div>
+    <div class="cap"><b>Pronto</b><span>Microfono chiuso. Niente rosso, niente pulsante pieno: nulla grida. Il cerchio e solo un contorno, cosi la differenza con lo stato acceso e evidente a colpo d'occhio.</span></div>
+  </div>
+
+  <!-- IN ASCOLTO -->
+  <div class="cell">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="statusbar"><span>15:27</span><span>▮▮▮ ⌁</span></div>
+      <div class="screen">
+        <div class="statusrow">
+          <span class="state rec"><i class="dot rec"></i><span>in ascolto</span></span>
+          <span class="timer on">00:06</span>
+        </div>
+        <div class="chip"><b>Oggi</b> · Mer 12 Ago ▾</div>
+        <div class="hero">
+          <div class="wave" id="w"></div>
+          <div class="mic">
+            <div class="ring2"></div><div class="ring"></div>
+            <div class="core"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></div>
+          </div>
+          <p class="hint">Lascia per fermare.</p>
+        </div>
+        <div class="foot">
+          <div class="icobtn"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div>
+          <div class="btn solid">Fine e salva</div>
+        </div>
+        <p class="write">Preferisco scrivere a mano</p>
+      </div>
+    </div>
+    <div class="cap"><b>In ascolto</b><span>La waveform e larga quanto lo schermo e viva. I due anelli attorno al microfono crescono col volume: lo vedi anche con la coda dell'occhio mentre parli guardando altrove.</span></div>
+  </div>
+
+  <!-- TRASCRIVO -->
+  <div class="cell">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="statusbar"><span>15:28</span><span>▮▮▮ ⌁</span></div>
+      <div class="screen">
+        <div class="statusrow">
+          <span class="state"><i class="dot"></i><span>trascrivo</span></span>
+          <span class="timer">01:42</span>
+        </div>
+        <div class="chip"><b>Oggi</b> · Mer 12 Ago ▾</div>
+        <div class="hero">
+          <div class="wave idle"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="mic idle" style="opacity:.45">
+            <div class="core"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></div>
+          </div>
+          <p class="hint">Un minuto e quarantadue di racconto.<br>Sto scrivendo le tue parole.</p>
+        </div>
+        <div class="foot">
+          <div class="btn" style="opacity:.4">Attendi…</div>
+        </div>
+        <p class="write" style="opacity:.35">Preferisco scrivere a mano</p>
+      </div>
+    </div>
+    <div class="cap"><b>Trascrivo</b><span>Lo schermo di attesa riusa la stessa struttura invece di sostituirla: niente salto, cambia solo il testo. Il cestino sparisce, perche qui non c'e piu niente da buttare.</span></div>
+  </div>
+
+</div>
+
+<div class="audit">
+  <h2>Cosa non andava, e perche</h2>
+  <div class="items">
+
+    <div class="item">
+      <h3>Quattro messaggi per un solo stato</h3>
+      <p>«IN ASCOLTO», «Sto registrando. Le parole arrivano quando premi Fine.», «Parla pure...», «lascia per fermare». Dicono tutti la stessa cosa in quattro posti diversi. Quando tutto parla, niente si legge.</p>
+      <p class="fix">Una riga sola, sotto il microfono, che cambia con lo stato. L'etichetta in alto resta perche e a colpo d'occhio, non da leggere.</p>
+    </div>
+
+    <div class="item">
+      <h3>Istruzioni permanenti</h3>
+      <p>«Le parole arrivano quando premi Fine» e una spiegazione da primo utilizzo, stampata li per sempre. Alla seconda volta e rumore; alla decima e un rimprovero.</p>
+      <p class="fix">Compare solo la prima volta che apri la registrazione, poi mai piu.</p>
+    </div>
+
+    <div class="item">
+      <h3>La cosa piu importante era la piu piccola</h3>
+      <p>La waveform e l'unica prova onesta che il microfono ti sente: dodici puntini alti tre pixel, persi in mezzo allo schermo. Il timer, che non serve a nulla mentre parli, era il testo piu grande.</p>
+      <p class="fix">Waveform larga tutto lo schermo e alta 54px, attaccata al pulsante. Timer ridotto e spostato a lato, come informazione secondaria.</p>
+    </div>
+
+    <div class="item">
+      <h3>Due terzi di schermo vuoti</h3>
+      <p>Testo al 35%, un altro al 57%, waveform al 64%, pulsante al 76%: quattro elementi che galleggiano senza rapporto fra loro. Non e respiro, e scollamento.</p>
+      <p class="fix">Waveform, microfono e frase diventano un blocco unico centrato. Lo spazio vuoto si sposta ai bordi, dove serve.</p>
+    </div>
+
+    <div class="item">
+      <h3>Due ambra in gara</h3>
+      <p>Il microfono e «Fine e salva» hanno lo stesso peso e lo stesso colore. Ma mentre registri l'azione principale e <i>continuare a tenere premuto</i>, non finire.</p>
+      <p class="fix">A riposo «Fine e salva» e solo contornato; diventa pieno quando c'e davvero qualcosa da salvare. Il cestino da quadrato solitario a icona quieta della stessa famiglia.</p>
+    </div>
+
+    <div class="item">
+      <h3>Dettagli da web, non da iOS</h3>
+      <p>«Preferisco scrivere a mano» e sottolineato come un link di pagina web. Il separatore della data e un punto isolato con spazi (« . »).</p>
+      <p class="fix">Sottolineatura via, colore tenue e tocco pieno. Separatore punto centrale (·) senza spazi larghi.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// waveform viva solo nella cella centrale
+const w = document.getElementById('w');
+for (let i = 0; i < 30; i++) w.appendChild(document.createElement('i'));
+const bars = w.querySelectorAll('i');
+setInterval(() => {
+  bars.forEach((b, i) => {
+    const centre = 1 - Math.abs(i - bars.length / 2) / (bars.length / 2);
+    const h = 3 + Math.random() * 46 * (0.35 + centre * 0.8);
+    b.style.height = h.toFixed(0) + 'px';
+  });
+}, 110);
+</script>
+</body>
+</html>

@@ -278,6 +278,7 @@ body > * {
 /* Push-to-talk button (recording overlay). Hold to capture; :active gives the
    "holding" amber glow for free while the finger is down. */
 .rec-ptt {
+  position: relative;
   width: 128px;
   height: 128px;
   border-radius: 50%;
@@ -2387,4 +2388,71 @@ summary:active {
 /* Il jump picker di Mese cadeva a 110px dal bordo assoluto dello schermo. */
 .jm-picker-overlay {
   padding-top: calc(110px + env(safe-area-inset-top, 0px));
+}
+
+
+/* ---------------------------------------------------------------------------
+   Registrazione v4 — il fondo schermata.
+
+   Prima: un cestino quadrato da 56px accanto a una barra larga tutto il resto.
+   Non era una composizione, era un avanzo — e soprattutto metteva sulla stessa
+   riga due azioni di peso opposto, salvare il racconto e buttarlo via, sotto
+   lo stesso pollice. Ora in fondo c'e una cosa sola; annullare e scrivere a
+   mano diventano due parole gemelle, bilanciate fra loro.
+--------------------------------------------------------------------------- */
+.jm-ptt-save-idle {
+  background: transparent;
+  border: 1px solid rgba(227, 161, 95, 0.40);
+  color: var(--color-accent);
+}
+.jm-ptt-save-idle:disabled {
+  opacity: 0.45;
+}
+
+.jm-rec-quiet {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: var(--color-ink-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: color 140ms ease;
+}
+.jm-rec-quiet:active {
+  color: var(--color-ink-muted);
+}
+.jm-rec-sep {
+  color: var(--color-ink-faint);
+  opacity: 0.3;
+  font-size: 12.5px;
+}
+
+/* Gli anelli attorno al microfono premuto. Prima la sola differenza fra "mic
+   chiuso" e "sto registrando" era una scritta: adesso il pulsante cambia forma,
+   e lo vedi con la coda dell'occhio mentre parli guardando altrove. */
+.rec-ptt::before,
+.rec-ptt::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(227, 161, 95, 0.28);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+.rec-ptt::before { inset: -14px; }
+.rec-ptt::after { inset: -31px; border-color: rgba(227, 161, 95, 0.12); }
+.rec-ptt:active:not(:disabled)::before,
+.rec-ptt:active:not(:disabled)::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-ptt::before,
+  .rec-ptt::after { transition: none; }
 }

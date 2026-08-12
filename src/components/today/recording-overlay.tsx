@@ -82,6 +82,8 @@ type Props = {
 
 type RecState = "connecting" | "recording" | "paused" | "error";
 
+const PRIMER_KEY = "journalme-rec-primer";
+
 /**
  * Records the user's voice to a local clip and transcribes it in one shot when
  * he is done, via `/api/transcribe-fallback` (gpt-4o-transcribe).
@@ -523,6 +525,32 @@ export function RecordingOverlay({
     setState("paused");
   }
 
+  // La spiegazione lunga («le parole arrivano quando premi Fine») compare solo
+  // al primo utilizzo. Stampata li per sempre, alla seconda volta e rumore e
+  // alla decima e un rimprovero.
+  const [showPrimer] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      if (localStorage.getItem(PRIMER_KEY)) return false;
+      localStorage.setItem(PRIMER_KEY, "1");
+      return true;
+    } catch {
+      return false;
+    }
+  });
+
+  // Una riga sola che cambia con lo stato, al posto dei quattro messaggi
+  // simultanei di prima (etichetta in alto, paragrafo al centro, "Parla
+  // pure...", "lascia per fermare"): quando tutto parla, niente si legge.
+  const hint =
+    state === "connecting"
+      ? "Preparo il microfono."
+      : state === "recording"
+        ? "Lascia per fermare."
+        : seconds > 0
+          ? "Riprendi quando vuoi."
+          : "Tieni premuto e racconta.";
+
   const liveLabel =
     state === "paused"
       ? "pronto"
@@ -648,7 +676,7 @@ export function RecordingOverlay({
                 )}
               </span>
               <span style={{ marginLeft: 5, color: "var(--color-ink-faint)" }}>
-                {" . "}
+                {" \u00b7 "}
                 {compactDayDate(parseISODate(targetDate))}
               </span>
             </span>
@@ -703,89 +731,22 @@ export function RecordingOverlay({
             {errorMessage ?? "Errore sconosciuto."}
           </div>
         ) : (
-          <>
-            {/* Where the live transcript used to scroll. Nothing arrives here
-                any more: the clip is transcribed in one go at the end, so the
-                only honest thing to show while he talks is how long he has
-                been talking and that he is being heard. */}
-            <div
-              className="flex flex-1 flex-col items-center justify-center"
-              style={{ padding: "12px 4px", minHeight: 0, textAlign: "center" }}
-            >
-              <p
-                style={{
-                  color: "var(--color-ink-faint)",
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  maxWidth: 260,
-                }}
-              >
-                {state === "connecting"
-                  ? "Preparo il microfono."
-                  : seconds > 0
-                    ? "Sto registrando. Le parole arrivano quando premi Fine."
-                    : "Tieni premuto e racconta la giornata. Puoi fermarti e riprendere quante volte vuoi."}
-              </p>
-            </div>
+          /* Un blocco solo, centrato: waveform, microfono, una riga di testo.
+             Prima erano quattro elementi che galleggiavano al 35, 57, 64 e 76
+             per cento dell'altezza, con due terzi di schermo vuoti in mezzo.
+             La waveform e la prima cosa che vedi perche e l'unica che ti dice
+             davvero che il microfono ti sente. */
+          <div
+            className="flex flex-1 flex-col items-center justify-center"
+            style={{ gap: 26, minHeight: 0, width: "100%" }}
+          >
+            <Waveform active={state === "recording"} stream={micStream} />
 
-            {/* Status strip above the waveform (Manuel's request — easier to
-                read while talking than buried in the scroll area). */}
-            <div className="shrink-0" style={{ padding: "0 4px 8px", minHeight: 42 }}>
-              {state === "connecting" && (
-                <div
-                  className="flex items-center justify-center"
-                  style={{ gap: 9 }}
-                >
-                  <span className="jm-dot-pulse" aria-hidden="true">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                  <span
-                    style={{
-                      color: "var(--color-ink-faint)",
-                      fontSize: 13,
-                      letterSpacing: "0.01em",
-                    }}
-                  >
-                    preparo il microfono
-                  </span>
-                </div>
-              )}
-              {state === "recording" && (
-                <p
-                  style={{
-                    color: "var(--color-ink-faint)",
-                    fontSize: 14,
-                    fontStyle: "italic",
-                    textAlign: "center",
-                  }}
-                >
-                  Parla pure...
-                </p>
-              )}
-              {/* The old 8s "non ti sento" alert was a false-alarm: it fired on
-                  a timer even when the mic WAS being heard. The real waveform
-                  above is now the honest "am I heard" signal (flat = not heard),
-                  so the misleading text is gone. */}
-            </div>
-
-            <div className="shrink-0">
-              <Waveform active={state === "recording"} stream={micStream} />
-            </div>
-          </>
-        )}
-
-        {/* Push-to-talk hero — hold to capture. Generous air above and below
-            so the button breathes; the mic is closed otherwise, so background
-            voices in the gaps never get transcribed. */}
-        <div className="shrink-0" style={{ padding: "22px 0 0" }}>
-          <div className="flex flex-col items-center" style={{ gap: 16 }}>
             <button
               type="button"
               aria-label="Tieni premuto per parlare"
               className="rec-ptt"
-              disabled={state === "connecting" || state === "error"}
+              disabled={state === "connecting"}
               onPointerDown={(e) => {
                 e.preventDefault();
                 beginTalk();
@@ -810,57 +771,46 @@ export function RecordingOverlay({
                 <path d="M12 18v3" />
               </svg>
             </button>
-            <span
-              style={{
-                fontSize: 12,
-                color: "var(--color-ink-faint)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              {state === "recording"
-                ? "lascia per fermare"
-                : state === "connecting"
-                  ? "preparo il microfono"
-                  : "tieni premuto per parlare"}
-            </span>
-          </div>
-        </div>
 
-        {/* Annulla (icona quieta) + Fine e salva (primaria, larga) — separate
-            from the hero with real space so nothing feels cramped. */}
-        <div
-          className="flex items-center shrink-0"
-          style={{ gap: 12, padding: "30px 0 4px" }}
-        >
-          <button
-            type="button"
-            onClick={handleCancel}
-            aria-label="Annulla"
-            className="jm-ptt-action jm-ptt-cancel"
-            style={{ flex: "0 0 auto", width: 56, padding: "15px 0" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              width="19"
-              height="19"
-              aria-hidden="true"
-            >
-              <path d="M3 6h18" />
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              <path d="M19 6l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2L5 6" />
-            </svg>
-          </button>
+            <div style={{ textAlign: "center", minHeight: 40 }}>
+              <p
+                aria-live="polite"
+                style={{ fontSize: 14, color: "var(--color-ink-faint)" }}
+              >
+                {hint}
+              </p>
+              {showPrimer && state !== "recording" && seconds === 0 && (
+                <p
+                  style={{
+                    fontSize: 12.5,
+                    color: "var(--color-ink-faint)",
+                    opacity: 0.65,
+                    marginTop: 6,
+                    maxWidth: 250,
+                  }}
+                >
+                  Le parole arrivano quando premi Fine.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Il fondo: una sola azione, larga tutto. Annulla e la scrittura a
+            mano scendono sotto come testo quieto. Buttare via il racconto non
+            puo pesare quanto salvarlo, ne stargli accanto sotto il pollice —
+            era il cestino spaiato che Manuel ha giustamente contestato. */}
+        <div className="shrink-0" style={{ paddingTop: 24 }}>
           <button
             type="button"
             onClick={handleStop}
-            className="jm-ptt-action jm-ptt-save"
-            disabled={state === "connecting"}
-            style={{ flex: 1, gap: 8 }}
+            className={
+              seconds > 0
+                ? "jm-ptt-action jm-ptt-save"
+                : "jm-ptt-action jm-ptt-save-idle"
+            }
+            disabled={state === "connecting" || recovering}
+            style={{ width: "100%", gap: 8, padding: "16px 22px", fontSize: 15 }}
           >
             <svg
               viewBox="0 0 24 24"
@@ -877,20 +827,30 @@ export function RecordingOverlay({
             </svg>
             Fine e salva
           </button>
-        </div>
 
-        {onWriteManually && state !== "error" && (
-          <div className="text-center shrink-0">
-            <button
-              type="button"
-              onClick={handleWriteManually}
-              className="jm-write-link"
-              style={{ marginTop: 0 }}
-            >
-              Preferisco scrivere a mano
+          <div
+            className="flex items-center justify-center"
+            style={{ paddingTop: 16 }}
+          >
+            <button type="button" onClick={handleCancel} className="jm-rec-quiet">
+              Annulla
             </button>
+            {onWriteManually && state !== "error" && (
+              <>
+                <span className="jm-rec-sep" aria-hidden="true">
+                  &#183;
+                </span>
+                <button
+                  type="button"
+                  onClick={handleWriteManually}
+                  className="jm-rec-quiet"
+                >
+                  Scrivi a mano
+                </button>
+              </>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="shrink-0" style={{ height: 18 }} />
       </div>
@@ -921,7 +881,9 @@ function Waveform({
   active: boolean;
   stream: MediaStream | null;
 }) {
-  const N = 13;
+  // 30 barre invece di 13: la waveform e l'unico segnale onesto che il
+  // microfono ti sente, e prima era l'elemento piu piccolo della schermata.
+  const N = 30;
   const barRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const rafRef = useRef<number | null>(null);
 
@@ -950,7 +912,7 @@ function Waveform({
       for (let i = 0; i < N; i++) {
         const v = (data[i * step] ?? 0) / 255; // 0..1
         const gated = v < 0.06 ? 0 : v; // noise floor -> truly flat in silence
-        const h = 3 + gated * 30;
+        const h = 3 + gated * 46;
         const el = barRefs.current[i];
         if (el) {
           el.style.height = `${h.toFixed(1)}px`;
@@ -987,7 +949,7 @@ function Waveform({
   return (
     <div
       className="flex items-center justify-center"
-      style={{ gap: 3, height: 36, margin: "18px 0 8px" }}
+      style={{ gap: 3, height: 54, width: "100%" }}
       aria-hidden="true"
     >
       {Array.from({ length: N }).map((_, i) => (
@@ -997,7 +959,7 @@ function Waveform({
             barRefs.current[i] = el;
           }}
           style={{
-            width: 2,
+            width: 3,
             height: 3,
             borderRadius: 2,
             background: "var(--color-accent)",

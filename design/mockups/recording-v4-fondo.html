@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal.me · Registrazione v4 · il fondo</title>
+<style>
+:root {
+  --bg-page: #050304; --bg-phone: #0E0709; --surface: #1D1013;
+  --line: rgba(255,229,214,0.075); --accent: #E3A15F; --accent-hi: #F0B875;
+  --ink: #F4E7DE; --ink-muted: #CDB7AE; --ink-faint: #8E7770; --danger: #F87171;
+  --font: "Inter", system-ui, -apple-system, "SF Pro Text", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg-page); color:var(--ink); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; padding:44px 24px 80px; }
+.head { max-width:980px; margin:0 auto 40px; }
+h1 { font-size:26px; font-weight:650; letter-spacing:-.02em; margin:0 0 10px; }
+.sub { color:var(--ink-muted); font-size:14px; line-height:1.6; max-width:700px; margin:0; }
+.lab { font-size:10px; font-weight:650; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-faint); }
+.row { display:flex; gap:40px; justify-content:center; flex-wrap:wrap; max-width:980px; margin:0 auto; }
+.cell { width:320px; }
+.cap { margin:16px 2px 0; }
+.cap b { display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
+.cap span { font-size:12.5px; color:var(--ink-faint); line-height:1.65; }
+.tag { display:inline-block; font-size:9px; font-weight:650; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--accent); border:1px solid rgba(227,161,95,.35); border-radius:999px; padding:3px 9px; margin-bottom:10px; }
+
+.phone { width:320px; height:660px; border-radius:44px; background:var(--bg-phone);
+  border:1px solid rgba(255,229,214,.10); position:relative; overflow:hidden;
+  display:flex; flex-direction:column; box-shadow:0 30px 60px rgba(0,0,0,.55); }
+.phone::before { content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(circle at 50% 108%, rgba(227,161,95,.10), transparent 46%); }
+.island { position:absolute; top:11px; left:50%; transform:translateX(-50%);
+  width:82px; height:23px; border-radius:12px; background:#000; z-index:5; }
+.statusbar { height:46px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+  padding:0 22px; font-size:11px; font-weight:600; opacity:.85; }
+.screen { flex:1; display:flex; flex-direction:column; padding:0 22px 22px; min-height:0; position:relative; z-index:2; }
+
+.statusrow { display:flex; align-items:center; justify-content:space-between; padding-top:4px; height:26px; }
+.state { display:inline-flex; align-items:center; gap:7px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--danger); box-shadow:0 0 9px rgba(248,113,113,.75); }
+.state span { font-size:10px; font-weight:650; letter-spacing:.2em; text-transform:uppercase; color:var(--danger); }
+.timer { font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:13px; font-weight:500;
+  letter-spacing:.05em; color:var(--ink-muted); font-variant-numeric:tabular-nums; }
+.closex { width:30px; height:30px; border-radius:50%; border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center; color:var(--ink-faint); flex-shrink:0; }
+
+.chip { align-self:center; margin-top:12px; display:inline-flex; align-items:center; gap:7px;
+  padding:7px 13px; border-radius:999px; border:1px solid var(--line); background:rgba(29,16,19,.5);
+  font-size:12px; color:var(--ink-faint); }
+.chip b { color:var(--ink); font-weight:600; }
+
+.hero { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; min-height:0; }
+.wave { display:flex; align-items:center; justify-content:center; gap:3px; height:54px; width:100%; }
+.wave i { display:block; width:3px; border-radius:2px; background:var(--accent); opacity:.9; transition:height .09s ease; }
+.mic { width:132px; height:132px; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.mic .ring { position:absolute; inset:-14px; border-radius:50%; border:1px solid rgba(227,161,95,.28); }
+.mic .ring2 { position:absolute; inset:-31px; border-radius:50%; border:1px solid rgba(227,161,95,.12); }
+.mic .core { width:132px; height:132px; border-radius:50%;
+  background:linear-gradient(180deg,var(--accent-hi),var(--accent));
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 46px rgba(227,161,95,.30), inset 0 1px 0 rgba(255,255,255,.35); }
+.mic svg { width:48px; height:48px; stroke:#1a0d06; }
+.hint { font-size:13px; color:var(--ink-faint); text-align:center; }
+
+.foot { flex-shrink:0; }
+.btn { height:54px; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:8px;
+  font-size:15px; font-weight:600; background:linear-gradient(180deg,var(--accent-hi),var(--accent)); color:#1a0d06; }
+.btn.ghost { background:transparent; border:1px solid var(--line); color:var(--ink-faint); font-weight:500; }
+.pair { display:flex; gap:10px; }
+.pair > * { flex:1; }
+.under { text-align:center; font-size:12.5px; color:var(--ink-faint); padding-top:16px; }
+.under .sep { opacity:.3; padding:0 10px; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <p class="lab">Journal.me · mockup · solo il fondo schermata</p>
+  <h1>Il cestino spaiato: due modi di risolverlo</h1>
+  <p class="sub">Il problema non e la misura del cestino, e che stavo mettendo sulla stessa riga due azioni di peso opposto: una che salva il tuo racconto e una che lo butta. Non possono stare fianco a fianco e sembrare in equilibrio, perche in equilibrio non sono.</p>
+</div>
+
+<div class="row">
+
+  <!-- A -->
+  <div class="cell">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="statusbar"><span>15:27</span><span>▮▮▮ ⌁</span></div>
+      <div class="screen">
+        <div class="statusrow">
+          <span class="state"><i class="dot"></i><span>in ascolto</span></span>
+          <span class="timer">00:06</span>
+        </div>
+        <div class="chip"><b>Oggi</b> · Mer 12 Ago ▾</div>
+        <div class="hero">
+          <div class="wave" id="wa"></div>
+          <div class="mic"><div class="ring2"></div><div class="ring"></div>
+            <div class="core"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></div>
+          </div>
+          <p class="hint">Lascia per fermare.</p>
+        </div>
+        <div class="foot">
+          <div class="btn">✓&nbsp; Fine e salva</div>
+          <p class="under">Annulla <span class="sep">·</span> Scrivi a mano</p>
+        </div>
+      </div>
+    </div>
+    <div class="cap">
+      <span class="tag">consigliata</span>
+      <b>A · Un solo pulsante, largo tutto</b>
+      <span>Simmetria per sottrazione: al fondo resta una sola cosa, centrata e piena larghezza. Annulla e Scrivi a mano scendono sotto come testo quieto, alla stessa altezza, separati da un punto — due parole gemelle, bilanciate fra loro. Buttare il racconto smette di essere un bottone grande quanto il salvarlo: e una scelta che devi cercare, non una che rischi di sfiorare col pollice.</span>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="cell">
+    <div class="phone">
+      <div class="island"></div>
+      <div class="statusbar"><span>15:27</span><span>▮▮▮ ⌁</span></div>
+      <div class="screen">
+        <div class="statusrow">
+          <div class="closex"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+          <span class="state"><i class="dot"></i><span>in ascolto</span></span>
+          <span class="timer">00:06</span>
+        </div>
+        <div class="chip"><b>Oggi</b> · Mer 12 Ago ▾</div>
+        <div class="hero">
+          <div class="wave" id="wb"></div>
+          <div class="mic"><div class="ring2"></div><div class="ring"></div>
+            <div class="core"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></div>
+          </div>
+          <p class="hint">Lascia per fermare.</p>
+        </div>
+        <div class="foot">
+          <div class="pair">
+            <div class="btn ghost">Scrivi a mano</div>
+            <div class="btn">✓&nbsp; Fine</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cap">
+      <b>B · Due pulsanti gemelli, la chiusura in alto</b>
+      <span>Simmetria per pareggio: due pulsanti identici di larghezza, distinti solo dal riempimento. Il gesto di buttare via se ne va in alto a sinistra, dove iOS mette sempre la chiusura di una schermata a tutto schermo. Piu ordinato geometricamente, ma da a "Scrivi a mano" un'importanza che forse non merita — la usi una volta su venti.</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+[['wa'],['wb']].forEach(([id]) => {
+  const w = document.getElementById(id);
+  for (let i = 0; i < 32; i++) w.appendChild(document.createElement('i'));
+  const bars = w.querySelectorAll('i');
+  setInterval(() => {
+    bars.forEach((b, i) => {
+      const centre = 1 - Math.abs(i - bars.length / 2) / (bars.length / 2);
+      b.style.height = (3 + Math.random() * 46 * (0.35 + centre * 0.8)).toFixed(0) + 'px';
+    });
+  }, 110);
+});
+</script>
+</body>
+</html>
