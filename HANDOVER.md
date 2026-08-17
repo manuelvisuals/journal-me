@@ -1,7 +1,8 @@
 # Handover · Journal.me
 
 Documento di riferimento per chi (Claude o umano) riprende lo sviluppo.
-Aggiornato al **26 luglio 2026**, allineato al commit `c1b8d30` di `main`.
+Aggiornato al **17 agosto 2026**, allineato al commit `d1da4ef` di `main`.
+Per il lavoro in corso (desktop, due modalita, temi) vedi §13 e le due SPEC in root.
 
 Regola numero uno: **la fonte di verita del codice e il repo GitHub, non questo file.**
 Se qui leggi qualcosa che il codice smentisce, vince il codice — e poi correggi qui.
@@ -24,7 +25,7 @@ Sezione futura gia in discussione: Palestra (set/peso/macchinari, AI come person
 
 ---
 
-## 2. Dove si lavora (organizzazione cartelle, luglio 2026)
+## 2. Dove si lavora (organizzazione cartelle)
 
 **Tutto vive nel repo.** Si lavora su un clone fresco di `main`
 (https://github.com/manuelvisuals/journal-me), si committa, si pusha: auto-deploy su
@@ -38,9 +39,11 @@ Documenti versionati nella root e in `design/`:
 
 ```
 HANDOVER.md                  questo file, unica fonte di contesto
+SPEC-temi.md                 contratto dei token e temi. E la PR 0 di v2
+SPEC-v2.md                   desktop + due modalita (locale/cloud). 13 PR in ordine
 HANDOVER-recording-bug.md    referto del bug mic iOS (utile finche e aperto, vedi §8)
 AUDIT-tre-esperti.md         audit di giugno, stato aggiornato in §9
-design/brandbook.html        fonte di verita del look
+design/brandbook.html        fonte di verita del look (diventa: contratto + tema wine)
 design/mockups/              mockup approvati
 ```
 
@@ -151,12 +154,13 @@ Label in maiuscoletto con tracking positivo; headline con tracking negativo.
 Mockup in `design/mockups/`: `login`, `today`, `mese`, `recap`, `remember`, `settings`,
 `altro`, `metrics-editable`, `recording-flow-v2`, `recording-overlay-v3`,
 `notte-feedback-persone`, `idee-feature`.
+Aggiunti il 17 agosto: `desktop-v1`, `due-modalita`, `temi` (vedi §13).
 
 ---
 
 ## 6. Stato reale del codice
 
-`main` a `c1b8d30` (14 giugno 2026). L'MVP e completo e in produzione: tutte le sezioni
+`main` a `d1da4ef` (agosto 2026). L'MVP e completo e in produzione: tutte le sezioni
 esistono, salvano su Supabase e sono state verificate in Chrome sul deploy live.
 
 ### Navigazione
@@ -380,11 +384,14 @@ non c'e stato da preservare fuori da GitHub.
 ## 11. Come iniziare una sessione
 
 1. Leggi questo file.
-2. Leggi la memoria persistente (`MEMORY.md` e i file topic: progetto, brandbook, utente,
-   workflow, bug registrazione, feedback verify-before-claiming-fixed).
-3. Clona `main` e guarda `git log --oneline -15`: e la foto piu aggiornata che esista.
-4. Chiedi a Manuel una cosa sola: da dove si riparte.
-5. Mockup prima del codice se si tocca il visivo. Push solo dopo tsc + eslint + OK.
+2. **Se stai per implementare v2, leggi `SPEC-temi.md` e poi `SPEC-v2.md`.** Sono la
+   specifica approvata del lavoro in corso, e contengono le trappole gia mappate sul
+   codice reale (file e riga). Vedi §13.
+3. Leggi la memoria persistente (`MEMORY.md` e i file topic: progetto, temi, brandbook,
+   utente, workflow, bug registrazione, feedback verify-before-claiming-fixed).
+4. Clona `main` e guarda `git log --oneline -15`: e la foto piu aggiornata che esista.
+5. Chiedi a Manuel una cosa sola: da dove si riparte.
+6. Mockup prima del codice se si tocca il visivo. Push solo dopo tsc + eslint + OK.
 
 Buon lavoro.
 
@@ -499,3 +506,61 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
 - **Icona app** provvisoria (l'icona web riscalata a 1024). Merita un mockup vero.
 - **Bundle id** `com.manuelvisuals.journalme`, scelto senza conoscere le convenzioni
   usate su stoqfolio.
+
+---
+
+## 13. Journal.me v2 — desktop, due modalita, temi (progettato il 17 agosto 2026)
+
+Progettazione chiusa e approvata da Manuel. **Il codice non e ancora stato scritto.**
+
+**Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
+(oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop
+diventa la scrittura invece del microfono, e nascono **due modalita**: una versione gratis
+che tiene tutto sul dispositivo e non fa **nessuna** richiesta di rete, e una premium con
+cloud e AI. Sopra a tutto, un sistema di **temi** con due assi indipendenti (identita del
+tema, e chiaro/scuro/sistema).
+
+**Dove sta la specifica.**
+
+```
+SPEC-temi.md                       contratto dei token, 5 temi, appearance. PR 0
+SPEC-v2.md                         architettura dati, gating, layout desktop. PR 1..12
+design/mockups/temi.html           i 5 temi in chiaro e scuro + picker
+design/mockups/desktop-v1.html     Oggi, focus, giornata piena, Mese a griglia
+design/mockups/due-modalita.html   scelta iniziale, giornata gratis, backup, muro premium
+```
+
+**Le tre cose da sapere prima di aprire qualsiasi file.**
+
+1. **P0 di sicurezza, indipendente dal resto.** Nessuna delle route sotto `/api/*` rifiuta
+   una richiesta non autenticata, e il CORS e `*`. Chiunque conosca
+   `journal-me-weld.vercel.app` puo spendere la chiave OpenAI. Finche l'app era privata era
+   teorico; distribuendola non lo e piu. E la PR 1 e va fatta comunque.
+   Collegato: `/api/realtime/session` non ha piu nessun chiamante
+   (`src/lib/realtime/prewarm.ts:8-9`) ed e da **cancellare**, non da proteggere.
+2. **La PR 0 (temi) viene prima di tutto il visivo.** Il grosso dei componenti nuovi nasce
+   nelle PR 6-10: se il contratto dei token arriva dopo, quei componenti nascono con
+   valori letterali dentro e vanno riscritti.
+3. **Il brandbook cambia ruolo.** Da "il look dell'app" a due cose: il contratto (regole
+   valide per ogni tema) e la definizione del tema `wine`. Serve un capitolo 00 che lo
+   dica, altrimenti ogni revisione futura bocciera i temi citando il brandbook.
+   Il tema di **default** e `minimal` (Inter + Newsreader), non `wine`.
+
+**Le trappole gia mappate** (dettaglio con file e riga nelle spec): `AuthGate` manda a
+`/login` chiunque non abbia sessione, e un utente locale non ne ha mai; la tab bar non e in
+`layout.tsx` ma la rendono dodici punti, e si spegne con `lg:hidden` in
+`src/components/ui/tab-bar.tsx:108`; `resolveMode()` e per forza asincrona; le funzioni dati
+hanno `_mode` come primo parametro su 26 call-site; `saveRecording` e `generateAndSaveRecap`
+chiamano `/api/*` dal livello dati e vanno spostate fuori dallo store.
+
+**Trappola di verifica dei mockup.** Il sandbox non raggiunge `fonts.googleapis.com`,
+quindi un mockup renderizzato li dentro mostra **Georgia** al posto di ogni serif senza
+dirtelo, e ogni giudizio sui font che ne esce e falso. Procedura corretta in
+`SPEC-temi.md`, in testa al documento.
+
+**Ancora aperto:** prezzo dell'abbonamento; App Store rinviato a dopo il web; capitolo 20
+del brandbook per focus e hover su desktop (oggi non esiste nessuno stato
+`:focus-visible` in tutto il repo); Recap come voce di primo livello o dentro Altro;
+privacy policy e termini, che servono anche per la sola versione gratis.
+
+---

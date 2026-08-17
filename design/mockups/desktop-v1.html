@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Desktop v1 (wine premium)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#050304; --bg-app:#0E0709; --surface:#1D1013; --surface-2:#241418;
+  --line:rgba(255,229,214,.075); --line-2:rgba(255,229,214,.075);
+  --accent:#E3A15F; --accent-pressed:#D08F4D; --accent-hi:#F0B875;
+  --text:#F4E7DE; --text-2:#CDB7AE; --text-3:#8E7770;
+  --success:#A8C9B0; --danger:#F87171;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Spectral",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg-page); color:var(--text); font-family:var(--font);
+  padding:44px 24px 90px; -webkit-font-smoothing:antialiased;
+  font-feature-settings:"cv11","ss01";
+}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center}
+.page-sub{font-size:13px;color:var(--text-3);text-align:center;margin-top:10px;line-height:1.6}
+.divider{height:1px;background:var(--line);max-width:1280px;margin:40px auto}
+.label{
+  font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 8px;
+}
+.caption{font-size:12.5px;color:var(--text-3);text-align:center;margin:0 auto 22px;max-width:720px;line-height:1.65}
+.frame-wrap{overflow-x:auto;padding-bottom:8px}
+
+/* ---------- finestra desktop ---------- */
+.win{
+  position:relative;width:1280px;height:800px;margin:0 auto;
+  background:var(--bg-app);border-radius:14px;overflow:hidden;
+  box-shadow:0 34px 90px rgba(0,0,0,.82),0 0 0 1px rgba(255,255,255,.05);
+  display:flex;
+}
+.win::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(circle at 30% -6%,rgba(227,161,95,.055),transparent 38%),
+    radial-gradient(circle at 6% 30%,rgba(126,80,80,.13),transparent 32%);
+}
+.win::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+  opacity:.028;mix-blend-mode:screen;
+}
+.win > *{position:relative;z-index:1}
+
+/* ---------- rail sinistra ---------- */
+.rail-l{
+  width:222px;flex:0 0 222px;border-right:1px solid var(--line);
+  padding:24px 14px 18px;display:flex;flex-direction:column;
+}
+.brand{font-family:var(--serif);font-size:21px;font-weight:400;letter-spacing:-.01em;padding:0 10px 24px}
+.brand span{color:var(--accent)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  font-size:13.5px;font-weight:600;color:var(--text-3);letter-spacing:-.005em;
+}
+.nav-i svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.nav-i.on{background:rgba(227,161,95,.10);color:var(--accent);border:1px solid rgba(227,161,95,.35)}
+.nav-i .kbd{margin-left:auto;font-size:10px;color:var(--text-3);letter-spacing:.04em}
+.nav-sep{height:1px;background:var(--line);margin:16px 12px}
+.nav-i.rec{color:var(--accent)}
+.rail-l-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--line)}
+.acct{display:flex;align-items:center;gap:10px}
+.avatar{
+  width:28px;height:28px;border-radius:50%;flex:0 0 28px;
+  background:var(--surface-2);border:1px solid var(--line-2);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text-2);
+}
+.acct-txt{min-width:0}
+.acct-nm{font-size:12px;font-weight:600;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{
+  display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;padding:2px 8px;border-radius:999px;
+}
+.pill.prem{background:rgba(227,161,95,.14);color:var(--accent-hi);border:1px solid rgba(227,161,95,.28)}
+.pill.loc{background:rgba(255,229,214,.05);color:var(--text-2);border:1px solid var(--line)}
+
+/* ---------- colonna centrale ---------- */
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column}
+.col-head{
+  height:56px;flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;border-bottom:1px solid var(--line);
+}
+.day-label{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.head-r{display:flex;align-items:center;gap:16px}
+.meta{font-size:11.5px;color:var(--text-3);letter-spacing:.01em}
+.icon-btn{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--text-3);
+}
+.icon-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+.editor-scroll{flex:1;overflow:hidden;display:flex;justify-content:center;padding:48px 28px 0}
+.editor{width:100%;max-width:660px}
+.editor p{
+  font-family:var(--serif);font-size:18px;font-weight:400;line-height:1.55;
+  color:var(--text);margin-bottom:1em;
+}
+.editor p.ghost{color:var(--text-3);font-style:italic}
+.caret{display:inline-block;width:2px;height:.95em;background:var(--accent);vertical-align:-3px;margin-left:1px}
+
+.col-foot{
+  flex:0 0 74px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;border-top:1px solid var(--line);
+  background:linear-gradient(to top,rgba(14,7,9,.96),rgba(14,7,9,.55));
+}
+.hint{font-size:12px;color:var(--text-2)}
+.kbd{
+  display:inline-block;font-size:10.5px;font-weight:600;color:var(--text-2);
+  border:1px solid var(--line);border-radius:5px;padding:2px 6px;margin:0 2px;
+  background:rgba(255,229,214,.035);letter-spacing:.02em;
+}
+.acts{display:flex;align-items:center;gap:10px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;border-radius:14px;
+  font-family:var(--font);font-size:15px;font-weight:650;letter-spacing:-.005em;
+  padding:14px 20px;border:1px solid transparent;
+}
+.btn-primary{
+  background:var(--accent);color:#1A0E0F;border-color:rgba(255,241,221,.34);
+  box-shadow:0 0 22px rgba(227,161,95,.28),0 12px 24px rgba(0,0,0,.50),inset 0 1px 1px rgba(255,255,255,.32);
+}
+.btn-ghost{background:transparent;color:var(--text-2);border-color:var(--line);text-transform:uppercase;font-size:13px;letter-spacing:.04em}
+.btn .k{font-size:10.5px;opacity:.7;font-weight:600}
+.btn-primary .k{color:#1A0E0F;opacity:.65}
+
+/* ---------- rail destra ---------- */
+.rail-r{
+  width:296px;flex:0 0 296px;border-left:1px solid var(--line);
+  padding:22px 20px;overflow:hidden;
+}
+.sec-l{font-size:11px;font-weight:650;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.sec{margin-bottom:30px}
+.mrow{display:flex;align-items:baseline;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:none}
+.mk{font-size:12px;color:var(--text-2);letter-spacing:.02em}
+.mv{font-size:19px;font-weight:300;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.mv small{font-size:11px;color:var(--text-3);margin-left:3px;font-weight:400}
+.mv.empty{font-size:13px;color:var(--text-3);font-style:italic;font-family:var(--serif)}
+.scale{display:flex;gap:5px;align-items:center}
+.sdot{width:8px;height:8px;border-radius:50%;background:rgba(255,229,214,.12)}
+.sdot.on{background:var(--accent)}
+.scale-w{font-size:12px;color:var(--text-2);margin-left:7px}
+
+.goal{display:flex;align-items:center;gap:12px;padding:8px 0}
+.gdot{width:14px;height:14px;border-radius:50%;border:1.5px solid rgba(255,229,214,.16);flex:0 0 14px}
+.gdot.on{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px rgba(227,161,95,.35)}
+.gname{font-size:13px;color:var(--text-3);letter-spacing:-.003em}
+.goal.on .gname{color:var(--text)}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  font-size:12px;color:var(--text-2);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+}
+.chip.add{color:var(--text-3)}
+
+/* ---------- giornata piena ---------- */
+.filled{width:100%;max-width:660px}
+.headline{font-size:27px;font-weight:650;letter-spacing:-.018em;line-height:1.22;margin-bottom:14px}
+.snippet{font-family:var(--serif);font-size:17px;font-style:italic;font-weight:300;line-height:1.6;color:var(--text-2);margin-bottom:30px}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.area{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;
+  box-shadow:inset 0 1px 0 rgba(255,229,214,.06),0 14px 30px rgba(0,0,0,.30)}
+.area-h{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.area-h i{display:none}
+.area-h span{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+.area p{font-size:13.5px;line-height:1.62;color:var(--text-2)}
+.orig{margin-top:24px;font-size:12.5px;color:var(--text-3);display:flex;gap:18px}
+.orig b{font-weight:600;color:var(--accent);}
+
+/* ---------- mese ---------- */
+.mese-head{padding:28px 28px 16px}
+.mese-t{font-family:var(--serif);font-size:40px;font-weight:400;letter-spacing:-.022em;line-height:1.05}
+.mese-s{font-size:12.5px;color:var(--text-3);margin-top:9px}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:0 28px 10px}
+.wk div{font-size:9.5px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--text-3);text-align:left;padding-left:2px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:0 28px}
+.cell{
+  height:112px;border-radius:10px;border-left:2px solid transparent;
+  padding:8px 10px;display:flex;flex-direction:column;overflow:hidden;
+  border-bottom:1px solid var(--line);
+}
+.cell.out{border-bottom-color:transparent}
+.cn{font-size:22px;font-weight:300;color:var(--text);line-height:1;font-variant-numeric:tabular-nums}
+.cell.out .cn{color:rgba(142,119,112,.5)}
+.ch{font-size:13px;line-height:1.4;color:var(--text-2);margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cell.full .ch{color:var(--text-2)}
+.cdots{margin-top:auto;display:flex;gap:4px;align-items:center}
+.cdots i{width:5px;height:5px;border-radius:50%;background:rgba(255,229,214,.14);display:block}
+.cdots i.on{background:var(--accent)}
+.cell.today{border-left-color:var(--accent);background:linear-gradient(90deg,rgba(227,161,95,.10),transparent 60%)}
+.cell.today .cn{color:var(--accent-hi);font-weight:400}
+.cell.empty .ch{font-family:var(--serif);font-style:italic;color:var(--text-3)}
+.cell.future{opacity:.5}
+
+.stat{padding:11px 0;border-bottom:1px solid var(--line)}
+.stat:last-child{border-bottom:none}
+.stat-v{font-size:26px;font-weight:300;letter-spacing:-.015em;font-variant-numeric:tabular-nums}
+.stat-k{font-size:12px;color:var(--text-2);margin-top:2px;letter-spacing:.01em}
+.locked{
+  margin-top:16px;border:1px solid rgba(227,161,95,.28);border-radius:16px;padding:16px;
+  background:linear-gradient(165deg,rgba(227,161,95,.09),var(--surface));
+  box-shadow:inset 0 1px 0 rgba(255,229,214,.06),0 14px 30px rgba(0,0,0,.30);
+}
+.locked-t{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.45}
+.locked-p{font-size:12px;line-height:1.55;color:var(--text-2)}
+
+/* focus */
+.focus-note{position:absolute;top:22px;right:26px;font-size:11px;color:var(--text-3);z-index:2}
+</style>
+</head>
+<body>
+
+<div class="page-title">Journal<span style="color:#E3A15F">.me</span> desktop</div>
+<div class="page-sub">Mockup v1 . Scrivere a colazione col MacBook a schermo intero.<br>Sotto i 1024px non cambia niente: resta l'app telefono di adesso.</div>
+
+<div class="divider"></div>
+
+<!-- ======================= 1. OGGI / SCRITTURA ======================= -->
+<div class="label">01 . Oggi &mdash; si scrive</div>
+<div class="caption">L'unica cosa che conta e' la colonna centrale. Le due rail stanno indietro di un tono e non si muovono mentre scrivi. Il tasto AI c'e' solo in premium: in gratis al suo posto resta solo "Salva la giornata".</div>
+<div class="frame-wrap">
+<div class="win">
+
+  <div class="rail-l">
+    <div class="brand">Journal<span>.me</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Recap</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce<span class="kbd">&#8984;&#8679;R</span></div>
+    </div>
+    <div class="rail-l-foot">
+      <div class="acct">
+        <div class="avatar">M</div>
+        <div class="acct-txt">
+          <div class="acct-nm">manuel</div>
+          <span class="pill prem">Premium</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-c">
+    <div class="col-head">
+      <div class="day-label">Lunedi 17 agosto</div>
+      <div class="head-r">
+        <div class="meta">218 parole . salvata ora</div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg></div>
+      </div>
+    </div>
+    <div class="editor-scroll">
+      <div class="editor">
+        <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone che non vuole saperne di riprendersi.</p>
+        <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire. Non me l'aspettavo, e per tutto il resto del pomeriggio non sono riuscito a concludere niente di quello che avevo in lista.</p>
+        <p>Alle sette sono uscito a camminare per non restare in casa a pensarci. Un'ora buona, fino al ponte e ritorno<span class="caret"></span></p>
+      </div>
+    </div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico . <span class="kbd">&#8984;K</span> comandi</div>
+      <div class="acts">
+        <div class="btn btn-ghost">salva e basta <span class="k">&#8984;S</span></div>
+        <div class="btn btn-primary">chiudi la giornata <span class="k">&#8984;&#9166;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rail-r">
+    <div class="sec">
+      <div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+      <div class="mrow"><span class="mk">Umore</span>
+        <span class="scale"><i class="sdot on"></i><i class="sdot on"></i><i class="sdot on"></i><i class="sdot on"></i><i class="sdot"></i><span class="scale-w">buono</span></span>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no junkfood</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no sbirciato ex</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">scopato</span></div>
+    </div>
+    <div class="sec">
+      <div class="sec-l">Persone</div>
+      <div class="chips"><span class="chip">Renzo</span><span class="chip add">+ aggiungi</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======================= 2. FOCUS ======================= -->
+<div class="label">02 . Modalita' focus</div>
+<div class="caption">Le rail spariscono, resta il testo. Si entra e si esce con <b style="color:#CDB7AE">&#8984;&#8679;F</b>, oppure con Esc. Serve per le mattine in cui la lista degli obiettivi a destra e' esattamente cio' che non vuoi vedere.</div>
+<div class="frame-wrap">
+<div class="win" style="height:560px">
+  <div class="focus-note">esc per uscire</div>
+  <div class="col-c">
+    <div class="editor-scroll" style="padding-top:74px">
+      <div class="editor" style="max-width:640px">
+        <p style="font-size:19px">Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+        <p style="font-size:19px">Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla la decisione perche' non so ancora come si mette il lavoro<span class="caret"></span></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======================= 3. GIORNATA PIENA ======================= -->
+<div class="label">03 . Oggi &mdash; giornata gia' raccontata (premium)</div>
+<div class="caption">Sul telefono le macro-aree sono una pila; qui stanno in due colonne e si leggono tutte insieme. In gratis questa schermata esiste lo stesso ma senza headline AI, senza snippet e senza aree: c'e' il testo come l'hai scritto, con la prima riga come titolo.</div>
+<div class="frame-wrap">
+<div class="win" style="height:700px">
+
+  <div class="rail-l">
+    <div class="brand">Journal<span>.me</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Recap</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce<span class="kbd">&#8984;&#8679;R</span></div>
+    </div>
+    <div class="rail-l-foot">
+      <div class="acct">
+        <div class="avatar">M</div>
+        <div class="acct-txt"><div class="acct-nm">manuel</div><span class="pill prem">Premium</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-c">
+    <div class="col-head">
+      <div class="day-label">Lunedi 17 agosto</div>
+      <div class="head-r">
+        <div class="meta">418 parole</div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/></svg></div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg></div>
+      </div>
+    </div>
+    <div class="editor-scroll" style="padding-top:44px">
+      <div class="filled">
+        <div class="headline">una telefonata rimandata tre settimane, e una frase alla fine</div>
+        <div class="snippet">Trentadue minuti al telefono con mio padre, venti dei quali sul tempo e su una pianta. Poi qualcosa detto in fondo, che si e' mangiato tutto il pomeriggio.</div>
+        <div class="areas">
+          <div class="area">
+            <div class="area-h"><i></i><span>Lavoro</span></div>
+            <p>Il pomeriggio e' andato perso: la lista di cose da fare e' rimasta dov'era.</p>
+          </div>
+          <div class="area">
+            <div class="area-h"><i></i><span>Relazioni</span></div>
+            <p>Telefonata con il padre dopo tre settimane di rinvii. Trentadue minuti, quasi tutti su argomenti neutri, poi una frase inattesa alla fine.</p>
+          </div>
+          <div class="area">
+            <div class="area-h"><i></i><span>Corpo</span></div>
+            <p>Un'ora a piedi la sera, fino al ponte e ritorno.</p>
+          </div>
+          <div class="area">
+            <div class="area-h"><i></i><span>Emozioni</span></div>
+            <p>Sorpresa, e una difficolta a rimettersi in moto per il resto della giornata.</p>
+          </div>
+        </div>
+        <div class="orig">
+          <span><b>testo originale</b></span>
+          <span><b>rielabora</b></span>
+          <span><b>aggiungi al racconto</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rail-r">
+    <div class="sec">
+      <div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+      <div class="mrow"><span class="mk">Umore</span>
+        <span class="scale"><i class="sdot on"></i><i class="sdot on"></i><i class="sdot on"></i><i class="sdot on"></i><i class="sdot"></i><span class="scale-w">buono</span></span>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no junkfood</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no sbirciato ex</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">scopato</span></div>
+    </div>
+    <div class="sec">
+      <div class="sec-l">Persone</div>
+      <div class="chips"><span class="chip">Renzo</span><span class="chip add">+ aggiungi</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======================= 4. MESE ======================= -->
+<div class="label">04 . Mese &mdash; il calendario che sul telefono non ci sta</div>
+<div class="caption">Sul telefono il mese e' una lista verticale, ed e' giusto cosi'. Su desktop la griglia mostra una cosa che la lista non mostra: la forma del mese, i vuoti in fila, le settimane tenute. E' la stessa informazione, letta da lontano.</div>
+<div class="frame-wrap">
+<div class="win" style="height:760px">
+
+  <div class="rail-l">
+    <div class="brand">Journal<span>.me</span></div>
+    <div class="nav">
+      <div class="nav-i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Recap</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce<span class="kbd">&#8984;&#8679;R</span></div>
+    </div>
+    <div class="rail-l-foot">
+      <div class="acct">
+        <div class="avatar">M</div>
+        <div class="acct-txt"><div class="acct-nm">manuel</div><span class="pill prem">Premium</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-c">
+    <div class="mese-head">
+      <div class="mese-t">Agosto 2026</div>
+      <div class="mese-s">14 giornate raccontate su 17 passate</div>
+    </div>
+    <div class="wk"><div>lun</div><div>mar</div><div>mer</div><div>gio</div><div>ven</div><div>sab</div><div>dom</div></div>
+    <div class="grid">
+      <div class="cell out"><div class="cn">27</div></div>
+      <div class="cell out"><div class="cn">28</div></div>
+      <div class="cell out"><div class="cn">29</div></div>
+      <div class="cell out"><div class="cn">30</div></div>
+      <div class="cell out"><div class="cn">31</div></div>
+      <div class="cell full"><div class="cn">1</div><div class="ch">primo agosto lento, si riparte dal mare</div><div class="cdots"><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i></div></div>
+      <div class="cell full"><div class="cn">2</div><div class="ch">la domenica ha retto meglio del previsto</div><div class="cdots"><i class="on"></i><i></i><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
+
+      <div class="cell full"><div class="cn">3</div><div class="ch">rientro pesante, la testa e' rimasta indietro</div><div class="cdots"><i></i><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell full"><div class="cn">4</div><div class="ch">giornata piena di chiamate, poco altro</div><div class="cdots"><i class="on"></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell empty"><div class="cn">5</div><div class="ch">vuota</div></div>
+      <div class="cell full"><div class="cn">6</div><div class="ch">cena con Gabo, il discorso si e' spostato dove non doveva</div><div class="cdots"><i class="on"></i><i></i><i></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+      <div class="cell full"><div class="cn">7</div><div class="ch">venerdi' recuperato, sunset dal tetto</div><div class="cdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+      <div class="cell full"><div class="cn">8</div><div class="ch">niente di speciale, ed e' andata bene cosi'</div><div class="cdots"><i class="on"></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell empty"><div class="cn">9</div><div class="ch">vuota</div></div>
+
+      <div class="cell full"><div class="cn">10</div><div class="ch">lunedi' onesto, la lista si e' accorciata</div><div class="cdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell full"><div class="cn">11</div><div class="ch">cena da Renzo, si e' parlato poco</div><div class="cdots"><i></i><i class="on"></i><i></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell full"><div class="cn">12</div><div class="ch">l'app ha girato sul telefono per la prima volta</div><div class="cdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+      <div class="cell full"><div class="cn">13</div><div class="ch">giovedi' storto, poco sonno e troppo caffe'</div><div class="cdots"><i></i><i></i><i></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell empty"><div class="cn">14</div><div class="ch">vuota</div></div>
+      <div class="cell full"><div class="cn">15</div><div class="ch">ferragosto in citta', silenzio ovunque</div><div class="cdots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div></div>
+      <div class="cell full"><div class="cn">16</div><div class="ch">domenica lunga, camminata fino al ponte</div><div class="cdots"><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i class="on"></i><i></i></div></div>
+
+      <div class="cell today full"><div class="cn">17</div><div class="ch">una telefonata rimandata tre settimane, e una frase alla fine</div><div class="cdots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell future"><div class="cn">18</div></div>
+      <div class="cell future"><div class="cn">19</div></div>
+      <div class="cell future"><div class="cn">20</div></div>
+      <div class="cell future"><div class="cn">21</div></div>
+      <div class="cell future"><div class="cn">22</div></div>
+      <div class="cell future"><div class="cn">23</div></div>
+    </div>
+  </div>
+
+  <div class="rail-r">
+    <div class="sec">
+      <div class="sec-l">Il mese</div>
+      <div class="stat"><div class="stat-v">14<span style="font-size:15px;color:#8E7770">/17</span></div><div class="stat-k">giornate raccontate</div></div>
+      <div class="stat"><div class="stat-v">3,8</div><div class="stat-k">umore medio</div></div>
+      <div class="stat"><div class="stat-v">11</div><div class="stat-k">giorni camminati</div></div>
+      <div class="stat"><div class="stat-v">5.240</div><div class="stat-k">parole scritte</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-l">Pattern</div>
+      <div class="locked">
+        <div class="locked-t">Nelle settimane in cui cammini almeno 4 giorni, l'umore medio sale di 0,7.</div>
+        <div class="locked-p">Le letture sui pattern arrivano da qui, e servono almeno due mesi di giornate per dire qualcosa di vero.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+</body>
+</html>
