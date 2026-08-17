@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { TabBar } from "@/components/ui/tab-bar";
 import { QuickCapture } from "@/components/remember/quick-capture";
 import { RememberItem } from "@/components/remember/remember-item";
@@ -58,7 +58,7 @@ export function RememberClient({ mode, initial }: Props) {
 
   const classifyAndReslot = async (id: string, text: string) => {
     try {
-      const resp = await fetch(apiUrl("/api/remember/classify"), {
+      const resp = await apiFetch("/api/remember/classify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),

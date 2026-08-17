@@ -29,8 +29,11 @@ const mobileConfig: NextConfig = {
 const webConfig: NextConfig = {
   // The iOS bundle is a different origin from these routes, so the browser
   // preflights every POST to them. Without this the app would only ever work
-  // in a tab. No credentials travel — the session is a bearer token, never a
-  // cookie — so a wildcard origin is the honest setting here.
+  // in a tab. Every call now carries an Authorization bearer token (injected
+  // by apiFetch, checked by requirePremium): the wildcard origin can stay
+  // because CORS `*` never lets cookies travel, and without a valid token a
+  // request from anywhere gets a 401 — the origin is not what protects these
+  // routes, the token is.
   async headers() {
     return [
       {
@@ -39,7 +42,10 @@ const webConfig: NextConfig = {
           { key: "Access-Control-Allow-Origin", value: "*" },
           {
             key: "Access-Control-Allow-Headers",
-            value: "Content-Type, Authorization, X-JM-Glossary",
+            // X-JM-Glossary was only read by /api/realtime/session,
+            // deleted in this PR; the transcription glossary travels as a
+            // FormData field, not a header.
+            value: "Content-Type, Authorization",
           },
           {
             key: "Access-Control-Allow-Methods",

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requirePremium } from "@/lib/server/entitlement";
 
 /**
  * Post-processes a daily journal transcript: produces headline, snippet,
@@ -8,6 +9,9 @@ import { NextRequest, NextResponse } from "next/server";
  * The OPENAI_API_KEY stays on the server.
  */
 export async function POST(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

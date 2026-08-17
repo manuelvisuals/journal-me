@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requirePremium } from "@/lib/server/entitlement";
 
 /**
  * Extracts the names of people the user mentioned or interacted with in a
@@ -10,6 +11,9 @@ import { NextRequest, NextResponse } from "next/server";
  * ambiguous.
  */
 export async function POST(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

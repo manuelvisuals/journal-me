@@ -9,8 +9,56 @@
  * The OpenAI key never moves: it stays in the Vercel environment, on the far
  * side of these endpoints.
  */
+import { getAccessToken } from "@/lib/supabase/client";
+
 const BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/+$/, "");
 
 export function apiUrl(path: string): string {
   return `${BASE}${path}`;
+}
+
+/**
+ * Default timeout for the textual AI routes (SPEC-v2 §7.3). Transcription
+ * ships a whole recording over a possibly bad connection and passes its own
+ * `timeoutMs` instead.
+ */
+const DEFAULT_TIMEOUT_MS = 15_000;
+
+export type ApiFetchInit = RequestInit & { timeoutMs?: number };
+
+/**
+ * The one way the client calls its own /api routes. Every route is gated by
+ * requirePremium (src/lib/server/entitlement.ts), so this
+ *
+ * - injects `Authorization: Bearer <access_token>` from the Supabase session
+ *   (localStorage, never cookies — see getAccessToken), and
+ * - aborts through an AbortController after `timeoutMs`, so no call can hang
+ *   silently (HANDOVER §8 C-bis).
+ *
+ * No fetch("/api/...") may exist outside this helper. Callers keep their own
+ * error handling: apiFetch returns the Response (or throws on abort/network
+ * failure) and does not interpret status codes — the 402 premium wall is
+ * client UI and arrives with the gating-ui PR.
+ */
+export async function apiFetch(
+  path: string,
+  init: ApiFetchInit = {},
+): Promise<Response> {
+  const { timeoutMs = DEFAULT_TIMEOUT_MS, headers, ...rest } = init;
+
+  const merged = new Headers(headers);
+  const token = await getAccessToken();
+  if (token) merged.set("Authorization", `Bearer ${token}`);
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    return await fetch(apiUrl(path), {
+      ...rest,
+      headers: merged,
+      signal: ctrl.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
 }

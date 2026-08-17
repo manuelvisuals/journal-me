@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requirePremium } from "@/lib/server/entitlement";
 
 /**
  * Auto-classifies a short remember snippet (manually saved by Manuel from the
@@ -13,6 +14,9 @@ import { NextRequest, NextResponse } from "next/server";
 type Kind = "persona" | "todo" | "luogo" | "idea" | "nota";
 
 export async function POST(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

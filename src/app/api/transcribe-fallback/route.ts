@@ -1,18 +1,13 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requirePremium } from "@/lib/server/entitlement";
 
 /**
- * Fallback transcription endpoint — the safety net.
- *
- * The primary path is the live OpenAI Realtime session (see
- * /api/realtime/session). That path can silently yield zero text on some
- * devices (notably iOS Safari on the very first mic grant, where the WebRTC
- * sender ships silence even though the mic track is live). To make sure the
- * user NEVER loses their words, the client records the raw mic audio in
- * parallel with a MediaRecorder and, if the live transcript came back empty,
- * POSTs that audio here for a non-realtime transcription.
- *
- * MediaRecorder reads the track directly (not through the WebRTC sender), so
- * it captures real audio exactly in the cases where the realtime path fails.
+ * The transcription endpoint. Still called "fallback" for historical
+ * reasons: it used to be the rescue path behind the live OpenAI Realtime
+ * session (/api/realtime/session, deleted in the api-auth PR), but the
+ * realtime path was dropped in August 2026 and this is now the only way a
+ * finished recording becomes words. The client records the raw mic audio
+ * with a MediaRecorder and POSTs it here whole.
  *
  * The OPENAI_API_KEY stays on the server and never reaches the browser.
  */
@@ -25,8 +20,15 @@ export const maxDuration = 60;
  * finished recording into words — so the user should never pay its cold start
  * while staring at "trascrivo...". Called when the Today screen mounts and when
  * the mic is tapped. Touches nothing: no OpenAI call, no audio, no state.
+ *
+ * Gated like everything else: a warm-up spends nothing, but an ungated
+ * handler on a gated route is one more surface to reason about. A 401/402
+ * still warms the lambda, so the client fires it regardless of plan.
  */
-export function GET() {
+export async function GET(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   return Response.json({ ok: true, warm: true });
 }
 
@@ -36,6 +38,9 @@ const ANTI_HALLUCINATION =
   "NON inventare contenuto plausibile, NON parafrasare.";
 
 export async function POST(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return Response.json(

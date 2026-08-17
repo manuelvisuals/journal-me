@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { apiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import {
   compactDayDate,
   formatDurationMmSs,
@@ -441,24 +441,20 @@ export function RecordingOverlay({
     } catch {
       // glossary hint is best-effort
     }
-    const ctrl = new AbortController();
-    // A long evening story is a big file on a mountain connection; 30s used to
-    // be plenty for a rescue clip and is not, for the whole recording.
-    const timer = setTimeout(() => ctrl.abort(), 120000);
     try {
-      const resp = await fetch(apiUrl("/api/transcribe-fallback"), {
+      // A long evening story is a big file on a mountain connection; 30s used
+      // to be plenty for a rescue clip and is not, for the whole recording.
+      const resp = await apiFetch("/api/transcribe-fallback", {
+        timeoutMs: 120_000,
         method: "POST",
         body: fd,
-        signal: ctrl.signal,
       });
-      clearTimeout(timer);
       if (!resp.ok) return "";
       const data = (await resp.json().catch(() => null)) as {
         text?: unknown;
       } | null;
       return data && typeof data.text === "string" ? data.text.trim() : "";
     } catch {
-      clearTimeout(timer);
       return "";
     }
   }

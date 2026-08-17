@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requirePremium } from "@/lib/server/entitlement";
 
 /**
  * Generate a narrative literary recap from a set of entries.
@@ -9,6 +10,9 @@ import { NextRequest, NextResponse } from "next/server";
  * Output: { title, snippet, body }
  */
 export async function POST(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(

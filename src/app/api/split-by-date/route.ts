@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requirePremium } from "@/lib/server/entitlement";
 
 /**
  * Splits a free-form Italian transcript into per-day segments based on
@@ -13,6 +14,9 @@ import { NextRequest, NextResponse } from "next/server";
  * transcript is returned as a single segment.
  */
 export async function POST(req: NextRequest) {
+  const gate = await requirePremium(req);
+  if (gate instanceof NextResponse) return gate;
+
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
