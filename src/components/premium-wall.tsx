@@ -19,6 +19,8 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api";
+import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
 import { useStorageMode } from "@/lib/data/store";
 
 export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns";
@@ -114,6 +116,7 @@ export function PremiumWall() {
   const router = useRouter();
   const mode = useStorageMode();
   const [cloudNote, setCloudNote] = useState<boolean>(false);
+  const [busy, setBusy] = useState<boolean>(false);
 
   const dismiss = () => {
     const after = state?.onDismiss;
@@ -137,7 +140,7 @@ export function PremiumWall() {
 
   if (!wall) return null;
 
-  const tryPremium = () => {
+  const tryPremium = async () => {
     if (mode === "local") {
       // Premium = account: si passa dal login. La scelta locale resta
       // finche non completa l'accesso (clearLocalMode arriva col flusso
@@ -147,9 +150,25 @@ export function PremiumWall() {
       router.push("/login");
       return;
     }
-    // Cloud gratis: l'acquisto arriva con la PR 11 (Stripe). Niente
-    // vicoli ciechi ne bottoni che fingono: lo si dice.
-    setCloudNote(true);
+    // Cloud: si apre Stripe Checkout (PR 11). Se Stripe non e ancora
+    // configurato la route risponde 503 e qui si dice la verita.
+    if (busy) return;
+    setBusy(true);
+    try {
+      const resp = await apiFetch("/api/stripe/checkout", { method: "POST" });
+      if (resp.ok) {
+        const data = (await resp.json()) as { url?: string };
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+      }
+      setCloudNote(true);
+    } catch {
+      setCloudNote(true);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -182,8 +201,13 @@ export function PremiumWall() {
             l&apos;app sta arrivando.
           </div>
         )}
-        <button type="button" className="btn-primary" onClick={tryPremium}>
-          prova premium
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => void tryPremium()}
+          disabled={busy}
+        >
+          {busy ? "un attimo..." : `prova premium . ${PREMIUM_PRICE_LABEL}`}
         </button>
         <button type="button" className="btn-ghost" onClick={dismiss}>
           non ora

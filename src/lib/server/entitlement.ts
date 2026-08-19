@@ -31,25 +31,30 @@ function adminClient(url: string, serviceKey: string): SupabaseClient {
 }
 
 /**
- * Gate to run as the FIRST line of every /api route handler.
- *
- * Returns { userId } when the caller is an authenticated premium user,
- * otherwise a ready-made response:
- *   401  missing or invalid bearer token
- *   402  valid user, but plan !== 'premium'
- *   500  server misconfigured (missing env) or profiles unreadable
- *
- * Usage:
- *   const gate = await requirePremium(req);
- *   if (gate instanceof NextResponse) return gate;
- *   // gate.userId from here on
+ * Il client admin (service role), per chi — come il webhook Stripe — deve
+ * scrivere su profiles scavalcando RLS. Ritorna null se le env mancano.
+ * Non esce mai verso il browser.
  */
-export async function requirePremium(
-  req: NextRequest,
-): Promise<{ userId: string } | NextResponse> {
+export function getAdminClient(): SupabaseClient | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
+  if (!url || !serviceKey) return null;
+  return adminClient(url, serviceKey);
+}
+
+/**
+ * Autenticazione senza requisito di piano (PR 11): il checkout lo apre un
+ * utente GRATIS che sta comprando — chiedergli il premium sarebbe comico.
+ *
+ * Returns { userId, email } for any authenticated user, otherwise:
+ *   401  missing or invalid bearer token
+ *   500  server misconfigured (missing env)
+ */
+export async function requireUser(
+  req: NextRequest,
+): Promise<{ userId: string; email: string | null } | NextResponse> {
+  const supabase = getAdminClient();
+  if (!supabase) {
     return NextResponse.json(
       { error: "Entitlement not configured (missing Supabase env)" },
       { status: 500 },
@@ -67,8 +72,6 @@ export async function requirePremium(
     );
   }
 
-  const supabase = adminClient(url, serviceKey);
-
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data.user) {
     return NextResponse.json(
@@ -77,10 +80,41 @@ export async function requirePremium(
     );
   }
 
+  return { userId: data.user.id, email: data.user.email ?? null };
+}
+
+/**
+ * Gate to run as the FIRST line of every /api route handler.
+ *
+ * Returns { userId } when the caller is an authenticated premium user,
+ * otherwise a ready-made response:
+ *   401  missing or invalid bearer token
+ *   402  valid user, but plan !== 'premium'
+ *   500  server misconfigured (missing env) or profiles unreadable
+ *
+ * Usage:
+ *   const gate = await requirePremium(req);
+ *   if (gate instanceof NextResponse) return gate;
+ *   // gate.userId from here on
+ */
+export async function requirePremium(
+  req: NextRequest,
+): Promise<{ userId: string } | NextResponse> {
+  const user = await requireUser(req);
+  if (user instanceof NextResponse) return user;
+
+  const supabase = getAdminClient();
+  if (!supabase) {
+    return NextResponse.json(
+      { error: "Entitlement not configured (missing Supabase env)" },
+      { status: 500 },
+    );
+  }
+
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("plan")
-    .eq("user_id", data.user.id)
+    .eq("user_id", user.userId)
     .maybeSingle();
   if (profileError) {
     // Most likely: migration 006 not applied yet. Surface it as a server
@@ -95,5 +129,5 @@ export async function requirePremium(
     return NextResponse.json({ error: "Premium required" }, { status: 402 });
   }
 
-  return { userId: data.user.id };
+  return { userId: user.userId };
 }

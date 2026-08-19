@@ -23,7 +23,8 @@
     "idb": "^8.0.3",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "stripe": "^22.5.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",

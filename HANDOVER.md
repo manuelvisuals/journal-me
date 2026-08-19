@@ -692,8 +692,38 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   LOCALI da /login — ora il rimbalzo dalle pagine d'ingresso vale solo con
   sessione cloud (auth === "in"), altrimenti il "prova premium" del muro
   era un vicolo cieco.
-- Le PR 11..12 non sono ancora iniziate. Per la PR 11 (Stripe) serve la
-  decisione sul prezzo.
+- **PR 11 `pagamento`: codice completo, in attesa SOLO dell'account
+  Stripe di Manuel.** PREZZO DECISO da Manuel il 19 ago: 4,99 EUR/mese
+  (etichetta in `src/lib/pricing.ts`, il prezzo vero lo detta
+  STRIPE_PRICE_ID). `requireUser` in entitlement.ts (autenticato ma NON
+  premium: il checkout lo apre chi sta comprando) + `getAdminClient()`
+  esportato per il webhook. `/api/stripe/checkout`: sessione subscription
+  con client_reference_id e metadata.user_id, locale it, success
+  /settings?upgraded=1; se le env Stripe mancano risponde 503 col
+  messaggio onesto. `/api/stripe/webhook`: firma verificata sul body
+  GREZZO (constructEventAsync), checkout.session.completed -> plan
+  premium + plan_source stripe + stripe_customer_id + current_period_end
+  (dagli item della subscription: nell'API 2025+ current_period_end sta
+  su SubscriptionItem, non sulla Subscription); subscription.updated/
+  deleted -> plan da status (active/trialing/past_due = premium), mappato
+  via metadata.user_id o stripe_customer_id. Migration 008
+  (stripe_customer_id + unique index) SCRITTA ma NON ancora applicata in
+  prod. Muro premium: in cloud "prova premium . 4,99 EUR al mese" apre il
+  checkout (redirect a session.url), 503 -> nota onesta; in locale ->
+  /login come prima. Dipendenza npm `stripe` 22.5.0. MANCANO (bloccati
+  sull'account Stripe che deve creare Manuel — creazione account e roba
+  sua): prodotto+price sul dashboard Stripe, STRIPE_SECRET_KEY /
+  STRIPE_PRICE_ID / STRIPE_WEBHOOK_SECRET su Vercel, endpoint webhook
+  registrato su Stripe (https://journal-me-weld.vercel.app/api/stripe/
+  webhook), test end-to-end con carta di test. Niente trial per ora
+  (spec §10.1 parlava di "primo mese incluso": da decidere).
+  ATTENZIONE BROWSER: durante questa PR la sessione claude-in-chrome si e
+  riattaccata a un Chrome SBAGLIATO (Browser 1, account Supabase
+  karyaaaktas@gmail.com — non e Manuel). Prima di qualsiasi operazione
+  Supabase/Vercel verificare SEMPRE con list_connected_browsers +
+  AskUserQuestion che il browser sia quello di Manuel (era Browser 2,
+  deviceId 7306a5ae-...). Nessun danno fatto: tab chiusa subito.
+- La PR 12 (marketplace temi) non e ancora iniziata.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop
