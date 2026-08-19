@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/components/today/empty-state";
@@ -11,7 +11,13 @@ import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { ReviewScreen } from "@/components/today/review-screen";
 import { ManualWrite } from "@/components/today/manual-write";
 import { PeopleReview } from "@/components/today/people-review";
-import { formatDayHeader, todayISO } from "@/lib/format";
+import { DesktopEditor } from "@/components/today/desktop-editor";
+import { RailToday } from "@/components/today/rail-today";
+import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
+import { useIsDesktop } from "@/components/desktop/use-is-desktop";
+import { can } from "@/lib/capabilities";
+import { clearDraft, loadDraft } from "@/lib/data/drafts";
+import { formatDayHeader, formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import {
@@ -105,6 +111,45 @@ export function TodayClient({
   const [peopleData, setPeopleData] = useState<PeopleData | null>(null);
   const [peopleSaving, setPeopleSaving] = useState<boolean>(false);
 
+  // --- editor desktop + bozze (PR 7, SPEC-v2 §5.3/§6) ---
+  const isDesktop = useIsDesktop();
+  const [draftInitial, setDraftInitial] = useState<string>("");
+  const [draftNotice, setDraftNotice] = useState<string | null>(null);
+  const [editorKey, setEditorKey] = useState<number>(0);
+  const [edWords, setEdWords] = useState<number>(0);
+  const [edSavedAt, setEdSavedAt] = useState<number | null>(null);
+  const viewRef = useRef<View>(view);
+  const edWordsRef = useRef<number>(0);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+  useEffect(() => {
+    edWordsRef.current = edWords;
+  }, [edWords]);
+
+  // Al mount di Oggi: se esiste una bozza per la data corrente piu recente
+  // della giornata salvata, l'editor si riapre con quel testo (§6). Non
+  // scavalca una registrazione in corso ne battute gia scritte.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const draft = await loadDraft(todayISO());
+      if (cancelled || !draft) return;
+      if (initialEntry && draft.updatedAt <= initialEntry.createdAt) return;
+      const v = viewRef.current;
+      if (v !== "empty" && v !== "filled" && v !== "manual") return;
+      if (edWordsRef.current > 0) return;
+      setDraftInitial(draft.text);
+      setDraftNotice("bozza non salvata, recuperata");
+      setEditorKey((k) => k + 1);
+      setView("manual");
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Prewarm the transcription path the moment Today loads, so the mic feels
   // instant when the user records. Best-effort, never touches the mic.
   useEffect(() => {
@@ -177,25 +222,41 @@ export function TodayClient({
     setView("review");
   };
 
-  // User confirmed the (possibly corrected) transcript — now run AI, then
-  // detect people mentioned today.
-  const handleConfirmReview = async (finalTranscript: string) => {
-    if (!pending) return;
+  // Pipeline unica di salvataggio (voce con review, testo a mano, editor
+  // desktop). withAI=false e il "salva e basta" di Cmd+S (§5.4): il testo
+  // resta com'e, la prima riga fa da titolo, zero chiamate AI.
+  const runSave = async (
+    text: string,
+    opts: { withAI: boolean; durationSeconds: number; targetDate: string },
+  ) => {
     setView("processing");
     try {
       const saved = await saveRecording({
-        transcript: finalTranscript,
-        durationSeconds: pending.durationSeconds,
-        defaultDate: pending.targetDate,
+        transcript: text,
+        durationSeconds: opts.durationSeconds,
+        defaultDate: opts.targetDate,
+        skipAI: !opts.withAI,
       });
+      // Giornata salvata davvero: SOLO ora la bozza si cancella (§6).
+      await clearDraft(opts.targetDate);
+      setDraftInitial("");
+      setDraftNotice(null);
+      setEdWords(0);
+      setEdSavedAt(null);
+      setEditorKey((k) => k + 1);
+      // Giornata chiusa: si torna all'interfaccia completa.
+      setFocusMode(false);
+
       const today = todayISO();
       const todayEntry = saved.find((e) => e.entryDate === today) ?? null;
       if (todayEntry) setEntry(todayEntry);
       setSavedDates(saved.map((e) => e.entryDate));
 
       // People detection — compare against the existing roster. In locale
-      // niente rete: nessuna estrazione, i nomi si aggiungono a mano.
-      const found = voiceLocked ? [] : await extractPeople(finalTranscript);
+      // niente rete: nessuna estrazione, i nomi si aggiungono a mano. Col
+      // "salva e basta" niente AI, quindi nemmeno questa chiamata.
+      const found =
+        voiceLocked || !opts.withAI ? [] : await extractPeople(text);
       if (found.length > 0) {
         const roster = await loadPersonaNames(mode);
         const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
@@ -203,7 +264,7 @@ export function TodayClient({
         const suggested = found.filter((p) => !rosterLower.has(p.toLowerCase()));
         const attachDate = todayEntry
           ? today
-          : saved[0]?.entryDate ?? pending.targetDate;
+          : saved[0]?.entryDate ?? opts.targetDate;
         const entryForDate =
           saved.find((e) => e.entryDate === attachDate) ?? todayEntry ?? null;
         setPeopleData({ existing, suggested, attachDate, entryForDate });
@@ -219,6 +280,16 @@ export function TodayClient({
       setPending(null);
       setView("empty");
     }
+  };
+
+  // User confirmed the (possibly corrected) transcript — same pipeline.
+  const handleConfirmReview = async (finalTranscript: string) => {
+    if (!pending) return;
+    await runSave(finalTranscript, {
+      withAI: true,
+      durationSeconds: pending.durationSeconds,
+      targetDate: pending.targetDate,
+    });
   };
 
   const finishPeople = async (allPeople: string[], newOnes: string[]) => {
@@ -262,7 +333,9 @@ export function TodayClient({
     try {
       const updated = await updateMetric(mode, dateISO, patch);
       setEntry(updated);
-      if (view === "empty") setView("filled");
+      // Su desktop, mentre si scrive, la colonna resta l'editor: toccare
+      // una metrica o un obiettivo dalla rail non deve chiuderlo.
+      if (view === "empty" && !isDesktop) setView("filled");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
     }
@@ -273,7 +346,9 @@ export function TodayClient({
     try {
       const updated = await toggleGoal(mode, dateISO, label);
       setEntry(updated);
-      if (view === "empty") setView("filled");
+      // Su desktop, mentre si scrive, la colonna resta l'editor: toccare
+      // una metrica o un obiettivo dalla rail non deve chiuderlo.
+      if (view === "empty" && !isDesktop) setView("filled");
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
     }
@@ -313,13 +388,33 @@ export function TodayClient({
   const multiDayNotice =
     savedDates.length > 1 ? `Salvato su ${savedDates.length} giorni` : null;
 
+  // Da lg in su la colonna centrale E l'editor (mockup desktop-v1 §01):
+  // niente overlay, si arriva su Oggi e si scrive.
+  const desktopWriting = isDesktop && (view === "empty" || view === "manual");
+  const aiAvailable = can("aiSummary");
+
+  const handleDesktopSaveOnly = (text: string) => {
+    void runSave(text, {
+      withAI: false,
+      durationSeconds: 0,
+      targetDate: todayISO(),
+    });
+  };
+  const handleDesktopSaveAI = (text: string) => {
+    void runSave(text, {
+      withAI: true,
+      durationSeconds: 0,
+      targetDate: todayISO(),
+    });
+  };
+
   return (
     <main
       className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
       <header
-        className="flex items-baseline justify-between"
+        className="jm-col-head flex items-baseline justify-between"
         style={{ padding: "0 24px 6px", paddingTop: "calc(26px + env(safe-area-inset-top, 0px))" }}
       >
         <span
@@ -334,6 +429,15 @@ export function TodayClient({
         >
           {dayHeader}
         </span>
+        {desktopWriting && (
+          <div className="jm-ed-meta">
+            <span suppressHydrationWarning>
+              {edWords > 0 ? `${formatNumber(edWords)} parole` : " "}
+              {edSavedAt !== null && <SavedAgo key={edSavedAt} ts={edSavedAt} />}
+            </span>
+            <FocusToggle />
+          </div>
+        )}
         {view === "filled" && (
           <div className="flex items-center" style={{ gap: 14 }}>
             <button
@@ -419,30 +523,55 @@ export function TodayClient({
         </div>
       )}
 
-      {view === "empty" && (
-        <>
-          {saveError && (
-            <div
-              role="alert"
-              style={{
-                margin: "0 24px 12px",
-                padding: 12,
-                border: "1px solid var(--color-line)",
-                borderRadius: 12,
-                background: "var(--color-surface)",
-                color: "var(--color-danger)",
-                fontSize: 13,
-              }}
-            >
-              {saveError}
-            </div>
-          )}
-          <EmptyState
-            writeFirst={voiceLocked}
-            onStartRecording={handleStartRecording}
-            onWriteManually={handleWriteManually}
-          />
-        </>
+      {(view === "empty" || desktopWriting) && saveError && (
+        <div
+          role="alert"
+          style={{
+            margin: "0 24px 12px",
+            padding: 12,
+            border: "1px solid var(--color-line)",
+            borderRadius: 12,
+            background: "var(--color-surface)",
+            color: "var(--color-danger)",
+            fontSize: 13,
+          }}
+        >
+          {saveError}
+        </div>
+      )}
+
+      {view === "empty" && !desktopWriting && (
+        <EmptyState
+          writeFirst={voiceLocked}
+          onStartRecording={handleStartRecording}
+          onWriteManually={handleWriteManually}
+        />
+      )}
+
+      {desktopWriting && (
+        <DesktopEditor
+          key={editorKey}
+          targetDate={todayISO()}
+          initialText={draftInitial}
+          notice={draftNotice}
+          aiAvailable={aiAvailable}
+          saving={false}
+          onCancel={entry ? () => setView("filled") : null}
+          onSaveOnly={handleDesktopSaveOnly}
+          onSaveAI={handleDesktopSaveAI}
+          onWords={setEdWords}
+          onDraftSaved={setEdSavedAt}
+        />
+      )}
+
+      {desktopWriting && (
+        <RailToday
+          metrics={entry?.metrics ?? null}
+          goals={goalsForView}
+          people={entry?.people ?? []}
+          onMetricChange={handleMetricChange}
+          onGoalToggle={handleGoalToggle}
+        />
       )}
 
       {view === "filled" && (
@@ -472,8 +601,12 @@ export function TodayClient({
         />
       )}
 
-      {view === "manual" && (
+      {view === "manual" && !isDesktop && (
         <ManualWrite
+          key={editorKey}
+          targetDate={todayISO()}
+          initialValue={draftInitial}
+          notice={draftNotice}
           onContinue={handleManualContinue}
           onCancel={() => setView(entry ? "filled" : "empty")}
         />
@@ -609,4 +742,26 @@ export function TodayClient({
       )}
     </main>
   );
+}
+
+/**
+ * "salvato ora" / "salvato 2 min fa" nell'header desktop (SPEC-v2 §6).
+ * Riceve il timestamp SOLO di una scrittura riuscita: se l'autosave
+ * fallisce, questo componente non viene proprio montato — l'indicatore
+ * non mente mai. Si aggiorna ogni 30 secondi.
+ */
+function SavedAgo({ ts }: { ts: number }) {
+  // Montato con key={ts}: appena salvato e sempre "salvato ora", poi
+  // l'intervallo aggiorna l'eta. Niente Date.now() in render.
+  const [label, setLabel] = useState<string>("salvato ora");
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      const mins = Math.floor((Date.now() - ts) / 60_000);
+      setLabel(
+        mins < 1 ? "salvato ora" : `salvato ${formatNumber(mins)} min fa`,
+      );
+    }, 30_000);
+    return () => window.clearInterval(id);
+  }, [ts]);
+  return <> . {label}</>;
 }

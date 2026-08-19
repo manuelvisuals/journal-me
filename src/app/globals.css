@@ -3074,3 +3074,149 @@ summary:active {
   border-radius: var(--jm-radius-pill);
   padding: 6px 12px;
 }
+
+/* =============================================================
+   Editor desktop + modalita focus (PR 7, SPEC-v2 §5.3/§5.5/§6,
+   mockup desktop-v1 §01/§02). Sotto lg NIENTE esiste: classi
+   spente di default, accese solo nel blocco lg. Tipografia
+   conforme al brandbook cap. 03 (Body 17): la deroga Spectral
+   nell'editor e stata proposta e rifiutata (19 ago 2026).
+   ============================================================= */
+.jm-ed-wrap,
+.jm-ed-meta,
+.jm-focus-btn,
+.jm-focus-note {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .jm-ed-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  .jm-ed-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 34px 28px 0;
+    cursor: text;
+  }
+  .jm-ed-ta {
+    display: block;
+    width: 100%;
+    min-height: 55vh;
+    background: transparent;
+    border: none;
+    resize: none;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--color-ink);
+    caret-color: var(--color-accent);
+    field-sizing: content;
+    padding: 0 0 40px;
+  }
+  /* Dentro l'editor il fuoco lo racconta il caret ambra: niente anello. */
+  .jm-ed-ta:focus,
+  .jm-ed-ta:focus-visible {
+    outline: none;
+  }
+  .jm-ed-ta::placeholder {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-ink-faint);
+  }
+  .jm-ed-notice {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--color-accent);
+    margin-bottom: 14px;
+  }
+  .jm-ed-foot {
+    flex: 0 0 74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid var(--color-line);
+    padding: 0 28px;
+  }
+  .jm-ed-hint {
+    font-size: 12px;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.01em;
+  }
+  .jm-ed-acts {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .jm-ed-acts .btn-primary,
+  .jm-ed-acts .btn-ghost {
+    width: auto;
+    padding: 13px 18px;
+    font-size: 14px;
+  }
+  .jm-ed-acts .btn-ghost {
+    font-size: 12px;
+  }
+  .jm-ed-k {
+    font-size: 10.5px;
+    font-weight: 600;
+    opacity: 0.65;
+    margin-left: 6px;
+  }
+  .jm-ed-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .jm-focus-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--color-line);
+    background: transparent;
+    color: var(--color-ink-faint);
+    cursor: pointer;
+    transition: color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Hover a un passo (brandbook cap. 20): faint -> muted, mai oltre. */
+  .jm-focus-btn:hover {
+    color: var(--color-ink-muted);
+    border-color: color-mix(in oklab, var(--color-accent) 25%, transparent);
+  }
+  .jm-focus-note {
+    display: block;
+    position: fixed;
+    top: 22px;
+    right: 26px;
+    font-size: 11px;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.02em;
+    z-index: 40;
+  }
+
+  /* Modalita focus (§5.5): via le rail, l'header e il footer azioni.
+     L'attributo vive su <html>; sotto lg queste regole non esistono. */
+  [data-focus="1"] .jm-rail-l,
+  [data-focus="1"] .jm-rail-r,
+  [data-focus="1"] .jm-col-head,
+  [data-focus="1"] .jm-ed-foot {
+    display: none;
+  }
+  [data-focus="1"] .jm-ed-scroll {
+    padding-top: 74px;
+  }
+}

@@ -25,6 +25,12 @@ export type RecordingInput = {
   durationSeconds: number;
   /** Default date for segments without explicit temporal markers (YYYY-MM-DD). */
   defaultDate: string;
+  /**
+   * "Salva e basta" (Cmd+S, SPEC-v2 §5.4): salva il testo cosi com'e anche
+   * quando l'AI sarebbe disponibile. La prima riga diventa il titolo
+   * (localFields), zero chiamate a /api.
+   */
+  skipAI?: boolean;
 };
 
 const SEGMENT_SEP = "\n---\n";
@@ -104,7 +110,7 @@ async function callProcessEntry(transcript: string): Promise<AIFields> {
 
 export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
   const store = getStore();
-  const useAI = can("aiSummary");
+  const useAI = can("aiSummary") && !input.skipAI;
 
   const segments = useAI
     ? await callSplitByDate(input.transcript, input.defaultDate)

@@ -60,7 +60,7 @@ type LocalEntryRecord = {
 
 type LocalGoalRecord = GoalDef & { position: number; createdAt: string };
 
-type DraftRecord = { entryDate: string; text: string; updatedAt: string };
+export type DraftRecord = { entryDate: string; text: string; updatedAt: string };
 
 type MetaRecord = { key: string; value: unknown };
 
@@ -202,6 +202,30 @@ export class LocalStore implements JournalStore {
     }
     await tx2.objectStore("meta").put({ key: "schemaVersion", value: DB_VERSION });
     await tx2.done;
+  }
+
+  /* ----------------- drafts (SPEC-v2 §6) -----------------
+   * Non fanno parte di JournalStore: la bozza e SEMPRE locale, anche per
+   * gli utenti cloud (autosave dell'editor, PR 7). Vive qui perche lo
+   * schema del database e uno solo e l'upgrade non va duplicato. */
+
+  async getDraft(entryDate: string): Promise<DraftRecord | null> {
+    const db = await this.db();
+    return (await db.get("drafts", entryDate)) ?? null;
+  }
+
+  async putDraft(entryDate: string, text: string): Promise<void> {
+    const db = await this.db();
+    await db.put("drafts", {
+      entryDate,
+      text,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  async deleteDraft(entryDate: string): Promise<void> {
+    const db = await this.db();
+    await db.delete("drafts", entryDate);
   }
 
   /* ----------------- entries ----------------- */

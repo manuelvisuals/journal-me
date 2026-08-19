@@ -577,7 +577,38 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   bash che lo contiene (il pattern matcha la propria command line) e lascia vivo
   `next-server`: sembrava un problema di CSS non compilato ed era un server
   zombie. Pattern giusti: `pkill -9 -f 'next[-]server'; pkill -9 -f 'next [d]ev'`.
-- Le PR 7..12 non sono ancora iniziate.
+- **PR 7 `desktop-editor`: fatta.** Da lg la colonna centrale di Oggi E l'editor
+  (mockup desktop-v1 §01): niente overlay, si arriva e si scrive. Tipografia
+  CONFORME al brandbook cap. 03 — font UI del tema, 17/400/1.6: la deroga
+  Spectral di spec §5.3 e stata proposta a Manuel e RIFIUTATA (19 ago, opzione
+  "Inter, regola attuale"); il serif resta il marcatore del registro AI. Caret
+  accent, placeholder serif corsivo "Com'e andata oggi?", click ovunque nella
+  colonna mette il fuoco. Footer 74px: "salva e basta" (Cmd+S, `skipAI` in
+  saveRecording — prima riga come titolo, zero AI) e "chiudi la giornata"
+  (Cmd+Invio, AI dove c'e); in locale un solo bottone. Autosave bozze (§6):
+  `drafts.ts` scrive su IndexedDB in ENTRAMBE le modalita (in cloud apre
+  un'istanza LocalStore dedicata, la bozza non passa mai dalla rete), 800ms di
+  debounce sia nell'editor desktop sia in ManualWrite (telefono), flush su
+  unmount, indicatore "salvato ora / N min fa" solo a scrittura riuscita, bozza
+  cancellata SOLO a giornata salvata (runSave). Al mount di Oggi la bozza piu
+  recente della entry riapre l'editor con avviso "bozza non salvata,
+  recuperata". Focus mode (§5.5): `focus-toggle.tsx`, stato in sessionStorage,
+  attributo `data-focus` su html, CSS solo nel blocco lg (rail+header+footer
+  spariscono, nota "esc per uscire" in portal su body perche l'header che
+  ospita il bottone e nascosto), Esc esce, si spegne da solo a giornata
+  chiusa. Refactor: `rail-today.tsx` (la rail destra di Oggi, condivisa tra
+  scrittura e giornata piena), `use-is-desktop.ts` (matchMedia sullo stesso
+  lg, per i punti dove cambia il COMPORTAMENTO, non il layout), pipeline unica
+  `runSave` (voce/review, ManualWrite, editor desktop). Su desktop toccare
+  metriche/obiettivi dalla rail NON chiude l'editor. Verifica Playwright
+  24/24: 1440px (tipografia, autosave in IDB dopo 800ms, ripresa dopo reload,
+  focus on/off, Cmd+S, bozza cancellata post-save, 0 errori console) e 430px
+  (tab bar intatta, overlay invariato, bozza riapre l'overlay). NON fatto:
+  Cmd+K/palette e scorciatoie globali (PR 8 — per questo l'hint del footer non
+  cita ancora la palette), mese a griglia (PR 9), aree su due colonne nella
+  giornata piena desktop (mockup §03, arrivera come rifinitura), ricerca
+  full-text.
+- Le PR 8..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop
