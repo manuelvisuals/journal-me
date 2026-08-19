@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Marketplace dei temi (PR 12)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=EB+Garamond:ital@0;1&family=Cormorant+Garamond:ital@0;1&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#050304; --bg-app:#0E0709; --surface:#1D1013; --surface-2:#241418;
+  --line:rgba(255,229,214,.075); --line-2:rgba(255,229,214,.075);
+  --accent:#E3A15F; --accent-hi:#F0B875;
+  --text:#F4E7DE; --text-2:#CDB7AE; --text-3:#8E7770;
+  --success:#A8C9B0; --danger:#F87171;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Spectral",Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg-page);color:var(--text);font-family:var(--font);padding:44px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center}
+.page-sub{font-size:13px;color:var(--text-3);text-align:center;margin-top:10px;line-height:1.6}
+.divider{height:1px;background:var(--line);max-width:1280px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:var(--text-3);text-align:center;margin:0 auto 22px;max-width:760px;line-height:1.65}
+.caption b{color:var(--text-2);font-weight:600}
+.frame-wrap{overflow-x:auto;padding-bottom:8px}
+.win{position:relative;width:1280px;min-height:700px;margin:0 auto;background:var(--bg-app);border-radius:14px;overflow:hidden;box-shadow:0 34px 90px rgba(0,0,0,.82),0 0 0 1px rgba(255,255,255,.05);display:flex}
+.win::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 50% -6%,rgba(227,161,95,.06),transparent 40%)}
+.win > *{position:relative;z-index:1}
+
+.rail-l{width:222px;flex:0 0 222px;border-right:1px solid var(--line);padding:24px 14px 18px;display:flex;flex-direction:column}
+.brand{font-family:var(--serif);font-size:21px;font-weight:400;padding:0 10px 24px}
+.brand span{color:var(--accent)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--text-3)}
+.nav-i.on{background:rgba(227,161,95,.10);color:var(--accent);border:1px solid rgba(227,161,95,.35)}
+.rail-l-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--line)}
+.acct{display:flex;align-items:center;gap:10px}
+.avatar{width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:var(--surface-2);border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--text-2)}
+.acct-nm{font-size:12px;font-weight:600;color:var(--text-2)}
+.pill{display:inline-block;margin-top:3px;font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;padding:2px 8px;border-radius:999px}
+.pill.prem{background:rgba(227,161,95,.14);color:var(--accent-hi);border:1px solid rgba(227,161,95,.28)}
+.pill.loc{background:rgba(255,229,214,.05);color:var(--text-2);border:1px solid var(--line)}
+
+/* colonna fluida: margini fissi, larghezza dinamica (regola 19 ago) */
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column;padding:26px 28px;overflow:hidden}
+.h1{font-size:24px;font-weight:650;letter-spacing:-.018em;margin-bottom:22px}
+.sec-l{font-size:11px;font-weight:650;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin:26px 0 12px}
+.sec-l:first-of-type{margin-top:0}
+.sec-l .cnt{color:var(--text-3);letter-spacing:.05em;margin-left:8px;text-transform:none;font-weight:500}
+.sec-hint{font-size:12.5px;color:var(--text-3);margin:-6px 0 14px;line-height:1.55}
+
+/* card tema (stessa griglia del picker esistente, fluida) */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.tcard{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.tcard.on{border-color:rgba(227,161,95,.4)}
+.tprev{padding:16px 18px 14px}
+.tprev .pt{font-size:15px;line-height:1.25;margin-bottom:5px}
+.tprev .ps{font-size:11.5px;line-height:1.5;opacity:.75;margin-bottom:10px}
+.tdots{display:flex;gap:5px}
+.tdots i{width:11px;height:11px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.15)}
+.tmeta{padding:11px 18px 13px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tmeta .tn{font-size:13.5px;font-weight:600}
+.tmeta .ta{font-size:11.5px;color:var(--text-3);margin-top:2px}
+.tbtn{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--text-2);background:transparent;white-space:nowrap}
+.tbtn.primary{border-color:rgba(227,161,95,.4);color:var(--accent)}
+.tbtn.done{border-color:rgba(168,201,176,.35);color:var(--success)}
+.tbadge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--success);margin-top:4px}
+.tbadge i{width:5px;height:5px;border-radius:50%;background:var(--success);display:block}
+
+/* preview palettes dei temi finti della community */
+.p-notte{background:#101318;color:#E8ECF2}
+.p-notte .pt{font-family:var(--serif)}
+.p-terra{background:#F3E4D3;color:#3A2A1E}
+.p-terra .pt{font-family:"EB Garamond",serif}
+.p-acqua{background:#F2F5F4;color:#26333B}
+.p-acqua .pt{font-family:"Cormorant Garamond",serif;font-weight:600}
+.p-mono{background:#F6F6F4;color:#191919}
+.p-mono .pt,.p-mono .ps{font-family:"Courier Prime",monospace}
+.p-bosco{background:#15201A;color:#E7EFE7}
+.p-bosco .pt{font-family:var(--serif)}
+.p-latte{background:#FBF7EF;color:#33302A}
+.p-latte .pt{font-family:var(--serif)}
+
+/* i tuoi temi / import */
+.import{border:1px dashed rgba(255,229,214,.22);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:transparent}
+.import .t{font-size:13.5px;font-weight:600}
+.import .p{font-size:12px;color:var(--text-3);margin-top:4px;line-height:1.5}
+
+/* sezione disattivata (locale) */
+.dis{opacity:.55;pointer-events:none;filter:saturate(.6)}
+.dis-note{border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:12.5px;line-height:1.6;color:var(--text-2);background:rgba(29,16,19,.55);margin-bottom:14px}
+.dis-note b{color:var(--text)}
+
+/* modal pubblica */
+.scrim{position:absolute;inset:0;background:rgba(5,3,4,.72);backdrop-filter:blur(7px);z-index:5;display:flex;align-items:center;justify-content:center}
+.modal{width:520px;background:var(--surface);border:1px solid var(--line-2);border-radius:18px;padding:30px;box-shadow:0 14px 28px rgba(0,0,0,.5)}
+.modal-t{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.02em;line-height:1.15;margin-bottom:12px}
+.modal-p{font-size:13px;line-height:1.65;color:var(--text-2);margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px}
+.field .in{border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px;color:var(--text);background:rgba(255,255,255,.02)}
+.check{display:flex;gap:10px;font-size:12.5px;color:var(--text-2);line-height:1.55;padding:10px 0 18px}
+.check i{width:6px;height:6px;border-radius:50%;background:var(--success);flex:0 0 6px;margin-top:6px;display:block}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;border-radius:14px;font-size:14.5px;font-weight:600;padding:14px;border:1px solid transparent}
+.btn-primary{background:var(--accent);color:#1A0E0F;border-color:rgba(255,241,221,.34);box-shadow:0 0 22px rgba(227,161,95,.28),0 12px 24px rgba(0,0,0,.5)}
+.btn-ghost{background:transparent;color:var(--text-2);border-color:var(--line);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="page-title">Marketplace dei temi</div>
+<div class="page-sub">PR 12. Temi fatti dalla community, dentro Altro &rarr; Aspetto: niente app-store separato, niente pagina in piu.<br>Un tema pubblicato e un JSON validato: il contrasto lo controlla la macchina, nome e autore li guarda una persona.</div>
+
+<div class="divider"></div>
+
+<!-- ================== 01 . ASPETTO CON LA COMMUNITY ================== -->
+<div class="label">01 . Altro &rarr; Aspetto, account cloud</div>
+<div class="caption">La community vive <b>sotto i cinque temi inclusi</b>, nella stessa griglia fluida del picker che esiste gia. Ogni card e l'anteprima VERA del tema (i suoi colori, il suo font). "Installa" scarica il JSON, lo valida e lo aggiunge al picker: da li in poi si comporta come un tema incluso. In fondo, "I tuoi temi": l'import manuale di un file .json e la porta per chi se lo fa da solo.</div>
+<div class="frame-wrap">
+<div class="win">
+  <div class="rail-l">
+    <div class="brand">Journal<span>.me</span></div>
+    <div class="nav">
+      <div class="nav-i">Oggi</div><div class="nav-i">Mese</div><div class="nav-i">Ricorda</div><div class="nav-i">Recap</div><div class="nav-i on">Altro</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pill prem">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="h1">Aspetto</div>
+
+    <div class="sec-l">Temi inclusi</div>
+    <div class="tgrid">
+      <div class="tcard on"><div class="tprev" style="background:#1A0E0F;color:#F4E7DE"><div class="pt" style="font-family:var(--serif)">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#E3A15F"></i><i style="background:#F4E7DE"></i><i style="background:#1D1013"></i><i style="background:#8E7770"></i></div></div><div class="tmeta"><div><div class="tn">Wine premium</div><div class="ta">Inter + Spectral</div></div><span class="tbtn done">attivo</span></div></div>
+      <div class="tcard"><div class="tprev" style="background:#FFFFFF;color:#1D1D1F"><div class="pt" style="font-family:var(--serif)">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#1D1D1F"></i><i style="background:#FFFFFF"></i><i style="background:#2C2C2E"></i><i style="background:#8E8E93"></i></div></div><div class="tmeta"><div><div class="tn">Minimal</div><div class="ta">Inter + Newsreader</div></div><span class="tbtn">usa</span></div></div>
+      <div class="tcard"><div class="tprev p-latte"><div class="pt">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#B4622D"></i><i style="background:#FBF7EF"></i><i style="background:#33302A"></i><i style="background:#8F887B"></i></div></div><div class="tmeta"><div><div class="tn">Carta</div><div class="ta">Inter + EB Garamond</div></div><span class="tbtn">usa</span></div></div>
+    </div>
+    <div class="sec-hint" style="margin-top:10px">+ Malva e Macchina da scrivere, come oggi. La griglia e la stessa: gli installati si mettono in coda qui.</div>
+
+    <div class="sec-l">Temi della community <span class="cnt">. 3 installabili questa settimana</span></div>
+    <div class="tgrid">
+      <div class="tcard"><div class="tprev p-notte"><div class="pt">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#7FA6D9"></i><i style="background:#E8ECF2"></i><i style="background:#1A2029"></i><i style="background:#77808C"></i></div></div><div class="tmeta"><div><div class="tn">Notte fonda</div><div class="ta">di @sara.scrive</div><div class="tbadge"><i></i>contrasto verificato</div></div><span class="tbtn primary">installa</span></div></div>
+      <div class="tcard"><div class="tprev p-terra"><div class="pt">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#A14E2C"></i><i style="background:#F3E4D3"></i><i style="background:#3A2A1E"></i><i style="background:#96806B"></i></div></div><div class="tmeta"><div><div class="tn">Terracotta</div><div class="ta">di @plinio</div><div class="tbadge"><i></i>contrasto verificato</div></div><span class="tbtn primary">installa</span></div></div>
+      <div class="tcard"><div class="tprev p-bosco"><div class="pt">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#9CC0A0"></i><i style="background:#E7EFE7"></i><i style="background:#1C2A21"></i><i style="background:#7C8A7E"></i></div></div><div class="tmeta"><div><div class="tn">Bosco</div><div class="ta">di @fern</div><div class="tbadge"><i></i>contrasto verificato</div></div><span class="tbtn done">installato</span></div></div>
+    </div>
+
+    <div class="sec-l">I tuoi temi</div>
+    <div class="import">
+      <div><div class="t">Importa un tema (.json)</div><div class="p">Un file col contratto dei token. Si valida qui, sul dispositivo: se il contrasto non regge, te lo dice prima di applicarlo.</div></div>
+      <span class="tbtn">scegli file</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================== 02 . PUBBLICAZIONE ================== -->
+<div class="label">02 . Pubblicare un tema tuo</div>
+<div class="caption">Dalla card di un tema importato, "pubblica". Il contrasto e il formato li ha gia controllati la macchina (altrimenti il tema non si applicava nemmeno): <b>resta da moderare a mano solo nome e autore</b>, e il modal lo dice. Dopo l'invio la card resta "in revisione" finche una persona non approva.</div>
+<div class="frame-wrap">
+<div class="win" style="min-height:620px">
+  <div class="scrim">
+    <div class="modal">
+      <div class="modal-t">Pubblica "Ottobre"</div>
+      <div class="modal-p">Il tuo tema diventa installabile da chiunque abbia un account cloud. Il file e gia stato validato: formato e contrasto li ha controllati la macchina.</div>
+      <div class="field"><label>Nome del tema</label><div class="in">Ottobre</div></div>
+      <div class="field"><label>Firma (autore)</label><div class="in">@manuel</div></div>
+      <div class="check"><i></i><div>Contrasto AA verificato su tutte le coppie del contratto, in chiaro e in scuro.</div></div>
+      <div class="btn btn-primary">invia per la revisione</div>
+      <div class="btn btn-ghost">annulla</div>
+    </div>
+  </div>
+  <div class="rail-l" style="opacity:.4"><div class="brand">Journal<span>.me</span></div><div class="nav"><div class="nav-i">Oggi</div><div class="nav-i">Mese</div><div class="nav-i">Ricorda</div><div class="nav-i">Recap</div><div class="nav-i on">Altro</div></div></div>
+  <div class="col-c" style="opacity:.4"><div class="h1">Aspetto</div></div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================== 03 . MODALITA LOCALE ================== -->
+<div class="label">03 . Modalita locale: la sezione esiste, spenta, col motivo scritto</div>
+<div class="caption">Dalla spec dei temi, deciso da tempo: <b>scaricare un tema e una richiesta di rete, e la promessa della modalita locale e zero richieste</b>. La sezione non sparisce (sparire confonde): resta visibile, disattivata, con la spiegazione onesta. Non e un gancio commerciale.</div>
+<div class="frame-wrap">
+<div class="win" style="min-height:560px">
+  <div class="rail-l">
+    <div class="brand">Journal<span>.me</span></div>
+    <div class="nav"><div class="nav-i">Oggi</div><div class="nav-i">Mese</div><div class="nav-i">Ricorda</div><div class="nav-i">Recap</div><div class="nav-i on">Altro</div></div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">&#9679;</div><div><div class="acct-nm">questo Mac</div><span class="pill loc">Locale</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="h1">Aspetto</div>
+    <div class="sec-l">Temi della community</div>
+    <div class="dis-note">In modalita locale i temi della community non ci sono: scaricarne uno e una richiesta di rete, e qui la promessa e <b>zero richieste</b>. I cinque temi inclusi ci sono tutti. L'import di un file .json funziona lo stesso: e un file tuo, non passa dalla rete.</div>
+    <div class="tgrid dis">
+      <div class="tcard"><div class="tprev p-notte"><div class="pt">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#7FA6D9"></i><i style="background:#E8ECF2"></i><i style="background:#1A2029"></i><i style="background:#77808C"></i></div></div><div class="tmeta"><div><div class="tn">Notte fonda</div><div class="ta">di @sara.scrive</div></div><span class="tbtn">installa</span></div></div>
+      <div class="tcard"><div class="tprev p-terra"><div class="pt">la telefonata rimandata</div><div class="ps">Trentadue minuti, e una frase alla fine.</div><div class="tdots"><i style="background:#A14E2C"></i><i style="background:#F3E4D3"></i><i style="background:#3A2A1E"></i><i style="background:#96806B"></i></div></div><div class="tmeta"><div><div class="tn">Terracotta</div><div class="ta">di @plinio</div></div><span class="tbtn">installa</span></div></div>
+    </div>
+    <div class="sec-l">I tuoi temi</div>
+    <div class="import">
+      <div><div class="t">Importa un tema (.json)</div><div class="p">Funziona anche in locale: il file e tuo e non passa dalla rete. La pubblicazione invece richiede un account cloud.</div></div>
+      <span class="tbtn">scegli file</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+<div class="caption" style="margin-top:8px">Note per l'implementazione (non si vedono nell'app): tabella `community_themes` su Supabase (JSON del tema, autore, stato bozza/in_revisione/pubblicato/rifiutato, contatore installazioni), validazione col validatore WCAG gia esistente in `src/themes/validate.ts` sia alla pubblicazione sia all'installazione, i temi installati vivono accanto a quelli inclusi nel registry runtime e si sincronizzano su `user_settings`. Telefono: identico al desktop, stessa griglia a una colonna.</div>
+
+</body>
+</html>
