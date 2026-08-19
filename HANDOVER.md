@@ -511,7 +511,23 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
 
 ## 13. Journal.me v2 — desktop, due modalita, temi (progettato il 17 agosto 2026)
 
-Progettazione chiusa e approvata da Manuel. **Il codice non e ancora stato scritto.**
+Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2026):**
+
+- **PR 1 `api-auth`: fatta e verificata in produzione** (commit `6ef18fc`). Tutte le
+  route AI dietro `requirePremium` (401/402), migration `006_profiles.sql` applicata,
+  `SUPABASE_SERVICE_ROLE_KEY` nelle env Vercel, `apiFetch()` con bearer e timeout,
+  `/api/realtime/session` cancellata. Manuel e `premium` (`plan_source=manual`).
+- **PR 0 `temi`: fatta.** Contratto in `src/themes/contract.ts`, cinque temi
+  (`minimal` default, `wine`, `carta`, `malva`, `macchina`), validatore di contrasto
+  (10/10 set passano), boot script inline senza flash, `Altro > Aspetto` con switch
+  chiaro/scuro/sistema e griglia con anteprime vive. `globals.css` rifattorizzato:
+  zero colori di marca letterali (tutto token o `color-mix` su token), radii e
+  spaziatura sui token (`--jm-*`), sei famiglie font locali in `layout.tsx`.
+  **Non ancora migrate ai ruoli tipografici** le taglie px degli schermi mobile
+  esistenti: migrano con le PR 6-10 quando i componenti vengono riscritti sul
+  contratto (deviazione deliberata dal passo 0.3, per non toccare il telefono).
+  Migration `007_user_settings_theme.sql` (colonne theme/appearance).
+- Le PR 2..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

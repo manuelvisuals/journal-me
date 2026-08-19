@@ -384,9 +384,9 @@ export function TodayClient({
           style={{
             margin: "0 24px 8px",
             padding: "8px 12px",
-            border: "1px solid rgba(168,201,176,0.30)",
+            border: "1px solid color-mix(in oklab, var(--color-success) 30%, transparent)",
             borderRadius: 10,
-            background: "rgba(168,201,176,0.06)",
+            background: "color-mix(in oklab, var(--color-success) 6%, transparent)",
             color: "var(--color-success)",
             fontSize: 12,
             fontWeight: 500,
@@ -479,7 +479,7 @@ export function TodayClient({
       {view === "no-capture" && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center"
-          style={{ background: "rgba(10,5,7,0.92)", backdropFilter: "blur(8px)" }}
+          style={{ background: "color-mix(in oklab, var(--color-bg) 92%, transparent)", backdropFilter: "blur(8px)" }}
         >
           <div style={{ maxWidth: 320, padding: "0 28px", textAlign: "center" }}>
             <div
@@ -546,7 +546,7 @@ export function TodayClient({
       {view === "processing" && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center"
-          style={{ background: "rgba(10,5,7,0.85)", backdropFilter: "blur(8px)" }}
+          style={{ background: "color-mix(in oklab, var(--color-bg) 85%, transparent)", backdropFilter: "blur(8px)" }}
         >
           <div className="jm-spinner" aria-hidden="true" />
           <div

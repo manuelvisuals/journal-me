@@ -71,7 +71,7 @@ export function PeopleReview({
       style={{
         background: "var(--color-bg-phone)",
         backgroundImage:
-          "radial-gradient(140% 90% at 12% -6%, rgba(120,40,46,.18), transparent 55%)",
+          "radial-gradient(140% 90% at 12% -6%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 55%)",
       }}
     >
       <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col" style={{ minHeight: 0 }}>

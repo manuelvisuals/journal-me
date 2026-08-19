@@ -139,7 +139,7 @@ export default function LoginPage() {
           Journal
           <span
             className="text-accent"
-            style={{ textShadow: "0 0 12px rgba(227,161,95,0.55)" }}
+            style={{ textShadow: "0 0 12px color-mix(in oklab, var(--color-glow) 55%, transparent)" }}
           >
             .
           </span>
@@ -260,7 +260,7 @@ export default function LoginPage() {
                 className="flex-1 h-px"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, rgba(255,229,214,0.075), transparent)",
+                    "linear-gradient(90deg, transparent, var(--color-line), transparent)",
                 }}
               ></div>
               <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-ink-faint">
@@ -270,7 +270,7 @@ export default function LoginPage() {
                 className="flex-1 h-px"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, rgba(255,229,214,0.075), transparent)",
+                    "linear-gradient(90deg, transparent, var(--color-line), transparent)",
                 }}
               ></div>
             </div>
@@ -284,8 +284,8 @@ export default function LoginPage() {
                 <span
                   className="text-[9px] px-[7px] py-[3px] rounded-md text-accent"
                   style={{
-                    background: "rgba(227,161,95,0.12)",
-                    border: "1px solid rgba(227,161,95,0.20)",
+                    background: "color-mix(in oklab, var(--color-accent) 12%, transparent)",
+                    border: "1px solid color-mix(in oklab, var(--color-accent) 20%, transparent)",
                     letterSpacing: "0.10em",
                   }}
                 >

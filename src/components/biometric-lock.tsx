@@ -98,7 +98,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
         Journal
         <span
           className="text-accent"
-          style={{ textShadow: "0 0 12px rgba(227,161,95,0.55)" }}
+          style={{ textShadow: "0 0 12px color-mix(in oklab, var(--color-glow) 55%, transparent)" }}
         >
           .
         </span>

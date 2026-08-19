@@ -72,7 +72,7 @@ export function GoalsSection({ mode, initial }: Props) {
             padding: 10,
             border: "1px solid var(--color-danger)",
             borderRadius: 10,
-            background: "rgba(248,113,113,0.08)",
+            background: "color-mix(in oklab, var(--color-danger) 8%, transparent)",
             color: "var(--color-danger)",
             fontSize: 12,
           }}

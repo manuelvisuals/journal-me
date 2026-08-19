@@ -761,6 +761,7 @@ table.tokens td.use { color: var(--ink-muted); font-size: 11px; line-height: 1.5
   <div class="ch-num">Indice</div>
   <h2 class="ch-title">Cosa c'e' dentro</h2>
   <div class="toc">
+    <a href="#ch00"><span class="num">00</span><span class="name">Cos'e' questo documento (dai temi in poi)</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch01"><span class="num">01</span><span class="name">Filosofia</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch02"><span class="num">02</span><span class="name">Colore</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch03"><span class="num">03</span><span class="name">Tipografia</span><span class="dot"></span><span class="num">pag</span></a>
@@ -780,6 +781,38 @@ table.tokens td.use { color: var(--ink-muted); font-size: 11px; line-height: 1.5
     <a href="#ch17"><span class="num">17</span><span class="name">Stati</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch18"><span class="num">18</span><span class="name">Da non fare</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch19"><span class="num">19</span><span class="name">Tokens (export)</span><span class="dot"></span><span class="num">pag</span></a>
+  </div>
+</section>
+
+<!-- ============================== CH 00 . IL RUOLO DI QUESTO DOCUMENTO ============================== -->
+<section class="chapter" id="ch00">
+  <div class="ch-num">Capitolo 00</div>
+  <h2 class="ch-title">Cos'e' questo documento, dai temi in poi</h2>
+  <p class="ch-lede">
+    Dal 17 agosto 2026 l'app ha un sistema di temi (SPEC-temi.md, PR 0).
+    Questo brandbook smette di essere "il look dell'app" e diventa due cose
+    distinte. Confonderle significa bocciare per sempre ogni tema che sia
+    semplicemente diverso da Wine.
+  </p>
+
+  <div class="prose">
+    <p><b>1. La specifica del contratto.</b> Quali token esistono, cosa
+    significano, e le regole che valgono per OGNI tema perche' sono
+    struttura, non gusto: una sola accent che parla; due famiglie di font e
+    non tre; tracking negativo sulle headline e positivo sulle label; mai
+    il sottolineato; la gerarchia delle superfici; il ritmo dello spazio.
+    Un tema che viola queste regole e' un tema sbagliato.</p>
+    <p><b>2. La definizione del tema Wine.</b> Tutti i VALORI concreti dei
+    capitoli che seguono &mdash; l'ambra #E3A15F, il fondo #0E0709, Spectral
+    per la prosa, i raggi 10/14/18 &mdash; da qui in poi descrivono UN tema:
+    <i>wine</i>, in src/themes/wine.ts. Un tema con valori diversi che
+    rispetta le regole strutturali non contraddice questo documento: lo
+    implementa.</p>
+    <p>Il tema di default dell'app e' <i>minimal</i> (Inter + Newsreader),
+    non <i>wine</i>: la decisione e' del 17 agosto 2026, e si cambia in una
+    riga (DEFAULT_THEME in src/themes/contract.ts). Il contratto completo
+    dei token e la lista dei temi inclusi vivono in SPEC-temi.md e in
+    src/themes/: in caso di conflitto su un valore, vince il codice.</p>
   </div>
 </section>
 

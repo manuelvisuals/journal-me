@@ -606,7 +606,7 @@ export function RecordingOverlay({
                 background: liveColor,
                 boxShadow:
                   state === "recording" || state === "error"
-                    ? "0 0 10px rgba(248,113,113,0.7)"
+                    ? "0 0 10px color-mix(in oklab, var(--color-danger) 70%, transparent)"
                     : "none",
                 opacity: liveDotOpacity,
               }}

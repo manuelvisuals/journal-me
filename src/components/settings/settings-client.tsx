@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { GoalsSection } from "@/components/settings/goals-section";
+import { AppearanceSection } from "@/components/settings/appearance-section";
 import { createClient } from "@/lib/supabase/client";
 import type { DataMode } from "@/lib/data/entries";
 import type { GoalDef } from "@/lib/types";
@@ -83,6 +84,8 @@ export function SettingsClient({
             </span>
           </div>
         </Link>
+
+        <AppearanceSection />
 
         <GoalsSection mode={mode} initial={initialGoals} />
 

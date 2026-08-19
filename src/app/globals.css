@@ -1,21 +1,28 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #050304;
-  --color-bg-phone: #0E0709;
-  --color-surface: #1D1013;
-  --color-surface-2: #241418;
-  --color-line: rgba(255, 229, 214, 0.075);
-  --color-accent: #E3A15F;
-  --color-accent-pressed: #D08F4D;
-  --color-accent-hi: #F0B875;
-  --color-ink: #F4E7DE;
-  --color-ink-muted: #CDB7AE;
-  --color-ink-faint: #8E7770;
-  --color-success: #A8C9B0;
-  --color-danger: #F87171;
-  --font-sans: var(--font-inter), system-ui, -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-  --font-serif: var(--font-spectral), Georgia, "Times New Roman", serif;
+  --color-bg: var(--jm-bg);
+  --color-bg-phone: var(--jm-bg-app);
+  --color-surface: var(--jm-surface);
+  --color-surface-2: var(--jm-surface-2);
+  --color-line: var(--jm-line);
+  --color-accent: var(--jm-accent);
+  --color-accent-pressed: var(--jm-accent-pressed);
+  --color-accent-hi: var(--jm-accent-hi);
+  --color-on-accent: var(--jm-on-accent);
+  --color-ink: var(--jm-ink);
+  --color-ink-muted: var(--jm-ink-muted);
+  --color-ink-faint: var(--jm-ink-faint);
+  --color-success: var(--jm-success);
+  --color-danger: var(--jm-danger);
+  --color-shadow: var(--jm-shadow);
+  --color-glow: var(--jm-glow);
+  --font-sans: var(--jm-font-sans);
+  --font-serif: var(--jm-font-serif);
+  --radius-t-sm: var(--jm-radius-sm);
+  --radius-t-md: var(--jm-radius-md);
+  --radius-t-lg: var(--jm-radius-lg);
+  --radius-t-pill: var(--jm-radius-pill);
 }
 
 html,
@@ -33,9 +40,7 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(227, 161, 95, 0.06), transparent 35%),
-    radial-gradient(circle at 12% 22%, rgba(126, 80, 80, 0.12), transparent 30%);
+  background: var(--jm-warmth);
 }
 
 body::after {
@@ -44,9 +49,9 @@ body::after {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.025;
+  opacity: var(--jm-grain);
   mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http: //www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
 }
 
 body > * {
@@ -58,24 +63,22 @@ body > * {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: calc(8px * var(--jm-space));
   width: 100%;
   background: var(--color-accent);
-  color: #1A0E0F;
-  border: 1px solid rgba(255, 241, 221, 0.34);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   font-family: var(--font-sans);
   font-size: 15px;
   font-weight: 650;
-  padding: 16px;
-  border-radius: 14px;
+  padding: calc(16px * var(--jm-space));
+  border-radius: var(--jm-radius-md);
   cursor: pointer;
   letter-spacing: -0.005em;
-  box-shadow:
-    0 0 22px rgba(227, 161, 95, 0.28),
-    0 12px 24px rgba(0, 0, 0, 0.50),
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 28%, transparent),
+    0 12px 24px color-mix(in oklab, var(--color-shadow) 50%, transparent),
     inset 0 1px 1px rgba(255, 255, 255, 0.32);
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
@@ -84,12 +87,11 @@ body > * {
 }
 
 .btn-primary:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(var(--jm-press));
   background: var(--color-accent-pressed);
-  box-shadow:
-    0 0 6px rgba(227, 161, 95, 0.10),
-    0 2px 6px rgba(0, 0, 0, 0.45),
-    inset 0 2px 5px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--color-glow) 10%, transparent),
+    0 2px 6px color-mix(in oklab, var(--color-shadow) 45%, transparent),
+    inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 28%, transparent);
 }
 
 .btn-primary:disabled {
@@ -101,7 +103,7 @@ body > * {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: calc(8px * var(--jm-space));
   width: 100%;
   background: transparent;
   color: var(--color-ink-muted);
@@ -109,14 +111,13 @@ body > * {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  padding: 14px;
-  border-radius: 14px;
+  padding: calc(14px * var(--jm-space));
+  border-radius: var(--jm-radius-md);
   cursor: pointer;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
     color 80ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -127,11 +128,11 @@ body > * {
 }
 
 .btn-ghost:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(var(--jm-press));
   background: var(--color-surface);
-  border-color: rgba(227, 161, 95, 0.20);
+  border-color: color-mix(in oklab, var(--color-accent) 20%, transparent);
   color: var(--color-ink);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 25%, transparent);
 }
 
 .btn-ghost:disabled {
@@ -144,17 +145,16 @@ body > * {
   width: 100%;
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 14px;
+  border-radius: var(--jm-radius-md);
   font-family: var(--font-sans);
   font-size: 16px;
   font-weight: 500;
   color: var(--color-ink);
-  padding: 16px 18px;
+  padding: calc(16px * var(--jm-space)) calc(18px * var(--jm-space));
   outline: none;
   text-align: center;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 12px 24px rgba(0, 0, 0, 0.30);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 24px color-mix(in oklab, var(--color-shadow) 30%, transparent);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -163,31 +163,28 @@ body > * {
 }
 
 .input-base:focus {
-  border-color: rgba(227, 161, 95, 0.55);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 0 0 1px rgba(227, 161, 95, 0.20),
-    0 0 22px rgba(227, 161, 95, 0.18);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px color-mix(in oklab, var(--color-glow) 20%, transparent),
+    0 0 22px color-mix(in oklab, var(--color-glow) 18%, transparent);
 }
 
 /* Today screen — big mic button (empty state) */
 .mic-big-btn {
   width: 96px;
   height: 96px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
-  color: #1A0E0F;
+  color: var(--color-on-accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 241, 221, 0.34);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   cursor: pointer;
-  box-shadow:
-    0 0 36px rgba(227, 161, 95, 0.40),
-    0 18px 36px rgba(0, 0, 0, 0.55),
+  box-shadow: 0 0 36px color-mix(in oklab, var(--color-glow) 40%, transparent),
+    0 18px 36px color-mix(in oklab, var(--color-shadow) 55%, transparent),
     inset 0 1px 2px rgba(255, 255, 255, 0.40);
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
@@ -197,17 +194,16 @@ body > * {
 .mic-big-btn:active {
   transform: scale(0.96);
   background: var(--color-accent-pressed);
-  box-shadow:
-    0 0 14px rgba(227, 161, 95, 0.20),
-    0 6px 14px rgba(0, 0, 0, 0.50),
-    inset 0 2px 5px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--color-glow) 20%, transparent),
+    0 6px 14px color-mix(in oklab, var(--color-shadow) 50%, transparent),
+    inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 28%, transparent);
 }
 
 /* Today screen — recording overlay controls */
 .rec-ctl {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface);
   color: var(--color-ink-muted);
   display: flex;
@@ -215,11 +211,9 @@ body > * {
   justify-content: center;
   border: 1px solid var(--color-line);
   cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 6px 14px rgba(0, 0, 0, 0.30);
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 6px 14px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -235,31 +229,29 @@ body > * {
   width: 76px;
   height: 76px;
   background: var(--color-accent);
-  color: #1A0E0F;
-  border-color: rgba(255, 241, 221, 0.34);
-  box-shadow:
-    0 0 24px rgba(227, 161, 95, 0.42),
-    0 14px 28px rgba(0, 0, 0, 0.50),
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
+  box-shadow: 0 0 24px color-mix(in oklab, var(--color-glow) 42%, transparent),
+    0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent),
     inset 0 1px 1px rgba(255, 255, 255, 0.36);
 }
 .rec-ctl-stop:active {
   transform: scale(0.95);
   background: var(--color-accent-pressed);
-  box-shadow:
-    0 0 8px rgba(227, 161, 95, 0.30),
-    0 4px 10px rgba(0, 0, 0, 0.45),
-    inset 0 2px 5px rgba(0, 0, 0, 0.30);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 30%, transparent),
+    0 4px 10px color-mix(in oklab, var(--color-shadow) 45%, transparent),
+    inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 
 /* Cancel button — trash bin styled as danger (Manuel's request: the X looked
    neutral, now it's a red trash to make the destructive action unambiguous). */
 .rec-ctl-cancel {
   color: var(--color-danger);
-  background: rgba(248, 113, 113, 0.06);
-  border-color: rgba(248, 113, 113, 0.30);
+  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
+  border-color: color-mix(in oklab, var(--color-danger) 30%, transparent);
 }
 .rec-ctl-cancel:active {
-  background: rgba(248, 113, 113, 0.14);
+  background: color-mix(in oklab, var(--color-danger) 14%, transparent);
 }
 
 /* Accessibility: honor the OS "Reduce Motion" setting. Apple HIG requires it;
@@ -281,8 +273,8 @@ body > * {
   position: relative;
   width: 128px;
   height: 128px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 241, 221, 0.30);
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 30%, transparent);
   background: var(--color-surface-2);
   color: var(--color-ink-muted);
   display: flex;
@@ -292,11 +284,9 @@ body > * {
   touch-action: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.50),
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--color-shadow) 50%, transparent),
     inset 0 1px 1px rgba(255, 255, 255, 0.06);
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 120ms,
     box-shadow 120ms,
     color 120ms,
@@ -305,11 +295,10 @@ body > * {
 .rec-ptt:active:not(:disabled) {
   transform: scale(1.05);
   background: var(--color-accent);
-  color: #1a0e0f;
-  border-color: rgba(255, 241, 221, 0.50);
-  box-shadow:
-    0 0 46px rgba(227, 161, 95, 0.55),
-    0 14px 30px rgba(0, 0, 0, 0.55),
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 50%, transparent);
+  box-shadow: 0 0 46px color-mix(in oklab, var(--color-glow) 55%, transparent),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 55%, transparent),
     inset 0 1px 2px rgba(255, 255, 255, 0.50);
 }
 .rec-ptt:disabled {
@@ -321,22 +310,21 @@ body > * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  padding: 12px 22px;
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 120ms,
     color 120ms,
     border-color 120ms;
 }
 .jm-ptt-action:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(var(--jm-press));
 }
 .jm-ptt-cancel {
   background: transparent;
@@ -345,16 +333,15 @@ body > * {
 }
 .jm-ptt-cancel:active:not(:disabled) {
   color: var(--color-danger);
-  border-color: rgba(248, 113, 113, 0.35);
+  border-color: color-mix(in oklab, var(--color-danger) 35%, transparent);
 }
 .jm-ptt-save {
   background: var(--color-accent);
-  color: #1a0e0f;
-  border: 1px solid rgba(255, 241, 221, 0.34);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   font-weight: 650;
-  box-shadow:
-    0 0 22px rgba(227, 161, 95, 0.30),
-    0 10px 22px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 30%, transparent),
+    0 10px 22px color-mix(in oklab, var(--color-shadow) 45%, transparent);
 }
 .jm-ptt-save:disabled {
   opacity: 0.45;
@@ -384,9 +371,7 @@ body > * {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 40%, rgba(227, 161, 95, 0.1), transparent 42%),
-    radial-gradient(circle at 14% 18%, rgba(126, 80, 80, 0.14), transparent 30%);
+  background: var(--jm-warmth);
 }
 .jm-splash-hide {
   opacity: 0;
@@ -405,14 +390,14 @@ body > * {
 }
 .jm-splash-dot {
   color: var(--color-accent);
-  text-shadow: 0 0 14px rgba(227, 161, 95, 0.6);
+  text-shadow: 0 0 14px color-mix(in oklab, var(--color-glow) 60%, transparent);
 }
 .jm-splash-halo {
   position: absolute;
   width: 230px;
   height: 230px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(227, 161, 95, 0.16), transparent 62%);
+  border-radius: var(--jm-radius-circle);
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 62%);
   filter: blur(6px);
   animation: jm-splash-breathe 2.6s ease-in-out infinite;
 }
@@ -422,7 +407,7 @@ body > * {
   width: 120px;
   height: 3px;
   border-radius: 3px;
-  background: rgba(255, 229, 214, 0.1);
+  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
   overflow: hidden;
 }
 .jm-splash-bar i {
@@ -481,7 +466,7 @@ button:not(:disabled):active,
 a[href]:active,
 [role="button"]:active,
 summary:active {
-  transform: scale(0.97);
+  transform: scale(var(--jm-press));
 }
 
 /* Skeleton shimmer for loading states. */
@@ -493,7 +478,7 @@ summary:active {
     var(--color-surface) 63%
   );
   background-size: 400% 100%;
-  border-radius: 10px;
+  border-radius: var(--jm-radius-sm);
   animation: jm-shimmer 1.4s ease-in-out infinite;
 }
 @keyframes jm-shimmer {
@@ -522,9 +507,9 @@ summary:active {
 
 /* Inline tagged-entity span (AI-extracted in real version, placeholder now) */
 .tagged {
-  background: rgba(227, 161, 95, 0.15);
+  background: color-mix(in oklab, var(--color-accent) 15%, transparent);
   color: var(--color-accent-hi);
-  padding: 1px 5px;
+  padding: calc(1px * var(--jm-space)) calc(5px * var(--jm-space));
   border-radius: 4px;
 }
 
@@ -533,7 +518,7 @@ summary:active {
    ============================================================= */
 
 .jm-rec-head {
-  padding: 22px 24px 14px;
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(14px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
 }
 .jm-rec-h {
@@ -541,14 +526,14 @@ summary:active {
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
-  margin-bottom: 14px;
+  margin-bottom: calc(14px * var(--jm-space));
 }
 .jm-period-seg {
   display: flex;
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 999px;
-  padding: 3px;
+  border-radius: var(--jm-radius-pill);
+  padding: calc(3px * var(--jm-space));
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -556,8 +541,8 @@ summary:active {
 .jm-period-seg .seg {
   flex: 1;
   text-align: center;
-  padding: 8px 6px;
-  border-radius: 999px;
+  padding: calc(8px * var(--jm-space)) calc(6px * var(--jm-space));
+  border-radius: var(--jm-radius-pill);
   color: var(--color-ink-faint);
   background: transparent;
   border: none;
@@ -568,13 +553,13 @@ summary:active {
 }
 .jm-period-seg .seg.on {
   background: var(--color-accent);
-  color: #1A0E0F;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.30);
+  color: var(--color-on-accent);
+  box-shadow: 0 4px 10px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 .jm-rec-list {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 0;
+  padding: calc(16px * var(--jm-space)) 0;
 }
 .jm-rec-card {
   display: block;
@@ -583,7 +568,7 @@ summary:active {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: 16px;
-  padding: 18px 18px 16px;
+  padding: calc(18px * var(--jm-space)) calc(18px * var(--jm-space)) calc(16px * var(--jm-space));
   text-align: left;
   cursor: pointer;
   font-family: inherit;
@@ -591,7 +576,7 @@ summary:active {
   transition: border-color 120ms, background-color 120ms;
 }
 .jm-rec-card:hover {
-  border-color: rgba(227, 161, 95, 0.30);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
 }
 .jm-rec-card .when {
   font-size: 10px;
@@ -599,7 +584,7 @@ summary:active {
   color: var(--color-accent);
   letter-spacing: 0.20em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: calc(6px * var(--jm-space));
 }
 .jm-rec-card .t {
   font-family: var(--font-serif);
@@ -607,7 +592,7 @@ summary:active {
   font-weight: 500;
   line-height: 1.2;
   color: var(--color-ink);
-  margin-bottom: 8px;
+  margin-bottom: calc(8px * var(--jm-space));
   letter-spacing: -0.005em;
 }
 .jm-rec-card .s {
@@ -617,10 +602,10 @@ summary:active {
 }
 .jm-rec-suggest {
   margin: 0 24px 16px;
-  background: rgba(227, 161, 95, 0.05);
-  border: 1px solid rgba(227, 161, 95, 0.25);
+  background: color-mix(in oklab, var(--color-accent) 5%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 25%, transparent);
   border-radius: 16px;
-  padding: 22px 20px;
+  padding: calc(22px * var(--jm-space)) calc(20px * var(--jm-space));
   text-align: center;
 }
 .jm-rec-suggest .title {
@@ -628,34 +613,33 @@ summary:active {
   font-size: 18px;
   font-weight: 500;
   color: var(--color-ink);
-  margin-bottom: 8px;
+  margin-bottom: calc(8px * var(--jm-space));
 }
 .jm-rec-suggest .hint {
   font-size: 13px;
   color: var(--color-ink-muted);
   line-height: 1.55;
-  margin-bottom: 16px;
-  padding: 0 6px;
+  margin-bottom: calc(16px * var(--jm-space));
+  padding: 0 calc(6px * var(--jm-space));
 }
 .jm-rec-suggest .err {
   font-size: 12px;
   color: var(--color-danger);
-  margin-bottom: 12px;
+  margin-bottom: calc(12px * var(--jm-space));
 }
 .jm-gen-btn {
   background: var(--color-accent);
-  color: #1A0E0F;
-  border: 1px solid rgba(255, 241, 221, 0.34);
-  border-radius: 14px;
-  padding: 12px 22px;
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 650;
   letter-spacing: -0.005em;
   cursor: pointer;
-  box-shadow:
-    0 0 22px rgba(227, 161, 95, 0.30),
-    0 12px 24px rgba(0, 0, 0, 0.50);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 30%, transparent),
+    0 12px 24px color-mix(in oklab, var(--color-shadow) 50%, transparent);
   -webkit-tap-highlight-color: transparent;
 }
 .jm-gen-btn:disabled {
@@ -663,14 +647,14 @@ summary:active {
   cursor: not-allowed;
 }
 .jm-rec-empty {
-  padding: 60px 32px;
+  padding: calc(60px * var(--jm-space)) calc(32px * var(--jm-space));
   text-align: center;
 }
 .jm-rec-empty .em-h {
   font-size: 17px;
   font-weight: 650;
   color: var(--color-ink);
-  margin-bottom: 6px;
+  margin-bottom: calc(6px * var(--jm-space));
 }
 .jm-rec-empty .em-p {
   font-size: 13px;
@@ -682,14 +666,14 @@ summary:active {
 .jm-det-head {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 24px 16px;
+  gap: calc(14px * var(--jm-space));
+  padding: calc(18px * var(--jm-space)) calc(24px * var(--jm-space)) calc(16px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
 }
 .jm-det-back {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   display: flex;
@@ -716,7 +700,7 @@ summary:active {
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
-  padding: 8px 4px;
+  padding: calc(8px * var(--jm-space)) calc(4px * var(--jm-space));
   -webkit-tap-highlight-color: transparent;
 }
 .jm-det-edit:hover {
@@ -727,15 +711,15 @@ summary:active {
 .jm-recap-editor-body {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 20px;
+  padding: calc(16px * var(--jm-space)) calc(20px * var(--jm-space));
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: calc(18px * var(--jm-space));
 }
 .jm-recap-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: calc(6px * var(--jm-space));
 }
 .jm-recap-field.grow {
   flex: 1;
@@ -751,8 +735,8 @@ summary:active {
 .jm-recap-field-input {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: var(--jm-radius-sm);
+  padding: calc(12px * var(--jm-space)) calc(14px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--color-ink);
@@ -760,7 +744,7 @@ summary:active {
   outline: none;
 }
 .jm-recap-field-input:focus {
-  border-color: rgba(227, 161, 95, 0.55);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
 .jm-recap-field-input.title {
   font-family: var(--font-serif);
@@ -778,7 +762,7 @@ summary:active {
 .jm-det-body {
   flex: 1;
   overflow-y: auto;
-  padding: 24px 28px 28px;
+  padding: calc(24px * var(--jm-space)) calc(28px * var(--jm-space)) calc(28px * var(--jm-space));
 }
 .jm-det-title {
   font-family: var(--font-serif);
@@ -787,7 +771,7 @@ summary:active {
   line-height: 1.15;
   color: var(--color-ink);
   letter-spacing: -0.015em;
-  margin-bottom: 22px;
+  margin-bottom: calc(22px * var(--jm-space));
 }
 .jm-det-body p {
   font-family: var(--font-serif);
@@ -795,7 +779,7 @@ summary:active {
   font-weight: 400;
   line-height: 1.65;
   color: var(--color-ink-muted);
-  margin-bottom: 16px;
+  margin-bottom: calc(16px * var(--jm-space));
   letter-spacing: -0.005em;
 }
 .jm-det-body p:first-of-type::first-letter {
@@ -813,7 +797,7 @@ summary:active {
   font-style: italic;
   color: var(--color-ink-faint);
   border-left: 2px solid var(--color-accent);
-  padding-left: 14px;
+  padding-left: calc(14px * var(--jm-space));
   margin: 20px 0;
   line-height: 1.5;
 }
@@ -823,20 +807,20 @@ summary:active {
    ============================================================= */
 
 .jm-rem-head {
-  padding: 22px 24px 12px;
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
 }
 .jm-rem-h {
   font-size: 24px;
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
-  margin-bottom: 14px;
+  margin-bottom: calc(14px * var(--jm-space));
 }
 .jm-rem-filter {
   display: flex;
-  gap: 6px;
+  gap: calc(6px * var(--jm-space));
   overflow-x: auto;
-  padding-bottom: 2px;
+  padding-bottom: calc(2px * var(--jm-space));
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -848,10 +832,10 @@ summary:active {
   font-weight: 600;
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  padding: 7px 12px;
+  padding: calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 999px;
+  border-radius: var(--jm-radius-pill);
   color: var(--color-ink-faint);
   white-space: nowrap;
   cursor: pointer;
@@ -859,15 +843,15 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .f-chip.on {
-  background: rgba(227, 161, 95, 0.12);
-  border-color: rgba(227, 161, 95, 0.55);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
   color: var(--color-accent-hi);
 }
 
 .jm-rem-list {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 0 130px; /* leave room for floating quick capture + tab bar */
+  padding: calc(14px * var(--jm-space)) 0 calc(130px * var(--jm-space)); /* leave room for floating quick capture + tab bar */
 }
 .jm-rem-day-header {
   font-size: 9px;
@@ -875,13 +859,13 @@ summary:active {
   color: var(--color-ink-faint);
   letter-spacing: 0.20em;
   text-transform: uppercase;
-  padding: 12px 24px 8px;
+  padding: calc(12px * var(--jm-space)) calc(24px * var(--jm-space)) calc(8px * var(--jm-space));
 }
 .jm-rem-item {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding: 11px 24px;
+  gap: calc(14px * var(--jm-space));
+  padding: calc(11px * var(--jm-space)) calc(24px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
   cursor: pointer;
 }
@@ -889,14 +873,14 @@ summary:active {
   flex: 0 0 32px;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: var(--jm-radius-sm);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-accent);
-  margin-top: 2px;
+  margin-top: calc(2px * var(--jm-space));
 }
 .jm-rem-body {
   flex: 1;
@@ -907,12 +891,12 @@ summary:active {
   color: var(--color-ink);
   line-height: 1.4;
   font-weight: 500;
-  margin-bottom: 4px;
+  margin-bottom: calc(4px * var(--jm-space));
 }
 .jm-rem-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8px * var(--jm-space));
   font-size: 10px;
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
@@ -933,7 +917,7 @@ summary:active {
   align-self: center;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: transparent;
   border: none;
   color: var(--color-ink-faint);
@@ -954,7 +938,7 @@ summary:active {
   left: 0;
   right: 0;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
-  padding: 0 24px;
+  padding: 0 calc(24px * var(--jm-space));
   z-index: 4;
   pointer-events: none;
 }
@@ -964,11 +948,11 @@ summary:active {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: 16px;
-  padding: 6px 6px 6px 14px;
+  padding: calc(6px * var(--jm-space)) calc(6px * var(--jm-space)) calc(6px * var(--jm-space)) calc(14px * var(--jm-space));
   display: flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.50);
+  gap: calc(10px * var(--jm-space));
+  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
   pointer-events: auto;
 }
 .jm-qc-card input {
@@ -979,7 +963,7 @@ summary:active {
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--color-ink);
-  padding: 10px 0;
+  padding: calc(10px * var(--jm-space)) 0;
 }
 .jm-qc-card input::placeholder {
   color: var(--color-ink-faint);
@@ -990,9 +974,9 @@ summary:active {
   color: var(--color-accent);
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  padding: 6px 10px;
+  padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
   border-radius: 8px;
-  background: rgba(227, 161, 95, 0.10);
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
   border: none;
   cursor: pointer;
   font-family: inherit;
@@ -1001,10 +985,10 @@ summary:active {
 .jm-qc-mic {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface-2);
   color: var(--color-accent);
-  border: 1px solid rgba(227, 161, 95, 0.30);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1014,15 +998,15 @@ summary:active {
 }
 .jm-qc-mic:active {
   background: var(--color-surface);
-  border-color: rgba(227, 161, 95, 0.55);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
 .jm-qc-add {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
-  color: #1A0E0F;
-  border: 1px solid rgba(255, 241, 221, 0.34);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1044,11 +1028,11 @@ summary:active {
   width: min(220px, calc(100vw - 48px));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 14px;
-  padding: 6px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.50);
+  border-radius: var(--jm-radius-md);
+  padding: calc(6px * var(--jm-space));
+  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
   z-index: 5;
-  /* Override the pointer-events:none inherited from .jm-qc-bar (set there
+  /* Override the pointer-events: none inherited from .jm-qc-bar (set there
      so empty space around the input doesn't block taps on the page).
      Without this the kind-picker rows were unclickable. */
   pointer-events: auto;
@@ -1057,14 +1041,14 @@ summary:active {
   display: block;
   width: 100%;
   text-align: left;
-  padding: 10px 12px;
+  padding: calc(10px * var(--jm-space)) calc(12px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 500;
   color: var(--color-ink);
   background: transparent;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--jm-radius-sm);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1072,7 +1056,7 @@ summary:active {
   background: var(--color-surface-2);
 }
 .jm-qc-kind-pop .row.selected {
-  background: rgba(227, 161, 95, 0.12);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
   color: var(--color-accent-hi);
 }
 
@@ -1083,24 +1067,22 @@ summary:active {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: 12px;
-  padding: 10px 6px;
+  padding: calc(10px * var(--jm-space)) calc(6px * var(--jm-space));
   cursor: pointer;
   transition: border-color 120ms, background-color 120ms;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 8px 16px rgba(0, 0, 0, 0.30);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 8px 16px color-mix(in oklab, var(--color-shadow) 30%, transparent);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 .jm-metric:hover {
-  border-color: rgba(227, 161, 95, 0.30);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
 }
 .jm-metric.editing {
   background: var(--color-surface-2);
-  border-color: rgba(227, 161, 95, 0.55);
-  box-shadow:
-    0 0 0 1px rgba(227, 161, 95, 0.20),
-    0 0 18px rgba(227, 161, 95, 0.15);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-glow) 20%, transparent),
+    0 0 18px color-mix(in oklab, var(--color-glow) 15%, transparent);
   cursor: default;
 }
 .jm-metric-input {
@@ -1116,15 +1098,15 @@ summary:active {
 }
 .jm-stepper {
   display: flex;
-  gap: 6px;
+  gap: calc(6px * var(--jm-space));
   justify-content: center;
-  margin-top: 6px;
+  margin-top: calc(6px * var(--jm-space));
 }
 .jm-stepper button {
   width: 22px;
   height: 22px;
-  border-radius: 50%;
-  background: rgba(227, 161, 95, 0.10);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
   color: var(--color-accent);
   font-weight: 600;
   font-size: 12px;
@@ -1137,13 +1119,13 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-stepper button:hover {
-  background: rgba(227, 161, 95, 0.18);
+  background: color-mix(in oklab, var(--color-accent) 18%, transparent);
 }
 .jm-sleep-inputs {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: calc(4px * var(--jm-space));
   font-family: var(--font-sans);
 }
 .jm-sleep-inputs input {
@@ -1164,14 +1146,14 @@ summary:active {
 }
 .jm-mood-picker {
   display: flex;
-  gap: 4px;
+  gap: calc(4px * var(--jm-space));
   justify-content: center;
-  margin-top: 2px;
+  margin-top: calc(2px * var(--jm-space));
 }
 .jm-mood-picker .opt {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1191,16 +1173,16 @@ summary:active {
 .jm-mood-picker .opt.on {
   opacity: 1;
   transform: scale(1.15);
-  background: rgba(227, 161, 95, 0.12);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
 }
 
 /* Goal dots (clickable in filled view) */
 .jm-goal-dot {
   width: 14px;
   height: 14px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 6%, transparent);
   cursor: pointer;
   transition: transform 120ms, background-color 120ms, box-shadow 120ms;
   padding: 0;
@@ -1211,22 +1193,22 @@ summary:active {
 }
 .jm-goal-dot.on {
   background: var(--color-accent);
-  border-color: rgba(227, 161, 95, 0.55);
-  box-shadow: 0 0 8px rgba(227, 161, 95, 0.40);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 40%, transparent);
 }
 
 /* Day detail page (/giorno/[date]) — opens when tapping a row in /mese */
 .jm-day-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 22px 24px 14px;
+  gap: calc(12px * var(--jm-space));
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(14px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
 }
 .jm-day-back {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   color: var(--color-ink-muted);
@@ -1252,7 +1234,7 @@ summary:active {
 .jm-day-head-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: calc(14px * var(--jm-space));
   flex-shrink: 0;
 }
 .jm-day-head-action {
@@ -1269,9 +1251,9 @@ summary:active {
 .jm-day-head-del {
   width: 30px;
   height: 30px;
-  border-radius: 50%;
-  background: rgba(248,113,113,0.06);
-  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 25%, transparent);
   color: var(--color-danger);
   display: flex;
   align-items: center;
@@ -1279,14 +1261,14 @@ summary:active {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.jm-day-head-del:active { background: rgba(248,113,113,0.14); }
+.jm-day-head-del:active { background: color-mix(in oklab, var(--color-danger) 14%, transparent); }
 .jm-day-head-del:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Altro page (formerly Settings — now contains Recap link, Glossario,
    Account, Logout). The legacy .jm-set-* classes are kept below so the
    inline sections (Glossary, Account) render as before. */
 .jm-altro-head {
-  padding: 22px 24px 18px;
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(18px * var(--jm-space));
 }
 .jm-altro-h {
   font-size: 26px;
@@ -1300,18 +1282,16 @@ summary:active {
   position: relative;
   display: block;
   margin: 0 24px 24px;
-  padding: 20px 22px 18px;
-  background:
-    linear-gradient(180deg, rgba(227,161,95,0.045) 0%, rgba(227,161,95,0.008) 60%, transparent 100%),
-    linear-gradient(140deg, rgba(126,80,80,0.18) 0%, transparent 55%),
+  padding: calc(20px * var(--jm-space)) calc(22px * var(--jm-space)) calc(18px * var(--jm-space));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, color-mix(in oklab, var(--color-accent) 1%, transparent) 60%, transparent 100%),
+    linear-gradient(140deg, color-mix(in oklab, var(--color-accent) 9%, transparent) 0%, transparent 55%),
     var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 18px;
+  border-radius: var(--jm-radius-lg);
   text-decoration: none;
   color: var(--color-ink);
-  box-shadow:
-    inset 0 1px 0 rgba(255,229,214,0.06),
-    0 14px 30px rgba(0,0,0,0.30);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-ink) 6%, transparent),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1322,7 +1302,7 @@ summary:active {
   left: 22px;
   right: 22px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(227,161,95,0.40), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-accent) 40%, transparent), transparent);
 }
 .jm-recap-card:active {
   transform: scale(0.99);
@@ -1331,20 +1311,20 @@ summary:active {
 .jm-recap-card .meta {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10px * var(--jm-space));
   font-size: 10px;
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: calc(12px * var(--jm-space));
 }
 .jm-recap-card .meta::after {
   content: "";
   height: 1px;
   flex: 1;
   max-width: 36px;
-  background: linear-gradient(90deg, rgba(227,161,95,0.5), transparent);
+  background: linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 50%, transparent), transparent);
 }
 .jm-recap-card .title {
   font-family: var(--font-serif);
@@ -1353,20 +1333,20 @@ summary:active {
   line-height: 1.18;
   letter-spacing: -0.01em;
   color: var(--color-ink);
-  margin-bottom: 8px;
+  margin-bottom: calc(8px * var(--jm-space));
 }
 .jm-recap-card .sub {
   font-size: 12px;
   color: var(--color-ink-muted);
   line-height: 1.5;
-  margin-bottom: 14px;
+  margin-bottom: calc(14px * var(--jm-space));
 }
 .jm-recap-card .last {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255,229,214,0.05);
+  gap: calc(10px * var(--jm-space));
+  padding-top: calc(14px * var(--jm-space));
+  border-top: 1px solid color-mix(in oklab, var(--color-ink) 5%, transparent);
 }
 .jm-recap-card .last .lbl {
   font-size: 9px;
@@ -1390,9 +1370,9 @@ summary:active {
 .jm-recap-card .last .chev {
   width: 26px;
   height: 26px;
-  border-radius: 50%;
-  background: rgba(227,161,95,0.10);
-  border: 1px solid rgba(227,161,95,0.20);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1402,15 +1382,15 @@ summary:active {
 
 /* Logout button at bottom of Altro */
 .jm-logout-wrap {
-  padding: 8px 24px 0;
+  padding: calc(8px * var(--jm-space)) calc(24px * var(--jm-space)) 0;
 }
 .jm-logout-btn {
   width: 100%;
   background: transparent;
   color: var(--color-danger);
-  border: 1px solid rgba(248,113,113,0.30);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 30%, transparent);
   border-radius: 12px;
-  padding: 14px;
+  padding: calc(14px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 600;
@@ -1420,7 +1400,7 @@ summary:active {
   transition: background-color 120ms;
 }
 .jm-logout-btn:active {
-  background: rgba(248,113,113,0.06);
+  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
 }
 .jm-logout-btn:disabled {
   opacity: 0.5;
@@ -1431,14 +1411,14 @@ summary:active {
 .jm-set-head {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 22px 24px 16px;
+  gap: calc(14px * var(--jm-space));
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(16px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
 }
 .jm-set-back {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   color: var(--color-ink-muted);
@@ -1462,20 +1442,20 @@ summary:active {
   color: var(--color-accent);
   letter-spacing: 0.20em;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: calc(8px * var(--jm-space));
 }
 .jm-set-section-hint {
   font-size: 13px;
   color: var(--color-ink-muted);
   line-height: 1.5;
-  margin-bottom: 16px;
+  margin-bottom: calc(16px * var(--jm-space));
 }
 .jm-set-section-hint b { color: var(--color-ink); font-weight: 600; }
 .jm-set-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 0;
+  padding: calc(14px * var(--jm-space)) 0;
   border-bottom: 1px solid var(--color-line);
   font-family: var(--font-sans);
   text-align: left;
@@ -1499,17 +1479,17 @@ summary:active {
 .jm-glossary {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: calc(8px * var(--jm-space));
+  margin-bottom: calc(12px * var(--jm-space));
 }
 .jm-gloss-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 8px 8px 14px;
+  gap: calc(6px * var(--jm-space));
+  padding: calc(8px * var(--jm-space)) calc(8px * var(--jm-space)) calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 999px;
+  border-radius: var(--jm-radius-pill);
   font-size: 13px;
   font-weight: 500;
   color: var(--color-ink);
@@ -1518,8 +1498,8 @@ summary:active {
 .jm-gloss-tag .x {
   width: 18px;
   height: 18px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
   color: var(--color-ink-faint);
   border: none;
   display: flex;
@@ -1533,17 +1513,17 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-gloss-tag .x:hover {
-  background: rgba(248, 113, 113, 0.15);
+  background: color-mix(in oklab, var(--color-danger) 15%, transparent);
   color: var(--color-danger);
 }
 .jm-gloss-input {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8px * var(--jm-space));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 14px;
-  padding: 4px 4px 4px 16px;
+  border-radius: var(--jm-radius-md);
+  padding: calc(4px * var(--jm-space)) calc(4px * var(--jm-space)) calc(4px * var(--jm-space)) calc(16px * var(--jm-space));
 }
 .jm-gloss-input input {
   flex: 1;
@@ -1553,7 +1533,7 @@ summary:active {
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--color-ink);
-  padding: 12px 0;
+  padding: calc(12px * var(--jm-space)) 0;
 }
 .jm-gloss-input input::placeholder {
   color: var(--color-ink-faint);
@@ -1561,17 +1541,17 @@ summary:active {
 .jm-gloss-input .add {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
-  color: #1A0E0F;
-  border: 1px solid rgba(255, 241, 221, 0.34);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.30);
+  box-shadow: 0 4px 10px color-mix(in oklab, var(--color-shadow) 30%, transparent);
   -webkit-tap-highlight-color: transparent;
 }
 .jm-gloss-input .add:disabled {
@@ -1583,7 +1563,7 @@ summary:active {
 .jm-settings-btn {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface);
   color: var(--color-ink-muted);
   border: 1px solid var(--color-line);
@@ -1603,19 +1583,17 @@ summary:active {
 .jm-mic-circle {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
-  color: #1A0E0F;
+  color: var(--color-on-accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 241, 221, 0.34);
-  box-shadow:
-    0 0 22px rgba(227, 161, 95, 0.40),
-    0 8px 18px rgba(0, 0, 0, 0.50),
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 40%, transparent),
+    0 8px 18px color-mix(in oklab, var(--color-shadow) 50%, transparent),
     inset 0 1px 1px rgba(255, 255, 255, 0.40);
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
@@ -1630,11 +1608,11 @@ summary:active {
 .jm-date-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: calc(6px * var(--jm-space));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 999px;
-  padding: 7px 14px 7px 12px;
+  border-radius: var(--jm-radius-pill);
+  padding: calc(7px * var(--jm-space)) calc(14px * var(--jm-space)) calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
   font-size: 12px;
   font-weight: 500;
   color: var(--color-ink-muted);
@@ -1647,7 +1625,7 @@ summary:active {
 }
 .jm-date-chip:active {
   background: var(--color-surface-2);
-  border-color: rgba(227, 161, 95, 0.30);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
 }
 .jm-date-chip .icn {
   width: 14px;
@@ -1668,27 +1646,27 @@ summary:active {
 .jm-date-pop {
   position: absolute;
   inset: 0;
-  background: rgba(10, 5, 7, 0.55);
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
   backdrop-filter: blur(8px);
   z-index: 60;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 90px;
+  padding-top: calc(90px * var(--jm-space));
 }
 .jm-date-pop-card {
   width: min(320px, calc(100vw - 32px));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 18px;
-  padding: 10px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(10px * var(--jm-space));
+  box-shadow: 0 24px 48px color-mix(in oklab, var(--color-shadow) 60%, transparent);
 }
 .jm-date-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
+  padding: calc(12px * var(--jm-space)) calc(14px * var(--jm-space));
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 80ms ease;
@@ -1702,7 +1680,7 @@ summary:active {
   background: var(--color-surface-2);
 }
 .jm-date-row.selected {
-  background: rgba(227, 161, 95, 0.10);
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
 }
 .jm-date-row .pr-label {
   font-size: 14px;
@@ -1738,7 +1716,7 @@ summary:active {
 .jm-editor-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 5, 7, 0.85);
+  background: color-mix(in oklab, var(--color-bg) 85%, transparent);
   backdrop-filter: blur(8px);
   z-index: 70;
   display: flex;
@@ -1757,7 +1735,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px 12px;
+  padding: calc(18px * var(--jm-space)) calc(20px * var(--jm-space)) calc(12px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
 }
 .jm-editor-title {
@@ -1768,7 +1746,7 @@ summary:active {
 }
 .jm-editor-actions {
   display: flex;
-  gap: 8px;
+  gap: calc(8px * var(--jm-space));
 }
 .jm-editor-btn {
   background: transparent;
@@ -1776,8 +1754,8 @@ summary:active {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: calc(8px * var(--jm-space)) calc(12px * var(--jm-space));
+  border-radius: var(--jm-radius-sm);
   cursor: pointer;
   letter-spacing: 0.01em;
   -webkit-tap-highlight-color: transparent;
@@ -1786,7 +1764,7 @@ summary:active {
   color: var(--color-ink-muted);
 }
 .jm-editor-btn.save {
-  color: #1A0E0F;
+  color: var(--color-on-accent);
   background: var(--color-accent);
 }
 .jm-editor-btn.save:disabled {
@@ -1800,7 +1778,7 @@ summary:active {
   border: none;
   outline: none;
   resize: none;
-  padding: 18px 20px;
+  padding: calc(18px * var(--jm-space)) calc(20px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.55;
@@ -1812,7 +1790,7 @@ summary:active {
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  padding: 8px 20px 14px;
+  padding: calc(8px * var(--jm-space)) calc(20px * var(--jm-space)) calc(14px * var(--jm-space));
   border-top: 1px solid var(--color-line);
   text-align: center;
 }
@@ -1820,19 +1798,19 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 8px 20px 14px;
+  gap: calc(12px * var(--jm-space));
+  padding: calc(8px * var(--jm-space)) calc(20px * var(--jm-space)) calc(14px * var(--jm-space));
   border-top: 1px solid var(--color-line);
 }
 .jm-editor-btn.danger {
   color: var(--color-danger);
-  border: 1px solid rgba(248, 113, 113, 0.30);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 30%, transparent);
   background: transparent;
-  padding: 8px 14px;
+  padding: calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
 }
 .jm-editor-btn.danger:hover {
-  background: rgba(248, 113, 113, 0.08);
-  border-color: rgba(248, 113, 113, 0.55);
+  background: color-mix(in oklab, var(--color-danger) 8%, transparent);
+  border-color: color-mix(in oklab, var(--color-danger) 55%, transparent);
 }
 .jm-editor-hint-inline {
   font-size: 10px;
@@ -1846,29 +1824,27 @@ summary:active {
 .jm-rerecord-btn {
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-surface);
   color: var(--color-accent);
-  border: 1px solid rgba(227, 161, 95, 0.30);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition:
-    transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   user-select: none;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 6px 14px rgba(0, 0, 0, 0.30);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 6px 14px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 .jm-rerecord-btn:active {
   transform: scale(0.94);
   background: var(--color-surface-2);
-  border-color: rgba(227, 161, 95, 0.55);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
 /* Larger tap target for the settings icon too */
 .jm-settings-btn {
@@ -1880,11 +1856,11 @@ summary:active {
 .jm-spinner {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 229, 214, 0.10);
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
   border-top-color: var(--color-accent);
   animation: jm-spin 0.9s linear infinite;
-  box-shadow: 0 0 22px rgba(227, 161, 95, 0.20);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 20%, transparent);
 }
 @keyframes jm-spin {
   to { transform: rotate(360deg); }
@@ -1895,7 +1871,7 @@ summary:active {
    ============================================================= */
 
 .jm-month-header {
-  padding: 16px 24px 12px;
+  padding: calc(16px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -1906,7 +1882,7 @@ summary:active {
 .jm-month-title {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: calc(7px * var(--jm-space));
   background: transparent;
   border: none;
   padding: 0;
@@ -1936,14 +1912,14 @@ summary:active {
 
 .jm-day-list {
   flex: 1;
-  padding: 4px 0 8px;
+  padding: calc(4px * var(--jm-space)) 0 calc(8px * var(--jm-space));
 }
 
 .jm-month-section-header {
   position: sticky;
   top: 0;
   z-index: 2;
-  padding: 18px 24px 10px;
+  padding: calc(18px * var(--jm-space)) calc(24px * var(--jm-space)) calc(10px * var(--jm-space));
   background: linear-gradient(
     to bottom,
     var(--color-bg-phone) 0%,
@@ -1962,19 +1938,18 @@ summary:active {
   position: relative;
   display: grid;
   grid-template-columns: 48px 1fr;
-  gap: 16px;
-  padding: 14px 24px;
+  gap: calc(16px * var(--jm-space));
+  padding: calc(14px * var(--jm-space)) calc(24px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
   cursor: pointer;
-  transition:
-    background-color 80ms ease,
+  transition: background-color 80ms ease,
     transform 120ms cubic-bezier(0.4, 0, 0.2, 1),
     opacity 160ms ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 .jm-day-row:active {
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in oklab, var(--color-ink) 2%, transparent);
   transform: scale(0.975);
 }
 .jm-day-row.is-loading {
@@ -1988,15 +1963,15 @@ summary:active {
   margin-top: -9px;
   width: 18px;
   height: 18px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 229, 214, 0.12);
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, var(--color-ink) 12%, transparent);
   border-top-color: var(--color-accent);
   animation: jm-spin 0.8s linear infinite;
 }
 .jm-day-row.is-today {
   background: linear-gradient(
     90deg,
-    rgba(227, 161, 95, 0.06) 0%,
+    color-mix(in oklab, var(--color-accent) 6%, transparent) 0%,
     transparent 60%
   );
 }
@@ -2009,7 +1984,7 @@ summary:active {
   width: 2px;
   background: var(--color-accent);
   border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 8px rgba(227, 161, 95, 0.45);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 45%, transparent);
 }
 
 .jm-day-num {
@@ -2032,15 +2007,15 @@ summary:active {
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin-top: 4px;
+  margin-top: calc(4px * var(--jm-space));
 }
 
 .jm-day-body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-top: 2px;
+  gap: calc(6px * var(--jm-space));
+  padding-top: calc(2px * var(--jm-space));
 }
 .jm-day-headline {
   font-size: 14px;
@@ -2062,9 +2037,9 @@ summary:active {
 .jm-day-meta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(12px * var(--jm-space));
   flex-wrap: wrap;
-  margin-top: 2px;
+  margin-top: calc(2px * var(--jm-space));
 }
 .jm-meta-chip {
   font-size: 11px;
@@ -2082,50 +2057,50 @@ summary:active {
 }
 .jm-dots-mini {
   display: flex;
-  gap: 4px;
+  gap: calc(4px * var(--jm-space));
   margin-left: auto;
 }
 .jm-dot-mini {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 5%, transparent);
   display: inline-block;
 }
 .jm-dot-mini.on {
   background: var(--color-accent);
-  border-color: rgba(227, 161, 95, 0.5);
-  box-shadow: 0 0 4px rgba(227, 161, 95, 0.35);
+  border-color: color-mix(in oklab, var(--color-accent) 50%, transparent);
+  box-shadow: 0 0 4px color-mix(in oklab, var(--color-glow) 35%, transparent);
 }
 
 /* Jump picker overlay */
 .jm-picker-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 5, 7, 0.55);
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
   backdrop-filter: blur(8px);
   z-index: 40;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 110px;
+  padding-top: calc(110px * var(--jm-space));
 }
 .jm-picker {
   width: min(320px, calc(100vw - 32px));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 18px;
-  padding: 16px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(16px * var(--jm-space));
+  box-shadow: 0 24px 48px color-mix(in oklab, var(--color-shadow) 60%, transparent);
 }
 .jm-picker-year {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 6px 14px;
+  padding: calc(4px * var(--jm-space)) calc(6px * var(--jm-space)) calc(14px * var(--jm-space));
   border-bottom: 1px solid var(--color-line);
-  margin-bottom: 12px;
+  margin-bottom: calc(12px * var(--jm-space));
 }
 .jm-picker-year .y {
   font-size: 16px;
@@ -2138,7 +2113,7 @@ summary:active {
   font-size: 18px;
   color: var(--color-accent);
   font-weight: 500;
-  padding: 0 8px;
+  padding: 0 calc(8px * var(--jm-space));
   cursor: pointer;
   background: transparent;
   border: none;
@@ -2148,17 +2123,17 @@ summary:active {
 .jm-picker-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: calc(6px * var(--jm-space));
 }
 .jm-picker-cell {
-  padding: 14px 6px;
+  padding: calc(14px * var(--jm-space)) calc(6px * var(--jm-space));
   text-align: center;
   font-size: 12px;
   font-weight: 600;
   color: var(--color-ink-muted);
   letter-spacing: 0.10em;
   text-transform: uppercase;
-  border-radius: 10px;
+  border-radius: var(--jm-radius-sm);
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
@@ -2177,9 +2152,9 @@ summary:active {
   cursor: not-allowed;
 }
 .jm-picker-cell.current {
-  background: rgba(227, 161, 95, 0.12);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
   color: var(--color-accent-hi);
-  border-color: rgba(227, 161, 95, 0.35);
+  border-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
 }
 
 /* =============================================================
@@ -2189,7 +2164,7 @@ summary:active {
 
 /* "Preferisco scrivere a mano" link under the big mic */
 .jm-write-link {
-  margin-top: 30px;
+  margin-top: calc(30px * var(--jm-space));
   background: none;
   border: none;
   color: var(--color-ink-faint);
@@ -2198,7 +2173,7 @@ summary:active {
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(255, 229, 214, 0.22);
+  text-decoration-color: color-mix(in oklab, var(--color-ink) 22%, transparent);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -2214,16 +2189,16 @@ summary:active {
 .jm-pill-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(8px * var(--jm-space));
 }
 .jm-person-pill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
+  gap: calc(7px * var(--jm-space));
+  padding: calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
-  border-radius: 999px;
+  border-radius: var(--jm-radius-pill);
   font-size: 13px;
   font-weight: 500;
   color: var(--color-ink);
@@ -2233,14 +2208,14 @@ summary:active {
   opacity: 0.85;
 }
 .jm-person-pill.is-new {
-  padding-right: 8px;
-  border-color: rgba(227, 161, 95, 0.45);
-  background: rgba(227, 161, 95, 0.08);
+  padding-right: calc(8px * var(--jm-space));
+  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 8%, transparent);
 }
 .jm-person-dot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
   flex: none;
 }
@@ -2258,8 +2233,8 @@ summary:active {
 .jm-person-pill .x {
   width: 18px;
   height: 18px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
   color: var(--color-ink-faint);
   border: none;
   display: flex;
@@ -2274,7 +2249,7 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-person-pill .x:hover {
-  background: rgba(248, 113, 113, 0.16);
+  background: color-mix(in oklab, var(--color-danger) 16%, transparent);
   color: var(--color-danger);
 }
 
@@ -2285,16 +2260,16 @@ summary:active {
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin-bottom: 10px;
+  margin-bottom: calc(10px * var(--jm-space));
 }
 .jm-pr-label.accent {
   color: var(--color-accent);
 }
 .jm-add-person {
-  margin-top: 14px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px dashed var(--color-line-2, rgba(255, 229, 214, 0.18));
+  margin-top: calc(14px * var(--jm-space));
+  padding: calc(10px * var(--jm-space)) calc(16px * var(--jm-space));
+  border-radius: var(--jm-radius-pill);
+  border: 1px dashed color-mix(in oklab, var(--color-ink) 18%, transparent);
   background: transparent;
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
@@ -2306,7 +2281,7 @@ summary:active {
   transition: background-color 100ms ease, transform 80ms ease;
 }
 .jm-add-person:active {
-  transform: scale(0.97);
+  transform: scale(var(--jm-press));
   background: var(--color-surface);
 }
 
@@ -2329,12 +2304,12 @@ summary:active {
 /* Connecting pulse (recording overlay, while priming the mic) */
 .jm-dot-pulse {
   display: inline-flex;
-  gap: 5px;
+  gap: calc(5px * var(--jm-space));
 }
 .jm-dot-pulse i {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
+  border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
   display: inline-block;
   animation: jm-dot-pulse 1s ease-in-out infinite;
@@ -2402,7 +2377,7 @@ summary:active {
 --------------------------------------------------------------------------- */
 .jm-ptt-save-idle {
   background: transparent;
-  border: 1px solid rgba(227, 161, 95, 0.40);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 40%, transparent);
   color: var(--color-accent);
 }
 .jm-ptt-save-idle:disabled {
@@ -2412,7 +2387,7 @@ summary:active {
 .jm-rec-quiet {
   background: transparent;
   border: none;
-  padding: 6px 10px;
+  padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
   font-family: var(--font-sans);
   font-size: 12.5px;
   color: var(--color-ink-faint);
@@ -2437,15 +2412,15 @@ summary:active {
 .rec-ptt::after {
   content: "";
   position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(227, 161, 95, 0.28);
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
   opacity: 0;
   transform: scale(0.9);
   transition: opacity 180ms ease, transform 180ms ease;
   pointer-events: none;
 }
 .rec-ptt::before { inset: -14px; }
-.rec-ptt::after { inset: -31px; border-color: rgba(227, 161, 95, 0.12); }
+.rec-ptt::after { inset: -31px; border-color: color-mix(in oklab, var(--color-accent) 12%, transparent); }
 .rec-ptt:active:not(:disabled)::before,
 .rec-ptt:active:not(:disabled)::after {
   opacity: 1;
@@ -2455,4 +2430,156 @@ summary:active {
 @media (prefers-reduced-motion: reduce) {
   .rec-ptt::before,
   .rec-ptt::after { transition: none; }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Macchina da scrivere: angoli vivi anche dove il raggio non e (ancora) un
+   token. I raggi tokenizzati sono gia 0; questo copre i residui (4/8/12/16px)
+   finche le PR 6-10 non riscrivono i componenti sul contratto.
+--------------------------------------------------------------------------- */
+[data-theme="macchina"] *,
+[data-theme="macchina"] *::before,
+[data-theme="macchina"] *::after {
+  border-radius: 0 !important;
+}
+
+/* =============================================================
+   Altro > Aspetto — switch appearance + griglia dei temi (PR 0).
+   Componente nuovo: SOLO token del contratto, nessun valore di
+   marca. Le taglie fisse delle anteprime sono miniature del
+   picker, non ruoli tipografici dell'app.
+   ============================================================= */
+.jm-appearance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
+  margin-bottom: calc(16px * var(--jm-space));
+}
+.jm-appearance-t {
+  font-size: var(--jm-text-body);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.jm-appearance-p {
+  font-size: var(--jm-text-meta);
+  color: var(--color-ink-muted);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+.jm-seg {
+  display: flex;
+  flex: none;
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px;
+}
+.jm-seg-opt {
+  font-family: var(--font-sans);
+  font-size: var(--jm-text-meta);
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--jm-radius-pill);
+  padding: 7px 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-seg-opt.on {
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+  color: var(--color-accent);
+}
+.jm-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(12px * var(--jm-space));
+}
+.jm-theme-card {
+  display: block;
+  text-align: left;
+  padding: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 120ms;
+}
+.jm-theme-card.on {
+  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+.jm-theme-prev {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 108px;
+  padding: 12px;
+  /* Le variabili scoped della card (style inline) vincono su <html>:
+     l'anteprima e VIVA, renderizza davvero il suo tema nel modo scelto. */
+  background: var(--jm-bg-app);
+  color: var(--jm-ink);
+}
+.jm-theme-prev-t {
+  font-family: var(--jm-font-serif);
+  font-size: 16px;
+  font-weight: var(--jm-weight-prose);
+  letter-spacing: -0.01em;
+  color: var(--jm-ink);
+}
+.jm-theme-prev-p {
+  font-family: var(--jm-font-sans);
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--jm-ink-muted);
+  margin-top: 5px;
+}
+.jm-theme-sw {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: auto;
+}
+.jm-theme-sw i {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--jm-radius-circle);
+  display: block;
+  border: 1px solid var(--jm-line);
+}
+.jm-theme-sw .sw-accent { background: var(--jm-accent); }
+.jm-theme-sw .sw-surface { background: var(--jm-surface); }
+.jm-theme-sw .sw-ink { background: var(--jm-ink); }
+.jm-theme-sw .sw-faint { background: var(--jm-ink-faint); }
+.jm-theme-meta {
+  display: block;
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-line);
+}
+.jm-theme-name {
+  display: block;
+  font-size: var(--jm-text-body);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.jm-theme-fonts {
+  display: block;
+  font-size: var(--jm-text-meta);
+  color: var(--color-ink-muted);
+  margin-top: 2px;
+}
+.jm-theme-footnote {
+  margin-top: calc(14px * var(--jm-space));
+  font-size: var(--jm-text-meta);
+  color: var(--color-ink-faint);
+  line-height: 1.55;
 }

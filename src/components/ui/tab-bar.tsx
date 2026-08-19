@@ -110,7 +110,7 @@ export function TabBar({ active }: Props) {
       style={{
         gridTemplateColumns: "repeat(5, 1fr)",
         borderColor: "var(--color-line)",
-        background: "rgba(10, 5, 7, 0.50)",
+        background: "color-mix(in oklab, var(--color-bg) 50%, transparent)",
         paddingTop: 12,
         paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 14px)",
       }}

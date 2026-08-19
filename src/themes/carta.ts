@@ -1,0 +1,76 @@
+import type { Theme } from "./contract";
+
+/**
+ * Carta — libro. Inter + EB Garamond, spaziatura ariosa (1.08).
+ */
+export const carta: Theme = {
+  id: "carta",
+  name: "Carta",
+  typography: {
+    fontUi: "inter",
+    fontProse: "eb-garamond",
+    sizes: {
+      display: 44,
+      chapter: 30,
+      pageHeader: 24,
+      headline: 27,
+      title: 23,
+      prose: 21,
+      body: 14,
+      meta: 12,
+      label: 11,
+      metric: 32,
+    },
+    weights: { headline: 600, prose: 400, label: 650, metric: 300 },
+    tracking: { headline: "-0.012em", label: "0.18em" },
+    lineHeight: { display: 1.1, editorial: 1.22, prose: 1.62, body: 1.45 },
+  },
+  shape: {
+    radius: { sm: 10, md: 14, lg: 18, xl: 22, pill: 999, circle: "50%" },
+    borderWidth: { hairline: 1, strong: 2 },
+  },
+  space: 1.08,
+  motion: { press: 0.97 },
+  light: {
+    bg: "#EDE6DA",
+    bgApp: "#F7F2E9",
+    surface: "#FFFDF8",
+    surface2: "#F2EADC",
+    ink: "#241C17",
+    inkMuted: "#55473D",
+    inkFaint: "#7B6C5F",
+    accent: "#A8542E",
+    accentPressed: "#8E4526",
+    accentHi: "#C4653A",
+    onAccent: "#FFFDF8",
+    success: "#3F6B4A",
+    danger: "#A63A3A",
+    line: "rgba(36, 28, 23, 0.10)",
+    shadow: "#6B5A48",
+    glow: "transparent",
+    warmth:
+      "radial-gradient(circle at 30% -6%, rgba(168, 84, 46, 0.05), transparent 40%)",
+    grain: 0.02,
+  },
+  dark: {
+    bg: "#12100E",
+    bgApp: "#1A1714",
+    surface: "#221E1A",
+    surface2: "#2A251F",
+    ink: "#EFE7DA",
+    inkMuted: "#C0B2A0",
+    inkFaint: "#968878",
+    accent: "#D08A5A",
+    accentPressed: "#B87747",
+    accentHi: "#E2A275",
+    onAccent: "#16120F",
+    success: "#8FB79A",
+    danger: "#E07A7A",
+    line: "rgba(239, 231, 218, 0.10)",
+    shadow: "#000000",
+    glow: "transparent",
+    warmth:
+      "radial-gradient(circle at 30% -6%, rgba(208, 138, 90, 0.05), transparent 40%)",
+    grain: 0.02,
+  },
+};
