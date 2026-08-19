@@ -681,6 +681,17 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   monitorate su desktop e telefono, larghezze) + regressione PR 7 (24/24),
   PR 8 (21/21), PR 9 (25/25 — i check sulle aree ora iniettano il DOM:
   in locale la vista gratis mostra prosa, non aree).
+- **Larghezze desktop: DECISIONE DI MANUEL (19 ago, esplicita e con
+  priorita) — larghezza FLUIDA su tutte le pagine.** Niente max-width per
+  pagina da lg (`lg:max-w-none` ovunque): ogni pagina riempie la colonna
+  disponibile e i margini interni fissi (24-28px) sono l'unica cosa fissa.
+  Il vecchio 660px del mockup vale solo per il TESTO: editor 680px e prosa
+  serif 700px restano a riga di lettura, centrati/limitati dentro la
+  colonna fluida. Non reintrodurre cap di larghezza sulle pagine senza
+  chiederglielo. Fix collegato: AuthGate rimbalzava a / anche gli utenti
+  LOCALI da /login — ora il rimbalzo dalle pagine d'ingresso vale solo con
+  sessione cloud (auth === "in"), altrimenti il "prova premium" del muro
+  era un vicolo cieco.
 - Le PR 11..12 non sono ancora iniziate. Per la PR 11 (Stripe) serve la
   decisione sul prezzo.
 
