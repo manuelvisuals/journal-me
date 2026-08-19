@@ -6,7 +6,7 @@
 export default function DayLoading() {
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-[860px] flex-1 flex-col"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
       aria-busy="true"
     >

@@ -96,7 +96,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-[1000px] flex-1 flex-col"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
       <header className="jm-rec-head">

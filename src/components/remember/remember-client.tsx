@@ -98,7 +98,7 @@ export function RememberClient({ mode, initial }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-[1000px] flex-1 flex-col relative"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col relative"
       style={{ minHeight: "100dvh" }}
     >
       <header className="jm-rem-head">
