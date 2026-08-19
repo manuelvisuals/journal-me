@@ -630,7 +630,30 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   editor e "⌘⇧R" nella rail. Verifica Playwright 21/21 a 1440px e 430px
   (palette apre/naviga/cattura con verifica su /remember, focus on/off,
   Cmd+S a fuoco fuori dal textarea, phone intatto, 0 errori console).
-- Le PR 9..12 non sono ancora iniziate.
+- **PR 9 `mese-griglia`: fatta.** `mese-grid.tsx` (mockup desktop-v1 §04):
+  griglia 7 colonne celle 112px da lg, lunedi primo giorno, fuori-mese senza
+  bordo, oggi con bordo sinistro ambra + gradiente caldo, futuri al 30%,
+  vuoti passati "vuota" in serif corsivo (come nel mockup approvato; la spec
+  diceva "trattino" ma il mockup vince), headline clampata a 3 righe + i sei
+  goal-dot per cella. Click su giornata piena -> /giorno; su oggi vuoto -> /.
+  Il titolo del mese apre lo JumpPicker esistente; su desktop il picker
+  cambia il mese della GRIGLIA (cache `deskCache` separata dal feed: il feed
+  e una lista cronologica e appenderci mesi arbitrari la romperebbe). Il
+  feed verticale resta intatto sotto lg. Rail destra: statistiche del mese
+  calcolate in locale senza AI (giornate X/Y, umore medio grezzo 1..5 con
+  virgola it, giorni col goal piu frequente, parole scritte) — esistono
+  anche in gratis; card Pattern come TEASER ONESTO senza numeri inventati
+  (la lettura vera arriva col motore pattern M4, gating in PR 10). BONUS da
+  feedback di Manuel ("il body e ancora portrait"): FilledView §03 — stili
+  migrati da inline a classi jm-fv-* (valori telefono replicati ESATTI e
+  verificati via computed-style), da lg headline 27px, snippet serif corsivo
+  17, aree macro su due colonne a card. TRAPPOLA SCOPERTA: le utility
+  Tailwind v4 stanno in @layer, il CSS nudo di globals.css no — quindi
+  `lg:hidden` PERDE contro un `display:flex` scritto in una classe custom
+  (successo con .jm-month-header): in quei casi serve un `display:none`
+  esplicito nel blocco lg. Verifica Playwright 27/27 + riesecuzione di
+  PR 7 (24/24) e PR 8 (21/21) su build pulita.
+- Le PR 10..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

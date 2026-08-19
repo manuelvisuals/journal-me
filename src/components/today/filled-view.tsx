@@ -33,90 +33,32 @@ export function FilledView({
 
   return (
     <div className="flex flex-1 flex-col" style={{ padding: "0 24px" }}>
+      {/* Stili in classi jm-fv-*: sotto lg replicano ESATTAMENTE i valori
+          inline storici; da lg il mockup desktop-v1 §03 (headline 27px,
+          snippet serif corsivo, aree su due colonne a card). */}
       {hasHeadline ? (
-        <h1
-          style={{
-            fontSize: 26,
-            fontWeight: 650,
-            lineHeight: 1.15,
-            letterSpacing: "-0.025em",
-            color: "var(--color-ink)",
-            margin: "4px 0 10px",
-          }}
-        >
-          {headline}
-        </h1>
+        <h1 className="jm-fv-h">{headline}</h1>
       ) : (
-        <h1
-          style={{
-            fontSize: 22,
-            fontWeight: 500,
-            lineHeight: 1.2,
-            color: "var(--color-ink-faint)",
-            fontStyle: "italic",
-            margin: "4px 0 10px",
-          }}
-        >
+        <h1 className="jm-fv-h placeholder">
           giornata raccontata, l&apos;AI non ha ancora generato un titolo
         </h1>
       )}
 
-      {hasSnippet && (
-        <p
-          style={{
-            fontSize: 14,
-            fontWeight: 400,
-            color: "var(--color-ink-muted)",
-            lineHeight: 1.55,
-            marginBottom: 18,
-          }}
-        >
-          {snippet}
-        </p>
-      )}
+      {hasSnippet && <p className="jm-fv-sn">{snippet}</p>}
 
       <Separator />
 
       {realAreas.length > 0 ? (
-        realAreas.map((area) => (
-          <div key={area.label} style={{ padding: "14px 0" }}>
-            <div
-              style={{
-                fontSize: 10,
-                fontWeight: 650,
-                color: "var(--color-accent)",
-                letterSpacing: "0.20em",
-                textTransform: "uppercase",
-                marginBottom: 6,
-              }}
-            >
-              {area.label}
+        <div className="jm-fv-areas">
+          {realAreas.map((area) => (
+            <div key={area.label} className="jm-fv-area">
+              <div className="l">{area.label}</div>
+              <div className="x">{area.text}</div>
             </div>
-            <div
-              style={{
-                fontSize: 14,
-                fontWeight: 500,
-                color: "var(--color-ink)",
-                lineHeight: 1.55,
-              }}
-            >
-              {area.text}
-            </div>
-          </div>
-        ))
-      ) : (
-        <div
-          style={{
-            padding: "20px 0",
-            fontSize: 12,
-            color: "var(--color-ink-faint)",
-            fontStyle: "italic",
-            textAlign: "center",
-            letterSpacing: "0.02em",
-          }}
-        >
-          aree macro non ancora estratte
+          ))}
         </div>
+      ) : (
+        <div className="jm-fv-noareas">aree macro non ancora estratte</div>
       )}
 
       {/* Sotto lg: persone, metriche e obiettivi restano nella colonna, come
@@ -179,13 +121,5 @@ export function FilledView({
 }
 
 function Separator() {
-  return (
-    <div
-      style={{
-        height: 1,
-        background: "var(--color-line)",
-        margin: "4px 0",
-      }}
-    />
-  );
+  return <div className="jm-fv-sep" />;
 }

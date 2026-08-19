@@ -3334,3 +3334,304 @@ summary:active {
     letter-spacing: 0.02em;
   }
 }
+
+/* =============================================================
+   Mese a griglia (PR 9, SPEC-v2 §5.6, mockup desktop-v1 §04).
+   Solo da lg: sotto resta il feed verticale, intoccato.
+   ============================================================= */
+.jm-mese-wrap {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .jm-mese-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  /* L'header sticky del telefono ha un suo `display:flex` NON layered, che
+     vince sulla utility lg:hidden (le utility Tailwind v4 stanno in @layer,
+     il CSS nudo no). Si spegne qui, esplicitamente. */
+  .jm-month-header {
+    display: none;
+  }
+  .jm-mese-head {
+    padding: 28px 28px 16px;
+  }
+  .jm-mese-t {
+    display: inline-flex;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--font-serif);
+    font-size: 40px;
+    font-weight: 400;
+    letter-spacing: -0.022em;
+    line-height: 1.05;
+    color: var(--color-ink);
+    text-align: left;
+  }
+  .jm-mese-t:hover {
+    color: var(--color-accent);
+  }
+  .jm-mese-s {
+    font-size: 12.5px;
+    color: var(--color-ink-faint);
+    margin-top: 9px;
+  }
+  .jm-mese-wk {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding: 0 28px 10px;
+  }
+  .jm-mese-wk div {
+    font-size: 9.5px;
+    font-weight: 650;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    text-align: left;
+    padding-left: 2px;
+  }
+  .jm-mese-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding: 0 28px 28px;
+  }
+  .jm-mese-cell {
+    height: 112px;
+    border-radius: var(--jm-radius-sm);
+    border: none;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid var(--color-line);
+    background: transparent;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    overflow: hidden;
+    font-family: var(--font-sans);
+  }
+  button.jm-mese-cell {
+    cursor: pointer;
+  }
+  button.jm-mese-cell:hover {
+    background: color-mix(in oklab, var(--color-ink) 4%, transparent);
+  }
+  .jm-mese-cell.out {
+    border-bottom-color: transparent;
+  }
+  .jm-mese-cell.future {
+    opacity: 0.3;
+  }
+  .jm-mese-cn {
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--color-ink);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .jm-mese-cell.out .jm-mese-cn {
+    color: color-mix(in oklab, var(--color-ink-faint) 50%, transparent);
+  }
+  .jm-mese-cell.today {
+    border-left-color: var(--color-accent);
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-accent) 10%, transparent),
+      transparent 60%
+    );
+  }
+  .jm-mese-cell.today .jm-mese-cn {
+    color: var(--color-accent);
+    font-weight: 400;
+  }
+  .jm-mese-ch {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--color-ink-muted);
+    margin-top: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .jm-mese-cell.empty .jm-mese-ch {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-ink-faint);
+  }
+  .jm-mese-dots {
+    margin-top: auto;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .jm-mese-dots i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--color-ink) 14%, transparent);
+    display: block;
+  }
+  .jm-mese-dots i.on {
+    background: var(--color-accent);
+  }
+}
+
+/* Statistiche del mese nella rail destra + card Pattern (teaser). Vivono
+   dentro .jm-rail-r, che sotto lg e display:none: niente media query. */
+.jm-railr-stat {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-railr-stat:last-child {
+  border-bottom: none;
+}
+.jm-railr-stat .v {
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-railr-stat .v span {
+  font-size: 15px;
+  color: var(--color-ink-faint);
+}
+.jm-railr-stat .k {
+  font-size: 12px;
+  color: var(--color-ink-muted);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+.jm-railr-locked {
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
+  border-radius: var(--jm-radius-md);
+  padding: 16px;
+  background: linear-gradient(
+    165deg,
+    color-mix(in oklab, var(--color-accent) 9%, transparent),
+    var(--color-surface)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+.jm-railr-locked .t {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+  line-height: 1.45;
+}
+.jm-railr-locked .p {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+
+/* =============================================================
+   Giornata raccontata (FilledView). Sotto lg: gli STESSI valori
+   che erano inline (nessun cambiamento sul telefono). Da lg: il
+   mockup desktop-v1 §03 — headline piu grande, snippet serif
+   corsivo, aree macro su due colonne a card.
+   ============================================================= */
+.jm-fv-h {
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  margin: 4px 0 10px;
+}
+.jm-fv-h.placeholder {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: var(--color-ink-faint);
+  font-style: italic;
+}
+.jm-fv-sn {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+.jm-fv-sep {
+  height: 1px;
+  background: var(--color-line);
+  margin: 4px 0;
+}
+.jm-fv-area {
+  padding: 14px 0;
+}
+.jm-fv-area .l {
+  font-size: 10px;
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.jm-fv-area .x {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  line-height: 1.55;
+}
+.jm-fv-noareas {
+  padding: 20px 0;
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  font-style: italic;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 1024px) {
+  .jm-fv-h {
+    font-size: 27px;
+    letter-spacing: -0.018em;
+    line-height: 1.22;
+    margin: 4px 0 14px;
+  }
+  .jm-fv-sn {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+  .jm-fv-sep {
+    display: none;
+  }
+  .jm-fv-areas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .jm-fv-area {
+    padding: 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--jm-radius-md);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  }
+  .jm-fv-area .l {
+    font-size: 11px;
+    margin-bottom: 9px;
+  }
+  .jm-fv-area .x {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    line-height: 1.62;
+  }
+}

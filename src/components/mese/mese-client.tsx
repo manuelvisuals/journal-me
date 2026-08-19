@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { JumpPicker } from "@/components/mese/jump-picker";
 import { MonthSection } from "@/components/mese/month-section";
+import { MeseGrid } from "@/components/mese/mese-grid";
+import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { formatMonthTitle, daysInMonth, nowAppParts } from "@/lib/format";
 import {
   loadMonthEntries,
@@ -45,6 +47,39 @@ export function MeseClient({ mode, initialMonth }: Props) {
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  // --- Mese a griglia, solo desktop (PR 9, SPEC-v2 §5.6) ---
+  // Cache separata dal feed: il feed e una LISTA ordinata dal piu recente
+  // al piu vecchio e appenderci un mese arbitrario dal picker romperebbe
+  // l'ordine cronologico sotto lg.
+  const isDesktop = useIsDesktop();
+  const [deskMonth, setDeskMonth] = useState<{ year: number; month: number }>({
+    year: initialMonth.year,
+    month: initialMonth.month,
+  });
+  const [deskCache, setDeskCache] = useState<Record<string, Entry[]>>({
+    [`${initialMonth.year}-${initialMonth.month}`]: initialMonth.entries,
+  });
+  const deskKey = `${deskMonth.year}-${deskMonth.month}`;
+  const deskEntries = deskCache[deskKey];
+
+  useEffect(() => {
+    if (!isDesktop || deskCache[deskKey] !== undefined) return;
+    let cancelled = false;
+    void (async () => {
+      const entries = await loadMonthEntries(
+        mode,
+        deskMonth.year,
+        deskMonth.month,
+      );
+      if (cancelled) return;
+      setDeskCache((prev) => ({ ...prev, [deskKey]: entries }));
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDesktop, deskKey]);
 
   // initialMonth.entries is always populated server-side now.
 
@@ -119,6 +154,11 @@ export function MeseClient({ mode, initialMonth }: Props) {
 
   const handlePickerSelect = async (year: number, month: number) => {
     setPickerOpen(false);
+    // Su desktop il picker cambia il mese della griglia, non scrolla il feed.
+    if (isDesktop) {
+      setDeskMonth({ year, month });
+      return;
+    }
     // Already loaded?
     const existing = loaded.find((m) => m.year === year && m.month === month);
     if (existing) {
@@ -171,9 +211,27 @@ export function MeseClient({ mode, initialMonth }: Props) {
       className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
-      {/* Sticky month header */}
+      {/* Mese a griglia: esiste solo da lg (CSS), il telefono non lo vede */}
+      {deskEntries !== undefined && (
+        <MeseGrid
+          year={deskMonth.year}
+          month={deskMonth.month}
+          entries={deskEntries}
+          today={today}
+          onTitleClick={() => setPickerOpen(true)}
+          onDayClick={(iso) => {
+            setPendingDate(iso);
+            startNav(() => {
+              router.push(`/giorno?d=${iso}`);
+            });
+          }}
+          onWriteToday={() => router.push("/")}
+        />
+      )}
+
+      {/* Sticky month header (solo telefono: da lg comanda la griglia) */}
       <header
-        className="jm-month-header"
+        className="jm-month-header lg:hidden"
         style={{ position: "sticky", top: 0 }}
       >
         <button
@@ -195,8 +253,8 @@ export function MeseClient({ mode, initialMonth }: Props) {
         )}
       </header>
 
-      {/* Day list */}
-      <div className="jm-day-list">
+      {/* Day list (solo telefono: da lg c'e la griglia) */}
+      <div className="jm-day-list lg:hidden">
         {loaded.map((m, idx) => (
           <MonthSection
             key={`${m.year}-${m.month}`}
@@ -238,8 +296,8 @@ export function MeseClient({ mode, initialMonth }: Props) {
 
       <JumpPicker
         open={pickerOpen}
-        currentYear={currentMonth.year}
-        currentMonth={currentMonth.month}
+        currentYear={isDesktop ? deskMonth.year : currentMonth.year}
+        currentMonth={isDesktop ? deskMonth.month : currentMonth.month}
         todayYear={today.year}
         todayMonth={today.month}
         onSelect={handlePickerSelect}
