@@ -1,0 +1,183 @@
+// Verifica PR 9 (Mese a griglia + stats rail + aree a card) — modalita locale.
+import { chromium } from "playwright-core";
+
+const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+const BASE = "http://localhost:3100";
+const results = [];
+function check(name, ok, extra = "") {
+  results.push({ name, ok });
+  console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "  -- " + extra : ""}`);
+}
+
+const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
+
+const now = new Date();
+const Y = now.getFullYear(), M = now.getMonth() + 1, D = now.getDate();
+const iso = (d) => `${Y}-${String(M).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+async function newPage(width, height) {
+  const ctx = await browser.newContext({ viewport: { width, height }, locale: "it-IT" });
+  await ctx.addInitScript(() => {
+    try { window.localStorage.setItem("jm.mode", "local"); } catch {}
+  });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  return { ctx, page, errors };
+}
+
+// Seed: due giornate nel mese corrente (oggi e il giorno 1) direttamente in IDB.
+async function seed(page) {
+  await page.evaluate(({ e1, e2 }) => new Promise((resolve) => {
+    const req = indexedDB.open("journalme");
+    req.onsuccess = () => {
+      const db = req.result;
+      const tx = db.transaction("entries", "readwrite");
+      tx.objectStore("entries").put(e1);
+      tx.objectStore("entries").put(e2);
+      tx.oncomplete = () => resolve(1);
+      tx.onerror = () => resolve(0);
+    };
+    req.onerror = () => resolve(0);
+  }), {
+    e1: {
+      id: crypto.randomUUID(), entryDate: iso(D), transcript: "Giornata di prova con dieci parole scritte qui dentro oggi.",
+      headline: "Titolo di oggi per la cella", snippet: "", areas: [
+        { label: "Lavoro", text: "Testo area lavoro." },
+        { label: "Relazioni", text: "Testo area relazioni." },
+      ],
+      metrics: { weightKg: null, sleepHours: null, mood: "good" },
+      goalsOn: ["camminato"], people: [], durationSeconds: 0, createdAt: new Date().toISOString(),
+    },
+    e2: {
+      id: crypto.randomUUID(), entryDate: iso(1), transcript: "Prima giornata del mese con qualche parola.",
+      headline: "Primo del mese", snippet: "", areas: [],
+      metrics: { weightKg: null, sleepHours: null, mood: "neutral" },
+      goalsOn: ["camminato", "no alcol"], people: [], durationSeconds: 0, createdAt: new Date().toISOString(),
+    },
+  });
+}
+
+/* ============ DESKTOP 1440 ============ */
+{
+  const { ctx, page, errors } = await newPage(1440, 900);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(800);
+  await seed(page);
+  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+
+  check("griglia visibile", await page.locator(".jm-mese-grid").isVisible());
+  check("feed verticale nascosto", await page.locator(".jm-day-list").evaluate((el) => getComputedStyle(el).display === "none"));
+  const cells = await page.locator(".jm-mese-cell").count();
+  check("celle multiple di 7", cells % 7 === 0 && cells >= 28, String(cells));
+  const cellH = (await page.locator(".jm-mese-cell").first().boundingBox())?.height;
+  check("cella alta 112px", cellH === 112, String(cellH));
+  check("oggi evidenziato", (await page.locator(".jm-mese-cell.today").count()) === 1);
+  check("cella di oggi col titolo", await page.locator(".jm-mese-cell.today", { hasText: "Titolo di oggi" }).isVisible());
+  check("giorno 1 pieno", await page.locator(".jm-mese-cell.full", { hasText: "Primo del mese" }).isVisible());
+  if (D > 2) {
+    check("giorni passati vuoti: 'vuota' in corsivo", (await page.locator(".jm-mese-cell.empty .jm-mese-ch", { hasText: "vuota" }).count()) > 0);
+  }
+  const lastDay = new Date(Y, M, 0).getDate();
+  if (D < lastDay) {
+    const fut = page.locator(".jm-mese-cell.future").first();
+    check("giorni futuri al 30%", (await fut.evaluate((el) => getComputedStyle(el).opacity)) === "0.3");
+  }
+
+  // Stats nella rail
+  check("rail: Il mese", await page.locator(".jm-railr-l", { hasText: "Il mese" }).isVisible());
+  const statDone = await page.locator(".jm-railr-stat").first().innerText();
+  check("rail: giornate raccontate 2/N", /^2\s*\/\s*\d+/.test(statDone.replace(/\n/g, " ")), statDone);
+  check("rail: umore medio 3,5", (await page.locator(".jm-railr-stat", { hasText: "umore medio" }).innerText()).includes("3,5"));
+  check("rail: giorni con camminato = 2", (await page.locator(".jm-railr-stat", { hasText: "camminato" }).innerText()).includes("2"));
+  check("rail: card Pattern presente", await page.locator(".jm-railr-locked").isVisible());
+
+  // Click su una giornata piena -> /giorno
+  await page.locator(".jm-mese-cell.full", { hasText: "Primo del mese" }).click();
+  await page.waitForTimeout(1200);
+  check("click cella -> /giorno", page.url().includes("/giorno?d=" + iso(1)));
+
+  // Titolo -> JumpPicker
+  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.waitForTimeout(900);
+  await page.locator(".jm-mese-t").click();
+  await page.waitForTimeout(400);
+  const pickerVisible = await page.locator("[role=dialog]").first().isVisible().catch(() => false);
+  check("titolo apre il picker dei mesi", pickerVisible);
+
+  // FilledView desktop: aree a due colonne. Dalla PR 10 in locale le aree
+  // non si mostrano piu (vista gratis = prosa): si verifica il CSS su DOM
+  // iniettato — la vista premium usa queste stesse classi.
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1000);
+  const areaCss = await page.evaluate(() => {
+    const d = document.createElement("div");
+    d.className = "jm-fv-areas";
+    d.innerHTML = '<div class="jm-fv-area"><div class="l">L</div><div class="x">x</div></div>';
+    document.querySelector("main")?.appendChild(d);
+    const s = getComputedStyle(d);
+    const a = getComputedStyle(d.firstElementChild);
+    const out = {
+      display: s.display,
+      cols: s.gridTemplateColumns.split(" ").length,
+      pad: a.paddingLeft,
+      radius: a.borderRadius,
+    };
+    d.remove();
+    return out;
+  });
+  check("oggi: aree in griglia 2 colonne", areaCss.display === "grid" && areaCss.cols === 2, JSON.stringify(areaCss));
+  check("oggi: area a card (surface)", areaCss.radius !== "0px" && areaCss.pad === "16px", JSON.stringify(areaCss));
+
+  check("desktop: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
+  await ctx.close();
+}
+
+/* ============ TELEFONO 430: feed intatto, stili phone invariati ============ */
+{
+  const { ctx, page, errors } = await newPage(430, 900);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(800);
+  await seed(page);
+  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+
+  check("phone: griglia nascosta", await page.locator(".jm-mese-wrap").evaluate((el) => getComputedStyle(el).display === "none").catch(() => false));
+  check("phone: feed visibile", await page.locator(".jm-day-list").isVisible());
+  check("phone: header sticky visibile", await page.locator(".jm-month-header").isVisible());
+
+  // FilledView phone: valori storici esatti
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1000);
+  const h = await page.locator(".jm-fv-h").evaluate((el) => {
+    const s = getComputedStyle(el);
+    return `${s.fontSize}|${s.fontWeight}|${s.letterSpacing}`;
+  });
+  check("phone: headline 26px/650", h.startsWith("26px|650"), h);
+  // Dalla PR 10 in locale le aree non si renderizzano (vista gratis =
+  // prosa): CSS verificato su DOM iniettato, come sopra.
+  const phoneArea = await page.evaluate(() => {
+    const d = document.createElement("div");
+    d.className = "jm-fv-areas";
+    d.innerHTML = '<div class="jm-fv-area"><div class="l">L</div><div class="x">x</div></div>';
+    document.querySelector("main")?.appendChild(d);
+    const wrap = getComputedStyle(d);
+    const s = getComputedStyle(d.firstElementChild);
+    const label = getComputedStyle(d.querySelector(".l"));
+    const text = getComputedStyle(d.querySelector(".x"));
+    const out = `${wrap.display}|${s.paddingTop}|${s.paddingLeft}|${s.borderRadius}|${label.fontSize}|${text.fontSize}|${text.fontWeight}`;
+    d.remove();
+    return out;
+  });
+  check("phone: aree in pila, 14px 0, label 10px, testo 14px/500", phoneArea === "block|14px|0px|0px|10px|14px|500", phoneArea);
+
+  check("phone: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
+  await ctx.close();
+}
+
+await browser.close();
+const fails = results.filter((r) => !r.ok);
+console.log(`\n${results.length - fails.length}/${results.length} PASS`);
+process.exit(fails.length ? 1 : 0);
