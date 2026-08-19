@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { RecapDetail } from "@/components/recap/recap-detail";
-import {
-  generateAndSaveRecap,
-  monthBoundaries,
-} from "@/lib/data/recaps";
+import { monthBoundaries } from "@/lib/data/recaps";
+import { generateAndSaveRecap } from "@/lib/actions/generate-recap";
 import type { DataMode } from "@/lib/data/entries";
 import type { Recap, RecapPeriod } from "@/lib/types";
 
@@ -57,7 +55,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
     setError(null);
     try {
       const { start, end } = monthBoundaries(suggestedYear, suggestedMonth);
-      const r = await generateAndSaveRecap(mode, "month", start, end);
+      const r = await generateAndSaveRecap("month", start, end);
       setRecaps((prev) => [
         r,
         ...prev.filter(

@@ -16,12 +16,12 @@ import { warmRealtime } from "@/lib/realtime/prewarm";
 import {
   deleteEntry,
   saveEntryPeople,
-  saveRecording,
   toggleGoal,
   updateEntryTranscript,
   updateMetric,
   type DataMode,
 } from "@/lib/data/entries";
+import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
@@ -162,7 +162,7 @@ export function TodayClient({
     if (!pending) return;
     setView("processing");
     try {
-      const saved = await saveRecording(mode, {
+      const saved = await saveRecording({
         transcript: finalTranscript,
         durationSeconds: pending.durationSeconds,
         defaultDate: pending.targetDate,
