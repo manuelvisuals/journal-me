@@ -150,6 +150,7 @@ export function RailLeft() {
             <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
           </svg>
           {mode === "local" ? "Scrivi la giornata" : "Racconta a voce"}
+          <span className="jm-rail-kbd">{"⌘⇧R"}</span>
         </Link>
       </div>
       <div className="jm-rail-foot">

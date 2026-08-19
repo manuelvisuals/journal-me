@@ -59,6 +59,10 @@ function restoreOnce(): void {
   if (saved) setFocusMode(true);
 }
 
+export function toggleFocusMode(): void {
+  setFocusMode(!focusOn);
+}
+
 export function useFocusMode(): boolean {
   return useSyncExternalStore(
     (l) => {
@@ -70,7 +74,15 @@ export function useFocusMode(): boolean {
   );
 }
 
-export function FocusToggle() {
+/**
+ * Guardiano globale del focus, montato UNA volta nel guscio desktop: fa il
+ * ripristino da sessionStorage, esce con Esc e mostra la nota "esc per
+ * uscire" in portal su body (in focus l'header — dove vive il bottone — e
+ * display:none e si porterebbe dietro qualsiasi figlio). Sta nel guscio e
+ * non nel bottone: il focus deve potersi spegnere con Esc anche su una
+ * pagina che il bottone non ce l'ha.
+ */
+export function FocusEscape() {
   const on = useFocusMode();
 
   useEffect(() => {
@@ -87,37 +99,37 @@ export function FocusToggle() {
     return () => window.removeEventListener("keydown", onKey);
   }, [on]);
 
+  if (!on || typeof document === "undefined") return null;
+  return createPortal(
+    <div className="jm-focus-note">esc per uscire</div>,
+    document.body,
+  );
+}
+
+export function FocusToggle() {
+  const on = useFocusMode();
+
   return (
-    <>
-      <button
-        type="button"
-        className="jm-focus-btn"
-        aria-label={on ? "Esci dalla modalita focus" : "Modalita focus"}
-        aria-pressed={on}
-        onClick={() => setFocusMode(!on)}
+    <button
+      type="button"
+      className="jm-focus-btn"
+      aria-label={on ? "Esci dalla modalita focus" : "Modalita focus"}
+      aria-pressed={on}
+      onClick={() => setFocusMode(!on)}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        width="14"
+        height="14"
+        aria-hidden="true"
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          width="14"
-          height="14"
-          aria-hidden="true"
-        >
-          <path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5" />
-        </svg>
-      </button>
-      {/* La nota va in un portal su body: in focus l'header (dove vive il
-          bottone) e display:none e si porterebbe dietro anche la nota. */}
-      {on &&
-        typeof document !== "undefined" &&
-        createPortal(
-          <div className="jm-focus-note">esc per uscire</div>,
-          document.body,
-        )}
-    </>
+        <path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5" />
+      </svg>
+    </button>
   );
 }

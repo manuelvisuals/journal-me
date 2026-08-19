@@ -608,7 +608,29 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   cita ancora la palette), mese a griglia (PR 9), aree su due colonne nella
   giornata piena desktop (mockup §03, arrivera come rifinitura), ricerca
   full-text.
-- Le PR 8..12 non sono ancora iniziate.
+- **PR 8 `shortcuts`: fatta.** `use-shortcuts.ts` (UN posto solo, montato in
+  DesktopShell): Cmd+S salva senza AI, Cmd+Invio chiude la giornata, Cmd+K
+  palette, Cmd+Shift+F focus (solo su Oggi, dove esiste l'editor), Cmd+Shift+R
+  registrazione. Regole spec §5.4 rispettate: `isComposing` saltato, metaKey su
+  Mac / ctrlKey altrove (MAI tutti e due alla cieca — nei test Playwright su
+  Linux si usa Control), niente Cmd+1..5 ne lettere nude, sotto lg e sulle
+  pagine bare i listener non fanno nulla. Cmd+S/Cmd+Invio dentro l'editor li
+  gestisce l'editor (che ha il testo) con preventDefault; il listener globale
+  controlla `defaultPrevented` e non spara due volte, e fuori dal fuoco
+  rilancia un CustomEvent `jm:shortcut` che l'editor montato ascolta.
+  `command-palette.tsx`: store modulo aperta/chiusa (stesso pattern del
+  focus), Vai a (Oggi/Mese/Ricorda/Recap/Altro), Racconta a voce / Scrivi la
+  giornata, Modalita focus (solo pathname "/"), e cattura rapida in Ricorda
+  (qualsiasi testo digitato -> "Salva in Ricorda", feedback inline, si chiude
+  da sola senza portarti via dalla pagina; l'auto-classificazione AI del tipo
+  NON c'e qui — l'appunto nasce 'nota', la si puo aggiungere dopo). Niente
+  ricerca full-text (spec §10.4, fuori dalle 11 PR). FocusEscape (nota "esc
+  per uscire" + listener Esc) spostato dal bottone al guscio: il focus si
+  spegne con Esc anche su pagine senza bottone. Hint "⌘K comandi" nel footer
+  editor e "⌘⇧R" nella rail. Verifica Playwright 21/21 a 1440px e 430px
+  (palette apre/naviga/cattura con verifica su /remember, focus on/off,
+  Cmd+S a fuoco fuori dal textarea, phone intatto, 0 errori console).
+- Le PR 9..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

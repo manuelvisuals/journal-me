@@ -21,6 +21,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { clearDraft, saveDraft } from "@/lib/data/drafts";
+import {
+  SHORTCUT_EVENT,
+  type EditorShortcut,
+} from "@/components/desktop/use-shortcuts";
 
 type Props = {
   /** Data (YYYY-MM-DD) su cui scrive e su cui salva la bozza. */
@@ -112,6 +116,23 @@ export function DesktopEditor({
     (withAI && aiAvailable ? onSaveAI : onSaveOnly)(value);
   };
 
+  // Cmd+S / Cmd+Invio arrivano anche quando il fuoco NON e nel textarea
+  // (PR 8): use-shortcuts li rilancia come CustomEvent e qui si eseguono
+  // con il testo corrente. submitRef evita di ri-registrare a ogni render.
+  const submitRef = useRef(submit);
+  useEffect(() => {
+    submitRef.current = submit;
+  });
+  useEffect(() => {
+    const onShortcut = (e: Event) => {
+      const detail = (e as CustomEvent<EditorShortcut>).detail;
+      if (detail === "save") submitRef.current(false);
+      else if (detail === "saveAI") submitRef.current(true);
+    };
+    window.addEventListener(SHORTCUT_EVENT, onShortcut);
+    return () => window.removeEventListener(SHORTCUT_EVENT, onShortcut);
+  }, []);
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.nativeEvent.isComposing) return;
     if (!(e.metaKey || e.ctrlKey)) return;
@@ -144,7 +165,9 @@ export function DesktopEditor({
       </div>
 
       <div className="jm-ed-foot">
-        <div className="jm-ed-hint">Bozza salvata in automatico</div>
+        <div className="jm-ed-hint">
+          Bozza salvata in automatico . {"⌘K"} comandi
+        </div>
         <div className="jm-ed-acts">
           {onCancel && (
             <button

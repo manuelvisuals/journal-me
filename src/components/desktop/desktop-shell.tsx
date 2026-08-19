@@ -3,6 +3,9 @@
 import { usePathname } from "next/navigation";
 import { RailLeft } from "@/components/desktop/rail-left";
 import { RailRightTarget } from "@/components/desktop/rail-right";
+import { CommandPalette } from "@/components/desktop/command-palette";
+import { FocusEscape } from "@/components/desktop/focus-toggle";
+import { useShortcuts } from "@/components/desktop/use-shortcuts";
 
 /**
  * Il guscio desktop (SPEC-v2 §5.2): sotto lg non rende NULLA di suo — il
@@ -25,6 +28,10 @@ function isBareLayout(pathname: string): boolean {
 export function DesktopShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // Scorciatoie desktop (PR 8): registrate qui, in un solo posto, sempre —
+  // il listener stesso si spegne sotto lg e sulle pagine bare.
+  useShortcuts();
+
   // Le pagine pubbliche (login, benvenuto) restano una colonna centrata
   // anche su desktop: niente rail attorno a una schermata d'ingresso.
   if (isBareLayout(pathname)) {
@@ -36,6 +43,8 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
       <RailLeft />
       <div className="jm-shell-c">{children}</div>
       <RailRightTarget />
+      <CommandPalette />
+      <FocusEscape />
     </div>
   );
 }
