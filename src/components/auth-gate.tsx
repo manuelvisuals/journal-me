@@ -81,10 +81,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (settledOut && !publicPath) {
       router.replace("/benvenuto");
-    } else if (entered && (pathname === "/login" || pathname === "/benvenuto")) {
+    } else if (auth === "in" && (pathname === "/login" || pathname === "/benvenuto")) {
+      // Fuori dalle pagine d'ingresso SOLO chi ha una sessione cloud vera.
+      // In modalita locale /login deve restare raggiungibile: e la strada
+      // del "prova premium" (muro, PR 10) — rimbalzarlo a / era un vicolo
+      // cieco. La migrazione locale->cloud vera e propria arriva con §7.2.
       router.replace("/");
     }
-  }, [settledOut, entered, publicPath, pathname, router]);
+  }, [settledOut, auth, publicPath, pathname, router]);
 
   if (mode === "resolving") return null;
   if (!entered && auth === "unknown" && !publicPath) return null;
