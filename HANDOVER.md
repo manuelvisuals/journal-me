@@ -527,7 +527,20 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   esistenti: migrano con le PR 6-10 quando i componenti vengono riscritti sul
   contratto (deviazione deliberata dal passo 0.3, per non toccare il telefono).
   Migration `007_user_settings_theme.sql` (colonne theme/appearance).
-- Le PR 2..12 non sono ancora iniziate.
+- **PR 2 `store-interface`: fatta** (commit `7e97470`). JournalStore + CloudStore
+  (spostamento puro), facade con `_mode` invariato, azioni AI in `src/lib/actions/`
+  con check `can()`, backup export/import v1 nello store.
+- **PR 3 `store-local`: fatta.** Dipendenza `idb`; `LocalStore` completo su IndexedDB
+  (db `journalme` v1: entries/goals/remembers/recaps/drafts/meta, seed dei sei goal
+  alla creazione, id `crypto.randomUUID()`); `resolveStorageMode()` asincrona con
+  stato `resolving` (flag `jm.mode` sincrono PRIMO, poi `getAccessToken()`, poi
+  `none`) + `useStorageMode()`; in modalita locale il client Supabase NON viene
+  costruito (AuthGate e theme-runtime a import dinamico solo nel ramo cloud,
+  env senza non-null assertion, prewarm silenziato). Verificato con Playwright:
+  con `jm.mode=local` l'app si apre senza login, salva una giornata in IndexedDB
+  con titolo di fallback e fa ZERO richieste esterne; senza flag il giro cloud e
+  identico a prima. Nessuna UI imposta ancora il flag: arriva con `/benvenuto` (PR 5).
+- Le PR 4..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

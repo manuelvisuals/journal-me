@@ -105,10 +105,13 @@ function ensureSystemListener(): void {
   }
 }
 
-/** Best-effort: salva la scelta anche su user_settings (cloud). */
+/** Best-effort: salva la scelta anche su user_settings (solo in cloud —
+ *  in modalita locale il client Supabase non si costruisce nemmeno). */
 function persistCloud(patch: { theme?: string; appearance?: Appearance }): void {
   void (async () => {
     try {
+      const { resolveStorageMode } = await import("@/lib/data/store");
+      if ((await resolveStorageMode()) !== "cloud") return;
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
       const {

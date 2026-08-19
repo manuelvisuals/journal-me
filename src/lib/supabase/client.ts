@@ -23,9 +23,19 @@ let cached: SupabaseClient | null = null;
 
 export function createClient(): SupabaseClient {
   if (cached) return cached;
+  // Niente non-null assertion: un build solo-locale non deve richiedere le
+  // env di Supabase (SPEC-v2 §1). Chi arriva qui senza env riceve un errore
+  // chiaro invece di un'esplosione al primo render.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    throw new Error(
+      "Supabase non configurato: la modalita cloud non e disponibile in questo build.",
+    );
+  }
   cached = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       auth: {
         persistSession: true,

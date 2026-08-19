@@ -22,13 +22,20 @@ export function warmRealtime(): void {
   if (now - lastWarmedAt < WARM_INTERVAL_MS) return;
   lastWarmedAt = now;
   try {
+    // In modalita locale NIENTE rete, nemmeno un warm-up (SPEC-v2 §1).
     // The route is gated like everything else; a 401/402 still warms the
     // lambda, so this stays fire-and-forget whatever the plan is.
-    void apiFetch("/api/transcribe-fallback", {
-      method: "GET",
-      cache: "no-store",
-      keepalive: true,
-    }).catch(() => {});
+    void import("@/lib/data/store")
+      .then(({ resolveStorageMode }) => resolveStorageMode())
+      .then((mode) => {
+        if (mode !== "cloud") return;
+        return apiFetch("/api/transcribe-fallback", {
+          method: "GET",
+          cache: "no-store",
+          keepalive: true,
+        }).then(() => undefined);
+      })
+      .catch(() => {});
   } catch {
     // ignore — best-effort
   }
