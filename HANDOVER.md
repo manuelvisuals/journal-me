@@ -653,7 +653,36 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   (successo con .jm-month-header): in quei casi serve un `display:none`
   esplicito nel blocco lg. Verifica Playwright 27/27 + riesecuzione di
   PR 7 (24/24) e PR 8 (21/21) su build pulita.
-- Le PR 10..12 non sono ancora iniziate.
+- **PR 10 `gating-ui`: fatta.** `src/lib/plan.ts`: piano free/premium lato
+  client SOLO per la UI (cache sincrona in localStorage `jm.plan` + refresh
+  in background da profiles.plan; ottimista "premium" finche non si sa —
+  mai lucchetti a sproposito per chi paga; MAI in locale: aspetta
+  resolveStorageMode e non costruisce Supabase). `can()` ora plan-based
+  (`sync` sempre acceso in cloud) + `useCan()` reattivo. `premium-wall.tsx`
+  (mockup due-modalita §04): montato nel guscio, funziona anche sotto lg,
+  compare SOLO su azione (mic, "vedi" del nudge, Genera recap) — mai
+  all'avvio; "non ora"/Esc = uscita gratuita contestuale (dal mic si apre
+  la scrittura); "prova premium" porta al login in locale, in cloud gratis
+  dice onestamente che l'acquisto arriva (Stripe = PR 11; NIENTE prezzo nel
+  bottone: e ancora da decidere). Giornata gratis (mockup §02): FilledView
+  con `freeProse` — sub "scritta/raccontata alle H:MM", il TUO testo come
+  prosa serif, nudge premium unico che non blocca; sparita la bugia "aree
+  macro non ancora estratte". apiFetch: un 402 apre il muro (import
+  dinamico) e la Response resta ai chiamanti (fallbackAIFields intatto).
+  Prewarm della trascrizione solo con can("voice") — un 402 di background
+  avrebbe aperto il muro all'avvio. BUG FIXATO: remember-client chiamava
+  /api/remember/classify anche in locale (violava "mai /api in locale");
+  ora dietro can("aiSummary"). Pill "premium" sulla card Pattern del Mese.
+  IN PIU (feedback Manuel "sfrutta BENE lo spazio"): contenitori desktop
+  allargati — Mese lg:max-w-[1080px], tutte le altre pagine 860px — con il
+  testo da leggere/scrivere tenuto a riga leggibile (editor e notice 680px
+  centrati, prosa/snippet 700px). Verifica Playwright 25/25 (muro da mic/
+  nudge/recap, prova premium -> login, ZERO richieste esterne in locale
+  monitorate su desktop e telefono, larghezze) + regressione PR 7 (24/24),
+  PR 8 (21/21), PR 9 (25/25 — i check sulle aree ora iniettano il DOM:
+  in locale la vista gratis mostra prosa, non aree).
+- Le PR 11..12 non sono ancora iniziate. Per la PR 11 (Stripe) serve la
+  decisione sul prezzo.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

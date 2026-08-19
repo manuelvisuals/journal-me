@@ -15,7 +15,8 @@ import { DesktopEditor } from "@/components/today/desktop-editor";
 import { RailToday } from "@/components/today/rail-today";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
-import { can } from "@/lib/capabilities";
+import { openPremiumWall } from "@/components/premium-wall";
+import { useCan } from "@/lib/capabilities";
 import { clearDraft, loadDraft } from "@/lib/data/drafts";
 import { formatDayHeader, formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
@@ -89,17 +90,20 @@ export function TodayClient({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // In modalita locale la voce e una funzione cloud/AI: ogni strada che
-  // porterebbe al microfono apre la scrittura. Il muro premium vero e
-  // proprio arriva con la PR 10 (gating-ui).
+  // Voce e AI sono capability (PR 10): spente in locale E in cloud gratis.
+  // Toccare il microfono senza la capability apre il muro premium, con la
+  // scrittura a mano come uscita gratuita (mockup due-modalita §04). La
+  // decisione vera resta comunque sul server (402).
   const storageMode = useStorageMode();
-  const voiceLocked = storageMode === "local";
+  const isLocalMode = storageMode === "local";
+  const canVoice = useCan("voice");
+  const canAI = useCan("aiSummary");
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
   const [view, setView] = useState<View>(
     autoRecord
-      ? voiceLocked
-        ? "manual"
-        : "recording"
+      ? canVoice
+        ? "recording"
+        : "manual"
       : initialEntry
         ? "filled"
         : "empty",
@@ -151,10 +155,12 @@ export function TodayClient({
   }, []);
 
   // Prewarm the transcription path the moment Today loads, so the mic feels
-  // instant when the user records. Best-effort, never touches the mic.
+  // instant when the user records. Best-effort, never touches the mic. SOLO
+  // con la capability voce: in gratis non si scalda niente (e un 402 di
+  // background aprirebbe il muro all'avvio, vietato dal mockup §04).
   useEffect(() => {
-    warmRealtime();
-  }, []);
+    if (canVoice) warmRealtime();
+  }, [canVoice]);
 
   // Watch for ?record=1 changes coming from clicking the mic in the tab bar
   // while we're already on /. Defer the setState via queueMicrotask so React
@@ -162,8 +168,14 @@ export function TodayClient({
   useEffect(() => {
     if (searchParams.get("record") !== "1") return;
     queueMicrotask(() => {
-      if (voiceLocked) {
-        setView((current) => (current === "manual" ? current : "manual"));
+      if (!canVoice) {
+        if (isLocalMode) {
+          // In locale il link della rail dice "Scrivi la giornata": si
+          // scrive, senza muri.
+          setView((current) => (current === "manual" ? current : "manual"));
+        } else {
+          openPremiumWall("voice", () => setView("manual"));
+        }
         router.replace("/", { scroll: false });
         return;
       }
@@ -186,8 +198,10 @@ export function TodayClient({
   const handleStartRecording = () => {
     setSaveError(null);
     setSavedDates([]);
-    if (voiceLocked) {
-      setView("manual");
+    if (!canVoice) {
+      // Il muro compare solo qui, quando TU tocchi il microfono. "Non ora"
+      // resta un'uscita gratuita: si apre la scrittura a mano.
+      openPremiumWall("voice", () => setView("manual"));
       return;
     }
     warmRealtime();
@@ -256,7 +270,7 @@ export function TodayClient({
       // niente rete: nessuna estrazione, i nomi si aggiungono a mano. Col
       // "salva e basta" niente AI, quindi nemmeno questa chiamata.
       const found =
-        voiceLocked || !opts.withAI ? [] : await extractPeople(text);
+        !canAI || !opts.withAI ? [] : await extractPeople(text);
       if (found.length > 0) {
         const roster = await loadPersonaNames(mode);
         const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
@@ -391,7 +405,7 @@ export function TodayClient({
   // Da lg in su la colonna centrale E l'editor (mockup desktop-v1 §01):
   // niente overlay, si arriva su Oggi e si scrive.
   const desktopWriting = isDesktop && (view === "empty" || view === "manual");
-  const aiAvailable = can("aiSummary");
+  const aiAvailable = canAI;
 
   const handleDesktopSaveOnly = (text: string) => {
     void runSave(text, {
@@ -410,7 +424,7 @@ export function TodayClient({
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-[860px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
       <header
@@ -542,7 +556,7 @@ export function TodayClient({
 
       {view === "empty" && !desktopWriting && (
         <EmptyState
-          writeFirst={voiceLocked}
+          writeFirst={!canVoice}
           onStartRecording={handleStartRecording}
           onWriteManually={handleWriteManually}
         />
@@ -584,6 +598,16 @@ export function TodayClient({
           goals={goalsForView}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
+          freeProse={
+            !canAI && entry
+              ? {
+                  transcript: entry.transcript,
+                  createdAt: entry.createdAt,
+                  spoken: entry.durationSeconds > 0,
+                }
+              : null
+          }
+          onSeePremium={() => openPremiumWall("aiSummary")}
         />
       )}
 

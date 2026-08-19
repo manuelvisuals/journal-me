@@ -37,8 +37,10 @@ export type ApiFetchInit = RequestInit & { timeoutMs?: number };
  *
  * No fetch("/api/...") may exist outside this helper. Callers keep their own
  * error handling: apiFetch returns the Response (or throws on abort/network
- * failure) and does not interpret status codes — the 402 premium wall is
- * client UI and arrives with the gating-ui PR.
+ * failure) and does not interpret status codes — con UNA eccezione (SPEC-v2
+ * §7.3): un 402 apre il muro premium invece di lasciare un "errore" muto.
+ * La Response viene comunque restituita, cosi i chiamanti fanno il loro
+ * fallback (es. la giornata si salva lo stesso col testo grezzo).
  */
 export async function apiFetch(
   path: string,
@@ -53,11 +55,19 @@ export async function apiFetch(
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(apiUrl(path), {
+    const resp = await fetch(apiUrl(path), {
       ...rest,
       headers: merged,
       signal: ctrl.signal,
     });
+    if (resp.status === 402) {
+      // Import dinamico per non trascinare il componente dentro ogni
+      // modulo dati; se il muro non e montato non succede niente.
+      void import("@/components/premium-wall")
+        .then((m) => m.openPremiumWall("aiSummary"))
+        .catch(() => undefined);
+    }
+    return resp;
   } finally {
     clearTimeout(timer);
   }

@@ -8,15 +8,32 @@
  * (requirePremium, 401/402). Non deve mai esistere una schermata in cui il
  * client crede di poter chiamare un endpoint e si becca un 402 a sorpresa.
  *
- * Oggi esiste solo la modalita cloud, quindi tutte le capability sono
- * accese: con la PR 3 (store-local) diventano mode-based, con la PR 10
- * (gating-ui) anche plan-based.
+ * Dalla PR 10 e anche plan-based: in locale tutto spento, in cloud `sync`
+ * e sempre acceso (i dati SONO nel cloud) e il resto dipende da
+ * profiles.plan (via src/lib/plan.ts, cache + refresh in background).
  */
 
-import { getStore } from "@/lib/data/store";
+import { getStore, useStorageMode } from "@/lib/data/store";
+import { getPlanSync, usePlan } from "@/lib/plan";
 
 export type Capability = "voice" | "aiSummary" | "recap" | "patterns" | "sync";
 
-export function can(_c: Capability): boolean {
-  return getStore().mode === "cloud";
+export function can(c: Capability): boolean {
+  if (getStore().mode !== "cloud") return false;
+  if (c === "sync") return true;
+  return getPlanSync() === "premium";
+}
+
+/**
+ * Versione reattiva per i componenti: si aggiorna quando il piano arriva
+ * dal refresh in background o quando la modalita si risolve.
+ */
+export function useCan(c: Capability): boolean {
+  const plan = usePlan();
+  const mode = useStorageMode();
+  // Stessa semantica di can(): finche la modalita non e risolta risponde
+  // il ramo cloud (le schermate dati stanno comunque dietro AuthGate).
+  if (mode === "local") return false;
+  if (c === "sync") return true;
+  return plan === "premium";
 }

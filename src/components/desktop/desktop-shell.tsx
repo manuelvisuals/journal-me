@@ -6,6 +6,7 @@ import { RailRightTarget } from "@/components/desktop/rail-right";
 import { CommandPalette } from "@/components/desktop/command-palette";
 import { FocusEscape } from "@/components/desktop/focus-toggle";
 import { useShortcuts } from "@/components/desktop/use-shortcuts";
+import { PremiumWall } from "@/components/premium-wall";
 
 /**
  * Il guscio desktop (SPEC-v2 §5.2): sotto lg non rende NULLA di suo — il
@@ -45,6 +46,10 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
       <RailRightTarget />
       <CommandPalette />
       <FocusEscape />
+      {/* Il muro premium vive nel guscio ma NON e roba desktop: sotto lg
+          il guscio e display:contents e il muro (position:fixed) funziona
+          identico sul telefono, dove serve di piu. */}
+      <PremiumWall />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { can } from "@/lib/capabilities";
 import { TabBar } from "@/components/ui/tab-bar";
 import { QuickCapture } from "@/components/remember/quick-capture";
 import { RememberItem } from "@/components/remember/remember-item";
@@ -48,7 +49,10 @@ export function RememberClient({ mode, initial }: Props) {
       // If the user didn't pick a specific kind (default 'nota'), ask the
       // backend to auto-classify into the right bucket. Runs async — the item
       // appears immediately in 'Note', and re-slots once the AI responds.
-      if (kind === "nota") {
+      // SOLO dove l'AI esiste: in locale (o in cloud gratis) niente
+      // chiamata — l'appunto resta 'nota' e va benissimo (SPEC-v2 §8:
+      // mai /api/* in locale).
+      if (kind === "nota" && can("aiSummary")) {
         void classifyAndReslot(r.id, text);
       }
     } catch (err) {
@@ -94,7 +98,7 @@ export function RememberClient({ mode, initial }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col relative"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-[860px] flex-1 flex-col relative"
       style={{ minHeight: "100dvh" }}
     >
       <header className="jm-rem-head">

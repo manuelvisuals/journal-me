@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { RecapDetail } from "@/components/recap/recap-detail";
+import { openPremiumWall } from "@/components/premium-wall";
+import { useCan } from "@/lib/capabilities";
 import { monthBoundaries } from "@/lib/data/recaps";
 import { generateAndSaveRecap } from "@/lib/actions/generate-recap";
 import type { DataMode } from "@/lib/data/entries";
@@ -25,6 +27,7 @@ const MONTH_NAMES_IT = [
 ];
 
 export function RecapClient({ mode, initialRecaps }: Props) {
+  const canRecap = useCan("recap");
   const [recaps, setRecaps] = useState<Recap[]>(initialRecaps);
   const [period, setPeriod] = useState<RecapPeriod>("month");
   const [selected, setSelected] = useState<Recap | null>(null);
@@ -51,6 +54,12 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 
   const handleGenerate = async () => {
     if (generating) return;
+    // Gratis: il tasto resta, ma apre il muro premium invece di partire
+    // (SPEC-v2 §3.3: mai un 402 a sorpresa).
+    if (!canRecap) {
+      openPremiumWall("recap");
+      return;
+    }
     setGenerating(true);
     setError(null);
     try {
@@ -87,7 +96,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-[860px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
       <header className="jm-rec-head">

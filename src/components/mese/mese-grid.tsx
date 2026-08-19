@@ -14,6 +14,7 @@
  */
 
 import { RailRight } from "@/components/desktop/rail-right";
+import { useCan } from "@/lib/capabilities";
 import { formatDecimal, formatNumber, daysInMonth } from "@/lib/format";
 import type { Entry, Mood } from "@/lib/types";
 
@@ -121,6 +122,7 @@ export function MeseGrid({
   onDayClick,
   onWriteToday,
 }: Props) {
+  const canPatterns = useCan("patterns");
   const cells = buildCells(year, month, entries, today);
 
   // ---- statistiche del mese (niente AI, valgono anche in gratis) ----
@@ -246,7 +248,10 @@ export function MeseGrid({
           </div>
         </div>
         <div className="jm-railr-sec">
-          <div className="jm-railr-l">Pattern</div>
+          <div className="jm-railr-l">
+            Pattern
+            {!canPatterns && <span className="jm-railr-pill">premium</span>}
+          </div>
           <div className="jm-railr-locked">
             <div className="t">Le letture sui pattern arrivano da qui.</div>
             <div className="p">
