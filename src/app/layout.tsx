@@ -5,6 +5,7 @@ import { Splash } from "@/components/splash";
 import { AuthGate } from "@/components/auth-gate";
 import { BiometricLock } from "@/components/biometric-lock";
 import { ThemeWatcher } from "@/components/theme-watcher";
+import { DesktopShell } from "@/components/desktop/desktop-shell";
 import { themeBootScript } from "@/themes/boot";
 
 /**
@@ -170,7 +171,11 @@ export default function RootLayout({
             A statically exported bundle has no server to run middleware, so
             the same rule is enforced here, in the app. */}
         <BiometricLock>
-          <AuthGate>{children}</AuthGate>
+          <AuthGate>
+            {/* Da lg in su: rail + colonna + rail destra (PR 6). Sotto lg il
+                guscio e display:contents e non esiste. */}
+            <DesktopShell>{children}</DesktopShell>
+          </AuthGate>
         </BiometricLock>
       </body>
     </html>

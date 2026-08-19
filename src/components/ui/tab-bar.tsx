@@ -106,7 +106,7 @@ const SIDE_TABS_RIGHT: Tab[] = [
 export function TabBar({ active }: Props) {
   return (
     <nav
-      className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur"
+      className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur lg:hidden"
       style={{
         gridTemplateColumns: "repeat(5, 1fr)",
         borderColor: "var(--color-line)",

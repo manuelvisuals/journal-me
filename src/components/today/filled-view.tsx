@@ -2,6 +2,7 @@
 
 import { MetricCards } from "@/components/today/metric-cards";
 import { GoalDots } from "@/components/today/goal-dots";
+import { RailRight } from "@/components/desktop/rail-right";
 import type { AreaSummary, EntryMetrics, GoalDot } from "@/lib/types";
 
 type Props = {
@@ -118,48 +119,86 @@ export function FilledView({
         </div>
       )}
 
-      {peopleList.length > 0 && (
-        <div style={{ padding: "14px 0" }}>
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 650,
-              color: "var(--color-accent)",
-              letterSpacing: "0.20em",
-              textTransform: "uppercase",
-              marginBottom: 10,
-            }}
-          >
-            Social
+      {/* Sotto lg: persone, metriche e obiettivi restano nella colonna, come
+          sempre. Da lg in su la stessa roba vive nella rail destra (mockup
+          desktop-v1 §01/§03) e qui si spegne. */}
+      <div className="lg:hidden">
+        {peopleList.length > 0 && (
+          <div style={{ padding: "14px 0" }}>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 650,
+                color: "var(--color-accent)",
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                marginBottom: 10,
+              }}
+            >
+              Social
+            </div>
+            <div className="jm-pill-row">
+              {peopleList.map((name) => (
+                <span key={name} className="jm-person-pill">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--color-ink-faint)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    width="12"
+                    height="12"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21a8 8 0 0 1 16 0" />
+                  </svg>
+                  {name}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="jm-pill-row">
-            {peopleList.map((name) => (
-              <span key={name} className="jm-person-pill">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="var(--color-ink-faint)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  width="12"
-                  height="12"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 21a8 8 0 0 1 16 0" />
-                </svg>
-                {name}
-              </span>
-            ))}
-          </div>
+        )}
+
+        <Separator />
+
+        <MetricCards metrics={metrics} onChange={onMetricChange} />
+        <GoalDots goals={goals} onToggle={onGoalToggle} />
+      </div>
+
+      <RailRight>
+        <div className="jm-railr-sec">
+          <div className="jm-railr-l">La giornata</div>
+          <MetricCards metrics={metrics} onChange={onMetricChange} />
         </div>
-      )}
-
-      <Separator />
-
-      <MetricCards metrics={metrics} onChange={onMetricChange} />
-      <GoalDots goals={goals} onToggle={onGoalToggle} />
+        <div className="jm-railr-sec">
+          <div className="jm-railr-l">Obiettivi</div>
+          {goals.map((g) => (
+            <button
+              key={g.id}
+              type="button"
+              className={`jm-railr-goal${g.on ? " on" : ""}`}
+              onClick={() => onGoalToggle(g.label)}
+            >
+              <span className="jm-railr-gdot" />
+              <span className="jm-railr-gname">{g.label}</span>
+            </button>
+          ))}
+        </div>
+        {peopleList.length > 0 && (
+          <div className="jm-railr-sec">
+            <div className="jm-railr-l">Persone</div>
+            <div className="jm-railr-chips">
+              {peopleList.map((name) => (
+                <span key={name} className="jm-railr-chip">
+                  {name}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </RailRight>
     </div>
   );
 }

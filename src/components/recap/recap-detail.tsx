@@ -45,7 +45,7 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
       <header className="jm-det-head">

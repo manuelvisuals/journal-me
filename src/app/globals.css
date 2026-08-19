@@ -2795,3 +2795,282 @@ summary:active {
   margin-top: calc(26px * var(--jm-space));
   line-height: 1.6;
 }
+
+/* =============================================================
+   Guscio desktop (PR 6, mockup desktop-v1.html). Sotto lg il
+   guscio e display:contents e le rail non esistono: il telefono
+   non se ne accorge. Solo token del contratto.
+   ============================================================= */
+.jm-shell,
+.jm-shell-c {
+  display: contents;
+}
+.jm-rail-l,
+.jm-rail-r {
+  display: none;
+}
+
+/* Il focus ring del capitolo 20 del brandbook: outline, non box-shadow,
+   cosi non tocca le ombre gia presenti sui bottoni. Solo da tastiera. */
+:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-accent) 45%, transparent);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .jm-shell {
+    display: flex;
+    flex: 1;
+    min-height: 100dvh;
+    width: 100%;
+  }
+  .jm-shell-c {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .jm-rail-l {
+    display: flex;
+    flex-direction: column;
+    width: 222px;
+    flex: 0 0 222px;
+    border-right: 1px solid var(--color-line);
+    padding: calc(24px * var(--jm-space)) 14px calc(18px * var(--jm-space));
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+  }
+  .jm-rail-r {
+    display: block;
+    width: 296px;
+    flex: 0 0 296px;
+    border-left: 1px solid var(--color-line);
+    padding: calc(22px * var(--jm-space)) 20px;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+  }
+  .jm-rail-r:empty {
+    display: none;
+  }
+}
+
+.jm-rail-brand {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  padding: 0 10px calc(24px * var(--jm-space));
+}
+.jm-rail-brand span {
+  color: var(--color-accent);
+}
+.jm-rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.jm-rail-i {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--color-ink-faint);
+  text-decoration: none;
+  transition: color 120ms, background-color 120ms, border-color 120ms;
+}
+.jm-rail-i svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+.jm-rail-i svg[fill="currentColor"] {
+  fill: currentColor;
+  stroke: none;
+}
+/* Hover: un passo di scala, mai un salto (brandbook cap. 20). */
+.jm-rail-i:hover {
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+}
+.jm-rail-i.on {
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+  color: var(--color-accent);
+}
+.jm-rail-i.rec {
+  color: var(--color-accent);
+}
+.jm-rail-i.rec:hover {
+  color: var(--color-accent-hi);
+  background: color-mix(in oklab, var(--color-accent) 8%, transparent);
+}
+.jm-rail-sep {
+  height: 1px;
+  background: var(--color-line);
+  margin: calc(16px * var(--jm-space)) 12px;
+}
+.jm-rail-foot {
+  margin-top: auto;
+  padding: 12px 10px 0;
+  border-top: 1px solid var(--color-line);
+}
+.jm-rail-acct {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.jm-rail-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--jm-radius-circle);
+  flex: 0 0 28px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--jm-text-meta);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+.jm-rail-acct-txt {
+  min-width: 0;
+}
+.jm-rail-acct-nm {
+  font-size: var(--jm-text-meta);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.jm-rail-pill {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--jm-radius-pill);
+  background: color-mix(in oklab, var(--color-ink) 5%, transparent);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+}
+.jm-rail-pill.prem {
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  color: var(--color-accent-hi);
+  border-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
+}
+
+/* --- contenuto della rail destra (sezioni La giornata / Obiettivi / Persone) --- */
+.jm-railr-sec {
+  margin-bottom: calc(30px * var(--jm-space));
+}
+.jm-railr-l {
+  font-size: var(--jm-text-label);
+  font-weight: 650;
+  letter-spacing: var(--jm-tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 14px;
+}
+.jm-railr-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-railr-row:last-child {
+  border-bottom: none;
+}
+.jm-railr-k {
+  font-size: var(--jm-text-meta);
+  color: var(--color-ink-muted);
+  letter-spacing: 0.02em;
+}
+.jm-railr-v {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.jm-railr-v small {
+  font-size: 11px;
+  color: var(--color-ink-faint);
+  margin-left: 3px;
+  font-weight: 400;
+}
+.jm-railr-v.empty {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+.jm-railr-goal {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-railr-gdot {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--jm-radius-circle);
+  border: 1.5px solid color-mix(in oklab, var(--color-ink) 16%, transparent);
+  flex: 0 0 14px;
+  transition: background-color 120ms, border-color 120ms;
+}
+.jm-railr-goal.on .jm-railr-gdot {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--color-glow) 35%, transparent);
+}
+.jm-railr-gname {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+  letter-spacing: -0.003em;
+}
+.jm-railr-goal.on .jm-railr-gname {
+  color: var(--color-ink);
+}
+.jm-railr-goal:hover .jm-railr-gname {
+  color: var(--color-ink-muted);
+}
+.jm-railr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.jm-railr-chip {
+  font-size: var(--jm-text-meta);
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 6px 12px;
+}

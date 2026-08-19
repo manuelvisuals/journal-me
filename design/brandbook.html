@@ -781,6 +781,7 @@ table.tokens td.use { color: var(--ink-muted); font-size: 11px; line-height: 1.5
     <a href="#ch17"><span class="num">17</span><span class="name">Stati</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch18"><span class="num">18</span><span class="name">Da non fare</span><span class="dot"></span><span class="num">pag</span></a>
     <a href="#ch19"><span class="num">19</span><span class="name">Tokens (export)</span><span class="dot"></span><span class="num">pag</span></a>
+    <a href="#ch20"><span class="num">20</span><span class="name">Desktop: focus e hover</span><span class="dot"></span><span class="num">pag</span></a>
   </div>
 </section>
 
@@ -1945,6 +1946,42 @@ body &gt; * { position: relative; z-index: 1; }</pre>
 </section>
 
 <!-- ============================== CLOSING ============================== -->
+<!-- ============================== CH 20 . DESKTOP: FOCUS E HOVER ============================== -->
+<section class="chapter" id="ch20">
+  <div class="ch-num">Capitolo 20</div>
+  <h2 class="ch-title">Desktop: focus e hover</h2>
+  <p class="ch-lede">
+    Una superficie che si guida con &#8984;K, &#8984;S, &#8984;&#9166; ed Esc
+    senza un focus ring e' inutilizzabile da tastiera. Questo capitolo nasce
+    con la versione desktop (agosto 2026) e vale per OGNI tema: e' contratto,
+    non gusto.
+  </p>
+
+  <div class="prose">
+    <p><b>Il focus ring.</b> Ogni elemento interattivo raggiunto da tastiera
+    mostra un anello dell'accent del tema attivo:</p>
+    <p><code>:focus-visible { outline: 2px solid
+    color-mix(in oklab, var(--jm-accent) 45%, transparent);
+    outline-offset: 2px; }</code></p>
+    <p>Si usa <code>outline</code> e non <code>box-shadow</code> (che era la
+    proposta di partenza in SPEC-v2 &sect;10.6): i bottoni hanno gia' ombre a
+    piu' livelli e un ring in box-shadow le sostituirebbe; l'outline si somma
+    senza toccare niente. Mai <code>outline: none</code> senza un sostituto
+    visibile. Il ring compare SOLO da tastiera (<code>:focus-visible</code>,
+    non <code>:focus</code>): il click non deve accenderlo.</p>
+    <p><b>L'hover.</b> Un passo di scala, mai un salto: una superficie
+    trasparente passa a <code>surface</code>, una <code>surface</code> a
+    <code>surface-2</code>; un hairline si scalda verso
+    <code>color-mix(accent 30%)</code>; un testo <code>ink-faint</code> sale a
+    <code>ink-muted</code>, mai direttamente a <code>ink</code>. Transizione
+    120ms. Niente trasformazioni di scala su hover (la scala e' il linguaggio
+    del PRESS, cap. 14) e niente sottolineature (cap. 01).</p>
+    <p><b>Il cursore.</b> <code>pointer</code> solo su cio' che e' davvero
+    interattivo. Un cursore che promette un click su una card statica e' una
+    bugia piccola, e le bugie piccole si sommano.</p>
+  </div>
+</section>
+
 <section class="closing">
   <div class="mark">. fin .</div>
   <div class="signoff">Brandbook v0.1 . Journal.me . per chi ricostruisce</div>

@@ -556,7 +556,28 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   NON fatto: backup automatico settimanale, migrazione locale->cloud, muro
   premium coi lucchetti (PR 10), aggiornamento del bundle iOS (`npm run
   build:ios` da rifare quando si rilascia sul telefono).
-- Le PR 6..12 non sono ancora iniziate.
+- **PR 6 `desktop-shell`: fatta.** Capitolo 20 del brandbook (focus/hover: outline
+  ring accent 45% + hover a un passo di scala — outline e non box-shadow, per non
+  toccare le ombre dei bottoni) e regola `:focus-visible` globale. `src/components/
+  desktop/`: `desktop-shell.tsx` (sotto lg e `display:contents`, il telefono non se
+  ne accorge; da lg griglia rail 222px + colonna + rail destra 296px, nascosta se
+  vuota), `rail-left.tsx` (nav dal mockup: Oggi/Mese/Ricorda/Recap/Altro + Racconta
+  a voce — che in locale diventa "Scrivi la giornata" — account badge
+  Premium/Cloud/Locale), `rail-right.tsx` (slot via portal: le pagine riempiono la
+  colonna destra con `<RailRight>`). Tab bar spenta con `lg:hidden` in
+  tab-bar.tsx (una riga, i 12 call-site intatti). Colonne pagina a
+  `lg:max-w-[660px]`. Oggi (giornata piena): metriche/obiettivi/persone migrano
+  nella rail destra a lg, `lg:hidden` sotto. Le decisioni aperte di spec §10.7
+  chiuse come nel mockup approvato: Recap di primo livello, etichetta "Ricorda"
+  (si cambia in NAV_ITEMS). Verificato con Playwright a 1440px (rail, nav,
+  rail destra, tab bar assente) e a 430px (zero regressioni, tab bar intatta).
+  NON fatto (PR 7-9): editor desktop con autosave e footer, focus mode,
+  scorciatoie/palette, mese a griglia.
+- **Trappola sandbox scoperta oggi:** `pkill -f "next dev"` uccide anche il comando
+  bash che lo contiene (il pattern matcha la propria command line) e lascia vivo
+  `next-server`: sembrava un problema di CSS non compilato ed era un server
+  zombie. Pattern giusti: `pkill -9 -f 'next[-]server'; pkill -9 -f 'next [d]ev'`.
+- Le PR 7..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

@@ -315,7 +315,7 @@ export function TodayClient({
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
+      className="mx-auto flex w-full max-w-[440px] lg:max-w-[660px] flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
       <header
