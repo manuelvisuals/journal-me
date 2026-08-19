@@ -2583,3 +2583,215 @@ summary:active {
   color: var(--color-ink-faint);
   line-height: 1.55;
 }
+
+/* =============================================================
+   Altro > I tuoi dati + banner backup (PR 4, mockup due-modalita 03).
+   Solo token del contratto.
+   ============================================================= */
+.jm-backup-warn {
+  margin: 0 24px calc(20px * var(--jm-space));
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
+  background: linear-gradient(165deg, color-mix(in oklab, var(--color-accent) 8%, transparent), var(--color-surface));
+  border-radius: var(--jm-radius-lg);
+  padding: calc(16px * var(--jm-space)) calc(18px * var(--jm-space));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-ink) 6%, transparent),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+.jm-backup-warn-t {
+  font-size: var(--jm-text-body);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+.jm-backup-warn-p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+.jm-data-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  overflow: hidden;
+}
+.jm-data-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(14px * var(--jm-space));
+  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-data-row:last-child {
+  border-bottom: none;
+}
+.jm-data-t {
+  font-size: var(--jm-text-body);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.jm-data-t.danger {
+  color: var(--color-danger);
+}
+.jm-data-p {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.jm-data-btn {
+  flex: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--jm-text-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 9px 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-data-btn.primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 28%, transparent),
+    0 8px 16px color-mix(in oklab, var(--color-shadow) 40%, transparent);
+}
+.jm-data-btn.danger {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 30%, transparent);
+}
+.jm-data-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.jm-data-note {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-success);
+}
+.jm-data-note.err {
+  color: var(--color-danger);
+}
+
+/* =============================================================
+   /benvenuto — la scelta delle due modalita (PR 5, mockup
+   due-modalita 01, adattato alla colonna telefono).
+   ============================================================= */
+.jm-benv {
+  display: flex;
+  flex-direction: column;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 24px 40px;
+}
+.jm-benv-hero {
+  font-family: var(--font-serif);
+  font-size: var(--jm-text-display);
+  font-weight: 400;
+  letter-spacing: var(--jm-tracking-headline);
+  line-height: var(--jm-leading-display);
+  text-align: center;
+  color: var(--color-ink);
+  margin-top: calc(22px * var(--jm-space));
+}
+.jm-benv-sub {
+  font-size: var(--jm-text-body);
+  color: var(--color-ink-muted);
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.6;
+}
+.jm-benv-cards {
+  display: flex;
+  flex-direction: column;
+  gap: calc(16px * var(--jm-space));
+  margin-top: calc(34px * var(--jm-space));
+}
+.jm-benv-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(22px * var(--jm-space)) calc(22px * var(--jm-space)) calc(20px * var(--jm-space));
+  display: flex;
+  flex-direction: column;
+}
+.jm-benv-card.pick {
+  border-color: color-mix(in oklab, var(--color-accent) 34%, transparent);
+  background: linear-gradient(165deg, color-mix(in oklab, var(--color-accent) 6%, transparent), var(--color-surface));
+}
+.jm-benv-tag {
+  font-size: var(--jm-text-label);
+  font-weight: 700;
+  letter-spacing: var(--jm-tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+.jm-benv-card.pick .jm-benv-tag {
+  color: var(--color-accent);
+}
+.jm-benv-t {
+  font-size: var(--jm-text-title);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+.jm-benv-p {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-bottom: 16px;
+}
+.jm-benv-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+.jm-benv-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  padding: 5px 0 5px 22px;
+  position: relative;
+}
+.jm-benv-list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+}
+.jm-benv-list li.no {
+  color: var(--color-ink-faint);
+}
+.jm-benv-list li.no::before {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--color-ink-faint) 50%, transparent);
+  top: 10px;
+}
+.jm-benv-price {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  margin-bottom: 14px;
+}
+.jm-benv-price b {
+  color: var(--color-ink);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.jm-benv-foot {
+  font-size: 12.5px;
+  color: var(--color-ink-muted);
+  text-align: center;
+  margin-top: calc(26px * var(--jm-space));
+  line-height: 1.6;
+}

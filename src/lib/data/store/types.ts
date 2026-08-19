@@ -38,6 +38,8 @@ export interface JournalStore {
   loadTodayEntry(): Promise<Entry | null>;
   loadEntryForDate(dateISO: string): Promise<Entry | null>;
   loadMonthEntries(year: number, month: number): Promise<Entry[]>;
+  /** Quante giornate esistono (per il banner backup e i testi "N giornate"). */
+  countEntries(): Promise<number>;
   deleteEntry(dateISO: string): Promise<void>;
   updateEntryTranscript(dateISO: string, text: string): Promise<Entry>;
   updateMetric(dateISO: string, patch: Partial<EntryMetrics>): Promise<Entry>;
@@ -97,7 +99,7 @@ export interface JournalStore {
 
 export const BACKUP_FORMAT = "journal.me/backup" as const;
 export const BACKUP_VERSION = 1 as const;
-export const APP_VERSION = "0.5.0";
+export const APP_VERSION = "0.6.0";
 
 /**
  * Un solo JSON, leggibile fra dieci anni. Gli oggetti negli array sono

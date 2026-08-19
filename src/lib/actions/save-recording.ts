@@ -40,6 +40,27 @@ function fallbackAIFields(transcript: string): AIFields {
   };
 }
 
+/**
+ * Senza AI (modalita locale) la prima riga di cio che hai scritto diventa il
+ * titolo e il resto e il tuo testo, come l'hai lasciato (mockup
+ * due-modalita §02). E un diario scritto, e va benissimo.
+ */
+function localFields(transcript: string): AIFields {
+  const firstLine =
+    transcript
+      .trim()
+      .split(/\n/)[0]
+      ?.trim()
+      .replace(/\s+/g, " ") ?? "";
+  const headline =
+    firstLine.length > 90 ? `${firstLine.slice(0, 89).trimEnd()}\u2026` : firstLine;
+  return {
+    headline: headline || "Giornata scritta",
+    snippet: "",
+    areas: [],
+  };
+}
+
 async function callSplitByDate(
   transcript: string,
   defaultDate: string,
@@ -97,7 +118,7 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
       : seg.text.trim();
     const ai = useAI
       ? await callProcessEntry(fullTranscript)
-      : fallbackAIFields(fullTranscript);
+      : localFields(fullTranscript);
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
     saved.push(await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur));
   }
@@ -116,6 +137,6 @@ export async function reprocessEntryTranscript(
   const store = getStore();
   const ai = can("aiSummary")
     ? await callProcessEntry(newTranscript)
-    : fallbackAIFields(newTranscript);
+    : localFields(newTranscript);
   return store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { SettingsClient } from "@/components/settings/settings-client";
 import SettingsLoading from "./loading";
-import { createClient } from "@/lib/supabase/client";
+import { resolveStorageMode } from "@/lib/data/store";
 import { loadGoalDefs } from "@/lib/data/goals";
 import { loadRecaps } from "@/lib/data/recaps";
 import { signalReady } from "@/lib/app-ready";
@@ -34,15 +34,20 @@ export default function SettingsPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      const supabase = createClient();
-      const [{ data: userData }, goals, recaps] = await Promise.all([
-        supabase.auth.getUser(),
+      // In modalita locale il client Supabase non si costruisce nemmeno:
+      // niente email da mostrare, e i dati arrivano da IndexedDB via store.
+      const mode = await resolveStorageMode();
+      let user: { email?: string | null } | null = null;
+      if (mode !== "local") {
+        const { createClient } = await import("@/lib/supabase/client");
+        const { data } = await createClient().auth.getUser();
+        user = data.user;
+      }
+      const [goals, recaps] = await Promise.all([
         loadGoalDefs(),
         loadRecaps("auth"),
       ]);
       if (!alive) return;
-
-      const user = userData.user;
       // The newest recap across all periods, as the teaser inside the Recap card.
       const newest = [...recaps].sort((a, b) =>
         b.generatedAt.localeCompare(a.generatedAt),

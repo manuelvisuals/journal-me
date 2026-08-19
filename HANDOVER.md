@@ -540,7 +540,23 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   con `jm.mode=local` l'app si apre senza login, salva una giornata in IndexedDB
   con titolo di fallback e fa ZERO richieste esterne; senza flag il giro cloud e
   identico a prima. Nessuna UI imposta ancora il flag: arriva con `/benvenuto` (PR 5).
-- Le PR 4..12 non sono ancora iniziate.
+- **PR 4 `backup` + PR 5 `onboarding`: fatte** (un commit solo: costruite e
+  verificate insieme). Backup v1: `src/lib/backup/backup.ts` (export web via
+  Blob/download, iOS via @capacitor/filesystem + share — pacchetti committati in
+  node_modules e referenziati da Package.swift, serve **Reset Package Caches** in
+  Xcode), import merge-mai-replace con report leggibile, sezione "I tuoi dati" in
+  Altro, banner rosso-ambra dopo 14 giorni senza backup (o mai, con 7+ giornate),
+  `eraseEverything()` con conferma a due passi. Onboarding: `/benvenuto` (mockup
+  due-modalita §01 adattato alla colonna telefono), AuthGate a TRE esiti
+  (locale / cloud / niente -> /benvenuto), **tour anonimo rimosso** dal login
+  (il bottone ora porta a /benvenuto), in locale il mic apre la scrittura e il
+  titolo e la prima riga (mockup §02). Verificato con Playwright: nuovo utente ->
+  /benvenuto -> "inizia cosi" -> giornata scritta e salvata in IndexedDB ->
+  export -> re-import ("1 era gia qui") con ZERO richieste esterne e zero errori.
+  NON fatto: backup automatico settimanale, migrazione locale->cloud, muro
+  premium coi lucchetti (PR 10), aggiornamento del bundle iOS (`npm run
+  build:ios` da rifare quando si rilascia sul telefono).
+- Le PR 6..12 non sono ancora iniziate.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

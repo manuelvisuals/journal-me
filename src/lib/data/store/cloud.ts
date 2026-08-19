@@ -224,6 +224,13 @@ export class CloudStore implements JournalStore {
     }));
   }
 
+  async countEntries(): Promise<number> {
+    const { count } = await this.supabase()
+      .from("entries")
+      .select("id", { count: "exact", head: true });
+    return count ?? 0;
+  }
+
   async deleteEntry(dateISO: string): Promise<void> {
     const userId = await this.userId();
     const { error } = await this.supabase()

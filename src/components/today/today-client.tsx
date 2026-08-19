@@ -13,6 +13,7 @@ import { ManualWrite } from "@/components/today/manual-write";
 import { PeopleReview } from "@/components/today/people-review";
 import { formatDayHeader, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
+import { useStorageMode } from "@/lib/data/store";
 import {
   deleteEntry,
   saveEntryPeople,
@@ -82,9 +83,20 @@ export function TodayClient({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  // In modalita locale la voce e una funzione cloud/AI: ogni strada che
+  // porterebbe al microfono apre la scrittura. Il muro premium vero e
+  // proprio arriva con la PR 10 (gating-ui).
+  const storageMode = useStorageMode();
+  const voiceLocked = storageMode === "local";
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
   const [view, setView] = useState<View>(
-    autoRecord ? "recording" : initialEntry ? "filled" : "empty",
+    autoRecord
+      ? voiceLocked
+        ? "manual"
+        : "recording"
+      : initialEntry
+        ? "filled"
+        : "empty",
   );
   const [saveError, setSaveError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
@@ -105,6 +117,11 @@ export function TodayClient({
   useEffect(() => {
     if (searchParams.get("record") !== "1") return;
     queueMicrotask(() => {
+      if (voiceLocked) {
+        setView((current) => (current === "manual" ? current : "manual"));
+        router.replace("/", { scroll: false });
+        return;
+      }
       warmRealtime();
       setView((current) => (current === "recording" ? current : "recording"));
       router.replace("/", { scroll: false });
@@ -124,6 +141,10 @@ export function TodayClient({
   const handleStartRecording = () => {
     setSaveError(null);
     setSavedDates([]);
+    if (voiceLocked) {
+      setView("manual");
+      return;
+    }
     warmRealtime();
     setView("recording");
   };
@@ -172,8 +193,9 @@ export function TodayClient({
       if (todayEntry) setEntry(todayEntry);
       setSavedDates(saved.map((e) => e.entryDate));
 
-      // People detection — compare against the existing roster.
-      const found = await extractPeople(finalTranscript);
+      // People detection — compare against the existing roster. In locale
+      // niente rete: nessuna estrazione, i nomi si aggiungono a mano.
+      const found = voiceLocked ? [] : await extractPeople(finalTranscript);
       if (found.length > 0) {
         const roster = await loadPersonaNames(mode);
         const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
@@ -416,6 +438,7 @@ export function TodayClient({
             </div>
           )}
           <EmptyState
+            writeFirst={voiceLocked}
             onStartRecording={handleStartRecording}
             onWriteManually={handleWriteManually}
           />

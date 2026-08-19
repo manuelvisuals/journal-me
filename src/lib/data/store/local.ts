@@ -166,6 +166,44 @@ export class LocalStore implements JournalStore {
     return granted;
   }
 
+  /**
+   * Svuota TUTTI gli object store (giornate, obiettivi, Ricorda, recap,
+   * bozze, meta). Non e recuperabile: chi la chiama deve aver gia chiesto
+   * conferma due volte. Il database resta e i goal di default vengono
+   * riseminati, cosi l'app riparte pulita e coerente.
+   */
+  async eraseEverything(): Promise<void> {
+    const db = await this.db();
+    const stores = [
+      "entries",
+      "goals",
+      "remembers",
+      "recaps",
+      "drafts",
+      "meta",
+    ] as const;
+    const tx = db.transaction(stores, "readwrite");
+    for (const s of stores) {
+      await tx.objectStore(s).clear();
+    }
+    await tx.done;
+    // Riparti come un database appena creato: seed goal + schemaVersion.
+    const tx2 = db.transaction(["goals", "meta"], "readwrite");
+    const now = new Date().toISOString();
+    let position = 0;
+    for (const label of DEFAULT_GOAL_LABELS) {
+      await tx2.objectStore("goals").put({
+        id: uuid(),
+        label,
+        isAiSuggested: false,
+        position: position++,
+        createdAt: now,
+      });
+    }
+    await tx2.objectStore("meta").put({ key: "schemaVersion", value: DB_VERSION });
+    await tx2.done;
+  }
+
   /* ----------------- entries ----------------- */
 
   private async recordToEntry(rec: LocalEntryRecord): Promise<Entry> {
@@ -230,6 +268,11 @@ export class LocalStore implements JournalStore {
     return recs
       .map((r) => this.recordToEntryWith(r, defs))
       .sort((a, b) => (a.entryDate < b.entryDate ? 1 : -1));
+  }
+
+  async countEntries(): Promise<number> {
+    const db = await this.db();
+    return db.count("entries");
   }
 
   async deleteEntry(dateISO: string): Promise<void> {

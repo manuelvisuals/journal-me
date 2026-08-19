@@ -6,7 +6,9 @@ import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { GoalsSection } from "@/components/settings/goals-section";
 import { AppearanceSection } from "@/components/settings/appearance-section";
-import { createClient } from "@/lib/supabase/client";
+import { BackupBanner, DataSection } from "@/components/settings/data-section";
+import { useStorageMode } from "@/lib/data/store";
+import { APP_VERSION } from "@/lib/data/store/types";
 import type { DataMode } from "@/lib/data/entries";
 import type { GoalDef } from "@/lib/types";
 
@@ -30,11 +32,15 @@ export function SettingsClient({
   latestRecap,
 }: Props) {
   const router = useRouter();
+  const storageMode = useStorageMode();
+  const isLocal = storageMode === "local";
   const [signingOut, setSigningOut] = useState<boolean>(false);
 
   const handleLogout = async () => {
     if (signingOut) return;
     setSigningOut(true);
+    // Solo cloud: in locale questo bottone non esiste (niente account).
+    const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     await supabase.auth.signOut();
     // Legacy demo cookie cleanup, just in case.
@@ -53,6 +59,9 @@ export function SettingsClient({
       </header>
 
       <div className="flex-1 overflow-y-auto" style={{ padding: "0 0 22px" }}>
+        {/* Solo in locale, quando l'ultimo backup e vecchio: il dovere di
+            dire che il diario esiste in un posto solo (SPEC-v2 §4.4). */}
+        <BackupBanner />
         {/* Recap card — premium editorial entry point. Opens /recap. */}
         <Link href="/recap" className="jm-recap-card" aria-label="Apri Recap">
           <div className="meta">Recap</div>
@@ -89,15 +98,23 @@ export function SettingsClient({
 
         <GoalsSection mode={mode} initial={initialGoals} />
 
+        <DataSection />
+
         <section className="jm-set-section">
           <div className="jm-set-section-h">Account</div>
-          {email && (
+          {isLocal && (
+            <div className="jm-set-row">
+              <span className="lbl">Dove</span>
+              <span className="v">Solo su questo dispositivo</span>
+            </div>
+          )}
+          {!isLocal && email && (
             <div className="jm-set-row">
               <span className="lbl">Email</span>
               <span className="v">{email}</span>
             </div>
           )}
-          {isAnonymous && (
+          {!isLocal && isAnonymous && (
             <div className="jm-set-row">
               <span className="lbl">Account</span>
               <span className="v">Ospite (cloud)</span>
@@ -105,20 +122,22 @@ export function SettingsClient({
           )}
           <div className="jm-set-row">
             <span className="lbl">Versione</span>
-            <span className="v">0.5.0</span>
+            <span className="v">{APP_VERSION}</span>
           </div>
         </section>
 
-        <div className="jm-logout-wrap">
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={signingOut}
-            className="jm-logout-btn"
-          >
-            {signingOut ? "Logout in corso..." : "Esci dall'account"}
-          </button>
-        </div>
+        {!isLocal && (
+          <div className="jm-logout-wrap">
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={signingOut}
+              className="jm-logout-btn"
+            >
+              {signingOut ? "Logout in corso..." : "Esci dall'account"}
+            </button>
+          </div>
+        )}
       </div>
 
       <TabBar active="settings" />

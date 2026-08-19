@@ -13,6 +13,8 @@
 /node_modules/@capacitor/*
 !/node_modules/@capacitor/app
 !/node_modules/@capacitor/local-notifications
+!/node_modules/@capacitor/filesystem
+!/node_modules/@capacitor/share
 !/node_modules/@aparajita
 /node_modules/@aparajita/*
 !/node_modules/@aparajita/capacitor-biometric-auth
