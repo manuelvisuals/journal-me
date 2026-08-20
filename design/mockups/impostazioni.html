@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Rail destra + Impostazioni</title>
+<style>
+/* I font sono quelli VERI del repo, non Google Fonts: un mockup che carica
+   da fonts.googleapis.com nel sandbox renderizza Georgia e ogni giudizio
+   tipografico che ne esce e falso (SPEC-temi, nota in testa). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+
+/* Tema MINIMAL chiaro: e quello che Manuel vede davvero (default dell'app). */
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --accent-hi:#000000; --on-accent:#FFFFFF;
+  --success:#1D1D1F; --danger:#C0392B; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
+}
+.dark{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --accent-hi:#FFFFFF; --on-accent:#1D1D1F;
+  --success:#F5F5F7; --danger:#FF6B60; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin-top:10px;line-height:1.6}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:820px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.caption .bad{color:#FF8A80;font-weight:600}
+.caption .good{color:#8FD19E;font-weight:600}
+.frame-wrap{overflow-x:auto;padding-bottom:8px}
+.row2{display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+
+.win{position:relative;width:1280px;min-height:620px;margin:0 auto;background:var(--bg-app);border-radius:14px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);display:flex;color:var(--ink)}
+.phone{width:390px;min-height:760px;border-radius:36px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:flex;flex-direction:column}
+
+/* ---------- rail sinistra (invariata, serve solo da contesto) ---------- */
+.rail-l{width:222px;flex:0 0 222px;border-right:1px solid var(--line);padding:24px 14px 18px;display:flex;flex-direction:column}
+.brand{font-family:var(--serif);font-size:21px;font-weight:400;padding:0 10px 24px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);font-size:13.5px;font-weight:600;color:var(--ink-faint)}
+.nav-i.on{background:var(--surface);color:var(--ink)}
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column;padding:26px 28px;overflow:hidden}
+
+/* =====================================================================
+   01 . RAIL DESTRA
+   ===================================================================== */
+.rail-r{width:296px;flex:0 0 296px;border-left:1px solid var(--line);padding:22px 20px;overflow:hidden}
+.rr-l{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+.rr-sec{margin-bottom:30px}
+
+/* PRIMA: le tre card del telefono infilate in 256px. */
+.old-cards{display:flex;gap:8px}
+.old-card{flex:1;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 6px}
+.old-card .v{font-size:18px;font-weight:600;line-height:1}
+.old-card .u{font-size:10px;color:var(--ink-faint)}
+.old-card .k{font-size:9px;font-weight:600;color:var(--ink-faint);letter-spacing:.18em;text-transform:uppercase;margin-top:5px}
+.old-card.editing{flex:0 0 170px;background:var(--surface-2);border-color:var(--ink-faint)}
+.old-moods{display:flex;gap:4px;justify-content:center}
+.old-moods span{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:18px;opacity:.45}
+.old-moods span.on{opacity:1;transform:scale(1.15)}
+.overflow-mark{position:absolute;top:0;bottom:0;width:31px;background:repeating-linear-gradient(45deg,rgba(255,80,80,.30),rgba(255,80,80,.30) 6px,transparent 6px,transparent 12px);border-left:1px dashed #FF5050}
+
+/* DOPO: una riga per metrica. */
+.m-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  min-height:52px;padding:8px 10px;margin:0 -10px;background:transparent;border:none;border-radius:var(--r-md);
+  border-bottom:1px solid var(--line);cursor:pointer;font-family:var(--font);text-align:left;color:inherit}
+.m-row:last-of-type{border-bottom:none}
+.m-row:hover{background:var(--surface)}
+.m-k{display:block;font-size:12px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:var(--ink-faint)}
+.m-v{font-size:22px;font-weight:300;letter-spacing:-.015em;color:var(--ink);font-variant-numeric:tabular-nums}
+.m-v small{font-size:12px;color:var(--ink-faint);margin-left:3px;font-weight:400}
+.m-v.empty{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-faint)}
+.m-v .face{font-size:20px}
+/* riga in modifica: si apre SOTTO, a tutta larghezza. Nessuno schiacciamento. */
+.m-edit{padding:4px 0 14px;border-bottom:1px solid var(--line)}
+.m-edit .k{font-size:12px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px;display:block}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper input{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:10px 12px;font-family:var(--font);font-size:17px;font-weight:500;color:var(--ink);text-align:center;font-variant-numeric:tabular-nums}
+.stepper button{width:44px;height:44px;flex:0 0 44px;border-radius:var(--r-sm);border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);font-size:18px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.moods{display:flex;gap:6px;justify-content:space-between}
+.moods button{width:44px;height:44px;flex:1;border-radius:var(--r-sm);border:1px solid transparent;background:transparent;
+  font-size:22px;opacity:.4;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.moods button.on{opacity:1;background:var(--surface-2);border-color:var(--line)}
+.moods button:hover{opacity:.8}
+
+/* =====================================================================
+   02 . OBIETTIVI
+   ===================================================================== */
+.g-old{display:flex;align-items:center;gap:12px;padding:8px 0;font-size:13px;color:var(--ink-faint)}
+.g-old i{width:14px;height:14px;flex:0 0 14px;border-radius:50%;border:1.5px solid rgba(0,0,0,.16);display:block}
+
+.g-row{display:flex;align-items:center;gap:14px;width:100%;min-height:44px;padding:0 10px;margin:0 -10px;
+  background:transparent;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:var(--font);text-align:left;color:inherit}
+.g-row:hover{background:var(--surface)}
+.g-box{width:22px;height:22px;flex:0 0 22px;border-radius:7px;border:1.5px solid rgba(0,0,0,.22);
+  display:flex;align-items:center;justify-content:center;transition:background-color 120ms,border-color 120ms}
+.dark .g-box{border-color:rgba(255,255,255,.28)}
+.g-row.on .g-box{background:var(--accent);border-color:var(--accent)}
+.g-box svg{width:13px;height:13px;stroke:var(--on-accent);stroke-width:3;fill:none;opacity:0}
+.g-row.on .g-box svg{opacity:1}
+.g-name{font-size:14px;color:var(--ink-faint);letter-spacing:-.003em}
+.g-row.on .g-name{color:var(--ink);font-weight:500}
+.hit{position:absolute;left:-10px;right:-10px;top:0;height:44px;border:1px dashed rgba(120,200,255,.55);border-radius:8px;pointer-events:none}
+
+/* =====================================================================
+   03 . IMPOSTAZIONI
+   ===================================================================== */
+.s-head{padding:0 0 4px}
+.s-h1{font-size:26px;font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+.s-sub{font-size:13px;color:var(--ink-faint);margin-top:6px}
+.s-scroll{flex:1;overflow:auto;padding-top:26px;max-width:640px}
+.s-group{margin-bottom:30px}
+.s-gl{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 10px 2px}
+.s-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.s-row{display:flex;align-items:center;gap:16px;width:100%;min-height:56px;padding:12px 16px;
+  border-bottom:1px solid var(--line);background:transparent;border-left:none;border-right:none;border-top:none;
+  cursor:pointer;font-family:var(--font);text-align:left;color:inherit}
+.s-row:last-child{border-bottom:none}
+.s-row:hover{background:var(--surface-2)}
+.s-row.static{cursor:default}
+.s-row.static:hover{background:transparent}
+.s-t{display:block;font-size:15px;font-weight:500;color:var(--ink)}
+.s-d{display:block;font-size:12.5px;color:var(--ink-faint);margin-top:3px;line-height:1.45}
+.s-grow{flex:1;min-width:0}
+.s-val{font-size:14px;color:var(--ink-faint);flex:0 0 auto;white-space:nowrap}
+.s-chev{width:16px;height:16px;flex:0 0 16px;stroke:var(--ink-faint);stroke-width:2;fill:none;opacity:.6}
+.s-row.danger .s-t{color:var(--danger)}
+
+.seg{display:flex;flex:0 0 auto;background:var(--bg-app);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{font-family:var(--font);font-size:12px;font-weight:600;color:var(--ink-faint);background:transparent;
+  border:1px solid transparent;border-radius:999px;padding:7px 13px;cursor:pointer}
+.seg button.on{background:var(--surface);border-color:var(--line);color:var(--ink)}
+
+.s-recap{display:block;padding:20px 22px 18px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);margin-bottom:30px;position:relative;overflow:hidden;text-decoration:none;color:inherit}
+.s-recap .meta{font-size:10px;font-weight:650;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px}
+.s-recap .title{font-family:var(--serif);font-size:23px;font-weight:400;line-height:1.18;letter-spacing:-.01em;margin-bottom:8px}
+.s-recap .sub{font-size:12.5px;color:var(--ink-faint);line-height:1.5}
+
+/* rail destra di Impostazioni: l'identita, non le impostazioni */
+.acct{display:flex;flex-direction:column;align-items:flex-start}
+.acct-av{width:48px;height:48px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--ink-muted);margin-bottom:14px}
+.acct-nm{font-size:15px;font-weight:600;color:var(--ink)}
+.acct-em{font-size:12.5px;color:var(--ink-faint);margin-top:3px;word-break:break-all}
+.pill{display:inline-block;margin-top:10px;font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--ink-muted);border:1px solid var(--line)}
+.rr-row{display:flex;align-items:baseline;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.rr-row:last-child{border-bottom:none}
+.rr-row .k{color:var(--ink-faint)}
+.rr-row .v{color:var(--ink-muted)}
+.btn-out{display:block;width:100%;margin-top:18px;padding:13px;border-radius:var(--r-md);border:1px solid var(--line);
+  background:transparent;color:var(--ink-muted);font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-out.danger{color:var(--danger);border-color:rgba(192,57,43,.35)}
+
+/* telefono */
+.ph-head{padding:26px 22px 0}
+.ph-scroll{flex:1;overflow:auto;padding:22px}
+.tabbar{border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:12px 0 20px;text-align:center}
+.tabbar div{font-size:9px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:var(--ink-faint)}
+.tabbar div.on{color:var(--ink)}
+.tabbar .mic{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--on-accent);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:16px}
+</style>
+</head>
+<body>
+
+<div class="page-title">Rail destra + Impostazioni</div>
+<div class="page-sub">Mockup del 20 agosto 2026. Tema Minimal chiaro (il default, quello che vedi tu) con i font veri del repo.<br>Tre problemi segnalati da Manuel piu il selettore di lingua che serve al bilingue.</div>
+
+<div class="divider"></div>
+
+<!-- ============ 01 ============ -->
+<div class="label">01 . La rail destra sborda</div>
+<div class="caption">Misurato a 1728px: a riposo le tre card stanno in 295px per un pelo. Appena tocchi <b>MOOD</b> l'editor chiede 170px, <span class="bad">peso si schiaccia a 45px, sonno a 55px</span> e la card esce <span class="bad">31px fuori dalla rail</span>. La causa e che nella rail e stato infilato il componente a tre card del telefono, dove ci sono 390px. <span class="good">Nel CSS esisteva gia lo stile giusto — <code>.jm-railr-row</code>, una riga per voce — scritto nella PR 6 e mai usato da nessun componente.</span></div>
+
+<div class="row2">
+  <div>
+    <div class="label" style="text-align:left;margin-left:4px">prima</div>
+    <div style="position:relative;width:296px;border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:visible;background:var(--bg-app);padding:22px 20px;color:var(--ink)">
+      <div class="rr-l">La giornata</div>
+      <div class="old-cards">
+        <div class="old-card"><div class="v">82,0<span class="u"> kg</span></div><div class="k">peso</div></div>
+        <div class="old-card"><div class="v">&mdash;</div><div class="k">sonno</div></div>
+        <div class="old-card editing">
+          <div class="old-moods"><span>&#128522;</span><span>&#128578;</span><span>&#128528;</span><span>&#128524;</span><span>&#128577;</span></div>
+          <div class="k">mood</div>
+        </div>
+      </div>
+      <div class="overflow-mark" style="right:-31px"></div>
+    </div>
+    <div style="width:296px;font-size:11px;color:#FF8A80;margin-top:8px">tratteggio rosso = i 31px fuori dalla rail</div>
+  </div>
+
+  <div>
+    <div class="label" style="text-align:left;margin-left:4px">dopo</div>
+    <div style="width:296px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:var(--bg-app);padding:22px 20px;color:var(--ink)">
+      <div class="rr-l">La giornata</div>
+      <button class="m-row"><span class="m-k">Peso</span><span class="m-v">82,0<small>kg</small></span></button>
+      <button class="m-row"><span class="m-k">Sonno</span><span class="m-v empty">non segnato</span></button>
+      <div class="m-edit">
+        <span class="k">Mood</span>
+        <div class="moods">
+          <button>&#128522;</button><button>&#128578;</button><button class="on">&#128528;</button><button>&#128524;</button><button>&#128577;</button>
+        </div>
+      </div>
+    </div>
+    <div style="width:296px;font-size:11px;color:#8FD19E;margin-top:8px">l'editor si apre SOTTO, a tutta larghezza: niente puo sbordare</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 02 ============ -->
+<div class="label">02 . Obiettivi difficili da centrare</div>
+<div class="caption">Il bersaglio cliccabile e gia tutta la riga (255px), ma e alto <span class="bad">36px</span> e l'unica cosa che <i>sembra</i> cliccabile e un pallino da <span class="bad">14px</span>. Il brandbook (cap. 05) dice <b>36-44px di minimo</b>. Diventa una casella da 22px dentro una riga da 44px, con la spunta che compare: si capisce che e un interruttore e si becca col mouse e col pollice.</div>
+
+<div class="row2">
+  <div>
+    <div class="label" style="text-align:left;margin-left:4px">prima</div>
+    <div style="width:296px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:var(--bg-app);padding:22px 20px;color:var(--ink)">
+      <div class="rr-l">Obiettivi</div>
+      <div class="g-old"><i></i>scopato</div>
+      <div class="g-old"><i></i>no alcol</div>
+      <div class="g-old"><i></i>no junkfood</div>
+    </div>
+  </div>
+  <div>
+    <div class="label" style="text-align:left;margin-left:4px">dopo</div>
+    <div style="width:296px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:var(--bg-app);padding:22px 20px;color:var(--ink)">
+      <div class="rr-l">Obiettivi <span style="float:right;letter-spacing:.05em;text-transform:none;font-weight:500">2 su 6</span></div>
+      <div style="position:relative">
+        <button class="g-row on"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">scopato</span></button>
+        <div class="hit" style="top:0"></div>
+      </div>
+      <button class="g-row on"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">no alcol</span></button>
+      <button class="g-row"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">no junkfood</span></button>
+      <button class="g-row"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">camminato</span></button>
+    </div>
+    <div style="width:296px;font-size:11px;color:#7FC4FF;margin-top:8px">tratteggio azzurro = il bersaglio, 44px pieni</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 03 ============ -->
+<div class="label">03 . Da "Altro" a "Impostazioni"</div>
+<div class="caption">"Altro" era un cassetto: banner, card Recap, temi, obiettivi a chip, dati, account e logout tutti aperti in una colonna sola. Ora e un elenco a gruppi: <b>ogni riga dice la cosa e il suo valore attuale</b>, e quello che ha bisogno di spazio si apre in una schermata sua. Su desktop <b>l'identita passa nella rail destra</b> — chi sei e contesto, non un'impostazione — e la colonna resta solo impostazioni. La card Recap sparisce da qui su desktop perche Recap e gia nella rail sinistra; sul telefono resta, perche li non c'e altro modo di arrivarci.</div>
+
+<div class="frame-wrap">
+<div class="win">
+  <div class="rail-l">
+    <div class="brand">Journal<span>.me</span></div>
+    <div class="nav">
+      <div class="nav-i">Oggi</div><div class="nav-i">Mese</div><div class="nav-i">Ricorda</div><div class="nav-i">Recap</div><div class="nav-i on">Impostazioni</div>
+    </div>
+  </div>
+
+  <div class="col-c">
+    <div class="s-head">
+      <div class="s-h1">Impostazioni</div>
+      <div class="s-sub">Come funziona e come si vede il tuo diario.</div>
+    </div>
+    <div class="s-scroll">
+
+      <div class="s-group">
+        <div class="s-gl">Il diario</div>
+        <div class="s-box">
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Obiettivi</span><span class="s-d">I pallini che accendi ogni giorno.</span></span>
+            <span class="s-val">6 attivi</span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Promemoria della sera</span><span class="s-d">Una notifica quando e ora di raccontare.</span></span>
+            <span class="s-val">21:30</span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="s-group">
+        <div class="s-gl">Lingua e aspetto</div>
+        <div class="s-box">
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Lingua</span><span class="s-d">Al primo avvio segue la lingua del dispositivo.</span></span>
+            <span class="s-val">Italiano . automatica</span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Tema</span><span class="s-d">Cinque temi inclusi, tutti in chiaro e in scuro.</span></span>
+            <span class="s-val">Minimal</span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <div class="s-row static">
+            <span class="s-grow"><span class="s-t">Chiaro o scuro</span><span class="s-d">Vale per qualsiasi tema.</span></span>
+            <span class="seg"><button>Chiaro</button><button>Scuro</button><button class="on">Sistema</button></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="s-group">
+        <div class="s-gl">I tuoi dati</div>
+        <div class="s-box">
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Esporta un backup</span><span class="s-d">Un solo file con tutto: giornate, obiettivi, Ricorda.</span></span>
+            <span class="s-val">127 giornate</span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Importa un backup</span><span class="s-d">Aggiunge quello che manca. Non sovrascrive mai.</span></span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+          <button class="s-row">
+            <span class="s-grow"><span class="s-t">Dove sono le mie giornate</span><span class="s-d">Cosa esce da questo dispositivo, e cosa no.</span></span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="s-group">
+        <div class="s-gl">Zona pericolosa</div>
+        <div class="s-box">
+          <button class="s-row danger">
+            <span class="s-grow"><span class="s-t">Cancella tutte le giornate</span><span class="s-d">Da questo dispositivo. Non si torna indietro.</span></span>
+            <svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="rail-r">
+    <div class="rr-sec">
+      <div class="acct">
+        <div class="acct-av">M</div>
+        <div class="acct-nm">manuel</div>
+        <div class="acct-em">spamming.madh52@gmail.com</div>
+        <span class="pill">Premium</span>
+      </div>
+    </div>
+    <div class="rr-sec">
+      <div class="rr-l">Account</div>
+      <div class="rr-row"><span class="k">Piano</span><span class="v">Premium . 4,99 &euro; al mese</span></div>
+      <div class="rr-row"><span class="k">Dispositivi</span><span class="v">3 attivi</span></div>
+      <div class="rr-row"><span class="k">Versione</span><span class="v">0.6.0</span></div>
+      <button class="btn-out">Gestisci l&rsquo;abbonamento</button>
+      <button class="btn-out danger">Esci dall&rsquo;account</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 04 ============ -->
+<div class="label">04 . Impostazioni sul telefono, e la stessa pagina in scuro</div>
+<div class="caption">Stessi gruppi, una colonna. Sul telefono <b>torna la card Recap</b> in cima, perche la tab bar non ha uno slot per Recap. L'identita, che su desktop sta nella rail, qui diventa l'ultimo gruppo.</div>
+
+<div class="row2">
+  <div class="phone">
+    <div class="ph-head"><div class="s-h1">Impostazioni</div></div>
+    <div class="ph-scroll">
+      <a class="s-recap">
+        <div class="meta">Recap</div>
+        <div class="title">Le tue giornate, raccontate.</div>
+        <div class="sub">Mensili, semestrali, annuali. Una prosa che rilegge i tuoi mesi senza giudizio.</div>
+      </a>
+      <div class="s-group">
+        <div class="s-gl">Il diario</div>
+        <div class="s-box">
+          <button class="s-row"><span class="s-grow"><span class="s-t">Obiettivi</span></span><span class="s-val">6 attivi</span><svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="s-row"><span class="s-grow"><span class="s-t">Promemoria della sera</span></span><span class="s-val">21:30</span><svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="s-group">
+        <div class="s-gl">Lingua e aspetto</div>
+        <div class="s-box">
+          <button class="s-row"><span class="s-grow"><span class="s-t">Lingua</span></span><span class="s-val">Italiano</span><svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="s-row"><span class="s-grow"><span class="s-t">Tema</span></span><span class="s-val">Minimal</span><svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <div class="s-row static"><span class="s-grow"><span class="s-t">Chiaro o scuro</span></span><span class="seg"><button>Ch</button><button>Sc</button><button class="on">Sist</button></span></div>
+        </div>
+      </div>
+      <div class="s-group">
+        <div class="s-gl">Account</div>
+        <div class="s-box">
+          <div class="s-row static"><span class="s-grow"><span class="s-t">Email</span></span><span class="s-val">spamming.madh52@&hellip;</span></div>
+          <div class="s-row static"><span class="s-grow"><span class="s-t">Piano</span></span><span class="s-val">Premium</span></div>
+          <button class="s-row danger"><span class="s-grow"><span class="s-t">Esci dall&rsquo;account</span></span></button>
+        </div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <div>Oggi</div><div>Mese</div><div><span class="mic">&#9679;</span></div><div>Ricorda</div><div class="on">Impost.</div>
+    </div>
+  </div>
+
+  <div class="phone dark">
+    <div class="ph-head"><div class="s-h1">Impostazioni</div></div>
+    <div class="ph-scroll">
+      <div class="s-group">
+        <div class="s-gl">Lingua e aspetto</div>
+        <div class="s-box">
+          <button class="s-row"><span class="s-grow"><span class="s-t">Lingua</span><span class="s-d">Al primo avvio segue il dispositivo.</span></span><span class="s-val">Italiano</span><svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <button class="s-row"><span class="s-grow"><span class="s-t">Tema</span></span><span class="s-val">Minimal</span><svg class="s-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+          <div class="s-row static"><span class="s-grow"><span class="s-t">Chiaro o scuro</span></span><span class="seg"><button>Ch</button><button class="on">Sc</button><button>Sist</button></span></div>
+        </div>
+      </div>
+      <div class="s-group">
+        <div class="s-gl">Obiettivi</div>
+        <div class="s-box" style="padding:10px 16px">
+          <button class="g-row on"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">scopato</span></button>
+          <button class="g-row"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">no alcol</span></button>
+          <button class="g-row on"><span class="g-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="g-name">camminato</span></button>
+        </div>
+      </div>
+      <div class="s-group">
+        <div class="s-gl">Lingua</div>
+        <div class="s-box">
+          <button class="s-row"><span class="s-grow"><span class="s-t">Italiano</span></span><span class="s-val">&#10003;</span></button>
+          <button class="s-row"><span class="s-grow"><span class="s-t">English</span></span></button>
+          <button class="s-row"><span class="s-grow"><span class="s-t">Come il dispositivo</span><span class="s-d">Ora sarebbe Italiano.</span></span><span class="s-val">&#10003;</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="tabbar">
+      <div>Oggi</div><div>Mese</div><div><span class="mic">&#9679;</span></div><div>Ricorda</div><div class="on">Impost.</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="caption" style="margin-top:8px">Note per l'implementazione (non si vedono nell'app): la riga metrica riusa <code>.jm-railr-row</code> che era gia in globals.css dalla PR 6 e non era mai stata usata; l'editor inline sostituisce <code>MetricCards</code> SOLO dentro la rail — sul telefono le tre card restano come sono. Le sottopagine (Obiettivi, Tema, Lingua, Dove sono le mie giornate) sul telefono sono fogli a tutta pagina, su desktop pannelli nella stessa colonna con un back. "Zona pericolosa" compare solo in modalita locale. Il conteggio "Dispositivi 3 attivi" arriva dalla sicurezza rimandata: finche non c'e, quella riga non si mostra.</div>
+
+</body>
+</html>
