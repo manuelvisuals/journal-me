@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
 import { useStorageMode } from "@/lib/data/store";
+import { useT } from "@/lib/i18n";
 
 export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns";
 
@@ -61,35 +62,17 @@ function useWallState(): WallState {
   );
 }
 
-const TITLES: Record<WallFeature, React.ReactNode> = {
-  voice: (
-    <>
-      Per raccontare a voce
-      <br />
-      serve premium
-    </>
-  ),
-  aiSummary: (
-    <>
-      Per il titolo e la sintesi
-      <br />
-      serve premium
-    </>
-  ),
-  recap: (
-    <>
-      Per i recap del mese
-      <br />
-      serve premium
-    </>
-  ),
-  patterns: (
-    <>
-      Per le letture sui pattern
-      <br />
-      serve premium
-    </>
-  ),
+/**
+ * I titoli del muro vanno su due righe. Prima erano JSX con un <br/> in
+ * mezzo: cosi il punto dove spezzare era deciso dall'italiano e in inglese
+ * cadeva a caso. Ora sono stringhe con un a capo dentro, la traduzione
+ * decide dove spezzare, e `.jm-wall-t` lo rispetta (white-space: pre-line).
+ */
+const TITLES: Record<WallFeature, string> = {
+  voice: "Per raccontare a voce\nserve premium",
+  aiSummary: "Per il titolo e la sintesi\nserve premium",
+  recap: "Per i recap del mese\nserve premium",
+  patterns: "Per le letture sui pattern\nserve premium",
 };
 
 const FEATURES: { t: string; p: string }[] = [
@@ -112,6 +95,7 @@ const FEATURES: { t: string; p: string }[] = [
 ];
 
 export function PremiumWall() {
+  const t = useT();
   const wall = useWallState();
   const router = useRouter();
   const mode = useStorageMode();
@@ -176,29 +160,30 @@ export function PremiumWall() {
       className="jm-wall-scrim"
       role="dialog"
       aria-modal="true"
-      aria-label="Premium"
+      aria-label={t("Premium")}
       onClick={dismiss}
     >
       <div className="jm-wall" onClick={(e) => e.stopPropagation()}>
-        <div className="jm-wall-t">{TITLES[wall.feature]}</div>
+        <div className="jm-wall-t">{t(TITLES[wall.feature])}</div>
         <div className="jm-wall-p">
-          La trascrizione e la rielaborazione girano su un server e costano a
-          ogni minuto registrato. Per questo non posso regalarle: le paghi tu
-          o le pago io.
+          {t(
+            "La trascrizione e la rielaborazione girano su un server e costano a ogni minuto registrato. Per questo non posso regalarle: le paghi tu o le pago io.",
+          )}
         </div>
         {FEATURES.map((f) => (
           <div key={f.t} className="jm-wall-feat">
             <i />
             <div>
-              <div className="t">{f.t}</div>
-              <div className="p">{f.p}</div>
+              <div className="t">{t(f.t)}</div>
+              <div className="p">{t(f.p)}</div>
             </div>
           </div>
         ))}
         {cloudNote && (
           <div className="jm-wall-note">
-            L&apos;abbonamento si attiva a breve: l&apos;acquisto dentro
-            l&apos;app sta arrivando.
+            {t(
+              "L'abbonamento si attiva a breve: l'acquisto dentro l'app sta arrivando.",
+            )}
           </div>
         )}
         <button
@@ -207,10 +192,12 @@ export function PremiumWall() {
           onClick={() => void tryPremium()}
           disabled={busy}
         >
-          {busy ? "un attimo..." : `prova premium . ${PREMIUM_PRICE_LABEL}`}
+          {busy
+            ? t("un attimo...")
+            : `${t("prova premium")} . ${PREMIUM_PRICE_LABEL}`}
         </button>
         <button type="button" className="btn-ghost" onClick={dismiss}>
-          non ora
+          {t("non ora")}
         </button>
       </div>
     </div>

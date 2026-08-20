@@ -15,7 +15,13 @@
 
 import { RailRight } from "@/components/desktop/rail-right";
 import { useCan } from "@/lib/capabilities";
-import { formatDecimal, formatNumber, daysInMonth } from "@/lib/format";
+import {
+  formatDecimal,
+  formatNumber,
+  daysInMonth,
+  formatMonthTitle,
+} from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import type { Entry, Mood } from "@/lib/types";
 
 type Today = { year: number; month: number; day: number };
@@ -31,10 +37,9 @@ type Props = {
   onWriteToday: () => void;
 };
 
-const MONTHS_IT = [
-  "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
-];
+// Il titolo del mese arriva da formatMonthTitle(), che segue la lingua.
+// Le iniziali dei giorni restano una lista: sono le sette caselle della
+// griglia e vanno tradotte come gruppo, non una per una.
 const WEEKDAYS = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
 
 const MOOD_VALUE: Record<Mood, number> = {
@@ -122,6 +127,7 @@ export function MeseGrid({
   onDayClick,
   onWriteToday,
 }: Props) {
+  const t = useT();
   const canPatterns = useCan("patterns");
   const cells = buildCells(year, month, entries, today);
 
@@ -161,16 +167,19 @@ export function MeseGrid({
             onClick={onTitleClick}
             aria-haspopup="dialog"
           >
-            {MONTHS_IT[month - 1]} {year}
+            {formatMonthTitle(year, month)}
           </button>
           <div className="jm-mese-s" suppressHydrationWarning>
-            {formatNumber(done)} giornate raccontate su {formatNumber(passed)}{" "}
-            {isCurrent ? "passate" : "del mese"}
+            {t("{fatte} giornate raccontate su {totali} {periodo}", {
+              fatte: formatNumber(done),
+              totali: formatNumber(passed),
+              periodo: isCurrent ? t("passate") : t("del mese"),
+            })}
           </div>
         </div>
         <div className="jm-mese-wk" aria-hidden="true">
           {WEEKDAYS.map((w) => (
-            <div key={w}>{w}</div>
+            <div key={w}>{t(w)}</div>
           ))}
         </div>
         <div className="jm-mese-grid">
@@ -183,7 +192,7 @@ export function MeseGrid({
                 <div key={c.key} className={cls}>
                   <div className="jm-mese-cn">{c.day}</div>
                   {c.kind === "empty" && (
-                    <div className="jm-mese-ch">vuota</div>
+                    <div className="jm-mese-ch">{t("vuota")}</div>
                   )}
                 </div>
               );
@@ -212,7 +221,7 @@ export function MeseGrid({
                     )}
                   </>
                 ) : (
-                  <div className="jm-mese-ch">vuota</div>
+                  <div className="jm-mese-ch">{t("vuota")}</div>
                 )}
               </button>
             );
@@ -222,41 +231,46 @@ export function MeseGrid({
 
       <RailRight>
         <div className="jm-railr-sec">
-          <div className="jm-railr-l">Il mese</div>
+          <div className="jm-railr-l">{t("Il mese")}</div>
           <div className="jm-railr-stat">
             <div className="v" suppressHydrationWarning>
               {formatNumber(done)}
               <span>/{formatNumber(passed)}</span>
             </div>
-            <div className="k">giornate raccontate</div>
+            <div className="k">{t("giornate raccontate")}</div>
           </div>
           <div className="jm-railr-stat">
             <div className="v">
               {moodAvg !== null ? formatDecimal(moodAvg, 1) : "-"}
             </div>
-            <div className="k">umore medio</div>
+            <div className="k">{t("umore medio")}</div>
           </div>
           {topGoal && (
             <div className="jm-railr-stat">
               <div className="v">{formatNumber(topGoal[1])}</div>
-              <div className="k">giorni con {topGoal[0]}</div>
+              <div className="k">
+                {t("giorni con {obiettivo}", { obiettivo: topGoal[0] })}
+              </div>
             </div>
           )}
           <div className="jm-railr-stat">
             <div className="v">{formatNumber(words)}</div>
-            <div className="k">parole scritte</div>
+            <div className="k">{t("parole scritte")}</div>
           </div>
         </div>
         <div className="jm-railr-sec">
           <div className="jm-railr-l">
             Pattern
-            {!canPatterns && <span className="jm-railr-pill">premium</span>}
+            {!canPatterns && (
+              <span className="jm-railr-pill">{t("premium")}</span>
+            )}
           </div>
           <div className="jm-railr-locked">
-            <div className="t">Le letture sui pattern arrivano da qui.</div>
+            <div className="t">{t("Le letture sui pattern arrivano da qui.")}</div>
             <div className="p">
-              Servono almeno due mesi di giornate raccontate per dire
-              qualcosa di vero su come stai.
+              {t(
+                "Servono almeno due mesi di giornate raccontate per dire qualcosa di vero su come stai.",
+              )}
             </div>
           </div>
         </div>

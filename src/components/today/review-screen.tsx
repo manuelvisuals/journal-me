@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { formatDurationMmSs } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   initialTranscript: string;
@@ -22,6 +23,7 @@ export function ReviewScreen({
   onConfirm,
   onCancel,
 }: Props) {
+  const t = useT();
   const [value, setValue] = useState<string>(initialTranscript);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -32,7 +34,7 @@ export function ReviewScreen({
       <div className="jm-editor-card">
         <div className="jm-editor-header">
           <div>
-            <div className="jm-editor-title">Rileggi prima di processare</div>
+            <div className="jm-editor-title">{t("Rileggi prima di processare")}</div>
             <div
               style={{
                 fontSize: 11,
@@ -43,7 +45,8 @@ export function ReviewScreen({
                 marginTop: 2,
               }}
             >
-              {formatDurationMmSs(durationSeconds)} . correggi nomi e parole
+              {formatDurationMmSs(durationSeconds)} .{" "}
+              {t("correggi nomi e parole")}
             </div>
           </div>
           <div className="jm-editor-actions">
@@ -52,7 +55,7 @@ export function ReviewScreen({
               className="jm-editor-btn cancel"
               onClick={onCancel}
             >
-              Annulla
+              {t("Annulla")}
             </button>
             <button
               type="button"
@@ -60,7 +63,7 @@ export function ReviewScreen({
               onClick={() => onConfirm(value)}
               disabled={isEmpty}
             >
-              Conferma
+              {t("Conferma")}
             </button>
           </div>
         </div>
@@ -80,11 +83,11 @@ export function ReviewScreen({
           spellCheck
           autoCorrect="on"
           autoCapitalize="sentences"
-          placeholder="Trascrizione vuota."
+          placeholder={t("Trascrizione vuota.")}
         />
 
         <div className="jm-editor-hint">
-          conferma . l&apos;ai genera headline e aree macro sul testo corretto
+          {t("conferma . l'ai genera headline e aree macro sul testo corretto")}
         </div>
       </div>
     </div>

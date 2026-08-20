@@ -73,7 +73,7 @@ for (const w of [1280, 1440, 1728, 2600]) {
   );
   check(
     `${w}: i gruppi ci sono tutti`,
-    ["il diario", "aspetto", "i tuoi dati", "zona pericolosa"].every((g) =>
+    ["il diario", "lingua e aspetto", "i tuoi dati", "zona pericolosa"].every((g) =>
       groups.includes(g),
     ),
     groups.join(" . "),

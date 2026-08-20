@@ -1,17 +1,21 @@
+"use client";
+
 import { TabBar } from "@/components/ui/tab-bar";
+import { useT } from "@/lib/i18n";
 
 /**
  * Recap-specific loading skeleton: title + period segmented control + the
  * generate card. Matches the real layout; shown only on a cold/uncached visit.
  */
 export default function Loading() {
+  const t = useT();
   return (
     <>
       <div
         className="flex flex-1 flex-col"
         style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
         aria-busy="true"
-        aria-label="Caricamento"
+        aria-label={t("Caricamento")}
       >
         <div
           className="jm-skel"

@@ -1,5 +1,7 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
+
 type Props = {
   onStartRecording: () => void;
   onWriteManually: () => void;
@@ -16,6 +18,7 @@ export function EmptyState({
   onWriteManually,
   writeFirst = false,
 }: Props) {
+  const t = useT();
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 pb-10">
       <h1
@@ -29,7 +32,7 @@ export function EmptyState({
           marginBottom: 14,
         }}
       >
-        Com&apos;e andata oggi?
+        {t("Com'e andata oggi?")}
       </h1>
       <p
         className="text-center"
@@ -39,28 +42,21 @@ export function EmptyState({
           marginBottom: 64,
           lineHeight: 1.55,
           maxWidth: 280,
+          whiteSpace: "pre-line",
         }}
       >
-        {writeFirst ? (
-          <>
-            Scrivi due righe.
-            <br />
-            Senza pensarci troppo.
-          </>
-        ) : (
-          <>
-            Apri il microfono e racconta.
-            <br />
-            Senza pensarci troppo.
-          </>
-        )}
+        {/* Due righe con un a capo in mezzo: dove spezzare lo decide la
+            traduzione, non un <br/> fisso pensato per l'italiano. */}
+        {writeFirst
+          ? t("Scrivi due righe.\nSenza pensarci troppo.")
+          : t("Apri il microfono e racconta.\nSenza pensarci troppo.")}
       </p>
 
       <button
         type="button"
         onClick={writeFirst ? onWriteManually : onStartRecording}
         aria-label={
-          writeFirst ? "Scrivi la giornata" : "Inizia a registrare"
+          writeFirst ? t("Scrivi la giornata") : t("Inizia a registrare")
         }
         className="mic-big-btn"
       >
@@ -104,7 +100,7 @@ export function EmptyState({
           onClick={onWriteManually}
           className="jm-write-link"
         >
-          Preferisco scrivere a mano
+          {t("Preferisco scrivere a mano")}
         </button>
       )}
     </div>

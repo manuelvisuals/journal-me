@@ -5,6 +5,7 @@ import { Splash } from "@/components/splash";
 import { AuthGate } from "@/components/auth-gate";
 import { BiometricLock } from "@/components/biometric-lock";
 import { ThemeWatcher } from "@/components/theme-watcher";
+import { LangWatcher } from "@/components/lang-watcher";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
 import { themeBootScript } from "@/themes/boot";
 
@@ -163,6 +164,7 @@ export default function RootLayout({
             I valori vengono da src/themes/*.ts, serializzati qui dal server. */}
         <script dangerouslySetInnerHTML={{ __html: themeBootScript() }} />
         <ThemeWatcher />
+        <LangWatcher />
         {/* Splash is a client component but server-rendered into the initial
             HTML, so it covers the cold load. It removes itself via React state
             only — never manual DOM removal (that crashed body re-renders). */}

@@ -19,6 +19,7 @@
 
 import { useState } from "react";
 import { formatDecimal, formatSleep } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import type { EntryMetrics, Mood } from "@/lib/types";
 
 type Props = {
@@ -37,13 +38,14 @@ const MOOD_OPTIONS: { value: Mood; emoji: string; label: string }[] = [
 ];
 
 export function RailMetrics({ metrics, onChange }: Props) {
+  const t = useT();
   const [open, setOpen] = useState<Open>("none");
   const toggle = (k: Open) => setOpen((cur) => (cur === k ? "none" : k));
 
   return (
     <div className="jm-rm">
       <MetricRow
-        k="Peso"
+        k={t("Peso")}
         open={open === "weight"}
         onToggle={() => toggle("weight")}
         value={
@@ -65,7 +67,7 @@ export function RailMetrics({ metrics, onChange }: Props) {
       </MetricRow>
 
       <MetricRow
-        k="Sonno"
+        k={t("Sonno")}
         open={open === "sleep"}
         onToggle={() => toggle("sleep")}
         value={
@@ -82,7 +84,7 @@ export function RailMetrics({ metrics, onChange }: Props) {
       </MetricRow>
 
       <MetricRow
-        k="Mood"
+        k={t("Mood")}
         open={open === "mood"}
         onToggle={() => toggle("mood")}
         value={
@@ -99,7 +101,7 @@ export function RailMetrics({ metrics, onChange }: Props) {
               key={o.value}
               type="button"
               className={metrics?.mood === o.value ? "on" : undefined}
-              aria-label={o.label}
+              aria-label={t(o.label)}
               aria-pressed={metrics?.mood === o.value}
               onClick={() => {
                 onChange({ mood: o.value });
@@ -128,6 +130,7 @@ function MetricRow({
   onToggle: () => void;
   children: React.ReactNode;
 }) {
+  const t = useT();
   return (
     <div className={open ? "jm-rm-block open" : "jm-rm-block"}>
       <button
@@ -138,7 +141,7 @@ function MetricRow({
       >
         <span className="jm-rm-k">{k}</span>
         <span className={value ? "jm-rm-v" : "jm-rm-v empty"}>
-          {value ?? "non segnato"}
+          {value ?? t("non segnato")}
         </span>
       </button>
       {open && <div className="jm-rm-edit">{children}</div>}
@@ -175,9 +178,10 @@ function WeightEditor({
     setText(formatDecimal(next, 1));
   };
 
+  const t = useT();
   return (
     <div className="jm-rm-stepper">
-      <button type="button" aria-label="Meno" onClick={() => step(-0.1)}>
+      <button type="button" aria-label={t("Meno")} onClick={() => step(-0.1)}>
         &minus;
       </button>
       <input
@@ -190,9 +194,9 @@ function WeightEditor({
         onKeyDown={(e) => {
           if (e.key === "Enter") onCommit(parse(text));
         }}
-        aria-label="Peso in kg"
+        aria-label={t("Peso in kg")}
       />
-      <button type="button" aria-label="Piu" onClick={() => step(0.1)}>
+      <button type="button" aria-label={t("Piu")} onClick={() => step(0.1)}>
         +
       </button>
       <button
@@ -200,7 +204,7 @@ function WeightEditor({
         className="jm-rm-ok"
         onClick={() => onCommit(parse(text))}
       >
-        ok
+        {t("ok")}
       </button>
     </div>
   );
@@ -234,6 +238,7 @@ function SleepEditor({
     onCommit(hh + mm / 60);
   };
 
+  const t = useT();
   return (
     <div className="jm-rm-stepper">
       <input
@@ -247,7 +252,7 @@ function SleepEditor({
         onKeyDown={(e) => {
           if (e.key === "Enter") commit();
         }}
-        aria-label="Ore di sonno"
+        aria-label={t("Ore di sonno")}
       />
       <span className="jm-rm-sep">h</span>
       <input
@@ -260,10 +265,10 @@ function SleepEditor({
         onKeyDown={(e) => {
           if (e.key === "Enter") commit();
         }}
-        aria-label="Minuti di sonno"
+        aria-label={t("Minuti di sonno")}
       />
       <button type="button" className="jm-rm-ok" onClick={commit}>
-        ok
+        {t("ok")}
       </button>
     </div>
   );

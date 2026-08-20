@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type TranscribeUsage } from "@/lib/server/ai-usage";
+import { langOf, type PromptLang } from "@/lib/server/lang";
 
 /**
  * The transcription endpoint. Still called "fallback" for historical
@@ -33,10 +34,19 @@ export async function GET(req: NextRequest) {
   return Response.json({ ok: true, warm: true });
 }
 
-const ANTI_HALLUCINATION =
-  "Trascrivi LETTERALMENTE in italiano solo le parole effettivamente pronunciate. " +
-  "Se l'audio e silenzioso, contiene solo rumore o e incomprensibile, restituisci stringa vuota. " +
-  "NON inventare contenuto plausibile, NON parafrasare.";
+// Il prompt anti-allucinazione va scritto NELLA lingua che si sta
+// trascrivendo: Whisper lo usa come contesto, e un prompt italiano su un
+// audio inglese peggiora la trascrizione invece di migliorarla.
+const ANTI_HALLUCINATION: Record<PromptLang, string> = {
+  it:
+    "Trascrivi LETTERALMENTE in italiano solo le parole effettivamente pronunciate. " +
+    "Se l'audio e silenzioso, contiene solo rumore o e incomprensibile, restituisci stringa vuota. " +
+    "NON inventare contenuto plausibile, NON parafrasare.",
+  en:
+    "Transcribe LITERALLY, in English, only the words actually spoken. " +
+    "If the audio is silent, is only noise, or is unintelligible, return an empty string. " +
+    "Do NOT invent plausible content, do NOT paraphrase.",
+};
 
 export async function POST(req: NextRequest) {
   const gate = await requirePremium(req);
@@ -64,18 +74,21 @@ export async function POST(req: NextRequest) {
   }
 
   // Optional proper-name vocabulary hint, same idea as the realtime path.
+  const lang = langOf(req);
   const glossary = inForm.get("glossary");
   const glossaryHint =
     typeof glossary === "string" && glossary.trim().length > 0
-      ? ` Nomi propri ricorrenti (rispettare scrittura esatta): ${glossary.trim()}.`
+      ? lang === "en"
+        ? ` Recurring proper names (keep the exact spelling): ${glossary.trim()}.`
+        : ` Nomi propri ricorrenti (rispettare scrittura esatta): ${glossary.trim()}.`
       : "";
 
   const upstream = new FormData();
   upstream.set("file", file, file.name || "audio.webm");
   upstream.set("model", "gpt-4o-transcribe");
-  upstream.set("language", "it");
+  upstream.set("language", lang);
   upstream.set("response_format", "json");
-  upstream.set("prompt", ANTI_HALLUCINATION + glossaryHint);
+  upstream.set("prompt", ANTI_HALLUCINATION[lang] + glossaryHint);
 
   let resp: Response;
   try {

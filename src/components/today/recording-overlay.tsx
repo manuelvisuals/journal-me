@@ -12,6 +12,7 @@ import {
 } from "@/lib/format";
 import { DatePickerPopover } from "@/components/today/date-picker-popover";
 import { loadPersonaNames } from "@/lib/data/remembers";
+import { useT } from "@/lib/i18n";
 import type { DataMode } from "@/lib/data/entries";
 
 // useSyncExternalStore needs a stable subscribe function; we never notify
@@ -116,6 +117,7 @@ export function RecordingOverlay({
   onCancel,
   onWriteManually,
 }: Props) {
+  const t = useT();
   const [seconds, setSeconds] = useState<number>(0);
   const [state, setState] = useState<RecState>("connecting");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -198,7 +200,9 @@ export function RecordingOverlay({
         }
         if (!stream) {
           throw new Error(
-            "Il microfono non si è avviato. Chiudi e riapri, oppure riavvia l'app.",
+            t(
+              "Il microfono non si e avviato. Chiudi e riapri, oppure riavvia l'app.",
+            ),
           );
         }
         localStreamRef.current = stream;
@@ -227,7 +231,9 @@ export function RecordingOverlay({
         // milliseconds instead of after an SDP round trip.
         if (!startTape(stream)) {
           throw new Error(
-            "Questo browser non sa registrare l'audio. Prova a scrivere a mano.",
+            t(
+              "Questo browser non sa registrare l'audio. Prova a scrivere a mano.",
+            ),
           );
         }
         if (cancelled) return;
@@ -240,7 +246,9 @@ export function RecordingOverlay({
         setErrorMessage(
           msg.toLowerCase().includes("permission") ||
             msg.toLowerCase().includes("denied")
-            ? "Permesso microfono negato. Vai nelle impostazioni del browser e abilitalo."
+            ? t(
+                "Permesso microfono negato. Vai nelle impostazioni del browser e abilitalo.",
+              )
             : msg,
         );
         setState("error");
@@ -540,21 +548,21 @@ export function RecordingOverlay({
   // pure...", "lascia per fermare"): quando tutto parla, niente si legge.
   const hint =
     state === "connecting"
-      ? "Preparo il microfono."
+      ? t("Preparo il microfono.")
       : state === "recording"
-        ? "Lascia per fermare."
+        ? t("Lascia per fermare.")
         : seconds > 0
-          ? "Riprendi quando vuoi."
-          : "Tieni premuto e racconta.";
+          ? t("Riprendi quando vuoi.")
+          : t("Tieni premuto e racconta.");
 
   const liveLabel =
     state === "paused"
-      ? "pronto"
+      ? t("pronto")
       : state === "connecting"
-        ? "connetto"
+        ? t("connetto")
         : state === "error"
-          ? "errore"
-          : "in ascolto";
+          ? t("errore")
+          : t("in ascolto");
   const liveDotOpacity =
     state === "recording" ? 1 : state === "paused" ? 0.45 : 0.6;
   // Il rosso significa "sto catturando la tua voce", e nient'altro. Prima era
@@ -698,7 +706,7 @@ export function RecordingOverlay({
                 fontWeight: 600,
               }}
             >
-              Trascrivo quello che hai detto...
+              {t("Trascrivo quello che hai detto...")}
             </p>
             <p
               style={{
@@ -708,8 +716,9 @@ export function RecordingOverlay({
                 maxWidth: 280,
               }}
             >
-              Sto mandando la registrazione intera: cosi i nomi propri vengono
-              scritti giusti.
+              {t(
+                "Sto mandando la registrazione intera: cosi i nomi propri vengono scritti giusti.",
+              )}
             </p>
           </div>
         ) : state === "error" ? (
@@ -724,7 +733,7 @@ export function RecordingOverlay({
               lineHeight: 1.55,
             }}
           >
-            {errorMessage ?? "Errore sconosciuto."}
+            {errorMessage ?? t("Errore sconosciuto.")}
           </div>
         ) : (
           /* Un blocco solo, centrato: waveform, microfono, una riga di testo.
@@ -740,7 +749,7 @@ export function RecordingOverlay({
 
             <button
               type="button"
-              aria-label="Tieni premuto per parlare"
+              aria-label={t("Tieni premuto per parlare")}
               className="rec-ptt"
               disabled={state === "connecting"}
               onPointerDown={(e) => {
@@ -785,7 +794,7 @@ export function RecordingOverlay({
                     maxWidth: 250,
                   }}
                 >
-                  Le parole arrivano quando premi Fine.
+                  {t("Le parole arrivano quando premi Fine.")}
                 </p>
               )}
             </div>
@@ -821,7 +830,7 @@ export function RecordingOverlay({
             >
               <polyline points="20 6 9 17 4 12" />
             </svg>
-            Fine e salva
+            {t("Fine e salva")}
           </button>
 
           <div
@@ -829,7 +838,7 @@ export function RecordingOverlay({
             style={{ paddingTop: 16 }}
           >
             <button type="button" onClick={handleCancel} className="jm-rec-quiet">
-              Annulla
+              {t("Annulla")}
             </button>
             {onWriteManually && state !== "error" && (
               <>
@@ -841,7 +850,7 @@ export function RecordingOverlay({
                   onClick={handleWriteManually}
                   className="jm-rec-quiet"
                 >
-                  Scrivi a mano
+                  {t("Scrivi a mano")}
                 </button>
               </>
             )}

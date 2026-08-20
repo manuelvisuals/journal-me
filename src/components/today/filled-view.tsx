@@ -4,6 +4,7 @@ import { MetricCards } from "@/components/today/metric-cards";
 import { GoalDots } from "@/components/today/goal-dots";
 import { RailToday } from "@/components/today/rail-today";
 import type { AreaSummary, EntryMetrics, GoalDot } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   headline?: string | null;
@@ -35,6 +36,7 @@ export function FilledView({
   freeProse = null,
   onSeePremium,
 }: Props) {
+  const t = useT();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = areas?.filter((a) => a.text.trim().length > 0) ?? [];
@@ -57,7 +59,7 @@ export function FilledView({
         <h1 className="jm-fv-h">{headline}</h1>
       ) : (
         <h1 className="jm-fv-h placeholder">
-          giornata raccontata, l&apos;AI non ha ancora generato un titolo
+          {t("giornata raccontata, l'AI non ha ancora generato un titolo")}
         </h1>
       )}
 
@@ -65,7 +67,10 @@ export function FilledView({
         <>
           {proseTime && (
             <div className="jm-fv-sub" suppressHydrationWarning>
-              {freeProse.spoken ? "raccontata" : "scritta"} alle {proseTime}
+              {t(
+                freeProse.spoken ? "raccontata alle {ora}" : "scritta alle {ora}",
+                { ora: proseTime },
+              )}
             </div>
           )}
           <div className="jm-fv-prose">
@@ -75,13 +80,13 @@ export function FilledView({
           </div>
           <div className="jm-fv-nudge">
             <div className="t">
-              Con <b>premium</b> questa giornata avrebbe un titolo, una
-              sintesi e le macro-aree. E la puoi raccontare a voce, invece di
-              scriverla.
+              {t(
+                "Con premium questa giornata avrebbe un titolo, una sintesi e le macro-aree. E la puoi raccontare a voce, invece di scriverla.",
+              )}
             </div>
             {onSeePremium && (
               <button type="button" className="btn-ghost" onClick={onSeePremium}>
-                vedi
+                {t("vedi")}
               </button>
             )}
           </div>
@@ -96,13 +101,15 @@ export function FilledView({
             <div className="jm-fv-areas">
               {realAreas.map((area) => (
                 <div key={area.label} className="jm-fv-area">
-                  <div className="l">{area.label}</div>
+                  <div className="l">{t(area.label)}</div>
                   <div className="x">{area.text}</div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="jm-fv-noareas">aree macro non ancora estratte</div>
+            <div className="jm-fv-noareas">
+              {t("aree macro non ancora estratte")}
+            </div>
           )}
         </>
       )}
@@ -123,7 +130,7 @@ export function FilledView({
                 marginBottom: 10,
               }}
             >
-              Social
+              {t("Social")}
             </div>
             <div className="jm-pill-row">
               {peopleList.map((name) => (

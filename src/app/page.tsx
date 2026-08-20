@@ -6,6 +6,7 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { loadTodayEntry } from "@/lib/data/entries";
 import { loadGoalDefs } from "@/lib/data/goals";
 import { signalReady } from "@/lib/app-ready";
+import { useT } from "@/lib/i18n";
 import type { Entry, GoalDef } from "@/lib/types";
 
 type Boot = { entry: Entry | null; goalDefs: GoalDef[] };
@@ -62,13 +63,14 @@ export default function Home() {
  * splash still covers this; it shows on a returning-to-Today navigation.
  */
 function TodaySkeleton() {
+  const t = useT();
   return (
     <>
       <div
         className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
         style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
         aria-busy="true"
-        aria-label="Caricamento"
+        aria-label={t("Caricamento")}
       >
         <div className="jm-skel" style={{ height: 11, width: 104, marginBottom: 20 }} />
         <div className="jm-skel" style={{ height: 26, width: "84%", marginBottom: 14 }} />

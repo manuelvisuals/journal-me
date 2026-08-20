@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
+import { langName, langOf } from "@/lib/server/lang";
 
 /**
  * Generate a narrative literary recap from a set of entries.
@@ -66,8 +67,10 @@ export async function POST(req: NextRequest) {
   const targetWords =
     periodType === "month" ? "300-450" : periodType === "semester" ? "500-700" : "700-1000";
 
+  const lingua = langName(langOf(req));
+
   const systemPrompt = [
-    `Sei lo scrittore intimista del diario personale di un utente italiano.`,
+    `Sei lo scrittore intimista del diario personale di una persona. Scrivi in ${lingua}: titolo, snippet e corpo devono essere tutti in ${lingua}.`,
     `Riguardi insieme a lui le sue giornate ${periodLabel} (${periodStart} -> ${periodEnd}) e ne scrivi un recap NARRATIVO LETTERARIO.`,
     "",
     "REGOLE DI STILE (fondamentali):",
@@ -75,7 +78,7 @@ export async function POST(req: NextRequest) {
     "  - Tono: scrittore intimista, in seconda persona singolare ('tu'). Mai 'io', mai 'l'utente'.",
     "  - Frasi medie/lunghe con respiro narrativo. Immagini concrete (la luce, il tramonto, il deck di Marco, la cena con X).",
     "  - Non dare consigli, non fare moralismi, non suggerire azioni future.",
-    "  - Italiano corrente, no inglesismi inutili. No emoji.",
+    `  - Lingua corrente e viva, niente parole prese in prestito da altre lingue quando ce n'e una in ${lingua}. No emoji.`,
     "  - Apostrofo dritto ASCII (l'aprile), non curvo.",
     "",
     `Lunghezza body: ${targetWords} parole.`,

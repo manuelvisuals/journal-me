@@ -4,13 +4,10 @@ import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { RecapEditor } from "@/components/recap/recap-editor";
 import { updateRecap } from "@/lib/data/recaps";
+import { useT } from "@/lib/i18n";
+import { recapPeriodLabel } from "@/lib/recap-labels";
 import type { DataMode } from "@/lib/data/entries";
 import type { Recap } from "@/lib/types";
-
-const MONTH_NAMES_IT = [
-  "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
-];
 
 type Props = {
   mode: DataMode;
@@ -20,6 +17,7 @@ type Props = {
 };
 
 export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
+  const t = useT();
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +32,7 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
       onUpdated(updated);
       setEditorOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore di salvataggio");
+      setError(err instanceof Error ? err.message : t("Errore di salvataggio"));
     }
   };
 
@@ -52,7 +50,7 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
         <button
           type="button"
           onClick={onBack}
-          aria-label="Indietro"
+          aria-label={t("Indietro")}
           className="jm-det-back"
         >
           <svg
@@ -68,14 +66,16 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-        <div className="jm-det-meta">{formatLabel(recap)}</div>
+        <div className="jm-det-meta">
+          {recapPeriodLabel(recap.periodType, recap.periodStart)}
+        </div>
         <button
           type="button"
           className="jm-det-edit"
           onClick={() => setEditorOpen(true)}
-          aria-label="Modifica recap"
+          aria-label={t("Modifica recap")}
         >
-          Modifica
+          {t("Modifica")}
         </button>
       </header>
 
@@ -125,17 +125,4 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
       )}
     </main>
   );
-}
-
-function formatLabel(r: Recap): string {
-  if (r.periodType === "month") {
-    const [y, m] = r.periodStart.split("-").map(Number);
-    return `${MONTH_NAMES_IT[m - 1]} ${y}`;
-  }
-  if (r.periodType === "semester") {
-    const [y, m] = r.periodStart.split("-").map(Number);
-    return `Semestre ${m <= 6 ? 1 : 2} ${y}`;
-  }
-  const [y] = r.periodStart.split("-").map(Number);
-  return `Anno ${y}`;
 }

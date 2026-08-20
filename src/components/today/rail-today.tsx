@@ -15,6 +15,7 @@
 import { RailMetrics } from "@/components/today/rail-metrics";
 import { RailRight } from "@/components/desktop/rail-right";
 import { formatNumber } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import type { EntryMetrics, GoalDot } from "@/lib/types";
 
 type Props = {
@@ -32,22 +33,26 @@ export function RailToday({
   onMetricChange,
   onGoalToggle,
 }: Props) {
+  const t = useT();
   const peopleList = people.filter((p) => p.trim().length > 0);
   const done = goals.filter((g) => g.on).length;
 
   return (
     <RailRight>
       <div className="jm-railr-sec">
-        <div className="jm-railr-l">La giornata</div>
+        <div className="jm-railr-l">{t("La giornata")}</div>
         <RailMetrics metrics={metrics} onChange={onMetricChange} />
       </div>
 
       {goals.length > 0 && (
         <div className="jm-railr-sec">
           <div className="jm-railr-l">
-            Obiettivi
+            {t("Obiettivi")}
             <span className="jm-railr-count">
-              {formatNumber(done)} su {formatNumber(goals.length)}
+              {t("{fatti} su {totali}", {
+                fatti: formatNumber(done),
+                totali: formatNumber(goals.length),
+              })}
             </span>
           </div>
           {goals.map((g) => (
@@ -71,7 +76,7 @@ export function RailToday({
 
       {peopleList.length > 0 && (
         <div className="jm-railr-sec">
-          <div className="jm-railr-l">Persone</div>
+          <div className="jm-railr-l">{t("Persone")}</div>
           <div className="jm-railr-chips">
             {peopleList.map((name) => (
               <span key={name} className="jm-railr-chip">

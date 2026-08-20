@@ -16,13 +16,11 @@
  * Recap sparisce da qui su desktop perche Recap e gia nella rail sinistra;
  * sul telefono resta, perche li la tab bar non ha uno slot per Recap.
  *
- * DUE RIGHE DEL MOCKUP NON SONO QUI, di proposito:
- *  - "Promemoria della sera": l'app non ha nessun sistema di notifiche.
- *    Una riga che mostra "21:30" senza che arrivi mai niente sarebbe una
- *    bugia dell'interfaccia, come il "primo mese incluso" tolto stamattina.
- *  - "Lingua": arriva col bilingue vero (task 27). Un selettore che non
- *    traduce niente e la stessa bugia.
- * Tutte e due tornano nel momento in cui esiste la cosa che promettono.
+ * UNA RIGA DEL MOCKUP NON E QUI, di proposito: "Promemoria della sera".
+ * L'app non ha nessun sistema di notifiche, e una riga che mostra "21:30"
+ * senza che arrivi mai niente sarebbe una bugia dell'interfaccia, come il
+ * "primo mese incluso" tolto la mattina dello stesso giorno. Torna nel
+ * momento in cui esistono le notifiche.
  */
 
 import Link from "next/link";
@@ -31,7 +29,13 @@ import { useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { RailRight } from "@/components/desktop/rail-right";
 import { PanelHead, SetGroup, SetRow } from "@/components/settings/rows";
-import { GoalsPanel, ThemePanel, WherePanel } from "@/components/settings/panels";
+import {
+  GoalsPanel,
+  LanguagePanel,
+  LANG_NAMES,
+  ThemePanel,
+  WherePanel,
+} from "@/components/settings/panels";
 import { BackupBanner } from "@/components/settings/data-section";
 import {
   eraseLocalData,
@@ -45,6 +49,7 @@ import { formatNumber } from "@/lib/format";
 import { clearPlanCache, usePlan } from "@/lib/plan";
 import { openPremiumWall } from "@/components/premium-wall";
 import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
+import { useLang, useLangPref, useT } from "@/lib/i18n";
 import { THEMES } from "@/themes";
 import { setAppearance, useAppearance, useThemeId } from "@/themes/runtime";
 import type { Appearance } from "@/themes";
@@ -59,12 +64,13 @@ type Props = {
   latestRecap: { title: string; periodLabel: string } | null;
 };
 
-type Panel = "root" | "goals" | "theme" | "where";
+type Panel = "root" | "goals" | "theme" | "where" | "language";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
   theme: "Tema",
   where: "Dove sono le mie giornate",
+  language: "Lingua",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -88,6 +94,9 @@ export function SettingsClient({
   const plan = usePlan();
   const themeId = useThemeId();
   const appearance = useAppearance();
+  const t = useT();
+  const lang = useLang();
+  const langPref = useLangPref();
 
   const [panel, setPanel] = useState<Panel>("root");
   const [goals, setGoals] = useState<GoalDef[]>(initialGoals);
@@ -130,10 +139,16 @@ export function SettingsClient({
     try {
       const n = await exportBackup();
       say(
-        `Backup esportato: ${formatNumber(n)} ${n === 1 ? "giornata" : "giornate"}. Mettilo dove tieni le cose che non vuoi perdere.`,
+        t(
+          "Backup esportato: {n} {giornate}. Mettilo dove tieni le cose che non vuoi perdere.",
+          {
+            n: formatNumber(n),
+            giornate: n === 1 ? t("giornata") : t("giornate"),
+          },
+        ),
       );
     } catch (err) {
-      say(err instanceof Error ? err.message : "Export non riuscito.", true);
+      say(err instanceof Error ? err.message : t("Export non riuscito."), true);
     } finally {
       setBusy("idle");
     }
@@ -146,7 +161,7 @@ export function SettingsClient({
     try {
       say(importReportText(await importBackup(file)));
     } catch (err) {
-      say(err instanceof Error ? err.message : "Import non riuscito.", true);
+      say(err instanceof Error ? err.message : t("Import non riuscito."), true);
     } finally {
       setBusy("idle");
       if (fileRef.current) fileRef.current.value = "";
@@ -164,10 +179,10 @@ export function SettingsClient({
     try {
       await eraseLocalData();
       setEraseArmed(false);
-      say("Fatto. Questo dispositivo non contiene piu nessuna giornata.");
+      say(t("Fatto. Questo dispositivo non contiene piu nessuna giornata."));
     } catch (err) {
       say(
-        err instanceof Error ? err.message : "Cancellazione non riuscita.",
+        err instanceof Error ? err.message : t("Cancellazione non riuscita."),
         true,
       );
     } finally {
@@ -195,7 +210,7 @@ export function SettingsClient({
   const themeName = THEMES.find((t) => t.id === themeId)?.name ?? "";
   const accountName = isLocal
     ? "Questo dispositivo"
-    : (email?.split("@")[0] ?? "Ospite");
+    : (email?.split("@")[0] ?? t("Ospite"));
 
   return (
     <main
@@ -204,11 +219,13 @@ export function SettingsClient({
     >
       {panel === "root" ? (
         <header className="jm-col-head">
-          <h1 className="jm-st-h1">Impostazioni</h1>
-          <p className="jm-st-sub">Come funziona e come si vede il tuo diario.</p>
+          <h1 className="jm-st-h1">{t("Impostazioni")}</h1>
+          <p className="jm-st-sub">
+            {t("Come funziona e come si vede il tuo diario.")}
+          </p>
         </header>
       ) : (
-        <PanelHead title={PANEL_TITLES[panel]} onBack={() => setPanel("root")} />
+        <PanelHead title={t(PANEL_TITLES[panel])} onBack={() => setPanel("root")} />
       )}
 
       <div className="jm-st-scroll">
@@ -216,6 +233,7 @@ export function SettingsClient({
           <GoalsPanel mode={mode} goals={goals} setGoals={setGoals} />
         )}
         {panel === "theme" && <ThemePanel />}
+        {panel === "language" && <LanguagePanel />}
         {panel === "where" && <WherePanel />}
 
         {panel === "root" && (
@@ -228,45 +246,58 @@ export function SettingsClient({
             <Link
               href="/recap"
               className="jm-st-recap jm-st-phoneonly"
-              aria-label="Apri Recap"
+              aria-label={t("Apri Recap")}
             >
               <span className="meta">Recap</span>
-              <span className="title">Le tue giornate, raccontate.</span>
+              <span className="title">{t("Le tue giornate, raccontate.")}</span>
               <span className="sub">
-                Mensili, semestrali, annuali. Una prosa narrativa che rilegge i
-                tuoi mesi senza giudizio.
+                {t(
+                  "Mensili, semestrali, annuali. Una prosa narrativa che rilegge i tuoi mesi senza giudizio.",
+                )}
               </span>
               <span className="last">
                 {latestRecap
                   ? `${latestRecap.periodLabel} . ${latestRecap.title}`
-                  : "Nessun recap generato ancora"}
+                  : t("Nessun recap generato ancora")}
               </span>
             </Link>
 
-            <SetGroup label="Il diario">
+            <SetGroup label={t("Il diario")}>
               <SetRow
-                title="Obiettivi"
-                desc="Le caselle che accendi ogni giorno."
-                value={`${formatNumber(goals.length)} ${goals.length === 1 ? "attivo" : "attivi"}`}
+                title={t("Obiettivi")}
+                desc={t("Le caselle che accendi ogni giorno.")}
+                value={`${formatNumber(goals.length)} ${goals.length === 1 ? t("attivo") : t("attivi")}`}
                 onClick={() => setPanel("goals")}
               />
             </SetGroup>
 
-            <SetGroup label="Aspetto">
+            <SetGroup label={t("Lingua e aspetto")}>
               <SetRow
-                title="Tema"
-                desc={`${formatNumber(THEMES.length)} temi inclusi, tutti in chiaro e in scuro.`}
+                title={t("Lingua")}
+                desc={t("Al primo avvio segue la lingua del dispositivo.")}
+                value={
+                  langPref === "system"
+                    ? `${LANG_NAMES[lang]} . ${t("automatica")}`
+                    : LANG_NAMES[lang]
+                }
+                onClick={() => setPanel("language")}
+              />
+              <SetRow
+                title={t("Tema")}
+                desc={t("{n} temi inclusi, tutti in chiaro e in scuro.", {
+                  n: formatNumber(THEMES.length),
+                })}
                 value={themeName}
                 onClick={() => setPanel("theme")}
               />
               <SetRow
-                title="Chiaro o scuro"
-                desc="Vale per qualsiasi tema. Con Sistema segue il dispositivo."
+                title={t("Chiaro o scuro")}
+                desc={t("Vale per qualsiasi tema. Con Sistema segue il dispositivo.")}
                 control={
                   <span
                     className="jm-st-seg"
                     role="radiogroup"
-                    aria-label="Chiaro o scuro"
+                    aria-label={t("Chiaro o scuro")}
                   >
                     {APPEARANCE_OPTIONS.map((o) => (
                       <button
@@ -274,12 +305,12 @@ export function SettingsClient({
                         type="button"
                         role="radio"
                         aria-checked={appearance === o.value}
-                        aria-label={o.label}
+                        aria-label={t(o.label)}
                         className={appearance === o.value ? "on" : undefined}
                         onClick={() => setAppearance(o.value)}
                       >
-                        <span className="lg">{o.label}</span>
-                        <span className="sm">{o.short}</span>
+                        <span className="lg">{t(o.label)}</span>
+                        <span className="sm">{t(o.short)}</span>
                       </button>
                     ))}
                   </span>
@@ -287,30 +318,34 @@ export function SettingsClient({
               />
             </SetGroup>
 
-            <SetGroup label="I tuoi dati">
+            <SetGroup label={t("I tuoi dati")}>
               <SetRow
-                title="Esporta un backup"
-                desc="Un solo file con tutto: giornate, obiettivi, metriche, Ricorda."
+                title={t("Esporta un backup")}
+                desc={t(
+                  "Un solo file con tutto: giornate, obiettivi, metriche, Ricorda.",
+                )}
                 value={
                   busy === "export"
-                    ? "esporto..."
+                    ? t("esporto...")
                     : entryCount == null
                       ? undefined
-                      : `${formatNumber(entryCount)} ${entryCount === 1 ? "giornata" : "giornate"}`
+                      : `${formatNumber(entryCount)} ${entryCount === 1 ? t("giornata") : t("giornate")}`
                 }
                 onClick={() => void handleExport()}
                 disabled={busy !== "idle"}
               />
               <SetRow
-                title="Importa un backup"
-                desc="Aggiunge le giornate che mancano. Quelle che hai gia non le tocca."
-                value={busy === "import" ? "importo..." : undefined}
+                title={t("Importa un backup")}
+                desc={t(
+                  "Aggiunge le giornate che mancano. Quelle che hai gia non le tocca.",
+                )}
+                value={busy === "import" ? t("importo...") : undefined}
                 onClick={() => fileRef.current?.click()}
                 disabled={busy !== "idle"}
               />
               <SetRow
-                title="Dove sono le mie giornate"
-                desc="Cosa esce da questo dispositivo, e cosa no."
+                title={t("Dove sono le mie giornate")}
+                desc={t("Cosa esce da questo dispositivo, e cosa no.")}
                 onClick={() => setPanel("where")}
               />
             </SetGroup>
@@ -331,26 +366,31 @@ export function SettingsClient({
 
             {/* L'account sul telefono: su desktop vive nella rail destra. */}
             <div className="jm-st-phoneonly">
-              <SetGroup label="Account">
+              <SetGroup label={t("Account")}>
                 {isLocal ? (
-                  <SetRow title="Dove" value="Solo su questo dispositivo" />
+                  <SetRow
+                    title={t("Dove")}
+                    value={t("Solo su questo dispositivo")}
+                  />
                 ) : (
                   <>
-                    {email && <SetRow title="Email" value={email} />}
-                    {isAnonymous && <SetRow title="Account" value="Ospite (cloud)" />}
+                    {email && <SetRow title={t("Email")} value={email} />}
+                    {isAnonymous && (
+                      <SetRow title={t("Account")} value={t("Ospite (cloud)")} />
+                    )}
                     <SetRow
-                      title="Piano"
-                      value={plan === "premium" ? "Premium" : "Gratis"}
+                      title={t("Piano")}
+                      value={plan === "premium" ? t("Premium") : t("Gratis")}
                     />
                   </>
                 )}
-                <SetRow title="Versione" value={APP_VERSION} />
+                <SetRow title={t("Versione")} value={APP_VERSION} />
                 {!isLocal && (
                   <SetRow
-                    title="Esci dall'account"
+                    title={t("Esci dall'account")}
                     danger
                     chevron={false}
-                    value={signingOut ? "esco..." : undefined}
+                    value={signingOut ? t("esco...") : undefined}
                     onClick={() => void handleLogout()}
                     disabled={signingOut}
                   />
@@ -359,19 +399,21 @@ export function SettingsClient({
             </div>
 
             {isLocal && (
-              <SetGroup label="Zona pericolosa">
+              <SetGroup label={t("Zona pericolosa")}>
                 <SetRow
-                  title="Cancella tutte le giornate"
+                  title={t("Cancella tutte le giornate")}
                   desc={
                     eraseArmed
-                      ? "Sicuro? Le elimina da questo dispositivo. Non si torna indietro."
-                      : "Da questo dispositivo. Non si torna indietro."
+                      ? t(
+                          "Sicuro? Le elimina da questo dispositivo. Non si torna indietro.",
+                        )
+                      : t("Da questo dispositivo. Non si torna indietro.")
                   }
                   value={
                     busy === "erase"
-                      ? "cancello..."
+                      ? t("cancello...")
                       : eraseArmed
-                        ? "si, cancella"
+                        ? t("si, cancella")
                         : undefined
                   }
                   danger
@@ -394,34 +436,36 @@ export function SettingsClient({
           <div className="jm-st-av" aria-hidden="true">
             {accountName.slice(0, 1).toUpperCase()}
           </div>
-          <div className="jm-st-nm">{accountName}</div>
+          <div className="jm-st-nm">{isLocal ? t(accountName) : accountName}</div>
           {!isLocal && email && <div className="jm-st-em">{email}</div>}
           {isLocal ? (
-            <span className="jm-st-pill">Locale</span>
+            <span className="jm-st-pill">{t("Locale")}</span>
           ) : (
             <span className="jm-st-pill">
-              {plan === "premium" ? "Premium" : "Gratis"}
+              {plan === "premium" ? t("Premium") : t("Gratis")}
             </span>
           )}
         </div>
 
         <div className="jm-st-rr">
-          <div className="jm-railr-l">Account</div>
+          <div className="jm-railr-l">{t("Account")}</div>
           {isLocal ? (
             <div className="jm-st-rrow">
-              <span className="k">Dove</span>
-              <span className="v">Solo su questo dispositivo</span>
+              <span className="k">{t("Dove")}</span>
+              <span className="v">{t("Solo su questo dispositivo")}</span>
             </div>
           ) : (
             <div className="jm-st-rrow">
-              <span className="k">Piano</span>
+              <span className="k">{t("Piano")}</span>
               <span className="v">
-                {plan === "premium" ? `Premium . ${PREMIUM_PRICE_LABEL}` : "Gratis"}
+                {plan === "premium"
+                  ? `${t("Premium")} . ${PREMIUM_PRICE_LABEL}`
+                  : t("Gratis")}
               </span>
             </div>
           )}
           <div className="jm-st-rrow">
-            <span className="k">Versione</span>
+            <span className="k">{t("Versione")}</span>
             <span className="v">{APP_VERSION}</span>
           </div>
 
@@ -431,7 +475,7 @@ export function SettingsClient({
               className="jm-st-out"
               onClick={() => openPremiumWall("aiSummary")}
             >
-              Passa a Premium
+              {t("Passa a Premium")}
             </button>
           )}
           {!isLocal && (
@@ -441,7 +485,7 @@ export function SettingsClient({
               onClick={() => void handleLogout()}
               disabled={signingOut}
             >
-              {signingOut ? "Esco..." : "Esci dall'account"}
+              {signingOut ? t("Esco...") : t("Esci dall'account")}
             </button>
           )}
         </div>

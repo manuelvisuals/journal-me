@@ -8,6 +8,7 @@ import { MonthSection } from "@/components/mese/month-section";
 import { MeseGrid } from "@/components/mese/mese-grid";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { formatMonthTitle, daysInMonth, nowAppParts } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import {
   loadMonthEntries,
   type DataMode,
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export function MeseClient({ mode, initialMonth }: Props) {
+  const t = useT();
   const router = useRouter();
   const [loaded, setLoaded] = useState<LoadedMonth[]>([initialMonth]);
   const [currentMonth, setCurrentMonth] = useState<{
@@ -287,7 +289,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
               textTransform: "uppercase",
             }}
           >
-            carico...
+            {t("carico...")}
           </div>
         )}
       </div>

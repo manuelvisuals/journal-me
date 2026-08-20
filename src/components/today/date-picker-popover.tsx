@@ -6,6 +6,7 @@ import {
   parseISODate,
   todayISO,
 } from "@/lib/format";
+import { t, useT } from "@/lib/i18n";
 
 type Props = {
   open: boolean;
@@ -24,8 +25,8 @@ function recentDays(): { iso: string; label: string; meta: string }[] {
     d.setDate(d.getDate() - i);
     const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     let label: string;
-    if (i === 0) label = "Oggi";
-    else if (i === 1) label = "Ieri";
+    if (i === 0) label = t("Oggi");
+    else if (i === 1) label = t("Ieri");
     else label = fullWeekday(d);
     out.push({ iso, label, meta: compactDayDate(d) });
   }
@@ -33,6 +34,7 @@ function recentDays(): { iso: string; label: string; meta: string }[] {
 }
 
 export function DatePickerPopover({ open, selected, onSelect, onClose }: Props) {
+  const tr = useT();
   if (!open) return null;
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -47,7 +49,7 @@ export function DatePickerPopover({ open, selected, onSelect, onClose }: Props) 
       className="jm-date-pop"
       role="dialog"
       aria-modal="true"
-      aria-label="Seleziona data"
+      aria-label={tr("Seleziona data")}
     >
       <div className="jm-date-pop-card">
         {days.map((d) => {
@@ -73,7 +75,7 @@ export function DatePickerPopover({ open, selected, onSelect, onClose }: Props) 
           disabled
           style={{ opacity: 0.45, cursor: "not-allowed" }}
         >
-          <span className="pr-label">Altra data...</span>
+          <span className="pr-label">{tr("Altra data...")}</span>
           <span className="pr-meta">&#8250;</span>
         </button>
       </div>

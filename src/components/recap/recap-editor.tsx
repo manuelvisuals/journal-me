@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   initialTitle: string;
@@ -27,6 +28,7 @@ export function RecapEditor({
   onCancel,
 }: Props) {
   const [title, setTitle] = useState<string>(initialTitle);
+  const t = useT();
   const [snippet, setSnippet] = useState<string>(initialSnippet);
   const [body, setBody] = useState<string>(initialBody);
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
@@ -44,14 +46,14 @@ export function RecapEditor({
     <div className="jm-editor-overlay" role="dialog" aria-modal="true">
       <div className="jm-editor-card">
         <div className="jm-editor-header">
-          <span className="jm-editor-title">Modifica recap</span>
+          <span className="jm-editor-title">{t("Modifica recap")}</span>
           <div className="jm-editor-actions">
             <button
               type="button"
               className="jm-editor-btn cancel"
               onClick={onCancel}
             >
-              Annulla
+              {t("Annulla")}
             </button>
             <button
               type="button"
@@ -59,14 +61,14 @@ export function RecapEditor({
               onClick={() => onSave({ title, snippet, body })}
               disabled={!dirty || title.trim().length === 0}
             >
-              Salva
+              {t("Salva")}
             </button>
           </div>
         </div>
 
         <div className="jm-recap-editor-body">
           <label className="jm-recap-field">
-            <span className="jm-recap-field-label">Titolo</span>
+            <span className="jm-recap-field-label">{t("Titolo")}</span>
             <textarea
               ref={titleRef}
               className="jm-recap-field-input title"
@@ -80,7 +82,7 @@ export function RecapEditor({
           </label>
 
           <label className="jm-recap-field">
-            <span className="jm-recap-field-label">Snippet</span>
+            <span className="jm-recap-field-label">{t("Snippet")}</span>
             <textarea
               className="jm-recap-field-input snippet"
               value={snippet}
@@ -93,7 +95,7 @@ export function RecapEditor({
           </label>
 
           <label className="jm-recap-field grow">
-            <span className="jm-recap-field-label">Corpo</span>
+            <span className="jm-recap-field-label">{t("Corpo")}</span>
             <textarea
               className="jm-recap-field-input body"
               value={body}
@@ -106,7 +108,7 @@ export function RecapEditor({
         </div>
 
         <div className="jm-editor-hint">
-          paragrafi separati da riga vuota . citazioni tra virgolette
+          {t("paragrafi separati da riga vuota . citazioni tra virgolette")}
         </div>
       </div>
     </div>

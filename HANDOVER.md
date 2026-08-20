@@ -181,7 +181,7 @@ sul telefono si raggiunge dalla card editoriale in cima a Impostazioni.
 /mese                Feed infinito newest-first, sticky month header, jump picker
 /recap               Segmented Mensili/Semestrali/Annuali + detail con dropcap
 /remember            Filtri a chip, raggruppamento per fascia temporale, quick-capture
-/settings            "Impostazioni": elenco a gruppi + pannelli (obiettivi, tema, dati)
+/settings            "Impostazioni": elenco a gruppi + pannelli (obiettivi, tema, lingua, dati)
 /benvenuto           La scelta locale/cloud al primo avvio (PR 5)
 /login               Codice a 6 cifre via email (niente piu magic link)
 /auth/callback       Scambio code -> sessione (PKCE)
@@ -848,12 +848,53 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
      incluso" tolto la mattina dello stesso giorno, e tornano nel
      momento in cui esiste la cosa che promettono.
 
+  11. **Bilingue italiano/inglese in tutta l'app** (task 27). Il modello:
+     **la chiave di traduzione E la frase italiana** — `t("Esci
+     dall'account")`, non `t("settings.account.logout")`. Tre motivi: il
+     codice resta leggibile senza aprire un secondo file; se una frase non
+     e tradotta esce in italiano invece di mostrare una chiave al cliente;
+     e si scrive un catalogo solo (`src/lib/i18n/en.ts`, 370 voci) invece
+     di due. Il difetto noto — cambiare la frase italiana scollega la
+     traduzione in silenzio — e coperto da `scripts/verify-i18n.mjs`, che
+     fallisce sia sulle frasi senza traduzione sia sulle traduzioni
+     rimaste orfane.
+
+     **La lingua la sceglie il dispositivo**, come chiesto: la preferenza
+     di default e "system" e `navigator.language` decide al primo avvio.
+     Da Impostazioni > Lingua si puo forzare italiano o inglese, e si puo
+     TORNARE all'automatico (chi cambia telefono altrimenti non avrebbe
+     piu modo di farlo).
+
+     **Perche la traduzione si accende dopo l'idratazione.** Il server non
+     sa che lingua ha il dispositivo e renderizza sempre in italiano. Se
+     il client partisse subito in inglese React troverebbe un HTML diverso
+     da quello atteso e urlerebbe in console — e le suite Playwright
+     falliscono su "zero errori console". Quindi `t()` risponde italiano
+     finche `LangWatcher` non chiama `markHydrated()`: un render in piu,
+     zero mismatch.
+
+     **Cambia anche cio che scrive l'AI.** `apiFetch` manda `x-jm-lang` e
+     le sei route AI scelgono la lingua dell'output (`src/lib/server/lang.ts`).
+     Un'interfaccia inglese che genera un titolo in italiano e tradotta a
+     meta, cioe rotta. **Le etichette delle macro-aree restano pero in
+     italiano** ('Lavoro', 'Relazioni', 'Corpo', 'Emozioni'): sono un enum
+     salvato a database, non testo, e se l'AI cominciasse a scrivere
+     'Work' le giornate vecchie e nuove dello stesso utente finirebbero
+     con etichette diverse. A schermo le traduce `t()` come tutto il resto.
+
+     **Numeri e date seguono la lingua**: `LOCALE` non e piu una costante,
+     `format.ts` chiede il tag a `localeTag()` a ogni chiamata. Il peso si
+     scrive 81,4 in italiano e 81.4 in inglese, e i nomi dei mesi arrivano
+     da Intl — le tre liste `MONTHS_IT` copiate a mano sono sparite, come
+     le tre copie di `periodLabel` (ora `src/lib/recap-labels.ts`).
+
   **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
   `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
   verdi; le suite Playwright rieseguite senza regressioni (PR 7 24/24,
-  PR 8 21/21, PR 9 25/25, PR 10 26/26) piu due nuove:
-  `scripts/verify-fix-20260820.mjs` 52/53 e
-  `scripts/verify-impostazioni.mjs` 55/55.
+  PR 8 21/21, PR 9 25/25, PR 10 26/26) piu quattro nuove:
+  `scripts/verify-fix-20260820.mjs` 52/53, `scripts/verify-impostazioni.mjs`
+  55/55, `scripts/verify-i18n.mjs` 6/6 (analisi statica del catalogo) e
+  `scripts/verify-lingua.mjs` 25/25 (l'app vera, in tutte e due le lingue).
 
   L'unico FAIL, `benvenuto: zero errori console`, e un artefatto
   dell'ambiente e non una regressione: senza `.env.local` il client

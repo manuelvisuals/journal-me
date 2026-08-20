@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
+import { langName, langOf } from "@/lib/server/lang";
 
 /**
  * Auto-classifies a short remember snippet (manually saved by Manuel from the
@@ -38,8 +39,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Empty text" }, { status: 400 });
   }
 
+  const lingua = langName(langOf(req));
+
   const systemPrompt = [
-    "Classifichi un appunto breve in italiano scritto o dettato a voce da una persona nella sua app di journaling.",
+    `Classifichi un appunto breve in ${lingua}, scritto o dettato a voce da una persona nella sua app di journaling.`,
     "Devi scegliere UNA categoria fra esattamente queste cinque:",
     "  - persona: nome di una persona, descrizione/note su qualcuno, contatto, relazione (es. 'Marco lavora ora in Stripe', 'mia cugina Anna')",
     "  - todo: azione da fare, promemoria operativo, compito (es. 'chiamare avvocato', 'comprare olio', 'rinnovare passaporto')",

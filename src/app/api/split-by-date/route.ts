@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
+import { langName, langOf } from "@/lib/server/lang";
 
 /**
  * Splits a free-form Italian transcript into per-day segments based on
@@ -45,20 +46,37 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Italian weekday name for the default date so the AI can resolve
-  // "lunedi", "martedi" etc. relative to today.
+  // Il nome del giorno serve all'AI per risolvere "lunedi" / "monday"
+  // rispetto a oggi, e va nella lingua in cui la persona ha parlato.
+  const lang = langOf(req);
+  const lingua = langName(lang);
   const d = new Date(`${defaultDate}T12:00:00`);
-  const weekdayIT = new Intl.DateTimeFormat("it-IT", { weekday: "long" }).format(d);
+  const weekday = new Intl.DateTimeFormat(lang === "en" ? "en-GB" : "it-IT", {
+    weekday: "long",
+  }).format(d);
+
+  const MARKERS = {
+    it: [
+      "  - 'oggi', 'stamattina', 'stasera', 'questa mattina', 'stanotte' -> data di registrazione",
+      "  - 'ieri', 'ieri sera', 'ieri mattina' -> giorno prima",
+      "  - 'l\\'altro ieri', 'due giorni fa' -> due giorni prima",
+      "  - 'lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato', 'domenica' -> giorno della settimana piu recente (no futuro)",
+      "  - 'la settimana scorsa', 'sabato scorso' -> 7 giorni indietro (o piu se serve)",
+    ],
+    en: [
+      "  - 'today', 'this morning', 'tonight', 'last night' -> data di registrazione",
+      "  - 'yesterday', 'yesterday evening', 'yesterday morning' -> giorno prima",
+      "  - 'the day before yesterday', 'two days ago' -> due giorni prima",
+      "  - 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday' -> giorno della settimana piu recente (no futuro)",
+      "  - 'last week', 'last saturday' -> 7 giorni indietro (o piu se serve)",
+    ],
+  };
 
   const systemPrompt = [
-    "Sei un parser di un diario personale italiano.",
-    `La data di registrazione e ${defaultDate} (${weekdayIT}).`,
-    "Ricevi un transcript di parlato libero. Devi splittarlo in segmenti per giornata, basandoti su marker temporali italiani:",
-    "  - 'oggi', 'stamattina', 'stasera', 'questa mattina', 'stanotte' -> data di registrazione",
-    "  - 'ieri', 'ieri sera', 'ieri mattina' -> giorno prima",
-    "  - 'l\\'altro ieri', 'due giorni fa' -> due giorni prima",
-    "  - 'lunedi', 'martedi', 'mercoledi', 'giovedi', 'venerdi', 'sabato', 'domenica' -> giorno della settimana piu recente (no futuro)",
-    "  - 'la settimana scorsa', 'sabato scorso' -> 7 giorni indietro (o piu se serve)",
+    `Sei un parser di un diario personale. Il transcript e in ${lingua}.`,
+    `La data di registrazione e ${defaultDate} (${weekday}).`,
+    `Ricevi un transcript di parlato libero. Devi splittarlo in segmenti per giornata, basandoti sui marker temporali in ${lingua}:`,
+    ...MARKERS[lang],
     "",
     "Restituisci un OGGETTO JSON: { segments: [{ date, text }] }",
     "  - date: formato YYYY-MM-DD",

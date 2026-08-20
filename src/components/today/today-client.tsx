@@ -31,6 +31,7 @@ import {
 } from "@/lib/data/entries";
 import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
+import { useT } from "@/lib/i18n";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
 type View =
@@ -88,6 +89,7 @@ export function TodayClient({
   goalDefs,
   autoRecord = false,
 }: Props) {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   // Voce e AI sono capability (PR 10): spente in locale E in cloud gratis.
@@ -144,7 +146,7 @@ export function TodayClient({
       if (v !== "empty" && v !== "filled" && v !== "manual") return;
       if (edWordsRef.current > 0) return;
       setDraftInitial(draft.text);
-      setDraftNotice("bozza non salvata, recuperata");
+      setDraftNotice(t("bozza non salvata, recuperata"));
       setEditorKey((k) => k + 1);
       setView("manual");
     })();
@@ -290,7 +292,7 @@ export function TodayClient({
       setPending(null);
       setView(todayEntry || entry ? "filled" : "empty");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+      setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
       setPending(null);
       setView("empty");
     }
@@ -326,7 +328,9 @@ export function TodayClient({
       setPeopleSaving(false);
       setView((base && showToday) || entry ? "filled" : "empty");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore salvataggio persone");
+      setSaveError(
+        err instanceof Error ? err.message : t("Errore salvataggio persone"),
+      );
       setPeopleData(null);
       setPeopleSaving(false);
       setView(entry ? "filled" : "empty");
@@ -351,7 +355,7 @@ export function TodayClient({
       // una metrica o un obiettivo dalla rail non deve chiuderlo.
       if (view === "empty" && !isDesktop) setView("filled");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+      setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
     }
   };
 
@@ -364,7 +368,7 @@ export function TodayClient({
       // una metrica o un obiettivo dalla rail non deve chiuderlo.
       if (view === "empty" && !isDesktop) setView("filled");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+      setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
     }
   };
 
@@ -377,7 +381,7 @@ export function TodayClient({
       setSavedDates([]);
       setView("empty");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore eliminazione");
+      setSaveError(err instanceof Error ? err.message : t("Errore eliminazione"));
     }
   };
 
@@ -394,13 +398,15 @@ export function TodayClient({
       setEntry(updated);
       setView("filled");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore nel salvataggio");
+      setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
       setView(entry ? "filled" : "empty");
     }
   };
 
   const multiDayNotice =
-    savedDates.length > 1 ? `Salvato su ${savedDates.length} giorni` : null;
+    savedDates.length > 1
+      ? t("Salvato su {n} giorni", { n: savedDates.length })
+      : null;
 
   // Da lg in su la colonna centrale E l'editor (mockup desktop-v1 §01):
   // niente overlay, si arriva su Oggi e si scrive.
@@ -470,12 +476,12 @@ export function TodayClient({
                 fontFamily: "inherit",
               }}
             >
-              originale &#8599;
+              {t("originale")} &#8599;
             </button>
             <button
               type="button"
               onClick={handleWriteManually}
-              aria-label="Scrivi a mano"
+              aria-label={t("Scrivi a mano")}
               className="jm-rerecord-btn"
             >
               <svg
@@ -496,7 +502,7 @@ export function TodayClient({
             <button
               type="button"
               onClick={handleStartRecording}
-              aria-label="Registra di nuovo"
+              aria-label={t("Registra di nuovo")}
               className="jm-rerecord-btn"
             >
               <svg
@@ -672,7 +678,7 @@ export function TodayClient({
                 marginBottom: 14,
               }}
             >
-              niente catturato
+              {t("niente catturato")}
             </div>
             <h2
               style={{
@@ -684,7 +690,7 @@ export function TodayClient({
                 marginBottom: 12,
               }}
             >
-              Non ho sentito nulla.
+              {t("Non ho sentito nulla.")}
             </h2>
             <p
               style={{
@@ -694,8 +700,9 @@ export function TodayClient({
                 marginBottom: 26,
               }}
             >
-              Forse il microfono era spento o c&apos;era troppo rumore. Riprova
-              da un posto tranquillo.
+              {t(
+                "Forse il microfono era spento o c'era troppo rumore. Riprova da un posto tranquillo.",
+              )}
             </p>
             <div className="flex flex-col" style={{ gap: 10 }}>
               <button
@@ -706,7 +713,7 @@ export function TodayClient({
                   setView("recording");
                 }}
               >
-                Riprova
+                {t("Riprova")}
               </button>
               <button
                 type="button"
@@ -716,7 +723,7 @@ export function TodayClient({
                   setView(entry ? "filled" : "empty");
                 }}
               >
-                Esci
+                {t("Esci")}
               </button>
             </div>
           </div>
@@ -739,7 +746,7 @@ export function TodayClient({
               textTransform: "uppercase",
             }}
           >
-            elaborazione
+            {t("elaborazione")}
           </div>
           <div
             style={{
@@ -751,7 +758,7 @@ export function TodayClient({
               lineHeight: 1.5,
             }}
           >
-            sto leggendo quello che hai detto e tiro fuori il succo
+            {t("sto leggendo quello che hai detto e tiro fuori il succo")}
           </div>
         </div>
       )}

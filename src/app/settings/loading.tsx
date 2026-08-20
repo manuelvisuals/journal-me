@@ -1,4 +1,7 @@
+"use client";
+
 import { TabBar } from "@/components/ui/tab-bar";
+import { useT } from "@/lib/i18n";
 
 /**
  * Lo scheletro di Impostazioni: titolo, sottotitolo e tre gruppi di righe.
@@ -18,6 +21,7 @@ function Group({ rows }: { rows: number }) {
 }
 
 export default function Loading() {
+  const t = useT();
   return (
     <>
       <div
@@ -28,7 +32,7 @@ export default function Loading() {
           minHeight: 0,
         }}
         aria-busy="true"
-        aria-label="Caricamento"
+        aria-label={t("Caricamento")}
       >
         <div className="jm-skel" style={{ height: 26, width: 190, marginBottom: 10 }} />
         <div className="jm-skel" style={{ height: 13, width: 250, marginBottom: 28 }} />

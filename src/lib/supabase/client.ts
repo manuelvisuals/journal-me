@@ -2,6 +2,7 @@ import {
   createClient as createSupabaseClient,
   type SupabaseClient,
 } from "@supabase/supabase-js";
+import { t } from "@/lib/i18n";
 
 /**
  * Browser/native Supabase client.
@@ -30,7 +31,9 @@ export function createClient(): SupabaseClient {
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
     throw new Error(
-      "Supabase non configurato: la modalita cloud non e disponibile in questo build.",
+      t(
+        "Supabase non configurato: la modalita cloud non e disponibile in questo build.",
+      ),
     );
   }
   cached = createSupabaseClient(

@@ -15,6 +15,7 @@
  */
 
 import type { ReactNode } from "react";
+import { useT } from "@/lib/i18n";
 
 export function SetGroup({
   label,
@@ -105,13 +106,14 @@ export function PanelHead({
   title: string;
   onBack: () => void;
 }) {
+  const t = useT();
   return (
     <header className="jm-col-head jm-st-phead">
       <button
         type="button"
         className="jm-st-back"
         onClick={onBack}
-        aria-label="Torna a Impostazioni"
+        aria-label={t("Torna a Impostazioni")}
       >
         <svg
           viewBox="0 0 24 24"

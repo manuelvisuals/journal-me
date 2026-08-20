@@ -19,6 +19,7 @@ import {
   type DataMode,
 } from "@/lib/data/entries";
 import type { Entry, EntryMetrics } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   mode: DataMode;
@@ -33,6 +34,7 @@ type Props = {
  * the recording entry-point — to re-record, go back to Today.
  */
 export function DayClient({ mode, date, initialEntry }: Props) {
+  const t = useT();
   const router = useRouter();
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
@@ -48,7 +50,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       const updated = await updateMetric(mode, date, patch);
       setEntry(updated);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
@@ -57,7 +59,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       const updated = await toggleGoal(mode, date, label);
       setEntry(updated);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
@@ -67,19 +69,19 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       const updated = await updateEntryTranscript(mode, date, newTranscript);
       setEntry(updated);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
   const handleDelete = async () => {
     if (deleting) return;
-    if (!confirm("Eliminare questa giornata? Non puoi annullare.")) return;
+    if (!confirm(t("Eliminare questa giornata? Non puoi annullare."))) return;
     setDeleting(true);
     try {
       await deleteEntry(mode, date);
       router.push("/mese");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
       setDeleting(false);
     }
   };
@@ -93,7 +95,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
         <button
           type="button"
           onClick={() => router.push("/mese")}
-          aria-label="Indietro"
+          aria-label={t("Indietro")}
           className="jm-day-back"
         >
           <svg
@@ -119,13 +121,13 @@ export function DayClient({ mode, date, initialEntry }: Props) {
               onClick={() => setEditorOpen(true)}
               className="jm-day-head-action"
             >
-              originale &#8599;
+              {t("originale")} &#8599;
             </button>
             <button
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              aria-label="Elimina giornata"
+              aria-label={t("Elimina giornata")}
               className="jm-day-head-del"
             >
               <svg
@@ -195,7 +197,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
                 marginBottom: 6,
               }}
             >
-              Nessuna giornata registrata
+              {t("Nessuna giornata registrata")}
             </div>
             <div
               style={{
@@ -204,8 +206,9 @@ export function DayClient({ mode, date, initialEntry }: Props) {
                 lineHeight: 1.5,
               }}
             >
-              Vai su Oggi per registrarla. Nel selettore data dell&apos;overlay
-              puoi scegliere questo giorno.
+              {t(
+                "Vai su Oggi per registrarla. Nel selettore data dell'overlay puoi scegliere questo giorno.",
+              )}
             </div>
           </div>
         </div>

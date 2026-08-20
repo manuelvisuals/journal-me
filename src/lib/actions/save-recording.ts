@@ -18,6 +18,7 @@
 import { apiFetch } from "@/lib/api";
 import { can } from "@/lib/capabilities";
 import { getStore, type AIFields } from "@/lib/data/store";
+import { t } from "@/lib/i18n";
 import type { Entry } from "@/lib/types";
 
 export type RecordingInput = {
@@ -40,7 +41,7 @@ type DateSegment = { date: string; text: string };
 function fallbackAIFields(transcript: string): AIFields {
   const firstSentence = transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
   return {
-    headline: "Giornata raccontata",
+    headline: t("Giornata raccontata"),
     snippet: firstSentence.slice(0, 240),
     areas: [],
   };
@@ -61,7 +62,7 @@ function localFields(transcript: string): AIFields {
   const headline =
     firstLine.length > 90 ? `${firstLine.slice(0, 89).trimEnd()}\u2026` : firstLine;
   return {
-    headline: headline || "Giornata scritta",
+    headline: headline || t("Giornata scritta"),
     snippet: "",
     areas: [],
   };

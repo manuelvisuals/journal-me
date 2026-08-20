@@ -1,13 +1,15 @@
 "use client";
 
 import type { Remember, RememberKind } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   remember: Remember;
   onDelete: () => void;
 };
 
-const KIND_LABEL_IT: Record<RememberKind, string> = {
+// I nomi delle categorie: chiavi italiane, tradotte a schermo da t().
+const KIND_LABEL: Record<RememberKind, string> = {
   persona: "Persona",
   todo: "Todo",
   nota: "Nota",
@@ -56,10 +58,11 @@ function KindIcon({ kind }: { kind: RememberKind }) {
 }
 
 export function RememberItem({ remember, onDelete }: Props) {
+  const t = useT();
   const handleClick = (e: React.MouseEvent) => {
     // Long-press style: only delete if shift+click for now.
     if (e.shiftKey) {
-      if (confirm("Eliminare?")) onDelete();
+      if (confirm(t("Eliminare?"))) onDelete();
     }
   };
 
@@ -71,22 +74,24 @@ export function RememberItem({ remember, onDelete }: Props) {
       <div className="jm-rem-body">
         <div className="jm-rem-text">{remember.text}</div>
         <div className="jm-rem-meta">
-          <span className="kind">{KIND_LABEL_IT[remember.kind]}</span>
+          <span className="kind">{t(KIND_LABEL[remember.kind])}</span>
           <span>&middot;</span>
           {remember.source === "extracted" ? (
-            <span className="src extracted">estratto da una giornata</span>
+            <span className="src extracted">
+              {t("estratto da una giornata")}
+            </span>
           ) : (
-            <span>manuale</span>
+            <span>{t("manuale")}</span>
           )}
         </div>
       </div>
       <button
         type="button"
         className="jm-rem-del"
-        aria-label="Elimina"
+        aria-label={t("Elimina")}
         onClick={(e) => {
           e.stopPropagation();
-          if (confirm("Eliminare questo elemento?")) onDelete();
+          if (confirm(t("Eliminare questo elemento?"))) onDelete();
         }}
       >
         &times;

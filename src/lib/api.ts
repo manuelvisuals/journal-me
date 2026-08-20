@@ -10,6 +10,7 @@
  * side of these endpoints.
  */
 import { getAccessToken } from "@/lib/supabase/client";
+import { getLang } from "@/lib/i18n";
 
 const BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/+$/, "");
 
@@ -31,7 +32,11 @@ export type ApiFetchInit = RequestInit & { timeoutMs?: number };
  * requirePremium (src/lib/server/entitlement.ts), so this
  *
  * - injects `Authorization: Bearer <access_token>` from the Supabase session
- *   (localStorage, never cookies — see getAccessToken), and
+ *   (localStorage, never cookies — see getAccessToken),
+ * - injects `x-jm-lang` con la lingua scelta, perche anche cio che scrive
+ *   l'AI (titolo, sintesi, recap) deve uscire nella lingua dell'utente: una
+ *   interfaccia inglese che genera un titolo in italiano e mezza tradotta,
+ *   cioe rotta, and
  * - aborts through an AbortController after `timeoutMs`, so no call can hang
  *   silently (HANDOVER §8 C-bis).
  *
@@ -51,6 +56,7 @@ export async function apiFetch(
   const merged = new Headers(headers);
   const token = await getAccessToken();
   if (token) merged.set("Authorization", `Bearer ${token}`);
+  merged.set("x-jm-lang", getLang());
 
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);

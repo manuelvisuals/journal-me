@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { shortMonthAbbr } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   open: boolean;
@@ -13,10 +15,9 @@ type Props = {
   onClose: () => void;
 };
 
-const MONTHS_IT = [
-  "Gen", "Feb", "Mar", "Apr", "Mag", "Giu",
-  "Lug", "Ago", "Set", "Ott", "Nov", "Dic",
-];
+// Le abbreviazioni dei mesi non sono piu scritte a mano: le da
+// shortMonthAbbr(), che segue la lingua scelta ("Gen" / "Jan").
+const MONTH_NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 export function JumpPicker({
   open,
@@ -27,6 +28,7 @@ export function JumpPicker({
   onSelect,
   onClose,
 }: Props) {
+  const t = useT();
   const [pickerYear, setPickerYear] = useState<number>(currentYear);
 
   if (!open) return null;
@@ -41,7 +43,7 @@ export function JumpPicker({
       className="jm-picker-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label="Seleziona mese"
+      aria-label={t("Seleziona mese")}
     >
       <div className="jm-picker">
         <div className="jm-picker-year">
@@ -49,7 +51,7 @@ export function JumpPicker({
             type="button"
             className="nav"
             onClick={() => setPickerYear((y) => y - 1)}
-            aria-label="Anno precedente"
+            aria-label={t("Anno precedente")}
           >
             &#8249;
           </button>
@@ -59,15 +61,14 @@ export function JumpPicker({
             className="nav"
             onClick={() => setPickerYear((y) => y + 1)}
             disabled={pickerYear >= todayYear}
-            aria-label="Anno successivo"
+            aria-label={t("Anno successivo")}
             style={pickerYear >= todayYear ? { opacity: 0.3, cursor: "not-allowed" } : undefined}
           >
             &#8250;
           </button>
         </div>
         <div className="jm-picker-grid">
-          {MONTHS_IT.map((label, i) => {
-            const m = i + 1;
+          {MONTH_NUMBERS.map((m) => {
             const isFuture =
               pickerYear > todayYear ||
               (pickerYear === todayYear && m > todayMonth);
@@ -83,7 +84,7 @@ export function JumpPicker({
                 disabled={isFuture}
                 onClick={() => onSelect(pickerYear, m)}
               >
-                {label}
+                {shortMonthAbbr(pickerYear, m)}
               </button>
             );
           })}

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { clearDraft, saveDraft } from "@/lib/data/drafts";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   /** Data (YYYY-MM-DD) su cui va la bozza dell'autosave. */
@@ -32,6 +33,7 @@ export function ManualWrite({
   onContinue,
   onCancel,
 }: Props) {
+  const t = useT();
   const [value, setValue] = useState<string>(initialValue ?? "");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -71,7 +73,7 @@ export function ManualWrite({
       <div className="jm-editor-card">
         <div className="jm-editor-header">
           <div>
-            <div className="jm-editor-title">Scrivi la tua giornata</div>
+            <div className="jm-editor-title">{t("Scrivi la tua giornata")}</div>
             <div
               style={{
                 fontSize: 11,
@@ -82,7 +84,7 @@ export function ManualWrite({
                 marginTop: 2,
               }}
             >
-              senza parlare a voce alta
+              {t("senza parlare a voce alta")}
             </div>
           </div>
           <div className="jm-editor-actions">
@@ -91,7 +93,7 @@ export function ManualWrite({
               className="jm-editor-btn cancel"
               onClick={onCancel}
             >
-              Annulla
+              {t("Annulla")}
             </button>
             <button
               type="button"
@@ -99,7 +101,7 @@ export function ManualWrite({
               onClick={() => onContinue(value)}
               disabled={isEmpty}
             >
-              Continua
+              {t("Continua")}
             </button>
           </div>
         </div>
@@ -127,11 +129,11 @@ export function ManualWrite({
           spellCheck
           autoCorrect="on"
           autoCapitalize="sentences"
-          placeholder="Oggi ho visto Mario e ho parlato con Luca al telefono. Chiuso il progetto al lavoro..."
+          placeholder={t("Oggi ho visto Mario e ho parlato con Luca al telefono. Chiuso il progetto al lavoro...")}
         />
 
         <div className="jm-editor-hint">
-          continua . poi rileggi e l&apos;ai elabora la giornata
+          {t("continua . poi rileggi e l'ai elabora la giornata")}
         </div>
       </div>
     </div>

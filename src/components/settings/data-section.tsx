@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { backupBannerState, type BackupBannerState } from "@/lib/backup/backup";
 import { useStorageMode } from "@/lib/data/store";
 import { formatNumber } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 
 /**
  * Quel che resta di "Altro > I tuoi dati" dopo il passaggio a Impostazioni
@@ -18,6 +19,7 @@ import { formatNumber } from "@/lib/format";
  * 7 giornate. Mai su Oggi.
  */
 export function BackupBanner() {
+  const t = useT();
   const mode = useStorageMode();
   const [state, setState] = useState<BackupBannerState | null>(null);
 
@@ -36,17 +38,19 @@ export function BackupBanner() {
 
   const title =
     state.daysSince === null
-      ? "Non hai mai fatto un backup"
-      : `Non fai un backup da ${formatNumber(state.daysSince)} giorni`;
+      ? t("Non hai mai fatto un backup")
+      : t("Non fai un backup da {n} giorni", {
+          n: formatNumber(state.daysSince),
+        });
 
   return (
     <div className="jm-backup-warn">
       <div className="jm-backup-warn-t">{title}</div>
       <div className="jm-backup-warn-p">
-        Le tue {formatNumber(state.entryCount)} giornate esistono solo su questo
-        dispositivo. Se si rompe o lo formatti, non c&apos;e nessuna copia da
-        nessuna parte: non esiste un server dove cercarle. Esporta il file e
-        mettilo dove tieni le cose che non vuoi perdere.
+        {t(
+          "Le tue {n} giornate esistono solo su questo dispositivo. Se si rompe o lo formatti, non c'e nessuna copia da nessuna parte: non esiste un server dove cercarle. Esporta il file e mettilo dove tieni le cose che non vuoi perdere.",
+          { n: formatNumber(state.entryCount) },
+        )}
       </div>
     </div>
   );

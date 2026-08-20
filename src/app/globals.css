@@ -3464,6 +3464,11 @@ summary:active {
   line-height: 1.15;
   color: var(--color-ink);
   margin-bottom: 12px;
+  /* Il titolo va su due righe e il punto dove spezzare lo decide la
+     traduzione, con un a capo dentro la stringa (vedi premium-wall.tsx).
+     Prima era un <br/> nel JSX, cioe il punto giusto per l'italiano e
+     uno a caso per l'inglese. */
+  white-space: pre-line;
 }
 .jm-wall-p {
   font-size: 13.5px;
