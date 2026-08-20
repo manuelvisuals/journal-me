@@ -5,6 +5,11 @@ import { useEffect, useState } from "react";
 import { chooseLocalMode, getStore } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
 import { signalReady } from "@/lib/app-ready";
+import {
+  PREMIUM_HAS_FREE_TRIAL,
+  PREMIUM_PRICE_AMOUNT,
+  PREMIUM_PRICE_PERIOD,
+} from "@/lib/pricing";
 
 /**
  * /benvenuto — la scelta, al primo avvio (SPEC-v2 §7.1, mockup
@@ -92,8 +97,13 @@ export default function BenvenutoPage() {
             <li>Recap mensili, semestrali, annuali</li>
             <li>Mac, iPhone, iPad sempre allineati</li>
           </ul>
+          {/* Il prezzo viene da src/lib/pricing.ts, non da qui: era
+              scritto a mano e prometteva anche "primo mese incluso", che
+              nessuna parte del codice mantiene (il checkout Stripe non ha
+              trial). Si dice cio che succede davvero. */}
           <div className="jm-benv-price">
-            <b>4,99 &euro;</b> al mese . primo mese incluso
+            <b>{PREMIUM_PRICE_AMOUNT}</b> {PREMIUM_PRICE_PERIOD}
+            {PREMIUM_HAS_FREE_TRIAL ? " . primo mese incluso" : ""}
           </div>
           <button
             type="button"

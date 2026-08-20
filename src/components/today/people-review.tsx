@@ -99,12 +99,12 @@ export function PeopleReview({
             }}
           >
             Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver
-            sbagliato lo spelling), poi salvali in Remember.
+            sbagliato lo spelling), poi salvali in Ricorda.
           </p>
 
           {existing.length > 0 && (
             <>
-              <div className="jm-pr-label">gia in remember</div>
+              <div className="jm-pr-label">gia in ricorda</div>
               <div className="jm-pill-row" style={{ marginBottom: 22 }}>
                 {existing.map((name) => (
                   <span key={name} className="jm-person-pill is-known">

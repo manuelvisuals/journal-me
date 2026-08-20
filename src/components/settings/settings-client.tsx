@@ -9,6 +9,7 @@ import { AppearanceSection } from "@/components/settings/appearance-section";
 import { BackupBanner, DataSection } from "@/components/settings/data-section";
 import { useStorageMode } from "@/lib/data/store";
 import { APP_VERSION } from "@/lib/data/store/types";
+import { clearPlanCache } from "@/lib/plan";
 import type { DataMode } from "@/lib/data/entries";
 import type { GoalDef } from "@/lib/types";
 
@@ -43,6 +44,13 @@ export function SettingsClient({
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     await supabase.auth.signOut();
+    // Il piano e cache in localStorage ("jm.plan") ed e OTTIMISTA: senza
+    // questa riga restava "premium" addosso al browser dopo il logout, e
+    // il prossimo account gratis vedeva la UI premium finche il refresh in
+    // background non lo smentiva (con un 402 a sorpresa alla prima azione,
+    // proprio cio che SPEC-v2 §3.3 vieta). clearPlanCache esisteva gia e
+    // non era chiamata da nessuna parte.
+    clearPlanCache();
     // Legacy demo cookie cleanup, just in case.
     document.cookie =
       "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";

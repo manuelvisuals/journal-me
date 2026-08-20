@@ -1,7 +1,7 @@
 # Handover · Journal.me
 
 Documento di riferimento per chi (Claude o umano) riprende lo sviluppo.
-Aggiornato al **17 agosto 2026**, allineato al commit `d1da4ef` di `main`.
+Aggiornato al **20 agosto 2026**. Lo stato del lavoro in corso e in §13.
 Per il lavoro in corso (desktop, due modalita, temi) vedi §13 e le due SPEC in root.
 
 Regola numero uno: **la fonte di verita del codice e il repo GitHub, non questo file.**
@@ -174,27 +174,38 @@ Recap non e piu un tab: si raggiunge dalla card editoriale in cima ad Altro.
 ```
 /                    Today (empty / recording / review / processing / people /
                      filled / manual / no-capture — macchina a stati in today-client)
-/giorno/[date]       Dettaglio giorno, riusa FilledView con tutti i controlli
+/giorno?d=YYYY-MM-DD Dettaglio giorno, riusa FilledView con tutti i controlli
+                     (era /giorno/[date]: un segmento dinamico non si
+                     prerenderizza nell'export statico del guscio iOS)
 /mese                Feed infinito newest-first, sticky month header, jump picker
 /recap               Segmented Mensili/Semestrali/Annuali + detail con dropcap
 /remember            Filtri a chip, raggruppamento per fascia temporale, quick-capture
 /settings            "Altro": card Recap, micro-goal CRUD, account, logout
-/login               Magic link + bottone App Tour
+/benvenuto           La scelta locale/cloud al primo avvio (PR 5)
+/login               Codice a 6 cifre via email (niente piu magic link)
 /auth/callback       Scambio code -> sessione (PKCE)
 ```
 
 ### API (tutte server-side, la chiave OpenAI non tocca mai il browser)
 
+Tutte dietro `requirePremium` (401 senza token, 402 senza premium) tranne
+dove indicato. Il client le chiama SOLO via `apiFetch` (bearer + timeout).
+
 ```
-/api/realtime/session      relay SDP per OpenAI Realtime (gpt-4o-transcribe)
-/api/transcribe-fallback   trascrizione full-clip di riserva (gpt-4o-transcribe)
+/api/transcribe-fallback   trascrizione dell'intero clip (gpt-4o-transcribe)
 /api/process-entry         gpt-4o-mini -> headline, snippet, aree macro
 /api/split-by-date         gpt-4o-mini -> smista un racconto multi-giorno
 /api/extract-people        gpt-4o-mini -> persone citate nella giornata
 /api/remember/classify     gpt-4o-mini -> riclassifica le note in persona/todo/luogo/idea
 /api/recap/generate        gpt-4o (non mini, serve la prosa) -> recap letterario
-/api/demo                  login sull'account condiviso demo@journal.me
+/api/usage                 consumi AI del mese (requireUser: basta essere loggati)
+/api/stripe/checkout       sessione di Checkout (requireUser: compra chi NON e premium)
+/api/stripe/webhook        l'unico posto che scrive profiles.plan (firma Stripe)
 ```
+
+**Cancellate:** `/api/realtime/session` (con la PR 1: non aveva piu chiamanti)
+e `/api/demo` (con la PR 5: il tour anonimo e stato sostituito dalla modalita
+locale). Se le trovi citate altrove in un documento, il documento e vecchio.
 
 ### Livello dati
 
@@ -205,16 +216,22 @@ Il parametro `mode` sopravvive nelle firme solo per stabilita dei call-site ed e
 ### Migration
 
 ```
-001_init.sql             entries, goals, entry_goals, remembers, recaps + RLS + seed goal
-002_user_settings.sql    user_settings.glossary (legacy, vedi sotto)
+001_init.sql              entries, goals, entry_goals, remembers, recaps + RLS + seed goal
+002_user_settings.sql     user_settings.glossary (legacy, vedi sotto)
 003_entry_goals_jsonb.sql entries.goals_on jsonb
-004_remove_libro.sql     toglie 'libro' dal check di remembers.kind
-005_entry_people.sql     entries.people jsonb
+004_remove_libro.sql      toglie 'libro' dal check di remembers.kind
+005_entry_people.sql      entries.people jsonb
+006_profiles.sql          profiles (plan/plan_source/current_period_end) + trigger + RLS
+007_user_settings_theme.sql  user_settings.theme, user_settings.appearance
+008_profiles_stripe.sql   profiles.stripe_customer_id + unique index
+009_ai_usage.sql          ai_usage (token ufficiali per chiamata) + RLS + indice
 ```
 
-001, 002, 003, 005 risultano applicate. **004 e da confermare** (nell'ultimo giro
-risultava ancora da eseguire da parte di Manuel nel SQL Editor). Prima di toccare
-Remember, verifica.
+**Tutte e nove applicate su `fljshsmpmpzapcczsbwc`, verificato in SQL Editor il
+20 agosto 2026** interrogando `information_schema` invece di fidarsi degli
+appunti: 004 risultava "da confermare" ed era gia applicata, 008 risultava non
+applicata ed era gia applicata, 009 mancava davvero ed e stata eseguita quel
+giorno. Morale: prima di riscrivere una migration, chiedi al database.
 
 ### Pipeline di registrazione (riscritta il 12 agosto 2026)
 
@@ -329,7 +346,8 @@ per qualsiasi fallimento — ma se la richiesta si appende non mostra nemmeno qu
 passate settimane senza che l'app dicesse niente. Da fare: timeout sulle chiamate al
 backend e messaggio d'errore vero al posto del silenzio.
 
-**D. Migration 004** possibilmente non applicata (vedi §6).
+**D. ~~Migration 004~~ CHIUSO il 20 agosto.** Verificata applicata: il check
+di `remembers.kind` e gia senza 'libro'. Vedi §6 per lo stato di tutte e nove.
 
 **E. Scrittura manuale** e raggiungibile dallo stato vuoto e dal giorno pieno, ma il
 percorso non e simmetrico ovunque: verificare prima di dare per scontato.
@@ -744,6 +762,56 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   luglio 2026) come ottimizzazione futura.
 - La PR 12 (marketplace temi) e APPROVATA nel design e non ancora
   implementata.
+- **20 agosto 2026 — giro di bugfix, nessuna funzione nuova.** Sei
+  correzioni uscite dalla rilettura integrale del codice, piu la
+  migration 009 finalmente applicata.
+  1. **Il mic della cattura rapida in Ricorda non era protetto.**
+     `quick-capture.tsx` montava `RecordingOverlay` senza nessun
+     `can("voice")`: in modalita locale premere quel microfono mandava
+     l'audio a `/api/transcribe-fallback`. Era l'ULTIMO buco nella
+     promessa "in locale nemmeno una richiesta di rete" (l'altro,
+     `/api/remember/classify`, era stato chiuso nella PR 10). Ora apre
+     il muro premium; il campo di testo accanto resta l'uscita gratuita.
+  2. **`/benvenuto` prometteva "primo mese incluso"** e aveva il prezzo
+     scritto a mano. Il trial non esiste da nessuna parte: la sessione
+     Stripe non ha `trial_period_days`. Il prezzo ora viene da
+     `src/lib/pricing.ts`, che espone anche `PREMIUM_HAS_FREE_TRIAL =
+     false`: finche quella costante e falsa nessuna schermata puo
+     promettere un mese gratis. Se un giorno il trial si attiva, si
+     accende li e si aggiunge al checkout.
+  3. **Il titolo di Ricorda diceva ancora "Remember"** (P2 dell'audit di
+     giugno), come pure due stringhe in `people-review`. Tab bar, rail e
+     palette dicevano gia "Ricorda".
+  4. **`clearPlanCache()` non era chiamata da nessuna parte.** Il piano
+     e cache in `localStorage` ("jm.plan") ed e OTTIMISTA: dopo un logout
+     restava "premium" addosso al browser, e il prossimo account gratis
+     vedeva la UI premium fino al refresh in background — cioe un 402 a
+     sorpresa, che SPEC-v2 §3.3 vieta esplicitamente. Ora il logout la
+     chiama.
+  5. **Pulizia:** `src/lib/types/speech.d.ts` eliminato (i tipi Web Speech
+     non servono da quando la trascrizione e full-clip); `navigator.platform`
+     (deprecato) sostituito da `userAgentData`/`userAgent` in
+     `use-shortcuts.ts`; il warning del ref della waveform chiuso copiando
+     `barRefs.current` dentro l'effetto; `argsIgnorePattern: "^_"` in
+     `eslint.config.mjs`, perche i `_mode` sono deliberati (spec §2.2) e
+     non devono sporcare ogni lint. `npx eslint .` ora e a **zero warning**.
+  6. **Migration 009 applicata** (vedi §6). Da qui in avanti `logAiUsage`
+     scrive davvero e `/api/usage` ha dati da aggregare.
+
+  **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
+  `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
+  verdi; le quattro suite Playwright esistenti rieseguite senza regressioni
+  (PR 7 24/24, PR 8 21/21, PR 9 25/25, PR 10 25/25) piu una nuova,
+  `scripts/verify-fix-20260820.mjs`, 19/19 — che fra le altre cose riconferma
+  ZERO richieste esterne in locale con il mic di Ricorda premuto.
+
+  **NON fatto, e da decidere:** `/api/usage` non ha ancora nessuna schermata
+  che lo mostri (il contatore consumi esiste solo lato server: serve un
+  mockup prima); il bundle iOS in `ios/App/App/public` e ancora
+  pre-temi, quindi `npm run build:ios` va rifatto prima di rimettere le mani
+  sul telefono; l'append-by-default di una giornata gia scritta in locale
+  tiene il titolo della PRIMA riga scritta quel giorno, che e coerente col
+  mockup ("il titolo e la prima riga") ma sorprende chi crede di riscrivere.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

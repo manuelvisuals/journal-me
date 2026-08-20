@@ -102,7 +102,9 @@ export function RememberClient({ mode, initial }: Props) {
       style={{ minHeight: "100dvh" }}
     >
       <header className="jm-rem-head">
-        <h1 className="jm-rem-h">Remember</h1>
+        {/* "Ricorda", come la tab bar, la rail desktop e la palette. Era
+            l'ultimo punto in inglese di una UI tutta italiana. */}
+        <h1 className="jm-rem-h">Ricorda</h1>
         <div className="jm-rem-filter">
           {FILTERS.map((f) => (
             <button

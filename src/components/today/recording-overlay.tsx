@@ -885,6 +885,9 @@ function Waveform({
 
   useEffect(() => {
     if (!active || !stream) return;
+    // Copia locale del ref: al momento della cleanup `barRefs.current` puo
+    // gia puntare a un altro array (regola react-hooks/exhaustive-deps).
+    const bars = barRefs.current;
     const AudioCtx =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext?: typeof AudioContext })
@@ -933,7 +936,7 @@ function Waveform({
       } catch {
         // ignore
       }
-      barRefs.current.forEach((el) => {
+      bars.forEach((el) => {
         if (el) {
           el.style.height = "3px";
           el.style.opacity = "0.3";

@@ -2,6 +2,8 @@
 
 import { useRef, useState } from "react";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
+import { openPremiumWall } from "@/components/premium-wall";
+import { useCan } from "@/lib/capabilities";
 import { todayISO } from "@/lib/format";
 import type { DataMode } from "@/lib/data/entries";
 import type { RememberKind } from "@/lib/types";
@@ -21,6 +23,12 @@ const KIND_OPTIONS: { key: RememberKind; label: string }[] = [
 ];
 
 export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
+  // La voce e una capability come nel resto dell'app (SPEC-v2 §3.3): questo
+  // mic apriva la registrazione senza nessun controllo, quindi in modalita
+  // locale mandava l'audio a /api/transcribe-fallback e rompeva la promessa
+  // "nemmeno una richiesta di rete". In gratis apre il muro premium; il
+  // campo di testo resta li accanto ed e l'uscita gratuita.
+  const canVoice = useCan("voice");
   const [text, setText] = useState<string>("");
   const [kind, setKind] = useState<RememberKind>(defaultKind);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
@@ -85,7 +93,13 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
           type="button"
           className="jm-qc-mic"
           aria-label="Aggiungi con voce"
-          onClick={() => setRecorderOpen(true)}
+          onClick={() => {
+            if (!canVoice) {
+              openPremiumWall("voice");
+              return;
+            }
+            setRecorderOpen(true);
+          }}
         >
           <svg
             viewBox="0 0 24 24"
@@ -132,7 +146,7 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
         </div>
       )}
 
-      {recorderOpen && (
+      {recorderOpen && canVoice && (
         <RecordingOverlay
           mode={mode}
           defaultDate={todayISO()}
