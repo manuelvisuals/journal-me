@@ -3780,21 +3780,35 @@ summary:active {
 }
 
 /* =============================================================
-   Larghezze desktop riviste (feedback Manuel 19 ago: "sfrutta
-   BENE lo spazio del body"). I CONTENITORI si allargano (Mese
-   1080px, pagine contenuto 860px — vedi lg:max-w-* nei client);
-   il TESTO da leggere/scrivere resta su una riga leggibile.
+   Larghezze desktop (regola di Manuel, ribadita il 20 ago sulla
+   schermata di scrittura): l'unica cosa FISSA sono i margini
+   interni, il resto si allarga con lo schermo. Niente piu
+   colonna di 680px centrata che lasciava 700px vuoti a destra su
+   un monitor largo. Il margine e uno solo per tutta la colonna
+   centrale — header, testo e footer partono dalla stessa
+   verticale — e vale a partire dal bordo della rail.
    ============================================================= */
+
+/* Il margine unico della colonna centrale. Sul telefono resta 24px
+   come e sempre stato; da lg passa a 28px, il valore del mockup
+   desktop-v1 gia usato da .jm-ed-scroll e .jm-ed-foot. Vive qui e
+   non in uno style inline perche l'inline non si puo scavalcare
+   con una media query. */
+.jm-col-head {
+  padding: calc(26px + env(safe-area-inset-top, 0px)) 24px 6px;
+}
+.jm-fv-wrap {
+  padding: 0 24px;
+}
+
 @media (min-width: 1024px) {
-  /* La colonna di scrittura resta ~75 caratteri, centrata nel
-     contenitore largo (come l'editor del mockup dentro col-c). */
-  .jm-ed-ta,
-  .jm-ed-notice {
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
+  .jm-col-head,
+  .jm-fv-wrap {
+    padding-left: 28px;
+    padding-right: 28px;
   }
-  /* Prosa della giornata gratis e sintesi serif: riga leggibile. */
+  /* Prosa della giornata gratis e sintesi serif: qui la riga di
+     lettura resta, perche e testo che si LEGGE e non si scrive. */
   .jm-fv-prose,
   .jm-fv-sn {
     max-width: 700px;

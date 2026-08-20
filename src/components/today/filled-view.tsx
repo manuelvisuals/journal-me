@@ -49,7 +49,7 @@ export function FilledView({
   const proseTime = freeProse ? timeLabel(freeProse.createdAt) : null;
 
   return (
-    <div className="flex flex-1 flex-col" style={{ padding: "0 24px" }}>
+    <div className="jm-fv-wrap flex flex-1 flex-col">
       {/* Stili in classi jm-fv-*: sotto lg replicano ESATTAMENTE i valori
           inline storici; da lg il mockup desktop-v1 §03 (headline 27px,
           snippet serif corsivo, aree su due colonne a card). */}

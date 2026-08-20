@@ -427,10 +427,10 @@ export function TodayClient({
       className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
       style={{ minHeight: "100dvh" }}
     >
-      <header
-        className="jm-col-head flex items-baseline justify-between"
-        style={{ padding: "0 24px 6px", paddingTop: "calc(26px + env(safe-area-inset-top, 0px))" }}
-      >
+      {/* Il padding sta in .jm-col-head (globals.css), non qui: da uno
+          style inline non si puo scavalcare con una media query, e su
+          desktop questo margine deve coincidere con quello dell'editor. */}
+      <header className="jm-col-head flex items-baseline justify-between">
         <span
           suppressHydrationWarning
           style={{
