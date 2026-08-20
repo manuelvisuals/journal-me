@@ -63,7 +63,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   {
     key: "altro",
     href: "/settings",
-    label: "Altro",
+    label: "Impostazioni",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
         <circle cx="5" cy="12" r="2" />

@@ -166,8 +166,9 @@ esistono, salvano su Supabase e sono state verificate in Chrome sul deploy live.
 ### Navigazione
 
 Tab bar a 5 slot: **Oggi** (`/`) · **Mese** (`/mese`) · **mic centrale ambra** (apre la
-registrazione via `/?record=1`) · **Ricorda** (`/remember`) · **Altro** (`/settings`).
-Recap non e piu un tab: si raggiunge dalla card editoriale in cima ad Altro.
+registrazione via `/?record=1`) · **Ricorda** (`/remember`) · **Impostazioni**
+(`/settings`). Recap non e piu un tab: su desktop e una voce della rail sinistra,
+sul telefono si raggiunge dalla card editoriale in cima a Impostazioni.
 
 ### Route
 
@@ -180,7 +181,7 @@ Recap non e piu un tab: si raggiunge dalla card editoriale in cima ad Altro.
 /mese                Feed infinito newest-first, sticky month header, jump picker
 /recap               Segmented Mensili/Semestrali/Annuali + detail con dropcap
 /remember            Filtri a chip, raggruppamento per fascia temporale, quick-capture
-/settings            "Altro": card Recap, micro-goal CRUD, account, logout
+/settings            "Impostazioni": elenco a gruppi + pannelli (obiettivi, tema, dati)
 /benvenuto           La scelta locale/cloud al primo avvio (PR 5)
 /login               Codice a 6 cifre via email (niente piu magic link)
 /auth/callback       Scambio code -> sessione (PKCE)
@@ -379,7 +380,7 @@ L'audit (designer Apple-style, UX senior, esperto dettatura) e in
 - P1: rimuovere logging e poll `getStats` dalla produzione (§8B); conferma o undo
   sull'annulla registrazione (oggi il cestino scarta tutto senza rete).
 - P2: casing tipografico incoerente; glow troppo neon rispetto al linguaggio Apple
-  attuale; spaziature a mano invece di un ritmo 8pt; icone "Oggi" (mirino) e "Altro"
+  attuale; spaziature a mano invece di un ritmo 8pt; icone "Oggi" (mirino) e "Impostazioni"
   (tre puntini) ambigue; haptics ed earcon su start/stop; valutare light mode;
   `logprobs` richiesti e mai usati (si potrebbero evidenziare le parole a bassa
   confidenza); stati `:focus` scarsi.
@@ -546,7 +547,7 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   `/api/realtime/session` cancellata. Manuel e `premium` (`plan_source=manual`).
 - **PR 0 `temi`: fatta.** Contratto in `src/themes/contract.ts`, cinque temi
   (`minimal` default, `wine`, `carta`, `malva`, `macchina`), validatore di contrasto
-  (10/10 set passano), boot script inline senza flash, `Altro > Aspetto` con switch
+  (10/10 set passano), boot script inline senza flash, `Impostazioni > Tema` con switch
   chiaro/scuro/sistema e griglia con anteprime vive. `globals.css` rifattorizzato:
   zero colori di marca letterali (tutto token o `color-mix` su token), radii e
   spaziatura sui token (`--jm-*`), sei famiglie font locali in `layout.tsx`.
@@ -588,7 +589,7 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   toccare le ombre dei bottoni) e regola `:focus-visible` globale. `src/components/
   desktop/`: `desktop-shell.tsx` (sotto lg e `display:contents`, il telefono non se
   ne accorge; da lg griglia rail 222px + colonna + rail destra 296px, nascosta se
-  vuota), `rail-left.tsx` (nav dal mockup: Oggi/Mese/Ricorda/Recap/Altro + Racconta
+  vuota), `rail-left.tsx` (nav dal mockup: Oggi/Mese/Ricorda/Recap/Impostazioni + Racconta
   a voce — che in locale diventa "Scrivi la giornata" — account badge
   Premium/Cloud/Locale), `rail-right.tsx` (slot via portal: le pagine riempiono la
   colonna destra con `<RailRight>`). Tab bar spenta con `lg:hidden` in
@@ -646,7 +647,7 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   controlla `defaultPrevented` e non spara due volte, e fuori dal fuoco
   rilancia un CustomEvent `jm:shortcut` che l'editor montato ascolta.
   `command-palette.tsx`: store modulo aperta/chiusa (stesso pattern del
-  focus), Vai a (Oggi/Mese/Ricorda/Recap/Altro), Racconta a voce / Scrivi la
+  focus), Vai a (Oggi/Mese/Ricorda/Recap/Impostazioni), Racconta a voce / Scrivi la
   giornata, Modalita focus (solo pathname "/"), e cattura rapida in Ricorda
   (qualsiasi testo digitato -> "Salva in Ricorda", feedback inline, si chiude
   da sola senza portarti via dalla pagina; l'auto-classificazione AI del tipo
@@ -824,13 +825,41 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
      `profiles.plan` in background a ogni load e sostituisce la cache
      `jm.plan`, senza bisogno di rifare il login.
 
+  10. **"Altro" e diventato "Impostazioni"** (mockup impostazioni.html
+     §03/§04, approvato). Era un cassetto: banner, card Recap, temi,
+     obiettivi a chip, dati, account e logout tutti aperti nella stessa
+     colonna, senza gerarchia. Ora e un elenco a gruppi dove ogni riga
+     dice la cosa E il suo valore attuale (quanti obiettivi, che tema,
+     quante giornate), e cio che vuole spazio si apre in un pannello con
+     un "indietro": Obiettivi, Tema, "Dove sono le mie giornate".
+     Su desktop l'identita passa nella rail destra e la card Recap
+     sparisce dalla colonna (Recap e gia nella rail sinistra); sul
+     telefono succede il contrario. File nuovi: `settings/rows.tsx`
+     (SetGroup, SetRow, PanelHead) e `settings/panels.tsx`;
+     `appearance-section.tsx` e `goals-section.tsx` sono spariti,
+     `data-section.tsx` e rimasto solo col banner. Tolti da globals.css
+     11.471 caratteri di CSS che non aveva piu nessun utente.
+
+     **Due righe del mockup NON sono state implementate, di proposito.**
+     "Promemoria della sera" mostrerebbe un orario senza che arrivi mai
+     nessuna notifica: l'app non ha un sistema di notifiche. "Lingua"
+     mostrerebbe un selettore che non traduce niente: il bilingue e la
+     task 27 e non esiste ancora. Sono la stessa bugia del "primo mese
+     incluso" tolto la mattina dello stesso giorno, e tornano nel
+     momento in cui esiste la cosa che promettono.
+
   **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
   `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
-  verdi; le quattro suite Playwright esistenti rieseguite senza regressioni
-  (PR 7 24/24, PR 8 21/21, PR 9 25/25, PR 10 26/26) piu una nuova,
-  `scripts/verify-fix-20260820.mjs`, 53/53 — che fra le altre cose riconferma
-  ZERO richieste esterne in locale con il mic di Ricorda premuto e misura la
-  rail a 1280, 1728 e 2600px.
+  verdi; le suite Playwright rieseguite senza regressioni (PR 7 24/24,
+  PR 8 21/21, PR 9 25/25, PR 10 26/26) piu due nuove:
+  `scripts/verify-fix-20260820.mjs` 52/53 e
+  `scripts/verify-impostazioni.mjs` 55/55.
+
+  L'unico FAIL, `benvenuto: zero errori console`, e un artefatto
+  dell'ambiente e non una regressione: senza `.env.local` il client
+  Supabase urla "Supabase non configurato" e `/benvenuto` lo costruisce.
+  Verificato rimettendo il `src` di `eb93806` sullo stesso dev server:
+  fallisce identico anche li. Da rifare quando l'ambiente ha le env.
 
   **NON fatto, e da decidere:** `/api/usage` non ha ancora nessuna schermata
   che lo mostri (il contatore consumi esiste solo lato server: serve un

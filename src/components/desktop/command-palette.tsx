@@ -94,7 +94,7 @@ export function CommandPalette() {
     { id: "mese", group: "Vai a", label: "Mese", run: () => router.push("/mese") },
     { id: "ricorda", group: "Vai a", label: "Ricorda", run: () => router.push("/remember") },
     { id: "recap", group: "Vai a", label: "Recap", run: () => router.push("/recap") },
-    { id: "altro", group: "Vai a", label: "Altro", run: () => router.push("/settings") },
+    { id: "altro", group: "Vai a", label: "Impostazioni", run: () => router.push("/settings") },
     {
       id: "record",
       group: "Azioni",

@@ -1279,301 +1279,6 @@ summary:active {
 .jm-day-head-del:active { background: color-mix(in oklab, var(--color-danger) 14%, transparent); }
 .jm-day-head-del:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* Altro page (formerly Settings — now contains Recap link, Glossario,
-   Account, Logout). The legacy .jm-set-* classes are kept below so the
-   inline sections (Glossary, Account) render as before. */
-.jm-altro-head {
-  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(18px * var(--jm-space));
-}
-.jm-altro-h {
-  font-size: 26px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
-}
-
-/* Recap card — premium editorial CTA inside Altro that opens /recap. */
-.jm-recap-card {
-  position: relative;
-  display: block;
-  margin: 0 24px 24px;
-  padding: calc(20px * var(--jm-space)) calc(22px * var(--jm-space)) calc(18px * var(--jm-space));
-  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, color-mix(in oklab, var(--color-accent) 1%, transparent) 60%, transparent 100%),
-    linear-gradient(140deg, color-mix(in oklab, var(--color-accent) 9%, transparent) 0%, transparent 55%),
-    var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-lg);
-  text-decoration: none;
-  color: var(--color-ink);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-ink) 6%, transparent),
-    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-recap-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 22px;
-  right: 22px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-accent) 40%, transparent), transparent);
-}
-.jm-recap-card:active {
-  transform: scale(0.99);
-  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.jm-recap-card .meta {
-  display: flex;
-  align-items: center;
-  gap: calc(10px * var(--jm-space));
-  font-size: 10px;
-  font-weight: 650;
-  color: var(--color-accent);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  margin-bottom: calc(12px * var(--jm-space));
-}
-.jm-recap-card .meta::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  max-width: 36px;
-  background: linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 50%, transparent), transparent);
-}
-.jm-recap-card .title {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-  color: var(--color-ink);
-  margin-bottom: calc(8px * var(--jm-space));
-}
-.jm-recap-card .sub {
-  font-size: 12px;
-  color: var(--color-ink-muted);
-  line-height: 1.5;
-  margin-bottom: calc(14px * var(--jm-space));
-}
-.jm-recap-card .last {
-  display: flex;
-  align-items: center;
-  gap: calc(10px * var(--jm-space));
-  padding-top: calc(14px * var(--jm-space));
-  border-top: 1px solid color-mix(in oklab, var(--color-ink) 5%, transparent);
-}
-.jm-recap-card .last .lbl {
-  font-size: 9px;
-  font-weight: 650;
-  color: var(--color-ink-faint);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-.jm-recap-card .last .name {
-  flex: 1;
-  font-family: var(--font-serif);
-  font-size: 13px;
-  color: var(--color-ink-muted);
-  font-style: italic;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.jm-recap-card .last .chev {
-  width: 26px;
-  height: 26px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
-  border: 1px solid color-mix(in oklab, var(--color-accent) 20%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-accent);
-  flex-shrink: 0;
-}
-
-/* Logout button at bottom of Altro */
-.jm-logout-wrap {
-  padding: calc(8px * var(--jm-space)) calc(24px * var(--jm-space)) 0;
-}
-.jm-logout-btn {
-  width: 100%;
-  background: transparent;
-  color: var(--color-danger);
-  border: 1px solid color-mix(in oklab, var(--color-danger) 30%, transparent);
-  border-radius: 12px;
-  padding: calc(14px * var(--jm-space));
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 120ms;
-}
-.jm-logout-btn:active {
-  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
-}
-.jm-logout-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Settings page (legacy classes kept for inline Account/Glossario sections) */
-.jm-set-head {
-  display: flex;
-  align-items: center;
-  gap: calc(14px * var(--jm-space));
-  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(16px * var(--jm-space));
-  border-bottom: 1px solid var(--color-line);
-}
-.jm-set-back {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--jm-radius-circle);
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  color: var(--color-ink-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-set-back:active { background: var(--color-surface-2); }
-.jm-set-title {
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-  color: var(--color-ink);
-}
-.jm-set-section { padding: 14px 24px 26px; }
-.jm-set-section-h {
-  font-size: 10px;
-  font-weight: 650;
-  color: var(--color-accent);
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  margin-bottom: calc(8px * var(--jm-space));
-}
-.jm-set-section-hint {
-  font-size: 13px;
-  color: var(--color-ink-muted);
-  line-height: 1.5;
-  margin-bottom: calc(16px * var(--jm-space));
-}
-.jm-set-section-hint b { color: var(--color-ink); font-weight: 600; }
-.jm-set-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(14px * var(--jm-space)) 0;
-  border-bottom: 1px solid var(--color-line);
-  font-family: var(--font-sans);
-  text-align: left;
-}
-.jm-set-row:last-child { border-bottom: none; }
-.jm-set-row .lbl {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-ink);
-}
-.jm-set-row .v {
-  font-size: 13px;
-  color: var(--color-ink-muted);
-}
-.jm-set-row.action .v {
-  color: var(--color-accent);
-  font-weight: 600;
-}
-
-/* Glossary chips */
-.jm-glossary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(8px * var(--jm-space));
-  margin-bottom: calc(12px * var(--jm-space));
-}
-.jm-gloss-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(6px * var(--jm-space));
-  padding: calc(8px * var(--jm-space)) calc(8px * var(--jm-space)) calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-pill);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-ink);
-  letter-spacing: -0.005em;
-}
-.jm-gloss-tag .x {
-  width: 18px;
-  height: 18px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
-  color: var(--color-ink-faint);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-gloss-tag .x:hover {
-  background: color-mix(in oklab, var(--color-danger) 15%, transparent);
-  color: var(--color-danger);
-}
-.jm-gloss-input {
-  display: flex;
-  align-items: center;
-  gap: calc(8px * var(--jm-space));
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-md);
-  padding: calc(4px * var(--jm-space)) calc(4px * var(--jm-space)) calc(4px * var(--jm-space)) calc(16px * var(--jm-space));
-}
-.jm-gloss-input input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  color: var(--color-ink);
-  padding: calc(12px * var(--jm-space)) 0;
-}
-.jm-gloss-input input::placeholder {
-  color: var(--color-ink-faint);
-}
-.jm-gloss-input .add {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--jm-radius-circle);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 10px color-mix(in oklab, var(--color-shadow) 30%, transparent);
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-gloss-input .add:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
 /* Settings icon button in the filled-view header */
 .jm-settings-btn {
   width: 36px;
@@ -2360,7 +2065,6 @@ summary:active {
 
 .jm-day-head,
 .jm-rem-head,
-.jm-altro-head,
 .jm-rec-head {
   padding-top: calc(22px + env(safe-area-inset-top, 0px));
 }
@@ -2460,58 +2164,13 @@ summary:active {
 }
 
 /* =============================================================
-   Altro > Aspetto — switch appearance + griglia dei temi (PR 0).
-   Componente nuovo: SOLO token del contratto, nessun valore di
-   marca. Le taglie fisse delle anteprime sono miniature del
-   picker, non ruoli tipografici dell'app.
+   Impostazioni > Tema — la griglia dei temi (PR 0). Lo switch
+   chiaro/scuro non e piu qui: dal 20 agosto 2026 e una riga
+   dell'elenco di Impostazioni (.jm-st-seg). Componente nuovo:
+   SOLO token del contratto, nessun valore di marca. Le taglie
+   fisse delle anteprime sono miniature del picker, non ruoli
+   tipografici dell'app.
    ============================================================= */
-.jm-appearance-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(12px * var(--jm-space));
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-lg);
-  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
-  margin-bottom: calc(16px * var(--jm-space));
-}
-.jm-appearance-t {
-  font-size: var(--jm-text-body);
-  font-weight: 600;
-  color: var(--color-ink);
-}
-.jm-appearance-p {
-  font-size: var(--jm-text-meta);
-  color: var(--color-ink-muted);
-  margin-top: 3px;
-  line-height: 1.45;
-}
-.jm-seg {
-  display: flex;
-  flex: none;
-  background: var(--color-bg-phone);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-pill);
-  padding: 3px;
-}
-.jm-seg-opt {
-  font-family: var(--font-sans);
-  font-size: var(--jm-text-meta);
-  font-weight: 600;
-  color: var(--color-ink-faint);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--jm-radius-pill);
-  padding: 7px 12px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-seg-opt.on {
-  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
-  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
-  color: var(--color-accent);
-}
 .jm-theme-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2622,76 +2281,6 @@ summary:active {
   font-size: 13px;
   line-height: 1.6;
   color: var(--color-ink-muted);
-}
-.jm-data-box {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-md);
-  overflow: hidden;
-}
-.jm-data-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(14px * var(--jm-space));
-  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
-  border-bottom: 1px solid var(--color-line);
-}
-.jm-data-row:last-child {
-  border-bottom: none;
-}
-.jm-data-t {
-  font-size: var(--jm-text-body);
-  font-weight: 600;
-  color: var(--color-ink);
-}
-.jm-data-t.danger {
-  color: var(--color-danger);
-}
-.jm-data-p {
-  font-size: 12.5px;
-  color: var(--color-ink-muted);
-  margin-top: 4px;
-  line-height: 1.5;
-}
-.jm-data-btn {
-  flex: none;
-  background: transparent;
-  color: var(--color-ink-muted);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-sm);
-  font-family: var(--font-sans);
-  font-size: var(--jm-text-meta);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 9px 14px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-data-btn.primary {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
-  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 28%, transparent),
-    0 8px 16px color-mix(in oklab, var(--color-shadow) 40%, transparent);
-}
-.jm-data-btn.danger {
-  color: var(--color-danger);
-  border-color: color-mix(in oklab, var(--color-danger) 30%, transparent);
-}
-.jm-data-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.jm-data-note {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--color-success);
-}
-.jm-data-note.err {
-  color: var(--color-danger);
 }
 
 /* =============================================================
@@ -4065,4 +3654,389 @@ summary:active {
   .jm-fv-sn {
     max-width: 700px;
   }
+}
+
+/* =============================================================
+   IMPOSTAZIONI (ex "Altro") — mockup design/mockups/impostazioni.html
+   §03 e §04, approvato il 20 agosto 2026.
+
+   Le misure sono quelle del mockup, con due sole traduzioni:
+    - i colori letterali diventano token del contratto temi (un tema
+      nuovo non deve poter rompere questa pagina);
+    - le spaziature passano da calc(N * var(--jm-space)) come tutto il
+      resto dell'app, cosi la densita segue il tema.
+
+   La riga e alta almeno 56px: oltre i 44px del brandbook cap. 05, che
+   era il problema numero due della segnalazione del 20 agosto.
+   ============================================================= */
+
+.jm-st-h1 {
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.jm-st-sub {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+  margin-top: calc(6px * var(--jm-space));
+}
+
+/* Il corpo scorrevole: stessi margini della colonna centrale altrove
+   (24px sul telefono, 28px da lg), cosi titolo e righe partono dalla
+   stessa verticale. */
+.jm-st-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(20px * var(--jm-space)) 24px calc(26px * var(--jm-space));
+}
+
+.jm-st-group {
+  margin-bottom: calc(28px * var(--jm-space));
+}
+.jm-st-gl {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin: 0 0 calc(10px * var(--jm-space)) 2px;
+}
+.jm-st-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  overflow: hidden;
+}
+
+.jm-st-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 56px;
+  padding: calc(12px * var(--jm-space)) 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-row:last-child { border-bottom: none; }
+.jm-st-row:hover { background: var(--color-surface-2); }
+.jm-st-row:disabled { cursor: default; opacity: 0.55; }
+.jm-st-row.static { cursor: default; }
+.jm-st-row.static:hover { background: transparent; }
+.jm-st-grow { flex: 1; min-width: 0; }
+.jm-st-t {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.jm-st-d {
+  display: block;
+  font-size: 12.5px;
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+.jm-st-val {
+  font-size: 14px;
+  color: var(--color-ink-faint);
+  flex: 0 0 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52%;
+}
+.jm-st-chev {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.6;
+}
+.jm-st-row.danger .jm-st-t { color: var(--color-danger); }
+.jm-st-row.danger .jm-st-val { color: var(--color-danger); font-weight: 600; }
+
+/* "togli" dentro il pannello Obiettivi: bersaglio pieno, non una x da 18px */
+.jm-st-x {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--jm-radius-pill);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-x:hover {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+}
+
+/* Segmented chiaro/scuro/sistema dentro la riga. Sul telefono usa le
+   sigle: la parola intera piu il titolo non ci stanno in 390px. */
+.jm-st-seg {
+  display: flex;
+  flex: 0 0 auto;
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px;
+}
+.jm-st-seg button {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--jm-radius-pill);
+  padding: 7px 11px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-seg button.on {
+  background: var(--color-surface);
+  border-color: var(--color-line);
+  color: var(--color-ink);
+}
+.jm-st-seg .lg { display: none; }
+.jm-st-seg .sm { display: inline; }
+
+/* Intestazione dei pannelli */
+.jm-st-phead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.jm-st-back {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  margin-left: -8px;
+  border-radius: var(--jm-radius-circle);
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-back:hover { background: var(--color-surface-2); }
+.jm-st-phead .jm-st-h1 { font-size: 20px; }
+
+.jm-st-lede {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  margin-bottom: calc(22px * var(--jm-space));
+  max-width: 62ch;
+}
+
+.jm-st-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) 14px;
+  margin-bottom: calc(24px * var(--jm-space));
+}
+.jm-st-note.err {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+  background: color-mix(in oklab, var(--color-danger) 7%, transparent);
+}
+
+/* Aggiunta di un obiettivo */
+.jm-st-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 5px 5px 5px 16px;
+}
+.jm-st-add input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-ink);
+  padding: 12px 0;
+}
+.jm-st-add input::placeholder { color: var(--color-ink-faint); }
+.jm-st-add button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--jm-radius-md);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-add button:disabled { opacity: 0.4; cursor: default; }
+
+/* Card Recap: solo sul telefono, dove la tab bar non ha uno slot Recap. */
+.jm-st-recap {
+  display: block;
+  padding: calc(20px * var(--jm-space)) 22px calc(18px * var(--jm-space));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, transparent 100%),
+    var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  margin-bottom: calc(28px * var(--jm-space));
+  text-decoration: none;
+  color: inherit;
+}
+.jm-st-recap .meta {
+  display: block;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+.jm-st-recap .title {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+.jm-st-recap .sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+.jm-st-recap .last {
+  display: block;
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+}
+
+/* Rail destra di Impostazioni: l'identita, non le impostazioni */
+.jm-st-acct { margin-bottom: 30px; }
+.jm-st-av {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  margin-bottom: 14px;
+}
+.jm-st-nm { font-size: 15px; font-weight: 600; color: var(--color-ink); }
+.jm-st-em {
+  font-size: 12.5px;
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  word-break: break-all;
+}
+.jm-st-pill {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+}
+.jm-st-rrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 12.5px;
+}
+.jm-st-rrow:last-of-type { border-bottom: none; }
+.jm-st-rrow .k { color: var(--color-ink-faint); flex: 0 0 auto; }
+.jm-st-rrow .v { color: var(--color-ink-muted); text-align: right; min-width: 0; }
+.jm-st-out {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  min-height: 44px;
+  border-radius: var(--jm-radius-md);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-out:hover { background: var(--color-surface-2); }
+.jm-st-out.danger {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 35%, transparent);
+}
+.jm-st-out:disabled { opacity: 0.55; cursor: default; }
+
+/* Solo telefono. NON si usa `lg:hidden` di Tailwind: le utility hanno la
+   stessa specificita di queste regole e vince l'ordine nel bundle, che qui
+   dava .jm-st-recap { display: block } sopra .lg\:hidden. Meglio dirlo una
+   volta sola, con una media query nostra. */
+@media (min-width: 1024px) {
+  .jm-st-phoneonly { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .jm-st-scroll {
+    padding-left: 28px;
+    padding-right: 28px;
+    /* L'elenco e fatto di righe corte: oltre 640px il valore a destra
+       finisce a mezzo metro dal titolo e la riga non si legge piu come
+       una coppia. Il mockup §03 usa esattamente questa misura. */
+    max-width: 668px;
+  }
+  .jm-st-seg .lg { display: inline; }
+  .jm-st-seg .sm { display: none; }
+  .jm-st-seg button { padding: 7px 13px; }
 }

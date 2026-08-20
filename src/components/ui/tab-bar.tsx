@@ -82,7 +82,9 @@ const SIDE_TABS_RIGHT: Tab[] = [
   },
   {
     key: "settings",
-    label: "Altro",
+    // "Impost." e non "Impostazioni": la tab bar ha cinque slot su 390px
+    // e la parola intera li sfonda (mockup impostazioni.html §04).
+    label: "Impost.",
     href: "/settings",
     icon: (
       <svg
