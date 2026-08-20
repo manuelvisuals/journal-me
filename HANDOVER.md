@@ -888,6 +888,25 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
      da Intl — le tre liste `MONTHS_IT` copiate a mano sono sparite, come
      le tre copie di `periodLabel` (ora `src/lib/recap-labels.ts`).
 
+  12. **Il codice di accesso e finito nel TITOLO della mail** (task 26).
+     L'oggetto era "Il tuo codice Journal.me" e il numero stava solo nel
+     corpo: iPhone la proposta di riempimento automatico la costruisce
+     dal messaggio, e col numero nascosto dentro l'HTML bisognava aprire
+     Mail, leggere, tornare indietro e ribattere sei cifre. Adesso
+     l'oggetto **comincia** col codice:
+     `{{ .Token }} e il tuo codice Journal.me / your Journal.me code`,
+     e il corpo e stato riscritto in due lingue col codice grande in
+     cima. Cambiati tutti e due i template — `magic_link` E `confirmation`,
+     perche al PRIMO accesso di un'email nuova Supabase usa il secondo, ed
+     era gia la trappola che aveva rotto il login a giugno.
+
+     **Come e stato fatto, visto che il dashboard non si vede:** con la
+     Management API (`PATCH /v1/projects/<ref>/config/auth`) chiamata dalla
+     scheda Chrome gia loggata, come per le migration (vedi §6). I template
+     precedenti sono salvati nel localStorage di quel browser sotto
+     `jm.backup.mailer.20260820`: se il nuovo non piace, si rimettono da li
+     senza doverli riscrivere a memoria.
+
   **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
   `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
   verdi; le suite Playwright rieseguite senza regressioni (PR 7 24/24,
