@@ -225,13 +225,17 @@ Il parametro `mode` sopravvive nelle firme solo per stabilita dei call-site ed e
 007_user_settings_theme.sql  user_settings.theme, user_settings.appearance
 008_profiles_stripe.sql   profiles.stripe_customer_id + unique index
 009_ai_usage.sql          ai_usage (token ufficiali per chiamata) + RLS + indice
+010_default_goals.sql     riscrive seed_default_goals() con i sei micro-goal nuovi
 ```
 
-**Tutte e nove applicate su `fljshsmpmpzapcczsbwc`, verificato in SQL Editor il
-20 agosto 2026** interrogando `information_schema` invece di fidarsi degli
-appunti: 004 risultava "da confermare" ed era gia applicata, 008 risultava non
-applicata ed era gia applicata, 009 mancava davvero ed e stata eseguita quel
-giorno. Morale: prima di riscrivere una migration, chiedi al database.
+**Tutte e dieci applicate su `fljshsmpmpzapcczsbwc`, verificato il 20 agosto
+2026** interrogando `information_schema` (e `pg_proc` per la 010) invece di
+fidarsi degli appunti: 004 risultava "da confermare" ed era gia applicata, 008
+risultava non applicata ed era gia applicata, 009 mancava davvero ed e stata
+eseguita quel giorno; la 010 e stata applicata la sera dello stesso giorno e
+verificata leggendo il corpo della funzione (`prosrc like '%mosso il corpo%'`)
+piu il trigger `seed_goals_on_user_create` su `auth.users`, ancora abilitato.
+Morale: prima di riscrivere una migration, chiedi al database.
 
 ### Pipeline di registrazione (riscritta il 12 agosto 2026)
 
@@ -517,7 +521,12 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
   il deploy gia in produzione — serve un nuovo build.
 - **Migrations e GitHub:** il progetto e collegato al repo ma manca `supabase/config.toml`
   e i file sono `001_...` invece che `<timestamp>_...`, quindi il deploy automatico delle
-  migration NON e attivo. Per ora si passa dal SQL Editor.
+  migration NON e attivo. Per ora si passa dal SQL Editor — o, quando la finestra
+  di Chrome non e in primo piano e il dashboard non disegna niente, dalla
+  Management API di Supabase (`POST https://api.supabase.com/v1/projects/<ref>/
+  database/query`) chiamata via `fetch` dalla scheda del dashboard gia loggata:
+  usa il token di sessione del dashboard, che la pagina rinnova da sola a ogni
+  navigazione, e non richiede nessuna chiave di servizio.
 - **Registrazione**: il guscio usa ancora la pipeline WebRTC/Realtime dentro WKWebView,
   bug A compreso. Da valutare il passaggio a registrazione nativa full-clip verso
   `/api/transcribe-fallback`: perde la trascrizione dal vivo, guadagna affidabilita.
@@ -797,13 +806,31 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
      non devono sporcare ogni lint. `npx eslint .` ora e a **zero warning**.
   6. **Migration 009 applicata** (vedi §6). Da qui in avanti `logAiUsage`
      scrive davvero e `/api/usage` ha dati da aggregare.
+  7. **Rail destra su tre righe e obiettivi cliccabili** (commit `272e127`):
+     `MetricCards` nella rail sbordava di 31px appena si apriva l'editor del
+     mood, e i pallini degli obiettivi erano bersagli da 14px. Ora una riga
+     per metrica con l'editor sotto a tutta larghezza (`rail-metrics.tsx`) e
+     caselle da 22px dentro righe da 44px.
+  8. **Migration 010 applicata la sera stessa** (vedi §6): i micro-goal di
+     default per i nuovi utenti non sono piu la lista personale di maggio.
+     `default-goals.ts` tiene la stessa lista per la modalita locale.
+  9. **`madh52@gmail.com` promosso a premium a mano**, su richiesta di
+     Manuel: `update public.profiles set plan='premium',
+     plan_source='manual', current_period_end=null where user_id =
+     'd771049e-b74e-4476-b36e-51d6bb569b2f'`. Nessun cliente Stripe
+     collegato, quindi il webhook non ha niente da sovrascrivere; se un
+     giorno quell'account paga davvero, il webhook riscrivera plan_source a
+     `stripe`. Lato client basta ricaricare l'app: `plan.ts` rilegge
+     `profiles.plan` in background a ogni load e sostituisce la cache
+     `jm.plan`, senza bisogno di rifare il login.
 
   **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
   `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
   verdi; le quattro suite Playwright esistenti rieseguite senza regressioni
-  (PR 7 24/24, PR 8 21/21, PR 9 25/25, PR 10 25/25) piu una nuova,
-  `scripts/verify-fix-20260820.mjs`, 19/19 — che fra le altre cose riconferma
-  ZERO richieste esterne in locale con il mic di Ricorda premuto.
+  (PR 7 24/24, PR 8 21/21, PR 9 25/25, PR 10 26/26) piu una nuova,
+  `scripts/verify-fix-20260820.mjs`, 53/53 — che fra le altre cose riconferma
+  ZERO richieste esterne in locale con il mic di Ricorda premuto e misura la
+  rail a 1280, 1728 e 2600px.
 
   **NON fatto, e da decidere:** `/api/usage` non ha ancora nessuna schermata
   che lo mostri (il contatore consumi esiste solo lato server: serve un
