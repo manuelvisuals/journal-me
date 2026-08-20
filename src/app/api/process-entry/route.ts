@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
+import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 
 /**
  * Post-processes a daily journal transcript: produces headline, snippet,
@@ -105,7 +106,16 @@ export async function POST(req: NextRequest) {
 
   const data = (await completion.json()) as {
     choices?: { message?: { content?: string } }[];
+    usage?: ChatUsage;
   };
+  // Conteggio consumi: token ufficiali di OpenAI, fire-and-forget.
+  void logAiUsage({
+    userId: gate.userId,
+    route: "process-entry",
+    model: "gpt-4o-mini",
+    inputTokens: data.usage?.prompt_tokens,
+    outputTokens: data.usage?.completion_tokens,
+  });
   const raw = data.choices?.[0]?.message?.content ?? "";
   let parsed: { headline: string; snippet: string; areas: { label: string; text: string }[] };
   try {

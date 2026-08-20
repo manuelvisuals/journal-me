@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
+import { logAiUsage, type TranscribeUsage } from "@/lib/server/ai-usage";
 
 /**
  * The transcription endpoint. Still called "fallback" for historical
@@ -99,7 +100,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const data = (await resp.json().catch(() => null)) as { text?: unknown } | null;
+  const data = (await resp.json().catch(() => null)) as
+    | { text?: unknown; usage?: TranscribeUsage }
+    | null;
+  // Conteggio consumi (token/secondi ufficiali di OpenAI, fire-and-forget).
+  void logAiUsage({
+    userId: gate.userId,
+    route: "transcribe",
+    model: "gpt-4o-transcribe",
+    inputTokens: data?.usage?.input_tokens,
+    outputTokens: data?.usage?.output_tokens,
+    audioSeconds:
+      typeof data?.usage?.seconds === "number" ? data.usage.seconds : undefined,
+  });
   const text =
     data && typeof data.text === "string" ? data.text.trim() : "";
   return Response.json({ text });

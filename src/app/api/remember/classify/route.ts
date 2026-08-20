@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
+import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 
 /**
  * Auto-classifies a short remember snippet (manually saved by Manuel from the
@@ -100,7 +101,15 @@ export async function POST(req: NextRequest) {
 
   const data = (await completion.json()) as {
     choices?: { message?: { content?: string } }[];
+    usage?: ChatUsage;
   };
+  void logAiUsage({
+    userId: gate.userId,
+    route: "classify",
+    model: "gpt-4o-mini",
+    inputTokens: data.usage?.prompt_tokens,
+    outputTokens: data.usage?.completion_tokens,
+  });
   const raw = data.choices?.[0]?.message?.content ?? "";
   let parsed: { kind: Kind };
   try {

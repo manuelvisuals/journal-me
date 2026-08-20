@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
+import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 
 /**
  * Splits a free-form Italian transcript into per-day segments based on
@@ -123,7 +124,15 @@ export async function POST(req: NextRequest) {
 
   const data = (await completion.json()) as {
     choices?: { message?: { content?: string } }[];
+    usage?: ChatUsage;
   };
+  void logAiUsage({
+    userId: gate.userId,
+    route: "split-by-date",
+    model: "gpt-4o-mini",
+    inputTokens: data.usage?.prompt_tokens,
+    outputTokens: data.usage?.completion_tokens,
+  });
   const raw = data.choices?.[0]?.message?.content ?? "";
   let parsed: { segments: { date: string; text: string }[] };
   try {
