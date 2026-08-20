@@ -723,7 +723,27 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   Supabase/Vercel verificare SEMPRE con list_connected_browsers +
   AskUserQuestion che il browser sia quello di Manuel (era Browser 2,
   deviceId 7306a5ae-...). Nessun danno fatto: tab chiusa subito.
-- La PR 12 (marketplace temi) non e ancora iniziata.
+- **Decisioni di Manuel (19 ago, sera): pagamenti RIMANDATI** — ha gia uno
+  Stripe per Xenovision e se ne riparla piu avanti; il codice della PR 11
+  resta deployato e inerte (503 onesto). **Mockup della PR 12 APPROVATO**
+  ("ok, approvato design"): si puo scrivere il codice del marketplace
+  seguendo design/mockups/marketplace-temi.html.
+- **Contatore consumi AI (0771765):** tabella `ai_usage` (migration 009 —
+  ATTENZIONE: al momento del commit NON ancora applicata in prod, il
+  browser di Manuel era disconnesso; applicarla alla prima occasione via
+  SQL Editor), logAiUsage fire-and-forget in tutte e sei le route AI coi
+  token UFFICIALI del campo usage di OpenAI, GET /api/usage con aggregato
+  mensile e stima USD (listini istantanea ago 2026 in ai-usage.ts:
+  gpt-4o-mini 0,15/0,60 $/M, gpt-4o 2,5/10 $/M, gpt-4o-transcribe
+  0,006 $/min). Finche la migration non gira, il log fallisce in silenzio
+  per design e le risposte non ne risentono. Ordine di grandezza dei
+  costi: giornata a voce ~3 min ≈ 2 centesimi $ (dominata dall'audio,
+  ~0,6 c/min), giornata scritta+AI ≈ 0,1 c, recap mensile (gpt-4o) ≈ 5-6 c.
+  I modelli 4o sono LEGACY nell'agosto 2026: valutare un passaggio ai
+  modelli correnti (famiglia 5.x, molto piu economici dopo i tagli di
+  luglio 2026) come ottimizzazione futura.
+- La PR 12 (marketplace temi) e APPROVATA nel design e non ancora
+  implementata.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop
