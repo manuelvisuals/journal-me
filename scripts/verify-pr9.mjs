@@ -3,6 +3,14 @@ import { chromium } from "playwright-core";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = "http://localhost:3100";
+// L'etichetta va presa dai micro-goal di default REALI (vedi
+// src/lib/data/store/default-goals.ts): la statistica "giorni con X" si
+// calcola incrociando i goalsOn salvati con le DEFINIZIONI in archivio,
+// quindi un'etichetta che non e piu un obiettivo non produce nessuna riga.
+// Prima qui c'era "camminato" scritto a mano, che la lista nuova non ha.
+const GOAL = "mosso il corpo";
+const GOAL_2 = "dormito abbastanza";
+
 const results = [];
 function check(name, ok, extra = "") {
   results.push({ name, ok });
@@ -48,13 +56,13 @@ async function seed(page) {
         { label: "Relazioni", text: "Testo area relazioni." },
       ],
       metrics: { weightKg: null, sleepHours: null, mood: "good" },
-      goalsOn: ["camminato"], people: [], durationSeconds: 0, createdAt: new Date().toISOString(),
+      goalsOn: [GOAL], people: [], durationSeconds: 0, createdAt: new Date().toISOString(),
     },
     e2: {
       id: crypto.randomUUID(), entryDate: iso(1), transcript: "Prima giornata del mese con qualche parola.",
       headline: "Primo del mese", snippet: "", areas: [],
       metrics: { weightKg: null, sleepHours: null, mood: "neutral" },
-      goalsOn: ["camminato", "no alcol"], people: [], durationSeconds: 0, createdAt: new Date().toISOString(),
+      goalsOn: [GOAL, GOAL_2], people: [], durationSeconds: 0, createdAt: new Date().toISOString(),
     },
   });
 }
@@ -91,7 +99,7 @@ async function seed(page) {
   const statDone = await page.locator(".jm-railr-stat").first().innerText();
   check("rail: giornate raccontate 2/N", /^2\s*\/\s*\d+/.test(statDone.replace(/\n/g, " ")), statDone);
   check("rail: umore medio 3,5", (await page.locator(".jm-railr-stat", { hasText: "umore medio" }).innerText()).includes("3,5"));
-  check("rail: giorni con camminato = 2", (await page.locator(".jm-railr-stat", { hasText: "camminato" }).innerText()).includes("2"));
+  check(`rail: giorni con ${GOAL} = 2`, (await page.locator(".jm-railr-stat", { hasText: GOAL }).innerText()).includes("2"));
   check("rail: card Pattern presente", await page.locator(".jm-railr-locked").isVisible());
 
   // Click su una giornata piena -> /giorno

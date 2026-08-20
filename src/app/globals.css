@@ -1176,8 +1176,18 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 12%, transparent);
 }
 
-/* Goal dots (clickable in filled view) */
+/* Goal dots (clickable in filled view).
+   Il pallino resta 14px: e il disegno approvato di quella riga, e allargarlo
+   cambierebbe la spaziatura di tutto il gruppo. Ma 14px come BERSAGLIO sono
+   meno di un terzo del minimo del brandbook (cap. 05: 36-44px), ed e la
+   ragione per cui prenderli e un terno al lotto. Il bersaglio si allarga con
+   uno pseudo-elemento invisibile: tutta l'altezza disponibile in verticale
+   (dove non c'e nulla da invadere) e meta del gap in orizzontale (di piu
+   farebbe accavallare due obiettivi, che e peggio di un bersaglio piccolo:
+   accenderesti quello sbagliato). Da 14x14 a 23x40, area per cinque, e cio
+   che si vede non cambia di un pixel. */
 .jm-goal-dot {
+  position: relative;
   width: 14px;
   height: 14px;
   border-radius: var(--jm-radius-circle);
@@ -1187,6 +1197,11 @@ summary:active {
   transition: transform 120ms, background-color 120ms, box-shadow 120ms;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+}
+.jm-goal-dot::after {
+  content: "";
+  position: absolute;
+  inset: -13px -4px;
 }
 .jm-goal-dot:hover {
   transform: scale(1.15);
@@ -3024,42 +3039,230 @@ summary:active {
   font-style: italic;
   font-family: var(--font-serif);
 }
+/* Obiettivi nella rail: il bersaglio era gia tutta la riga, ma alta 36px
+   e con un pallino da 14px come unica cosa che sembrasse cliccabile. Il
+   brandbook (cap. 05) chiede 36-44px di minimo. Ora e una casella da 22px
+   dentro una riga da 44px, con la spunta: si legge come un interruttore. */
 .jm-railr-goal {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  width: 100%;
+  gap: 14px;
+  min-height: 44px;
+  padding: 0 10px;
+  margin: 0 -10px;
+  width: calc(100% + 20px);
   background: transparent;
   border: none;
+  border-radius: var(--jm-radius-sm);
   cursor: pointer;
   font-family: var(--font-sans);
   text-align: left;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
 }
-.jm-railr-gdot {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--jm-radius-circle);
-  border: 1.5px solid color-mix(in oklab, var(--color-ink) 16%, transparent);
-  flex: 0 0 14px;
+.jm-railr-goal:hover {
+  background: var(--color-surface);
+}
+.jm-railr-gbox {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 7px;
+  border: 1.5px solid color-mix(in oklab, var(--color-ink) 22%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 120ms, border-color 120ms;
 }
-.jm-railr-goal.on .jm-railr-gdot {
+.jm-railr-gbox svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--color-on-accent);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.jm-railr-goal.on .jm-railr-gbox {
   background: var(--color-accent);
   border-color: var(--color-accent);
   box-shadow: 0 0 10px color-mix(in oklab, var(--color-glow) 35%, transparent);
 }
+.jm-railr-goal.on .jm-railr-gbox svg {
+  opacity: 1;
+}
 .jm-railr-gname {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-ink-faint);
   letter-spacing: -0.003em;
 }
 .jm-railr-goal.on .jm-railr-gname {
   color: var(--color-ink);
+  font-weight: 500;
 }
 .jm-railr-goal:hover .jm-railr-gname {
   color: var(--color-ink-muted);
+}
+.jm-railr-count {
+  float: right;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--color-ink-faint);
+}
+
+/* --- metriche della rail: una riga per voce, editor sotto (rail-metrics.tsx) --- */
+.jm-rm-block {
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-rm-block:last-child {
+  border-bottom: none;
+}
+.jm-rm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: calc(100% + 20px);
+  min-height: 52px;
+  padding: 8px 10px;
+  margin: 0 -10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--jm-radius-md);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
+}
+.jm-rm-row:hover {
+  background: var(--color-surface);
+}
+.jm-rm-k {
+  display: block;
+  font-size: var(--jm-text-meta);
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.jm-rm-v {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.jm-rm-v small {
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  margin-left: 3px;
+  font-weight: 400;
+}
+.jm-rm-v.empty {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--color-ink-faint);
+}
+.jm-rm-face {
+  font-size: 20px;
+}
+.jm-rm-edit {
+  padding: 2px 0 14px;
+}
+.jm-rm-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.jm-rm-stepper input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-sm);
+  padding: 11px 10px;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.jm-rm-stepper input:focus {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+.jm-rm-stepper input::placeholder {
+  color: var(--color-ink-faint);
+}
+.jm-rm-stepper button {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-rm-stepper button:hover {
+  background: var(--color-surface-2);
+}
+.jm-rm-stepper .jm-rm-ok {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
+}
+.jm-rm-sep {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+}
+.jm-rm-moods {
+  display: flex;
+  gap: 6px;
+}
+.jm-rm-moods button {
+  flex: 1;
+  height: 44px;
+  min-width: 0;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 120ms, background-color 120ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-rm-moods button:hover {
+  opacity: 0.8;
+}
+.jm-rm-moods button.on {
+  opacity: 1;
+  background: var(--color-surface-2);
+  border-color: var(--color-line);
 }
 .jm-railr-chips {
   display: flex;

@@ -148,7 +148,68 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
   await ctx.close();
 }
 
-/* ============ 5. sul telefono la modale resta un foglio pieno ============ */
+/* ============ 5. rail destra: niente sbordamento, bersagli 44px ============ */
+for (const w of [1280, 1728, 2600]) {
+  const { ctx, page, errors } = await newPage(w, 1000);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+
+  const noOverflow = async () =>
+    page.evaluate(() => {
+      const r = document.querySelector(".jm-rail-r");
+      return r.scrollWidth === r.clientWidth;
+    });
+
+  check(`rail ${w}: nessuno sbordamento a riposo`, await noOverflow());
+  await page.locator(".jm-rm-row").nth(2).click();          // mood
+  await page.waitForTimeout(350);
+  check(`rail ${w}: nessuno sbordamento con mood aperto`, await noOverflow());
+  const mood = await page.locator(".jm-rm-moods button").first().boundingBox();
+  check(`rail ${w}: bersaglio mood >= 44px`, Math.round(mood.height) >= 44, String(Math.round(mood.height)));
+
+  await page.locator(".jm-rm-row").nth(0).click();          // peso
+  await page.waitForTimeout(350);
+  check(`rail ${w}: nessuno sbordamento con peso aperto`, await noOverflow());
+  const plus = await page.locator(".jm-rm-stepper button").first().boundingBox();
+  check(`rail ${w}: bersaglio +/- 44px`, Math.round(plus.height) === 44, String(Math.round(plus.height)));
+
+  // il valore si salva e si formatta in italiano
+  await page.locator(".jm-rm-stepper input").fill("81,4");
+  await page.locator(".jm-rm-ok").click();
+  await page.waitForTimeout(700);
+  const v = (await page.locator(".jm-rm-v").first().innerText()).replace(/\s/g, "");
+  check(`rail ${w}: peso salvato con la virgola`, v.startsWith("81,4"), v);
+
+  const goal = await page.locator(".jm-railr-goal").first().boundingBox();
+  check(`rail ${w}: riga obiettivo 44px`, Math.round(goal.height) === 44, String(Math.round(goal.height)));
+  await page.locator(".jm-railr-goal").nth(0).click();
+  await page.waitForTimeout(600);
+  check(
+    `rail ${w}: contatore obiettivi`,
+    /1 su \d+/.test(await page.locator(".jm-railr-count").innerText()),
+    await page.locator(".jm-railr-count").innerText(),
+  );
+  check(`rail ${w}: zero errori console`, errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 6. i micro-goal di default sono quelli nuovi ============ */
+{
+  const { ctx, page } = await newPage(1728, 1000);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+  const labels = await page.locator(".jm-railr-gname").allInnerTexts();
+  check(
+    "seed: sei obiettivi nuovi, nessuno della vecchia lista",
+    labels.length === 6 &&
+      labels.includes("mosso il corpo") &&
+      !labels.some((l) => ["scopato", "no alcol", "no junkfood", "no sbirciato ex"].includes(l)),
+    labels.join(" . "),
+  );
+  await ctx.close();
+}
+
+/* ============ 7. sul telefono la modale resta un foglio pieno ============ */
 {
   const { ctx, page } = await newPage(430, 932);
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
