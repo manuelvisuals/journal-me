@@ -5,6 +5,10 @@
 //  2. il titolo della pagina dice "Ricorda", non "Remember";
 //  3. /benvenuto mostra il prezzo da src/lib/pricing.ts e NON promette piu
 //     un primo mese incluso che il checkout Stripe non prevede;
+//  4. da lg gli editor a schermo intero (Modifica transcript, Rileggi,
+//     Modifica recap) non sono piu una card di 480px centrata: margini
+//     fissi 28px, dentro si allargano, con un bordo visibile e senza il
+//     focus ring che disegnava un rettangolo attorno al testo;
 // Il quarto fix di giornata (clearPlanCache al logout) NON e qui: il
 // bottone Esci esiste solo con una sessione cloud vera e questo harness
 // gira senza account, quindi resta verificato leggendo il codice invece
@@ -102,6 +106,63 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
   check("benvenuto: prezzo 4,99 EUR al mese", /4,99\s*€\s*al mese/.test(price), price);
   check("benvenuto: niente 'primo mese incluso'", !/primo mese/i.test(price), price);
   check("benvenuto: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 4. editor a schermo intero fluidi da lg ============ */
+{
+  const { ctx, page, errors } = await newPage(2600, 1419);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1200);
+  await page.locator(".jm-ed-ta").click();
+  await page.keyboard.type("Riga uno.\n\nRiga due del racconto di prova.");
+  await page.keyboard.press("Control+Enter");
+  await page.waitForTimeout(2000);
+  await page.locator("header button", { hasText: "originale" }).click();
+  await page.waitForTimeout(700);
+
+  const geo = await page.evaluate(() => {
+    const b = (s) => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return { l: Math.round(r.left), t: Math.round(r.top), w: Math.round(r.width) }; };
+    const ta = document.querySelector(".jm-editor-textarea");
+    return {
+      card: b(".jm-editor-card"),
+      ta: b(".jm-editor-textarea"),
+      vw: window.innerWidth,
+      outlineWidth: ta ? getComputedStyle(ta).outlineWidth : null,
+      cardBorder: (() => { const c = document.querySelector(".jm-editor-card"); return c ? getComputedStyle(c).borderTopWidth : null; })(),
+    };
+  });
+  check(
+    "modale: margini fissi 28px e larghezza fluida",
+    geo.card.l === 28 && geo.card.w === geo.vw - 56,
+    `left=${geo.card.l} w=${geo.card.w} vw=${geo.vw}`,
+  );
+  check("modale: staccata dall'alto (40px)", geo.card.t === 40, String(geo.card.t));
+  check("modale: bordo visibile", geo.cardBorder === "1px", String(geo.cardBorder));
+  check(
+    "modale: niente focus ring attorno al testo",
+    geo.outlineWidth === "0px",
+    String(geo.outlineWidth),
+  );
+  check("modale: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 5. sul telefono la modale resta un foglio pieno ============ */
+{
+  const { ctx, page } = await newPage(430, 932);
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1000);
+  const geo = await page.evaluate(() => {
+    const el = document.createElement("div");
+    el.className = "jm-editor-card";
+    document.body.appendChild(el);
+    const cs = getComputedStyle(el);
+    const out = { maxWidth: cs.maxWidth, border: cs.borderTopWidth };
+    el.remove();
+    return out;
+  });
+  check("telefono: modale invariata (480px, senza bordo)", geo.maxWidth === "480px" && geo.border === "0px", JSON.stringify(geo));
   await ctx.close();
 }
 

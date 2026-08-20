@@ -3780,6 +3780,55 @@ summary:active {
 }
 
 /* =============================================================
+   Gli editor a schermo intero (Modifica transcript, Rileggi prima
+   di processare, Modifica recap) da lg in su.
+
+   Erano una card di 480px centrata: su un monitor da 2600px
+   lasciava 1060px vuoti PER LATO. Stessa regola del resto del
+   desktop — margini fissi, dentro si allarga.
+
+   Due difetti che venivano da qui e si vedevano nello stesso
+   scatto. (1) La card ha `background: var(--color-bg-phone)` e
+   l'overlay e `var(--color-bg)` all'85%: nei temi chiari sono lo
+   stesso bianco, quindi la card non aveva nessun bordo visibile e
+   il testo galleggiava senza contenitore. (2) L'unico bordo che
+   si vedeva era il focus ring: `.jm-editor-textarea` dichiara
+   `outline: none`, ma la regola globale `:focus-visible` (cap. 20
+   del brandbook) ha la stessa specificita e arriva dopo nel file,
+   quindi vinceva lei e disegnava un rettangolo alto quanto tutta
+   l'area di scrittura. Nell'editor desktop il fuoco lo racconta
+   gia il caret e l'anello e spento: qui vale lo stesso.
+   ============================================================= */
+.jm-editor-textarea:focus,
+.jm-editor-textarea:focus-visible,
+.jm-recap-field-input:focus-visible {
+  outline: none;
+}
+
+@media (min-width: 1024px) {
+  .jm-editor-overlay {
+    padding: 40px 28px;
+  }
+  .jm-editor-card {
+    max-width: none;
+    border: 1px solid var(--color-line);
+    border-radius: var(--jm-radius-lg);
+    box-shadow: 0 24px 60px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+    overflow: hidden;
+  }
+  .jm-editor-header,
+  .jm-editor-textarea,
+  .jm-editor-hint,
+  .jm-editor-footer-row {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  .jm-recap-editor-body {
+    padding: calc(20px * var(--jm-space)) 28px;
+  }
+}
+
+/* =============================================================
    Larghezze desktop (regola di Manuel, ribadita il 20 ago sulla
    schermata di scrittura): l'unica cosa FISSA sono i margini
    interni, il resto si allarga con lo schermo. Niente piu
