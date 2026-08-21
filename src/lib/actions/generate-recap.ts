@@ -10,6 +10,7 @@ import { apiFetch } from "@/lib/api";
 import { can } from "@/lib/capabilities";
 import { getStore } from "@/lib/data/store";
 import { t } from "@/lib/i18n";
+import { invalidateAll } from "@/lib/data/cache";
 import type { Entry, Recap, RecapPeriod } from "@/lib/types";
 
 async function loadEntriesForPeriod(
@@ -74,7 +75,7 @@ export async function generateAndSaveRecap(
     body: string;
   };
 
-  return getStore().saveRecap({
+  const saved = await getStore().saveRecap({
     periodType,
     periodStart,
     periodEnd,
@@ -82,4 +83,6 @@ export async function generateAndSaveRecap(
     snippet: ai.snippet,
     body: ai.body,
   });
+  invalidateAll();
+  return saved;
 }

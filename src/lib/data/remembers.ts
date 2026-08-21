@@ -6,11 +6,12 @@
  */
 
 import { getStore } from "@/lib/data/store";
+import { cached, invalidateAll } from "@/lib/data/cache";
 import type { DataMode } from "@/lib/data/entries";
 import type { Remember, RememberKind } from "@/lib/types";
 
 export async function loadRemembers(_mode: DataMode): Promise<Remember[]> {
-  return getStore().loadRemembers();
+  return cached("remembers", () => getStore().loadRemembers());
 }
 
 export async function addRemember(
@@ -18,6 +19,7 @@ export async function addRemember(
   text: string,
   kind: RememberKind,
 ): Promise<Remember> {
+  invalidateAll();
   return getStore().addRemember(text, kind);
 }
 
@@ -25,11 +27,12 @@ export async function deleteRemember(
   _mode: DataMode,
   id: string,
 ): Promise<void> {
+  invalidateAll();
   return getStore().deleteRemember(id);
 }
 
 export async function loadPersonaNames(_mode?: DataMode): Promise<string[]> {
-  return getStore().loadPersonaNames();
+  return cached("personas", () => getStore().loadPersonaNames());
 }
 
 export async function addPersonas(
@@ -37,6 +40,7 @@ export async function addPersonas(
   names: string[],
   sourceEntryId?: string | null,
 ): Promise<string[]> {
+  invalidateAll();
   return getStore().addPersonas(names, sourceEntryId);
 }
 
@@ -45,5 +49,6 @@ export async function updateRememberKind(
   id: string,
   kind: RememberKind,
 ): Promise<void> {
+  invalidateAll();
   return getStore().updateRememberKind(id, kind);
 }

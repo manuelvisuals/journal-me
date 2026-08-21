@@ -1,12 +1,17 @@
 // Verifica delle due richieste del 20 agosto 2026 (mockup approvato
 // design/mockups/testo-e-giorno.html):
 //
-//  A. DIMENSIONE DELL'INTERFACCIA. E accessibilita, non una preferenza:
-//     Manuel non vede bene. Quindi non basta che "cambi qualcosa" — deve
-//     ingrandire DAVVERO, applicarsi PRIMA del primo disegno (o l'app
-//     lampeggia piccola e poi salta), sopravvivere a un reload, e
-//     soprattutto NON rompere il layout: e il rischio vero dello zoom, ed
-//     e per questo che 100dvh e diventato calc(100dvh / scala).
+//  A. DIMENSIONE DEL TESTO. E accessibilita, non una preferenza: Manuel non
+//     vede bene. Deve ingrandire DAVVERO, applicarsi PRIMA del primo
+//     disegno (o l'app lampeggia piccola e poi salta) e sopravvivere a un
+//     reload.
+//
+//     E soprattutto deve ingrandire SOLO IL TESTO. La prima versione usava
+//     `zoom` sulla radice e cresceva tutto insieme, margini compresi: sullo
+//     schermo entrava la stessa quantita di parole, solo piu grosse.
+//     Manuel l'ha bocciata ("il gap destra e sinistra cambia, volevo solo
+//     il font"). Il controllo qui sotto sui margini e la rete che impedisce
+//     di tornarci per sbaglio.
 //
 //  B. IL TASTO NELLA GIORNATA. Prima /giorno era un vicolo cieco: una
 //     giornata vuota diceva "vai su Oggi" e una piena non poteva ricevere
@@ -50,22 +55,21 @@ async function open(path, { w = 430, h = 932, scale = null, wait = ".jm-st-group
 const geometry = (page) =>
   page.evaluate(() => {
     const de = document.documentElement;
-    const screen = document.querySelector(".jm-screen");
-    const zoom = Number(de.style.zoom || 1);
+    const box = document.querySelector(".jm-st-box") || document.querySelector("main > *");
+    const testo = document.querySelector(".jm-st-h1, .jm-day-empty-h, h1");
+    const r = box ? box.getBoundingClientRect() : null;
     return {
       zoom: de.style.zoom || "",
       cssScale: getComputedStyle(de).getPropertyValue("--jm-ui-scale").trim(),
       scrollW: de.scrollWidth,
       clientW: de.clientWidth,
       innerH: window.innerHeight,
-      // Il difetto vero dello zoom sta QUI e non nell'altezza della
-      // pagina: una pagina lunga scorre di suo, ed e giusto. Il bug era
-      // che `min-height: 100dvh` dentro una radice zoomata valeva
-      // 100dvh * zoom, cioe una schermata piena piu un pezzo. Si misura
-      // il min-height calcolato e lo si confronta con lo schermo diviso
-      // lo zoom: e esattamente cio che scrive .jm-screen.
-      minH: screen ? parseFloat(getComputedStyle(screen).minHeight) : null,
-      atteso: Math.round(window.innerHeight / zoom),
+      // I due numeri che contano: dove comincia il riquadro (margine
+      // sinistro) e quanto e largo. Devono restare identici a ogni misura
+      // del testo — e la cosa che Manuel ha chiesto.
+      boxLeft: r ? Math.round(r.left) : null,
+      boxWidth: r ? Math.round(r.width) : null,
+      fontTesto: testo ? Math.round(parseFloat(getComputedStyle(testo).fontSize) * 10) / 10 : null,
     };
   });
 
@@ -79,7 +83,7 @@ const geometry = (page) =>
     (await row.locator(".jm-st-val").innerText()).trim() === "Normale",
     await row.locator(".jm-st-val").innerText(),
   );
-  check("nessuno zoom quando la misura e Normale", (await geometry(page)).zoom === "");
+  check("niente zoom sulla radice (si scala il testo, non la pagina)", (await geometry(page)).zoom === "");
   check("Impostazioni: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 }
@@ -113,8 +117,8 @@ const geometry = (page) =>
   await rows.nth(3).click();
   await page.waitForTimeout(500);
   const g = await geometry(page);
-  check("scegliere applica lo zoom subito, senza salvare", g.zoom === "1.3", g.zoom);
-  check("la variabile CSS segue lo zoom", g.cssScale === "1.3", g.cssScale);
+  check("scegliere si applica subito, senza salvare", g.cssScale === "1.3", g.cssScale);
+  check("niente zoom: solo il testo cambia", g.zoom === "");
   check(
     "l'anteprima cresce insieme all'app",
     (await page
@@ -122,11 +126,6 @@ const geometry = (page) =>
       .evaluate((e) => e.getBoundingClientRect().height)) > primaAltezza * 1.2,
   );
 
-  check(
-    "100dvh corretto: la schermata resta alta uno schermo, non uno e un quarto",
-    g.minH !== null && Math.abs(g.minH - g.atteso) <= 2,
-    `minHeight=${g.minH} atteso=${g.atteso}`,
-  );
   check("niente sbordamento laterale", g.scrollW <= g.clientW + 1, `${g.scrollW}/${g.clientW}`);
 
   check("cambio misura: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
@@ -139,45 +138,53 @@ for (const [scala, atteso] of [["1.5", "1.5"], ["0.9", "0.9"]]) {
   const g = await geometry(page);
   check(
     `scala ${scala}: applicata gia al primo disegno`,
-    g.zoom === atteso && g.cssScale === atteso,
-    `zoom=${g.zoom} var=${g.cssScale}`,
-  );
-  check(
-    `scala ${scala}: 100dvh corretto`,
-    g.minH !== null && Math.abs(g.minH - g.atteso) <= 2,
-    `minHeight=${g.minH} atteso=${g.atteso}`,
+    g.cssScale === atteso,
+    `var=${g.cssScale}`,
   );
   check(`scala ${scala}: niente sbordamento laterale`, g.scrollW <= g.clientW + 1);
   check(`scala ${scala}: zero errori console`, errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 }
 
-/* ============ A4. il testo cresce DAVVERO, e la tab bar resta in fondo ============ */
-{
+/* ============ A4. il testo cresce, i MARGINI NO ============ */
+// Questo blocco e la richiesta di Manuel messa in un test.
+for (const [w, h, etichetta] of [[430, 932, "telefono"], [1440, 900, "desktop"]]) {
   const misura = async (scale) => {
-    const { ctx, page } = await open("/settings", { scale });
-    const px = await page
-      .locator(".jm-st-h1")
-      .evaluate((e) => e.getBoundingClientRect().height);
+    const { ctx, page } = await open("/settings", { w, h, scale });
+    const g = await geometry(page);
     const tab = await page.locator("nav").last().evaluate((e) => {
       const r = e.getBoundingClientRect();
       return { bottom: Math.round(r.bottom), viewport: window.innerHeight };
     });
     await ctx.close();
-    return { px, tab };
+    return { ...g, tab };
   };
-  const a = await misura(null);
-  const b = await misura("1.5");
+  const uno = await misura(null);
+  const max = await misura("1.5");
+
   check(
-    "a Massimo il titolo e davvero piu grande sullo schermo",
-    b.px > a.px * 1.35,
-    `${Math.round(a.px)}px -> ${Math.round(b.px)}px`,
+    `${etichetta}: a Massimo il testo e davvero piu grande`,
+    max.fontTesto > uno.fontTesto * 1.4,
+    `${uno.fontTesto}px -> ${max.fontTesto}px`,
   );
   check(
-    "la tab bar resta incollata in fondo anche a Massimo",
-    Math.abs(b.tab.bottom - b.tab.viewport) <= 2,
-    `${b.tab.bottom}/${b.tab.viewport}`,
+    `${etichetta}: il margine sinistro NON cambia`,
+    uno.boxLeft === max.boxLeft,
+    `${uno.boxLeft}px -> ${max.boxLeft}px`,
   );
+  check(
+    `${etichetta}: la larghezza del contenuto NON cambia`,
+    uno.boxWidth === max.boxWidth,
+    `${uno.boxWidth}px -> ${max.boxWidth}px`,
+  );
+  // La tab bar esiste solo sotto lg: su desktop c'e la rail sinistra.
+  if (w < 1024) {
+    check(
+      `${etichetta}: la tab bar resta incollata in fondo`,
+      Math.abs(max.tab.bottom - max.tab.viewport) <= 2,
+      `${max.tab.bottom}/${max.tab.viewport}`,
+    );
+  }
 }
 
 /* ============ A5. anche le altre schermate reggono ============ */
@@ -196,11 +203,7 @@ for (const [path, w, h] of [
     g.scrollW <= g.clientW + 1,
     `${g.scrollW}/${g.clientW}`,
   );
-  check(
-    `${path} ${w}px a 1,3: 100dvh corretto`,
-    g.minH === null || Math.abs(g.minH - g.atteso) <= 2,
-    `minHeight=${g.minH} atteso=${g.atteso}`,
-  );
+
   check(
     `${path} ${w}px a 1,3: zero errori console`,
     errors.length === 0,

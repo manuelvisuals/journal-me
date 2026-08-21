@@ -439,7 +439,7 @@ export function TodayClient({
         <span
           suppressHydrationWarning
           style={{
-            fontSize: 11,
+            fontSize: "calc(11px * var(--jm-ui-scale))",
             fontWeight: 600,
             color: "var(--color-ink-faint)",
             letterSpacing: "0.20em",
@@ -464,7 +464,7 @@ export function TodayClient({
               onClick={() => entry && setEditorOpen(true)}
               disabled={!entry}
               style={{
-                fontSize: 12,
+                fontSize: "calc(12px * var(--jm-ui-scale))",
                 color: "var(--color-accent)",
                 fontWeight: 600,
                 background: "transparent",
@@ -533,7 +533,7 @@ export function TodayClient({
             borderRadius: 10,
             background: "color-mix(in oklab, var(--color-success) 6%, transparent)",
             color: "var(--color-success)",
-            fontSize: 12,
+            fontSize: "calc(12px * var(--jm-ui-scale))",
             fontWeight: 500,
             letterSpacing: "0.02em",
           }}
@@ -552,7 +552,7 @@ export function TodayClient({
             borderRadius: 12,
             background: "var(--color-surface)",
             color: "var(--color-danger)",
-            fontSize: 13,
+            fontSize: "calc(13px * var(--jm-ui-scale))",
           }}
         >
           {saveError}
@@ -669,7 +669,7 @@ export function TodayClient({
           <div style={{ maxWidth: 320, padding: "0 28px", textAlign: "center" }}>
             <div
               style={{
-                fontSize: 11,
+                fontSize: "calc(11px * var(--jm-ui-scale))",
                 fontWeight: 650,
                 color: "var(--color-danger)",
                 letterSpacing: "0.20em",
@@ -681,7 +681,7 @@ export function TodayClient({
             </div>
             <h2
               style={{
-                fontSize: 22,
+                fontSize: "calc(22px * var(--jm-ui-scale))",
                 fontWeight: 650,
                 color: "var(--color-ink)",
                 lineHeight: 1.2,
@@ -693,7 +693,7 @@ export function TodayClient({
             </h2>
             <p
               style={{
-                fontSize: 14,
+                fontSize: "calc(14px * var(--jm-ui-scale))",
                 color: "var(--color-ink-muted)",
                 lineHeight: 1.55,
                 marginBottom: 26,
@@ -738,7 +738,7 @@ export function TodayClient({
           <div
             style={{
               marginTop: 28,
-              fontSize: 11,
+              fontSize: "calc(11px * var(--jm-ui-scale))",
               fontWeight: 600,
               color: "var(--color-ink-faint)",
               letterSpacing: "0.20em",
@@ -750,7 +750,7 @@ export function TodayClient({
           <div
             style={{
               marginTop: 12,
-              fontSize: 14,
+              fontSize: "calc(14px * var(--jm-ui-scale))",
               color: "var(--color-ink-muted)",
               maxWidth: 280,
               textAlign: "center",

@@ -56,6 +56,5 @@ if(mc)mc.setAttribute("content",v["--jm-bg-app"]);
 var z=1;
 try{var zr=Number(localStorage.getItem(${JSON.stringify(UI_SCALE_STORAGE_KEY)}));if(D.scales.indexOf(zr)>=0)z=zr;}catch(e){}
 e.style.setProperty("--jm-ui-scale",String(z));
-if(z!==1)e.style.zoom=String(z);
 }catch(err){}})();`;
 }

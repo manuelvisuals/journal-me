@@ -76,7 +76,7 @@ export function ManualWrite({
             <div className="jm-editor-title">{t("Scrivi la tua giornata")}</div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: "calc(11px * var(--jm-ui-scale))",
                 fontWeight: 600,
                 color: "var(--color-ink-faint)",
                 letterSpacing: "0.10em",
@@ -111,7 +111,7 @@ export function ManualWrite({
             style={{
               fontFamily: "var(--font-serif)",
               fontStyle: "italic",
-              fontSize: 12.5,
+              fontSize: "calc(12.5px * var(--jm-ui-scale))",
               color: "var(--color-accent)",
               padding: "8px 0 0",
             }}

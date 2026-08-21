@@ -92,7 +92,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-7">
       <p
-        className="mb-2 text-[22px] font-semibold tracking-tight"
+        className="mb-2 text-[calc(22px*var(--jm-ui-scale))] font-semibold tracking-tight"
         style={{ letterSpacing: "-0.01em" }}
       >
         Journal

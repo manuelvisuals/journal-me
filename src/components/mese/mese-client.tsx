@@ -281,7 +281,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
             style={{
               padding: 16,
               textAlign: "center",
-              fontSize: 11,
+              fontSize: "calc(11px * var(--jm-ui-scale))",
               fontWeight: 600,
               color: "var(--color-ink-faint)",
               letterSpacing: "0.20em",

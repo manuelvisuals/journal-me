@@ -367,7 +367,10 @@ export function TextSizePanel() {
               type="button"
               className={`jm-st-szrow${on ? " on" : ""}`}
               // La riga si disegna alla misura che rappresenta: e il punto
-              // di tutta la schermata.
+              // di tutta la schermata. Qui il valore e assoluto e NON
+              // moltiplicato per --jm-ui-scale: queste cinque righe devono
+              // mostrare le cinque misure, non la misura corrente cinque
+              // volte. L'altezza cresce con il testo perche e min-height.
               style={{ fontSize: `${15 * v}px`, minHeight: 56 * v }}
               onClick={() => setUiScale(v)}
               aria-pressed={on}

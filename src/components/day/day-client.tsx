@@ -21,6 +21,7 @@ import {
 } from "@/lib/data/entries";
 import type { Entry, EntryMetrics } from "@/lib/types";
 import { useT } from "@/lib/i18n";
+import { toast } from "@/components/ui/toast";
 
 type Props = {
   mode: DataMode;
@@ -70,11 +71,17 @@ export function DayClient({ mode, date, initialEntry }: Props) {
 
   const handleTranscriptSave = async (newTranscript: string) => {
     setEditorOpen(false);
+    // Rigenera titolo, sintesi e aree passando dall'AI: sono secondi, e
+    // senza avviso sembra che il tasto non abbia fatto niente.
+    toast.loading(t("Salvo le modifiche..."));
     try {
       const updated = await updateEntryTranscript(mode, date, newTranscript);
       setEntry(updated);
+      toast.ok(t("Salvato"));
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t("Errore"));
+      const msg = err instanceof Error ? err.message : t("Errore");
+      setSaveError(msg);
+      toast.error(msg);
     }
   };
 
@@ -82,11 +89,15 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     if (deleting) return;
     if (!confirm(t("Eliminare questa giornata? Non puoi annullare."))) return;
     setDeleting(true);
+    toast.loading(t("Elimino la giornata..."));
     try {
       await deleteEntry(mode, date);
+      toast.ok(t("Giornata eliminata"));
       router.push("/mese");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t("Errore"));
+      const msg = err instanceof Error ? err.message : t("Errore");
+      setSaveError(msg);
+      toast.error(msg);
       setDeleting(false);
     }
   };
@@ -164,7 +175,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
             border: "1px solid var(--color-danger)",
             borderRadius: 10,
             color: "var(--color-danger)",
-            fontSize: 12,
+            fontSize: "calc(12px * var(--jm-ui-scale))",
           }}
         >
           {saveError}

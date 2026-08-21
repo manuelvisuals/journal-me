@@ -23,6 +23,7 @@ import {
 } from "@/lib/data/store/types";
 import { todayISO } from "@/lib/format";
 import { t } from "@/lib/i18n";
+import { invalidateAll } from "@/lib/data/cache";
 
 export function backupFilename(): string {
   return `journal-me-backup-${todayISO()}.json`;
@@ -87,7 +88,9 @@ export async function readBackupFile(file: File): Promise<BackupFile> {
 /** Importa (merge) un backup nello store corrente. */
 export async function importBackup(file: File): Promise<ImportReport> {
   const backup = await readBackupFile(file);
-  return getStore().importAll(backup);
+  const report = await getStore().importAll(backup);
+  invalidateAll();
+  return report;
 }
 
 /** Frase del report, leggibile: "Aggiunte 41 giornate. 86 erano gia qui." */
@@ -164,4 +167,5 @@ export async function eraseLocalData(): Promise<void> {
     throw new Error(t("La cancellazione locale vale solo in modalita locale."));
   }
   await store.eraseEverything();
+  invalidateAll();
 }

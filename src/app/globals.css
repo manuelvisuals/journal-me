@@ -69,7 +69,7 @@ body > * {
   color: var(--color-on-accent);
   border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   font-weight: 650;
   padding: calc(16px * var(--jm-space));
   border-radius: var(--jm-radius-md);
@@ -109,7 +109,7 @@ body > * {
   color: var(--color-ink-muted);
   border: 1px solid var(--color-line);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   padding: calc(14px * var(--jm-space));
   border-radius: var(--jm-radius-md);
@@ -147,7 +147,7 @@ body > * {
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-md);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   padding: calc(16px * var(--jm-space)) calc(18px * var(--jm-space));
@@ -313,7 +313,7 @@ body > * {
   border-radius: var(--jm-radius-md);
   padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -380,7 +380,7 @@ body > * {
 .jm-splash-mark {
   position: relative;
   font-family: var(--font-sans);
-  font-size: 30px;
+  font-size: calc(30px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--color-ink);
@@ -522,7 +522,7 @@ summary:active {
   border-bottom: 1px solid var(--color-line);
 }
 .jm-rec-h {
-  font-size: 24px;
+  font-size: calc(24px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
@@ -534,7 +534,7 @@ summary:active {
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
   padding: calc(3px * var(--jm-space));
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -579,7 +579,7 @@ summary:active {
   border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
 }
 .jm-rec-card .when {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -588,7 +588,7 @@ summary:active {
 }
 .jm-rec-card .t {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.2;
   color: var(--color-ink);
@@ -596,7 +596,7 @@ summary:active {
   letter-spacing: -0.005em;
 }
 .jm-rec-card .s {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.5;
 }
@@ -610,20 +610,20 @@ summary:active {
 }
 .jm-rec-suggest .title {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   margin-bottom: calc(8px * var(--jm-space));
 }
 .jm-rec-suggest .hint {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.55;
   margin-bottom: calc(16px * var(--jm-space));
   padding: 0 calc(6px * var(--jm-space));
 }
 .jm-rec-suggest .err {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-danger);
   margin-bottom: calc(12px * var(--jm-space));
 }
@@ -634,7 +634,7 @@ summary:active {
   border-radius: var(--jm-radius-md);
   padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.005em;
   cursor: pointer;
@@ -651,13 +651,13 @@ summary:active {
   text-align: center;
 }
 .jm-rec-empty .em-h {
-  font-size: 17px;
+  font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-ink);
   margin-bottom: calc(6px * var(--jm-space));
 }
 .jm-rec-empty .em-p {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.55;
 }
@@ -684,7 +684,7 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-det-meta {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -696,7 +696,7 @@ summary:active {
   border: none;
   color: var(--color-accent);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -726,7 +726,7 @@ summary:active {
   min-height: 200px;
 }
 .jm-recap-field-label {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -738,7 +738,7 @@ summary:active {
   border-radius: var(--jm-radius-sm);
   padding: calc(12px * var(--jm-space)) calc(14px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   resize: vertical;
   outline: none;
@@ -748,13 +748,13 @@ summary:active {
 }
 .jm-recap-field-input.title {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.2;
 }
 .jm-recap-field-input.body {
   font-family: var(--font-serif);
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   line-height: 1.65;
   min-height: 200px;
   flex: 1;
@@ -766,7 +766,7 @@ summary:active {
 }
 .jm-det-title {
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: calc(28px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.15;
   color: var(--color-ink);
@@ -775,7 +775,7 @@ summary:active {
 }
 .jm-det-body p {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 400;
   line-height: 1.65;
   color: var(--color-ink-muted);
@@ -784,7 +784,7 @@ summary:active {
 }
 .jm-det-body p:first-of-type::first-letter {
   font-family: var(--font-serif);
-  font-size: 48px;
+  font-size: calc(48px * var(--jm-ui-scale));
   font-weight: 600;
   float: left;
   line-height: 0.95;
@@ -793,7 +793,7 @@ summary:active {
 }
 .jm-drop-quote {
   font-family: var(--font-serif);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-style: italic;
   color: var(--color-ink-faint);
   border-left: 2px solid var(--color-accent);
@@ -810,7 +810,7 @@ summary:active {
   padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
 }
 .jm-rem-h {
-  font-size: 24px;
+  font-size: calc(24px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
@@ -828,7 +828,7 @@ summary:active {
   display: none;
 }
 .f-chip {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -854,7 +854,7 @@ summary:active {
   padding: calc(14px * var(--jm-space)) 0 calc(130px * var(--jm-space)); /* leave room for floating quick capture + tab bar */
 }
 .jm-rem-day-header {
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-ink-faint);
   letter-spacing: 0.20em;
@@ -887,7 +887,7 @@ summary:active {
   min-width: 0;
 }
 .jm-rem-text {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   line-height: 1.4;
   font-weight: 500;
@@ -897,7 +897,7 @@ summary:active {
   display: flex;
   align-items: center;
   gap: calc(8px * var(--jm-space));
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -911,7 +911,7 @@ summary:active {
   font-style: italic;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
 }
 .jm-rem-del {
   align-self: center;
@@ -921,7 +921,7 @@ summary:active {
   background: transparent;
   border: none;
   color: var(--color-ink-faint);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   cursor: pointer;
   opacity: 0.5;
   font-family: inherit;
@@ -961,7 +961,7 @@ summary:active {
   border: none;
   outline: none;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   padding: calc(10px * var(--jm-space)) 0;
 }
@@ -969,7 +969,7 @@ summary:active {
   color: var(--color-ink-faint);
 }
 .jm-qc-kind {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-accent);
   letter-spacing: 0.10em;
@@ -1010,7 +1010,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: calc(20px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -1043,7 +1043,7 @@ summary:active {
   text-align: left;
   padding: calc(10px * var(--jm-space)) calc(12px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   background: transparent;
@@ -1091,7 +1091,7 @@ summary:active {
   outline: none;
   font-family: var(--font-sans);
   color: var(--color-accent-hi);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 600;
   text-align: center;
   width: 60px;
@@ -1109,7 +1109,7 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 10%, transparent);
   color: var(--color-accent);
   font-weight: 600;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   border: none;
   display: flex;
   align-items: center;
@@ -1134,13 +1134,13 @@ summary:active {
   border: none;
   outline: none;
   text-align: center;
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-accent-hi);
   padding: 0;
 }
 .jm-sleep-inputs .sep {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin: 0 2px;
 }
@@ -1157,7 +1157,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   opacity: 0.45;
   transition: opacity 100ms, transform 100ms, background-color 100ms;
   background: transparent;
@@ -1237,7 +1237,7 @@ summary:active {
 .jm-day-back:active { background: var(--color-surface-2); }
 .jm-day-head-label {
   flex: 1;
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   letter-spacing: 0.20em;
@@ -1253,7 +1253,7 @@ summary:active {
   flex-shrink: 0;
 }
 .jm-day-head-action {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-accent);
   background: transparent;
@@ -1333,7 +1333,7 @@ summary:active {
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
   padding: calc(7px * var(--jm-space)) calc(14px * var(--jm-space)) calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink-muted);
   letter-spacing: 0.01em;
@@ -1357,7 +1357,7 @@ summary:active {
   font-weight: 600;
 }
 .jm-date-chip .chev {
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-left: 2px;
 }
@@ -1403,7 +1403,7 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 10%, transparent);
 }
 .jm-date-row .pr-label {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   text-align: left;
@@ -1413,7 +1413,7 @@ summary:active {
   font-weight: 600;
 }
 .jm-date-row .pr-meta {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1459,7 +1459,7 @@ summary:active {
   border-bottom: 1px solid var(--color-line);
 }
 .jm-editor-title {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-ink);
   letter-spacing: -0.01em;
@@ -1472,7 +1472,7 @@ summary:active {
   background: transparent;
   border: none;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   padding: calc(8px * var(--jm-space)) calc(12px * var(--jm-space));
   border-radius: var(--jm-radius-sm);
@@ -1500,13 +1500,13 @@ summary:active {
   resize: none;
   padding: calc(18px * var(--jm-space)) calc(20px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   line-height: 1.55;
   letter-spacing: -0.005em;
   width: 100%;
 }
 .jm-editor-hint {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1533,7 +1533,7 @@ summary:active {
   border-color: color-mix(in oklab, var(--color-danger) 55%, transparent);
 }
 .jm-editor-hint-inline {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1608,7 +1608,7 @@ summary:active {
   padding: 0;
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
@@ -1616,13 +1616,13 @@ summary:active {
   touch-action: manipulation;
 }
 .jm-month-chevron {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-accent);
   opacity: 0.85;
   transform: translateY(2px);
 }
 .jm-month-count {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
@@ -1646,7 +1646,7 @@ summary:active {
     var(--color-bg-phone) 70%,
     transparent 100%
   );
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -1711,7 +1711,7 @@ summary:active {
   text-align: right;
 }
 .jm-day-num .n {
-  font-size: 30px;
+  font-size: calc(30px * var(--jm-ui-scale));
   font-weight: 300;
   line-height: 1;
   color: var(--color-ink);
@@ -1722,7 +1722,7 @@ summary:active {
   color: var(--color-accent-hi);
 }
 .jm-day-num .wd {
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
@@ -1738,7 +1738,7 @@ summary:active {
   padding-top: calc(2px * var(--jm-space));
 }
 .jm-day-headline {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   line-height: 1.35;
@@ -1749,7 +1749,7 @@ summary:active {
   -webkit-box-orient: vertical;
 }
 .jm-day-empty {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-style: italic;
   color: var(--color-ink-faint);
   letter-spacing: 0.01em;
@@ -1762,7 +1762,7 @@ summary:active {
   margin-top: calc(2px * var(--jm-space));
 }
 .jm-meta-chip {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink-faint);
   letter-spacing: 0.01em;
@@ -1772,7 +1772,7 @@ summary:active {
   color: var(--color-ink-muted);
 }
 .jm-meta-mood {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1;
 }
 .jm-dots-mini {
@@ -1823,14 +1823,14 @@ summary:active {
   margin-bottom: calc(12px * var(--jm-space));
 }
 .jm-picker-year .y {
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
 }
 .jm-picker-year .nav {
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   color: var(--color-accent);
   font-weight: 500;
   padding: 0 calc(8px * var(--jm-space));
@@ -1848,7 +1848,7 @@ summary:active {
 .jm-picker-cell {
   padding: calc(14px * var(--jm-space)) calc(6px * var(--jm-space));
   text-align: center;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
   letter-spacing: 0.10em;
@@ -1889,7 +1889,7 @@ summary:active {
   border: none;
   color: var(--color-ink-faint);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1919,7 +1919,7 @@ summary:active {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   letter-spacing: -0.005em;
@@ -1945,7 +1945,7 @@ summary:active {
   outline: none;
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   min-width: 36px;
   padding: 0;
@@ -1960,7 +1960,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   line-height: 1;
   cursor: pointer;
   font-family: inherit;
@@ -1975,7 +1975,7 @@ summary:active {
 
 /* Section labels in the people-review screen */
 .jm-pr-label {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 700;
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
@@ -1993,7 +1993,7 @@ summary:active {
   background: transparent;
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -2108,7 +2108,7 @@ summary:active {
   border: none;
   padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -2121,7 +2121,7 @@ summary:active {
 .jm-rec-sep {
   color: var(--color-ink-faint);
   opacity: 0.3;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
 }
 
 /* Gli anelli attorno al microfono premuto. Prima la sola differenza fra "mic
@@ -2205,14 +2205,14 @@ summary:active {
 }
 .jm-theme-prev-t {
   font-family: var(--jm-font-serif);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: var(--jm-weight-prose);
   letter-spacing: -0.01em;
   color: var(--jm-ink);
 }
 .jm-theme-prev-p {
   font-family: var(--jm-font-sans);
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   line-height: 1.45;
   color: var(--jm-ink-muted);
   margin-top: 5px;
@@ -2241,19 +2241,19 @@ summary:active {
 }
 .jm-theme-name {
   display: block;
-  font-size: var(--jm-text-body);
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
 }
 .jm-theme-fonts {
   display: block;
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-top: 2px;
 }
 .jm-theme-footnote {
   margin-top: calc(14px * var(--jm-space));
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   line-height: 1.55;
 }
@@ -2272,13 +2272,13 @@ summary:active {
     0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 .jm-backup-warn-t {
-  font-size: var(--jm-text-body);
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
   margin-bottom: 6px;
 }
 .jm-backup-warn-p {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1.6;
   color: var(--color-ink-muted);
 }
@@ -2294,7 +2294,7 @@ summary:active {
 }
 .jm-benv-hero {
   font-family: var(--font-serif);
-  font-size: var(--jm-text-display);
+  font-size: calc(var(--jm-text-display) * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: var(--jm-tracking-headline);
   line-height: var(--jm-leading-display);
@@ -2303,7 +2303,7 @@ summary:active {
   margin-top: calc(22px * var(--jm-space));
 }
 .jm-benv-sub {
-  font-size: var(--jm-text-body);
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   text-align: center;
   margin-top: 14px;
@@ -2328,7 +2328,7 @@ summary:active {
   background: linear-gradient(165deg, color-mix(in oklab, var(--color-accent) 6%, transparent), var(--color-surface));
 }
 .jm-benv-tag {
-  font-size: var(--jm-text-label);
+  font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: var(--jm-tracking-label);
   text-transform: uppercase;
@@ -2339,14 +2339,14 @@ summary:active {
   color: var(--color-accent);
 }
 .jm-benv-t {
-  font-size: var(--jm-text-title);
+  font-size: calc(var(--jm-text-title) * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.015em;
   color: var(--color-ink);
   margin-bottom: 8px;
 }
 .jm-benv-p {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   line-height: 1.6;
   color: var(--color-ink-muted);
   margin-bottom: 16px;
@@ -2357,7 +2357,7 @@ summary:active {
   padding: 0;
 }
 .jm-benv-list li {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1.5;
   color: var(--color-ink-muted);
   padding: 5px 0 5px 22px;
@@ -2382,18 +2382,18 @@ summary:active {
   top: 10px;
 }
 .jm-benv-price {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-bottom: 14px;
 }
 .jm-benv-price b {
   color: var(--color-ink);
-  font-size: 19px;
+  font-size: calc(19px * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: -0.01em;
 }
 .jm-benv-foot {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   text-align: center;
   margin-top: calc(26px * var(--jm-space));
@@ -2425,7 +2425,7 @@ summary:active {
   .jm-shell {
     display: flex;
     flex: 1;
-    min-height: calc(100dvh / var(--jm-ui-scale));
+    min-height: 100dvh;
     width: 100%;
   }
   .jm-shell-c {
@@ -2443,7 +2443,7 @@ summary:active {
     padding: calc(24px * var(--jm-space)) 14px calc(18px * var(--jm-space));
     position: sticky;
     top: 0;
-    height: calc(100dvh / var(--jm-ui-scale));
+    height: 100dvh;
   }
   .jm-rail-r {
     display: block;
@@ -2453,7 +2453,7 @@ summary:active {
     padding: calc(22px * var(--jm-space)) 20px;
     position: sticky;
     top: 0;
-    height: calc(100dvh / var(--jm-ui-scale));
+    height: 100dvh;
     overflow-y: auto;
   }
   .jm-rail-r:empty {
@@ -2463,7 +2463,7 @@ summary:active {
 
 .jm-rail-brand {
   font-family: var(--font-serif);
-  font-size: 21px;
+  font-size: calc(21px * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--color-ink);
@@ -2484,7 +2484,7 @@ summary:active {
   padding: 10px 12px;
   border-radius: var(--jm-radius-sm);
   border: 1px solid transparent;
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: -0.005em;
   color: var(--color-ink-faint);
@@ -2548,7 +2548,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
 }
@@ -2556,7 +2556,7 @@ summary:active {
   min-width: 0;
 }
 .jm-rail-acct-nm {
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
   white-space: nowrap;
@@ -2566,7 +2566,7 @@ summary:active {
 .jm-rail-pill {
   display: inline-block;
   margin-top: 4px;
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -2587,7 +2587,7 @@ summary:active {
   margin-bottom: calc(30px * var(--jm-space));
 }
 .jm-railr-l {
-  font-size: var(--jm-text-label);
+  font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: var(--jm-tracking-label);
   text-transform: uppercase;
@@ -2605,25 +2605,25 @@ summary:active {
   border-bottom: none;
 }
 .jm-railr-k {
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   letter-spacing: 0.02em;
 }
 .jm-railr-v {
-  font-size: 19px;
+  font-size: calc(19px * var(--jm-ui-scale));
   font-weight: 300;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 .jm-railr-v small {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-left: 3px;
   font-weight: 400;
 }
 .jm-railr-v.empty {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   font-style: italic;
   font-family: var(--font-serif);
@@ -2683,7 +2683,7 @@ summary:active {
   opacity: 1;
 }
 .jm-railr-gname {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: -0.003em;
 }
@@ -2732,14 +2732,14 @@ summary:active {
 }
 .jm-rm-k {
   display: block;
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--color-ink-faint);
 }
 .jm-rm-v {
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 300;
   letter-spacing: -0.015em;
   color: var(--color-ink);
@@ -2747,7 +2747,7 @@ summary:active {
   white-space: nowrap;
 }
 .jm-rm-v small {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-left: 3px;
   font-weight: 400;
@@ -2755,11 +2755,11 @@ summary:active {
 .jm-rm-v.empty {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
 .jm-rm-face {
-  font-size: 20px;
+  font-size: calc(20px * var(--jm-ui-scale));
 }
 .jm-rm-edit {
   padding: 2px 0 14px;
@@ -2777,7 +2777,7 @@ summary:active {
   border-radius: var(--jm-radius-sm);
   padding: 11px 10px;
   font-family: var(--font-sans);
-  font-size: 17px;
+  font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   text-align: center;
@@ -2799,7 +2799,7 @@ summary:active {
   background: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -2814,14 +2814,14 @@ summary:active {
   flex: 0 0 auto;
   width: auto;
   padding: 0 14px;
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   background: var(--color-accent);
   color: var(--color-on-accent);
   border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
 }
 .jm-rm-sep {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
 .jm-rm-moods {
@@ -2835,7 +2835,7 @@ summary:active {
   border-radius: var(--jm-radius-sm);
   border: 1px solid transparent;
   background: transparent;
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   line-height: 1;
   opacity: 0.4;
   cursor: pointer;
@@ -2859,7 +2859,7 @@ summary:active {
   gap: 7px;
 }
 .jm-railr-chip {
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
@@ -2902,7 +2902,7 @@ summary:active {
     border: none;
     resize: none;
     font-family: var(--font-sans);
-    font-size: 17px;
+    font-size: calc(17px * var(--jm-ui-scale));
     font-weight: 400;
     line-height: 1.6;
     color: var(--color-ink);
@@ -2923,7 +2923,7 @@ summary:active {
   .jm-ed-notice {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     color: var(--color-accent);
     margin-bottom: 14px;
   }
@@ -2937,7 +2937,7 @@ summary:active {
     padding: 0 28px;
   }
   .jm-ed-hint {
-    font-size: 12px;
+    font-size: calc(12px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.01em;
   }
@@ -2950,13 +2950,13 @@ summary:active {
   .jm-ed-acts .btn-ghost {
     width: auto;
     padding: 13px 18px;
-    font-size: 14px;
+    font-size: calc(14px * var(--jm-ui-scale));
   }
   .jm-ed-acts .btn-ghost {
-    font-size: 12px;
+    font-size: calc(12px * var(--jm-ui-scale));
   }
   .jm-ed-k {
-    font-size: 10.5px;
+    font-size: calc(10.5px * var(--jm-ui-scale));
     font-weight: 600;
     opacity: 0.65;
     margin-left: 6px;
@@ -2965,7 +2965,7 @@ summary:active {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 11.5px;
+    font-size: calc(11.5px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;
@@ -2994,7 +2994,7 @@ summary:active {
     position: fixed;
     top: 22px;
     right: 26px;
-    font-size: 11px;
+    font-size: calc(11px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.02em;
     z-index: 40;
@@ -3026,7 +3026,7 @@ summary:active {
   .jm-rail-kbd {
     display: inline;
     margin-left: auto;
-    font-size: 10px;
+    font-size: calc(10px * var(--jm-ui-scale));
     font-weight: 600;
     color: var(--color-ink-faint);
     letter-spacing: 0.04em;
@@ -3061,7 +3061,7 @@ summary:active {
     border: none;
     border-bottom: 1px solid var(--color-line);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: calc(15px * var(--jm-ui-scale));
     color: var(--color-ink);
     caret-color: var(--color-accent);
   }
@@ -3077,7 +3077,7 @@ summary:active {
     padding: 8px;
   }
   .jm-pal-l {
-    font-size: 10px;
+    font-size: calc(10px * var(--jm-ui-scale));
     font-weight: 650;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -3095,7 +3095,7 @@ summary:active {
     background: transparent;
     border-radius: var(--jm-radius-sm);
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: calc(14px * var(--jm-ui-scale));
     color: var(--color-ink-muted);
     cursor: pointer;
   }
@@ -3107,21 +3107,21 @@ summary:active {
     padding: 18px 12px;
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
   }
   .jm-pal-done {
     padding: 10px 12px;
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     color: var(--color-success);
   }
   .jm-pal-foot {
     flex: 0 0 auto;
     padding: 10px 18px;
     border-top: 1px solid var(--color-line);
-    font-size: 11px;
+    font-size: calc(11px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.02em;
   }
@@ -3157,7 +3157,7 @@ summary:active {
     padding: 0;
     cursor: pointer;
     font-family: var(--font-serif);
-    font-size: 40px;
+    font-size: calc(40px * var(--jm-ui-scale));
     font-weight: 400;
     letter-spacing: -0.022em;
     line-height: 1.05;
@@ -3168,7 +3168,7 @@ summary:active {
     color: var(--color-accent);
   }
   .jm-mese-s {
-    font-size: 12.5px;
+    font-size: calc(12.5px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     margin-top: 9px;
   }
@@ -3179,7 +3179,7 @@ summary:active {
     padding: 0 28px 10px;
   }
   .jm-mese-wk div {
-    font-size: 9.5px;
+    font-size: calc(9.5px * var(--jm-ui-scale));
     font-weight: 650;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -3221,7 +3221,7 @@ summary:active {
     opacity: 0.3;
   }
   .jm-mese-cn {
-    font-size: 22px;
+    font-size: calc(22px * var(--jm-ui-scale));
     font-weight: 300;
     color: var(--color-ink);
     line-height: 1;
@@ -3243,7 +3243,7 @@ summary:active {
     font-weight: 400;
   }
   .jm-mese-ch {
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     line-height: 1.4;
     color: var(--color-ink-muted);
     margin-top: 8px;
@@ -3285,18 +3285,18 @@ summary:active {
   border-bottom: none;
 }
 .jm-railr-stat .v {
-  font-size: 26px;
+  font-size: calc(26px * var(--jm-ui-scale));
   font-weight: 300;
   letter-spacing: -0.015em;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
 }
 .jm-railr-stat .v span {
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
 .jm-railr-stat .k {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-top: 2px;
   letter-spacing: 0.01em;
@@ -3314,14 +3314,14 @@ summary:active {
     0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 .jm-railr-locked .t {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
   margin-bottom: 6px;
   line-height: 1.45;
 }
 .jm-railr-locked .p {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   line-height: 1.55;
   color: var(--color-ink-muted);
 }
@@ -3333,7 +3333,7 @@ summary:active {
    corsivo, aree macro su due colonne a card.
    ============================================================= */
 .jm-fv-h {
-  font-size: 26px;
+  font-size: calc(26px * var(--jm-ui-scale));
   font-weight: 650;
   line-height: 1.15;
   letter-spacing: -0.025em;
@@ -3341,7 +3341,7 @@ summary:active {
   margin: 4px 0 10px;
 }
 .jm-fv-h.placeholder {
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: normal;
@@ -3349,7 +3349,7 @@ summary:active {
   font-style: italic;
 }
 .jm-fv-sn {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 400;
   color: var(--color-ink-muted);
   line-height: 1.55;
@@ -3364,7 +3364,7 @@ summary:active {
   padding: 14px 0;
 }
 .jm-fv-area .l {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.2em;
@@ -3372,14 +3372,14 @@ summary:active {
   margin-bottom: 6px;
 }
 .jm-fv-area .x {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   line-height: 1.55;
 }
 .jm-fv-noareas {
   padding: 20px 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   font-style: italic;
   text-align: center;
@@ -3388,7 +3388,7 @@ summary:active {
 
 @media (min-width: 1024px) {
   .jm-fv-h {
-    font-size: 27px;
+    font-size: calc(27px * var(--jm-ui-scale));
     letter-spacing: -0.018em;
     line-height: 1.22;
     margin: 4px 0 14px;
@@ -3396,7 +3396,7 @@ summary:active {
   .jm-fv-sn {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 17px;
+    font-size: calc(17px * var(--jm-ui-scale));
     line-height: 1.6;
     margin-bottom: 30px;
   }
@@ -3417,11 +3417,11 @@ summary:active {
       0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
   }
   .jm-fv-area .l {
-    font-size: 11px;
+    font-size: calc(11px * var(--jm-ui-scale));
     margin-bottom: 9px;
   }
   .jm-fv-area .x {
-    font-size: 13.5px;
+    font-size: calc(13.5px * var(--jm-ui-scale));
     font-weight: 400;
     color: var(--color-ink-muted);
     line-height: 1.62;
@@ -3458,7 +3458,7 @@ summary:active {
 }
 .jm-wall-t {
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: calc(28px * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -3471,7 +3471,7 @@ summary:active {
   white-space: pre-line;
 }
 .jm-wall-p {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   line-height: 1.65;
   color: var(--color-ink-muted);
   margin-bottom: 20px;
@@ -3496,12 +3496,12 @@ summary:active {
   display: block;
 }
 .jm-wall-feat .t {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
 }
 .jm-wall-feat .p {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-top: 4px;
   line-height: 1.5;
@@ -3509,7 +3509,7 @@ summary:active {
 .jm-wall-note {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-accent);
   margin-bottom: 14px;
   line-height: 1.5;
@@ -3520,14 +3520,14 @@ summary:active {
 
 /* --- giornata gratis: sub, prosa, nudge --- */
 .jm-fv-sub {
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.01em;
   margin: -4px 0 22px;
 }
 .jm-fv-prose p {
   font-family: var(--font-serif);
-  font-size: 17px;
+  font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 400;
   line-height: 1.6;
   color: var(--color-ink-muted);
@@ -3544,7 +3544,7 @@ summary:active {
   background: color-mix(in oklab, var(--color-surface) 70%, transparent);
 }
 .jm-fv-nudge .t {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.5;
 }
@@ -3555,7 +3555,7 @@ summary:active {
 .jm-fv-nudge .btn-ghost {
   width: auto;
   padding: 10px 16px;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   white-space: nowrap;
   flex: 0 0 auto;
 }
@@ -3564,7 +3564,7 @@ summary:active {
 .jm-railr-pill {
   display: inline-block;
   margin-left: 8px;
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -3662,19 +3662,19 @@ summary:active {
 }
 
 /* =============================================================
-   DIMENSIONE DELL'INTERFACCIA (src/lib/ui-scale.ts)
+   DIMENSIONE DEL TESTO (src/lib/ui-scale.ts)
 
-   `zoom` sulla radice ingrandisce testo, spazi e bersagli insieme. L'unica
-   cosa che rompe e 100dvh: dentro una radice zoomata al 125% vale il 125%
-   dello schermo, e su una pagina vuota compare una barra di scorrimento.
-   Le schermate a tutta altezza usano questa classe invece del valore
-   diretto. A scala 1 la divisione e per 1 e non cambia niente.
+   Si scala SOLO il testo: ogni `font-size` del progetto e scritto come
+   calc(<valore> * var(--jm-ui-scale)). Margini e spaziature restano quelli,
+   cosi ingrandendo entra piu roba leggibile invece degli stessi margini
+   piu larghi. `.jm-screen` resta perche le schermate a tutta altezza
+   condividevano gia questa misura in tredici punti.
    ============================================================= */
 :root {
   --jm-ui-scale: 1;
 }
 .jm-screen {
-  min-height: calc(100dvh / var(--jm-ui-scale));
+  min-height: 100dvh;
 }
 
 /* =============================================================
@@ -3692,13 +3692,13 @@ summary:active {
    ============================================================= */
 
 .jm-st-h1 {
-  font-size: 26px;
+  font-size: calc(26px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.02em;
   color: var(--color-ink);
 }
 .jm-st-sub {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-top: calc(6px * var(--jm-space));
 }
@@ -3717,7 +3717,7 @@ summary:active {
   margin-bottom: calc(28px * var(--jm-space));
 }
 .jm-st-gl {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -3755,19 +3755,19 @@ summary:active {
 .jm-st-grow { flex: 1; min-width: 0; }
 .jm-st-t {
   display: block;
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
 }
 .jm-st-d {
   display: block;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-top: 3px;
   line-height: 1.45;
 }
 .jm-st-val {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   flex: 0 0 auto;
   white-space: nowrap;
@@ -3796,7 +3796,7 @@ summary:active {
   border: 1px solid var(--color-line);
   background: transparent;
   font-family: var(--font-sans);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   cursor: pointer;
@@ -3819,7 +3819,7 @@ summary:active {
 }
 .jm-st-seg button {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   background: transparent;
@@ -3859,10 +3859,10 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-st-back:hover { background: var(--color-surface-2); }
-.jm-st-phead .jm-st-h1 { font-size: 20px; }
+.jm-st-phead .jm-st-h1 { font-size: calc(20px * var(--jm-ui-scale)); }
 
 .jm-st-lede {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   line-height: 1.55;
   color: var(--color-ink-muted);
   margin-bottom: calc(22px * var(--jm-space));
@@ -3870,7 +3870,7 @@ summary:active {
 }
 
 .jm-st-note {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   line-height: 1.5;
   color: var(--color-ink-muted);
   background: var(--color-surface);
@@ -3902,7 +3902,7 @@ summary:active {
   border: none;
   outline: none;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   padding: 12px 0;
 }
@@ -3916,7 +3916,7 @@ summary:active {
   background: var(--color-accent);
   color: var(--color-on-accent);
   font-family: var(--font-sans);
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -3937,7 +3937,7 @@ summary:active {
 }
 .jm-st-recap .meta {
   display: block;
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -3947,7 +3947,7 @@ summary:active {
 .jm-st-recap .title {
   display: block;
   font-family: var(--font-serif);
-  font-size: 23px;
+  font-size: calc(23px * var(--jm-ui-scale));
   font-weight: 400;
   line-height: 1.18;
   letter-spacing: -0.01em;
@@ -3956,13 +3956,13 @@ summary:active {
 }
 .jm-st-recap .sub {
   display: block;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   line-height: 1.5;
 }
 .jm-st-recap .last {
   display: block;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-top: 12px;
   padding-top: 12px;
@@ -3980,14 +3980,14 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
   margin-bottom: 14px;
 }
-.jm-st-nm { font-size: 15px; font-weight: 600; color: var(--color-ink); }
+.jm-st-nm { font-size: calc(15px * var(--jm-ui-scale)); font-weight: 600; color: var(--color-ink); }
 .jm-st-em {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-top: 3px;
   word-break: break-all;
@@ -3995,7 +3995,7 @@ summary:active {
 .jm-st-pill {
   display: inline-block;
   margin-top: 10px;
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -4012,7 +4012,7 @@ summary:active {
   gap: 12px;
   padding: 10px 0;
   border-bottom: 1px solid var(--color-line);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
 }
 .jm-st-rrow:last-of-type { border-bottom: none; }
 .jm-st-rrow .k { color: var(--color-ink-faint); flex: 0 0 auto; }
@@ -4028,7 +4028,7 @@ summary:active {
   background: transparent;
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -4078,7 +4078,7 @@ summary:active {
   margin-bottom: calc(22px * var(--jm-space));
 }
 .jm-st-prev-l {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -4087,7 +4087,7 @@ summary:active {
 }
 .jm-st-prev-h {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 400;
   line-height: 1.18;
   letter-spacing: -0.01em;
@@ -4095,7 +4095,7 @@ summary:active {
   margin-bottom: 6px;
 }
 .jm-st-prev-p {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   line-height: 1.5;
 }
@@ -4160,7 +4160,7 @@ summary:active {
   border-radius: var(--jm-radius-md);
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -4186,13 +4186,13 @@ summary:active {
   padding: 0 30px;
 }
 .jm-day-empty-h {
-  font-size: 17px;
+  font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
   margin-bottom: 8px;
 }
 .jm-day-empty-p {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1.55;
   color: var(--color-ink-faint);
   margin-bottom: calc(26px * var(--jm-space));
@@ -4239,7 +4239,7 @@ summary:active {
   margin: 0 auto 14px;
 }
 .jm-sheet-head {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -4282,14 +4282,89 @@ summary:active {
 .jm-sheet-txt { flex: 1; min-width: 0; }
 .jm-sheet-t {
   display: block;
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
 }
 .jm-sheet-d {
   display: block;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-top: 2px;
   line-height: 1.4;
+}
+
+/* =============================================================
+   L'AVVISO DI CARICAMENTO, uno per tutta l'app
+   (src/components/ui/toast.tsx)
+
+   Sta in basso, sopra la tab bar, e non copre niente di cliccabile:
+   non e un dialogo, e una notizia. `pointer-events: none` sul
+   contenitore perche non deve mai rubare un tocco all'app sotto.
+   ============================================================= */
+.jm-toast-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  /* Da lg la tab bar non c'e: l'avviso puo stare piu in basso. */
+  .jm-toast-wrap { bottom: 28px; }
+}
+.jm-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 420px;
+  padding: 12px 18px;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 500;
+  line-height: 1.35;
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+  animation: jm-toast-in 160ms ease-out;
+}
+.jm-toast.error {
+  background: var(--color-danger);
+  color: #fff;
+}
+@keyframes jm-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.jm-toast-t { min-width: 0; }
+.jm-toast-ic {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-toast-spin {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  animation: jm-toast-spin 700ms linear infinite;
+}
+@keyframes jm-toast-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jm-toast { animation: none; }
+  .jm-toast-spin { animation-duration: 2s; }
 }

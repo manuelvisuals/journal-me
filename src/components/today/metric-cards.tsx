@@ -105,12 +105,12 @@ function CardShell({
 }
 
 const unitStyle: React.CSSProperties = {
-  fontSize: 10,
+  fontSize: "calc(10px * var(--jm-ui-scale))",
   color: "var(--color-ink-faint)",
   fontWeight: 500,
 };
 const labelStyle: React.CSSProperties = {
-  fontSize: 9,
+  fontSize: "calc(9px * var(--jm-ui-scale))",
   fontWeight: 600,
   color: "var(--color-ink-faint)",
   letterSpacing: "0.18em",
@@ -118,7 +118,7 @@ const labelStyle: React.CSSProperties = {
   marginTop: 5,
 };
 const valueStyle: React.CSSProperties = {
-  fontSize: 18,
+  fontSize: "calc(18px * var(--jm-ui-scale))",
   fontWeight: 600,
   color: "var(--color-ink)",
   letterSpacing: "-0.01em",
@@ -316,7 +316,7 @@ function MoodDisplay({
   const t = useT();
   return (
     <CardShell editing={false} onClick={onOpen}>
-      <div style={{ fontSize: 22, lineHeight: 1 }}>{moodEmoji(value)}</div>
+      <div style={{ fontSize: "calc(22px * var(--jm-ui-scale))", lineHeight: 1 }}>{moodEmoji(value)}</div>
       <div style={labelStyle}>{t("mood")}</div>
     </CardShell>
   );

@@ -102,7 +102,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10">
       <div className="w-full max-w-sm">
         <p
-          className="text-center text-[22px] font-semibold mb-16 tracking-tight"
+          className="text-center text-[calc(22px*var(--jm-ui-scale))] font-semibold mb-16 tracking-tight"
           style={{ letterSpacing: "-0.01em" }}
         >
           Journal
@@ -118,7 +118,7 @@ export default function LoginPage() {
         {sent ? (
           <>
             <h1
-              className="text-center text-[32px] leading-[1.1] mb-3 text-ink"
+              className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
               style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
             >
               {t("Il codice")}
@@ -145,7 +145,7 @@ export default function LoginPage() {
                 className="input-base mb-3.5"
                 style={{
                   textAlign: "center",
-                  fontSize: 30,
+                  fontSize: "calc(30px * var(--jm-ui-scale))",
                   fontWeight: 600,
                   letterSpacing: "0.34em",
                   textIndent: "0.34em",
@@ -161,13 +161,13 @@ export default function LoginPage() {
                 {verifying ? t("Controllo...") : t("Entra")}
               </Button>
               {error && (
-                <p className="text-center text-[12px] text-danger mt-3">
+                <p className="text-center text-[calc(12px*var(--jm-ui-scale))] text-danger mt-3">
                   {error}
                 </p>
               )}
             </form>
 
-            <p className="text-center text-[11px] text-ink-faint leading-[1.6] mt-7">
+            <p className="text-center text-[calc(11px*var(--jm-ui-scale))] text-ink-faint leading-[1.6] mt-7">
               {t("Non arriva? Guarda nello spam, oppure")}{" "}
               <button
                 onClick={() => void sendCode()}
@@ -193,7 +193,7 @@ export default function LoginPage() {
         ) : (
           <>
             <h1
-              className="text-center text-[32px] leading-[1.1] mb-3 text-ink"
+              className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
               style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
             >
               {isReturning ? t("Bentornato") : t("Benvenuto")}
@@ -223,7 +223,7 @@ export default function LoginPage() {
                 {loading ? t("Sto inviando...") : t("Mandami il codice")}
               </Button>
               {error && (
-                <p className="text-center text-[12px] text-danger mt-3">
+                <p className="text-center text-[calc(12px*var(--jm-ui-scale))] text-danger mt-3">
                   {error}
                 </p>
               )}
@@ -236,7 +236,7 @@ export default function LoginPage() {
                     "linear-gradient(90deg, transparent, var(--color-line), transparent)",
                 }}
               ></div>
-              <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-ink-faint">
+              <span className="text-[calc(10px*var(--jm-ui-scale))] font-semibold tracking-[0.2em] uppercase text-ink-faint">
                 {t("oppure")}
               </span>
               <div
@@ -253,7 +253,7 @@ export default function LoginPage() {
             >
               {t("Tienilo solo su questo dispositivo")}
             </Button>
-            <p className="text-center text-[11px] text-ink-faint leading-[1.6] mt-7">
+            <p className="text-center text-[calc(11px*var(--jm-ui-scale))] text-ink-faint leading-[1.6] mt-7">
               {t("Il codice vale un'ora.")}
               <br />
               {t("La versione gratis non ha bisogno di email: resta tutto qui.")}

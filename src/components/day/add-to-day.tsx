@@ -32,6 +32,7 @@ import { addRemember } from "@/lib/data/remembers";
 import { saveRecording } from "@/lib/actions/save-recording";
 import { compactDayDate, formatDate, parseISODate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
+import { toast } from "@/components/ui/toast";
 import type { DataMode } from "@/lib/data/entries";
 import type { Entry, RememberKind } from "@/lib/types";
 
@@ -80,30 +81,56 @@ export function AddToDay({
     const clean = text.trim();
     if (!clean || saving) return;
     setSaving(true);
+    // Il foglio si chiude SUBITO: da qui in poi a parlare e l'avviso in
+    // basso. Tenere aperto un editor congelato per tre secondi e il modo
+    // piu sicuro di far credere che non stia succedendo niente.
+    setSheet("closed");
+    toast.loading(t("Salvo nella giornata..."));
     try {
-      // saveRecording accoda al transcript del giorno e rigenera titolo e
-      // sintesi sul testo intero.
+      // skipSplit: la data l'ha scelta l'utente aprendo questa schermata.
+      // Senza, una frase come "ieri" spostava il testo su un altro giorno
+      // e qui non compariva niente (bug del 21 agosto 2026).
       const saved = await saveRecording({
         transcript: clean,
         defaultDate: targetDate,
         durationSeconds,
+        skipSplit: true,
       });
-      const forThisDay = saved.find((e) => e.entryDate === date) ?? saved[0];
-      if (forThisDay) onSaved(forThisDay);
-      setSheet("closed");
+      const forThisDay = saved.find((e) => e.entryDate === date);
+      if (forThisDay) {
+        onSaved(forThisDay);
+        toast.ok(t("Aggiunto alla giornata"));
+      } else if (saved.length > 0) {
+        // Puo succedere solo se l'utente ha spostato la data nel
+        // registratore: allora il testo e su un ALTRO giorno, ed e giusto
+        // dirlo invece di lasciare questa schermata immutata e muta.
+        toast.ok(
+          t("Salvato sul {giorno}", {
+            giorno: compactDayDate(parseISODate(saved[0].entryDate)),
+          }),
+        );
+      } else {
+        toast.error(t("Non sono riuscito a salvare. Riprova."));
+      }
     } catch (err) {
-      onError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
+      const msg = err instanceof Error ? err.message : t("Errore nel salvataggio");
+      onError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
   };
 
   const handleRemember = async (text: string, kind: RememberKind) => {
+    setSheet("closed");
+    toast.loading(t("Salvo in Ricorda..."));
     try {
       await addRemember(mode, text, kind);
-      setSheet("closed");
+      toast.ok(t("Salvato in Ricorda"));
     } catch (err) {
-      onError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
+      const msg = err instanceof Error ? err.message : t("Errore nel salvataggio");
+      onError(msg);
+      toast.error(msg);
     }
   };
 

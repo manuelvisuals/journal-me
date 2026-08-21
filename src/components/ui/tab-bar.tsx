@@ -154,7 +154,7 @@ export function TabBar({ active }: Props) {
         </span>
         <span
           style={{
-            fontSize: 9,
+            fontSize: "calc(9px * var(--jm-ui-scale))",
             fontWeight: 600,
             letterSpacing: "0.10em",
             textTransform: "uppercase",
@@ -188,7 +188,7 @@ function SideTab({ tab, active }: { tab: Tab; active: boolean }) {
       </span>
       <span
         style={{
-          fontSize: 9,
+          fontSize: "calc(9px * var(--jm-ui-scale))",
           fontWeight: 600,
           letterSpacing: "0.10em",
           textTransform: "uppercase",

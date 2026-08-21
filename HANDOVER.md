@@ -954,6 +954,67 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
      Se l'utente sposta la data dentro l'overlay di registrazione, vince
      lui: il foglio non riporta di forza il testo su questa giornata.
 
+  15. **La dimensione del testo rifatta: si scala SOLO il testo** (21
+     agosto). La prima versione usava `zoom` sulla radice e cresceva tutto
+     insieme, margini compresi: sullo schermo entrava la stessa quantita
+     di parole, solo piu grosse. Manuel l'ha bocciata in mezz'ora ("il gap
+     destra e sinistra cambia, volevo solo il font") e aveva ragione: chi
+     ingrandisce il testo lo fa per LEGGERE DI PIU. Ora ogni misura di
+     testo del progetto — 175 in globals.css, 14 dai token dei temi, 37
+     inline, 9 in classi Tailwind — e `calc(<valore> * var(--jm-ui-scale))`.
+     Margini e larghezze non si toccano; `.jm-screen` e tornata a 100dvh
+     perche senza zoom non c'era piu niente da correggere. Il test misura
+     margine sinistro e larghezza del contenuto a ogni scala: se qualcuno
+     riprova con lo zoom, fallisce.
+
+  16. **L'avviso di caricamento, uno per tutta l'app**
+     (`src/components/ui/toast.tsx`). Premevi "Continua" per aggiungere
+     testo a una giornata e per qualche secondo non succedeva niente:
+     nessuna rotella, nessuna scritta. Store nel modulo come premium-wall
+     e palette, montato una volta sola nel layout, tre stati (loading che
+     dura finche non lo sostituisci, ok 2,5s, errore 6s). Lo usano
+     l'aggiunta a una giornata, il salvataggio del transcript e
+     l'eliminazione; le schermate che gia avevano un'attesa visibile
+     (Oggi con "elaborazione", Recap col tasto che cambia testo) non ne
+     hanno bisogno e non lo usano — un secondo avviso sopra un'attesa gia
+     mostrata e rumore.
+
+  17. **BUG VERO: il testo aggiunto finiva su un ALTRO giorno.** Manuel ha
+     detto "non li salva". Il database ha detto un'altra cosa: alle
+     09:27:15 del 21 agosto l'entry del 2026-08-20 era stata aggiornata,
+     con il separatore dell'append dentro. Salvava eccome — sul giorno
+     sbagliato. Causa: `saveRecording` chiama `/api/split-by-date`, che
+     legge i marker temporali del testo ("ieri", "lunedi") e sposta il
+     racconto sulla data giusta. Su Oggi e cio che serve; su `/giorno` no,
+     perche la data l'hai gia scelta tu aprendo quella schermata, e il
+     testo spariva da sotto gli occhi. Aggiunta l'opzione `skipSplit`, che
+     AddToDay passa sempre. Se la data viene spostata a mano nel
+     registratore l'avviso lo dice invece di tacere.
+
+     **Da qui una regola:** quando "non salva", chiedere al database prima
+     di leggere il codice. Sarebbe bastato un `select` per non cercare nel
+     posto sbagliato.
+
+  18. **Passare da un tab all'altro era lento: cache + precaricamento**
+     (`src/lib/data/cache.ts`, `warm.ts`). Ogni schermata caricava i suoi
+     dati al montaggio e in cloud ogni lettura e un giro fino a Supabase,
+     rifatto da capo a ogni ritorno. Ora le letture passano da una cache
+     in memoria (60 secondi, stale-while-revalidate: la seconda visita
+     disegna subito e rilegge in sottofondo) e, appena la PRIMA schermata
+     e pronta, gli altri tab si precaricano da soli.
+
+     La cache sta dentro `src/lib/data/*.ts` — l'unico punto d'accesso ai
+     dati — e non nelle pagine: cosi una schermata scritta domani la
+     eredita senza saperlo. **L'invalidazione e grossolana di proposito:**
+     qualsiasi scrittura svuota tutto. Una giornata salvata cambia anche
+     il conteggio del mese, i micro-goal di quel giorno e magari un
+     remember estratto; tenere quella mappa a mano e il tipo di cosa che
+     si rompe in silenzio sei mesi dopo. **Attenzione:** le scritture che
+     NON passano da `data/*.ts` (saveRecording, generateAndSaveRecap,
+     import ed erase del backup) chiamano `invalidateAll()` a mano — se se
+     ne aggiunge una e ci si dimentica, l'app mostra dati vecchi fino allo
+     scadere del minuto.
+
   **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
   `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
   verdi; le suite Playwright rieseguite senza regressioni (PR 7 24/24,
@@ -961,9 +1022,11 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   `scripts/verify-fix-20260820.mjs` 52/53, `scripts/verify-impostazioni.mjs`
   55/55, `scripts/verify-i18n.mjs` 6/6 (analisi statica del catalogo),
   `scripts/verify-lingua.mjs` 25/25 (l'app vera, in tutte e due le lingue) e
-  `scripts/verify-testo-giorno.mjs` 49/49 — che fra le altre cose misura il
-  `min-height` calcolato a ogni scala, perche e li che lo zoom rompe, non
-  nell'altezza della pagina (una pagina lunga scorre di suo, ed e giusto).
+  `scripts/verify-testo-giorno.mjs` 46/46 — che fra le altre cose misura
+  margine sinistro e larghezza del contenuto a ogni misura del testo, cioe
+  la cosa che Manuel ha chiesto — e `scripts/verify-toast-cache.mjs` 12/12,
+  che riproduce il bug del giorno sbagliato scrivendo "ieri" dentro il testo
+  e ricaricando la pagina.
 
   L'unico FAIL, `benvenuto: zero errori console`, e un artefatto
   dell'ambiente e non una regressione: senza `.env.local` il client

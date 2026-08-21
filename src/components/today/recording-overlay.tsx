@@ -592,8 +592,7 @@ export function RecordingOverlay({
         inset: 0,
         zIndex: 50,
         background: "var(--color-bg-phone)",
-        // Diviso per la scala dell'interfaccia: vedi .jm-screen in globals.css.
-        height: "calc(100dvh / var(--jm-ui-scale))",
+        height: "100dvh",
       }}
     >
       <div
@@ -622,7 +621,7 @@ export function RecordingOverlay({
             />
             <span
               style={{
-                fontSize: 11,
+                fontSize: "calc(11px * var(--jm-ui-scale))",
                 fontWeight: 650,
                 color: liveColor,
                 letterSpacing: "0.20em",
@@ -636,7 +635,7 @@ export function RecordingOverlay({
             style={{
               fontFamily:
                 "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-              fontSize: 18,
+              fontSize: "calc(18px * var(--jm-ui-scale))",
               fontWeight: 500,
               color: "var(--color-ink)",
               letterSpacing: "0.06em",
@@ -703,7 +702,7 @@ export function RecordingOverlay({
             <p
               style={{
                 color: "var(--color-ink)",
-                fontSize: 16,
+                fontSize: "calc(16px * var(--jm-ui-scale))",
                 fontWeight: 600,
               }}
             >
@@ -712,7 +711,7 @@ export function RecordingOverlay({
             <p
               style={{
                 color: "var(--color-ink-faint)",
-                fontSize: 13,
+                fontSize: "calc(13px * var(--jm-ui-scale))",
                 lineHeight: 1.5,
                 maxWidth: 280,
               }}
@@ -730,7 +729,7 @@ export function RecordingOverlay({
               borderRadius: 14,
               background: "var(--color-surface)",
               color: "var(--color-ink-muted)",
-              fontSize: 14,
+              fontSize: "calc(14px * var(--jm-ui-scale))",
               lineHeight: 1.55,
             }}
           >
@@ -781,14 +780,14 @@ export function RecordingOverlay({
             <div style={{ textAlign: "center", minHeight: 40 }}>
               <p
                 aria-live="polite"
-                style={{ fontSize: 14, color: "var(--color-ink-faint)" }}
+                style={{ fontSize: "calc(14px * var(--jm-ui-scale))", color: "var(--color-ink-faint)" }}
               >
                 {hint}
               </p>
               {showPrimer && state !== "recording" && seconds === 0 && (
                 <p
                   style={{
-                    fontSize: 12.5,
+                    fontSize: "calc(12.5px * var(--jm-ui-scale))",
                     color: "var(--color-ink-faint)",
                     opacity: 0.65,
                     marginTop: 6,
@@ -816,7 +815,7 @@ export function RecordingOverlay({
                 : "jm-ptt-action jm-ptt-save-idle"
             }
             disabled={state === "connecting" || recovering}
-            style={{ width: "100%", gap: 8, padding: "16px 22px", fontSize: 15 }}
+            style={{ width: "100%", gap: 8, padding: "16px 22px", fontSize: "calc(15px * var(--jm-ui-scale))" }}
           >
             <svg
               viewBox="0 0 24 24"

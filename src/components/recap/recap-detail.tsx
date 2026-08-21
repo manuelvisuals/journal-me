@@ -88,7 +88,7 @@ export function RecapDetail({ mode, recap, onBack, onUpdated }: Props) {
             borderRadius: 10,
             background: "var(--color-surface)",
             color: "var(--color-danger)",
-            fontSize: 12,
+            fontSize: "calc(12px * var(--jm-ui-scale))",
           }}
         >
           {error}

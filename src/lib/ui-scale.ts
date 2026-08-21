@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Il lato React della dimensione dell'interfaccia. I valori, le etichette e
+ * Il lato React della dimensione del testo. I valori, le etichette e
  * l'applicazione a <html> stanno in `ui-scale-contract.ts`, che non importa
  * React perche lo usa anche lo script di boot (server).
  */

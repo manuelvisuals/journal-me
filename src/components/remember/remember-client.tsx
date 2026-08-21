@@ -126,7 +126,7 @@ export function RememberClient({ mode, initial }: Props) {
             style={{
               padding: "40px 24px",
               textAlign: "center",
-              fontSize: 13,
+              fontSize: "calc(13px * var(--jm-ui-scale))",
               color: "var(--color-ink-faint)",
               fontStyle: "italic",
             }}
@@ -170,7 +170,7 @@ export function RememberClient({ mode, initial }: Props) {
             border: "1px solid var(--color-danger)",
             borderRadius: 10,
             color: "var(--color-danger)",
-            fontSize: 12,
+            fontSize: "calc(12px * var(--jm-ui-scale))",
             zIndex: 5,
           }}
         >

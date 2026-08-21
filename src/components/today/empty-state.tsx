@@ -24,7 +24,7 @@ export function EmptyState({
       <h1
         className="text-center"
         style={{
-          fontSize: 28,
+          fontSize: "calc(28px * var(--jm-ui-scale))",
           fontWeight: 650,
           lineHeight: 1.15,
           letterSpacing: "-0.025em",
@@ -37,7 +37,7 @@ export function EmptyState({
       <p
         className="text-center"
         style={{
-          fontSize: 14,
+          fontSize: "calc(14px * var(--jm-ui-scale))",
           color: "var(--color-ink-muted)",
           marginBottom: 64,
           lineHeight: 1.55,

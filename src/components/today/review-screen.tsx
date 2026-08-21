@@ -37,7 +37,7 @@ export function ReviewScreen({
             <div className="jm-editor-title">{t("Rileggi prima di processare")}</div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: "calc(11px * var(--jm-ui-scale))",
                 fontWeight: 600,
                 color: "var(--color-ink-faint)",
                 letterSpacing: "0.10em",

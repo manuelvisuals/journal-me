@@ -10,17 +10,23 @@
  * ogni componente, e il rischio di rompere qualcosa e alto in confronto al
  * guadagno.
  *
- * Si usa invece `zoom` sulla radice, che ingrandisce testo, spazi e
- * bersagli insieme — che e esattamente cio che serve a chi non vede bene.
- * Provato nel browser vero prima di scriverlo (scripts/verify-testo.mjs):
- * niente sbordamenti orizzontali, gli overlay `position: fixed` continuano
- * a coprire tutto lo schermo, la tab bar resta incollata in fondo.
+ * PRIMA VERSIONE, SCARTATA: `zoom` sulla radice. Ingrandiva tutto insieme
+ * — testo, spazi, margini — e funzionava, ma non era cio che serviva:
+ * crescendo anche i margini laterali, sullo schermo entrava la stessa
+ * quantita di parole di prima, solo piu grosse. Manuel l'ha visto subito
+ * ("il gap destra e sinistra cambia, volevo solo il font") e ha ragione:
+ * chi ingrandisce il testo lo fa per LEGGERE DI PIU, non per vedere gli
+ * stessi margini piu larghi.
  *
- * L'UNICA COSA CHE LO ZOOM ROMPE e `100dvh`. Dentro una radice zoomata
- * 100dvh vale il 125% dello schermo, e compare una barra di scorrimento su
- * una pagina vuota. Per questo esiste la classe `.jm-screen`, che al posto
- * di `min-height: 100dvh` scrive `calc(100dvh / var(--jm-ui-scale))`: le
- * tredici schermate a tutta altezza usano quella e non il valore diretto.
+ * VERSIONE ATTUALE: si scala SOLO la dimensione del testo. Ogni misura di
+ * testo del progetto — 175 in globals.css, 14 dai token dei temi, 37 negli
+ * stili inline, 9 nelle classi Tailwind — e scritta come
+ * `calc(<valore> * var(--jm-ui-scale))`. Margini, spaziature e larghezze
+ * restano quelle: il testo cresce dentro lo spazio che c'e gia, e sullo
+ * schermo entra piu roba leggibile.
+ *
+ * Le altezze minime sono `min-height` e non `height`, quindi le righe si
+ * allargano da sole quando il testo dentro cresce.
  *
  * La scala si applica PRIMA del primo disegno, nello stesso script inline
  * che gia mette tema e chiaro/scuro (src/themes/boot.ts). Applicarla da
@@ -57,15 +63,10 @@ export function isUiScale(n: number): n is UiScale {
 }
 
 /**
- * Applica la scala a <html>. `zoom` fa il lavoro; la custom property serve
- * a `.jm-screen` per correggere 100dvh (vedi la nota in testa al file).
+ * Applica la scala a <html>: una custom property, e basta. Il CSS la
+ * moltiplica dentro ogni misura di testo.
  */
 export function applyUiScale(value: number): void {
   if (typeof document === "undefined") return;
-  const el = document.documentElement;
-  el.style.setProperty("--jm-ui-scale", String(value));
-  // A 1 lo zoom si toglie invece di scriverlo: una radice senza `zoom` e
-  // il caso normale, e non va fatta pagare a chi non usa questa funzione.
-  if (value === 1) el.style.removeProperty("zoom");
-  else el.style.zoom = String(value);
+  document.documentElement.style.setProperty("--jm-ui-scale", String(value));
 }

@@ -130,7 +130,7 @@ export function FilledView({
           <div style={{ padding: "14px 0" }}>
             <div
               style={{
-                fontSize: 10,
+                fontSize: "calc(10px * var(--jm-ui-scale))",
                 fontWeight: 650,
                 color: "var(--color-accent)",
                 letterSpacing: "0.20em",

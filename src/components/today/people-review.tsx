@@ -80,7 +80,7 @@ export function PeopleReview({
         <header style={{ padding: "30px 24px 6px" }}>
           <div
             style={{
-              fontSize: 11,
+              fontSize: "calc(11px * var(--jm-ui-scale))",
               fontWeight: 700,
               color: "var(--color-accent)",
               letterSpacing: "0.20em",
@@ -94,7 +94,7 @@ export function PeopleReview({
         <div className="flex-1 overflow-y-auto" style={{ padding: "8px 24px 0" }}>
           <p
             style={{
-              fontSize: 14,
+              fontSize: "calc(14px * var(--jm-ui-scale))",
               color: "var(--color-ink-muted)",
               lineHeight: 1.55,
               margin: "0 0 22px",
