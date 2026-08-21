@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Consumi AI</title>
+<style>
+/* Font VERI del repo, non Google Fonts: nel sandbox fonts.googleapis.com non si
+   raggiunge e ogni serif renderizzerebbe Georgia (HANDOVER §13, trappola mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+
+/* Tema MINIMAL chiaro: il default dell'app, quello che Manuel vede davvero. */
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --danger:#C0392B; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --danger:#FF6B60; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin-top:10px;line-height:1.6}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1180px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:800px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.frame-wrap{overflow-x:auto;padding-bottom:8px}
+.row2{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+
+.win{position:relative;width:1180px;min-height:600px;margin:0 auto;background:var(--bg-app);border-radius:14px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);display:flex;color:var(--ink)}
+.phone{width:390px;min-height:720px;border-radius:36px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:flex;flex-direction:column}
+
+/* rail sinistra, solo contesto */
+.rail-l{width:222px;flex:0 0 222px;border-right:1px solid var(--line);padding:24px 14px 18px;display:flex;flex-direction:column}
+.brand{font-family:var(--serif);font-size:21px;font-weight:400;padding:0 10px 24px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);font-size:13.5px;font-weight:600;color:var(--ink-faint)}
+.nav-i.on{background:var(--surface);color:var(--ink)}
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column;padding:26px 28px;overflow:hidden}
+
+/* intestazione pannello */
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.ph-back{width:36px;height:36px;flex:0 0 36px;border-radius:50%;border:1px solid var(--line);background:transparent;
+  display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer}
+.ph-back svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ph-t{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.ph-s{font-size:12.5px;color:var(--ink-faint);margin-top:3px}
+
+/* il numero grosso */
+.total{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:8px}
+.total-v{font-size:52px;font-weight:300;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.total-v .cur{font-size:26px;font-weight:400;color:var(--ink-faint);margin-left:4px}
+.total-k{font-size:13px;color:var(--ink-muted);margin-top:10px;line-height:1.5}
+.total-k b{color:var(--ink);font-weight:600}
+
+/* elenco per attivita */
+.gl{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin:28px 0 4px}
+.ur{display:flex;align-items:center;gap:14px;min-height:56px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ur:last-child{border-bottom:none}
+.ur-main{flex:1;min-width:0}
+.ur-t{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.ur-d{font-size:12.5px;color:var(--ink-faint);margin-top:3px}
+.ur-v{font-size:17px;font-weight:400;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.ur-v small{display:block;font-size:11px;color:var(--ink-faint);font-weight:400;margin-top:3px;letter-spacing:.04em}
+.bar{height:4px;border-radius:999px;background:var(--surface-2);margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.bar.q i{opacity:.35}
+
+/* nota onesta */
+.note{margin-top:26px;border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;background:var(--surface)}
+.note-t{font-size:13px;font-weight:600;margin-bottom:6px}
+.note-p{font-size:12.5px;line-height:1.6;color:var(--ink-muted)}
+.note-p code{font-family:ui-monospace,monospace;font-size:11.5px;background:var(--surface-2);padding:1px 5px;border-radius:4px}
+
+/* riga di Impostazioni */
+.st-gl{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 10px}
+.st-box{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface)}
+.st-row{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:12px 16px;border-bottom:1px solid var(--line);
+  background:transparent;border-left:none;border-right:none;border-top:none;cursor:pointer;text-align:left;font-family:var(--font);color:inherit}
+.st-row:last-child{border-bottom:none}
+.st-row:hover{background:var(--surface-2)}
+.st-row.hl{background:var(--surface-2)}
+.st-t{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.st-d{font-size:12.5px;color:var(--ink-faint);margin-top:2px}
+.st-v{margin-left:auto;font-size:14px;color:var(--ink-faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.st-chev{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;color:var(--ink-faint);flex:0 0 16px}
+
+/* telefono */
+.ph-head{display:flex;align-items:center;gap:10px;padding:18px 18px 0}
+.ph-body{flex:1;padding:18px 18px 26px;overflow:hidden}
+.tabbar{height:64px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;color:var(--ink-faint);font-size:9px;font-weight:600;letter-spacing:.10em;text-transform:uppercase}
+.tabbar span.on{color:var(--ink)}
+
+/* vuoto */
+.empty{text-align:center;padding:50px 20px}
+.empty-t{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-.01em;margin-bottom:10px}
+.empty-p{font-size:13.5px;line-height:1.6;color:var(--ink-muted);max-width:420px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<div class="page-title">Consumi AI</div>
+<div class="page-sub">La route <code style="color:#D8D8DE">/api/usage</code> esiste gia e aggrega il mese corrente.<br>Questa e la schermata che le manca.</div>
+
+<div class="divider"></div>
+
+<!-- ============ 01 ============ -->
+<div class="label">01 . Dove sta</div>
+<div class="caption">Impostazioni &rarr; gruppo <b>Account</b>, sotto il piano. La riga dice gia il numero: chi la apre lo fa per il dettaglio, non per scoprire se ha speso. <b>La riga esiste solo con un account cloud</b> — in modalita locale l'AI non gira, e una voce spenta sarebbe solo un modo elegante di dire di no.</div>
+<div class="frame-wrap">
+<div class="win" style="min-height:420px">
+  <div class="rail-l">
+    <div class="brand">Journal<span style="color:var(--ink-faint)">.me</span></div>
+    <div class="nav">
+      <div class="nav-i">Oggi</div><div class="nav-i">Mese</div><div class="nav-i">Ricorda</div>
+      <div class="nav-i">Recap</div><div class="nav-i on">Impostazioni</div>
+    </div>
+  </div>
+  <div class="col-c">
+    <div class="ph" style="margin-bottom:22px"><div><div class="ph-t">Impostazioni</div></div></div>
+    <div class="st-gl">Account</div>
+    <div class="st-box">
+      <button class="st-row"><div><div class="st-t">Piano</div><div class="st-d">manuel@journal.me</div></div><span class="st-v">Premium</span><svg class="st-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      <button class="st-row hl"><div><div class="st-t">Consumi AI</div><div class="st-d">Quanto e costato questo mese</div></div><span class="st-v">circa 0,29 $</span><svg class="st-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      <button class="st-row"><div><div class="st-t">Esci dall'account</div></div><svg class="st-chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 02 ============ -->
+<div class="label">02 . Il pannello</div>
+<div class="caption">Un numero grosso, e sotto <b>le attivita in italiano</b> — non i nomi delle route. La barra serve a far vedere in un colpo d'occhio la cosa che conta davvero: <b>l'audio si mangia tre quarti del conto</b>, tutto il resto e polvere. E l'unica informazione da cui puoi decidere qualcosa.</div>
+<div class="frame-wrap">
+<div class="row2">
+  <div class="win" style="width:760px;min-height:600px">
+    <div class="col-c">
+      <div class="ph">
+        <button class="ph-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div><div class="ph-t">Consumi AI</div><div class="ph-s">Agosto 2026, dal giorno 1</div></div>
+      </div>
+
+      <div class="total">
+        <div class="total-v">0,29<span class="cur">$</span></div>
+        <div class="total-k">Stima su <b>17 giornate</b>, di cui 12 raccontate a voce.<br>Circa <b>1,7 centesimi</b> a giornata.</div>
+      </div>
+
+      <div class="gl">Da cosa arriva</div>
+
+      <div class="ur">
+        <div class="ur-main">
+          <div class="ur-t">Trascrizione della voce</div>
+          <div class="ur-d">12 registrazioni . 36 minuti</div>
+          <div class="bar"><i style="width:76%"></i></div>
+        </div>
+        <div class="ur-v">0,22 $<small>76%</small></div>
+      </div>
+
+      <div class="ur">
+        <div class="ur-main">
+          <div class="ur-t">Recap del mese</div>
+          <div class="ur-d">1 recap . il modello grande</div>
+          <div class="bar"><i style="width:14%"></i></div>
+        </div>
+        <div class="ur-v">0,04 $<small>14%</small></div>
+      </div>
+
+      <div class="ur">
+        <div class="ur-main">
+          <div class="ur-t">Titoli e sintesi delle giornate</div>
+          <div class="ur-d">17 giornate</div>
+          <div class="bar"><i style="width:7%"></i></div>
+        </div>
+        <div class="ur-v">0,02 $<small>7%</small></div>
+      </div>
+
+      <div class="ur">
+        <div class="ur-main">
+          <div class="ur-t">Persone, date e note di Ricorda</div>
+          <div class="ur-d">41 chiamate in tutto</div>
+          <div class="bar q"><i style="width:3%"></i></div>
+        </div>
+        <div class="ur-v">0,01 $<small>3%</small></div>
+      </div>
+
+      <div class="note">
+        <div class="note-t">E una stima, non la tua bolletta</div>
+        <div class="note-p">I token sono quelli <b>ufficiali</b> che OpenAI riporta a ogni risposta, quindi il conteggio e esatto. Il prezzo no: e un listino salvato ad agosto 2026 in <code>ai-usage.ts</code>, e se OpenAI lo cambia questa cifra resta indietro finche non lo aggiorni. Il conto vero e sul tuo pannello OpenAI.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="ph-head">
+      <button class="ph-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div><div class="ph-t" style="font-size:19px">Consumi AI</div><div class="ph-s">Agosto 2026</div></div>
+    </div>
+    <div class="ph-body">
+      <div class="total" style="padding-bottom:18px">
+        <div class="total-v" style="font-size:44px">0,29<span class="cur">$</span></div>
+        <div class="total-k">Stima su <b>17 giornate</b>, 12 a voce.<br>Circa <b>1,7 centesimi</b> a giornata.</div>
+      </div>
+      <div class="gl">Da cosa arriva</div>
+      <div class="ur"><div class="ur-main"><div class="ur-t">Trascrizione della voce</div><div class="ur-d">12 registrazioni . 36 min</div><div class="bar"><i style="width:76%"></i></div></div><div class="ur-v">0,22 $<small>76%</small></div></div>
+      <div class="ur"><div class="ur-main"><div class="ur-t">Recap del mese</div><div class="ur-d">1 recap</div><div class="bar"><i style="width:14%"></i></div></div><div class="ur-v">0,04 $<small>14%</small></div></div>
+      <div class="ur"><div class="ur-main"><div class="ur-t">Titoli e sintesi</div><div class="ur-d">17 giornate</div><div class="bar"><i style="width:7%"></i></div></div><div class="ur-v">0,02 $<small>7%</small></div></div>
+      <div class="ur"><div class="ur-main"><div class="ur-t">Persone, date, note</div><div class="ur-d">41 chiamate</div><div class="bar q"><i style="width:3%"></i></div></div><div class="ur-v">0,01 $<small>3%</small></div></div>
+    </div>
+    <div class="tabbar"><span>Oggi</span><span>Mese</span><span>Ricorda</span><span class="on">Impost.</span></div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 03 ============ -->
+<div class="label">03 . Scuro, e quando non c'e niente</div>
+<div class="caption">Il vuoto non dice "nessun dato": dice <b>perche</b> e vuoto. Il caso reale e il primo del mese, oppure un utente che scrive e basta senza mai usare l'AI &mdash; e in quel caso zero e la risposta giusta, non un errore.</div>
+<div class="frame-wrap">
+<div class="row2">
+  <div class="win dark" style="width:560px;min-height:400px">
+    <div class="col-c">
+      <div class="ph">
+        <button class="ph-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div><div class="ph-t">Consumi AI</div><div class="ph-s">Agosto 2026, dal giorno 1</div></div>
+      </div>
+      <div class="total">
+        <div class="total-v">0,29<span class="cur">$</span></div>
+        <div class="total-k">Stima su <b>17 giornate</b>, di cui 12 raccontate a voce.</div>
+      </div>
+      <div class="gl">Da cosa arriva</div>
+      <div class="ur"><div class="ur-main"><div class="ur-t">Trascrizione della voce</div><div class="ur-d">12 registrazioni . 36 minuti</div><div class="bar"><i style="width:76%"></i></div></div><div class="ur-v">0,22 $<small>76%</small></div></div>
+      <div class="ur"><div class="ur-main"><div class="ur-t">Recap del mese</div><div class="ur-d">1 recap</div><div class="bar"><i style="width:14%"></i></div></div><div class="ur-v">0,04 $<small>14%</small></div></div>
+    </div>
+  </div>
+
+  <div class="win" style="width:560px;min-height:400px">
+    <div class="col-c">
+      <div class="ph">
+        <button class="ph-back"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div><div class="ph-t">Consumi AI</div><div class="ph-s">Agosto 2026, dal giorno 1</div></div>
+      </div>
+      <div class="empty">
+        <div class="empty-t">Questo mese l'AI non l'hai ancora usata</div>
+        <div class="empty-p">Il conto riparte da zero il primo di ogni mese. Compare qualcosa appena racconti una giornata a voce o chiudi una giornata col riassunto.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>
