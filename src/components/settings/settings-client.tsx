@@ -38,7 +38,11 @@ import {
   WherePanel,
 } from "@/components/settings/panels";
 import { BackupBanner } from "@/components/settings/data-section";
-import { ConsumiPanel, ConsumiRow } from "@/components/consumi/consumi-panel";
+import {
+  ConsumiPanel,
+  ConsumiRailRow,
+  ConsumiRow,
+} from "@/components/consumi/consumi-panel";
 import {
   eraseLocalData,
   exportBackup,
@@ -413,17 +417,6 @@ export function SettingsClient({
               </SetGroup>
             </div>
 
-            {/* Su desktop il gruppo Account qui sopra sparisce (l'identita
-                passa nella rail destra) e la riga resterebbe irraggiungibile
-                proprio dove il mockup la mostra. Vedi features.css. */}
-            {!isLocal && (
-              <div className="jm-cs-deskonly">
-                <SetGroup label={t("Account")}>
-                  <ConsumiRow onOpen={() => setPanel("consumi")} />
-                </SetGroup>
-              </div>
-            )}
-
             {isLocal && (
               <SetGroup label={t("Zona pericolosa")}>
                 <SetRow
@@ -492,6 +485,7 @@ export function SettingsClient({
               </span>
             </div>
           )}
+          {!isLocal && <ConsumiRailRow onOpen={() => setPanel("consumi")} />}
           <div className="jm-st-rrow">
             <span className="k">{t("Versione")}</span>
             <span className="v">{APP_VERSION}</span>
