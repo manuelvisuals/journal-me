@@ -17,6 +17,10 @@
  * traducono.
  */
 export const EN_EXTRA: Record<string, string> = {
+  /* Mese, avanti e indietro (ramo mese-nav) */
+  "Mese precedente": "Previous month",
+  "Mese successivo": "Next month",
+
   /* Consumi AI (ramo consumi-ai) */
   "Consumi AI": "AI spend",
   "Quanto e costato questo mese": "What it has cost this month",
