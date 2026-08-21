@@ -38,6 +38,7 @@ import {
   WherePanel,
 } from "@/components/settings/panels";
 import { BackupBanner } from "@/components/settings/data-section";
+import { ConsumiPanel, ConsumiRow } from "@/components/consumi/consumi-panel";
 import {
   eraseLocalData,
   exportBackup,
@@ -66,7 +67,8 @@ type Props = {
   latestRecap: { title: string; periodLabel: string } | null;
 };
 
-type Panel = "root" | "goals" | "theme" | "where" | "language" | "textsize";
+type Panel =
+  | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -74,6 +76,7 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   where: "Dove sono le mie giornate",
   language: "Lingua",
   textsize: "Dimensione del testo",
+  consumi: "Consumi AI",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -239,6 +242,7 @@ export function SettingsClient({
         {panel === "language" && <LanguagePanel />}
         {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
+        {panel === "consumi" && <ConsumiPanel />}
 
         {panel === "root" && (
           <>
@@ -392,6 +396,7 @@ export function SettingsClient({
                       title={t("Piano")}
                       value={plan === "premium" ? t("Premium") : t("Gratis")}
                     />
+                    <ConsumiRow onOpen={() => setPanel("consumi")} />
                   </>
                 )}
                 <SetRow title={t("Versione")} value={APP_VERSION} />
@@ -407,6 +412,17 @@ export function SettingsClient({
                 )}
               </SetGroup>
             </div>
+
+            {/* Su desktop il gruppo Account qui sopra sparisce (l'identita
+                passa nella rail destra) e la riga resterebbe irraggiungibile
+                proprio dove il mockup la mostra. Vedi features.css. */}
+            {!isLocal && (
+              <div className="jm-cs-deskonly">
+                <SetGroup label={t("Account")}>
+                  <ConsumiRow onOpen={() => setPanel("consumi")} />
+                </SetGroup>
+              </div>
+            )}
 
             {isLocal && (
               <SetGroup label={t("Zona pericolosa")}>
