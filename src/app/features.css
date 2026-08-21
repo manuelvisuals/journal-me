@@ -274,3 +274,59 @@
   fill: none;
   opacity: 0.6;
 }
+
+/* ============================================================
+   MESE, AVANTI E INDIETRO  (mockup design/mockups/mese-navigazione.html,
+   variante 03 approvata il 21 agosto)
+   Solo desktop: .jm-mese-wrap e display:none sotto lg, quindi qui non
+   serve nessuna media query. Le regole stanno in questo file e non in
+   globals.css per non scontrarsi con l'altra sessione.
+   ============================================================ */
+
+.jm-mese-hrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+/* Il titolo prende lo spazio che gli serve e non un pixel di piu: le
+   frecce vanno all'altro capo, non subito dopo la parola. */
+.jm-mese-navpair {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.jm-mese-nav {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-mese-nav svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-mese-nav:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+.jm-mese-nav:active:not(:disabled) {
+  transform: scale(0.97);
+}
+/* Spento, non nascosto. */
+.jm-mese-nav:disabled {
+  opacity: 0.28;
+  cursor: default;
+}

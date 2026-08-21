@@ -15,6 +15,19 @@ import {
 } from "@/lib/data/entries";
 import type { Entry } from "@/lib/types";
 
+/**
+ * Un mese avanti o indietro, senza mai costruire una Date: il mese come
+ * indice assoluto non ha casi limite a dicembre e non tocca il fuso, che
+ * qui sarebbe l'unico modo di sbagliare (HANDOVER, la regola su APP_TZ).
+ */
+function stepMonth(
+  m: { year: number; month: number },
+  delta: number,
+): { year: number; month: number } {
+  const idx = m.year * 12 + (m.month - 1) + delta;
+  return { year: Math.floor(idx / 12), month: (idx % 12) + 1 };
+}
+
 type LoadedMonth = {
   year: number;
   month: number; // 1-based
@@ -220,6 +233,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
           entries={deskEntries}
           today={today}
           onTitleClick={() => setPickerOpen(true)}
+          onStep={(delta) => setDeskMonth((m) => stepMonth(m, delta))}
           onDayClick={(iso) => {
             setPendingDate(iso);
             startNav(() => {
