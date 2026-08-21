@@ -31,6 +31,7 @@ import {
 } from "@/lib/data/entries";
 import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
+import { mergePeople } from "@/lib/people-merge";
 import { useT } from "@/lib/i18n";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
@@ -321,12 +322,14 @@ export function TodayClient({
       if (newOnes.length > 0) {
         await addPersonas(mode, newOnes);
       }
-      await saveEntryPeople(mode, attachDate, allPeople);
+      // UNIRE, non sostituire: l'estrazione ha guardato solo il testo appena
+      // aggiunto, quindi chi era gia sulla giornata non compare in
+      // `allPeople` e verrebbe cancellato senza che nessuno lo dica.
+      const people = mergePeople(entryForDate?.people ?? [], allPeople);
+      await saveEntryPeople(mode, attachDate, people);
       // Base the view on the real saved entry (which has the headline/areas),
       // with people merged in — never a headline-less shell.
-      const base = entryForDate
-        ? { ...entryForDate, people: allPeople }
-        : null;
+      const base = entryForDate ? { ...entryForDate, people } : null;
       const showToday = attachDate === todayISO();
       if (base && showToday) setEntry(base);
       setPeopleData(null);
