@@ -140,8 +140,12 @@ async function open(opts) {
   return { ctx, page, errors, external, apiUsage };
 }
 
+// Due forme della stessa riga: SetRow nel gruppo Account (telefono) e riga
+// della rail destra (desktop). Solo una delle due e visibile per volta.
 const visibleRow = (page) =>
-  page.locator(".jm-st-row:visible").filter({ hasText: "Consumi AI" });
+  page
+    .locator(".jm-st-row:visible, .jm-cs-rrow:visible")
+    .filter({ hasText: "Consumi AI" });
 
 /* ================= 1. MODALITA LOCALE: la riga non c'e ================= */
 for (const [w, h, dove] of [[1440, 900, "desktop"], [390, 780, "telefono"]]) {
@@ -164,7 +168,11 @@ for (const [w, h, dove] of [[1440, 900, "desktop"], [390, 780, "telefono"]]) {
   const row = visibleRow(page);
   check("cloud desktop: la riga c'e, una sola", (await row.count()) === 1);
   const rowText = await row.first().innerText();
-  check("riga: descrizione del mockup", rowText.includes("Quanto e costato questo mese"), rowText.replace(/\n/g, " | "));
+  check(
+    "cloud desktop: la riga vive nella rail destra, sotto Piano",
+    (await page.locator(".jm-st-rr .jm-cs-rrow").count()) === 1 &&
+      (await page.locator(".jm-cs-deskonly").count()) === 0,
+  );
   check("riga: il totale e gia sulla riga", rowText.includes("circa 0,29 $"), rowText.replace(/\n/g, " | "));
 
   await row.first().click();
@@ -255,6 +263,10 @@ for (const [w, h, dove] of [[1440, 900, "desktop"], [390, 780, "telefono"]]) {
   const { ctx, page } = await open({ width: 390, height: 780, mode: "cloud" });
   const row = visibleRow(page);
   check("cloud telefono: la riga c'e, una sola", (await row.count()) === 1);
+  const phoneRow = (await row.first().innerText()).replace(/\n/g, " | ");
+  check("cloud telefono: descrizione e totale del mockup",
+    phoneRow.includes("Quanto e costato questo mese") && phoneRow.includes("circa 0,29 $"),
+    phoneRow);
   await row.first().click();
   await page.waitForTimeout(600);
   check("cloud telefono: il pannello si apre", await page.locator(".jm-cs-total-v").isVisible());

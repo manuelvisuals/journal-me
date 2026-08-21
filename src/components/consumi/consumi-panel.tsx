@@ -169,6 +169,37 @@ export function ConsumiRow({ onOpen }: { onOpen: () => void }) {
   );
 }
 
+/**
+ * La stessa riga, per la rail destra del desktop. Li l'elenco non e fatto
+ * di SetRow ma di coppie chiave/valore (.jm-st-rrow), e questa e l'unica
+ * di quelle coppie che porta da qualche parte: quindi e un bottone vero,
+ * con il chevron, e non una riga che si clicca per intuito.
+ */
+export function ConsumiRailRow({ onOpen }: { onOpen: () => void }) {
+  const t = useT();
+  const { load } = useUsage();
+
+  return (
+    <button
+      type="button"
+      className="jm-st-rrow jm-cs-rrow"
+      onClick={onOpen}
+    >
+      <span className="k">{t("Consumi AI")}</span>
+      <span className="v">
+        {load.state === "ready"
+          ? t("circa {v}", { v: moneyOrLess(load.usage.totalUsd, t) })
+          : load.state === "error"
+            ? t("non disponibile")
+            : ""}
+        <svg className="jm-cs-chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </span>
+    </button>
+  );
+}
+
 /* ----------------------- il pannello ----------------------- */
 
 export function ConsumiPanel() {

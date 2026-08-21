@@ -239,12 +239,38 @@
   .jm-cs-total-v { font-size: calc(44px * var(--jm-ui-scale)); }
 }
 
-/* Il gemello da desktop della riga "Consumi AI". Su telefono la riga sta
-   nel gruppo Account insieme a Piano; su desktop quel gruppo non esiste
-   (l'identita passa nella rail destra) e la riga resterebbe irraggiungibile
-   proprio dove il mockup la mostra. Stessa regola di .jm-st-phoneonly in
-   globals.css: media query nostra, non le utility di Tailwind. */
-.jm-cs-deskonly { display: none; }
-@media (min-width: 1024px) {
-  .jm-cs-deskonly { display: block; }
+/* La riga "Consumi AI" nella rail destra del desktop. Su telefono la riga
+   sta nel gruppo Account insieme a Piano; su desktop quel gruppo non
+   esiste, perche l'identita e passata nella rail — e li che va messa.
+   Eredita .jm-st-rrow di globals.css per allineamento, bordo e misure:
+   qui resta solo cio che serve a farne un bottone. Nota che globals.css
+   viene DOPO questo file, quindi non provare a sovrascrivere .jm-st-rrow
+   da qui: si perde. */
+.jm-cs-rrow {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-cs-rrow:hover .v { color: var(--color-ink); }
+.jm-cs-rrow .v {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.jm-cs-chev {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  opacity: 0.6;
 }

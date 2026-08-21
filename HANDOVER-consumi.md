@@ -85,17 +85,17 @@ per una bolletta.
    di Impostazioni e condiviso (`PanelHead` in `src/components/settings/rows.tsx`,
    file dell'altra sessione) e accetta solo un titolo. La riga del mese
    apre quindi il contenuto: stessa informazione, tre pixel piu in basso.
-2. **Su desktop la riga sta in un gruppo Account suo.** Il mockup mostra
-   Piano + Consumi AI + Esci nella colonna centrale anche a 1440, ma il
-   codice e andato avanti: da PR 10 l'identita su desktop vive nella rail
-   destra e il gruppo Account della colonna centrale e `jm-st-phoneonly`.
-   La rail destra non e un file di questo ramo, quindi la riga e montata
-   due volte, una per formato: sul telefono dentro il gruppo Account
-   esistente (sotto Piano, come chiesto), su desktop in un gruppo Account
-   suo in fondo alla colonna (`.jm-cs-deskonly`). Le due copie condividono
-   la stessa richiesta grazie alla cache di `loadUsage`.
-   **Da rivedere quando si potra toccare la rail destra**: il posto giusto
-   e probabilmente li.
+2. **Su desktop la riga sta nella rail destra, non in colonna centrale.**
+   Il mockup mostra Piano + Consumi AI + Esci nella colonna centrale anche
+   a 1440, ma il codice e andato avanti: da PR 10 l'identita su desktop
+   vive nella rail destra e il gruppo Account della colonna centrale e
+   `jm-st-phoneonly`. Autorizzato da Manuel il 21 agosto: la riga sta
+   sotto "Piano" nella rail (`ConsumiRailRow`), che li e l'unica coppia
+   chiave/valore cliccabile e quindi e un bottone vero, col chevron. Sul
+   telefono resta dov'e nel mockup, dentro il gruppo Account sotto Piano.
+   Il contenuto della rail e renderizzato da `settings-client.tsx`:
+   `src/components/desktop/rail-right.tsx` e solo il contenitore e non e
+   stato toccato.
 
 ---
 
