@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . La schermata di elaborazione, con il segno dell'AI</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --glow:rgba(0,0,0,.35);
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+}
+.dark{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+  --glow:rgba(255,255,255,.55);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.6;max-width:800px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:880px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.row2{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.phone{width:340px;height:520px;border-radius:36px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.phone-cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+.pl{font-size:11px;font-weight:600;color:var(--ink-faint);letter-spacing:.20em;text-transform:uppercase;margin-top:28px}
+.pp{font-size:14px;color:var(--ink-muted);max-width:280px;text-align:center;line-height:1.5;margin-top:12px}
+
+/* ---------- PRIMA: la rotella ---------- */
+.spinner{width:38px;height:38px;border-radius:50%;
+  border:2px solid color-mix(in srgb,var(--ink) 10%,transparent);
+  border-top-color:var(--accent);animation:spin .9s linear infinite;
+  box-shadow:0 0 22px color-mix(in srgb,var(--glow) 20%,transparent)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- DOPO A: stellina dentro l'anello ---------- */
+.markA{position:relative;width:58px;height:58px;display:flex;align-items:center;justify-content:center}
+.markA .ring{position:absolute;inset:0;border-radius:50%;
+  border:1.5px solid color-mix(in srgb,var(--ink) 9%,transparent);
+  border-top-color:var(--accent);animation:spin 1.1s linear infinite}
+.markA .star{width:24px;height:24px;fill:var(--accent);animation:breathe 1.9s ease-in-out infinite}
+.markA .spark{position:absolute;width:9px;height:9px;fill:var(--accent);top:9px;right:8px;opacity:.75;
+  animation:twinkle 1.9s ease-in-out infinite .55s}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.1);opacity:1}}
+@keyframes twinkle{0%,100%{transform:scale(.7);opacity:.25}55%{transform:scale(1);opacity:.85}}
+
+/* ---------- DOPO B: solo le stelline ---------- */
+.markB{position:relative;width:58px;height:58px;display:flex;align-items:center;justify-content:center}
+.markB .star{width:30px;height:30px;fill:var(--accent);animation:breathe 1.9s ease-in-out infinite;
+  filter:drop-shadow(0 0 14px color-mix(in srgb,var(--glow) 28%,transparent))}
+.markB .s2{position:absolute;width:11px;height:11px;fill:var(--accent);top:6px;right:6px;
+  animation:twinkle 1.9s ease-in-out infinite .5s}
+.markB .s3{position:absolute;width:7px;height:7px;fill:var(--accent);bottom:9px;left:8px;
+  animation:twinkle 2.3s ease-in-out infinite 1.1s}
+</style>
+</head>
+<body>
+
+<div class="page-title">Il momento in cui l'AI lavora</div>
+<div class="page-sub">
+  La schermata che compare dopo il salvataggio, mentre titolo, sintesi e aree
+  vengono estratti. Oggi e una rotella qualunque: la stessa che userebbe un
+  caricamento di file. Non dice che li dentro sta lavorando l'AI, cioe
+  esattamente la cosa che stai pagando.
+</div>
+
+<div class="divider"></div>
+
+<div class="label">prima . com'e adesso</div>
+<div class="caption">
+  Una rotella grigia da 38 pixel. Corretta, muta.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="spinner"></div>
+      <div class="pl">elaborazione</div>
+      <div class="pp">sto leggendo quello che hai detto e tiro fuori il succo</div>
+    </div>
+    <div class="phone-cap">prima . chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="spinner"></div>
+      <div class="pl">elaborazione</div>
+      <div class="pp">sto leggendo quello che hai detto e tiro fuori il succo</div>
+    </div>
+    <div class="phone-cap">prima . scuro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">dopo . A . la stellina dentro l'anello</div>
+<div class="caption">
+  Le <b>stelline</b> sono ormai il segno universale di "qui sta lavorando
+  l'AI". L'anello sottile continua a girare, quindi non si perde la sensazione
+  che qualcosa stia avanzando; la stellina al centro <b>respira</b> e la
+  piccola in alto si accende mezzo secondo dopo, cosi il movimento non e
+  meccanico. Stesso nero dell'app, nessun colore nuovo, nessun arcobaleno.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="markA">
+        <div class="ring"></div>
+        <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        <svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+      </div>
+      <div class="pl">elaborazione</div>
+      <div class="pp">sto leggendo quello che hai detto e tiro fuori il succo</div>
+    </div>
+    <div class="phone-cap">A . chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="markA">
+        <div class="ring"></div>
+        <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        <svg class="spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+      </div>
+      <div class="pl">elaborazione</div>
+      <div class="pp">sto leggendo quello che hai detto e tiro fuori il succo</div>
+    </div>
+    <div class="phone-cap">A . scuro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">dopo . B . solo le stelline</div>
+<div class="caption">
+  Niente anello: tre stelline che respirano a tempi diversi, con un alone
+  morbido. Piu silenziosa e piu elegante, ma <b>toglie il segnale di
+  avanzamento</b>: senza qualcosa che gira, dopo cinque secondi non e ovvio
+  che stia ancora lavorando invece di essersi piantata.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="markB">
+        <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        <svg class="s2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        <svg class="s3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+      </div>
+      <div class="pl">elaborazione</div>
+      <div class="pp">sto leggendo quello che hai detto e tiro fuori il succo</div>
+    </div>
+    <div class="phone-cap">B . chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="markB">
+        <svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        <svg class="s2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        <svg class="s3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+      </div>
+      <div class="pl">elaborazione</div>
+      <div class="pp">sto leggendo quello che hai detto e tiro fuori il succo</div>
+    </div>
+    <div class="phone-cap">B . scuro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">dove altro comparirebbe</div>
+<div class="caption">
+  Lo stesso segno, piccolo, sull'avviso in basso quando l'AI sta lavorando
+  (salvataggio di una giornata, rigenerazione del testo, recap). Cosi
+  "l'app sta salvando" e "l'AI sta pensando" smettono di essere la stessa
+  rotella, e la differenza si vede senza leggere.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="height:200px;justify-content:flex-end;padding-bottom:26px">
+      <div style="display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg-app);
+        border-radius:999px;padding:12px 18px;font-size:13px;font-weight:500">
+        <svg style="width:15px;height:15px;fill:var(--bg-app);animation:breathe 1.9s ease-in-out infinite" viewBox="0 0 24 24"><path d="M12 1.6c.9 4.6 2.2 6.9 6.4 8.4 -4.2 1.5 -5.5 3.8 -6.4 8.4 -.9 -4.6 -2.2 -6.9 -6.4 -8.4 4.2 -1.5 5.5 -3.8 6.4 -8.4z"/></svg>
+        L'AI sta leggendo la giornata
+      </div>
+    </div>
+    <div class="phone-cap">l'avviso, quando dietro c'e l'AI</div>
+  </div>
+</div>
+
+</body>
+</html>
