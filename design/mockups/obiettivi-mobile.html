@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Obiettivi del giorno sul telefono</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --r-sm:8px; --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.6;max-width:780px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:880px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.caption .bad{color:#FF8A80;font-weight:600}
+.caption .good{color:#8FD19E;font-weight:600}
+.row2{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.phone{width:390px;border-radius:36px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:flex;flex-direction:column;padding:24px 24px 30px}
+.phone-cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+
+/* schede metriche, come nella schermata vera */
+.cards{display:flex;gap:10px}
+.card{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 10px;text-align:center}
+.card .v{font-size:19px;font-weight:600;color:var(--ink)}
+.card .v small{font-size:12px;font-weight:500;color:var(--ink-faint);margin-left:2px}
+.card .k{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-top:7px}
+
+/* ---- oggi: i pallini ---- */
+.dots{display:flex;justify-content:center;gap:9px;padding:26px 0 6px}
+.dot{width:14px;height:14px;border-radius:50%;background:rgba(0,0,0,.10);border:1px solid rgba(0,0,0,.06)}
+.dark .dot{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.06)}
+.dot.on{background:var(--accent);border-color:var(--accent)}
+
+/* ---- intestazione del gruppo ---- */
+.ghead{display:flex;align-items:baseline;justify-content:space-between;margin:26px 0 10px}
+.ghead .l{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint)}
+.ghead .c{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+
+/* ---- A. lista a righe ---- */
+.glist{border-top:1px solid var(--line)}
+.grow{display:flex;align-items:center;gap:14px;width:100%;min-height:52px;padding:8px 2px;border-bottom:1px solid var(--line);
+  background:transparent;border-left:none;border-right:none;border-top:none;cursor:pointer;font-family:var(--font);text-align:left}
+.gbox{width:22px;height:22px;flex:0 0 22px;border-radius:7px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
+  transition:background-color 120ms,border-color 120ms}
+.gbox svg{width:13px;height:13px;stroke:var(--on-accent);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.grow.on .gbox{background:var(--accent);border-color:var(--accent)}
+.grow.on .gbox svg{opacity:1}
+.glab{flex:1;font-size:15.5px;font-weight:500;color:var(--ink-muted);letter-spacing:-.01em}
+.grow.on .glab{color:var(--ink)}
+
+/* ---- B. pillole ---- */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px 0 13px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--ink-muted);font-family:var(--font);font-size:14.5px;font-weight:500;cursor:pointer}
+.chip .m{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center}
+.chip .m svg{width:9px;height:9px;stroke:var(--on-accent);stroke-width:3;fill:none;opacity:0}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.chip.on .m{border-color:color-mix(in srgb,var(--on-accent) 55%,transparent)}
+.chip.on .m svg{opacity:1;stroke:var(--on-accent)}
+
+.hand{position:relative}
+.hand::after{content:"";position:absolute;width:44px;height:44px;border-radius:50%;border:1.5px dashed #FF8A80;pointer-events:none}
+</style>
+</head>
+<body>
+
+<div class="page-title">Gli obiettivi del giorno, sul telefono</div>
+<div class="page-sub">
+  Oggi sono cinque pallini da 14 pixel, tutti uguali, senza nomi: per sapere quale sia
+  quale devi ricordartelo, e per prenderne uno col pollice devi mirare. Il polpastrello
+  ne copre 44: il cerchio rosso qui sotto e la sua misura vera.
+</div>
+
+<div class="divider"></div>
+
+<div class="label">00 . com'e adesso</div>
+<div class="caption">
+  Il problema non e l'estetica, e che <b class="bad">non dicono niente e non si prendono</b>.
+  Sul desktop la stessa informazione e gia una lista con i nomi e le caselle: il telefono
+  e l'unico posto dove l'app te la nasconde.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone">
+      <div class="cards">
+        <div class="card"><div class="v">&mdash;<small>kg</small></div><div class="k">Peso</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Sonno</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Umore</div></div>
+      </div>
+      <div class="dots">
+        <span class="dot on hand"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+    </div>
+    <div class="phone-cap">adesso: cinque pallini anonimi</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">A . lista a righe (la mia proposta)</div>
+<div class="caption">
+  Ogni obiettivo e una riga alta <b>52 pixel</b> da bordo a bordo: il bersaglio e tutta
+  la riga, non la casella. Nessun riquadro attorno, solo righe sottili — cosi cinque
+  obiettivi non diventano cinque scatole che pesano piu del diario. In alto,
+  <b>quanti ne hai fatti</b>, che e l'unica cifra che conta e che oggi non c'e.
+  Spuntato: la casella si riempie e il nome si scurisce. E la stessa forma che il
+  desktop usa gia, quindi l'app resta una sola app.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="cards">
+        <div class="card"><div class="v">&mdash;<small>kg</small></div><div class="k">Peso</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Sonno</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Umore</div></div>
+      </div>
+      <div class="ghead"><span class="l">Obiettivi</span><span class="c">2 su 5</span></div>
+      <div class="glist">
+        <button class="grow on"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Palestra</span></button>
+        <button class="grow on"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Letto presto</span></button>
+        <button class="grow"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Meditazione</span></button>
+        <button class="grow"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Lettura</span></button>
+        <button class="grow"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Niente alcol</span></button>
+      </div>
+    </div>
+    <div class="phone-cap">A . chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="cards">
+        <div class="card"><div class="v">&mdash;<small>kg</small></div><div class="k">Peso</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Sonno</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Umore</div></div>
+      </div>
+      <div class="ghead"><span class="l">Obiettivi</span><span class="c">2 su 5</span></div>
+      <div class="glist">
+        <button class="grow on"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Palestra</span></button>
+        <button class="grow on"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Letto presto</span></button>
+        <button class="grow"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Meditazione</span></button>
+        <button class="grow"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Lettura</span></button>
+        <button class="grow"><span class="gbox"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="glab">Niente alcol</span></button>
+      </div>
+    </div>
+    <div class="phone-cap">A . scuro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">B . pillole</div>
+<div class="caption">
+  Stessa informazione, meno righe: <b>44 pixel</b> di altezza, i nomi restano, e otto
+  obiettivi occupano due righe invece di otto. Piu compatta e piu viva, ma il fatto
+  che ognuno abbia una larghezza diversa rende la lettura meno ordinata, e con nomi
+  lunghi ("niente alcol per un mese") va a capo male.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="cards">
+        <div class="card"><div class="v">&mdash;<small>kg</small></div><div class="k">Peso</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Sonno</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Umore</div></div>
+      </div>
+      <div class="ghead"><span class="l">Obiettivi</span><span class="c">2 su 5</span></div>
+      <div class="chips">
+        <button class="chip on"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Palestra</button>
+        <button class="chip on"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Letto presto</button>
+        <button class="chip"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Meditazione</button>
+        <button class="chip"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Lettura</button>
+        <button class="chip"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Niente alcol</button>
+      </div>
+    </div>
+    <div class="phone-cap">B . chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="cards">
+        <div class="card"><div class="v">&mdash;<small>kg</small></div><div class="k">Peso</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Sonno</div></div>
+        <div class="card"><div class="v">&mdash;</div><div class="k">Umore</div></div>
+      </div>
+      <div class="ghead"><span class="l">Obiettivi</span><span class="c">2 su 5</span></div>
+      <div class="chips">
+        <button class="chip on"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Palestra</button>
+        <button class="chip on"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Letto presto</button>
+        <button class="chip"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Meditazione</button>
+        <button class="chip"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Lettura</button>
+        <button class="chip"><span class="m"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>Niente alcol</button>
+      </div>
+    </div>
+    <div class="phone-cap">B . scuro</div>
+  </div>
+</div>
+
+</body>
+</html>

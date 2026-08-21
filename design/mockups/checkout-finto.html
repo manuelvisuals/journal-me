@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Checkout finto per lo sviluppo</title>
+<style>
+/* Font veri del repo, non Google Fonts: nel sandbox un @import remoto
+   renderizza Georgia e ogni giudizio tipografico che ne esce e falso. */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --accent-hi:#000000; --on-accent:#FFFFFF;
+  --danger:#C0392B; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
+}
+.dark{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --accent-hi:#FFFFFF; --on-accent:#1D1D1F;
+  --danger:#FF6B60; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin-top:10px;line-height:1.6;max-width:760px;margin-left:auto;margin-right:auto}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:880px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.caption .bad{color:#FF8A80;font-weight:600}
+.caption .good{color:#8FD19E;font-weight:600}
+.row2{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.phone{width:390px;min-height:720px;border-radius:36px;overflow:hidden;background:var(--bg-app);color:var(--ink);position:relative;
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:flex;flex-direction:column}
+.phone-cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+
+/* ============ 01 . la pagina di pagamento finta ============ */
+.ck{flex:1;display:flex;flex-direction:column;padding:0 26px;background:var(--bg-app)}
+.ck-bar{display:flex;align-items:center;gap:8px;padding:18px 0 0;font-size:11px;color:var(--ink-faint);letter-spacing:.02em}
+.ck-lock{width:12px;height:12px;stroke:var(--ink-faint);stroke-width:2;fill:none}
+.ck-mid{flex:1;display:flex;flex-direction:column;justify-content:center;padding-bottom:20px}
+.ck-tag{display:inline-flex;align-self:flex-start;align-items:center;gap:7px;font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);border:1px solid var(--line);border-radius:999px;padding:6px 12px;margin-bottom:26px}
+.ck-tag i{width:5px;height:5px;border-radius:50%;background:#E0A800;display:block}
+.ck-t{font-family:var(--serif);font-size:31px;font-weight:400;letter-spacing:-.022em;line-height:1.15;color:var(--ink)}
+.ck-p{font-size:13.5px;line-height:1.65;color:var(--ink-muted);margin-top:14px}
+.ck-amount{display:flex;align-items:baseline;gap:8px;margin:30px 0 6px}
+.ck-amount .n{font-family:var(--serif);font-size:44px;font-weight:400;letter-spacing:-.03em;color:var(--ink)}
+.ck-amount .per{font-size:13px;color:var(--ink-faint)}
+.ck-strike{font-size:12px;color:var(--ink-faint);margin-bottom:30px}
+.ck-btns{display:flex;flex-direction:column;gap:10px;padding-bottom:26px}
+.btn-primary{width:100%;min-height:52px;border:none;border-radius:var(--r-md);background:var(--accent);color:var(--on-accent);
+  font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;letter-spacing:-.01em}
+.btn-ghost{width:100%;min-height:48px;border:1px solid var(--line);border-radius:var(--r-md);background:transparent;color:var(--ink-muted);
+  font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer}
+.btn-quiet{width:100%;min-height:40px;border:none;background:transparent;color:var(--ink-faint);font-family:var(--font);font-size:12.5px;cursor:pointer}
+.ck-foot{font-size:11.5px;line-height:1.6;color:var(--ink-faint);border-top:1px solid var(--line);padding:16px 0 22px}
+
+/* ============ 02 . il popup di congratulazioni ============ */
+.scrim{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(7px)}
+.dark .scrim{background:rgba(0,0,0,.72)}
+.cong{width:100%;max-width:330px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);
+  padding:34px 28px 24px;text-align:center;box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.cong-mark{width:56px;height:56px;margin:0 auto 22px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;background:var(--bg-app)}
+.cong-mark svg{width:24px;height:24px;stroke:var(--ink);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.cong-t{font-family:var(--serif);font-size:26px;font-weight:400;letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
+.cong-p{font-size:13.5px;line-height:1.65;color:var(--ink-muted);margin-top:12px}
+.cong-list{text-align:left;margin:22px 0 24px;border-top:1px solid var(--line)}
+.cong-li{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+.cong-li i{width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 5px;margin-top:7px;display:block}
+.cong-li span{font-size:13px;color:var(--ink-muted);line-height:1.45}
+.cong .btn-primary{min-height:48px}
+
+/* ============ 03 . la targhetta premium ============ */
+.acct{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 20px;width:300px;text-align:center}
+.av{width:52px;height:52px;border-radius:50%;background:var(--surface-2);color:var(--ink);display:flex;align-items:center;justify-content:center;
+  font-size:19px;font-weight:600;margin:0 auto 12px}
+.nm{font-size:16px;font-weight:600;color:var(--ink)}
+.em{font-size:12.5px;color:var(--ink-faint);margin-top:3px}
+.pill{display:inline-block;margin-top:12px;font-size:10.5px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink-faint)}
+.pill.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.rowset{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;width:330px}
+.srow{display:flex;align-items:center;gap:16px;min-height:56px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:none}
+.srow .k{flex:1;font-size:15px;font-weight:500;color:var(--ink)}
+.srow .v{font-size:14px;color:var(--ink-faint)}
+.srow .v.on{color:var(--ink);font-weight:600}
+
+/* ============ 04 . l'errore ============ */
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:26px;display:flex;align-items:center;gap:10px;
+  background:var(--ink);color:var(--bg-app);border-radius:999px;padding:12px 18px;font-size:13px;font-weight:500;max-width:330px;
+  box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.toast svg{width:16px;height:16px;stroke:currentColor;stroke-width:2;fill:none;flex:0 0 16px}
+.wall{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;width:340px}
+.wall-t{font-family:var(--serif);font-size:24px;font-weight:400;line-height:1.15;letter-spacing:-.02em;color:var(--ink);white-space:pre-line}
+.wall-p{font-size:13px;line-height:1.6;color:var(--ink-muted);margin:12px 0 18px}
+</style>
+</head>
+<body>
+
+<div class="page-title">Checkout finto, solo per lo sviluppo</div>
+<div class="page-sub">
+  Serve a provare l'app da premium senza Stripe e senza pagare. Percorre le stesse
+  schermate del percorso vero, cosi quando le chiavi Stripe arriveranno non ci sara
+  niente da smontare. Acceso da una variabile d'ambiente e riservato a un elenco di
+  email: spento, queste pagine rispondono 404.
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================ 01 ============================ -->
+<div class="label">01 . la pagina di pagamento</div>
+<div class="caption">
+  Volutamente <b>spoglia e dichiaratamente finta</b>: la fascia in alto e la nota in
+  fondo dicono a chiare lettere che non c'e nessun addebito. Il prezzo e sbarrato
+  perche vederlo pieno, su una pagina che non incassa, e il modo piu rapido per
+  dimenticarsi che e finta e crederci davvero.
+</div>
+<div class="row2">
+
+  <div>
+    <div class="phone">
+      <div class="ck">
+        <div class="ck-bar">
+          <svg class="ck-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          pagamento simulato . nessun addebito
+        </div>
+        <div class="ck-mid">
+          <span class="ck-tag"><i></i>ambiente di prova</span>
+          <div class="ck-t">Journal.me<br>Premium</div>
+          <div class="ck-p">
+            Questa pagina non e collegata a nessun sistema di pagamento. Serve a
+            provare l'app come la vede chi ha pagato.
+          </div>
+          <div class="ck-amount">
+            <span class="n" style="text-decoration:line-through;text-decoration-thickness:1px;opacity:.45">4,99 &euro;</span>
+            <span class="per">al mese</span>
+          </div>
+          <div class="ck-strike">Non verra addebitato nulla.</div>
+        </div>
+        <div class="ck-btns">
+          <button class="btn-primary">Simula pagamento riuscito</button>
+          <button class="btn-ghost">Simula pagamento fallito</button>
+          <button class="btn-quiet">Annulla e torna al diario</button>
+        </div>
+        <div class="ck-foot">
+          Pagina visibile solo in ambiente di prova e solo agli account autorizzati.
+          Il piano viene scritto dal server, mai dal browser.
+        </div>
+      </div>
+    </div>
+    <div class="phone-cap">chiaro</div>
+  </div>
+
+  <div class="dark">
+    <div class="phone">
+      <div class="ck">
+        <div class="ck-bar">
+          <svg class="ck-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          pagamento simulato . nessun addebito
+        </div>
+        <div class="ck-mid">
+          <span class="ck-tag"><i></i>ambiente di prova</span>
+          <div class="ck-t">Journal.me<br>Premium</div>
+          <div class="ck-p">
+            Questa pagina non e collegata a nessun sistema di pagamento. Serve a
+            provare l'app come la vede chi ha pagato.
+          </div>
+          <div class="ck-amount">
+            <span class="n" style="text-decoration:line-through;text-decoration-thickness:1px;opacity:.45">4,99 &euro;</span>
+            <span class="per">al mese</span>
+          </div>
+          <div class="ck-strike">Non verra addebitato nulla.</div>
+        </div>
+        <div class="ck-btns">
+          <button class="btn-primary">Simula pagamento riuscito</button>
+          <button class="btn-ghost">Simula pagamento fallito</button>
+          <button class="btn-quiet">Annulla e torna al diario</button>
+        </div>
+        <div class="ck-foot">
+          Pagina visibile solo in ambiente di prova e solo agli account autorizzati.
+          Il piano viene scritto dal server, mai dal browser.
+        </div>
+      </div>
+    </div>
+    <div class="phone-cap">scuro</div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================ 02 ============================ -->
+<div class="label">02 . il popup di congratulazioni</div>
+<div class="caption">
+  Compare tornando nel diario, <b>una volta sola</b>. Niente coriandoli e niente
+  esclamazioni: un segno, una riga, e l'elenco di cosa si e appena aperto. La cosa
+  utile qui non e la festa, e <b>sapere cosa provare adesso</b>.
+</div>
+<div class="row2">
+
+  <div>
+    <div class="phone">
+      <div class="ck" style="filter:blur(0)">
+        <div class="ck-bar" style="opacity:.35">.</div>
+        <div class="ck-mid" style="opacity:.35">
+          <div class="ck-t">Oggi</div>
+          <div class="ck-p">Il diario sotto, gia sbloccato.</div>
+        </div>
+      </div>
+      <div class="scrim">
+        <div class="cong">
+          <div class="cong-mark">
+            <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="cong-t">Sei premium</div>
+          <div class="cong-p">Da adesso l'app lavora insieme a te. Ecco cosa e cambiato.</div>
+          <div class="cong-list">
+            <div class="cong-li"><i></i><span>Racconti a voce, il testo si scrive da solo</span></div>
+            <div class="cong-li"><i></i><span>Titolo, sintesi e macro-aree di ogni giornata</span></div>
+            <div class="cong-li"><i></i><span>Recap del mese e letture sui pattern</span></div>
+          </div>
+          <button class="btn-primary">Provalo adesso</button>
+        </div>
+      </div>
+    </div>
+    <div class="phone-cap">chiaro</div>
+  </div>
+
+  <div class="dark">
+    <div class="phone">
+      <div class="ck">
+        <div class="ck-bar" style="opacity:.35">.</div>
+        <div class="ck-mid" style="opacity:.35">
+          <div class="ck-t">Oggi</div>
+          <div class="ck-p">Il diario sotto, gia sbloccato.</div>
+        </div>
+      </div>
+      <div class="scrim">
+        <div class="cong">
+          <div class="cong-mark">
+            <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="cong-t">Sei premium</div>
+          <div class="cong-p">Da adesso l'app lavora insieme a te. Ecco cosa e cambiato.</div>
+          <div class="cong-list">
+            <div class="cong-li"><i></i><span>Racconti a voce, il testo si scrive da solo</span></div>
+            <div class="cong-li"><i></i><span>Titolo, sintesi e macro-aree di ogni giornata</span></div>
+            <div class="cong-li"><i></i><span>Recap del mese e letture sui pattern</span></div>
+          </div>
+          <button class="btn-primary">Provalo adesso</button>
+        </div>
+      </div>
+    </div>
+    <div class="phone-cap">scuro</div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================ 03 ============================ -->
+<div class="label">03 . la targhetta accanto al nome</div>
+<div class="caption">
+  La targhetta <b>esiste gia</b> e dice "Gratis": oggi resta cosi anche dopo il
+  pagamento, perche il piano viene riletto una volta sola per sessione. Il lavoro qui
+  non e disegnarla, e <b>farla cambiare senza ricaricare</b>. Da premium diventa piena
+  invece che contornata: si distingue con la coda dell'occhio.
+</div>
+<div class="row2">
+  <div>
+    <div class="acct">
+      <div class="av">M</div>
+      <div class="nm">madh52</div>
+      <div class="em">madh52@gmail.com</div>
+      <span class="pill">Gratis</span>
+    </div>
+    <div class="phone-cap">prima</div>
+  </div>
+  <div>
+    <div class="acct">
+      <div class="av">M</div>
+      <div class="nm">madh52</div>
+      <div class="em">madh52@gmail.com</div>
+      <span class="pill on">Premium</span>
+    </div>
+    <div class="phone-cap">dopo</div>
+  </div>
+  <div>
+    <div class="rowset">
+      <div class="srow"><span class="k">Email</span><span class="v">madh52@gmail.com</span></div>
+      <div class="srow"><span class="k">Piano</span><span class="v on">Premium</span></div>
+      <div class="srow"><span class="k">Versione</span><span class="v">2.4.0</span></div>
+    </div>
+    <div class="phone-cap">sul telefono: la riga Piano in Impostazioni</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================ 04 ============================ -->
+<div class="label">04 . quando il pagamento fallisce</div>
+<div class="caption">
+  Il piano resta <b class="bad">gratis</b> e l'errore <b>si legge</b>: torna il muro
+  premium con una riga in piu, e l'avviso in basso e lo stesso di tutta l'app, non
+  uno nuovo. La cosa che non deve succedere e tornare a una schermata identica a
+  prima, senza sapere se e andata o no.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="min-height:520px;justify-content:center;align-items:center;background:var(--bg-app)">
+      <div class="wall">
+        <div class="wall-t">Per raccontare a voce
+serve premium</div>
+        <div class="wall-p">Il pagamento non e andato a buon fine. Non e stato addebitato nulla e il tuo piano non e cambiato.</div>
+        <button class="btn-primary">riprova . 4,99 &euro; al mese</button>
+        <div style="height:10px"></div>
+        <button class="btn-ghost">non ora</button>
+      </div>
+      <div class="toast">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 17h.01"/></svg>
+        Pagamento non riuscito. Sei ancora al piano gratis.
+      </div>
+    </div>
+    <div class="phone-cap">errore simulato</div>
+  </div>
+</div>
+
+</body>
+</html>
