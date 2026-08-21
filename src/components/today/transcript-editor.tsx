@@ -56,11 +56,23 @@ export function TranscriptEditor({
             >
               {t("Annulla")}
             </button>
+            {/* "Salva" resta premibile anche senza modifiche, e non e una
+                svista: salvare rilancia l'AI sul testo, ed e l'unico modo
+                di RIPROVARE su una giornata venuta male. Il 21 agosto 2026
+                una giornata vera e rimasta con il titolo generico e nessuna
+                area, e non c'era nessun gesto per chiedere all'app di
+                riprovare: il tasto c'era, ma spento proprio quando serviva.
+                Vuoto no: quello cancellerebbe il racconto. */}
             <button
               type="button"
               className="jm-editor-btn save"
               onClick={() => onSave(value)}
-              disabled={!isDirty || isEmpty}
+              disabled={isEmpty}
+              title={
+                isDirty
+                  ? undefined
+                  : t("Rilancia il riassunto AI su questo testo")
+              }
             >
               {t("Salva")}
             </button>

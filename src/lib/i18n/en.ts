@@ -488,4 +488,5 @@ export const EN: Record<string, string> = {
   "Registrare serie e ripetizioni ha bisogno di un posto dove salvarle, e quel posto lo sto costruendo. Intanto quello che racconti sulla palestra finisce comunque nella giornata, sotto Movimento.":
     "Recording sets and reps needs a place to store them, and that place is being built. In the meantime what you say about the gym still lands in the day, under Movement.",
   "Torna a Oggi": "Back to Today",
+  "Rilancia il riassunto AI su questo testo": "Run the AI summary again on this text",
 };
