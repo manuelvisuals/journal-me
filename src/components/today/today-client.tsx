@@ -32,6 +32,7 @@ import {
 import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import { useT } from "@/lib/i18n";
+import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
 type View =
@@ -101,6 +102,7 @@ export function TodayClient({
   const canVoice = useCan("voice");
   const canAI = useCan("aiSummary");
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
+  const optimisticGoals = useOptimisticGoals();
   const [view, setView] = useState<View>(
     autoRecord
       ? canVoice
@@ -192,10 +194,13 @@ export function TodayClient({
 
   // Goals to render: the entry's own goal state if present, otherwise the
   // live definitions rendered all-off. No hardcoded list anywhere.
-  const goalsForView: GoalDot[] =
+  // La spunta appena toccata vince sul dato salvato finche il salvataggio
+  // non torna: vedi src/lib/use-optimistic-goals.ts.
+  const goalsForView: GoalDot[] = optimisticGoals.view(
     entry?.goals && entry.goals.length > 0
       ? entry.goals
-      : goalDefs.map((d) => ({ id: d.id, label: d.label, on: false }));
+      : goalDefs.map((d) => ({ id: d.id, label: d.label, on: false })),
+  );
 
   const handleStartRecording = () => {
     setSaveError(null);
@@ -361,15 +366,19 @@ export function TodayClient({
 
   const handleGoalToggle = async (label: string) => {
     const dateISO = entry?.entryDate ?? todayISO();
-    try {
-      const updated = await toggleGoal(mode, dateISO, label);
-      setEntry(updated);
-      // Su desktop, mentre si scrive, la colonna resta l'editor: toccare
-      // una metrica o un obiettivo dalla rail non deve chiuderlo.
-      if (view === "empty" && !isDesktop) setView("filled");
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
-    }
+    await optimisticGoals.toggle(goalsForView, label, async () => {
+      try {
+        const updated = await toggleGoal(mode, dateISO, label);
+        setEntry(updated);
+        // Su desktop, mentre si scrive, la colonna resta l'editor: toccare
+        // una metrica o un obiettivo dalla rail non deve chiuderlo.
+        if (view === "empty" && !isDesktop) setView("filled");
+      } catch (err) {
+        setSaveError(
+          err instanceof Error ? err.message : t("Errore nel salvataggio"),
+        );
+      }
+    });
   };
 
   const handleEditorDelete = async () => {

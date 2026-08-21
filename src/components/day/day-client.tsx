@@ -6,6 +6,7 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { AddToDay } from "@/components/day/add-to-day";
+import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
 import {
   compactDayDate,
   parseISODate,
@@ -43,6 +44,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
   const t = useT();
   const router = useRouter();
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
+  const optimisticGoals = useOptimisticGoals();
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -60,13 +62,19 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     }
   };
 
+  // La spunta si accende SUBITO e poi si salva: vedi
+  // src/lib/use-optimistic-goals.ts.
+  const goalsForView = optimisticGoals.view(entry?.goals ?? []);
+
   const handleGoalToggle = async (label: string) => {
-    try {
-      const updated = await toggleGoal(mode, date, label);
-      setEntry(updated);
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t("Errore"));
-    }
+    await optimisticGoals.toggle(goalsForView, label, async () => {
+      try {
+        const updated = await toggleGoal(mode, date, label);
+        setEntry(updated);
+      } catch (err) {
+        setSaveError(err instanceof Error ? err.message : t("Errore"));
+      }
+    });
   };
 
   const handleTranscriptSave = async (newTranscript: string) => {
@@ -188,7 +196,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           snippet={entry.snippet}
           areas={entry.areas}
           metrics={entry.metrics}
-          goals={entry.goals}
+          goals={goalsForView}
           people={entry.people}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
