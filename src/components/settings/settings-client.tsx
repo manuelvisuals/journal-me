@@ -7,6 +7,7 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { GoalsSection } from "@/components/settings/goals-section";
 import { AppearanceSection } from "@/components/settings/appearance-section";
 import { BackupBanner, DataSection } from "@/components/settings/data-section";
+import { UsageSection } from "@/components/settings/usage-section";
 import { useStorageMode } from "@/lib/data/store";
 import { APP_VERSION } from "@/lib/data/store/types";
 import type { DataMode } from "@/lib/data/entries";
@@ -99,6 +100,8 @@ export function SettingsClient({
         <GoalsSection mode={mode} initial={initialGoals} />
 
         <DataSection />
+
+        <UsageSection />
 
         <section className="jm-set-section">
           <div className="jm-set-section-h">Account</div>

@@ -3800,3 +3800,84 @@ summary:active {
     max-width: 700px;
   }
 }
+
+/* =============================================================
+   Benvenuto su desktop (fix 19 ago, richiamo di Manuel): da lg le
+   due card stanno AFFIANCATE e la pagina usa lo schermo, come nel
+   mockup due-modalita §01. Il max-w-[440px] del telefono e una
+   utility Tailwind (in @layer): questo CSS nudo la scavalca.
+   ============================================================= */
+@media (min-width: 1024px) {
+  .jm-benv {
+    max-width: none;
+    padding-left: 48px;
+    padding-right: 48px;
+    justify-content: center;
+  }
+  .jm-benv-hero {
+    font-size: 44px;
+    margin-top: 0;
+  }
+  .jm-benv-cards {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 48px;
+  }
+  .jm-benv-card {
+    flex: 1 1 0;
+    max-width: 640px;
+    padding: 28px 28px 24px;
+  }
+}
+
+/* =============================================================
+   Quota AI del mese (richiesta Manuel 19 ago): barra di progresso
+   della quota inclusa nell'abbonamento, dentro Altro. Vale a
+   tutte le larghezze.
+   ============================================================= */
+.jm-usage {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 16px 18px;
+}
+.jm-usage-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.jm-usage-t {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.jm-usage-pct {
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.jm-usage-bar {
+  height: 8px;
+  border-radius: var(--jm-radius-pill);
+  background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+  overflow: hidden;
+}
+.jm-usage-fill {
+  height: 100%;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-accent);
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.jm-usage-fill.warn {
+  background: var(--color-danger);
+}
+.jm-usage-sub {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}

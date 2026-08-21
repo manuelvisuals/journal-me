@@ -16,6 +16,8 @@ create table if not exists public.ai_usage (
 
 alter table public.ai_usage enable row level security;
 
+drop policy if exists "read own ai usage" on public.ai_usage;
+
 create policy "read own ai usage" on public.ai_usage
   for select using (auth.uid() = user_id);
 
