@@ -39,6 +39,11 @@ import {
 } from "@/components/settings/panels";
 import { BackupBanner } from "@/components/settings/data-section";
 import {
+  ConsumiPanel,
+  ConsumiRailRow,
+  ConsumiRow,
+} from "@/components/consumi/consumi-panel";
+import {
   eraseLocalData,
   exportBackup,
   importBackup,
@@ -66,7 +71,8 @@ type Props = {
   latestRecap: { title: string; periodLabel: string } | null;
 };
 
-type Panel = "root" | "goals" | "theme" | "where" | "language" | "textsize";
+type Panel =
+  | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -74,6 +80,7 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   where: "Dove sono le mie giornate",
   language: "Lingua",
   textsize: "Dimensione del testo",
+  consumi: "Consumi AI",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -239,6 +246,7 @@ export function SettingsClient({
         {panel === "language" && <LanguagePanel />}
         {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
+        {panel === "consumi" && <ConsumiPanel />}
 
         {panel === "root" && (
           <>
@@ -392,6 +400,7 @@ export function SettingsClient({
                       title={t("Piano")}
                       value={plan === "premium" ? t("Premium") : t("Gratis")}
                     />
+                    <ConsumiRow onOpen={() => setPanel("consumi")} />
                   </>
                 )}
                 <SetRow title={t("Versione")} value={APP_VERSION} />
@@ -476,6 +485,7 @@ export function SettingsClient({
               </span>
             </div>
           )}
+          {!isLocal && <ConsumiRailRow onOpen={() => setPanel("consumi")} />}
           <div className="jm-st-rrow">
             <span className="k">{t("Versione")}</span>
             <span className="v">{APP_VERSION}</span>
