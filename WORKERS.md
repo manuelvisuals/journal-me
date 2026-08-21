@@ -22,18 +22,25 @@ rifiutato, prova a risolvere da solo, e li si perde un'ora. E successo a tutti.
 Prima di far partire due worker, guarda quali file toccano. Se due elenchi si
 sovrappongono, quei due lavori **non vanno in parallelo**: vanno in fila.
 
-Coppie sicure oggi:
+La divisione viva di oggi sta in **`PROMPT-sorella.md`**, scritto per la sessione che
+implementa la fase 1 dei fatti: e l'esempio di riferimento di come si fa una divisione
+buona. Da notare due invenzioni che valgono per qualunque coppia futura:
 
-| Worker | PR | File che tocca |
-|---|---|---|
-| A | 1 `api-auth` | `src/app/api/**`, `src/lib/api.ts`, `src/lib/server/**`, `supabase/migrations/006_*` |
-| B | 0 `temi` | `src/app/globals.css`, `src/themes/**`, `src/app/layout.tsx`, i `.tsx` solo per togliere valori letterali |
+- **`src/app/features.css`**, importato in cima a `globals.css`: il worker nuovo scrive
+  solo li, e `globals.css` resta di chi lo aveva gia in mano.
+- **`src/lib/i18n/en-extra.ts`**, consultato da `t()` prima del catalogo grande: le
+  traduzioni nuove non toccano `en.ts`.
 
-Sovrapposizione: nessuna. `layout.tsx` lo tocca solo B.
+Sono **punti d'innesto**: file vuoti creati apposta perche due sessioni scrivano vicino
+senza scrivere nello stesso posto. Quando apri un fronte nuovo, chiediti se serve
+un innesto invece di far condividere un file grosso. Un conflitto in un foglio di stile
+non da nessun errore, da una schermata storta; in un catalogo di traduzioni perde righe
+in silenzio.
 
-Coppie da **non** mettere in parallelo:
-- PR 1 e PR 2: si incontrano in `src/lib/data/entries.ts` (le fetch alle route AI).
-- PR 0 e qualunque PR visiva (6, 7, 9, 10): il senso della PR 0 e arrivare prima di loro.
+Regola generale per scegliere le coppie: prendi da `HANDOVER.md` §13 la tabella di cosa
+manca, scrivi per ognuno l'elenco dei file, e metti in parallelo solo gli elenchi che non
+si intersecano. Se si intersecano e non puoi creare un innesto, quei due lavori vanno in
+fila.
 
 ## Regola numero tre: si ferma a uno stato pulito, non a meta
 
