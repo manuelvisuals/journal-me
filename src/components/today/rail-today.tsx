@@ -12,6 +12,7 @@
  * 31px appena si apriva l'editor del mood. Vedi rail-metrics.tsx.
  */
 
+import { useRouter } from "next/navigation";
 import { RailMetrics } from "@/components/today/rail-metrics";
 import { RailRight } from "@/components/desktop/rail-right";
 import { formatNumber } from "@/lib/format";
@@ -34,6 +35,7 @@ export function RailToday({
   onGoalToggle,
 }: Props) {
   const t = useT();
+  const router = useRouter();
   const peopleList = people.filter((p) => p.trim().length > 0);
   const done = goals.filter((g) => g.on).length;
 
@@ -79,9 +81,16 @@ export function RailToday({
           <div className="jm-railr-l">{t("Persone")}</div>
           <div className="jm-railr-chips">
             {peopleList.map((name) => (
-              <span key={name} className="jm-railr-chip">
+              <button
+                key={name}
+                type="button"
+                className="jm-railr-chip link"
+                onClick={() =>
+                  router.push(`/persona?nome=${encodeURIComponent(name)}`)
+                }
+              >
                 {name}
-              </span>
+              </button>
             ))}
           </div>
         </div>

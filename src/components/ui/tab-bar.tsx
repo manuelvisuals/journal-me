@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useT } from "@/lib/i18n";
+import { MODULE_ICONS } from "@/components/ui/module-icons";
+import { useActiveModules } from "@/lib/modules";
 
 export type TabKey =
   | "today"
   | "month"
   | "mic"
   | "remember"
+  | "module"
   | "settings";
 
 type Props = {
@@ -108,6 +111,24 @@ const SIDE_TABS_RIGHT: Tab[] = [
 
 export function TabBar({ active }: Props) {
   const t = useT();
+  // Il modulo acceso piu di recente prende il quarto posto (richiesta di
+  // Manuel del 21 agosto 2026). I posti sono cinque e il microfono al
+  // centro non si tocca, quindi qualcosa deve spostarsi: si sposta
+  // Ricorda, che resta raggiungibile dalla prima riga di Impostazioni.
+  // Sul desktop non si sposta niente: la barra di sinistra li tiene tutti.
+  const moduli = useActiveModules();
+  const primo = moduli[0];
+  const tabsRight: Tab[] = primo
+    ? [
+        {
+          key: "module",
+          label: primo.label,
+          href: primo.href,
+          icon: MODULE_ICONS[primo.id],
+        },
+        ...SIDE_TABS_RIGHT.filter((tb) => tb.key !== "remember"),
+      ]
+    : SIDE_TABS_RIGHT;
   return (
     <nav
       className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur lg:hidden"
@@ -164,7 +185,7 @@ export function TabBar({ active }: Props) {
         </span>
       </Link>
 
-      {SIDE_TABS_RIGHT.map((tab) => (
+      {tabsRight.map((tab) => (
         <SideTab key={tab.key} tab={tab} active={active === tab.key} />
       ))}
     </nav>

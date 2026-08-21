@@ -30,6 +30,7 @@ import {
   useT,
   type LangPref,
 } from "@/lib/i18n";
+import { MODULES, setModuleActive, useActiveModules } from "@/lib/modules";
 import type { DataMode } from "@/lib/data/entries";
 import type { GoalDef } from "@/lib/types";
 
@@ -397,6 +398,84 @@ export function TextSizePanel() {
           {t("Torna alla misura normale")}
         </button>
       )}
+    </>
+  );
+}
+
+/**
+ * Moduli: le sezioni in piu (mockup design/mockups/palestra.html §07,
+ * approvato il 21 agosto 2026).
+ *
+ * Due cose sono scritte a schermo e non lasciate intuire, perche sono le
+ * due domande che si fa chiunque tocchi un interruttore:
+ *
+ *  1. COSA SUCCEDE ACCENDENDO: il modulo prende il quarto posto nella barra
+ *     in basso, e il piu recente vince sugli altri.
+ *  2. COSA SUCCEDE SPEGNENDO: niente viene cancellato. E la paura vera, e
+ *     una riga di testo costa meno di un utente che non prova mai.
+ *
+ * I moduli non ancora pronti compaiono con scritto "presto" e l'interruttore
+ * non si muove: uno che si muove senza che succeda niente e peggio di uno
+ * assente.
+ */
+export function ModuliPanel() {
+  const t = useT();
+  const attivi = useActiveModules();
+  const attiviIds = attivi.map((m) => m.id);
+  // L'ordine mostrato e quello vero: gli accesi in cima, il piu recente per
+  // primo. Cosi l'elenco stesso dice chi comanda la quarta icona.
+  const ordinati = [
+    ...attivi,
+    ...MODULES.filter((m) => !attiviIds.includes(m.id)),
+  ];
+
+  return (
+    <>
+      <p className="jm-st-lede">
+        {t(
+          "Sezioni in piu, accese solo se le vuoi. Quella che accendi per ultima prende il quarto posto nella barra in basso; sul computer ci sono tutte nella colonna di sinistra.",
+        )}
+      </p>
+
+      <div className="jm-st-box">
+        {ordinati.map((m) => {
+          const on = attiviIds.includes(m.id);
+          const pronto = m.status === "pronto";
+          return (
+            <div
+              key={m.id}
+              className={`jm-st-row static${pronto ? "" : " presto"}`}
+            >
+              <span className="jm-st-grow">
+                <span className="jm-st-t">{t(m.label)}</span>
+                <span className="jm-st-d">
+                  {pronto ? t(m.description) : t("Presto")}
+                </span>
+              </span>
+              {pronto ? (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={on}
+                  aria-label={t(m.label)}
+                  className={`jm-sw${on ? " on" : ""}`}
+                  onClick={() => setModuleActive(m.id, !on)}
+                >
+                  <i aria-hidden="true" />
+                </button>
+              ) : (
+                <span className="jm-st-val">{t("presto")}</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="jm-st-note">
+        {t(
+          "Spegnendo un modulo la voce sparisce dalla barra, ma quello che hai registrato resta dov'e: riaccendendolo lo ritrovi.",
+        )}
+      </p>
     </>
   );
 }

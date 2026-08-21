@@ -38,6 +38,16 @@ export interface JournalStore {
   loadTodayEntry(): Promise<Entry | null>;
   loadEntryForDate(dateISO: string): Promise<Entry | null>;
   loadMonthEntries(year: number, month: number): Promise<Entry[]>;
+  /**
+   * Tutte le giornate, dalla piu vecchia alla piu recente.
+   *
+   * Serve alla Scheda Persona (src/lib/data/people.ts): "quando ho visto
+   * Christian l'ultima volta" non e una domanda su un mese, e una domanda su
+   * tutta la storia. Esisteva gia dentro tutti e due gli store per il
+   * backup: qui diventa pubblica invece di essere riscritta una seconda
+   * volta con un nome diverso.
+   */
+  loadAllEntries(): Promise<Entry[]>;
   /** Quante giornate esistono (per il banner backup e i testi "N giornate"). */
   countEntries(): Promise<number>;
   deleteEntry(dateISO: string): Promise<void>;

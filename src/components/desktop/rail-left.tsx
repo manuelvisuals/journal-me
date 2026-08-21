@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
+import { MODULE_ICONS } from "@/components/ui/module-icons";
+import { useActiveModules } from "@/lib/modules";
 
 /**
  * La rail sinistra del guscio desktop (mockup desktop-v1.html): brand,
@@ -88,6 +90,7 @@ type Account = { name: string; badge: string };
 
 export function RailLeft() {
   const t = useT();
+  const moduli = useActiveModules();
   const pathname = usePathname();
   const mode = useStorageMode();
   const active = activeKeyFor(pathname);
@@ -145,6 +148,23 @@ export function RailLeft() {
             {t(item.label)}
           </Link>
         ))}
+
+        {/* I moduli accesi: sul desktop ci stanno TUTTI, incolonnati, perche
+            qui lo spazio c'e (sul telefono la barra ne mostra uno solo).
+            Sono sotto le voci fisse e sopra il separatore: sono sezioni,
+            non azioni. */}
+        {moduli.map((m) => (
+          <Link
+            key={m.id}
+            href={m.href}
+            className={`jm-rail-i${pathname === m.href ? " on" : ""}`}
+            aria-current={pathname === m.href ? "page" : undefined}
+          >
+            {MODULE_ICONS[m.id]}
+            {t(m.label)}
+          </Link>
+        ))}
+
         <div className="jm-rail-sep" />
         <Link href="/?record=1" className="jm-rail-i rec">
           <svg viewBox="0 0 24 24" aria-hidden="true">

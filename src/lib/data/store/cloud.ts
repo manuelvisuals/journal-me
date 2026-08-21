@@ -627,7 +627,7 @@ export class CloudStore implements JournalStore {
 
   /* ----------------- backup (SPEC-v2 §4) ----------------- */
 
-  private async loadAllEntries(): Promise<Entry[]> {
+  async loadAllEntries(): Promise<Entry[]> {
     const supabase = this.supabase();
     const goalDefs = await this.loadGoalDefs();
     const full = await supabase

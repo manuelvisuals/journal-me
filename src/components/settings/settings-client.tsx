@@ -33,11 +33,13 @@ import {
   GoalsPanel,
   LanguagePanel,
   LANG_NAMES,
+  ModuliPanel,
   TextSizePanel,
   ThemePanel,
   WherePanel,
 } from "@/components/settings/panels";
 import { BackupBanner } from "@/components/settings/data-section";
+import { useActiveModules } from "@/lib/modules";
 import {
   ConsumiPanel,
   ConsumiRailRow,
@@ -72,7 +74,8 @@ type Props = {
 };
 
 type Panel =
-  | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi";
+  | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi"
+  | "moduli";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -81,6 +84,7 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   language: "Lingua",
   textsize: "Dimensione del testo",
   consumi: "Consumi AI",
+  moduli: "Moduli",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -218,6 +222,8 @@ export function SettingsClient({
     router.push("/login");
   };
 
+  const moduliAttivi = useActiveModules();
+
   const themeName = THEMES.find((t) => t.id === themeId)?.name ?? "";
   const accountName = isLocal
     ? "Questo dispositivo"
@@ -247,6 +253,7 @@ export function SettingsClient({
         {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
         {panel === "consumi" && <ConsumiPanel />}
+        {panel === "moduli" && <ModuliPanel />}
 
         {panel === "root" && (
           <>
@@ -280,6 +287,25 @@ export function SettingsClient({
                 desc={t("Le caselle che accendi ogni giorno.")}
                 value={`${formatNumber(goals.length)} ${goals.length === 1 ? t("attivo") : t("attivi")}`}
                 onClick={() => setPanel("goals")}
+              />
+              <SetRow
+                title={t("Moduli")}
+                desc={t("Sezioni in piu: palestra, cibo, sonno.")}
+                value={
+                  moduliAttivi.length === 0
+                    ? t("nessuno")
+                    : moduliAttivi.map((m) => t(m.label)).join(" . ")
+                }
+                onClick={() => setPanel("moduli")}
+              />
+              {/* Sul telefono un modulo acceso prende il posto di Ricorda
+                  nella barra in basso: questa riga e la strada che gli
+                  resta, e per questo non e nascosta dietro il modulo. */}
+              <SetRow
+                title={t("Ricorda")}
+                desc={t("Persone, posti e idee salvate al volo.")}
+                onClick={() => router.push("/remember")}
+                chevron
               />
             </SetGroup>
 

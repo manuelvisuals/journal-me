@@ -180,6 +180,7 @@ export const EN: Record<string, string> = {
   "Eliminare questo elemento?": "Delete this item?",
   "Nota": "Note",
   "Persona": "Person",
+  "giornata raccontata": "day told",
   "Todo": "Todo",
   "Luogo": "Place",
   "Idea": "Idea",
@@ -449,4 +450,42 @@ export const EN: Record<string, string> = {
   "Titolo, sintesi e macro-aree di ogni giornata": "A title, a summary and the macro-areas of every day",
   "Recap del mese e letture sui pattern": "Monthly recaps and readings on your patterns",
   "Provalo adesso": "Try it now",
+
+  // Scheda persona (/persona?nome=), 21 agosto 2026.
+  "giorni fa": "days ago",
+  "in 2 mesi": "in 2 months",
+  "Le giornate": "The days",
+  "l'ultima volta oggi": "last time today",
+  "l'ultima volta ieri": "last time yesterday",
+  "l'ultima volta {giorni} giorni fa": "last time {giorni} days ago",
+  "l'ultima volta il {giorno}": "last time on {giorno}",
+  "{recenti} negli ultimi due mesi": "{recenti} in the last two months",
+  "{recenti} negli ultimi due mesi, prima erano {prima}":
+    "{recenti} in the last two months, before that {prima}",
+  "Questo nome non compare in nessuna giornata. Comparira da solo la prossima volta che lo nomini raccontando.":
+    "This name does not appear in any day yet. It will show up on its own the next time you mention it.",
+
+  // Moduli (21 agosto 2026) e la sezione Palestra, primo passo.
+  "Moduli": "Modules",
+  "Sezioni in piu: palestra, cibo, sonno.": "Extra sections: gym, food, sleep.",
+  "nessuno": "none",
+  "Presto": "Coming soon",
+  "presto": "soon",
+  "Palestra": "Gym",
+  "Meditazione": "Meditation",
+  "Allenamenti, serie e progressi": "Workouts, sets and progress",
+  "Allenamenti, serie e progressi.": "Workouts, sets and progress.",
+  "Cosa mangi, quanto spesso, e come cambia": "What you eat, how often, and how it changes",
+  "Ore, regolarita, e come va il giorno dopo": "Hours, regularity, and how the next day goes",
+  "Minuti, costanza, e cosa cambia nei giorni in cui la fai":
+    "Minutes, consistency, and what changes on the days you do it",
+  "Sezioni in piu, accese solo se le vuoi. Quella che accendi per ultima prende il quarto posto nella barra in basso; sul computer ci sono tutte nella colonna di sinistra.":
+    "Extra sections, on only if you want them. The one you turn on last takes the fourth spot in the bottom bar; on a computer they are all in the left column.",
+  "Spegnendo un modulo la voce sparisce dalla barra, ma quello che hai registrato resta dov'e: riaccendendolo lo ritrovi.":
+    "Turning a module off removes it from the bar, but what you recorded stays where it is: turn it back on and you find it again.",
+  "Persone, posti e idee salvate al volo.": "People, places and ideas saved on the fly.",
+  "La sezione c'e, il dentro no": "The section is here, the inside is not",
+  "Registrare serie e ripetizioni ha bisogno di un posto dove salvarle, e quel posto lo sto costruendo. Intanto quello che racconti sulla palestra finisce comunque nella giornata, sotto Movimento.":
+    "Recording sets and reps needs a place to store them, and that place is being built. In the meantime what you say about the gym still lands in the day, under Movement.",
+  "Torna a Oggi": "Back to Today",
 };

@@ -52,7 +52,15 @@ const DINAMICHE = {
   "app/checkout-finto/client.tsx (PREMIUM_PRICE_PERIOD da lib/pricing.ts)": [
     "al mese",
   ],
-  "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
+  "lib/modules.ts (MODULES: nomi e descrizioni)": [
+    "Palestra", "Cibo", "Sonno", "Meditazione",
+    "Allenamenti, serie e progressi",
+    "Cosa mangi, quanto spesso, e come cambia",
+    "Ore, regolarita, e come va il giorno dopo",
+    "Minuti, costanza, e cosa cambia nei giorni in cui la fai",
+  ],
+  "components/settings/settings-client.tsx (PANEL_TITLES, moduli)": ["Moduli"],
+    "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
   "components/remember/quick-capture.tsx (KIND_OPTIONS)": [
     "Nota", "Persona", "Todo", "Luogo", "Idea",
   ],

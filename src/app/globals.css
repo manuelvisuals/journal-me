@@ -4645,3 +4645,228 @@ summary:active {
   line-height: 1.45;
   color: var(--color-ink-muted);
 }
+
+/* =============================================================
+   Scheda persona (/persona?nome=). La domanda a cui risponde e
+   "da quanto non lo vedo": per questo il numero grande e quello,
+   e non il totale degli incontri.
+   ============================================================= */
+.jm-pers-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space))
+    calc(40px * var(--jm-space));
+}
+.jm-pers-top {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  margin-bottom: calc(20px * var(--jm-space));
+}
+.jm-pers-av {
+  width: calc(56px * var(--jm-ui-scale));
+  height: calc(56px * var(--jm-ui-scale));
+  flex: 0 0 calc(56px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.jm-pers-id { min-width: 0; }
+.jm-pers-name {
+  font-size: calc(23px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.jm-pers-last {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+}
+.jm-pers-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: calc(8px * var(--jm-space));
+}
+.jm-pers-stat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(14px * var(--jm-space)) 6px;
+  text-align: center;
+}
+.jm-pers-stat .n {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-pers-stat .k {
+  font-size: calc(9.5px * var(--jm-ui-scale));
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-top: 4px;
+}
+/* Un fatto con i suoi numeri accanto, non una pagella: il diario non da
+   voti, e chi legge sa cosa farsene del confronto. */
+.jm-pers-trend {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  margin-top: calc(14px * var(--jm-space));
+}
+.jm-pers-l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: calc(26px * var(--jm-space)) 0 calc(8px * var(--jm-space));
+}
+.jm-pers-days { border-top: 1px solid var(--color-line); }
+.jm-pers-day {
+  display: flex;
+  align-items: baseline;
+  gap: calc(12px * var(--jm-space));
+  width: 100%;
+  min-height: calc(52px * var(--jm-ui-scale));
+  padding: calc(10px * var(--jm-space)) 2px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-pers-day:hover {
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
+}
+.jm-pers-day .d {
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+}
+.jm-pers-day .x {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(14.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.4;
+}
+.jm-pers-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 calc(30px * var(--jm-space)) calc(60px * var(--jm-space));
+}
+.jm-pers-empty-h {
+  font-family: var(--font-serif);
+  font-size: calc(24px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+.jm-pers-empty-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-top: calc(12px * var(--jm-space));
+  max-width: 280px;
+}
+/* La pill diventa un bottone: stesso disegno, piu il fatto che si prema. */
+.jm-person-pill.link {
+  cursor: pointer;
+  font-family: inherit;
+}
+.jm-person-pill.link:hover {
+  background: var(--color-surface-2);
+}
+.jm-railr-chip.link {
+  cursor: pointer;
+  font-family: inherit;
+}
+.jm-railr-chip.link:hover {
+  background: var(--color-surface-2);
+}
+
+/* Moduli: l'interruttore, e la schermata di un modulo ancora in
+   costruzione. */
+.jm-sw {
+  width: calc(42px * var(--jm-ui-scale));
+  height: calc(25px * var(--jm-ui-scale));
+  flex: 0 0 calc(42px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 140ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-sw i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(19px * var(--jm-ui-scale));
+  height: calc(19px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  transition: transform 140ms;
+}
+.jm-sw.on { background: var(--color-accent); border-color: var(--color-accent); }
+.jm-sw.on i {
+  transform: translateX(calc(17px * var(--jm-ui-scale)));
+  background: var(--color-on-accent);
+  border-color: transparent;
+}
+.jm-st-row.presto .jm-st-t { color: var(--color-ink-faint); }
+
+.jm-mod-soon {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 calc(30px * var(--jm-space)) calc(60px * var(--jm-space));
+}
+.jm-mod-soon-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: calc(20px * var(--jm-space));
+  color: var(--color-ink-faint);
+}
+.jm-mod-soon-ic svg { width: 24px; height: 24px; }
+.jm-mod-soon-h {
+  font-family: var(--font-serif);
+  font-size: calc(23px * var(--jm-ui-scale));
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.jm-mod-soon-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin: calc(12px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+  max-width: 300px;
+}

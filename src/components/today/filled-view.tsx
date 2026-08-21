@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { MetricCards } from "@/components/today/metric-cards";
 import { GoalList } from "@/components/today/goal-list";
 import { RailToday } from "@/components/today/rail-today";
@@ -45,6 +46,7 @@ export function FilledView({
   footer = null,
 }: Props) {
   const t = useT();
+  const router = useRouter();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = orderAreas(areas ?? []);
@@ -142,7 +144,14 @@ export function FilledView({
             </div>
             <div className="jm-pill-row">
               {peopleList.map((name) => (
-                <span key={name} className="jm-person-pill">
+                <button
+                  key={name}
+                  type="button"
+                  className="jm-person-pill link"
+                  onClick={() =>
+                    router.push(`/persona?nome=${encodeURIComponent(name)}`)
+                  }
+                >
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -158,7 +167,7 @@ export function FilledView({
                     <path d="M4 21a8 8 0 0 1 16 0" />
                   </svg>
                   {name}
-                </span>
+                </button>
               ))}
             </div>
           </div>

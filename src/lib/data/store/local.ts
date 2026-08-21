@@ -295,6 +295,17 @@ export class LocalStore implements JournalStore {
       .sort((a, b) => (a.entryDate < b.entryDate ? 1 : -1));
   }
 
+  async loadAllEntries(): Promise<Entry[]> {
+    const db = await this.db();
+    const [recs, defs] = await Promise.all([
+      db.getAll("entries"),
+      this.loadGoalDefs(),
+    ]);
+    return recs
+      .sort((a, b) => (a.entryDate < b.entryDate ? -1 : 1))
+      .map((r) => this.recordToEntryWith(r, defs));
+  }
+
   async countEntries(): Promise<number> {
     const db = await this.db();
     return db.count("entries");
