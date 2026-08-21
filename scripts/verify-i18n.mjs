@@ -67,7 +67,7 @@ const DINAMICHE = {
     "molto bene", "bene", "cosi cosi", "giu", "male",
   ],
   "components/today/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
-    "Lavoro", "Relazioni", "Corpo", "Emozioni",
+    "Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni",
   ],
   "lib/ui-scale.ts (UI_SCALE_LABELS)": [
     "Piccolo", "Normale", "Grande", "Molto grande", "Massimo",

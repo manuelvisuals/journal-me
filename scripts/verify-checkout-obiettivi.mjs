@@ -175,24 +175,41 @@ async function open(path, wait) {
 // che protegge davvero e la ROTTA, che risponde 404 vero prima di
 // qualunque render. Quindi qui si controllano tutte e due le cose per
 // quello che sono.
+// Serve un SECONDO dev server, su :3101, avviato SENZA le variabili. Se non
+// c'e, questi tre controlli si saltano invece di fallire: un controllo che
+// fallisce per un server spento insegna a ignorare i FAIL, ed e il modo
+// migliore per non accorgersi di quelli veri.
 {
   let corpo = "";
   let statoApi = 0;
+  let raggiungibile = true;
   try {
-    corpo = await (await fetch(OFF + "/checkout-finto")).text();
-    statoApi = (await fetch(OFF + "/api/dev-checkout", { method: "POST" })).status;
-  } catch (e) {
-    console.log("  (server spento su :3101 non raggiungibile: " + e.message + ")");
+    const p = await fetch(OFF + "/checkout-finto");
+    corpo = await p.text();
+    const a = await fetch(OFF + "/api/dev-checkout", { method: "POST" });
+    statoApi = a.status;
+    // Un 500 vuol dire che quel server e rotto, non che la serratura non
+    // funziona: e comunque un "non lo so", quindi si salta.
+    if (p.status >= 500 || statoApi >= 500) raggiungibile = false;
+  } catch {
+    raggiungibile = false;
   }
-  check(
-    "a interruttore spento la pagina mostra il 404",
-    /could not be found|non trovata|404/i.test(corpo),
-  );
-  check(
-    "a interruttore spento la pagina non mostra il checkout",
-    corpo.length > 0 && !/jm-ck-btns/.test(corpo),
-  );
-  check("a interruttore spento la rotta risponde 404", statoApi === 404, String(statoApi));
+  if (!raggiungibile) {
+    console.log(
+      "SKIP  interruttore spento: manca il dev server su :3101 (avvialo senza\n" +
+        "      NEXT_PUBLIC_JM_FAKE_CHECKOUT per provare pagina e rotta a 404)",
+    );
+  } else {
+    check(
+      "a interruttore spento la pagina mostra il 404",
+      /could not be found|non trovata|404/i.test(corpo),
+    );
+    check(
+      "a interruttore spento la pagina non mostra il checkout",
+      !/jm-ck-btns/.test(corpo),
+    );
+    check("a interruttore spento la rotta risponde 404", statoApi === 404, String(statoApi));
+  }
 }
 
 /* ============ 5. senza token la rotta non concede niente ============ */

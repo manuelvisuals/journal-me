@@ -164,6 +164,9 @@ export const EN: Record<string, string> = {
   "Titolo": "Title",
   "Snippet": "Snippet",
   "Corpo": "Body",
+  // Nate il 21 agosto 2026 staccandole da "Corpo": vedi process-entry.
+  "Cibo": "Food",
+  "Movimento": "Movement",
   "paragrafi separati da riga vuota . citazioni tra virgolette": "paragraphs separated by a blank line . quotes between quotation marks",
   "Semestre {n} {anno}": "Half {n} {anno}",
   "Anno {anno}": "Year {anno}",

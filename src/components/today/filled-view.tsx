@@ -47,7 +47,7 @@ export function FilledView({
   const t = useT();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
-  const realAreas = areas?.filter((a) => a.text.trim().length > 0) ?? [];
+  const realAreas = orderAreas(areas ?? []);
   const peopleList = (people ?? []).filter((p) => p.trim().length > 0);
 
   const proseParagraphs = freeProse
@@ -181,6 +181,48 @@ export function FilledView({
       />
     </div>
   );
+}
+
+/**
+ * L'ordine in cui le macro-aree compaiono nella giornata, e la garanzia che
+ * ognuna compaia una volta sola.
+ *
+ * ORDINE FISSO. Il modello restituisce le aree nell'ordine in cui gli
+ * vengono, quindi ieri "Cibo" stava in cima e oggi in fondo: una pagina che
+ * si riordina da sola costringe a rileggerla tutta ogni volta. L'ordine
+ * qui sotto segue la giornata come la si racconta: fuori (lavoro,
+ * relazioni), poi il corpo (cibo, movimento, il resto), poi dentro.
+ *
+ * NIENTE DOPPIONI. Se il modello restituisse due volte la stessa etichetta,
+ * la lista le userebbe come identificativo e le due righe si
+ * sovrascriverebbero a vicenda. Qui i testi si uniscono invece di sparire.
+ */
+const AREA_ORDER: string[] = [
+  "Lavoro",
+  "Relazioni",
+  "Cibo",
+  "Movimento",
+  "Corpo",
+  "Emozioni",
+];
+
+function orderAreas(areas: AreaSummary[]): AreaSummary[] {
+  const merged = new Map<string, string>();
+  for (const a of areas) {
+    const text = a.text.trim();
+    if (text.length === 0) continue;
+    const prev = merged.get(a.label);
+    merged.set(a.label, prev ? `${prev} ${text}` : text);
+  }
+  return [...merged.entries()]
+    .map(([label, text]) => ({ label, text }))
+    .sort((x, y) => {
+      const ix = AREA_ORDER.indexOf(x.label);
+      const iy = AREA_ORDER.indexOf(y.label);
+      // Un'etichetta sconosciuta (una giornata vecchia, un'area futura) va
+      // in fondo invece di sparire.
+      return (ix === -1 ? 99 : ix) - (iy === -1 ? 99 : iy);
+    });
 }
 
 function Separator() {

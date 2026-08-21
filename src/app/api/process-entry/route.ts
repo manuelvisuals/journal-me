@@ -5,7 +5,8 @@ import { langName, langOf } from "@/lib/server/lang";
 
 /**
  * Post-processes a daily journal transcript: produces headline, snippet,
- * and macro-area summaries (Lavoro, Relazioni, Corpo, Emozioni).
+ * and macro-area summaries (Lavoro, Relazioni, Cibo, Movimento, Corpo,
+ * Emozioni).
  *
  * Uses OpenAI's Chat Completions API in JSON mode for a strict schema.
  * The OPENAI_API_KEY stays on the server.
@@ -45,7 +46,13 @@ export async function POST(req: NextRequest) {
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
     `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
     "  - snippet: 1-2 frasi (max 30 parole totali) che riassumono i fatti principali della giornata.",
-    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Corpo', 'Emozioni'. Includi solo le aree effettivamente menzionate (puoi anche restituire array vuoto). Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 25 parole.`,
+    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. Includi solo le aree effettivamente menzionate (puoi anche restituire array vuoto), UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
+    "",
+    "Cosa va in quale area, quando c'e il dubbio:",
+    "  - Cibo: cosa ha mangiato e bevuto. Pasti, piatti, locali, alcol, caffe. Elenca i piatti come li ha detti lui (pizza, insalata, sushi), senza aggiungerne di non menzionati.",
+    "  - Movimento: attivita fisica. Palestra ed esercizi svolti, corsa, camminate, sport, bicicletta, minuti o serie se li ha detti.",
+    "  - Corpo: il resto del corpo che non e ne cibo ne movimento: sonno, stanchezza, dolori, malattie, peso.",
+    "  - Se la giornata contiene sia cibo sia attivita fisica devono comparire ENTRAMBE le aree. Non scegliere: erano due aree separate proprio per questo.",
     "",
     "Regole assolute:",
     "  - Niente moralismi, giudizi o coaching.",
@@ -83,7 +90,21 @@ export async function POST(req: NextRequest) {
                   properties: {
                     label: {
                       type: "string",
-                      enum: ["Lavoro", "Relazioni", "Corpo", "Emozioni"],
+                      // 'Cibo' e 'Movimento' sono nati il 21 agosto 2026,
+                      // staccandoli da 'Corpo'. Prima cibo e palestra si
+                      // contendevano la stessa casella da 25 parole e il
+                      // modello ne buttava via uno: un giorno spariva la
+                      // pizza, il giorno dopo gli esercizi. Non era il
+                      // modello a essere debole, era la casella a essere
+                      // una sola. 'Corpo' resta, per sonno e salute.
+                      enum: [
+                        "Lavoro",
+                        "Relazioni",
+                        "Cibo",
+                        "Movimento",
+                        "Corpo",
+                        "Emozioni",
+                      ],
                     },
                     text: { type: "string" },
                   },
