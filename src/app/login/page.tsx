@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 
@@ -105,6 +106,7 @@ export default function LoginPage() {
           className="text-center text-[calc(22px*var(--jm-ui-scale))] font-semibold mb-16 tracking-tight"
           style={{ letterSpacing: "-0.01em" }}
         >
+          <BrandMark />
           Journal
           <span
             className="text-accent"
