@@ -35,6 +35,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Empty transcript" }, { status: 400 });
   }
 
+  // La decisione "questo testo non dice niente" la prende il CODICE, con un
+  // righello, non il modello a sensazione. Prima era una riga del prompt, e
+  // il 21 agosto 2026 e successo il danno: una giornata vera ("cantato
+  // lezione con Anna, lavorato, stasera cena con amici") e stata giudicata
+  // incomprensibile, e Manuel si e ritrovato titolo generico, nessuna area e
+  // il suo stesso testo come sintesi. Con la stessa frase, un attimo dopo, lo
+  // stesso modello ha prodotto un riassunto perfetto: era una moneta lanciata
+  // a ogni salvataggio.
+  //
+  // Venti caratteri: sotto, non c'e abbastanza per un titolo comunque.
+  if (transcript.length < 20) {
+    return NextResponse.json({
+      headline: langOf(req) === "en" ? "day told" : "giornata raccontata",
+      snippet: transcript.slice(0, 240),
+      areas: [],
+    });
+  }
+
   // La lingua dell'utente arriva in x-jm-lang: headline, snippet e testo
   // delle aree escono in quella lingua. Le ETICHETTE delle aree no: sono
   // un enum salvato a database (vedi src/lib/server/lang.ts).
@@ -59,7 +77,19 @@ export async function POST(req: NextRequest) {
     "  - Niente emoji.",
     "  - Niente apostrofo curvo: solo l'apostrofo dritto ASCII.",
     "  - Mantieni i nomi propri come pronunciati dall'utente.",
-    `  - Se il transcript e troppo breve o incomprensibile, restituisci una headline generica in ${lingua} (in italiano sarebbe 'giornata raccontata') + snippet con il transcript troncato + areas vuoto.`,
+    "",
+    "SULLA RINUNCIA. Esiste un solo caso in cui puoi rinunciare: un testo",
+    "che non contiene NESSUN fatto (vuoto, una parola sola, lettere a caso).",
+    "In quel caso, e solo in quello, restituisci una headline generica in",
+    `${lingua} (in italiano sarebbe 'giornata raccontata'), lo snippet con il`,
+    "transcript troncato e areas vuoto.",
+    "",
+    "Un racconto a voce trascritto e quasi sempre telegrafico, sgrammaticato,",
+    "senza soggetti e con i verbi all'infinito: 'cantato lezione, lavorato,",
+    "riletto diario, stasera cena con amici'. QUESTO NON E UN TESTO",
+    "INCOMPRENSIBILE, e un testo pieno di fatti scritto male, ed e il caso",
+    "normale, non l'eccezione. Rinunciare li significa cancellare la giornata",
+    "di qualcuno per un problema di grammatica.",
   ].join("\n");
 
   const completion = await fetch("https://api.openai.com/v1/chat/completions", {
