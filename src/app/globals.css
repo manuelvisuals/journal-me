@@ -1181,41 +1181,95 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 12%, transparent);
 }
 
-/* Goal dots (clickable in filled view).
-   Il pallino resta 14px: e il disegno approvato di quella riga, e allargarlo
-   cambierebbe la spaziatura di tutto il gruppo. Ma 14px come BERSAGLIO sono
-   meno di un terzo del minimo del brandbook (cap. 05: 36-44px), ed e la
-   ragione per cui prenderli e un terno al lotto. Il bersaglio si allarga con
-   uno pseudo-elemento invisibile: tutta l'altezza disponibile in verticale
-   (dove non c'e nulla da invadere) e meta del gap in orizzontale (di piu
-   farebbe accavallare due obiettivi, che e peggio di un bersaglio piccolo:
-   accenderesti quello sbagliato). Da 14x14 a 23x40, area per cinque, e cio
-   che si vede non cambia di un pixel. */
-.jm-goal-dot {
-  position: relative;
-  width: 14px;
-  height: 14px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
-  border: 1px solid color-mix(in oklab, var(--color-ink) 6%, transparent);
+/* Gli obiettivi del giorno, sul telefono (mockup obiettivi-mobile.html §A,
+   approvato il 21 agosto 2026). Sostituiscono i pallini da 14px: erano
+   sotto la misura del polpastrello (44px) e, soprattutto, non dicevano di
+   quale obiettivo si trattasse. Vedi src/components/today/goal-list.tsx.
+
+   Righe separate da una linea sottile e nessun riquadro attorno: cinque
+   obiettivi dentro cinque scatole peserebbero piu del diario, che e la
+   cosa per cui si e qui. */
+.jm-goals {
+  padding: calc(20px * var(--jm-space)) 0 calc(4px * var(--jm-space));
+}
+.jm-goals-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: calc(8px * var(--jm-space));
+}
+.jm-goals-head .l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.jm-goals-head .c {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.jm-goals-list {
+  border-top: 1px solid var(--color-line);
+}
+/* Il bersaglio e TUTTA la riga, non la casella: 52px di altezza per la
+   scala 1, e si alza con il testo quando l'utente ingrandisce (la riga
+   deve restare piu alta di cio che contiene, o il nome tocca i bordi). */
+.jm-goal-row {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  width: 100%;
+  min-height: calc(52px * var(--jm-ui-scale));
+  padding: calc(8px * var(--jm-space)) 2px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
   cursor: pointer;
-  transition: transform 120ms, background-color 120ms, box-shadow 120ms;
-  padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
-.jm-goal-dot::after {
-  content: "";
-  position: absolute;
-  inset: -13px -4px;
+.jm-goal-row:hover {
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
 }
-.jm-goal-dot:hover {
-  transform: scale(1.15);
+.jm-goal-box {
+  width: calc(22px * var(--jm-ui-scale));
+  height: calc(22px * var(--jm-ui-scale));
+  flex: 0 0 calc(22px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-sm);
+  border: 1.5px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 120ms, border-color 120ms;
 }
-.jm-goal-dot.on {
+.jm-goal-box svg {
+  width: calc(13px * var(--jm-ui-scale));
+  height: calc(13px * var(--jm-ui-scale));
+  stroke: var(--color-on-accent);
+  stroke-width: 2.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+.jm-goal-row.on .jm-goal-box {
   background: var(--color-accent);
-  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
-  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 40%, transparent);
+  border-color: var(--color-accent);
 }
+.jm-goal-row.on .jm-goal-box svg { opacity: 1; }
+.jm-goal-lab {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(15.5px * var(--jm-ui-scale));
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-ink-muted);
+}
+.jm-goal-row.on .jm-goal-lab { color: var(--color-ink); }
 
 /* Day detail page (/giorno/[date]) — opens when tapping a row in /mese */
 .jm-day-head {
@@ -3997,6 +4051,14 @@ summary:active {
   margin-top: 3px;
   word-break: break-all;
 }
+/* Premium: la targhetta si riempie invece di restare contornata. Prima
+   "Gratis" e "Premium" erano lo stesso oggetto con dentro una parola
+   diversa: per accorgersi del cambio bisognava leggerla. */
+.jm-st-pill.on {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
 .jm-st-pill {
   display: inline-block;
   margin-top: 10px;
@@ -4372,4 +4434,214 @@ summary:active {
 @media (prefers-reduced-motion: reduce) {
   .jm-toast { animation: none; }
   .jm-toast-spin { animation-duration: 2s; }
+}
+
+/* ============================================================
+   Checkout finto e popup di congratulazioni (mockup
+   design/mockups/checkout-finto.html, approvato il 21 agosto 2026).
+   Esiste solo in ambiente di prova: vedi src/lib/dev-checkout.ts.
+   ============================================================ */
+.jm-ck {
+  padding: 0 calc(26px * var(--jm-space));
+}
+.jm-ck-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: calc(18px * var(--jm-space));
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-ck-bar svg {
+  width: 12px;
+  height: 12px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  fill: none;
+}
+.jm-ck-mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: calc(20px * var(--jm-space));
+}
+.jm-ck-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 7px;
+  font-size: calc(10.5px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 6px 12px;
+  margin-bottom: calc(26px * var(--jm-space));
+}
+.jm-ck-tag i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jm-radius-circle);
+  background: #e0a800;
+  display: block;
+}
+.jm-ck-t {
+  font-family: var(--font-serif);
+  font-size: calc(31px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--color-ink);
+  /* Il titolo va su due righe e dove spezzare lo decide la traduzione, con
+     un a capo dentro la stringa: stesso motivo di .jm-wall-t. */
+  white-space: pre-line;
+}
+.jm-ck-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-top: calc(14px * var(--jm-space));
+}
+.jm-ck-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: calc(30px * var(--jm-space)) 0 6px;
+}
+/* Il prezzo e sbarrato: pieno, su una pagina che non incassa, e il modo
+   piu rapido per dimenticarsi che e una prova. */
+.jm-ck-amount .n {
+  font-family: var(--font-serif);
+  font-size: calc(44px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.45;
+}
+.jm-ck-amount .per {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-ck-strike {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-ck-err {
+  margin-top: calc(22px * var(--jm-space));
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-danger);
+}
+.jm-ck-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: calc(20px * var(--jm-space));
+}
+.jm-ck-quiet {
+  width: 100%;
+  min-height: calc(40px * var(--jm-ui-scale));
+  border: none;
+  background: transparent;
+  color: var(--color-ink-faint);
+  font-family: inherit;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  cursor: pointer;
+}
+.jm-ck-quiet:disabled { opacity: 0.5; cursor: default; }
+.jm-ck-foot {
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-faint);
+  border-top: 1px solid var(--color-line);
+  padding: calc(16px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+}
+
+.jm-cong-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: color-mix(in oklab, var(--color-shadow) 72%, transparent);
+  backdrop-filter: blur(7px);
+}
+.jm-cong {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: 34px 28px 24px;
+  text-align: center;
+  box-shadow: 0 18px 40px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+}
+.jm-cong-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 22px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg-phone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jm-cong-mark svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-cong-t {
+  font-family: var(--font-serif);
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+.jm-cong-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-top: 12px;
+}
+.jm-cong-list {
+  text-align: left;
+  margin: 22px 0 24px;
+  border-top: 1px solid var(--color-line);
+}
+.jm-cong-li {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-cong-li i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  flex: 0 0 5px;
+  margin-top: 7px;
+  display: block;
+}
+.jm-cong-li span {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.45;
+  color: var(--color-ink-muted);
 }

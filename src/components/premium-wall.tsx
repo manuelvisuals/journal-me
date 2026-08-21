@@ -21,6 +21,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
+import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
 import { useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
 
@@ -132,6 +133,16 @@ export function PremiumWall() {
       closePremiumWall();
       setCloudNote(false);
       router.push("/login");
+      return;
+    }
+    // Ambiente di prova: al posto di Stripe c'e il pagamento simulato
+    // (/checkout-finto). Serve a provare l'app da premium finche le chiavi
+    // vere non ci sono; in produzione l'interruttore e spento e questa riga
+    // non esiste nemmeno.
+    if (fakeCheckoutEnabled()) {
+      closePremiumWall();
+      setCloudNote(false);
+      router.push("/checkout-finto");
       return;
     }
     // Cloud: si apre Stripe Checkout (PR 11). Se Stripe non e ancora

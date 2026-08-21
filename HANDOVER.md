@@ -286,6 +286,17 @@ eliminato; `user_settings.glossary` resta solo come fallback legacy lato server.
 
 ## 7. Trappole gia pagate (non ripeterle)
 
+### Il foglio di stile che non cambia (21 agosto 2026)
+
+Dopo aver copiato `src` in `/tmp/jm-build`, il dev server puo continuare a
+servire il VECCHIO `globals.css`: Turbopack tiene la sua cache in `.next` e
+il pezzo di CSS mantiene lo stesso nome. Il sintomo inganna, perche il
+componente nuovo c'e (i suoi elementi si trovano nel DOM) ma e senza stile:
+sembra un errore di CSS scritto male, ed e solo roba vecchia servita.
+
+Cura: `rm -rf /tmp/jm-build/.next` prima di riavviare. Controprova rapida:
+`curl` sull'indirizzo del CSS e `grep` di una classe nuova.
+
 - **`src/proxy.ts`, non `middleware.ts`.** Next 16 ha rinominato il middleware.
 - **`entries` non ha la colonna `duration_seconds`.** Metterla in un `select` fa fallire
   silenziosamente tutta la query (era il BUG2 di maggio: "Nessuna giornata" su giorni

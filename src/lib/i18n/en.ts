@@ -417,4 +417,33 @@ export const EN: Record<string, string> = {
   "Elimino la giornata...": "Deleting the day...",
   "Giornata eliminata": "Day deleted",
   "Ci sta mettendo troppo. Riprova.": "This is taking too long. Try again.",
+
+  // Checkout finto (solo ambiente di prova) e popup di congratulazioni.
+  "pagamento simulato . nessun addebito": "simulated payment . no charge",
+  "ambiente di prova": "test environment",
+  "Journal.me\nPremium": "Journal.me\nPremium",
+  "Questa pagina non e collegata a nessun sistema di pagamento. Serve a provare l'app come la vede chi ha pagato.":
+    "This page is not connected to any payment system. It is here so you can try the app the way a paying user sees it.",
+  "al mese": "per month",
+  "Non verra addebitato nulla.": "Nothing will be charged.",
+  "Simula pagamento riuscito": "Simulate a successful payment",
+  "Simula pagamento fallito": "Simulate a failed payment",
+  "Annulla e torna al diario": "Cancel and go back to the journal",
+  "Riporta questo account al piano gratis": "Put this account back on the free plan",
+  "Pagina visibile solo in ambiente di prova e solo agli account autorizzati. Il piano viene scritto dal server, mai dal browser.":
+    "This page is visible only in the test environment and only to allowed accounts. The plan is written by the server, never by the browser.",
+  "Il pagamento non e andato a buon fine. Non e stato addebitato nulla e il tuo piano non e cambiato.":
+    "The payment did not go through. Nothing was charged and your plan has not changed.",
+  "Pagamento non riuscito. Sei ancora al piano gratis.": "Payment failed. You are still on the free plan.",
+  "Attivo il premium...": "Turning on premium...",
+  "Torno al piano gratis...": "Going back to the free plan...",
+  "Sei tornato al piano gratis": "You are back on the free plan",
+  "Non sono riuscito a cambiare il piano.": "I could not change the plan.",
+  "Sei premium": "You are premium",
+  "Da adesso l'app lavora insieme a te. Ecco cosa e cambiato.":
+    "From now on the app works alongside you. Here is what changed.",
+  "Racconti a voce, il testo si scrive da solo": "Speak, and the text writes itself",
+  "Titolo, sintesi e macro-aree di ogni giornata": "A title, a summary and the macro-areas of every day",
+  "Recap del mese e letture sui pattern": "Monthly recaps and readings on your patterns",
+  "Provalo adesso": "Try it now",
 };

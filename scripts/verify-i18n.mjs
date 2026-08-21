@@ -44,6 +44,14 @@ const DINAMICHE = {
     "Su tutti i dispositivi",
     "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.",
   ],
+  "components/premium-welcome.tsx (FEATURES)": [
+    "Racconti a voce, il testo si scrive da solo",
+    "Titolo, sintesi e macro-aree di ogni giornata",
+    "Recap del mese e letture sui pattern",
+  ],
+  "app/checkout-finto/client.tsx (PREMIUM_PRICE_PERIOD da lib/pricing.ts)": [
+    "al mese",
+  ],
   "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
   "components/remember/quick-capture.tsx (KIND_OPTIONS)": [
     "Nota", "Persona", "Todo", "Luogo", "Idea",
@@ -131,6 +139,8 @@ check(
 const UGUALI_OK = new Set([
   "Premium", "premium", "Email", "Account", "Idea", "Recap", "Todo",
   "mood", "Mood", "ok", "Cloud", "Snippet",
+  // Nome del prodotto: si scrive uguale nelle due lingue.
+  "Journal.me\nPremium",
 ]);
 const sospette = [...CATALOG.entries()].filter(
   ([it, en]) => it === en && !UGUALI_OK.has(it),

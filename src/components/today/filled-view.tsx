@@ -1,7 +1,7 @@
 "use client";
 
 import { MetricCards } from "@/components/today/metric-cards";
-import { GoalDots } from "@/components/today/goal-dots";
+import { GoalList } from "@/components/today/goal-list";
 import { RailToday } from "@/components/today/rail-today";
 import type { AreaSummary, EntryMetrics, GoalDot } from "@/lib/types";
 import { useT } from "@/lib/i18n";
@@ -167,7 +167,7 @@ export function FilledView({
         <Separator />
 
         <MetricCards metrics={metrics} onChange={onMetricChange} />
-        <GoalDots goals={goals} onToggle={onGoalToggle} />
+        <GoalList goals={goals} onToggle={onGoalToggle} />
       </div>
 
       {footer}

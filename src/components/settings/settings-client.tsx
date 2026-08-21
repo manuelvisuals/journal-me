@@ -451,7 +451,9 @@ export function SettingsClient({
           {isLocal ? (
             <span className="jm-st-pill">{t("Locale")}</span>
           ) : (
-            <span className="jm-st-pill">
+            <span
+              className={plan === "premium" ? "jm-st-pill on" : "jm-st-pill"}
+            >
               {plan === "premium" ? t("Premium") : t("Gratis")}
             </span>
           )}
