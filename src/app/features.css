@@ -7,12 +7,244 @@
    da una schermata storta che nessuno nota subito.
 
    Regola: chi lavora su un ramo parallelo scrive QUI, chi lavora su main
-   scrive in globals.css. Questo file e importato in fondo a globals.css,
-   quindi vince sulle regole di uguale specificita — comodo, ma da usare
-   con la testa: se serve vincere, meglio una classe piu precisa.
+   scrive in globals.css.
+
+   ATTENZIONE, corretto il 21 agosto sul ramo consumi-ai: questo file e
+   importato alla RIGA 6 di globals.css, cioe in CIMA e non in fondo come
+   diceva il commento qui sopra. Conseguenza pratica opposta a quella che
+   c'era scritta: a parita di specificita vince globals.css, non questo
+   file. Chi scrive qui usi classi sue (prefisso della funzione) e non
+   conti sull'ordine per sovrascrivere una regola di globals.
 
    Quando la funzione e stabile, le sue regole si possono spostare nel
    blocco che le compete dentro globals.css. */
 
 /* Verificato nel browser il 21 agosto 2026 che le regole scritte qui
    arrivano davvero a schermo (sonda .jm-features-probe, poi rimossa). */
+
+/* ============================================================
+   CONSUMI AI  (ramo consumi-ai, mockup design/mockups/consumi-ai.html)
+   Il pannello dentro Impostazioni: totale del mese, le attivita con la
+   loro quota, la nota onesta. La riga della lista in Impostazioni riusa
+   .jm-st-row di globals.css: e una riga come le altre, non un caso
+   speciale, e deve restare identica alle vicine.
+   ============================================================ */
+
+.jm-cs {
+  padding-bottom: calc(24px * var(--jm-space));
+}
+
+/* Il mese. Nel mockup sta sotto il titolo dentro l'intestazione; qui
+   l'intestazione dei pannelli e condivisa (PanelHead, di globals) e
+   accetta solo un titolo, quindi la riga del mese apre il contenuto.
+   Stessa informazione, tre pixel piu in basso. */
+.jm-cs-sub {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-bottom: calc(18px * var(--jm-space));
+}
+
+.jm-cs-total {
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: calc(22px * var(--jm-space));
+}
+.jm-cs-total-v {
+  font-size: calc(52px * var(--jm-ui-scale));
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-cs-cur {
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 400;
+  color: var(--color-ink-faint);
+  margin-left: 4px;
+}
+.jm-cs-total-k {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-top: calc(10px * var(--jm-space));
+  line-height: 1.5;
+}
+
+.jm-cs-gl {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin: calc(28px * var(--jm-space)) 0 calc(4px * var(--jm-space)) 2px;
+}
+
+.jm-cs-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: calc(10px * var(--jm-space)) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-cs-row:last-child { border-bottom: none; }
+.jm-cs-main { flex: 1; min-width: 0; }
+.jm-cs-t {
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+.jm-cs-d {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+}
+.jm-cs-v {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--color-ink);
+  flex: 0 0 auto;
+}
+.jm-cs-v small {
+  display: block;
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* La barra e l'unica cosa da cui si decide qualcosa: fa vedere in un colpo
+   d'occhio che l'audio si mangia il conto e il resto e polvere. */
+.jm-cs-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  margin-top: calc(9px * var(--jm-space));
+  overflow: hidden;
+}
+.jm-cs-bar i {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 999px;
+  min-width: 2px;
+}
+/* Sotto il 5% la barra e quasi invisibile comunque: smorzarla dice "questa
+   non conta" invece di far sembrare rotto un trattino di due pixel. */
+.jm-cs-bar.faint i { opacity: 0.35; }
+
+.jm-cs-note {
+  margin-top: calc(26px * var(--jm-space));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(16px * var(--jm-space)) 18px;
+  background: var(--color-surface);
+}
+.jm-cs-note-t {
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+.jm-cs-note-p {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+.jm-cs-note-p code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  background: var(--color-surface-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Vuoto: dice PERCHE e vuoto. Zero e una risposta giusta, non un guasto. */
+.jm-cs-empty {
+  text-align: center;
+  padding: calc(50px * var(--jm-space)) 20px;
+}
+.jm-cs-empty-t {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 10px;
+}
+.jm-cs-empty-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.jm-cs-wait {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  padding: calc(30px * var(--jm-space)) 0;
+}
+
+/* Errore: si vede SCRITTO. Una schermata vuota dopo un 500 farebbe credere
+   di non aver speso niente. */
+.jm-cs-err {
+  border: 1px solid color-mix(in oklab, var(--color-danger) 35%, transparent);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(18px * var(--jm-space));
+  background: var(--color-surface);
+}
+.jm-cs-err-t {
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-danger);
+  margin-bottom: 8px;
+}
+.jm-cs-err-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+.jm-cs-err-d {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 10px;
+  word-break: break-word;
+}
+.jm-cs-retry {
+  margin-top: calc(14px * var(--jm-space));
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--jm-radius-lg);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+.jm-cs-retry:hover { background: var(--color-surface-2); }
+
+@media (min-width: 1024px) {
+  .jm-cs-total-v { font-size: calc(52px * var(--jm-ui-scale)); }
+}
+@media (max-width: 1023px) {
+  .jm-cs-total-v { font-size: calc(44px * var(--jm-ui-scale)); }
+}
+
+/* Il gemello da desktop della riga "Consumi AI". Su telefono la riga sta
+   nel gruppo Account insieme a Piano; su desktop quel gruppo non esiste
+   (l'identita passa nella rail destra) e la riga resterebbe irraggiungibile
+   proprio dove il mockup la mostra. Stessa regola di .jm-st-phoneonly in
+   globals.css: media query nostra, non le utility di Tailwind. */
+.jm-cs-deskonly { display: none; }
+@media (min-width: 1024px) {
+  .jm-cs-deskonly { display: block; }
+}
