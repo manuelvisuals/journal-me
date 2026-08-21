@@ -210,8 +210,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
   return (
     <main
       ref={scrollRef}
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       {/* Mese a griglia: esiste solo da lg (CSS), il telefono non lo vede */}
       {deskEntries !== undefined && (

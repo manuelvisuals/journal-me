@@ -17,6 +17,13 @@ import { cssVarsFor, FONTS, THEMES } from "@/themes";
 import { setTheme, useResolvedMode, useThemeId } from "@/themes/runtime";
 import { useStorageMode } from "@/lib/data/store";
 import {
+  DEFAULT_UI_SCALE,
+  setUiScale,
+  UI_SCALES,
+  UI_SCALE_LABELS,
+  useUiScale,
+} from "@/lib/ui-scale";
+import {
   detectSystemLang,
   setLangPref,
   useLangPref,
@@ -313,6 +320,80 @@ export function LanguagePanel() {
           />
         ))}
       </SetGroup>
+    </>
+  );
+}
+
+/* ===================== Dimensione del testo ===================== */
+
+/**
+ * La scelta della dimensione (mockup design/mockups/testo-e-giorno.html
+ * §02, approvato). Due cose che non sono decorazione:
+ *
+ *  1. OGNI RIGA E DISEGNATA ALLA SUA MISURA. La parola "Massimo" e scritta
+ *     grande davvero. Chi apre questa schermata lo fa perche non vede
+ *     bene: farlo scegliere fra nomi tutti della stessa taglia, o peggio
+ *     fra percentuali, vuol dire fargli indovinare.
+ *  2. NESSUN TASTO "SALVA". Si tocca e l'app cambia sotto le dita, e
+ *     l'anteprima in cima cambia con lei. Se la misura non va bene la si
+ *     cambia di nuovo: e l'unico modo di sceglierla, guardandola.
+ */
+export function TextSizePanel() {
+  const t = useT();
+  const scale = useUiScale();
+
+  return (
+    <>
+      <p className="jm-st-lede">
+        {t(
+          "Ingrandisce tutta l'app: scritte, tasti e spazi insieme. Cosi niente si accavalla.",
+        )}
+      </p>
+
+      <div className="jm-st-prev">
+        <div className="jm-st-prev-l">{t("Anteprima")}</div>
+        <div className="jm-st-prev-h">{t("la telefonata rimandata")}</div>
+        <div className="jm-st-prev-p">
+          {t("Trentadue minuti, e una frase alla fine.")}
+        </div>
+      </div>
+
+      <div className="jm-st-box">
+        {UI_SCALES.map((v) => {
+          const on = v === scale;
+          return (
+            <button
+              key={v}
+              type="button"
+              className={`jm-st-szrow${on ? " on" : ""}`}
+              // La riga si disegna alla misura che rappresenta: e il punto
+              // di tutta la schermata.
+              style={{ fontSize: `${15 * v}px`, minHeight: 56 * v }}
+              onClick={() => setUiScale(v)}
+              aria-pressed={on}
+            >
+              <span className="jm-st-szname">
+                {t(UI_SCALE_LABELS[String(v)])}
+              </span>
+              <span className="jm-st-szdemo" aria-hidden="true">
+                Aa
+              </span>
+              {on && <span className="jm-st-szcheck">{"\u2713"}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {scale !== DEFAULT_UI_SCALE && (
+        <button
+          type="button"
+          className="jm-st-out"
+          style={{ marginTop: 18 }}
+          onClick={() => setUiScale(DEFAULT_UI_SCALE)}
+        >
+          {t("Torna alla misura normale")}
+        </button>
+      )}
     </>
   );
 }

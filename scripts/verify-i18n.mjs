@@ -61,6 +61,9 @@ const DINAMICHE = {
   "components/today/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
     "Lavoro", "Relazioni", "Corpo", "Emozioni",
   ],
+  "lib/ui-scale.ts (UI_SCALE_LABELS)": [
+    "Piccolo", "Normale", "Grande", "Molto grande", "Massimo",
+  ],
 };
 
 const results = [];

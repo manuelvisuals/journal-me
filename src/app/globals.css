@@ -2425,7 +2425,7 @@ summary:active {
   .jm-shell {
     display: flex;
     flex: 1;
-    min-height: 100dvh;
+    min-height: calc(100dvh / var(--jm-ui-scale));
     width: 100%;
   }
   .jm-shell-c {
@@ -2443,7 +2443,7 @@ summary:active {
     padding: calc(24px * var(--jm-space)) 14px calc(18px * var(--jm-space));
     position: sticky;
     top: 0;
-    height: 100dvh;
+    height: calc(100dvh / var(--jm-ui-scale));
   }
   .jm-rail-r {
     display: block;
@@ -2453,7 +2453,7 @@ summary:active {
     padding: calc(22px * var(--jm-space)) 20px;
     position: sticky;
     top: 0;
-    height: 100dvh;
+    height: calc(100dvh / var(--jm-ui-scale));
     overflow-y: auto;
   }
   .jm-rail-r:empty {
@@ -3662,6 +3662,22 @@ summary:active {
 }
 
 /* =============================================================
+   DIMENSIONE DELL'INTERFACCIA (src/lib/ui-scale.ts)
+
+   `zoom` sulla radice ingrandisce testo, spazi e bersagli insieme. L'unica
+   cosa che rompe e 100dvh: dentro una radice zoomata al 125% vale il 125%
+   dello schermo, e su una pagina vuota compare una barra di scorrimento.
+   Le schermate a tutta altezza usano questa classe invece del valore
+   diretto. A scala 1 la divisione e per 1 e non cambia niente.
+   ============================================================= */
+:root {
+  --jm-ui-scale: 1;
+}
+.jm-screen {
+  min-height: calc(100dvh / var(--jm-ui-scale));
+}
+
+/* =============================================================
    IMPOSTAZIONI (ex "Altro") — mockup design/mockups/impostazioni.html
    §03 e §04, approvato il 20 agosto 2026.
 
@@ -4044,4 +4060,236 @@ summary:active {
   .jm-st-seg .lg { display: inline; }
   .jm-st-seg .sm { display: none; }
   .jm-st-seg button { padding: 7px 13px; }
+}
+
+/* =============================================================
+   IMPOSTAZIONI > DIMENSIONE DEL TESTO
+   (mockup design/mockups/testo-e-giorno.html §02)
+
+   Le righe non hanno una misura fissa: ognuna si disegna alla taglia che
+   rappresenta, con font-size e altezza scritti inline dal componente. Qui
+   ci sta solo cio che NON dipende dalla taglia.
+   ============================================================= */
+.jm-st-prev {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(18px * var(--jm-space));
+  margin-bottom: calc(22px * var(--jm-space));
+}
+.jm-st-prev-l {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+.jm-st-prev-h {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+.jm-st-prev-p {
+  font-size: 13px;
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
+.jm-st-szrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-szrow:last-child { border-bottom: none; }
+.jm-st-szrow:hover { background: var(--color-surface-2); }
+.jm-st-szrow.on { background: var(--color-surface-2); }
+.jm-st-szname {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--color-ink);
+  /* eredita la misura dalla riga: e il punto di questa schermata */
+  font-size: inherit;
+}
+.jm-st-szdemo {
+  flex: 0 0 auto;
+  font-weight: 500;
+  color: var(--color-ink-faint);
+  font-size: inherit;
+  white-space: nowrap;
+}
+.jm-st-szcheck {
+  flex: 0 0 auto;
+  color: var(--color-ink);
+  font-size: inherit;
+}
+
+/* =============================================================
+   LA GIORNATA: AGGIUNGERE QUALCOSA
+   (mockup design/mockups/testo-e-giorno.html §03/§04)
+
+   Il tasto sta in fondo al racconto e non nell'intestazione: lassu ci sono
+   gia indietro, "originale" ed elimina, e un quarto bersaglio sarebbe
+   stretto e appiccicato al cestino. Tratteggiato perche e un invito, non
+   l'azione principale della schermata — quella e leggere.
+   ============================================================= */
+.jm-day-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 52px;
+  margin: calc(6px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+  background: transparent;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--jm-radius-md);
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-day-add:hover { background: var(--color-surface); }
+.jm-day-add:disabled { opacity: 0.55; cursor: default; }
+.jm-day-add svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+}
+
+/* Giornata vuota: era un vicolo cieco, ora e un invito con un'azione. */
+.jm-day-empty-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 30px;
+}
+.jm-day-empty-h {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+.jm-day-empty-p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-ink-faint);
+  margin-bottom: calc(26px * var(--jm-space));
+  max-width: 300px;
+}
+/* Qui il tasto e l'unica cosa sullo schermo: pieno, non tratteggiato. */
+.jm-day-empty-wrap .jm-day-add {
+  max-width: 280px;
+  margin: 0;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.jm-day-empty-wrap .jm-day-add:hover {
+  background: var(--color-accent-pressed, var(--color-accent));
+}
+
+/* Il foglio delle scelte */
+.jm-sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+.jm-sheet {
+  background: var(--color-bg-phone);
+  border-top: 1px solid var(--color-line);
+  border-radius: 20px 20px 0 0;
+  padding: 10px 16px calc(30px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -18px 40px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.jm-sheet-grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-line);
+  margin: 0 auto 14px;
+}
+.jm-sheet-head {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  padding: 0 6px 10px;
+}
+.jm-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 6px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-sheet-row:last-child { border-bottom: none; }
+.jm-sheet-row:hover { background: var(--color-surface); }
+.jm-sheet-ic {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jm-sheet-ic svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-ink-muted);
+  fill: none;
+}
+.jm-sheet-txt { flex: 1; min-width: 0; }
+.jm-sheet-t {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.jm-sheet-d {
+  display: block;
+  font-size: 12px;
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  line-height: 1.4;
 }

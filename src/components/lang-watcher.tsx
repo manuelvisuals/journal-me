@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { markHydrated } from "@/lib/i18n";
+import { markUiScaleHydrated } from "@/lib/ui-scale";
 
 /**
  * Montato nel layout, non disegna niente. Fa due cose:
@@ -10,12 +11,17 @@ import { markHydrated } from "@/lib/i18n";
  *    HTML italiano che ha mandato il server, o React protesta in console);
  *  - allinea <html lang> alla lingua effettiva.
  *
+ * Fa la stessa cosa per la DIMENSIONE dell'interfaccia: lo zoom lo ha gia
+ * messo lo script di boot, qui si allinea solo cio che React sa, e per lo
+ * stesso motivo (il server renderizza a scala 1).
+ *
  * Gemello di ThemeWatcher, e per lo stesso motivo: la preferenza vive
  * fuori da React e qualcuno deve dire a React quando guardarla.
  */
 export function LangWatcher() {
   useEffect(() => {
     markHydrated();
+    markUiScaleHydrated();
   }, []);
   return null;
 }

@@ -907,13 +907,63 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
      `jm.backup.mailer.20260820`: se il nuovo non piace, si rimettono da li
      senza doverli riscrivere a memoria.
 
+  13. **La dimensione dell'interfaccia si puo cambiare** (Impostazioni >
+     Lingua e aspetto > Dimensione del testo). E accessibilita, non una
+     preferenza: Manuel non vede bene e l'app gli era troppo piccola.
+
+     **Perche zoom e non font piu grandi.** In globals.css ci sono 166
+     misure di testo scritte in pixel, e accanto altezze e spaziature
+     anch'esse in pixel: scalare solo i font vuol dire testo grande dentro
+     righe rimaste piccole. Convertire tutto in rem sarebbe la strada da
+     manuale ma tocca ogni riga del foglio di stile. Si usa `zoom` sulla
+     radice, provato nel browser PRIMA di scriverlo: ingrandisce testo,
+     spazi e bersagli insieme, gli overlay `fixed` continuano a coprire lo
+     schermo, la tab bar resta in fondo.
+
+     **L'unica cosa che lo zoom rompe e `100dvh`**: dentro una radice
+     zoomata al 125% vale il 125% dello schermo, e su una pagina vuota
+     compare una barra di scorrimento. I tredici punti sono diventati la
+     classe `.jm-screen`, cioe `calc(100dvh / var(--jm-ui-scale))`.
+
+     Cinque passi (0,9 / 1 / 1,15 / 1,3 / 1,5). La scala si applica nello
+     script inline di boot, insieme a tema e chiaro/scuro: applicarla da
+     React vorrebbe dire vedere l'app piccola per un istante e poi
+     saltare. Nel pannello **ogni riga e disegnata alla sua misura** e non
+     c'e nessun tasto "salva": chi apre quella schermata lo fa perche non
+     vede bene, e deve poter scegliere guardando.
+
+     `src/lib/ui-scale-contract.ts` non importa React di proposito: lo
+     importa anche `themes/boot.ts`, che gira come modulo server, e un
+     solo hook li dentro fa fallire la compilazione della pagina.
+
+  14. **Dalla giornata si puo aggiungere qualcosa** (`/giorno`). Prima era
+     un vicolo cieco: una giornata vuota diceva "vai su Oggi" e una gia
+     raccontata non poteva ricevere una riga in piu. Ora un tasto in fondo
+     al racconto (non nell'intestazione: lassu ci sono gia indietro,
+     originale ed elimina, e un quarto bersaglio sarebbe appiccicato al
+     cestino) apre un foglio con tre voci: scrivi altro, racconta a voce,
+     salva in Ricorda.
+
+     Sotto il cofano non c'e niente di nuovo: `ManualWrite`,
+     `RecordingOverlay` e `QuickCapture` sono gli stessi di Oggi e di
+     Ricorda, e `saveRecording` con `defaultDate` accodava gia al
+     transcript esistente. **La voce non compare in gratis** — assente,
+     non spenta con la targhetta "Premium": quello e solo un modo elegante
+     di dire di no (SPEC-v2 §3.3).
+
+     Se l'utente sposta la data dentro l'overlay di registrazione, vince
+     lui: il foglio non riporta di forza il testo su questa giornata.
+
   **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
   `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
   verdi; le suite Playwright rieseguite senza regressioni (PR 7 24/24,
   PR 8 21/21, PR 9 25/25, PR 10 26/26) piu quattro nuove:
   `scripts/verify-fix-20260820.mjs` 52/53, `scripts/verify-impostazioni.mjs`
-  55/55, `scripts/verify-i18n.mjs` 6/6 (analisi statica del catalogo) e
-  `scripts/verify-lingua.mjs` 25/25 (l'app vera, in tutte e due le lingue).
+  55/55, `scripts/verify-i18n.mjs` 6/6 (analisi statica del catalogo),
+  `scripts/verify-lingua.mjs` 25/25 (l'app vera, in tutte e due le lingue) e
+  `scripts/verify-testo-giorno.mjs` 49/49 — che fra le altre cose misura il
+  `min-height` calcolato a ogni scala, perche e li che lo zoom rompe, non
+  nell'altezza della pagina (una pagina lunga scorre di suo, ed e giusto).
 
   L'unico FAIL, `benvenuto: zero errori console`, e un artefatto
   dell'ambiente e non una regressione: senza `.env.local` il client

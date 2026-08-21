@@ -22,6 +22,13 @@ type Props = {
    */
   freeProse?: { transcript: string; createdAt: string; spoken: boolean } | null;
   onSeePremium?: () => void;
+  /**
+   * Slot in fondo alla colonna, sotto metriche e obiettivi. Lo usa la
+   * schermata della giornata per il tasto "aggiungi" (mockup
+   * testo-e-giorno.html §03). Uno slot e non un bottone fisso perche su
+   * Oggi quel tasto non serve: stai gia scrivendo.
+   */
+  footer?: React.ReactNode;
 };
 
 export function FilledView({
@@ -35,6 +42,7 @@ export function FilledView({
   onGoalToggle,
   freeProse = null,
   onSeePremium,
+  footer = null,
 }: Props) {
   const t = useT();
   const hasHeadline = !!headline && headline.trim().length > 0;
@@ -161,6 +169,8 @@ export function FilledView({
         <MetricCards metrics={metrics} onChange={onMetricChange} />
         <GoalDots goals={goals} onToggle={onGoalToggle} />
       </div>
+
+      {footer}
 
       <RailToday
         metrics={metrics}

@@ -33,6 +33,7 @@ import {
   GoalsPanel,
   LanguagePanel,
   LANG_NAMES,
+  TextSizePanel,
   ThemePanel,
   WherePanel,
 } from "@/components/settings/panels";
@@ -50,6 +51,7 @@ import { clearPlanCache, usePlan } from "@/lib/plan";
 import { openPremiumWall } from "@/components/premium-wall";
 import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
 import { useLang, useLangPref, useT } from "@/lib/i18n";
+import { UI_SCALE_LABELS, useUiScale } from "@/lib/ui-scale";
 import { THEMES } from "@/themes";
 import { setAppearance, useAppearance, useThemeId } from "@/themes/runtime";
 import type { Appearance } from "@/themes";
@@ -64,13 +66,14 @@ type Props = {
   latestRecap: { title: string; periodLabel: string } | null;
 };
 
-type Panel = "root" | "goals" | "theme" | "where" | "language";
+type Panel = "root" | "goals" | "theme" | "where" | "language" | "textsize";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
   theme: "Tema",
   where: "Dove sono le mie giornate",
   language: "Lingua",
+  textsize: "Dimensione del testo",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -97,6 +100,7 @@ export function SettingsClient({
   const t = useT();
   const lang = useLang();
   const langPref = useLangPref();
+  const uiScale = useUiScale();
 
   const [panel, setPanel] = useState<Panel>("root");
   const [goals, setGoals] = useState<GoalDef[]>(initialGoals);
@@ -214,8 +218,7 @@ export function SettingsClient({
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       {panel === "root" ? (
         <header className="jm-col-head">
@@ -234,6 +237,7 @@ export function SettingsClient({
         )}
         {panel === "theme" && <ThemePanel />}
         {panel === "language" && <LanguagePanel />}
+        {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
 
         {panel === "root" && (
@@ -289,6 +293,12 @@ export function SettingsClient({
                 })}
                 value={themeName}
                 onClick={() => setPanel("theme")}
+              />
+              <SetRow
+                title={t("Dimensione del testo")}
+                desc={t("Ingrandisce tutta l'app, non solo le scritte.")}
+                value={t(UI_SCALE_LABELS[String(uiScale)])}
+                onClick={() => setPanel("textsize")}
               />
               <SetRow
                 title={t("Chiaro o scuro")}

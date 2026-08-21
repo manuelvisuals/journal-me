@@ -592,7 +592,8 @@ export function RecordingOverlay({
         inset: 0,
         zIndex: 50,
         background: "var(--color-bg-phone)",
-        height: "100dvh",
+        // Diviso per la scala dell'interfaccia: vedi .jm-screen in globals.css.
+        height: "calc(100dvh / var(--jm-ui-scale))",
       }}
     >
       <div

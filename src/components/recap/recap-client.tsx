@@ -95,8 +95,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       <header className="jm-rec-head">
         <h1 className="jm-rec-h">Recap</h1>

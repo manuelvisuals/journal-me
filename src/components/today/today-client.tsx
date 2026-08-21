@@ -430,8 +430,7 @@ export function TodayClient({
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       {/* Il padding sta in .jm-col-head (globals.css), non qui: da uno
           style inline non si puo scavalcare con una media query, e su

@@ -100,8 +100,7 @@ export function RememberClient({ mode, initial }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col relative"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col relative"
     >
       <header className="jm-rem-head">
         {/* "Ricorda", come la tab bar, la rail desktop e la palette. Era

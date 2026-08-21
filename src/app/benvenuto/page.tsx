@@ -46,8 +46,7 @@ export default function BenvenutoPage() {
 
   return (
     <main
-      className="jm-benv mx-auto w-full max-w-[440px] flex-1"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen jm-benv mx-auto w-full max-w-[440px] flex-1"
     >
       {/* Titolo su due righe: dove spezzare lo decide la traduzione. */}
       <h1 className="jm-benv-hero" style={{ whiteSpace: "pre-line" }}>
