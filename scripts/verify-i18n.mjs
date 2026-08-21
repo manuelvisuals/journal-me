@@ -72,12 +72,17 @@ function check(name, ok, extra = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "\n      " + extra : ""}`);
 }
 
-/* ---- il catalogo ---- */
-const src = readFileSync("src/lib/i18n/en.ts", "utf8");
-const body = src.slice(src.indexOf("{", src.indexOf("export const EN")));
+/* ---- il catalogo: en.ts + en-extra.ts (i rami paralleli) ---- */
 const CATALOG = new Map();
-for (const m of body.matchAll(/^\s*("(?:[^"\\]|\\.)*")\s*:\s*("(?:[^"\\]|\\.)*")\s*,\s*$/gm)) {
-  CATALOG.set(JSON.parse(m[1]), JSON.parse(m[2]));
+for (const [file, marker] of [
+  ["src/lib/i18n/en.ts", "export const EN"],
+  ["src/lib/i18n/en-extra.ts", "export const EN_EXTRA"],
+]) {
+  const src = readFileSync(file, "utf8");
+  const body = src.slice(src.indexOf("{", src.indexOf(marker)));
+  for (const m of body.matchAll(/^\s*("(?:[^"\\]|\\.)*")\s*:\s*("(?:[^"\\]|\\.)*")\s*,\s*$/gm)) {
+    CATALOG.set(JSON.parse(m[1]), JSON.parse(m[2]));
+  }
 }
 check("catalogo: si legge e non e vuoto", CATALOG.size > 200, `${CATALOG.size} voci`);
 

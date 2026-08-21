@@ -1,4 +1,9 @@
 @import "tailwindcss";
+/* Le funzioni in lavorazione su rami paralleli: vedi features.css.
+   Sta QUI e non in fondo perche un @import dopo le regole e ignorato dai
+   browser: il file sarebbe stato caricato dal bundler e buttato via dal
+   browser, cioe il tipo di guasto che non da nessun errore. */
+@import "./features.css";
 
 @theme inline {
   --color-bg: var(--jm-bg);

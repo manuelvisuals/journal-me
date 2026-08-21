@@ -37,6 +37,7 @@
 
 import { useSyncExternalStore } from "react";
 import { EN } from "@/lib/i18n/en";
+import { EN_EXTRA } from "@/lib/i18n/en-extra";
 
 export type Lang = "it" | "en";
 export type LangPref = Lang | "system";
@@ -147,7 +148,11 @@ export function t(
   vars?: Record<string, string | number>,
 ): string {
   const lang = snapshot();
-  const out = lang === "en" ? (EN[phrase] ?? phrase) : phrase;
+  // EN_EXTRA prima: e il catalogo dei rami paralleli, e quando una
+  // funzione arriva su main le sue righe si spostano in EN senza che
+  // niente cambi a schermo (vedi en-extra.ts).
+  const out =
+    lang === "en" ? (EN_EXTRA[phrase] ?? EN[phrase] ?? phrase) : phrase;
   if (!vars) return out;
   return out.replace(/\{(\w+)\}/g, (whole, k: string) =>
     k in vars ? String(vars[k]) : whole,

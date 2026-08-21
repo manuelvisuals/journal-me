@@ -1,0 +1,18 @@
+/* Il foglio di stile delle FUNZIONI IN LAVORAZIONE IN PARALLELO.
+
+   Stessa ragione di src/lib/i18n/en-extra.ts: globals.css ha quasi
+   quattromila righe ed e il file piu toccato del progetto (11 commit sugli
+   ultimi 25). Due sessioni che ci scrivono insieme si scontrano a ogni
+   merge, e un conflitto risolto male in un foglio di stile non da errore:
+   da una schermata storta che nessuno nota subito.
+
+   Regola: chi lavora su un ramo parallelo scrive QUI, chi lavora su main
+   scrive in globals.css. Questo file e importato in fondo a globals.css,
+   quindi vince sulle regole di uguale specificita — comodo, ma da usare
+   con la testa: se serve vincere, meglio una classe piu precisa.
+
+   Quando la funzione e stabile, le sue regole si possono spostare nel
+   blocco che le compete dentro globals.css. */
+
+/* Verificato nel browser il 21 agosto 2026 che le regole scritte qui
+   arrivano davvero a schermo (sonda .jm-features-probe, poi rimossa). */
