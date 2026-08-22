@@ -82,7 +82,14 @@ const GROUPS: { id: UsageActivityId; routes: string[] }[] = [
   { id: "transcribe", routes: ["transcribe"] },
   { id: "recap", routes: ["recap"] },
   { id: "process-entry", routes: ["process-entry"] },
-  { id: "ricorda", routes: ["split-by-date", "extract-people", "classify"] },
+  // "extract-facts" ha preso il posto di "extract-people" (22 agosto 2026):
+  // le persone sono fatti come gli altri. La vecchia resta nell'elenco perche
+  // i mesi passati hanno righe con quel nome, e un consuntivo che perde
+  // pezzi di storia e peggio di uno con una voce in piu.
+  {
+    id: "ricorda",
+    routes: ["split-by-date", "extract-people", "extract-facts", "classify"],
+  },
 ];
 
 /**

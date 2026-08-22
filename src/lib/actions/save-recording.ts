@@ -98,7 +98,19 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
       ? await analyzeDay(fullTranscript)
       : localFields(fullTranscript);
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
-    saved.push(await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur));
+    const entry = await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur);
+    // I fatti vanno scritti DOPO la giornata: hanno bisogno del suo id per
+    // sparire insieme a lei. `undefined` significa "non letti" e non tocca
+    // niente; una lista vuota e una risposta vera ("qui non c'e nessun
+    // fatto") e ha il diritto di svuotare.
+    if (ai.facts) {
+      try {
+        await store.replaceAiFacts(seg.date, ai.facts);
+      } catch {
+        // I fatti sono un di piu: se non si salvano, la giornata resta.
+      }
+    }
+    saved.push(entry);
   }
   // La cache delle letture non sa niente di questa scrittura: senza,
   // tornando su Mese si vedrebbe ancora il mese di prima.
@@ -120,6 +132,13 @@ export async function reprocessEntryTranscript(
     ? await analyzeDay(newTranscript)
     : localFields(newTranscript);
   const saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
+  if (ai.facts) {
+    try {
+      await store.replaceAiFacts(dateISO, ai.facts);
+    } catch {
+      // vedi saveRecording: i fatti non possono far fallire un salvataggio
+    }
+  }
   invalidateAll();
   return saved;
 }

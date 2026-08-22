@@ -44,16 +44,16 @@ const locale = leggi("src/lib/data/store/local.ts");
 /* ====== 1. una sola analisi, e legge tutto ====== */
 {
   check(
-    "riassunto e persone escono dalla stessa funzione",
+    "riassunto e fatti escono dalla stessa funzione",
     /callProcessEntry\(transcript\)/.test(analisi) &&
-      /callExtractPeople\(transcript\)/.test(analisi),
+      /callExtractFacts\(transcript\)/.test(analisi),
   );
   // Lo stesso identico testo a tutte e due: e la proprieta che mancava.
   const dentro = funzione(analisi, "export async function analyzeDay(");
   check(
     "ricevono lo STESSO testo, non due testi diversi",
     /callProcessEntry\(transcript\)/.test(dentro) &&
-      /callExtractPeople\(transcript\)/.test(dentro),
+      /callExtractFacts\(transcript\)/.test(dentro),
     dentro.split("\n").find((l) => l.includes("Promise.all")) ?? "",
   );
   check(
@@ -76,11 +76,11 @@ const locale = leggi("src/lib/data/store/local.ts");
   );
   check(
     "nessuno chiama piu le rotte AI per conto suo",
-    !/api\/process-entry/.test(salva) && !/api\/extract-people/.test(salva),
+    !/api\/process-entry/.test(salva) && !/api\/extract-facts/.test(salva),
   );
   check(
     "la schermata Oggi non fa piu una lettura sua dei nomi",
-    !/api\/extract-people/.test(oggi),
+    !/api\/extract-facts/.test(oggi),
   );
 }
 

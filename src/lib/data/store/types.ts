@@ -43,6 +43,15 @@ export type AIFields = {
    * quel testo non nomina nessuno.
    */
   people?: string[];
+  /**
+   * I fatti letti dallo stesso testo (SPEC-fatti §4). Assente = non letti,
+   * e vale la stessa regola di `people`: non si tocca cio che e salvato.
+   *
+   * Non li scrive `saveProcessedEntry`: i fatti hanno una tabella loro e
+   * vogliono l'id della giornata, che esiste solo DOPO il salvataggio.
+   * Li scrive saveRecording, subito dopo, con `replaceAiFacts`.
+   */
+  facts?: NewFact[];
 };
 
 export interface JournalStore {

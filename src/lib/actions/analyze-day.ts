@@ -37,7 +37,9 @@
 
 import { apiFetch } from "@/lib/api";
 import { t } from "@/lib/i18n";
+import { loadKnownLabels } from "@/lib/data/facts";
 import type { AIFields } from "@/lib/data/store";
+import type { NewFact } from "@/lib/types";
 
 /** Il riassunto: titolo, sintesi, aree. */
 async function callProcessEntry(
@@ -63,21 +65,70 @@ async function callProcessEntry(
 }
 
 /**
- * I nomi. `null` vuol dire "non lo so" (rete, errore, timeout) ed e diverso
- * da `[]`, che vuol dire "questo testo non nomina nessuno". Solo il secondo
- * ha il diritto di svuotare la lista salvata.
+ * I FATTI della giornata (SPEC-fatti.md §4).
+ *
+ * Ha assorbito l'estrazione dei nomi: una persona e un fatto con
+ * `kind: 'persona'`. Tenerle su due strade separate voleva dire due prompt,
+ * due modelli e due punti dove sbagliare — ed e esattamente dove si
+ * sbagliava, il 21 agosto, quando i nomi si leggevano solo sull'ultimo pezzo
+ * scritto.
+ *
+ * `null` vuol dire "non lo so" (rete, errore, timeout) ed e diverso da `[]`,
+ * che vuol dire "in questo testo non c'e niente". Solo il secondo ha il
+ * diritto di svuotare cio che e salvato.
+ *
+ * LE ETICHETTE GIA USATE si passano al modello perche le RIUSI: e meta della
+ * normalizzazione, ed e misurata (RISULTATI-prova-modelli.md) — senza
+ * elenco scrive "panca", con l'elenco scrive "panca piana", e i progressi
+ * restano un grafico solo invece di due meta che non si sommano.
  */
-async function callExtractPeople(transcript: string): Promise<string[] | null> {
+async function callExtractFacts(transcript: string): Promise<NewFact[] | null> {
+  let known: string[] = [];
   try {
-    const resp = await apiFetch("/api/extract-people", {
+    known = await loadKnownLabels();
+  } catch {
+    // Nessuna etichetta nota: si estrae lo stesso, si normalizza peggio.
+  }
+  try {
+    const resp = await apiFetch("/api/extract-facts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcript }),
+      body: JSON.stringify({ transcript, known }),
     });
     if (!resp.ok) return null;
-    const data = (await resp.json()) as { people?: string[] };
-    if (!Array.isArray(data.people)) return null;
-    return data.people.map((p) => p.trim()).filter((p) => p.length > 0);
+    const data = (await resp.json()) as {
+      facts?: {
+        kind?: string;
+        label?: string;
+        label_key?: string;
+        attrs?: Record<string, unknown>;
+        confidence?: number;
+      }[];
+    };
+    if (!Array.isArray(data.facts)) return null;
+    const validi: NewFact["kind"][] = [
+      "cibo",
+      "attivita",
+      "persona",
+      "lavoro",
+      "luogo",
+    ];
+    return data.facts
+      .filter(
+        (f): f is Required<typeof f> =>
+          typeof f.kind === "string" &&
+          validi.includes(f.kind as NewFact["kind"]) &&
+          typeof f.label === "string" &&
+          f.label.trim().length > 0,
+      )
+      .map((f) => ({
+        kind: f.kind as NewFact["kind"],
+        label: f.label.trim(),
+        labelKey: (f.label_key || f.label).trim().toLowerCase(),
+        attrs: f.attrs && typeof f.attrs === "object" ? f.attrs : {},
+        confidence: typeof f.confidence === "number" ? f.confidence : null,
+        origin: "ai" as const,
+      }));
   } catch {
     return null;
   }
@@ -93,6 +144,7 @@ function fallbackFields(transcript: string): AIFields {
     // Non `[]`: una chiamata fallita non sa niente delle persone, e non ha
     // nessun diritto di cancellarle.
     people: undefined,
+    facts: undefined,
   };
 }
 
@@ -105,16 +157,22 @@ function fallbackFields(transcript: string): AIFields {
 export async function analyzeDay(transcript: string): Promise<AIFields> {
   // In parallelo: sono indipendenti, e in fila sommerebbero le due attese
   // davanti a un utente che sta gia guardando la schermata di elaborazione.
-  const [summary, people] = await Promise.all([
+  const [summary, facts] = await Promise.all([
     callProcessEntry(transcript),
-    callExtractPeople(transcript),
+    callExtractFacts(transcript),
   ]);
 
-  if (!summary) return { ...fallbackFields(transcript), people: people ?? undefined };
+  // Le persone della giornata SONO i fatti di tipo persona: una lettura
+  // sola, quindi non possono piu discordare fra loro.
+  const people = facts
+    ? [...new Set(facts.filter((f) => f.kind === "persona").map((f) => f.label))]
+    : null;
 
+  const base = summary ?? fallbackFields(transcript);
   return {
-    ...summary,
+    ...base,
     people: people ?? undefined,
+    facts: facts ?? undefined,
   };
 }
 
@@ -137,5 +195,6 @@ export function localFields(transcript: string): AIFields {
     snippet: "",
     areas: [],
     people: undefined,
+    facts: undefined,
   };
 }
