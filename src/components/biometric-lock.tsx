@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { isNative } from "@/lib/native/platform";
 
 type LockState = "checking" | "locked" | "open";
@@ -95,6 +96,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
         className="mb-2 text-[calc(22px*var(--jm-ui-scale))] font-semibold tracking-tight"
         style={{ letterSpacing: "-0.01em" }}
       >
+        <BrandMark />
         Journal
         <span
           className="text-accent"

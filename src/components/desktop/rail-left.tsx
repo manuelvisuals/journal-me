@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
 import { useActiveModules } from "@/lib/modules";
@@ -134,6 +135,7 @@ export function RailLeft() {
   return (
     <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
       <div className="jm-rail-brand">
+        <BrandMark />
         Journal<span>.me</span>
       </div>
       <div className="jm-rail-nav">

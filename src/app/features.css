@@ -330,3 +330,35 @@
   opacity: 0.28;
   cursor: default;
 }
+
+/* ============================================================
+   IL SEGNO DI JOURNAL.ME  (src/components/brand/brand-mark.tsx)
+   Un file solo per tutto il sito: public/logo.png.
+   ============================================================ */
+
+.jm-logo {
+  /* In em, non in px: il segno segue il testo accanto a cui sta, quindi
+     una regola sola vale per la rail (serif 21px), la splash (sans 30px),
+     il login e lo sblocco (22px) — e segue anche "Dimensione del testo". */
+  height: 1.55em;
+  width: auto;
+  display: inline-block;
+  /* Il file ha un margine trasparente suo (circa il 15 per cento per lato):
+     l'allineamento e quindi ottico e misurato a schermo, non calcolato. */
+  vertical-align: -0.44em;
+  margin-right: 0.18em;
+  flex: 0 0 auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Sui temi scuri il marrone del segno sparisce sul fondo nero. Il file
+   resta UNO: e il CSS che lo schiarisce, e si puo fare anche su un PNG.
+   invert(1) da un segno chiaro ma di colore complementare (azzurro);
+   hue-rotate(180deg) subito dopo riporta la tinta nella famiglia calda di
+   partenza. Il risultato e un beige caldo, non il marrone originale: e il
+   prezzo di tenere un file solo, ed e stato guardato a schermo prima di
+   sceglierlo, non dedotto. */
+[data-mode="dark"] .jm-logo {
+  filter: invert(1) hue-rotate(180deg);
+}
