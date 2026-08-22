@@ -1,0 +1,62 @@
+{
+  "format": "journal.me/backup",
+  "version": 1,
+  "exportedAt": "2026-03-15T09:00:00.000Z",
+  "source": {
+    "mode": "local",
+    "app": "0.6.0"
+  },
+  "counts": {
+    "entries": 1,
+    "goals": 0,
+    "remembers": 0,
+    "recaps": 0
+  },
+  "entries": [
+    {
+      "id": "8bbdc25b-0407-44aa-b480-d355b5defd10",
+      "entryDate": "2026-03-14",
+      "transcript": "Giornata di prova per le icone delle aree.",
+      "durationSeconds": 0,
+      "headline": "giornata di prova",
+      "snippet": "Una riga di prova.",
+      "areas": [
+        {
+          "label": "Lavoro",
+          "text": "Testo di prova per Lavoro."
+        },
+        {
+          "label": "Relazioni",
+          "text": "Testo di prova per Relazioni."
+        },
+        {
+          "label": "Cibo",
+          "text": "Testo di prova per Cibo."
+        },
+        {
+          "label": "Movimento",
+          "text": "Testo di prova per Movimento."
+        },
+        {
+          "label": "Emozioni",
+          "text": "Testo di prova per Emozioni."
+        },
+        {
+          "label": "Corpo",
+          "text": "Testo di prova per Corpo."
+        }
+      ],
+      "metrics": {
+        "weightKg": null,
+        "sleepHours": null,
+        "mood": null
+      },
+      "goals": [],
+      "people": [],
+      "createdAt": "2026-03-14T21:00:00.000Z"
+    }
+  ],
+  "goals": [],
+  "remembers": [],
+  "recaps": []
+}

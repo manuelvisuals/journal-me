@@ -378,9 +378,16 @@
   align-items: center;
   gap: 9px;
 }
+/* Il contenitore e alto UNA riga di testo e il disegno gli esce fuori senza
+   essere tagliato: cosi l'icona si vede grande quanto deve, ma la riga
+   dell'etichetta non si alza e la scheda resta alta identica a prima. Era
+   la promessa della collocazione scelta, e senza questo la scheda cresceva
+   di quattro pixel. */
 .jm-area-icw {
   display: inline-flex;
+  align-items: center;
   flex: 0 0 auto;
+  height: 1em;
   line-height: 0;
 }
 .jm-area-ic {
@@ -388,6 +395,8 @@
      e il disegno la segue da solo perche l'altezza e in em. */
   width: 1.82em;
   height: 1.82em;
+  margin-top: -0.41em;
+  margin-bottom: -0.41em;
   /* Il tratto e grosso e nero pieno peserebbe piu della parola che
      accompagna: un filo indietro e l'icona torna al suo posto. */
   opacity: 0.85;
