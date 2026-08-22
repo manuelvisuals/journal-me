@@ -5,7 +5,11 @@ import {
   THEME_STORAGE_KEY,
 } from "./contract";
 import { THEMES } from "./index";
-import { UI_SCALE_STORAGE_KEY, UI_SCALES } from "@/lib/ui-scale-contract";
+import {
+  DEFAULT_UI_SCALE,
+  UI_SCALE_STORAGE_KEY,
+  UI_SCALES,
+} from "@/lib/ui-scale-contract";
 
 /**
  * Lo script inline di boot (SPEC-temi §5, "Applicazione, senza flash").
@@ -37,6 +41,12 @@ export function themeBootScript(): string {
     themes,
     def: DEFAULT_THEME_ID,
     scales: UI_SCALES,
+    // Il passo di partenza viaggia con il resto invece di essere scritto a
+    // mano qui sotto: era 1 in questo script e DEFAULT_UI_SCALE in React,
+    // e finche i due valori coincidevano nessuno se n'e accorto. Spostare
+    // il default a 1,15 li ha separati, e l'app si disegnava a 1 mentre
+    // Impostazioni diceva "Normale". Una fonte sola, non due.
+    zdef: DEFAULT_UI_SCALE,
   });
   return `(function(){try{
 var D=${payload};
@@ -53,7 +63,7 @@ for(var k in v)e.style.setProperty(k,v[k]);
 e.style.colorScheme=m;
 var mc=document.querySelector('meta[name="theme-color"]');
 if(mc)mc.setAttribute("content",v["--jm-bg-app"]);
-var z=1;
+var z=D.zdef;
 try{var zr=Number(localStorage.getItem(${JSON.stringify(UI_SCALE_STORAGE_KEY)}));if(D.scales.indexOf(zr)>=0)z=zr;}catch(e){}
 e.style.setProperty("--jm-ui-scale",String(z));
 }catch(err){}})();`;
