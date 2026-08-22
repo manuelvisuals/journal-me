@@ -4214,33 +4214,59 @@ summary:active {
    stretto e appiccicato al cestino. Tratteggiato perche e un invito, non
    l'azione principale della schermata — quella e leggere.
    ============================================================= */
+/* Il tasto per aggiungere qualcosa alla giornata (mockup
+   design/mockups/tasto-aggiungi.html §C, approvato il 22 agosto 2026).
+
+   Com'era: bordo tratteggiato e sei pixel d'aria sopra. Due difetti in uno.
+   Il tratteggiato, ovunque nel mondo, vuol dire "campo da riempire": il
+   tasto sembrava un segnaposto rimasto li. E sei pixel non sono spazio,
+   sono un errore di stampa - stava appiccicato all'ultima area.
+
+   Com'e: la stessa forma delle aree - stesso fondo, stesso bordo, stesso
+   raggio - ma vuota, con il piu al centro. Si legge come LA CASELLA CHE
+   MANCA, e non ha bisogno di spiegazioni. Sopra, trenta pixel di respiro:
+   la giornata finisce, e poi c'e questo. */
 .jm-day-add {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 10px;
   width: 100%;
-  min-height: 52px;
-  margin: calc(6px * var(--jm-space)) 0 calc(22px * var(--jm-space));
-  background: transparent;
-  border: 1px dashed var(--color-line);
-  border-radius: var(--jm-radius-md);
+  min-height: calc(64px * var(--jm-ui-scale));
+  margin: calc(30px * var(--jm-space)) 0 calc(24px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: calc(14px * var(--jm-ui-scale));
+  font-size: calc(14.5px * var(--jm-ui-scale));
   font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
+  transition: background-color 140ms, color 140ms;
   -webkit-tap-highlight-color: transparent;
 }
-.jm-day-add:hover { background: var(--color-surface); }
+.jm-day-add:hover {
+  background: var(--color-surface-2);
+  color: var(--color-ink);
+}
 .jm-day-add:disabled { opacity: 0.55; cursor: default; }
 .jm-day-add svg {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 16px;
+  width: calc(16px * var(--jm-ui-scale));
+  height: calc(16px * var(--jm-ui-scale));
+  flex: 0 0 calc(16px * var(--jm-ui-scale));
   fill: none;
   stroke: currentColor;
+  stroke-width: 2.2;
 }
+/* Sulla giornata VUOTA il tasto e l'unica cosa sullo schermo: li non deve
+   somigliare a una scheda in una lista, deve essere un invito. Niente
+   fondo, e l'aria sopra la mette gia il centraggio verticale. */
+.jm-day-add.empty {
+  background: transparent;
+  margin-top: calc(10px * var(--jm-space));
+}
+.jm-day-add.empty:hover { background: var(--color-surface); }
 
 /* Giornata vuota: era un vicolo cieco, ora e un invito con un'azione. */
 .jm-day-empty-wrap {
