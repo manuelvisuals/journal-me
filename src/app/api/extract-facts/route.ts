@@ -145,7 +145,11 @@ export async function POST(req: NextRequest) {
     },
     body: JSON.stringify({
       model,
-      temperature: 0,
+      // La temperatura si manda SOLO ai modelli che la accettano. I 5.x la
+      // rifiutano con un 400 ("does not support 0 with this model"): la
+      // tengono fissa e non si tocca. Meglio non mandarla che mandarla e
+      // vedersi rifiutare la chiamata (scoperto provando, il 22 agosto 2026).
+      ...(model.startsWith("gpt-4") ? { temperature: 0 } : {}),
       response_format: RESPONSE_FORMAT,
       messages: [
         { role: "system", content: systemPrompt },
