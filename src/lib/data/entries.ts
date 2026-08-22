@@ -98,3 +98,20 @@ export async function saveEntryPeople(
   invalidateAll();
   return getStore().saveEntryPeople(dateISO, people);
 }
+
+/**
+ * Scrive il titolo a mano e lo blocca (22 agosto 2026).
+ *
+ * Da qui in poi nessuna rilettura del racconto lo tocca piu: e una scelta
+ * senza strada indietro dall'app, ed e voluta. Il titolo e la prima cosa che
+ * rileggerai fra sei mesi, e se hai deciso come si chiama quella giornata
+ * non deve poterlo cambiare nessuno.
+ */
+export async function saveHeadline(
+  _mode: DataMode,
+  dateISO: string,
+  headline: string,
+): Promise<Entry> {
+  invalidateAll();
+  return getStore().saveHeadline(dateISO, headline);
+}

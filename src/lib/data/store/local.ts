@@ -53,6 +53,7 @@ type LocalEntryRecord = {
   headline: string | null;
   snippet: string | null;
   areas: AreaSummary[];
+  headlineLocked?: boolean;
   metrics: EntryMetrics;
   /** Le etichette accese; i GoalDot completi si costruiscono in lettura. */
   goalsOn: string[];
@@ -270,6 +271,7 @@ export class LocalStore implements JournalStore {
         on: on.has(d.label.toLowerCase()),
       })),
       people: rec.people,
+      headlineLocked: rec.headlineLocked === true,
       createdAt: rec.createdAt,
     };
   }
@@ -396,13 +398,26 @@ export class LocalStore implements JournalStore {
     const rec: LocalEntryRecord = {
       ...(existing ?? this.blankRecord(dateISO)),
       transcript,
-      headline: ai.headline,
+      // Titolo bloccato = scritto a mano: nessuna rilettura lo tocca.
+      ...(existing?.headlineLocked ? {} : { headline: ai.headline }),
       snippet: ai.snippet,
       areas: ai.areas,
       // Assente = non toccare (vedi AIFields): senza questo ramo, una
       // lettura vuota cancellerebbe i nomi gia salvati.
       ...(ai.people ? { people: ai.people } : {}),
       durationSeconds,
+    };
+    await db.put("entries", rec);
+    return this.recordToEntry(rec);
+  }
+
+  async saveHeadline(dateISO: string, headline: string): Promise<Entry> {
+    const db = await this.db();
+    const existing = await db.get("entries", dateISO);
+    const rec: LocalEntryRecord = {
+      ...(existing ?? this.blankRecord(dateISO)),
+      headline: headline.trim(),
+      headlineLocked: true,
     };
     await db.put("entries", rec);
     return this.recordToEntry(rec);

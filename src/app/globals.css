@@ -3407,6 +3407,102 @@ summary:active {
   color: var(--color-ink-faint);
   font-style: italic;
 }
+/* Il titolo si puo riscrivere a mano. La matita compare accanto finche il
+   titolo e dell'AI; appena e tuo, al suo posto resta la targhetta. La
+   targhetta NON e un bottone: da qui non si torna indietro (vedi
+   headline-editable.tsx). */
+.jm-fv-hbox {
+  position: relative;
+}
+.jm-fv-htap {
+  cursor: text;
+  border-radius: 10px;
+  /* Il titolo resta dov'era: il riquadro dell'editor cade esattamente sopra
+     grazie ai margini negativi speculari. */
+  padding: 0;
+}
+.jm-fv-htap:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+.jm-fv-htap.saving {
+  opacity: 0.5;
+}
+.jm-fv-hpen {
+  width: calc(15px * var(--jm-ui-scale));
+  height: calc(15px * var(--jm-ui-scale));
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+/* Sul telefono non esiste il passaggio del mouse: la matita si vede sempre,
+   se no il titolo sembra non toccabile. */
+@media (hover: none) {
+  .jm-fv-hpen {
+    opacity: 0.65;
+  }
+}
+.jm-fv-htap:hover .jm-fv-hpen,
+.jm-fv-htap:focus-visible .jm-fv-hpen {
+  opacity: 1;
+}
+.jm-fv-tuo {
+  display: inline-flex;
+  align-items: center;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px 9px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.jm-fv-hedit {
+  display: block;
+  width: calc(100% + 20px);
+  resize: none;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: -4px -10px 4px;
+  font-family: inherit;
+}
+.jm-fv-hedit:focus {
+  outline: none;
+}
+.jm-fv-hhint {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+/* I luoghi, accanto alle persone: stessa pastiglia, con lo spillo davanti
+   perche a colpo d'occhio si distingua un posto da una persona. */
+.jm-railr-chip .jm-pin,
+.jm-person-pill .jm-pin {
+  width: calc(11px * var(--jm-ui-scale));
+  height: calc(11px * var(--jm-ui-scale));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-right: 5px;
+  vertical-align: -1px;
+}
+
 .jm-fv-sn {
   font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 400;

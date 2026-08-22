@@ -31,6 +31,7 @@ import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import { useT } from "@/lib/i18n";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
+import { usePlaces } from "@/lib/use-places";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
 type View =
@@ -215,6 +216,12 @@ export function TodayClient({
       ? entry.goals
       : goalDefs.map((d) => ({ id: d.id, label: d.label, on: false })),
   );
+
+  // La giornata mostrata da Oggi non e sempre quella di oggi: se hai
+  // raccontato dopo mezzanotte, l'entry appartiene a ieri. I luoghi vanno
+  // letti dalla data dell'entry, non dal calendario.
+  const dateVista = entry?.entryDate ?? todayISO();
+  const places = usePlaces(mode, dateVista, entry?.transcript ?? null);
 
   const handleStartRecording = () => {
     setSaveError(null);
@@ -631,7 +638,22 @@ export function TodayClient({
           areas={entry?.areas ?? []}
           metrics={entry?.metrics ?? null}
           people={entry?.people ?? []}
+          places={places}
           goals={goalsForView}
+          editHeadline={
+            // Solo a giornata salvata e con l'AI: senza AI il titolo non
+            // esiste proprio (la prima riga del testo fa da titolo), e non
+            // c'e niente da riscrivere.
+            entry && canAI
+              ? {
+                  dateISO: entry.entryDate,
+                  mode,
+                  locked: entry.headlineLocked === true,
+                  onSaved: (e) => setEntry(e),
+                  onError: setSaveError,
+                }
+              : null
+          }
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
           freeProse={

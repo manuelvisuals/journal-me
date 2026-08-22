@@ -105,12 +105,28 @@ export async function POST(req: NextRequest) {
   // un enum salvato a database (vedi src/lib/server/lang.ts).
   const lingua = langName(langOf(req));
 
+  // Il riassunto cresce con la giornata. Prima era una riga fissa ("max 30
+  // parole") e il 22 agosto Manuel se ne e accorto: aveva raccontato una
+  // giornata intera e si ritrovava una frase sola. Ora la lunghezza e
+  // proporzionale al racconto: circa due quinti del testo, con un pavimento
+  // e un tetto perche' nessuno vuole leggere un riassunto lungo come il
+  // diario, ne' vuole due parole al posto di una giornata piena.
+  const paroleTranscript = transcript.split(/\s+/).filter(Boolean).length;
+  const tettoParole = Math.min(100, Math.max(40, Math.round(paroleTranscript * 0.4)));
+  // Se il racconto e' cortissimo, chiedere 30 parole vorrebbe dire chiedere
+  // di inventare: il pavimento non puo' superare il testo stesso.
+  const pavimentoParole = Math.min(30, Math.max(8, Math.round(paroleTranscript * 0.5)));
+  const regolaSnippet =
+    pavimentoParole >= tettoParole
+      ? `  - snippet: un riassunto dei fatti principali della giornata, al massimo ${tettoParole} parole.`
+      : `  - snippet: un riassunto dei fatti principali della giornata, lungo in proporzione al racconto: da ${pavimentoParole} a ${tettoParole} parole. Il racconto che ricevi e' di circa ${paroleTranscript} parole: piu' cose ha raccontato, piu' il riassunto deve coprirle tutte. Non fermarti alla prima frase della giornata: tocca il mattino, il giorno e la sera se ci sono. Frasi intere, niente elenchi puntati.`;
+
   const systemPrompt = [
     `Sei l'assistente di un diario personale. L'utente scrive in ${lingua} e tutto cio che produci va scritto in ${lingua}.`,
     "Ricevi il transcript di una persona che racconta la sua giornata a voce libera.",
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
     `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
-    "  - snippet: 1-2 frasi (max 30 parole totali) che riassumono i fatti principali della giornata.",
+    regolaSnippet,
     `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
     "",
     "Cosa va in quale area, quando c'e il dubbio:",
@@ -140,12 +156,6 @@ export async function POST(req: NextRequest) {
     "uno stato d'animo, l'area corrispondente DEVE comparire. Un array di",
     "aree vuoto e ammesso solo se davvero non c'e niente di nessuna delle",
     "sei categorie.",
-    "",
-    "Regole assolute:",
-    "  - Niente moralismi, giudizi o coaching.",
-    "  - Niente emoji.",
-    "  - Niente apostrofo curvo: solo l'apostrofo dritto ASCII.",
-    "  - Mantieni i nomi propri come pronunciati dall'utente.",
   ].join("\n");
 
   type Riassunto = {

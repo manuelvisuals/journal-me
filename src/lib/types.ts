@@ -45,6 +45,12 @@ export type Entry = {
   goals: GoalDot[];
   /** Names of people related to this day (Social section). */
   people: string[];
+  /**
+   * Il titolo l'ha scritto l'utente: nessuna rielaborazione AI lo tocca.
+   * Deciso il 22 agosto 2026, e senza strada indietro dall'app: se lo
+   * scrivi, e tuo.
+   */
+  headlineLocked?: boolean;
   /** ISO timestamp of when the entry was saved. */
   createdAt: string;
 };

@@ -5,7 +5,10 @@ import { AreaIcon } from "@/components/aree/area-icon";
 import { MetricCards } from "@/components/today/metric-cards";
 import { GoalList } from "@/components/today/goal-list";
 import { RailToday } from "@/components/today/rail-today";
-import type { AreaSummary, EntryMetrics, GoalDot } from "@/lib/types";
+import { HeadlineEditable } from "@/components/today/headline-editable";
+import { PlacePin } from "@/components/ui/place-pin";
+import type { AreaSummary, Entry, EntryMetrics, GoalDot } from "@/lib/types";
+import type { DataMode } from "@/lib/data/entries";
 import { useT } from "@/lib/i18n";
 
 type Props = {
@@ -15,6 +18,20 @@ type Props = {
   metrics: EntryMetrics | null;
   goals: GoalDot[];
   people?: string[];
+  /** I luoghi della giornata (fatti di tipo luogo), accanto alle persone. */
+  places?: string[];
+  /**
+   * Presente = il titolo si puo riscrivere a mano. Lo passano le schermate
+   * che hanno una giornata salvata sotto (Oggi e /giorno); dove non c'e
+   * ancora niente da titolare, il titolo resta una scritta e basta.
+   */
+  editHeadline?: {
+    dateISO: string;
+    mode: DataMode;
+    locked: boolean;
+    onSaved: (entry: Entry) => void;
+    onError?: (message: string) => void;
+  } | null;
   onMetricChange: (patch: Partial<EntryMetrics>) => void;
   onGoalToggle: (label: string) => void;
   /**
@@ -40,6 +57,8 @@ export function FilledView({
   metrics,
   goals,
   people,
+  places,
+  editHeadline = null,
   onMetricChange,
   onGoalToggle,
   freeProse = null,
@@ -52,6 +71,7 @@ export function FilledView({
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = orderAreas(areas ?? []);
   const peopleList = (people ?? []).filter((p) => p.trim().length > 0);
+  const placeList = (places ?? []).filter((p) => p.trim().length > 0);
 
   const proseParagraphs = freeProse
     ? freeProse.transcript
@@ -66,7 +86,16 @@ export function FilledView({
       {/* Stili in classi jm-fv-*: sotto lg replicano ESATTAMENTE i valori
           inline storici; da lg il mockup desktop-v1 §03 (headline 27px,
           snippet serif corsivo, aree su due colonne a card). */}
-      {hasHeadline ? (
+      {editHeadline ? (
+        <HeadlineEditable
+          headline={headline}
+          locked={editHeadline.locked}
+          dateISO={editHeadline.dateISO}
+          mode={editHeadline.mode}
+          onSaved={editHeadline.onSaved}
+          onError={editHeadline.onError}
+        />
+      ) : hasHeadline ? (
         <h1 className="jm-fv-h">{headline}</h1>
       ) : (
         <h1 className="jm-fv-h placeholder">
@@ -177,6 +206,34 @@ export function FilledView({
           </div>
         )}
 
+        {placeList.length > 0 && (
+          <div
+            className="jm-places"
+            style={{ padding: peopleList.length > 0 ? "0 0 14px" : "14px 0" }}
+          >
+            <div
+              style={{
+                fontSize: "calc(10px * var(--jm-ui-scale))",
+                fontWeight: 650,
+                color: "var(--color-accent)",
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                marginBottom: 10,
+              }}
+            >
+              {t("Luoghi")}
+            </div>
+            <div className="jm-pill-row">
+              {placeList.map((nome) => (
+                <span key={nome} className="jm-person-pill">
+                  <PlacePin />
+                  {nome}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         <Separator />
 
         <MetricCards metrics={metrics} onChange={onMetricChange} />
@@ -189,6 +246,7 @@ export function FilledView({
         metrics={metrics}
         goals={goals}
         people={peopleList}
+        places={placeList}
         onMetricChange={onMetricChange}
         onGoalToggle={onGoalToggle}
       />

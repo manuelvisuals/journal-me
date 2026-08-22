@@ -118,7 +118,7 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
   await page.keyboard.type("Riga uno.\n\nRiga due del racconto di prova.");
   await page.keyboard.press("Control+Enter");
   await page.waitForTimeout(2000);
-  await page.locator("header button", { hasText: "originale" }).click();
+  await page.locator("header button", { hasText: "modifica" }).click();
   await page.waitForTimeout(700);
 
   const geo = await page.evaluate(() => {

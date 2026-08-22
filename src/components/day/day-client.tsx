@@ -7,6 +7,7 @@ import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { AddToDay } from "@/components/day/add-to-day";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
+import { usePlaces } from "@/lib/use-places";
 import {
   compactDayDate,
   parseISODate,
@@ -65,6 +66,10 @@ export function DayClient({ mode, date, initialEntry }: Props) {
   // La spunta si accende SUBITO e poi si salva: vedi
   // src/lib/use-optimistic-goals.ts.
   const goalsForView = optimisticGoals.view(entry?.goals ?? []);
+
+  // I luoghi arrivano dai fatti, non dall'entry: si ricaricano ogni volta
+  // che la giornata viene risalvata (il testo cambia, l'analisi riparte).
+  const places = usePlaces(mode, date, entry?.transcript ?? null);
 
   const handleGoalToggle = async (label: string) => {
     await optimisticGoals.toggle(goalsForView, label, async () => {
@@ -198,6 +203,14 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           metrics={entry.metrics}
           goals={goalsForView}
           people={entry.people}
+          places={places}
+          editHeadline={{
+            dateISO: date,
+            mode,
+            locked: entry.headlineLocked === true,
+            onSaved: (e) => setEntry(e),
+            onError: setSaveError,
+          }}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
           footer={

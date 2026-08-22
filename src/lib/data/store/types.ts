@@ -75,6 +75,11 @@ export interface JournalStore {
   countEntries(): Promise<number>;
   deleteEntry(dateISO: string): Promise<void>;
   updateEntryTranscript(dateISO: string, text: string): Promise<Entry>;
+  /**
+   * Scrive il titolo a mano e lo blocca: da qui in poi nessuna
+   * rielaborazione AI lo sovrascrive (vedi Entry.headlineLocked).
+   */
+  saveHeadline(dateISO: string, headline: string): Promise<Entry>;
   updateMetric(dateISO: string, patch: Partial<EntryMetrics>): Promise<Entry>;
   toggleGoal(dateISO: string, label: string): Promise<Entry>;
   saveEntryPeople(dateISO: string, people: string[]): Promise<Entry>;

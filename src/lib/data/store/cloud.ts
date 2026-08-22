@@ -118,7 +118,7 @@ function blankEntryShell(dateISO: string): Entry {
 }
 
 const ENTRY_COLS_FULL =
-  "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at";
+  "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, headline_locked, created_at";
 const ENTRY_COLS_BASE =
   "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at";
 
@@ -146,6 +146,7 @@ function rowToEntry(row: Record<string, unknown>, goalDefs: GoalDef[]): Entry {
     metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
     goals: buildGoals(goalDefs, parseStringArray(row.goals_on)),
     people: parseStringArray(row.people),
+    headlineLocked: row.headline_locked === true,
     createdAt: row.created_at as string,
   };
 }
@@ -279,14 +280,26 @@ export class CloudStore implements JournalStore {
     const userId = await this.userId();
     // `people` entra nella riga SOLO se l'analisi lo ha prodotto: assente
     // vuol dire "non toccare", vedi AIFields in store/types.ts.
+    // Il titolo scritto a mano vince su qualunque rilettura: si guarda
+    // prima se questa giornata lo ha bloccato, e in quel caso non lo si
+    // manda nemmeno. Vedi migration 012.
+    const { data: prima } = await this.supabase()
+      .from("entries")
+      .select("headline_locked")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .maybeSingle();
+    const bloccato = (prima as { headline_locked?: boolean } | null)
+      ?.headline_locked === true;
+
     const row: Record<string, unknown> = {
       user_id: userId,
       entry_date: dateISO,
       transcript,
-      headline: ai.headline,
       snippet: ai.snippet,
       areas: ai.areas,
     };
+    if (!bloccato) row.headline = ai.headline;
     if (ai.people) row.people = ai.people;
     const { error } = await this.supabase()
       .from("entries")
@@ -299,6 +312,18 @@ export class CloudStore implements JournalStore {
     const reloaded = await this.loadEntryRow(dateISO);
     if (reloaded) return { ...reloaded, durationSeconds };
     return blankEntryShell(dateISO);
+  }
+
+  async saveHeadline(dateISO: string, headline: string): Promise<Entry> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("entries")
+      .update({ headline: headline.trim(), headline_locked: true })
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO);
+    if (error) throw new Error(error.message);
+    const reloaded = await this.loadEntryRow(dateISO);
+    return reloaded ?? blankEntryShell(dateISO);
   }
 
   async updateEntryTranscript(dateISO: string, text: string): Promise<Entry> {

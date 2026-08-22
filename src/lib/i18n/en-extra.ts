@@ -65,4 +65,10 @@ export const EN_EXTRA: Record<string, string> = {
   "ufficiali": "official ones",
   "che OpenAI riporta a ogni risposta, quindi il conteggio e esatto. Il prezzo no: e un listino salvato ad agosto 2026 in": "OpenAI reports with every response, so the count is exact. The price is not: it is a price list saved in August 2026 in",
   ", e se OpenAI lo cambia questa cifra resta indietro finche non lo aggiorni. Il conto vero e sul tuo pannello OpenAI.": ", and if OpenAI changes it this figure stays behind until you update it. The real bill is on your OpenAI dashboard.",
+  // Il titolo riscritto a mano (22 agosto 2026)
+  "tuo": "yours",
+  "tocca fuori per salvare": "tap outside to save",
+  "titolo della giornata": "day title",
+  "modifica il titolo della giornata": "edit the day title",
+  "non sono riuscito a salvare il titolo": "could not save the title",
 };
