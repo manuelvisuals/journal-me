@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Titolo tuo, riassunto proporzionato, luoghi nella rail</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif; --serif:"Newsreader",Georgia,serif;
+  --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.65;max-width:820px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:38px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 20px;max-width:900px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.row2{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+.phone{width:390px;border-radius:34px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);padding:26px 22px 28px;position:relative}
+.rail{width:280px;border-radius:18px;background:var(--bg-app);color:var(--ink);padding:24px 20px 28px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+
+.h{font-size:23px;font-weight:650;letter-spacing:-.025em;line-height:1.15}
+.h.edit{border:1px solid var(--accent);border-radius:10px;padding:8px 10px;margin:-8px -10px}
+.sn{font-family:var(--serif);font-style:italic;font-size:14.5px;line-height:1.6;color:var(--ink-muted);margin-top:10px}
+.tuo{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);border:1px solid var(--line);border-radius:999px;padding:3px 9px;margin-left:8px;vertical-align:middle}
+.matita{width:15px;height:15px;fill:none;stroke:var(--ink-faint);stroke-width:1.8;vertical-align:middle;margin-left:8px}
+.aree{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.area{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 13px}
+.area .l{font-size:9.5px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:5px}
+.area .x{font-size:12.5px;line-height:1.5;color:var(--ink-muted)}
+
+.rl{font-size:10px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin:22px 0 10px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.rrow .v{color:var(--ink-faint)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:12.5px;padding:7px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.chip.luogo{color:var(--ink-muted)}
+.chip.luogo svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:1.9;margin-right:5px;vertical-align:-1px}
+
+.sheet-wrap{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:flex-end}
+.sheet{width:100%;background:var(--bg-app);border-radius:20px 20px 0 0;padding:20px 22px 26px;border-top:1px solid var(--line)}
+.grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px}
+.sheet h3{font-size:17px;font-weight:650;margin-bottom:6px}
+.sheet p{font-size:13px;color:var(--ink-muted);line-height:1.55;margin-bottom:14px}
+.btn{width:100%;min-height:50px;border:none;border-radius:var(--r-md);background:var(--accent);color:var(--on-accent);
+  font-family:var(--font);font-size:15px;font-weight:600;margin-top:14px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-muted);margin-top:10px;min-height:46px;font-weight:500}
+.misura{font-size:11.5px;color:var(--ink-faint);text-align:right;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="page-title">Il titolo e' tuo, il riassunto e' suo</div>
+<div class="page-sub">
+  Tre cose insieme, perche' toccano la stessa schermata: un titolo che
+  diventa tuo appena lo scrivi, un riassunto lungo quanto merita la giornata,
+  e i luoghi accanto alle persone.
+</div>
+
+<div class="divider"></div>
+
+<div class="label">01 . il titolo diventa tuo</div>
+<div class="caption">
+  Tocchi il titolo e lo scrivi. Da quel momento <b>l'AI non lo tocca piu</b>,
+  mai, nemmeno quando riscrivi tutta la giornata. La targhetta lo dice, e c'e
+  una strada per tornare indietro: <b>"rifallo tu"</b> restituisce il titolo
+  all'AI. Senza quella, una modifica fatta per sbaglio sarebbe per sempre.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="h">giornata fra piscina e giochi<svg class="matita" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+      <div class="sn">Colazione al Bubba Cafe, pomeriggio in piscina con amici e cena da Charlie.</div>
+    </div>
+    <div class="cap">prima: il titolo dell'AI, con la matita accanto</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="h edit">la domenica piu bella del mese</div>
+      <div class="misura">tocca fuori per salvare</div>
+      <div class="sn">Colazione al Bubba Cafe, pomeriggio in piscina con amici e cena da Charlie.</div>
+    </div>
+    <div class="cap">mentre lo scrivi</div>
+  </div>
+  <div>
+    <div class="phone">
+      <div class="h">la domenica piu bella del mese<span class="tuo">tuo</span></div>
+      <div class="sn">Colazione al Bubba Cafe, pomeriggio in piscina con amici e cena da Charlie. Poi giochi di gruppo a casa di Ha Tran fino a tardi.</div>
+    </div>
+    <div class="cap">dopo: e tuo, e l'AI non lo tocca piu</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">01b . restituirlo all'AI</div>
+<div class="caption">
+  Toccando la targhetta <b>tuo</b>. E l'unica strada indietro, e deve
+  esistere: senza, un titolo scritto per sbaglio resterebbe li per sempre e
+  l'AI non potrebbe piu aiutarti su quella giornata.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="height:430px">
+      <div class="h" style="opacity:.25">la domenica piu bella del mese</div>
+      <div class="sheet-wrap">
+        <div class="sheet">
+          <div class="grip"></div>
+          <h3>Questo titolo l'hai scritto tu</h3>
+          <p>Per questo l'AI non lo cambia piu, nemmeno quando aggiungi qualcosa alla giornata. Vuoi che torni a scriverlo lei?</p>
+          <button class="btn">Rifallo tu, AI</button>
+          <button class="btn ghost">Lascialo com'e</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap">la strada indietro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">02 . il riassunto, lungo quanto merita</div>
+<div class="caption">
+  Oggi il limite e <b>30 parole per tutte le giornate</b>, un numero che avevo
+  scelto quando il riassunto stava in una riga sola. Ora diventa
+  proporzionato: da <b>30 parole</b> per una giornata detta in due righe fino
+  a <b>100</b> per una raccontata per venti minuti. Resta sempre dell'AI: e
+  quello che rileggerai fra sei mesi, e deve corrispondere al racconto, non a
+  come ti andava di riassumerlo un martedi sera.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="h" style="font-size:20px">colazione al bar e basta</div>
+      <div class="sn">Colazione al Bubba Cafe, poi una giornata tranquilla a casa.</div>
+      <div class="misura">racconto di 14 parole . riassunto di 11</div>
+    </div>
+    <div class="cap">giornata corta: resta corto</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="h" style="font-size:20px">domenica piena fra piscina, amici e giochi</div>
+      <div class="sn">Colazione al Bubba Cafe con calma, poi pomeriggio in piscina con gli amici fino al tramonto. Cena da Charlie, dove si e parlato a lungo del viaggio. La serata e finita a casa di Ha Tran con i giochi di gruppo, e si e fatta notte. Giornata piena, di quelle che stancano bene.</div>
+      <div class="misura">racconto di 180 parole . riassunto di 52</div>
+    </div>
+    <div class="cap">giornata piena: il riassunto cresce</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">03 . i luoghi nella rail</div>
+<div class="caption">
+  Sotto le persone, con la stessa forma ma <b>piu scuri</b>: sono contesto,
+  non protagonisti. I dati ci sono gia - da ieri l'estrazione produce i
+  luoghi come fatti. Toccandone uno, un giorno, si aprira la sua scheda come
+  succede per le persone.
+</div>
+<div class="row2">
+  <div>
+    <div class="rail">
+      <div class="rl" style="margin-top:0">La giornata</div>
+      <div class="rrow"><span>Peso</span><span class="v">82,0 kg</span></div>
+      <div class="rrow"><span>Sonno</span><span class="v">non segnato</span></div>
+      <div class="rrow" style="border:none"><span>Mood</span><span class="v">buono</span></div>
+      <div class="rl">Obiettivi <span style="float:right;font-weight:400;letter-spacing:0;text-transform:none">3 su 5</span></div>
+      <div class="rrow" style="border:none;padding-top:0"><span style="color:var(--ink-faint);font-size:12.5px">Alcohol free, Drug free, Social</span></div>
+      <div class="rl">Persone</div>
+      <div class="chips"><span class="chip">Charlie</span><span class="chip">Ha Tran</span></div>
+      <div class="rl">Luoghi</div>
+      <div class="chips">
+        <span class="chip luogo"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Bubba Cafe</span>
+        <span class="chip luogo"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>piscina</span>
+        <span class="chip luogo"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>da Charlie</span>
+      </div>
+    </div>
+    <div class="cap">rail destra . chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="rail">
+      <div class="rl" style="margin-top:0">La giornata</div>
+      <div class="rrow"><span>Peso</span><span class="v">82,0 kg</span></div>
+      <div class="rrow"><span>Sonno</span><span class="v">non segnato</span></div>
+      <div class="rrow" style="border:none"><span>Mood</span><span class="v">buono</span></div>
+      <div class="rl">Persone</div>
+      <div class="chips"><span class="chip">Charlie</span><span class="chip">Ha Tran</span></div>
+      <div class="rl">Luoghi</div>
+      <div class="chips">
+        <span class="chip luogo"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Bubba Cafe</span>
+        <span class="chip luogo"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>piscina</span>
+      </div>
+      <div class="rl">Sul telefono</div>
+      <div class="rrow" style="border:none;padding-top:0"><span style="color:var(--ink-faint);font-size:12.5px">stessa fila, sotto le persone</span></div>
+    </div>
+    <div class="cap">rail destra . scuro</div>
+  </div>
+</div>
+
+</body>
+</html>
