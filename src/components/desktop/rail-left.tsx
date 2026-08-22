@@ -11,7 +11,7 @@ import { useActiveModules } from "@/lib/modules";
 
 /**
  * La rail sinistra del guscio desktop (mockup desktop-v1.html): brand,
- * navigazione, "Racconta a voce", account con badge modalita in fondo.
+ * navigazione, "Racconta" (una parola: vedi sotto), account con badge in fondo.
  *
  * Le voci vengono dal mockup approvato: Recap e di primo livello e
  * l'etichetta e "Ricorda" (SPEC-v2 §10.7 le segnava come decisione aperta;
@@ -173,7 +173,11 @@ export function RailLeft() {
             <rect x="9" y="3" width="6" height="11" rx="3" />
             <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
           </svg>
-          {mode === "local" ? t("Scrivi la giornata") : t("Racconta a voce")}
+          {/* Una parola sola: "Racconta a voce" andava a capo dentro i 222px
+              della rail, e una voce di navigazione su due righe rompe la
+              colonna che tutte le altre tengono. Il verbo resta quello del
+              progetto — si racconta la giornata — solo senza il complemento. */}
+          {mode === "local" ? t("Scrivi") : t("Racconta")}
           <span className="jm-rail-kbd">{"⌘⇧R"}</span>
         </Link>
       </div>

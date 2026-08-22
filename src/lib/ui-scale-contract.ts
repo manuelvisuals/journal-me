@@ -47,15 +47,28 @@ export const UI_SCALE_STORAGE_KEY = "jm:scale";
 export const UI_SCALES = [0.9, 1, 1.15, 1.3, 1.5] as const;
 export type UiScale = (typeof UI_SCALES)[number];
 
-export const DEFAULT_UI_SCALE: UiScale = 1;
+/**
+ * Il passo di partenza, spostato da 1 a 1,15 il 22 agosto 2026 su richiesta
+ * di Manuel. Non e un ritocco di etichette: chi non ha mai scelto niente
+ * vede l'app un passo piu grande di prima. E la misura che lui usa davvero,
+ * e questa app ha un utente che non vede bene da vicino — partire dal
+ * minimo leggibile e piu onesto che partire dal piu compatto.
+ */
+export const DEFAULT_UI_SCALE: UiScale = 1.15;
 
 /** Il nome di ogni passo. */
+/**
+ * I nomi sono scalati di un passo (22 agosto 2026): quello che si chiamava
+ * "Grande" adesso si chiama "Normale" ed e il default. I VALORI non sono
+ * cambiati, solo i nomi e il punto di partenza — chi aveva gia scelto una
+ * misura continua a vedere esattamente quella, con un nome diverso accanto.
+ */
 export const UI_SCALE_LABELS: Record<string, string> = {
-  "0.9": "Piccolo",
-  "1": "Normale",
-  "1.15": "Grande",
-  "1.3": "Molto grande",
-  "1.5": "Massimo",
+  "0.9": "Molto piccolo",
+  "1": "Piccolo",
+  "1.15": "Normale",
+  "1.3": "Grande",
+  "1.5": "Molto grande",
 };
 
 export function isUiScale(n: number): n is UiScale {

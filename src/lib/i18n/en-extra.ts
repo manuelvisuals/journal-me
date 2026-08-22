@@ -17,6 +17,11 @@
  * traducono.
  */
 export const EN_EXTRA: Record<string, string> = {
+  /* Rail e misure del testo (ramo icone-e-misure) */
+  "Racconta": "Talk",
+  "Scrivi": "Write",
+  "Molto piccolo": "Smallest",
+
   /* Mese, avanti e indietro (ramo mese-nav) */
   "Mese precedente": "Previous month",
   "Mese successivo": "Next month",

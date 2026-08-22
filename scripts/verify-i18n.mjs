@@ -78,7 +78,7 @@ const DINAMICHE = {
     "Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni",
   ],
   "lib/ui-scale.ts (UI_SCALE_LABELS)": [
-    "Piccolo", "Normale", "Grande", "Molto grande", "Massimo",
+    "Molto piccolo", "Piccolo", "Normale", "Grande", "Molto grande",
   ],
 };
 
