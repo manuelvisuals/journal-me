@@ -20,6 +20,7 @@ export type AiRoute =
   | "process-entry"
   | "split-by-date"
   | "extract-people"
+  | "extract-facts"
   | "classify"
   | "recap";
 
