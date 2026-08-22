@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Il tasto "aggiungi a questa giornata"</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif; --serif:"Newsreader",Georgia,serif;
+  --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.65;max-width:800px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:38px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 20px;max-width:900px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.row2{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+
+.phone{width:390px;border-radius:34px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);padding:26px 24px 30px}
+.desk{width:640px;border-radius:18px;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);padding:28px 30px 34px}
+.h1{font-size:23px;font-weight:650;letter-spacing:-.02em;margin-bottom:6px}
+.sn{font-family:var(--serif);font-style:italic;font-size:14.5px;line-height:1.55;color:var(--ink-muted);margin-bottom:18px}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.area{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 15px}
+.area .l{font-size:10px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+.area .x{font-size:13px;line-height:1.5;color:var(--ink-muted)}
+
+/* ---- PRIMA ---- */
+.add-old{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:52px;
+  margin:6px 0 22px;background:transparent;border:1px dashed var(--line);border-radius:var(--r-md);
+  color:var(--ink-muted);font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer}
+.add-old svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* ---- A: pieno, staccato ---- */
+.add-a{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;
+  margin-top:34px;background:var(--accent);color:var(--on-accent);border:none;border-radius:14px;
+  font-family:var(--font);font-size:15px;font-weight:600;letter-spacing:-.01em;cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.14)}
+.add-a svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.2}
+
+/* ---- B: riga discreta con separatore ---- */
+.sep-wrap{margin-top:32px;padding-top:22px;border-top:1px solid var(--line)}
+.add-b{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;background:transparent;
+  border:none;color:var(--ink-muted);font-family:var(--font);font-size:15px;font-weight:500;cursor:pointer;text-align:left}
+.add-b .circle{width:32px;height:32px;flex:0 0 32px;border-radius:50%;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;background:var(--surface)}
+.add-b .circle svg{width:15px;height:15px;fill:none;stroke:var(--ink);stroke-width:2}
+.add-b:hover .circle{background:var(--accent)}
+.add-b:hover .circle svg{stroke:var(--on-accent)}
+
+/* ---- C: scheda fantasma, come le aree ---- */
+.add-c{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:64px;
+  margin-top:30px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  color:var(--ink-muted);font-family:var(--font);font-size:14.5px;font-weight:600;cursor:pointer}
+.add-c svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2}
+</style>
+</head>
+<body>
+
+<div class="page-title">Il tasto per aggiungere qualcosa</div>
+<div class="page-sub">
+  Oggi e attaccato alle aree, con lo stesso bordo tratteggiato di un campo da
+  compilare: sembra un segnaposto, non un invito. E lo spazio sopra e 6 pixel,
+  cioe niente.
+</div>
+
+<div class="divider"></div>
+
+<div class="label">prima</div>
+<div class="caption">Bordo tratteggiato, 6 pixel di aria sopra, appiccicato al riquadro.</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone">
+      <div class="h1">giornata sociale tra colazioni e pranzi</div>
+      <div class="sn">Colazione da Bubba Cafe con Marco e Giulia. Pranzo da Burger King con Francesco.</div>
+      <div class="areas">
+        <div class="area"><div class="l">Relazioni</div><div class="x">Colazione con Marco e Giulia.</div></div>
+        <div class="area"><div class="l">Cibo</div><div class="x">Bubba Cafe e Burger King.</div></div>
+      </div>
+      <button class="add-old"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>aggiungi a questa giornata</button>
+    </div>
+    <div class="cap">com'e adesso</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">A . il tasto pieno</div>
+<div class="caption">
+  Nero pieno, 56 pixel, <b>34 di aria sopra</b>, angoli morbidi e un'ombra
+  appena accennata. Diventa l'azione principale della schermata: impossibile
+  non vederlo. Il rischio: e <b>forte</b> — su una giornata gia raccontata,
+  l'occhio va li invece che al racconto.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="h1">giornata sociale tra colazioni e pranzi</div>
+      <div class="sn">Colazione da Bubba Cafe con Marco e Giulia. Pranzo da Burger King con Francesco.</div>
+      <div class="areas">
+        <div class="area"><div class="l">Relazioni</div><div class="x">Colazione con Marco e Giulia.</div></div>
+        <div class="area"><div class="l">Cibo</div><div class="x">Bubba Cafe e Burger King.</div></div>
+      </div>
+      <button class="add-a"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Aggiungi a questa giornata</button>
+    </div>
+    <div class="cap">A . telefono, chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="desk">
+      <div class="h1">giornata sociale tra colazioni e pranzi veloci</div>
+      <div class="sn">Colazione da Bubba Cafe con Marco e Giulia. Pranzo da Burger King con Francesco. Telefonata con Andrea nel pomeriggio.</div>
+      <div class="areas">
+        <div class="area"><div class="l">Relazioni</div><div class="x">Colazione con Marco e Giulia, pranzo con Francesco e telefonata con Andrea.</div></div>
+        <div class="area"><div class="l">Cibo</div><div class="x">Colazione da Bubba Cafe. Pranzo da Burger King.</div></div>
+      </div>
+      <button class="add-a" style="max-width:280px;margin-left:auto;margin-right:auto"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Aggiungi a questa giornata</button>
+    </div>
+    <div class="cap">A . desktop, scuro (largo quanto basta, non tutta la colonna)</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">B . la riga sotto la linea</div>
+<div class="caption">
+  Una linea sottile chiude la giornata, poi <b>22 pixel di respiro</b> e una
+  riga con il segno + dentro un cerchio. Non compete con il racconto: dice
+  "la giornata finisce qui, e se vuoi si continua". Il cerchio si riempie di
+  nero quando ci passi sopra, cosi si capisce che e un tasto. E la scelta
+  <b>piu silenziosa</b>, ed e quella che consiglio.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="h1">giornata sociale tra colazioni e pranzi</div>
+      <div class="sn">Colazione da Bubba Cafe con Marco e Giulia. Pranzo da Burger King con Francesco.</div>
+      <div class="areas">
+        <div class="area"><div class="l">Relazioni</div><div class="x">Colazione con Marco e Giulia.</div></div>
+        <div class="area"><div class="l">Cibo</div><div class="x">Bubba Cafe e Burger King.</div></div>
+      </div>
+      <div class="sep-wrap">
+        <button class="add-b"><span class="circle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Aggiungi a questa giornata</button>
+      </div>
+    </div>
+    <div class="cap">B . telefono, chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="desk">
+      <div class="h1">giornata sociale tra colazioni e pranzi veloci</div>
+      <div class="sn">Colazione da Bubba Cafe con Marco e Giulia. Pranzo da Burger King con Francesco. Telefonata con Andrea nel pomeriggio.</div>
+      <div class="areas">
+        <div class="area"><div class="l">Relazioni</div><div class="x">Colazione con Marco e Giulia, pranzo con Francesco e telefonata con Andrea.</div></div>
+        <div class="area"><div class="l">Cibo</div><div class="x">Colazione da Bubba Cafe. Pranzo da Burger King.</div></div>
+      </div>
+      <div class="sep-wrap">
+        <button class="add-b"><span class="circle"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Aggiungi a questa giornata</button>
+      </div>
+    </div>
+    <div class="cap">B . desktop, scuro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">C . la scheda in piu</div>
+<div class="caption">
+  Stessa forma delle aree - stesso riquadro, stesso bordo, stesso raggio - ma
+  vuota, con il + al centro. Sembra <b>la casella che manca</b>, e si capisce
+  senza leggere. Il difetto: da lontano si confonde con un'area vera, e su
+  una giornata con una sola area sembra che ce ne siano due.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone">
+      <div class="h1">giornata sociale tra colazioni e pranzi</div>
+      <div class="sn">Colazione da Bubba Cafe con Marco e Giulia. Pranzo da Burger King con Francesco.</div>
+      <div class="areas">
+        <div class="area"><div class="l">Relazioni</div><div class="x">Colazione con Marco e Giulia.</div></div>
+        <div class="area"><div class="l">Cibo</div><div class="x">Bubba Cafe e Burger King.</div></div>
+      </div>
+      <button class="add-c"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Aggiungi a questa giornata</button>
+    </div>
+    <div class="cap">C . telefono, scuro</div>
+  </div>
+</div>
+
+</body>
+</html>
