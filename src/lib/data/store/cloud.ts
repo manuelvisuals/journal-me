@@ -19,9 +19,11 @@ import type {
   AreaSummary,
   Entry,
   EntryMetrics,
+  Fact,
   GoalDef,
   GoalDot,
   Mood,
+  NewFact,
   Recap,
   RecapPeriod,
   Remember,
@@ -392,6 +394,119 @@ export class CloudStore implements JournalStore {
       throw new Error(error.message);
     }
     return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+  }
+
+  /* ----------------- fatti (SPEC-fatti §3) ----------------- */
+
+  private factRow(r: Record<string, unknown>): Fact {
+    return {
+      id: r.id as string,
+      entryDate: r.entry_date as string,
+      kind: r.kind as Fact["kind"],
+      label: (r.label as string) ?? "",
+      labelKey: (r.label_key as string) ?? "",
+      attrs:
+        r.attrs && typeof r.attrs === "object"
+          ? (r.attrs as Record<string, unknown>)
+          : {},
+      confidence: typeof r.confidence === "number" ? r.confidence : null,
+      origin: r.origin === "manual" ? "manual" : "ai",
+    };
+  }
+
+  async replaceAiFacts(dateISO: string, facts: NewFact[]): Promise<Fact[]> {
+    const userId = await this.userId();
+    const supabase = this.supabase();
+
+    // Prima si cancellano SOLO i fatti letti dall'AI per quel giorno: quelli
+    // scritti a mano restano, sempre.
+    const { error: delError } = await supabase
+      .from("facts")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .eq("origin", "ai");
+    if (delError) throw new Error(delError.message);
+
+    if (facts.length === 0) return this.loadFactsForDate(dateISO);
+
+    // entry_id: se la giornata esiste, i fatti spariscono con lei.
+    const { data: entryRow } = await supabase
+      .from("entries")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .maybeSingle();
+    const entryId = (entryRow as { id?: string } | null)?.id ?? null;
+
+    const { error } = await supabase.from("facts").insert(
+      facts.map((f) => ({
+        user_id: userId,
+        entry_id: entryId,
+        entry_date: dateISO,
+        kind: f.kind,
+        label: f.label,
+        label_key: f.labelKey,
+        attrs: f.attrs ?? {},
+        confidence: f.confidence,
+        origin: f.origin ?? "ai",
+      })),
+    );
+    if (error) throw new Error(error.message);
+    return this.loadFactsForDate(dateISO);
+  }
+
+  async loadFactsForDate(dateISO: string): Promise<Fact[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+  }
+
+  async loadFactsForMonth(year: number, month: number): Promise<Fact[]> {
+    const userId = await this.userId();
+    const from = `${year}-${String(month).padStart(2, "0")}-01`;
+    const to =
+      month === 12
+        ? `${year + 1}-01-01`
+        : `${year}-${String(month + 1).padStart(2, "0")}-01`;
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("*")
+      .eq("user_id", userId)
+      .gte("entry_date", from)
+      .lt("entry_date", to)
+      .order("entry_date", { ascending: false });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+  }
+
+  async loadKnownLabels(limit = 120): Promise<string[]> {
+    const userId = await this.userId();
+    // Le ultime 600 righe bastano: le etichette che uno usa davvero
+    // ricompaiono spesso, e una query di aggregazione qui non vale la pena.
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("label_key")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(600);
+    if (error || !data) return [];
+    const conteggio = new Map<string, number>();
+    for (const r of data as { label_key?: string }[]) {
+      const k = (r.label_key ?? "").trim();
+      if (!k) continue;
+      conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+    }
+    return [...conteggio.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([k]) => k);
   }
 
   /* ----------------- goals ----------------- */

@@ -25,7 +25,9 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
 
 /** Tre giornate finte con dentro delle persone, scritte nel database del browser. */
 const SEED = `
-  const req = indexedDB.open("journalme", 1);
+  const req = // senza numero di versione: apre quella che c'e. Fissarla a 1 rompeva
+  // il test il giorno in cui il database e passato alla 2 (i fatti).
+  indexedDB.open("journalme");
   const db = await new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
   const tx = db.transaction("entries", "readwrite");
   const giorni = [

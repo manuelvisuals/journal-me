@@ -22,7 +22,16 @@ import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
  * spese nostre.
  */
 
-const MODELLO_DEFAULT = "gpt-4o-mini";
+/**
+ * Scelto MISURANDO, non leggendo un listino (22 agosto 2026, risultati in
+ * RISULTATI-prova-modelli.md): su 15 racconti veri Luna trova 25 fatti su 28
+ * contro i 21 di gpt-4o-mini, e soprattutto non ne inventa nessuno. Costa
+ * 2,7 volte a chiamata, che su questo uso sono quattro centesimi al mese.
+ *
+ * Se un giorno si cambia, si rilancia `scripts/eval-fatti.mjs` PRIMA: la
+ * frase "questo modello e migliore" senza quei numeri accanto e un'opinione.
+ */
+const MODELLO_DEFAULT = "gpt-5.6-luna";
 
 const RESPONSE_FORMAT = {
   type: "json_schema",

@@ -1,8 +1,10 @@
 import type {
   AreaSummary,
+  Fact,
   Entry,
   EntryMetrics,
   GoalDef,
+  NewFact,
   Recap,
   Remember,
   RememberKind,
@@ -80,6 +82,31 @@ export interface JournalStore {
     ai: AIFields,
     durationSeconds: number,
   ): Promise<Entry>;
+
+  /* fatti (SPEC-fatti.md §3) */
+
+  /**
+   * Rifa i fatti 'ai' di una giornata: cancella quelli vecchi e scrive i
+   * nuovi, in un colpo solo.
+   *
+   * PERCHE CANCELLA PRIMA. Il testo della giornata e l'unica autorita
+   * (decisione del 21 agosto 2026): se una frase sparisce dal racconto, il
+   * fatto che ne derivava deve sparire con lei, o i conteggi raccontano una
+   * giornata che non esiste piu.
+   *
+   * PERCHE SOLO GLI 'ai'. Quelli scritti a mano dall'utente non si toccano:
+   * un'AI non cancella cio che ha scritto una persona.
+   */
+  replaceAiFacts(dateISO: string, facts: NewFact[]): Promise<Fact[]>;
+  loadFactsForDate(dateISO: string): Promise<Fact[]>;
+  /** Per i conteggi: tutti i fatti di un mese. */
+  loadFactsForMonth(year: number, month: number): Promise<Fact[]>;
+  /**
+   * Le etichette che questo utente usa gia, dalla piu frequente. Si passano
+   * al modello perche le RIUSI invece di inventarne di simili: e meta della
+   * normalizzazione, e senza, "panca" e "panca piana" restano due cose.
+   */
+  loadKnownLabels(limit?: number): Promise<string[]>;
 
   /* goals */
   loadGoalDefs(): Promise<GoalDef[]>;

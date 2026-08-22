@@ -65,7 +65,9 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
   // casi che prima rompevano la pagina.
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
   await page.evaluate(async () => {
-    const req = indexedDB.open("journalme", 1);
+    const req = // senza numero di versione: apre quella che c'e. Fissarla a 1 rompeva
+  // il test il giorno in cui il database e passato alla 2 (i fatti).
+  indexedDB.open("journalme");
     const db = await new Promise((res, rej) => {
       req.onsuccess = () => res(req.result);
       req.onerror = () => rej(req.error);
@@ -158,7 +160,9 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
   const page = await ctx.newPage();
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
   await page.evaluate(async () => {
-    const req = indexedDB.open("journalme", 1);
+    const req = // senza numero di versione: apre quella che c'e. Fissarla a 1 rompeva
+  // il test il giorno in cui il database e passato alla 2 (i fatti).
+  indexedDB.open("journalme");
     const db = await new Promise((res, rej) => {
       req.onsuccess = () => res(req.result);
       req.onerror = () => rej(req.error);
