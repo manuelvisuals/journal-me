@@ -362,3 +362,37 @@
 [data-mode="dark"] .jm-logo {
   filter: invert(1) hue-rotate(180deg);
 }
+
+/* ============================================================
+   LE ICONE DELLE AREE  (src/components/aree/area-icon.tsx,
+   mockup design/mockups/icone-aree.html §01, approvato il 22 agosto)
+   Venti pixel accanto all'etichetta, dentro la riga che c'e gia: la
+   scheda non cresce di un pixel e l'ordine di lettura non cambia.
+   ============================================================ */
+
+/* La riga dell'etichetta diventa una fila. `display` non e dichiarato su
+   .jm-fv-area .l in globals.css, quindi qui non si scontra niente — e non
+   si puo contare sull'ordine dei file, perche features.css viene PRIMA. */
+.jm-fv-area .l {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.jm-area-icw {
+  display: inline-flex;
+  flex: 0 0 auto;
+  line-height: 0;
+}
+.jm-area-ic {
+  /* La misura NON e moltiplicata per --jm-ui-scale: l'etichetta accanto si,
+     e il disegno la segue da solo perche l'altezza e in em. */
+  width: 1.82em;
+  height: 1.82em;
+  /* Il tratto e grosso e nero pieno peserebbe piu della parola che
+     accompagna: un filo indietro e l'icona torna al suo posto. */
+  opacity: 0.85;
+  color: var(--color-ink);
+  /* La terracotta dei disegni originali: sta qui e non nel componente,
+     cosi si cambia senza toccare il codice. */
+  --jm-area-dot: #C96F4A;
+}
