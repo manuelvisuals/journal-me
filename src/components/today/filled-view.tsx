@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { AreaIcon } from "@/components/aree/area-icon";
 import { MetricCards } from "@/components/today/metric-cards";
 import { GoalList } from "@/components/today/goal-list";
 import { RailToday } from "@/components/today/rail-today";
@@ -111,7 +112,10 @@ export function FilledView({
             <div className="jm-fv-areas">
               {realAreas.map((area) => (
                 <div key={area.label} className="jm-fv-area">
-                  <div className="l">{t(area.label)}</div>
+                  <div className="l">
+                    <AreaIcon label={area.label} />
+                    {t(area.label)}
+                  </div>
                   <div className="x">{area.text}</div>
                 </div>
               ))}
