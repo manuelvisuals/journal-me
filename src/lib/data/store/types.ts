@@ -29,6 +29,18 @@ export type AIFields = {
   headline: string;
   snippet: string;
   areas: AreaSummary[];
+  /**
+   * Le persone nominate nel testo, lette dallo stesso testo completo del
+   * riassunto (decisione di Manuel del 21 agosto 2026: "il testo di tutta la
+   * giornata e king").
+   *
+   * ASSENTE (undefined) significa NON TOCCARE quelle salvate, e non "nessuna
+   * persona". La differenza e tutto: una lettura andata storta, che torna
+   * vuota su un testo pieno di nomi, non deve poter cancellare la lista
+   * buona di ieri. Lista vuota esplicita, invece, e una risposta vera:
+   * quel testo non nomina nessuno.
+   */
+  people?: string[];
 };
 
 export interface JournalStore {

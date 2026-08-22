@@ -330,6 +330,9 @@ export class LocalStore implements JournalStore {
       headline: ai.headline,
       snippet: ai.snippet,
       areas: ai.areas,
+      // Assente = non toccare (vedi AIFields): senza questo ramo, una
+      // lettura vuota cancellerebbe i nomi gia salvati.
+      ...(ai.people ? { people: ai.people } : {}),
       durationSeconds,
     };
     await db.put("entries", rec);

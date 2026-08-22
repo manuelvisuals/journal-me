@@ -11,15 +11,19 @@
  * nessuno la chiami. can("aiSummary") si controlla PRIMA di partire.
  *
  * Il comportamento e identico a quando viveva in src/lib/data/entries.ts:
- * se l'AI fallisce, la giornata si salva LO STESSO col testo grezzo
- * (fallbackAIFields) — quel comportamento non va perso (spec §7.3).
+ * se l'AI fallisce, la giornata si salva LO STESSO col testo grezzo — quel
+ * comportamento non va perso (spec §7.3).
+ *
+ * L'analisi vera (titolo, sintesi, aree, persone) sta in
+ * src/lib/actions/analyze-day.ts e gira SEMPRE sul testo completo del
+ * giorno: qui si costruisce quel testo e si sceglie la data, niente altro.
  */
 
 import { apiFetch } from "@/lib/api";
 import { can } from "@/lib/capabilities";
-import { getStore, type AIFields } from "@/lib/data/store";
+import { getStore } from "@/lib/data/store";
 import { invalidateAll } from "@/lib/data/cache";
-import { t } from "@/lib/i18n";
+import { analyzeDay, localFields } from "@/lib/actions/analyze-day";
 import type { Entry } from "@/lib/types";
 
 export type RecordingInput = {
@@ -51,36 +55,6 @@ const SEGMENT_SEP = "\n---\n";
 
 type DateSegment = { date: string; text: string };
 
-function fallbackAIFields(transcript: string): AIFields {
-  const firstSentence = transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
-  return {
-    headline: t("Giornata raccontata"),
-    snippet: firstSentence.slice(0, 240),
-    areas: [],
-  };
-}
-
-/**
- * Senza AI (modalita locale) la prima riga di cio che hai scritto diventa il
- * titolo e il resto e il tuo testo, come l'hai lasciato (mockup
- * due-modalita §02). E un diario scritto, e va benissimo.
- */
-function localFields(transcript: string): AIFields {
-  const firstLine =
-    transcript
-      .trim()
-      .split(/\n/)[0]
-      ?.trim()
-      .replace(/\s+/g, " ") ?? "";
-  const headline =
-    firstLine.length > 90 ? `${firstLine.slice(0, 89).trimEnd()}\u2026` : firstLine;
-  return {
-    headline: headline || t("Giornata scritta"),
-    snippet: "",
-    areas: [],
-  };
-}
-
 async function callSplitByDate(
   transcript: string,
   defaultDate: string,
@@ -102,26 +76,6 @@ async function callSplitByDate(
   }
 }
 
-async function callProcessEntry(transcript: string): Promise<AIFields> {
-  try {
-    const resp = await apiFetch("/api/process-entry", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcript }),
-    });
-    if (!resp.ok) return fallbackAIFields(transcript);
-    const data = (await resp.json()) as Partial<AIFields>;
-    if (!data.headline || !data.snippet) return fallbackAIFields(transcript);
-    return {
-      headline: data.headline,
-      snippet: data.snippet,
-      areas: Array.isArray(data.areas) ? data.areas : [],
-    };
-  } catch {
-    return fallbackAIFields(transcript);
-  }
-}
-
 export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
   const store = getStore();
   const useAI = can("aiSummary") && !input.skipAI;
@@ -137,8 +91,11 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
     const fullTranscript = existing?.transcript
       ? existing.transcript + SEGMENT_SEP + seg.text.trim()
       : seg.text.trim();
+    // Da zero, su TUTTO il testo del giorno: titolo, sintesi, aree e
+    // persone escono dalla stessa lettura dello stesso testo. Vedi
+    // src/lib/actions/analyze-day.ts.
     const ai = useAI
-      ? await callProcessEntry(fullTranscript)
+      ? await analyzeDay(fullTranscript)
       : localFields(fullTranscript);
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
     saved.push(await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur));
@@ -160,7 +117,7 @@ export async function reprocessEntryTranscript(
 ): Promise<Entry> {
   const store = getStore();
   const ai = can("aiSummary")
-    ? await callProcessEntry(newTranscript)
+    ? await analyzeDay(newTranscript)
     : localFields(newTranscript);
   const saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
   invalidateAll();

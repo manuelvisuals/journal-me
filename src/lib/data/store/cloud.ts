@@ -249,19 +249,20 @@ export class CloudStore implements JournalStore {
     durationSeconds: number,
   ): Promise<Entry> {
     const userId = await this.userId();
+    // `people` entra nella riga SOLO se l'analisi lo ha prodotto: assente
+    // vuol dire "non toccare", vedi AIFields in store/types.ts.
+    const row: Record<string, unknown> = {
+      user_id: userId,
+      entry_date: dateISO,
+      transcript,
+      headline: ai.headline,
+      snippet: ai.snippet,
+      areas: ai.areas,
+    };
+    if (ai.people) row.people = ai.people;
     const { error } = await this.supabase()
       .from("entries")
-      .upsert(
-        {
-          user_id: userId,
-          entry_date: dateISO,
-          transcript,
-          headline: ai.headline,
-          snippet: ai.snippet,
-          areas: ai.areas,
-        },
-        { onConflict: "user_id,entry_date" },
-      );
+      .upsert(row, { onConflict: "user_id,entry_date" });
     if (error) {
       throw new Error(error.message ?? "Failed to save entry");
     }
