@@ -144,7 +144,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
               onClick={() => setEditorOpen(true)}
               className="jm-day-head-action"
             >
-              {t("originale")} &#8599;
+              {t("modifica")} &#8599;
             </button>
             <button
               type="button"

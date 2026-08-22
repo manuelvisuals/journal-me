@@ -506,7 +506,7 @@ export function TodayClient({
                 fontFamily: "inherit",
               }}
             >
-              {t("originale")} &#8599;
+              {t("modifica")} &#8599;
             </button>
             <button
               type="button"

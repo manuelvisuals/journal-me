@@ -84,7 +84,7 @@ export const EN: Record<string, string> = {
   "non ora": "not now",
   "un attimo...": "one moment...",
   "Eliminare questa giornata? Non puoi annullare.": "Delete this day? You cannot undo this.",
-  "originale": "original",
+  "modifica": "edit",
   "Elimina giornata": "Delete day",
   "Vai a": "Go to",
   "Oggi": "Today",

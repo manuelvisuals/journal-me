@@ -11,9 +11,56 @@ import { langName, langOf } from "@/lib/server/lang";
  * Uses OpenAI's Chat Completions API in JSON mode for a strict schema.
  * The OPENAI_API_KEY stays on the server.
  */
+const RESPONSE_FORMAT = {
+  type: "json_schema",
+  json_schema: {
+    name: "journal_summary",
+    strict: true,
+    schema: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        headline: { type: "string" },
+        snippet: { type: "string" },
+        areas: {
+          type: "array",
+          items: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              label: {
+                type: "string",
+                // 'Cibo' e 'Movimento' sono nati il 21 agosto 2026,
+                // staccandoli da 'Corpo'. Prima cibo e palestra si
+                // contendevano la stessa casella da 25 parole e il modello ne
+                // buttava via uno: un giorno spariva la pizza, il giorno dopo
+                // gli esercizi. Non era il modello a essere debole, era la
+                // casella a essere una sola. 'Corpo' resta, per sonno e
+                // salute.
+                enum: [
+                  "Lavoro",
+                  "Relazioni",
+                  "Cibo",
+                  "Movimento",
+                  "Corpo",
+                  "Emozioni",
+                ],
+              },
+              text: { type: "string" },
+            },
+            required: ["label", "text"],
+          },
+        },
+      },
+      required: ["headline", "snippet", "areas"],
+    },
+  },
+} as const;
+
 export async function POST(req: NextRequest) {
   const gate = await requirePremium(req);
   if (gate instanceof NextResponse) return gate;
+  const { userId } = gate;
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -64,7 +111,7 @@ export async function POST(req: NextRequest) {
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
     `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
     "  - snippet: 1-2 frasi (max 30 parole totali) che riassumono i fatti principali della giornata.",
-    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. Includi solo le aree effettivamente menzionate (puoi anche restituire array vuoto), UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
+    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
     "",
     "Cosa va in quale area, quando c'e il dubbio:",
     "  - Cibo: cosa ha mangiato e bevuto. Pasti, piatti, locali, alcol, caffe. Elenca i piatti come li ha detti lui (pizza, insalata, sushi), senza aggiungerne di non menzionati.",
@@ -99,111 +146,112 @@ export async function POST(req: NextRequest) {
     "  - Niente emoji.",
     "  - Niente apostrofo curvo: solo l'apostrofo dritto ASCII.",
     "  - Mantieni i nomi propri come pronunciati dall'utente.",
-    "",
-    "SULLA RINUNCIA. Esiste un solo caso in cui puoi rinunciare: un testo",
-    "che non contiene NESSUN fatto (vuoto, una parola sola, lettere a caso).",
-    "In quel caso, e solo in quello, restituisci una headline generica in",
-    `${lingua} (in italiano sarebbe 'giornata raccontata'), lo snippet con il`,
-    "transcript troncato e areas vuoto.",
-    "",
-    "Un racconto a voce trascritto e quasi sempre telegrafico, sgrammaticato,",
-    "senza soggetti e con i verbi all'infinito: 'cantato lezione, lavorato,",
-    "riletto diario, stasera cena con amici'. QUESTO NON E UN TESTO",
-    "INCOMPRENSIBILE, e un testo pieno di fatti scritto male, ed e il caso",
-    "normale, non l'eccezione. Rinunciare li significa cancellare la giornata",
-    "di qualcuno per un problema di grammatica.",
   ].join("\n");
 
-  const completion = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      temperature: 0.4,
-      response_format: {
-        type: "json_schema",
-        json_schema: {
-          name: "journal_summary",
-          strict: true,
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            properties: {
-              headline: { type: "string" },
-              snippet: { type: "string" },
-              areas: {
-                type: "array",
-                items: {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: {
-                    label: {
-                      type: "string",
-                      // 'Cibo' e 'Movimento' sono nati il 21 agosto 2026,
-                      // staccandoli da 'Corpo'. Prima cibo e palestra si
-                      // contendevano la stessa casella da 25 parole e il
-                      // modello ne buttava via uno: un giorno spariva la
-                      // pizza, il giorno dopo gli esercizi. Non era il
-                      // modello a essere debole, era la casella a essere
-                      // una sola. 'Corpo' resta, per sonno e salute.
-                      enum: [
-                        "Lavoro",
-                        "Relazioni",
-                        "Cibo",
-                        "Movimento",
-                        "Corpo",
-                        "Emozioni",
-                      ],
-                    },
-                    text: { type: "string" },
-                  },
-                  required: ["label", "text"],
-                },
-              },
-            },
-            required: ["headline", "snippet", "areas"],
-          },
-        },
-      },
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: transcript },
-      ],
-    }),
-  });
+  type Riassunto = {
+    headline: string;
+    snippet: string;
+    areas: { label: string; text: string }[];
+  };
 
-  if (!completion.ok) {
-    const text = await completion.text().catch(() => "");
-    return NextResponse.json(
-      { error: `OpenAI error ${completion.status}: ${text}` },
-      { status: completion.status },
-    );
+  /**
+   * Una passata sul modello. `correzione`, quando c'e, e un secondo giro:
+   * vedi sotto perche esiste.
+   */
+  async function chiedi(
+    correzione?: string,
+  ): Promise<{ ok: true; value: Riassunto } | { ok: false; response: NextResponse }> {
+    const messages: { role: string; content: string }[] = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: transcript },
+    ];
+    if (correzione) messages.push({ role: "system", content: correzione });
+
+    const completion = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        // 0,2 e non 0,4: qui non serve fantasia, serve che le regole vengano
+        // seguite. A 0,4 lo stesso testo, chiamato tre volte, due volte
+        // rinunciava e una volta rispondeva bene (visto il 22 agosto 2026).
+        temperature: 0.2,
+        response_format: RESPONSE_FORMAT,
+        messages,
+      }),
+    });
+
+    if (!completion.ok) {
+      const text = await completion.text().catch(() => "");
+      return {
+        ok: false,
+        response: NextResponse.json(
+          { error: `OpenAI error ${completion.status}: ${text}` },
+          { status: completion.status },
+        ),
+      };
+    }
+
+    const data = (await completion.json()) as {
+      choices?: { message?: { content?: string } }[];
+      usage?: ChatUsage;
+    };
+    // Conteggio consumi: token ufficiali di OpenAI, fire-and-forget.
+    void logAiUsage({
+      userId,
+      route: "process-entry",
+      model: "gpt-4o-mini",
+      inputTokens: data.usage?.prompt_tokens,
+      outputTokens: data.usage?.completion_tokens,
+    });
+    const raw = data.choices?.[0]?.message?.content ?? "";
+    try {
+      return { ok: true, value: JSON.parse(raw) as Riassunto };
+    } catch {
+      return {
+        ok: false,
+        response: NextResponse.json(
+          { error: "AI returned non-JSON content" },
+          { status: 502 },
+        ),
+      };
+    }
   }
 
-  const data = (await completion.json()) as {
-    choices?: { message?: { content?: string } }[];
-    usage?: ChatUsage;
-  };
-  // Conteggio consumi: token ufficiali di OpenAI, fire-and-forget.
-  void logAiUsage({
-    userId: gate.userId,
-    route: "process-entry",
-    model: "gpt-4o-mini",
-    inputTokens: data.usage?.prompt_tokens,
-    outputTokens: data.usage?.completion_tokens,
-  });
-  const raw = data.choices?.[0]?.message?.content ?? "";
-  let parsed: { headline: string; snippet: string; areas: { label: string; text: string }[] };
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return NextResponse.json(
-      { error: "AI returned non-JSON content" },
-      { status: 502 },
+  const primo = await chiedi();
+  if (!primo.ok) return primo.response;
+
+  /**
+   * LA SECONDA PASSATA, e perche esiste.
+   *
+   * Le istruzioni non bastano. Il 22 agosto 2026, con il prompt gia
+   * corretto, lo stesso testo ("colazione con Marco, pranzo con Francesco,
+   * telefonata con Andrea") chiamato tre volte ha risposto due volte con un
+   * titolo generico e zero aree, e una volta bene. Un difetto che si
+   * presenta due volte su tre non si chiude con una frase piu convincente:
+   * si chiude controllando la risposta.
+   *
+   * Quindi: se torna senza nemmeno un'area su un testo che ha parole vere,
+   * si richiede una volta sola, dicendo cosa non andava. Costa una seconda
+   * chiamata solo quando serve, e chi legge il diario non vede piu una
+   * giornata svuotata senza motivo.
+   */
+  let parsed = primo.value;
+  const sembraUnaResa =
+    parsed.areas.length === 0 && transcript.split(/\s+/).length >= 5;
+  if (sembraUnaResa) {
+    const secondo = await chiedi(
+      "La risposta precedente non conteneva nessuna area, ma questo testo " +
+        "contiene fatti. Rileggilo e elenca TUTTE le aree presenti fra " +
+        "'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. " +
+        "Un pasto e 'Cibo'. Una persona nominata e 'Relazioni'. Un " +
+        "allenamento e 'Movimento'. Il titolo deve descrivere questa " +
+        "giornata, non essere generico.",
     );
+    if (secondo.ok && secondo.value.areas.length > 0) parsed = secondo.value;
   }
 
   return NextResponse.json(parsed);
