@@ -406,7 +406,6 @@ export const EN: Record<string, string> = {
   "Normale": "Normal",
   "Grande": "Large",
   "Molto grande": "Very large",
-  "Massimo": "Largest",
   "Racconta il {giorno}": "Tell {giorno}",
   "Salvo nella giornata...": "Saving to the day...",
   "Aggiunto alla giornata": "Added to the day",
