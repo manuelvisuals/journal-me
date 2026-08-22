@@ -157,10 +157,36 @@ export class CloudStore implements JournalStore {
     return createClient();
   }
 
+  /**
+   * L'id dell'utente, per ogni lettura e ogni scrittura.
+   *
+   * PRIMA passava da `auth.getUser()`, che NON legge la sessione salvata:
+   * fa una chiamata di rete a Supabase per farsi validare il token, a ogni
+   * singola operazione. Due conseguenze, viste tutte e due dal vivo il 22
+   * agosto 2026:
+   *
+   *  - un intoppo di rete di mezzo secondo faceva tornare `user` nullo, e la
+   *    giornata non si salvava con scritto in faccia "Not authenticated" —
+   *    in inglese, e per giunta falso: la sessione era validissima;
+   *  - ogni salvataggio pagava un giro di rete in piu prima di cominciare.
+   *
+   * Ora si legge la sessione gia in memoria (`getSession`), che non tocca la
+   * rete. Non e un buco di sicurezza: chi puo scrivere davvero lo decide il
+   * database riga per riga con le regole RLS — se questo id fosse sbagliato,
+   * la scrittura verrebbe rifiutata li. `getUser()` resta come seconda
+   * strada per il primo avvio, quando la sessione non e ancora in memoria.
+   *
+   * Non si tiene in cache: `getSession()` e gia locale, e ricordarselo
+   * significherebbe scrivere con l'identita di ieri dopo un cambio account.
+   */
   private async userId(): Promise<string> {
+    const supabase = this.supabase();
+    const { data: sessione } = await supabase.auth.getSession();
+    const fromSession = sessione.session?.user?.id;
+    if (fromSession) return fromSession;
     const {
       data: { user },
-    } = await this.supabase().auth.getUser();
+    } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
     return user.id;
   }
