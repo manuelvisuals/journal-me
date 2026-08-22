@@ -262,6 +262,57 @@ body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 
 
 <div class="divider"></div>
 
+<div class="label">03b . e il passato?</div>
+<div class="caption">
+  La domanda che mancava, ed e quella che decide se i conteggi valgono
+  qualcosa. Creata la regola, l'app chiede se applicarla anche alle giornate
+  gia scritte, e <b>dice quante righe cambierebbe prima di toccarle</b>.
+  Senza, crei la regola oggi e "panca" e "panca piana" continuano a non
+  sommarsi per tutti i mesi precedenti - cioe proprio quelli che volevi
+  contare.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="height:520px">
+      <div class="scr" style="opacity:.25">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+      </div>
+      <div class="scrim">
+        <div class="sheet">
+          <div class="grip"></div>
+          <h3>Anche nelle giornate passate?</h3>
+          <p>La regola vale da adesso in poi. Vuoi che riscriva anche quello che c'e gia? <b>Cambierebbe 12 righe in 9 giornate.</b></p>
+          <div class="opt"><span class="rad on"></span><span><span class="t">Si, sistema anche il passato</span><span class="d">I conteggi dei mesi scorsi diventano giusti.</span></span></div>
+          <div class="opt"><span class="rad"></span><span><span class="t">No, solo da oggi</span><span class="d">Lo storico resta com'e.</span></span></div>
+          <button class="btn">Applica</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap">la domanda sul passato . scuro</div>
+  </div>
+  <div>
+    <div class="phone" style="height:520px">
+      <div class="scr">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+        <div class="sub">mercoledi 12 agosto</div>
+        <div class="gl">Da controllare</div>
+        <div class="list">
+          <div class="f dubbio"><span class="txt"><span class="lab">palestra</span><span class="det">gia contata come attivita</span></span><span class="chip-conf">doppia</span><span class="dots">&#8942;</span></div>
+          <div class="f dubbio"><span class="txt"><span class="lab">bowl con pollo</span><span class="det">mai vista prima</span></span><span class="chip-conf">nuova</span><span class="dots">&#8942;</span></div>
+        </div>
+        <div class="riga-entra" style="margin-top:20px">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8"><path d="M6 9l6 6 6-6"/></svg>
+          Le altre 24 cose che ho capito
+          <span class="n">&#8250;</span>
+        </div>
+      </div>
+    </div>
+    <div class="cap">giornata piena: prima i dubbi, il resto chiuso</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <div class="label">04 . togliere un fatto sbagliato</div>
 <div class="caption">
   Il caso vero trovato ieri: la palestra contata <b>due volte</b>, una come
@@ -325,6 +376,13 @@ body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 
   quello che mangi e quello che fai, e <b>non dice se e giusto o sbagliato</b>.
   Se vorrai dividere il cibo in categorie, quelle categorie le scegli tu, con
   parole tue, e restano tue.
+</div>
+<div class="page-sub" style="margin-top:26px">
+  <b>Come funziona sotto</b> (SPEC-fatti-decisioni.md): i fatti non sono piu
+  solo il risultato della lettura del testo, sono
+  <b>lettura del testo + le tue decisioni</b>, riapplicate a ogni rilettura.
+  E per questo che "solo per oggi" adesso regge: prima sarebbe stato
+  cancellato dal primo salvataggio successivo.
 </div>
 
 </body>
