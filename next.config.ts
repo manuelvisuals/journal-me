@@ -45,7 +45,15 @@ const webConfig: NextConfig = {
             // X-JM-Glossary was only read by /api/realtime/session,
             // deleted in this PR; the transcription glossary travels as a
             // FormData field, not a header.
-            value: "Content-Type, Authorization",
+            //
+            // x-jm-lang non e un dettaglio: apiFetch lo mette su OGNI
+            // chiamata dal 20 agosto (PR bilingue), e un header non elencato
+            // qui fa fallire il preflight PRIMA che la richiesta parta. Sul
+            // web non si vede — app e API sono la stessa origine e il
+            // preflight non esiste — dentro il guscio iOS invece muore tutto
+            // cio che passa da /api, in silenzio. Chi aggiunge un header al
+            // client lo aggiunge anche qui.
+            value: "Content-Type, Authorization, x-jm-lang",
           },
           {
             key: "Access-Control-Allow-Methods",

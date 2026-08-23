@@ -147,4 +147,8 @@ export const OGGI: Record<string, string> = {
   "Un posto": "A place",
   "Qualcosa da mangiare": "Something to eat",
   "Un'attivita": "An activity",
+  "Ho tenuto aperto il microfono ma non e arrivato audio. Riprova, e se succede ancora mandami questa riga.":
+    "The microphone was open but no audio came through. Try again, and if it keeps happening send me this line.",
+  "La registrazione c'e, ma non sono riuscito a trascriverla.":
+    "The recording is there, but I could not turn it into words.",
 };

@@ -154,12 +154,48 @@ export function RecordingOverlay({
   // Guards against double-ending if the stop button is tapped twice.
   const endingRef = useRef<boolean>(false);
 
+  // --- Diagnostica ---------------------------------------------------------
+  // Fino al 24 agosto 2026 una registrazione che non produceva parole era
+  // muta in tutti i sensi: `transcribeClip` inghiottiva ogni errore e
+  // restituiva "", quindi un permesso negato, una traccia morta, un 402 sul
+  // piano e una connessione caduta finivano tutti nella stessa schermata
+  // vuota. Su iPhone, dove non c'e una console da aprire, questo rendeva il
+  // bug impossibile da localizzare senza tirare a indovinare — e tirare a
+  // indovinare e gia costato due giri (vedi HANDOVER-recording-bug.md).
+  //
+  // Ora ogni passo lascia una riga qui dentro, e quando la registrazione
+  // fallisce davvero la riga finisce SULLO SCHERMO insieme al messaggio
+  // umano. Non e un pannello di debug da togliere: e la differenza fra
+  // "non ha funzionato" e "ho catturato 0 byte in 14 secondi".
+  const diagRef = useRef<string[]>([]);
+  const chunksStatRef = useRef<{ n: number; bytes: number }>({ n: 0, bytes: 0 });
+  const mimeRef = useRef<string>("-");
+  const gumRef = useRef<string>("-");
+  const httpRef = useRef<string>("-");
+
   function dbg(msg: string) {
     try {
+      diagRef.current.push(msg);
       console.log("[rec]", msg);
     } catch {
       // ignore
     }
+  }
+
+  /**
+   * Una riga sola, leggibile in uno screenshot, con i quattro numeri che
+   * distinguono le cause fra loro:
+   *  - `gum`  come e nata la traccia microfono (live/ended, muted o no);
+   *  - `mr`   che formato ha scelto MediaRecorder (su iOS e mp4, non webm);
+   *  - `n`/`b` quanti pezzi e quanti byte di audio sono stati CATTURATI:
+   *           se b=0 il microfono non ha mai consegnato niente e il resto
+   *           della pipeline e innocente;
+   *  - `http` cosa ha risposto /api/transcribe-fallback (402 = piano,
+   *           0/err = la richiesta non e nemmeno partita, es. CORS).
+   */
+  function diagLine(): string {
+    const c = chunksStatRef.current;
+    return `gum=${gumRef.current} mr=${mimeRef.current} n=${c.n} b=${c.bytes} http=${httpRef.current}`;
   }
 
   // Acquire the mic and arm the recorder once, on mount.
@@ -188,6 +224,11 @@ export function RecordingOverlay({
               ? `getUserMedia #${attempt} muted=${t.muted} enabled=${t.enabled} ready=${t.readyState} "${t.label.slice(0, 20)}"`
               : `getUserMedia #${attempt} NO audio track`,
           );
+          if (t) {
+            gumRef.current = `#${attempt}/${t.readyState}${t.muted ? "/muted" : ""}`;
+          } else {
+            gumRef.current = `#${attempt}/no-track`;
+          }
           if (t && t.readyState === "live") {
             stream = s;
             break;
@@ -376,8 +417,18 @@ export function RecordingOverlay({
       const rec = mime
         ? new MediaRecorder(stream, { mimeType: mime })
         : new MediaRecorder(stream);
+      mimeRef.current = rec.mimeType || mime || "default";
+      chunksStatRef.current = { n: 0, bytes: 0 };
       rec.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data);
+          const st = chunksStatRef.current;
+          st.n += 1;
+          st.bytes += e.data.size;
+          // Solo il primo pezzo si annota per esteso: e quello che dice se
+          // l'audio sta davvero arrivando. I successivi finiscono nei totali.
+          if (st.n === 1) dbg(`first chunk ${e.data.size}B`);
+        }
       };
       // Emit a chunk every second so we still have audio even if stop is abrupt.
       rec.start(1000);
@@ -390,6 +441,7 @@ export function RecordingOverlay({
         // the clip also contains the gaps between holds — worse, not broken.
         dbg("pause unsupported");
       }
+      dbg(`armed mime=${mimeRef.current} state=${rec.state}`);
       recorderRef.current = rec;
       return true;
     } catch {
@@ -413,7 +465,9 @@ export function RecordingOverlay({
             return;
           }
           const type = rec.mimeType || "audio/webm";
-          resolve(new Blob(chunksRef.current, { type }));
+          const out = new Blob(chunksRef.current, { type });
+          dbg(`blob ${out.size}B ${type}`);
+          resolve(out);
         } catch {
           resolve(null);
         }
@@ -421,6 +475,26 @@ export function RecordingOverlay({
       try {
         if (rec.state !== "inactive") {
           rec.onstop = finish;
+          // Il push-to-talk lascia SEMPRE il registratore in pausa quando si
+          // molla il pulsante, quindi `stop()` arriva quasi sempre su un
+          // recorder in pausa. Su Chrome desktop e innocuo — ed e per questo
+          // che sul web non si e mai visto niente. WebKit invece ha spedito
+          // versioni in cui fermare un MediaRecorder in pausa chiude il file
+          // senza scriverlo: zero byte, nessun errore. Riaprire il rubinetto
+          // per un istante prima di chiudere costa una frazione di secondo di
+          // ambiente e toglie di mezzo quella variabile.
+          //
+          // ONESTA: questa NON e una causa dimostrata, e un irrobustimento.
+          // La prova sta nella diagnostica (`n`/`b` in diagLine): se i byte
+          // adesso arrivano, era questo; se restano a zero, il problema e a
+          // monte, nella cattura, e questa riga non ha fatto danni.
+          if (rec.state === "paused") {
+            try {
+              rec.resume();
+            } catch {
+              dbg("resume-before-stop failed");
+            }
+          }
           rec.stop();
         } else {
           finish();
@@ -457,12 +531,22 @@ export function RecordingOverlay({
         method: "POST",
         body: fd,
       });
-      if (!resp.ok) return "";
+      httpRef.current = String(resp.status);
+      if (!resp.ok) {
+        const body = await resp.text().catch(() => "");
+        dbg(`transcribe ${resp.status} ${body.slice(0, 120)}`);
+        return "";
+      }
       const data = (await resp.json().catch(() => null)) as {
         text?: unknown;
       } | null;
       return data && typeof data.text === "string" ? data.text.trim() : "";
-    } catch {
+    } catch (err) {
+      // Una fetch che non parte proprio (CORS, offline, timeout) arrivava qui
+      // e usciva identica a un audio silenzioso. Adesso `http` lo dice.
+      const e = err as { name?: string; message?: string };
+      httpRef.current = `err:${e?.name ?? "Error"}`;
+      dbg(`transcribe threw ${e?.name ?? "Error"} ${e?.message ?? ""}`);
       return "";
     }
   }
@@ -478,14 +562,37 @@ export function RecordingOverlay({
     // the recorder never produced a chunk. Hand back an empty transcript and let
     // the review screen say so, rather than shipping silence to the model.
     if (!blob || blob.size <= 1200) {
-      setState("connecting");
-      onStop("", seconds, targetDate);
+      // Se non ha mai tenuto premuto, non e successo niente di strano: la
+      // schermata di revisione dira che non c'e testo, come prima.
+      if (seconds === 0) {
+        setState("connecting");
+        onStop("", seconds, targetDate);
+        return;
+      }
+      // Ma se ha parlato per dei secondi e non e stato catturato NIENTE, il
+      // silenzio e il bug. Dirlo, e dire i numeri.
+      endingRef.current = false;
+      setErrorMessage(
+        `${t("Ho tenuto aperto il microfono ma non e arrivato audio. Riprova, e se succede ancora mandami questa riga.")} [${diagLine()}]`,
+      );
+      setState("error");
       return;
     }
 
     setRecovering(true);
     const text = await transcribeClip(blob);
     setRecovering(false);
+    // Audio c'era (il blob ha byte veri) ma non sono tornate parole: o la
+    // richiesta non e mai arrivata, o e stata rifiutata. Prima diventava una
+    // giornata vuota senza spiegazioni.
+    if (!text && httpRef.current !== "200") {
+      endingRef.current = false;
+      setErrorMessage(
+        `${t("La registrazione c'e, ma non sono riuscito a trascriverla.")} [${diagLine()}]`,
+      );
+      setState("error");
+      return;
+    }
     setState("connecting"); // transient; the parent switches the view away
     onStop(text, seconds, targetDate);
   }
@@ -509,6 +616,10 @@ export function RecordingOverlay({
     if (!rec) return;
     try {
       if (rec.state === "paused") rec.resume();
+      // Su WebKit `resume()` puo risolversi senza riaprire il rubinetto: il
+      // timer scorre, la waveform balla, e il file resta vuoto. Se lo stato
+      // non e tornato "recording" lo si scrive, invece di scoprirlo alla fine.
+      if (rec.state !== "recording") dbg(`resume -> state=${rec.state}`);
     } catch {
       dbg("resume failed");
       return;
