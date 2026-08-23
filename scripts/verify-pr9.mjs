@@ -110,6 +110,35 @@ async function seed(page) {
   await page.waitForTimeout(1200);
   check("click cella -> /giorno", page.url().includes("/giorno?d=" + iso(1)));
 
+  // Click su una giornata PASSATA E VUOTA -> la sua schermata, dove
+  // "Aggiungi a questa giornata" la fa compilare. Fino al 23 agosto 2026 la
+  // cella vuota era un <div> inerte: dalla griglia desktop un giorno saltato
+  // non si poteva piu recuperare, mentre dal feed del telefono si poteva da
+  // sempre (day-row.tsx: ogni riga e cliccabile, piena o no).
+  if (D > 2) {
+    await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+    await page.waitForTimeout(900);
+    const vuota = page.locator(".jm-mese-cell.empty").first();
+    const num = Number((await vuota.locator(".jm-mese-cn").innerText()).trim());
+    check("giorno vuoto: e un bottone", (await vuota.evaluate((el) => el.tagName)) === "BUTTON");
+    check("giorno vuoto: cursore a mano", (await vuota.evaluate((el) => getComputedStyle(el).cursor)) === "pointer");
+    // L'highlight deve essere LO STESSO dei giorni pieni, non uno suo: si
+    // confronta il colore calcolato all'hover, non la classe.
+    const pieno = page.locator(".jm-mese-cell.full").first();
+    await pieno.hover();
+    await page.waitForTimeout(150);
+    const hoverPieno = await pieno.evaluate((el) => getComputedStyle(el).backgroundColor);
+    const riposo = await vuota.evaluate((el) => getComputedStyle(el).backgroundColor);
+    await vuota.hover();
+    await page.waitForTimeout(150);
+    const hoverVuoto = await vuota.evaluate((el) => getComputedStyle(el).backgroundColor);
+    check("giorno vuoto: l'hover accende qualcosa", hoverVuoto !== riposo, `${riposo} -> ${hoverVuoto}`);
+    check("giorno vuoto: stesso highlight dei pieni", hoverVuoto === hoverPieno, `${hoverVuoto} vs ${hoverPieno}`);
+    await vuota.click();
+    await page.waitForTimeout(1200);
+    check("click giorno vuoto -> /giorno di QUEL giorno", page.url().includes("/giorno?d=" + iso(num)), page.url());
+  }
+
   // Titolo -> JumpPicker
   await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
