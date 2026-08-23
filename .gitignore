@@ -60,3 +60,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Artefatto di lavoro del passo B (verify-css-split.mjs): si scatta e si butta.
+scripts/css-baseline.json
