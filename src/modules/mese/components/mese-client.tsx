@@ -6,6 +6,8 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { JumpPicker } from "@/modules/mese/components/jump-picker";
 import { MonthSection } from "@/modules/mese/components/month-section";
 import { MeseGrid } from "@/modules/mese/components/mese-grid";
+import { MeseMini } from "@/modules/mese/components/mese-mini";
+import { setVistaGriglia, useVistaGriglia } from "@/modules/mese/vista";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { formatMonthTitle, daysInMonth, nowAppParts } from "@/lib/format";
 import { useT } from "@/lib/i18n";
@@ -68,6 +70,8 @@ export function MeseClient({ mode, initialMonth }: Props) {
   // al piu vecchio e appenderci un mese arbitrario dal picker romperebbe
   // l'ordine cronologico sotto lg.
   const isDesktop = useIsDesktop();
+  // Lista o griglia sul telefono: la scelta si ricorda (vista.ts).
+  const griglia = useVistaGriglia();
   const [deskMonth, setDeskMonth] = useState<{ year: number; month: number }>({
     year: initialMonth.year,
     month: initialMonth.month,
@@ -261,16 +265,64 @@ export function MeseClient({ mode, initialMonth }: Props) {
           </span>
           <span className="jm-month-chevron">&#9662;</span>
         </button>
-        {counter && (
-          <span className="jm-month-count">
-            {counter.done} / {counter.total}
-          </span>
-        )}
+        <span className="jm-month-right">
+          {counter && (
+            <span className="jm-month-count">
+              {counter.done} / {counter.total}
+            </span>
+          )}
+          {/* Lista <-> griglia. Un solo bottone, nello stesso punto:
+              acceso mostra la lista (la via del ritorno), spento mostra
+              i quadratini (la via dell'andata). */}
+          <button
+            type="button"
+            className="jm-mese-vista"
+            aria-pressed={griglia}
+            aria-label={
+              griglia ? t("Torna alla lista") : t("Vedi il mese a griglia")
+            }
+            onClick={() => setVistaGriglia(!griglia)}
+          >
+            {griglia ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="7.5" height="7.5" rx="1.6" />
+                <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6" />
+                <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6" />
+                <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6" />
+              </svg>
+            )}
+          </button>
+        </span>
       </header>
 
       {/* Day list (solo telefono: da lg c'e la griglia) */}
       <div className="jm-day-list lg:hidden">
-        {loaded.map((m, idx) => (
+        {loaded.map((m, idx) =>
+          griglia ? (
+            <div key={`g-${m.year}-${m.month}`}>
+              {idx > 0 && (
+                <div className="jm-month-section-header" suppressHydrationWarning>
+                  {formatMonthTitle(m.year, m.month)}
+                </div>
+              )}
+              <MeseMini
+                year={m.year}
+                month={m.month}
+                entries={m.entries}
+                today={today}
+                onDayClick={(iso) => {
+                  setPendingDate(iso);
+                  startNav(() => {
+                    router.push(`/giorno?d=${iso}`);
+                  });
+                }}
+              />
+            </div>
+          ) : (
           <MonthSection
             key={`${m.year}-${m.month}`}
             year={m.year}
@@ -288,7 +340,8 @@ export function MeseClient({ mode, initialMonth }: Props) {
               });
             }}
           />
-        ))}
+          ),
+        )}
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
         {loadingMore && (
           <div
