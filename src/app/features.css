@@ -412,16 +412,21 @@
    ============================================================ */
 
 /* globals.css tiene la sintesi entro 700px con una motivazione buona: sotto
-   i settantacinque caratteri per riga si legge meglio. Il problema e che
-   sopra e sotto quel paragrafo tutto il resto — il titolo, le schede delle
-   aree, il tasto "aggiungi" — corre per tutta la colonna, e la sintesi si
-   ferma a meta come se mancasse qualcosa. Su una colonna larga il buco si
-   vede piu di quanto pesi la riga lunga.
+   i settantacinque caratteri per riga si legge meglio. Il problema e il
+   contorno — titolo, schede delle aree e tasto "aggiungi" corrono per tutta
+   la colonna, e il paragrafo si fermava a meta come se mancasse qualcosa.
 
-   Il limite sale, non sparisce: sopra i novanta caratteri l'occhio perde
-   il capo della riga tornando a sinistra, e questo e testo che si legge
-   davvero, non un'etichetta. 980px con il testo da 17px sono circa
-   novanta caratteri.
+   PRIMA VERSIONE, SBAGLIATA: il tetto era sceso a 980px invece di sparire.
+   Sotto i 1500px di finestra bastava, sopra no — su uno schermo largo
+   restavano centosettanta pixel di buco, e il difetto era identico a prima,
+   solo piu piccolo. Il numero che lo diceva era gia nella misurazione fatta
+   prima di pubblicare (a 1728: sintesi 980, schede 1154) ed e stato
+   scambiato per un dettaglio. Non lo era: era la richiesta, non soddisfatta.
+
+   ADESSO NON C'E NESSUN TETTO. La sintesi e larga quanto la colonna, cioe
+   quanto le schede sotto, a qualsiasi larghezza. Su un monitor molto largo
+   la riga diventa lunga, ed e il prezzo scelto consapevolmente: e un
+   paragrafo solo di quaranta-cento parole, non una pagina di prosa.
 
    La PROSA della giornata gratis (.jm-fv-prose) resta a 700px: sono piu
    paragrafi di fila, e li la riga di lettura conta per davvero.
@@ -430,6 +435,6 @@
    globals.css: a parita di specificita vincerebbe globals. */
 @media (min-width: 1024px) {
   .jm-fv-wrap .jm-fv-sn {
-    max-width: 980px;
+    max-width: none;
   }
 }

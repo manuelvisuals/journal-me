@@ -17,7 +17,7 @@ function check(name, ok, extra = "") {
 
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
 
-for (const w of [1280, 1440]) {
+for (const w of [1280, 1440, 1728, 1920]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: 1000 }, locale: "it-IT" });
   await ctx.addInitScript(() => { try { localStorage.setItem("jm.mode", "local"); } catch {} });
   const page = await ctx.newPage();
@@ -35,22 +35,6 @@ for (const w of [1280, 1440]) {
   check(`${w}px: e finisce dove finiscono`,
     Math.abs((sn.x + sn.width) - (cards.x + cards.width)) <= 1,
     `${Math.round(sn.x + sn.width)} contro ${Math.round(cards.x + cards.width)}`);
-
-  // La riga di lettura non e sparita, e solo salita: oltre un certo punto
-  // l'occhio perde il capo della riga tornando a sinistra.
-  const chars = await page.locator(".jm-fv-sn").evaluate((e) => {
-    const s = getComputedStyle(e);
-    const probe = document.createElement("span");
-    probe.style.font = s.font;
-    probe.style.position = "absolute";
-    probe.style.visibility = "hidden";
-    probe.textContent = "x".repeat(100);
-    document.body.appendChild(probe);
-    const per = probe.getBoundingClientRect().width / 100;
-    probe.remove();
-    return Math.round(e.getBoundingClientRect().width / per);
-  });
-  check(`${w}px: la riga resta sotto i cento caratteri`, chars <= 100, `${chars} caratteri`);
 
   // La prosa della giornata gratis e un'altra cosa: piu paragrafi di fila,
   // e li la riga corta conta davvero. Non deve essere stata allargata.
