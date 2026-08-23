@@ -7,7 +7,7 @@ Impostazioni a pannelli (obiettivi, lingua, tema, dimensione testo, dati, accoun
 moduli utente) piu la rail destra su desktop. E un perimetro unico con
 `src/components/consumi` (la schermata Consumi AI). Pagina: `src/app/settings/`.
 
-- Prefissi CSS: `jm-st`, `jm-usage`. CSS nuovo da branch: in `src/app/features.css`.
+- Prefissi CSS: `jm-st`, `jm-usage`. Il CSS del modulo vive in `src/styles/impostazioni.css` (passo B, 23 ago).
 - Banchi prima del push: `verify-impostazioni`, `verify-lingua`, `verify-parole-misure`,
   `verify-checkout-obiettivi` (piu tsc, eslint, verify-i18n).
-- NON toccare: gli altri moduli, `globals.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).

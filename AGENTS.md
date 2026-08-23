@@ -17,9 +17,12 @@ Le regole comuni, valide in ogni cartella:
 2. **Branch, non main** (`WORKERS.md`): un modulo = un branch = una chat. Su `main` si
    arriva per merge. Eccezione: una sessione scheletro dichiarata, quando e l'unica
    attiva.
-3. **Punti d'innesto finche B e C non sono fatti** (vedi ARCHITETTURA.md §3): CSS nuovo
-   in `src/app/features.css` col prefisso del tuo modulo, traduzioni nuove in
-   `src/lib/i18n/en-extra.ts`. Mai in coda a `globals.css`/`en.ts` da un branch.
+3. **Dove si scrive cio che e nuovo.** CSS: nel file del TUO modulo,
+   `src/styles/<modulo>.css` (dal passo B ogni modulo ha il suo; `globals.css` e solo
+   l'indice degli import e non si tocca). Un pezzo che serve a piu moduli va discusso:
+   `base.css` o `overrides.css` sono scheletro. `features.css` resta per gli innesti
+   temporanei trasversali. Traduzioni nuove da branch: `src/lib/i18n/en-extra.ts`,
+   mai in coda a `en.ts` (il passo C non e ancora fatto).
 4. **Solo token, mai valori a mano**: colori, raggi e spazi vengono dal contratto temi
    (`--color-*`, `--jm-*`); ogni `font-size` e `calc(Npx * var(--jm-ui-scale))`.
    Testo a schermo sempre via `t()` (`@/lib/i18n`).

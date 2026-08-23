@@ -1,0 +1,171 @@
+/* =============================================================
+   Modulo ACCESSO: /benvenuto (il login usa utility Tailwind).
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+/* =============================================================
+   /benvenuto — la scelta delle due modalita (PR 5, mockup
+   due-modalita 01, adattato alla colonna telefono).
+   ============================================================= */
+.jm-benv {
+  display: flex;
+  flex-direction: column;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 24px 40px;
+}
+
+.jm-benv-hero {
+  font-family: var(--font-serif);
+  font-size: calc(var(--jm-text-display) * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: var(--jm-tracking-headline);
+  line-height: var(--jm-leading-display);
+  text-align: center;
+  color: var(--color-ink);
+  margin-top: calc(22px * var(--jm-space));
+}
+
+.jm-benv-sub {
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.6;
+}
+
+.jm-benv-cards {
+  display: flex;
+  flex-direction: column;
+  gap: calc(16px * var(--jm-space));
+  margin-top: calc(34px * var(--jm-space));
+}
+
+.jm-benv-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(22px * var(--jm-space)) calc(22px * var(--jm-space)) calc(20px * var(--jm-space));
+  display: flex;
+  flex-direction: column;
+}
+
+.jm-benv-card.pick {
+  border-color: color-mix(in oklab, var(--color-accent) 34%, transparent);
+  background: linear-gradient(165deg, color-mix(in oklab, var(--color-accent) 6%, transparent), var(--color-surface));
+}
+
+.jm-benv-tag {
+  font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: var(--jm-tracking-label);
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+
+.jm-benv-card.pick .jm-benv-tag {
+  color: var(--color-accent);
+}
+
+.jm-benv-t {
+  font-size: calc(var(--jm-text-title) * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+
+.jm-benv-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-bottom: 16px;
+}
+
+.jm-benv-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+
+.jm-benv-list li {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  padding: 5px 0 5px 22px;
+  position: relative;
+}
+
+.jm-benv-list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 11px;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+}
+
+.jm-benv-list li.no {
+  color: var(--color-ink-faint);
+}
+
+.jm-benv-list li.no::before {
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--color-ink-faint) 50%, transparent);
+  top: 10px;
+}
+
+.jm-benv-price {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-bottom: 14px;
+}
+
+.jm-benv-price b {
+  color: var(--color-ink);
+  font-size: calc(19px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.jm-benv-foot {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  text-align: center;
+  margin-top: calc(26px * var(--jm-space));
+  line-height: 1.6;
+}
+
+/* =============================================================
+   Benvenuto su desktop (fix 19 ago, richiamo di Manuel): da lg le
+   due card stanno AFFIANCATE e la pagina usa lo schermo, come nel
+   mockup due-modalita §01. Il max-w-[440px] del telefono e una
+   utility Tailwind (in @layer): questo CSS nudo la scavalca.
+   ============================================================= */
+@media (min-width: 1024px) {
+  .jm-benv {
+    max-width: none;
+    padding-left: 48px;
+    padding-right: 48px;
+    justify-content: center;
+  }
+  .jm-benv-hero {
+    font-size: calc(44px * var(--jm-ui-scale));
+    margin-top: 0;
+  }
+  .jm-benv-cards {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 48px;
+  }
+  .jm-benv-card {
+    flex: 1 1 0;
+    max-width: 640px;
+    padding: 28px 28px 24px;
+  }
+}

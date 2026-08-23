@@ -10,7 +10,12 @@ Apple senza sorprese.
 - passo A — FATTO il 23 agosto: questa mappa, un CLAUDE.md di recinto in ogni cartella
   di modulo, la regola ESLint sui confini in modalita warning, WORKERS.md vincolante,
   PROMPT-WORKER.md per aprire chat nuove.
-- passi B-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
+- passo B — FATTO il 23 agosto: globals.css (5.092 righe) e diventato l'indice degli
+  import; il CSS vive in src/styles/ (base, un file per modulo, overrides). La guardia
+  degli stili calcolati (scripts/verify-css-split.mjs) ha certificato 18/18 scatti
+  identici prima/dopo, e tutte le 21 suite sono verdi. L'ordine degli import e parte
+  del contratto: base prima dei moduli, overrides dopo.
+- passi C-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
 
 **Chi apre una sessione su questo repo legge questo file PRIMA di toccare codice**, poi
 il CLAUDE.md della cartella in cui lavora. Se lavori a un modulo, il tuo perimetro e
@@ -134,7 +139,7 @@ modulo ha il suo CLAUDE.md (per ora puntano ai path attuali), la regola ESLint s
 confini e in modalita WARNING (fotografa gli attraversamenti senza rompere nessuno),
 WORKERS.md e vincolante. Da adesso ogni chat sa il suo recinto.
 
-**B. Lo spacchettamento del CSS (il passo che vale di piu).**
+**B. Lo spacchettamento del CSS (il passo che vale di piu). FATTO il 23 agosto 2026.**
 `globals.css` 5.092 righe → `styles/base.css` + un file per modulo, `@import` in cima.
 Meccanico ma delicato: la prova e un banco che confronta gli stili CALCOLATI di ogni
 schermata prima/dopo (stessa dottrina delle misure di Stoqfolio: si misura il rendering,

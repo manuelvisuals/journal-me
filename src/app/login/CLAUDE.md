@@ -8,8 +8,7 @@ E un perimetro unico con `src/app/benvenuto/`. Il flusso auth server-side
 (`src/app/auth/`, `src/lib/supabase/`) e scheletro.
 
 - Prefissi CSS: `jm-benv` (benvenuto); la pagina login oggi usa utility Tailwind,
-  se le servono classi nuove il prefisso e `jm-login`. CSS nuovo da branch: in
-  `src/app/features.css`.
+  se le servono classi nuove il prefisso e `jm-login`. Il CSS del modulo vive in `src/styles/accesso.css` (passo B, 23 ago).
 - Banchi prima del push: `verify-pr10` (il locale non fa MAI rete: e la promessa piu
   importante dell'app), piu tsc, eslint, verify-i18n.
-- NON toccare: gli altri moduli, `globals.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).

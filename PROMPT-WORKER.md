@@ -30,9 +30,10 @@ Le regole che rompono tutto se le sbagli:
   `src/components/ui/**`, `src/components/desktop/**`, `globals.css`, `en.ts`, ne agli
   altri moduli. Se il compito sembra richiederlo, fermati e dillo a Manuel: o e un
   compito da sessione scheletro, o c'e una strada dentro il tuo recinto.
-- **CSS nuovo in `src/app/features.css`** (mai in coda a globals.css), classi col
-  prefisso del tuo modulo. **Traduzioni nuove in `src/lib/i18n/en-extra.ts`** (mai
-  in en.ts). Solo token del tema (`--color-*`, `--jm-*`), mai colori o misure a mano;
+- **Il CSS del tuo modulo vive in `src/styles/<modulo>.css`** (il tuo CLAUDE.md dice
+  quale): scrivi li, con le classi col prefisso del tuo modulo. `globals.css` e solo
+  l'indice degli import; `base.css` e `overrides.css` sono scheletro e non si toccano.
+  **Traduzioni nuove in `src/lib/i18n/en-extra.ts`** (mai in en.ts). Solo token del tema (`--color-*`, `--jm-*`), mai colori o misure a mano;
   ogni font-size e `calc(Npx * var(--jm-ui-scale))`; ogni testo a schermo passa da
   `t()` di `@/lib/i18n`.
 - **git**: email `spamming.madh52@gmail.com`; `git add <file espliciti>`, mai `-A`;

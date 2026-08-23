@@ -1,0 +1,767 @@
+/* =============================================================
+   Modulo IMPOSTAZIONI: pannelli, tema, dati, consumi AI, quota.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+/* =============================================================
+   Impostazioni > Tema — la griglia dei temi (PR 0). Lo switch
+   chiaro/scuro non e piu qui: dal 20 agosto 2026 e una riga
+   dell'elenco di Impostazioni (.jm-st-seg). Componente nuovo:
+   SOLO token del contratto, nessun valore di marca. Le taglie
+   fisse delle anteprime sono miniature del picker, non ruoli
+   tipografici dell'app.
+   ============================================================= */
+.jm-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(12px * var(--jm-space));
+}
+
+.jm-theme-card {
+  display: block;
+  text-align: left;
+  padding: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 120ms;
+}
+
+.jm-theme-card.on {
+  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+}
+
+.jm-theme-prev {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 108px;
+  padding: 12px;
+  /* Le variabili scoped della card (style inline) vincono su <html>:
+     l'anteprima e VIVA, renderizza davvero il suo tema nel modo scelto. */
+  background: var(--jm-bg-app);
+  color: var(--jm-ink);
+}
+
+.jm-theme-prev-t {
+  font-family: var(--jm-font-serif);
+  font-size: calc(16px * var(--jm-ui-scale));
+  font-weight: var(--jm-weight-prose);
+  letter-spacing: -0.01em;
+  color: var(--jm-ink);
+}
+
+.jm-theme-prev-p {
+  font-family: var(--jm-font-sans);
+  font-size: calc(11px * var(--jm-ui-scale));
+  line-height: 1.45;
+  color: var(--jm-ink-muted);
+  margin-top: 5px;
+}
+
+.jm-theme-sw {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: auto;
+}
+
+.jm-theme-sw i {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--jm-radius-circle);
+  display: block;
+  border: 1px solid var(--jm-line);
+}
+
+.jm-theme-sw .sw-accent { background: var(--jm-accent); }
+
+.jm-theme-sw .sw-surface { background: var(--jm-surface); }
+
+.jm-theme-sw .sw-ink { background: var(--jm-ink); }
+
+.jm-theme-sw .sw-faint { background: var(--jm-ink-faint); }
+
+.jm-theme-meta {
+  display: block;
+  padding: 10px 12px;
+  border-top: 1px solid var(--color-line);
+}
+
+.jm-theme-name {
+  display: block;
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.jm-theme-fonts {
+  display: block;
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-top: 2px;
+}
+
+.jm-theme-footnote {
+  margin-top: calc(14px * var(--jm-space));
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.55;
+}
+
+/* =============================================================
+   Altro > I tuoi dati + banner backup (PR 4, mockup due-modalita 03).
+   Solo token del contratto.
+   ============================================================= */
+.jm-backup-warn {
+  margin: 0 24px calc(20px * var(--jm-space));
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
+  background: linear-gradient(165deg, color-mix(in oklab, var(--color-accent) 8%, transparent), var(--color-surface));
+  border-radius: var(--jm-radius-lg);
+  padding: calc(16px * var(--jm-space)) calc(18px * var(--jm-space));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-ink) 6%, transparent),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+
+.jm-backup-warn-t {
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.jm-backup-warn-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+
+/* =============================================================
+   IMPOSTAZIONI (ex "Altro") — mockup design/mockups/impostazioni.html
+   §03 e §04, approvato il 20 agosto 2026.
+
+   Le misure sono quelle del mockup, con due sole traduzioni:
+    - i colori letterali diventano token del contratto temi (un tema
+      nuovo non deve poter rompere questa pagina);
+    - le spaziature passano da calc(N * var(--jm-space)) come tutto il
+      resto dell'app, cosi la densita segue il tema.
+
+   La riga e alta almeno 56px: oltre i 44px del brandbook cap. 05, che
+   era il problema numero due della segnalazione del 20 agosto.
+   ============================================================= */
+
+.jm-st-h1 {
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.jm-st-sub {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: calc(6px * var(--jm-space));
+}
+
+/* Il corpo scorrevole: stessi margini della colonna centrale altrove
+   (24px sul telefono, 28px da lg), cosi titolo e righe partono dalla
+   stessa verticale. */
+.jm-st-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(20px * var(--jm-space)) 24px calc(26px * var(--jm-space));
+}
+
+.jm-st-group {
+  margin-bottom: calc(28px * var(--jm-space));
+}
+
+.jm-st-gl {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin: 0 0 calc(10px * var(--jm-space)) 2px;
+}
+
+.jm-st-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  overflow: hidden;
+}
+
+.jm-st-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 56px;
+  padding: calc(12px * var(--jm-space)) 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-row:last-child { border-bottom: none; }
+
+.jm-st-row:hover { background: var(--color-surface-2); }
+
+.jm-st-row:disabled { cursor: default; opacity: 0.55; }
+
+.jm-st-row.static { cursor: default; }
+
+.jm-st-row.static:hover { background: transparent; }
+
+.jm-st-grow { flex: 1; min-width: 0; }
+
+.jm-st-t {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.jm-st-d {
+  display: block;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+.jm-st-val {
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  flex: 0 0 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52%;
+}
+
+.jm-st-chev {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.6;
+}
+
+.jm-st-row.danger .jm-st-t { color: var(--color-danger); }
+
+.jm-st-row.danger .jm-st-val { color: var(--color-danger); font-weight: 600; }
+
+/* "togli" dentro il pannello Obiettivi: bersaglio pieno, non una x da 18px */
+.jm-st-x {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--jm-radius-pill);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-x:hover {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+}
+
+/* Segmented chiaro/scuro/sistema dentro la riga. Sul telefono usa le
+   sigle: la parola intera piu il titolo non ci stanno in 390px. */
+.jm-st-seg {
+  display: flex;
+  flex: 0 0 auto;
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px;
+}
+
+.jm-st-seg button {
+  font-family: var(--font-sans);
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--jm-radius-pill);
+  padding: 7px 11px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-seg button.on {
+  background: var(--color-surface);
+  border-color: var(--color-line);
+  color: var(--color-ink);
+}
+
+.jm-st-seg .lg { display: none; }
+
+.jm-st-seg .sm { display: inline; }
+
+/* Intestazione dei pannelli */
+.jm-st-phead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jm-st-back {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  margin-left: -8px;
+  border-radius: var(--jm-radius-circle);
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-back:hover { background: var(--color-surface-2); }
+
+.jm-st-phead .jm-st-h1 { font-size: calc(20px * var(--jm-ui-scale)); }
+
+.jm-st-lede {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  margin-bottom: calc(22px * var(--jm-space));
+  max-width: 62ch;
+}
+
+.jm-st-note {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) 14px;
+  margin-bottom: calc(24px * var(--jm-space));
+}
+
+.jm-st-note.err {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+  background: color-mix(in oklab, var(--color-danger) 7%, transparent);
+}
+
+/* Aggiunta di un obiettivo */
+.jm-st-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 5px 5px 5px 16px;
+}
+
+.jm-st-add input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  padding: 12px 0;
+}
+
+.jm-st-add input::placeholder { color: var(--color-ink-faint); }
+
+.jm-st-add button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--jm-radius-md);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-sans);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-add button:disabled { opacity: 0.4; cursor: default; }
+
+/* Card Recap: solo sul telefono, dove la tab bar non ha uno slot Recap. */
+.jm-st-recap {
+  display: block;
+  padding: calc(20px * var(--jm-space)) 22px calc(18px * var(--jm-space));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, transparent 100%),
+    var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  margin-bottom: calc(28px * var(--jm-space));
+  text-decoration: none;
+  color: inherit;
+}
+
+.jm-st-recap .meta {
+  display: block;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+
+.jm-st-recap .title {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: calc(23px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+
+.jm-st-recap .sub {
+  display: block;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
+.jm-st-recap .last {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+}
+
+/* Rail destra di Impostazioni: l'identita, non le impostazioni */
+.jm-st-acct { margin-bottom: 30px; }
+
+.jm-st-av {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  margin-bottom: 14px;
+}
+
+.jm-st-nm { font-size: calc(15px * var(--jm-ui-scale)); font-weight: 600; color: var(--color-ink); }
+
+.jm-st-em {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  word-break: break-all;
+}
+
+/* Premium: la targhetta si riempie invece di restare contornata. Prima
+   "Gratis" e "Premium" erano lo stesso oggetto con dentro una parola
+   diversa: per accorgersi del cambio bisognava leggerla. */
+.jm-st-pill.on {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
+
+.jm-st-pill {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+}
+
+.jm-st-rrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: calc(12.5px * var(--jm-ui-scale));
+}
+
+.jm-st-rrow:last-of-type { border-bottom: none; }
+
+.jm-st-rrow .k { color: var(--color-ink-faint); flex: 0 0 auto; }
+
+.jm-st-rrow .v { color: var(--color-ink-muted); text-align: right; min-width: 0; }
+
+.jm-st-out {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  min-height: 44px;
+  border-radius: var(--jm-radius-md);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-out:hover { background: var(--color-surface-2); }
+
+.jm-st-out.danger {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 35%, transparent);
+}
+
+.jm-st-out:disabled { opacity: 0.55; cursor: default; }
+
+/* Solo telefono. NON si usa `lg:hidden` di Tailwind: le utility hanno la
+   stessa specificita di queste regole e vince l'ordine nel bundle, che qui
+   dava .jm-st-recap { display: block } sopra .lg\:hidden. Meglio dirlo una
+   volta sola, con una media query nostra. */
+@media (min-width: 1024px) {
+  .jm-st-phoneonly { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .jm-st-scroll {
+    padding-left: 28px;
+    padding-right: 28px;
+    /* L'elenco e fatto di righe corte: oltre 640px il valore a destra
+       finisce a mezzo metro dal titolo e la riga non si legge piu come
+       una coppia. Il mockup §03 usa esattamente questa misura. */
+    max-width: 668px;
+  }
+  .jm-st-seg .lg { display: inline; }
+  .jm-st-seg .sm { display: none; }
+  .jm-st-seg button { padding: 7px 13px; }
+}
+
+/* =============================================================
+   IMPOSTAZIONI > DIMENSIONE DEL TESTO
+   (mockup design/mockups/testo-e-giorno.html §02)
+
+   Le righe non hanno una misura fissa: ognuna si disegna alla taglia che
+   rappresenta, con font-size e altezza scritti inline dal componente. Qui
+   ci sta solo cio che NON dipende dalla taglia.
+   ============================================================= */
+.jm-st-prev {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(18px * var(--jm-space));
+  margin-bottom: calc(22px * var(--jm-space));
+}
+
+.jm-st-prev-l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+
+.jm-st-prev-h {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+
+.jm-st-prev-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
+.jm-st-szrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-szrow:last-child { border-bottom: none; }
+
+.jm-st-szrow:hover { background: var(--color-surface-2); }
+
+.jm-st-szrow.on { background: var(--color-surface-2); }
+
+.jm-st-szname {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--color-ink);
+  /* eredita la misura dalla riga: e il punto di questa schermata */
+  font-size: inherit;
+}
+
+.jm-st-szdemo {
+  flex: 0 0 auto;
+  font-weight: 500;
+  color: var(--color-ink-faint);
+  font-size: inherit;
+  white-space: nowrap;
+}
+
+.jm-st-szcheck {
+  flex: 0 0 auto;
+  color: var(--color-ink);
+  font-size: inherit;
+}
+
+/* =============================================================
+   Quota AI del mese (richiesta Manuel 19 ago): barra di progresso
+   della quota inclusa nell'abbonamento, dentro Impostazioni.
+   Vale a tutte le larghezze.
+   ============================================================= */
+.jm-usage {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 16px 18px;
+}
+
+/* Dentro il pannello Consumi AI la card respira dal sottotitolo del mese
+   sopra e dal totale sotto. */
+.jm-cs .jm-usage {
+  margin: calc(14px * var(--jm-space)) 0 calc(18px * var(--jm-space));
+}
+
+.jm-usage-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.jm-usage-t {
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.jm-usage-pct {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-usage-bar {
+  height: 8px;
+  border-radius: var(--jm-radius-pill);
+  background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+  overflow: hidden;
+}
+
+.jm-usage-fill {
+  height: 100%;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-accent);
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.jm-usage-fill.warn {
+  background: var(--color-danger);
+}
+
+.jm-usage-sub {
+  margin-top: 8px;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
+/* Moduli: l'interruttore, e la schermata di un modulo ancora in
+   costruzione. */
+.jm-sw {
+  width: calc(42px * var(--jm-ui-scale));
+  height: calc(25px * var(--jm-ui-scale));
+  flex: 0 0 calc(42px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 140ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-sw i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(19px * var(--jm-ui-scale));
+  height: calc(19px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  transition: transform 140ms;
+}
+
+.jm-sw.on { background: var(--color-accent); border-color: var(--color-accent); }
+
+.jm-sw.on i {
+  transform: translateX(calc(17px * var(--jm-ui-scale)));
+  background: var(--color-on-accent);
+  border-color: transparent;
+}
+
+.jm-st-row.presto .jm-st-t { color: var(--color-ink-faint); }

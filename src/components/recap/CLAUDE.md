@@ -8,7 +8,7 @@ I recap letterari (mensili, semestrali, annuali): lista, dettaglio, editor. Pagi
 guscio: la logica che tocca l'AI si discute con Manuel prima).
 
 - Prefissi CSS (misurati il 23 ago): `jm-recap`, `jm-det`, `jm-gen`, `jm-period`,
-  `jm-drop`. CSS nuovo da branch: in `src/app/features.css`.
+  `jm-drop`. Il CSS del modulo vive in `src/styles/recap.css` (passo B, 23 ago).
 - Banchi prima del push: tsc, eslint, verify-i18n (un banco dedicato al Recap ancora
   non esiste: se lo scrivi, chiamalo `verify-recap.mjs` e provalo a mordere).
-- NON toccare: gli altri moduli, `globals.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).

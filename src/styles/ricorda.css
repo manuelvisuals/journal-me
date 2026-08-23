@@ -1,0 +1,429 @@
+/* =============================================================
+   Modulo RICORDA: Remember, quick capture, scheda persona.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+/* =============================================================
+   Remember view
+   ============================================================= */
+
+.jm-rem-head {
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
+}
+
+.jm-rem-h {
+  font-size: calc(24px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  margin-bottom: calc(14px * var(--jm-space));
+}
+
+.jm-rem-filter {
+  display: flex;
+  gap: calc(6px * var(--jm-space));
+  overflow-x: auto;
+  padding-bottom: calc(2px * var(--jm-space));
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.jm-rem-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.jm-rem-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(14px * var(--jm-space)) 0 calc(130px * var(--jm-space)); /* leave room for floating quick capture + tab bar */
+}
+
+.jm-rem-day-header {
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  padding: calc(12px * var(--jm-space)) calc(24px * var(--jm-space)) calc(8px * var(--jm-space));
+}
+
+.jm-rem-item {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(14px * var(--jm-space));
+  padding: calc(11px * var(--jm-space)) calc(24px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+  cursor: pointer;
+}
+
+.jm-rem-icon {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--jm-radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  margin-top: calc(2px * var(--jm-space));
+}
+
+.jm-rem-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.jm-rem-text {
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  line-height: 1.4;
+  font-weight: 500;
+  margin-bottom: calc(4px * var(--jm-space));
+}
+
+.jm-rem-meta {
+  display: flex;
+  align-items: center;
+  gap: calc(8px * var(--jm-space));
+  font-size: calc(10px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+.jm-rem-meta .kind {
+  color: var(--color-accent);
+  font-weight: 650;
+}
+
+.jm-rem-meta .src.extracted {
+  color: var(--color-ink-muted);
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: calc(11px * var(--jm-ui-scale));
+}
+
+.jm-rem-del {
+  align-self: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--jm-radius-circle);
+  background: transparent;
+  border: none;
+  color: var(--color-ink-faint);
+  font-size: calc(16px * var(--jm-ui-scale));
+  cursor: pointer;
+  opacity: 0.5;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-rem-del:hover {
+  opacity: 1;
+  color: var(--color-danger);
+}
+
+/* Quick capture floating bar */
+.jm-qc-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  padding: 0 calc(24px * var(--jm-space));
+  z-index: 4;
+  pointer-events: none;
+}
+
+.jm-qc-card {
+  max-width: 392px;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  padding: calc(6px * var(--jm-space)) calc(6px * var(--jm-space)) calc(6px * var(--jm-space)) calc(14px * var(--jm-space));
+  display: flex;
+  align-items: center;
+  gap: calc(10px * var(--jm-space));
+  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
+  pointer-events: auto;
+}
+
+.jm-qc-card input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  padding: calc(10px * var(--jm-space)) 0;
+}
+
+.jm-qc-card input::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.jm-qc-kind {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-qc-mic {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface-2);
+  color: var(--color-accent);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 30%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-qc-mic:active {
+  background: var(--color-surface);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+
+.jm-qc-add {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(20px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-qc-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.jm-qc-kind-pop {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 145px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(220px, calc(100vw - 48px));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: calc(6px * var(--jm-space));
+  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
+  z-index: 5;
+  /* Override the pointer-events: none inherited from .jm-qc-bar (set there
+     so empty space around the input doesn't block taps on the page).
+     Without this the kind-picker rows were unclickable. */
+  pointer-events: auto;
+}
+
+.jm-qc-kind-pop .row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: calc(10px * var(--jm-space)) calc(12px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  background: transparent;
+  border: none;
+  border-radius: var(--jm-radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-qc-kind-pop .row:hover {
+  background: var(--color-surface-2);
+}
+
+.jm-qc-kind-pop .row.selected {
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  color: var(--color-accent-hi);
+}
+
+/* =============================================================
+   Scheda persona (/persona?nome=). La domanda a cui risponde e
+   "da quanto non lo vedo": per questo il numero grande e quello,
+   e non il totale degli incontri.
+   ============================================================= */
+.jm-pers-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space))
+    calc(40px * var(--jm-space));
+}
+
+.jm-pers-top {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  margin-bottom: calc(20px * var(--jm-space));
+}
+
+.jm-pers-av {
+  width: calc(56px * var(--jm-ui-scale));
+  height: calc(56px * var(--jm-ui-scale));
+  flex: 0 0 calc(56px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.jm-pers-id { min-width: 0; }
+
+.jm-pers-name {
+  font-size: calc(23px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.jm-pers-last {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+}
+
+.jm-pers-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: calc(8px * var(--jm-space));
+}
+
+.jm-pers-stat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(14px * var(--jm-space)) 6px;
+  text-align: center;
+}
+
+.jm-pers-stat .n {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-pers-stat .k {
+  font-size: calc(9.5px * var(--jm-ui-scale));
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-top: 4px;
+}
+
+/* Un fatto con i suoi numeri accanto, non una pagella: il diario non da
+   voti, e chi legge sa cosa farsene del confronto. */
+.jm-pers-trend {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  margin-top: calc(14px * var(--jm-space));
+}
+
+.jm-pers-l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: calc(26px * var(--jm-space)) 0 calc(8px * var(--jm-space));
+}
+
+.jm-pers-days { border-top: 1px solid var(--color-line); }
+
+.jm-pers-day {
+  display: flex;
+  align-items: baseline;
+  gap: calc(12px * var(--jm-space));
+  width: 100%;
+  min-height: calc(52px * var(--jm-ui-scale));
+  padding: calc(10px * var(--jm-space)) 2px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-pers-day:hover {
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
+}
+
+.jm-pers-day .d {
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+}
+
+.jm-pers-day .x {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(14.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.4;
+}
+
+.jm-pers-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 calc(30px * var(--jm-space)) calc(60px * var(--jm-space));
+}
+
+.jm-pers-empty-h {
+  font-family: var(--font-serif);
+  font-size: calc(24px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+
+.jm-pers-empty-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-top: calc(12px * var(--jm-space));
+  max-width: 280px;
+}

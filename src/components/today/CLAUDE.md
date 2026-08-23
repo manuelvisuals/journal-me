@@ -33,4 +33,4 @@ che lo montano: `src/app/page.tsx` e `src/app/giorno/`.
 - Persone e luoghi di una giornata passano TUTTI da `src/lib/use-day-lists.ts`:
   prima i soprannomi, poi le cose tolte con la X. Non leggere `entry.people`
   direttamente in una schermata nuova, o la X non varrebbe li.
-- NON toccare: gli altri moduli, `globals.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).

@@ -1,0 +1,1637 @@
+/* =============================================================
+   Modulo OGGI: la giornata (editor, overlay di registrazione,
+   giornata raccontata, metriche, obiettivi, /giorno).
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+.jm-ptt-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 120ms,
+    color 120ms,
+    border-color 120ms;
+}
+
+.jm-ptt-action:active:not(:disabled) {
+  transform: scale(var(--jm-press));
+}
+
+.jm-ptt-cancel {
+  background: transparent;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+}
+
+.jm-ptt-cancel:active:not(:disabled) {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 35%, transparent);
+}
+
+.jm-ptt-save {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  font-weight: 650;
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 30%, transparent),
+    0 10px 22px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+}
+
+.jm-ptt-save:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: var(--color-surface);
+  color: var(--color-ink-faint);
+}
+
+/* =============================================================
+   Recap view
+   ============================================================= */
+
+.jm-rec-head {
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(14px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-rec-h {
+  font-size: calc(24px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  margin-bottom: calc(14px * var(--jm-space));
+}
+
+.jm-rec-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(16px * var(--jm-space)) 0;
+}
+
+.jm-rec-card {
+  display: block;
+  width: calc(100% - 48px);
+  margin: 0 24px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  padding: calc(18px * var(--jm-space)) calc(18px * var(--jm-space)) calc(16px * var(--jm-space));
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 120ms, background-color 120ms;
+}
+
+.jm-rec-card:hover {
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+
+.jm-rec-card .when {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  margin-bottom: calc(6px * var(--jm-space));
+}
+
+.jm-rec-card .t {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-ink);
+  margin-bottom: calc(8px * var(--jm-space));
+  letter-spacing: -0.005em;
+}
+
+.jm-rec-card .s {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
+
+.jm-rec-suggest {
+  margin: 0 24px 16px;
+  background: color-mix(in oklab, var(--color-accent) 5%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 25%, transparent);
+  border-radius: 16px;
+  padding: calc(22px * var(--jm-space)) calc(20px * var(--jm-space));
+  text-align: center;
+}
+
+.jm-rec-suggest .title {
+  font-family: var(--font-serif);
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  margin-bottom: calc(8px * var(--jm-space));
+}
+
+.jm-rec-suggest .hint {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  margin-bottom: calc(16px * var(--jm-space));
+  padding: 0 calc(6px * var(--jm-space));
+}
+
+.jm-rec-suggest .err {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-danger);
+  margin-bottom: calc(12px * var(--jm-space));
+}
+
+.jm-rec-empty {
+  padding: calc(60px * var(--jm-space)) calc(32px * var(--jm-space));
+  text-align: center;
+}
+
+.jm-rec-empty .em-h {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-ink);
+  margin-bottom: calc(6px * var(--jm-space));
+}
+
+.jm-rec-empty .em-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+}
+
+/* Metric cards (editable in filled view) */
+.jm-metric {
+  flex: 1;
+  text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: calc(10px * var(--jm-space)) calc(6px * var(--jm-space));
+  cursor: pointer;
+  transition: border-color 120ms, background-color 120ms;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 8px 16px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-metric:hover {
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+
+.jm-metric.editing {
+  background: var(--color-surface-2);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-glow) 20%, transparent),
+    0 0 18px color-mix(in oklab, var(--color-glow) 15%, transparent);
+  cursor: default;
+}
+
+.jm-metric-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  color: var(--color-accent-hi);
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 600;
+  text-align: center;
+  width: 60px;
+}
+
+.jm-stepper {
+  display: flex;
+  gap: calc(6px * var(--jm-space));
+  justify-content: center;
+  margin-top: calc(6px * var(--jm-space));
+}
+
+.jm-stepper button {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: calc(12px * var(--jm-ui-scale));
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-stepper button:hover {
+  background: color-mix(in oklab, var(--color-accent) 18%, transparent);
+}
+
+.jm-sleep-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(4px * var(--jm-space));
+  font-family: var(--font-sans);
+}
+
+.jm-sleep-inputs input {
+  width: 28px;
+  background: transparent;
+  border: none;
+  outline: none;
+  text-align: center;
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent-hi);
+  padding: 0;
+}
+
+.jm-sleep-inputs .sep {
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin: 0 2px;
+}
+
+.jm-mood-picker {
+  display: flex;
+  gap: calc(4px * var(--jm-space));
+  justify-content: center;
+  margin-top: calc(2px * var(--jm-space));
+}
+
+.jm-mood-picker .opt {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--jm-radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(18px * var(--jm-ui-scale));
+  opacity: 0.45;
+  transition: opacity 100ms, transform 100ms, background-color 100ms;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-mood-picker .opt:hover {
+  opacity: 0.85;
+}
+
+.jm-mood-picker .opt.on {
+  opacity: 1;
+  transform: scale(1.15);
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+}
+
+/* Gli obiettivi del giorno, sul telefono (mockup obiettivi-mobile.html §A,
+   approvato il 21 agosto 2026). Sostituiscono i pallini da 14px: erano
+   sotto la misura del polpastrello (44px) e, soprattutto, non dicevano di
+   quale obiettivo si trattasse. Vedi src/components/today/goal-list.tsx.
+
+   Righe separate da una linea sottile e nessun riquadro attorno: cinque
+   obiettivi dentro cinque scatole peserebbero piu del diario, che e la
+   cosa per cui si e qui. */
+.jm-goals {
+  padding: calc(20px * var(--jm-space)) 0 calc(4px * var(--jm-space));
+}
+
+.jm-goals-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: calc(8px * var(--jm-space));
+}
+
+.jm-goals-head .l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.jm-goals-head .c {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-goals-list {
+  border-top: 1px solid var(--color-line);
+}
+
+/* Il bersaglio e TUTTA la riga, non la casella: 52px di altezza per la
+   scala 1, e si alza con il testo quando l'utente ingrandisce (la riga
+   deve restare piu alta di cio che contiene, o il nome tocca i bordi). */
+.jm-goal-row {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  width: 100%;
+  min-height: calc(52px * var(--jm-ui-scale));
+  padding: calc(8px * var(--jm-space)) 2px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-goal-row:hover {
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
+}
+
+.jm-goal-box {
+  width: calc(22px * var(--jm-ui-scale));
+  height: calc(22px * var(--jm-ui-scale));
+  flex: 0 0 calc(22px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-sm);
+  border: 1.5px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 120ms, border-color 120ms;
+}
+
+.jm-goal-box svg {
+  width: calc(13px * var(--jm-ui-scale));
+  height: calc(13px * var(--jm-ui-scale));
+  stroke: var(--color-on-accent);
+  stroke-width: 2.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+
+.jm-goal-row.on .jm-goal-box {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.jm-goal-row.on .jm-goal-box svg { opacity: 1; }
+
+.jm-goal-lab {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(15.5px * var(--jm-ui-scale));
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-ink-muted);
+}
+
+.jm-goal-row.on .jm-goal-lab { color: var(--color-ink); }
+
+/* Date chip used in the recording overlay header */
+.jm-date-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: calc(7px * var(--jm-space)) calc(14px * var(--jm-space)) calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  font-family: var(--font-sans);
+}
+
+.jm-date-chip:active {
+  background: var(--color-surface-2);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+
+.jm-date-chip .icn {
+  width: 14px;
+  height: 14px;
+  color: var(--color-accent);
+}
+
+.jm-date-chip .v {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.jm-date-chip .chev {
+  font-size: calc(9px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-left: 2px;
+}
+
+/* Date picker popover (inside recording overlay) */
+.jm-date-pop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(8px);
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(90px * var(--jm-space));
+}
+
+.jm-date-pop-card {
+  width: min(320px, calc(100vw - 32px));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(10px * var(--jm-space));
+  box-shadow: 0 24px 48px color-mix(in oklab, var(--color-shadow) 60%, transparent);
+}
+
+.jm-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(12px * var(--jm-space)) calc(14px * var(--jm-space));
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-date-row:hover {
+  background: var(--color-surface-2);
+}
+
+.jm-date-row.selected {
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+}
+
+.jm-date-row .pr-label {
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.jm-date-row.selected .pr-label {
+  color: var(--color-accent-hi);
+  font-weight: 600;
+}
+
+.jm-date-row .pr-meta {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-date-row.dim .pr-label {
+  color: var(--color-ink-muted);
+}
+
+.jm-date-divider {
+  height: 1px;
+  background: var(--color-line);
+  margin: 6px 14px;
+}
+
+.jm-date-row.other .pr-label {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Transcript editor modal */
+.jm-editor-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, var(--color-bg) 85%, transparent);
+  backdrop-filter: blur(8px);
+  z-index: 70;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.jm-editor-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--color-bg-phone);
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+
+.jm-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(18px * var(--jm-space)) calc(20px * var(--jm-space)) calc(12px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-editor-title {
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+
+.jm-editor-actions {
+  display: flex;
+  gap: calc(8px * var(--jm-space));
+}
+
+.jm-editor-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  padding: calc(8px * var(--jm-space)) calc(12px * var(--jm-space));
+  border-radius: var(--jm-radius-sm);
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-editor-btn.cancel {
+  color: var(--color-ink-muted);
+}
+
+.jm-editor-btn.save {
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}
+
+.jm-editor-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.jm-editor-textarea {
+  flex: 1;
+  background: transparent;
+  color: var(--color-ink);
+  border: none;
+  outline: none;
+  resize: none;
+  padding: calc(18px * var(--jm-space)) calc(20px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(16px * var(--jm-ui-scale));
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  width: 100%;
+}
+
+.jm-editor-hint {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: calc(8px * var(--jm-space)) calc(20px * var(--jm-space)) calc(14px * var(--jm-space));
+  border-top: 1px solid var(--color-line);
+  text-align: center;
+}
+
+.jm-editor-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12px * var(--jm-space));
+  padding: calc(8px * var(--jm-space)) calc(20px * var(--jm-space)) calc(14px * var(--jm-space));
+  border-top: 1px solid var(--color-line);
+}
+
+.jm-editor-btn.danger {
+  color: var(--color-danger);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 30%, transparent);
+  background: transparent;
+  padding: calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
+}
+
+.jm-editor-btn.danger:hover {
+  background: color-mix(in oklab, var(--color-danger) 8%, transparent);
+  border-color: color-mix(in oklab, var(--color-danger) 55%, transparent);
+}
+
+.jm-editor-hint-inline {
+  font-size: calc(10px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* Re-record button shown in the filled-view header (sized for touch) */
+.jm-rerecord-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  color: var(--color-accent);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 30%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 6px 14px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+
+.jm-rerecord-btn:active {
+  transform: scale(0.94);
+  background: var(--color-surface-2);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+
+/* Spinner used during AI processing of a recorded entry */
+.jm-spinner {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
+  border-top-color: var(--color-accent);
+  animation: jm-spin 0.9s linear infinite;
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 20%, transparent);
+}
+
+/* =============================================================
+   Night build: manual write link, people pills, skeletons,
+   connecting pulse. (jm- prefixed to avoid collisions.)
+   ============================================================= */
+
+/* "Preferisco scrivere a mano" link under the big mic */
+.jm-write-link {
+  margin-top: calc(30px * var(--jm-space));
+  background: none;
+  border: none;
+  color: var(--color-ink-faint);
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklab, var(--color-ink) 22%, transparent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: color 120ms ease;
+}
+
+.jm-write-link:hover,
+.jm-write-link:active {
+  color: var(--color-ink-muted);
+}
+
+/* People pills (Social section + people-review). Same family as the
+   glossary tag, with a person/known/new variant set. */
+.jm-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(8px * var(--jm-space));
+}
+
+.jm-person-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(7px * var(--jm-space));
+  padding: calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  letter-spacing: -0.005em;
+}
+
+.jm-person-pill.is-known {
+  opacity: 0.85;
+}
+
+.jm-person-pill.is-new {
+  padding-right: calc(8px * var(--jm-space));
+  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+  background: color-mix(in oklab, var(--color-accent) 8%, transparent);
+}
+
+.jm-person-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  flex: none;
+}
+
+.jm-person-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 500;
+  min-width: 36px;
+  padding: 0;
+}
+
+.jm-person-pill .x {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
+  color: var(--color-ink-faint);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(12px * var(--jm-ui-scale));
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  flex: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-person-pill .x:hover {
+  background: color-mix(in oklab, var(--color-danger) 16%, transparent);
+  color: var(--color-danger);
+}
+
+/* Section labels in the people-review screen */
+.jm-pr-label {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 700;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: calc(10px * var(--jm-space));
+}
+
+.jm-pr-label.accent {
+  color: var(--color-accent);
+}
+
+.jm-add-person {
+  margin-top: calc(14px * var(--jm-space));
+  padding: calc(10px * var(--jm-space)) calc(16px * var(--jm-space));
+  border-radius: var(--jm-radius-pill);
+  border: 1px dashed color-mix(in oklab, var(--color-ink) 18%, transparent);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: background-color 100ms ease, transform 80ms ease;
+}
+
+.jm-add-person:active {
+  transform: scale(var(--jm-press));
+  background: var(--color-surface);
+}
+
+/* ---------------------------------------------------------------------------
+   Registrazione v4 — il fondo schermata.
+
+   Prima: un cestino quadrato da 56px accanto a una barra larga tutto il resto.
+   Non era una composizione, era un avanzo — e soprattutto metteva sulla stessa
+   riga due azioni di peso opposto, salvare il racconto e buttarlo via, sotto
+   lo stesso pollice. Ora in fondo c'e una cosa sola; annullare e scrivere a
+   mano diventano due parole gemelle, bilanciate fra loro.
+--------------------------------------------------------------------------- */
+.jm-ptt-save-idle {
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--color-accent) 40%, transparent);
+  color: var(--color-accent);
+}
+
+.jm-ptt-save-idle:disabled {
+  opacity: 0.45;
+}
+
+.jm-rec-quiet {
+  background: transparent;
+  border: none;
+  padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: color 140ms ease;
+}
+
+.jm-rec-quiet:active {
+  color: var(--color-ink-muted);
+}
+
+.jm-rec-sep {
+  color: var(--color-ink-faint);
+  opacity: 0.3;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+}
+
+/* --- metriche della rail: una riga per voce, editor sotto (rail-metrics.tsx) --- */
+.jm-rm-block {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-rm-block:last-child {
+  border-bottom: none;
+}
+
+.jm-rm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: calc(100% + 20px);
+  min-height: 52px;
+  padding: 8px 10px;
+  margin: 0 -10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--jm-radius-md);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
+}
+
+.jm-rm-row:hover {
+  background: var(--color-surface);
+}
+
+.jm-rm-k {
+  display: block;
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+.jm-rm-v {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.jm-rm-v small {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-left: 3px;
+  font-weight: 400;
+}
+
+.jm-rm-v.empty {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(15px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-rm-face {
+  font-size: calc(20px * var(--jm-ui-scale));
+}
+
+.jm-rm-edit {
+  padding: 2px 0 14px;
+}
+
+.jm-rm-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jm-rm-stepper input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-sm);
+  padding: 11px 10px;
+  font-family: var(--font-sans);
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+.jm-rm-stepper input:focus {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+
+.jm-rm-stepper input::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.jm-rm-stepper button {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-rm-stepper button:hover {
+  background: var(--color-surface-2);
+}
+
+.jm-rm-stepper .jm-rm-ok {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 14px;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
+}
+
+.jm-rm-sep {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-rm-moods {
+  display: flex;
+  gap: 6px;
+}
+
+.jm-rm-moods button {
+  flex: 1;
+  height: 44px;
+  min-width: 0;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: calc(22px * var(--jm-ui-scale));
+  line-height: 1;
+  opacity: 0.4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 120ms, background-color 120ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-rm-moods button:hover {
+  opacity: 0.8;
+}
+
+.jm-rm-moods button.on {
+  opacity: 1;
+  background: var(--color-surface-2);
+  border-color: var(--color-line);
+}
+
+/* =============================================================
+   Editor desktop + modalita focus (PR 7, SPEC-v2 §5.3/§5.5/§6,
+   mockup desktop-v1 §01/§02). Sotto lg NIENTE esiste: classi
+   spente di default, accese solo nel blocco lg. Tipografia
+   conforme al brandbook cap. 03 (Body 17): la deroga Spectral
+   nell'editor e stata proposta e rifiutata (19 ago 2026).
+   ============================================================= */
+.jm-ed-wrap,
+.jm-ed-meta,
+.jm-focus-btn,
+.jm-focus-note {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .jm-ed-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  .jm-ed-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 34px 28px 0;
+    cursor: text;
+  }
+  .jm-ed-ta {
+    display: block;
+    width: 100%;
+    min-height: 55vh;
+    background: transparent;
+    border: none;
+    resize: none;
+    font-family: var(--font-sans);
+    font-size: calc(17px * var(--jm-ui-scale));
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--color-ink);
+    caret-color: var(--color-accent);
+    field-sizing: content;
+    padding: 0 0 40px;
+  }
+  /* Dentro l'editor il fuoco lo racconta il caret ambra: niente anello. */
+  .jm-ed-ta:focus,
+  .jm-ed-ta:focus-visible {
+    outline: none;
+  }
+  .jm-ed-ta::placeholder {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-ink-faint);
+  }
+  .jm-ed-notice {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: calc(13px * var(--jm-ui-scale));
+    color: var(--color-accent);
+    margin-bottom: 14px;
+  }
+  .jm-ed-foot {
+    flex: 0 0 74px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid var(--color-line);
+    padding: 0 28px;
+  }
+  .jm-ed-hint {
+    font-size: calc(12px * var(--jm-ui-scale));
+    color: var(--color-ink-faint);
+    letter-spacing: 0.01em;
+  }
+  .jm-ed-acts {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .jm-ed-acts .btn-primary,
+  .jm-ed-acts .btn-ghost {
+    width: auto;
+    padding: 13px 18px;
+    font-size: calc(14px * var(--jm-ui-scale));
+  }
+  .jm-ed-acts .btn-ghost {
+    font-size: calc(12px * var(--jm-ui-scale));
+  }
+  .jm-ed-k {
+    font-size: calc(10.5px * var(--jm-ui-scale));
+    font-weight: 600;
+    opacity: 0.65;
+    margin-left: 6px;
+  }
+  .jm-ed-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: calc(11.5px * var(--jm-ui-scale));
+    color: var(--color-ink-faint);
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .jm-focus-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--color-line);
+    background: transparent;
+    color: var(--color-ink-faint);
+    cursor: pointer;
+    transition: color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Hover a un passo (brandbook cap. 20): faint -> muted, mai oltre. */
+  .jm-focus-btn:hover {
+    color: var(--color-ink-muted);
+    border-color: color-mix(in oklab, var(--color-accent) 25%, transparent);
+  }
+  .jm-focus-note {
+    display: block;
+    position: fixed;
+    top: 22px;
+    right: 26px;
+    font-size: calc(11px * var(--jm-ui-scale));
+    color: var(--color-ink-faint);
+    letter-spacing: 0.02em;
+    z-index: 40;
+  }
+
+  /* Modalita focus (§5.5): via le rail, l'header e il footer azioni.
+     L'attributo vive su <html>; sotto lg queste regole non esistono. */
+  [data-focus="1"] .jm-rail-l,
+  [data-focus="1"] .jm-rail-r,
+  [data-focus="1"] .jm-col-head,
+  [data-focus="1"] .jm-ed-foot {
+    display: none;
+  }
+  [data-focus="1"] .jm-ed-scroll {
+    padding-top: 74px;
+  }
+}
+
+/* =============================================================
+   Giornata raccontata (FilledView). Sotto lg: gli STESSI valori
+   che erano inline (nessun cambiamento sul telefono). Da lg: il
+   mockup desktop-v1 §03 — headline piu grande, snippet serif
+   corsivo, aree macro su due colonne a card.
+   ============================================================= */
+.jm-fv-h {
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  margin: 4px 0 10px;
+}
+
+.jm-fv-h.placeholder {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: normal;
+  color: var(--color-ink-faint);
+  font-style: italic;
+}
+
+/* Il titolo si puo riscrivere a mano. La matita compare accanto finche il
+   titolo e dell'AI; appena e tuo, al suo posto resta la targhetta. La
+   targhetta NON e un bottone: da qui non si torna indietro (vedi
+   headline-editable.tsx). */
+.jm-fv-hbox {
+  position: relative;
+}
+
+.jm-fv-htap {
+  cursor: text;
+  border-radius: 10px;
+  /* Il titolo resta dov'era: il riquadro dell'editor cade esattamente sopra
+     grazie ai margini negativi speculari. */
+  padding: 0;
+}
+
+.jm-fv-htap:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.jm-fv-htap.saving {
+  opacity: 0.5;
+}
+
+.jm-fv-hpen {
+  width: calc(15px * var(--jm-ui-scale));
+  height: calc(15px * var(--jm-ui-scale));
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Sul telefono non esiste il passaggio del mouse: la matita si vede sempre,
+   se no il titolo sembra non toccabile. */
+@media (hover: none) {
+  .jm-fv-hpen {
+    opacity: 0.65;
+  }
+}
+
+.jm-fv-htap:hover .jm-fv-hpen,
+.jm-fv-htap:focus-visible .jm-fv-hpen {
+  opacity: 1;
+}
+
+.jm-fv-tuo {
+  display: inline-flex;
+  align-items: center;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px 9px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.jm-fv-hedit {
+  display: block;
+  width: calc(100% + 20px);
+  resize: none;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: -4px -10px 4px;
+  font-family: inherit;
+}
+
+.jm-fv-hedit:focus {
+  outline: none;
+}
+
+.jm-fv-hhint {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+/* I luoghi, accanto alle persone: stessa pastiglia, con lo spillo davanti
+   perche a colpo d'occhio si distingua un posto da una persona. */
+.jm-railr-chip .jm-pin,
+.jm-person-pill .jm-pin {
+  width: calc(11px * var(--jm-ui-scale));
+  height: calc(11px * var(--jm-ui-scale));
+  /* Non si schiaccia quando il nome del posto e lungo. */
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm-fv-sn {
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 400;
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.jm-fv-sep {
+  height: 1px;
+  background: var(--color-line);
+  margin: 4px 0;
+}
+
+.jm-fv-area {
+  padding: 14px 0;
+}
+
+.jm-fv-area .l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.jm-fv-area .x {
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  line-height: 1.55;
+}
+
+.jm-fv-noareas {
+  padding: 20px 0;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  font-style: italic;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 1024px) {
+  .jm-fv-h {
+    font-size: calc(27px * var(--jm-ui-scale));
+    letter-spacing: -0.018em;
+    line-height: 1.22;
+    margin: 4px 0 14px;
+  }
+  .jm-fv-sn {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: calc(17px * var(--jm-ui-scale));
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+  .jm-fv-sep {
+    display: none;
+  }
+  .jm-fv-areas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .jm-fv-area {
+    padding: 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--jm-radius-md);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  }
+  .jm-fv-area .l {
+    font-size: calc(11px * var(--jm-ui-scale));
+    margin-bottom: 9px;
+  }
+  .jm-fv-area .x {
+    font-size: calc(13.5px * var(--jm-ui-scale));
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    line-height: 1.62;
+  }
+}
+
+/* --- giornata gratis: sub, prosa, nudge --- */
+.jm-fv-sub {
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.01em;
+  margin: -4px 0 22px;
+}
+
+.jm-fv-prose p {
+  font-family: var(--font-serif);
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-bottom: 1em;
+}
+
+.jm-fv-nudge {
+  margin-top: 22px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: color-mix(in oklab, var(--color-surface) 70%, transparent);
+}
+
+.jm-fv-nudge .t {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
+
+.jm-fv-nudge .t b {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.jm-fv-nudge .btn-ghost {
+  width: auto;
+  padding: 10px 16px;
+  font-size: calc(12px * var(--jm-ui-scale));
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* =============================================================
+   Larghezze desktop (regola di Manuel, ribadita il 20 ago sulla
+   schermata di scrittura): l'unica cosa FISSA sono i margini
+   interni, il resto si allarga con lo schermo. Niente piu
+   colonna di 680px centrata che lasciava 700px vuoti a destra su
+   un monitor largo. Il margine e uno solo per tutta la colonna
+   centrale — header, testo e footer partono dalla stessa
+   verticale — e vale a partire dal bordo della rail.
+   ============================================================= */
+
+/* Il margine unico della colonna centrale. Sul telefono resta 24px
+   come e sempre stato; da lg passa a 28px, il valore del mockup
+   desktop-v1 gia usato da .jm-ed-scroll e .jm-ed-foot. Vive qui e
+   non in uno style inline perche l'inline non si puo scavalcare
+   con una media query. */
+.jm-col-head {
+  padding: calc(26px + env(safe-area-inset-top, 0px)) 24px 6px;
+}
+
+.jm-fv-wrap {
+  padding: 0 24px;
+}
+
+@media (min-width: 1024px) {
+  .jm-col-head,
+  .jm-fv-wrap {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  /* Prosa della giornata gratis e sintesi serif: qui la riga di
+     lettura resta, perche e testo che si LEGGE e non si scrive. */
+  .jm-fv-prose,
+  .jm-fv-sn {
+    max-width: 700px;
+  }
+}
+
+/* =============================================================
+   LA GIORNATA: AGGIUNGERE QUALCOSA
+   (mockup design/mockups/testo-e-giorno.html §03/§04)
+
+   Il tasto sta in fondo al racconto e non nell'intestazione: lassu ci sono
+   gia indietro, "originale" ed elimina, e un quarto bersaglio sarebbe
+   stretto e appiccicato al cestino. Tratteggiato perche e un invito, non
+   l'azione principale della schermata — quella e leggere.
+   ============================================================= */
+/* Il tasto per aggiungere qualcosa alla giornata (mockup
+   design/mockups/tasto-aggiungi.html §C, approvato il 22 agosto 2026).
+
+   Com'era: bordo tratteggiato e sei pixel d'aria sopra. Due difetti in uno.
+   Il tratteggiato, ovunque nel mondo, vuol dire "campo da riempire": il
+   tasto sembrava un segnaposto rimasto li. E sei pixel non sono spazio,
+   sono un errore di stampa - stava appiccicato all'ultima area.
+
+   Com'e: la stessa forma delle aree - stesso fondo, stesso bordo, stesso
+   raggio - ma vuota, con il piu al centro. Si legge come LA CASELLA CHE
+   MANCA, e non ha bisogno di spiegazioni. Sopra, trenta pixel di respiro:
+   la giornata finisce, e poi c'e questo. */
+.jm-day-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: calc(64px * var(--jm-ui-scale));
+  margin: calc(30px * var(--jm-space)) 0 calc(24px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  /* --jm-radius-md e non lg: e lo stesso raggio delle schede delle aree
+     (.jm-fv-area da lg in su). Su desktop il tasto deve essere
+     indistinguibile da loro nella forma, o l'idea della "casella che manca"
+     non funziona. */
+  border-radius: var(--jm-radius-md);
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: calc(14.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background-color 140ms, color 140ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Il foglio delle scelte */
+.jm-sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.jm-sheet {
+  background: var(--color-bg-phone);
+  border-top: 1px solid var(--color-line);
+  border-radius: 20px 20px 0 0;
+  padding: 10px 16px calc(30px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -18px 40px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.jm-sheet-grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-line);
+  margin: 0 auto 14px;
+}
+
+.jm-sheet-head {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  padding: 0 6px 10px;
+}
+
+.jm-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 6px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-sheet-row:last-child { border-bottom: none; }
+
+.jm-sheet-row:hover { background: var(--color-surface); }
+
+.jm-sheet-ic {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jm-sheet-ic svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-ink-muted);
+  fill: none;
+}
+
+.jm-sheet-txt { flex: 1; min-width: 0; }
+
+.jm-sheet-t {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.jm-sheet-d {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* La pill diventa un bottone: stesso disegno, piu il fatto che si prema. */
+.jm-person-pill.link {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.jm-person-pill.link:hover {
+  background: var(--color-surface-2);
+}

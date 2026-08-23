@@ -7,7 +7,6 @@ Il primo "modulo utente" accendibile da Impostazioni > Moduli (mockup
 design/mockups/palestra.html). L'interruttore e l'ordine vivono in
 `src/lib/modules.ts` (scheletro: si tocca in accordo con Manuel).
 
-- Prefisso CSS: `jm-gym` (oggi `jm-mod-*` per lo stato "presto"). CSS nuovo da branch:
-  in `src/app/features.css`.
+- Prefisso CSS: `jm-gym` (oggi `jm-mod-*` per lo stato "presto"). Il CSS del modulo vive in `src/styles/palestra.css` (passo B, 23 ago).
 - Banchi prima del push: `verify-persona-moduli` (piu tsc, eslint, verify-i18n).
-- NON toccare: gli altri moduli, `globals.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).
