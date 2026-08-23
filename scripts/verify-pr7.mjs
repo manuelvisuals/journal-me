@@ -1,6 +1,7 @@
 // Verifica PR 7 (editor desktop, bozze, focus mode) — modalita locale.
 // Uso: node scripts/verify-pr7.mjs
 import { chromium } from "playwright-core";
+import { scalaUi, eAllaScala, spiega } from "./lib/misure.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = "http://localhost:3100";
@@ -75,10 +76,16 @@ const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "
     const s = getComputedStyle(el);
     return { size: s.fontSize, weight: s.fontWeight, lh: s.lineHeight, caret: s.caretColor, family: s.fontFamily };
   });
+  // 17px E' LA MISURA A SCALA 1, non un numero assoluto: se l'utente (o il
+  // default dell'app) ingrandisce l'interfaccia, l'editor deve crescere con
+  // lei. Vedi scripts/lib/misure.mjs.
+  const scalaDesktop = await scalaUi(page);
   check(
-    "desktop: tipografia Inter 17/400 (conforme, no Spectral)",
-    taStyle.size === "17px" && taStyle.weight === "400" && !/Spectral/i.test(taStyle.family),
-    JSON.stringify(taStyle),
+    "desktop: tipografia Inter 17/400 alla misura corrente (conforme, no Spectral)",
+    eAllaScala(taStyle.size, 17, scalaDesktop) &&
+      taStyle.weight === "400" &&
+      !/Spectral/i.test(taStyle.family),
+    spiega(taStyle.size, 17, scalaDesktop) + " . " + JSON.stringify(taStyle),
   );
   check("desktop: EmptyState mobile assente", (await page.locator("text=Racconta la tua giornata").count()) === 0);
   check("desktop: rail destra Obiettivi", await page.locator(".jm-railr-l", { hasText: "Obiettivi" }).isVisible());
