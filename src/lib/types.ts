@@ -45,6 +45,12 @@ export type Entry = {
   goals: GoalDot[];
   /** Names of people related to this day (Social section). */
   people: string[];
+  /**
+   * Il titolo l'ha scritto l'utente: nessuna rielaborazione AI lo tocca.
+   * Deciso il 22 agosto 2026, e senza strada indietro dall'app: se lo
+   * scrivi, e tuo.
+   */
+  headlineLocked?: boolean;
   /** ISO timestamp of when the entry was saved. */
   createdAt: string;
 };
@@ -87,3 +93,35 @@ export type Remember = {
   sourceEntryId: string | null;
   createdAt: string;
 };
+
+/**
+ * Un FATTO: un giorno, un tipo, un'etichetta (SPEC-fatti.md §3).
+ *
+ * "Pizza", "panca piana" e "Christian" sono la stessa struttura con `kind`
+ * diverso. E cio che permette di rispondere a "quante volte ho mangiato la
+ * pizza a maggio" senza aggiungere una tabella per argomento.
+ */
+export type FactKind = "cibo" | "attivita" | "persona" | "lavoro" | "luogo";
+
+export type Fact = {
+  id: string;
+  /** YYYY-MM-DD */
+  entryDate: string;
+  kind: FactKind;
+  /** Come l'hai detto tu: "una margherita da Gino". Si mostra questa. */
+  label: string;
+  /** La forma con cui si conta: "pizza". Vedi SPEC-fatti §3.3. */
+  labelKey: string;
+  /** Quello che e stato detto e nient'altro: minuti, serie, pasto. */
+  attrs: Record<string, unknown>;
+  /** 0..1. Sotto soglia il fatto chiede conferma invece di contare zitto. */
+  confidence: number | null;
+  /**
+   * 'manual' e cio che hai scritto tu. Una rilettura del testo rifa i fatti
+   * 'ai' del giorno e non tocca mai i 'manual'.
+   */
+  origin: "ai" | "manual";
+};
+
+/** Un fatto appena letto dal testo, prima di avere un id. */
+export type NewFact = Omit<Fact, "id" | "entryDate">;

@@ -119,11 +119,15 @@ const geometry = (page) =>
   const g = await geometry(page);
   check("scegliere si applica subito, senza salvare", g.cssScale === "1.3", g.cssScale);
   check("niente zoom: solo il testo cambia", g.zoom === "");
+  // La soglia e legata al passo di PARTENZA: si misura da li fino a 1,3.
+  // Con il default a 1 il salto era +30%, con il default a 1,15 (22 agosto
+  // 2026) e +13%. Il controllo verifica che l'anteprima cresca davvero,
+  // non di quanto: il "quanto" lo decide una costante di prodotto.
   check(
     "l'anteprima cresce insieme all'app",
     (await page
       .locator(".jm-st-prev-h")
-      .evaluate((e) => e.getBoundingClientRect().height)) > primaAltezza * 1.2,
+      .evaluate((e) => e.getBoundingClientRect().height)) > primaAltezza * 1.08,
   );
 
   check("niente sbordamento laterale", g.scrollW <= g.clientW + 1, `${g.scrollW}/${g.clientW}`);
@@ -159,11 +163,13 @@ for (const [w, h, etichetta] of [[430, 932, "telefono"], [1440, 900, "desktop"]]
     await ctx.close();
     return { ...g, tab };
   };
-  const uno = await misura(null);
+  // Si confrontano i due ESTREMI e non "il default contro il massimo": cosi
+  // il controllo non si rompe ogni volta che il passo di partenza cambia.
+  const uno = await misura("0.9");
   const max = await misura("1.5");
 
   check(
-    `${etichetta}: a Massimo il testo e davvero piu grande`,
+    `${etichetta}: da "Molto piccolo" a "Molto grande" il testo cresce davvero`,
     max.fontTesto > uno.fontTesto * 1.4,
     `${uno.fontTesto}px -> ${max.fontTesto}px`,
   );

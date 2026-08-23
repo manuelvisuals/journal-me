@@ -12,8 +12,10 @@
  * 31px appena si apriva l'editor del mood. Vedi rail-metrics.tsx.
  */
 
+import { useRouter } from "next/navigation";
 import { RailMetrics } from "@/components/today/rail-metrics";
 import { RailRight } from "@/components/desktop/rail-right";
+import { PlacePin } from "@/components/ui/place-pin";
 import { formatNumber } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import type { EntryMetrics, GoalDot } from "@/lib/types";
@@ -22,6 +24,8 @@ type Props = {
   metrics: EntryMetrics | null;
   goals: GoalDot[];
   people: string[];
+  /** I luoghi della giornata, sotto le persone (mockup titolo-riassunto-luoghi §03). */
+  places?: string[];
   onMetricChange: (patch: Partial<EntryMetrics>) => void;
   onGoalToggle: (label: string) => void;
 };
@@ -30,11 +34,14 @@ export function RailToday({
   metrics,
   goals,
   people,
+  places,
   onMetricChange,
   onGoalToggle,
 }: Props) {
   const t = useT();
+  const router = useRouter();
   const peopleList = people.filter((p) => p.trim().length > 0);
+  const placeList = (places ?? []).filter((p) => p.trim().length > 0);
   const done = goals.filter((g) => g.on).length;
 
   return (
@@ -79,8 +86,32 @@ export function RailToday({
           <div className="jm-railr-l">{t("Persone")}</div>
           <div className="jm-railr-chips">
             {peopleList.map((name) => (
-              <span key={name} className="jm-railr-chip">
+              <button
+                key={name}
+                type="button"
+                className="jm-railr-chip link"
+                onClick={() =>
+                  router.push(`/persona?nome=${encodeURIComponent(name)}`)
+                }
+              >
                 {name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* I luoghi non hanno ancora una scheda propria come le persone: per
+          ora sono pastiglie da leggere, non da cliccare. Il giorno che la
+          scheda esiste, diventano bottoni come sopra. */}
+      {placeList.length > 0 && (
+        <div className="jm-railr-sec jm-places">
+          <div className="jm-railr-l">{t("Luoghi")}</div>
+          <div className="jm-railr-chips">
+            {placeList.map((nome) => (
+              <span key={nome} className="jm-railr-chip">
+                <PlacePin />
+                {nome}
               </span>
             ))}
           </div>

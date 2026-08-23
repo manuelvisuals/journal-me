@@ -1,0 +1,407 @@
+/* Il foglio di stile delle FUNZIONI IN LAVORAZIONE IN PARALLELO.
+
+   Stessa ragione di src/lib/i18n/en-extra.ts: globals.css ha quasi
+   quattromila righe ed e il file piu toccato del progetto (11 commit sugli
+   ultimi 25). Due sessioni che ci scrivono insieme si scontrano a ogni
+   merge, e un conflitto risolto male in un foglio di stile non da errore:
+   da una schermata storta che nessuno nota subito.
+
+   Regola: chi lavora su un ramo parallelo scrive QUI, chi lavora su main
+   scrive in globals.css.
+
+   ATTENZIONE, corretto il 21 agosto sul ramo consumi-ai: questo file e
+   importato alla RIGA 6 di globals.css, cioe in CIMA e non in fondo come
+   diceva il commento qui sopra. Conseguenza pratica opposta a quella che
+   c'era scritta: a parita di specificita vince globals.css, non questo
+   file. Chi scrive qui usi classi sue (prefisso della funzione) e non
+   conti sull'ordine per sovrascrivere una regola di globals.
+
+   Quando la funzione e stabile, le sue regole si possono spostare nel
+   blocco che le compete dentro globals.css. */
+
+/* Verificato nel browser il 21 agosto 2026 che le regole scritte qui
+   arrivano davvero a schermo (sonda .jm-features-probe, poi rimossa). */
+
+/* ============================================================
+   CONSUMI AI  (ramo consumi-ai, mockup design/mockups/consumi-ai.html)
+   Il pannello dentro Impostazioni: totale del mese, le attivita con la
+   loro quota, la nota onesta. La riga della lista in Impostazioni riusa
+   .jm-st-row di globals.css: e una riga come le altre, non un caso
+   speciale, e deve restare identica alle vicine.
+   ============================================================ */
+
+.jm-cs {
+  padding-bottom: calc(24px * var(--jm-space));
+}
+
+/* Il mese. Nel mockup sta sotto il titolo dentro l'intestazione; qui
+   l'intestazione dei pannelli e condivisa (PanelHead, di globals) e
+   accetta solo un titolo, quindi la riga del mese apre il contenuto.
+   Stessa informazione, tre pixel piu in basso. */
+.jm-cs-sub {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-bottom: calc(18px * var(--jm-space));
+}
+
+.jm-cs-total {
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: calc(22px * var(--jm-space));
+}
+.jm-cs-total-v {
+  font-size: calc(52px * var(--jm-ui-scale));
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-cs-cur {
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 400;
+  color: var(--color-ink-faint);
+  margin-left: 4px;
+}
+.jm-cs-total-k {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-top: calc(10px * var(--jm-space));
+  line-height: 1.5;
+}
+
+.jm-cs-gl {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin: calc(28px * var(--jm-space)) 0 calc(4px * var(--jm-space)) 2px;
+}
+
+.jm-cs-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: calc(10px * var(--jm-space)) 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-cs-row:last-child { border-bottom: none; }
+.jm-cs-main { flex: 1; min-width: 0; }
+.jm-cs-t {
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+.jm-cs-d {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+}
+.jm-cs-v {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--color-ink);
+  flex: 0 0 auto;
+}
+.jm-cs-v small {
+  display: block;
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* La barra e l'unica cosa da cui si decide qualcosa: fa vedere in un colpo
+   d'occhio che l'audio si mangia il conto e il resto e polvere. */
+.jm-cs-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-surface-2);
+  margin-top: calc(9px * var(--jm-space));
+  overflow: hidden;
+}
+.jm-cs-bar i {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 999px;
+  min-width: 2px;
+}
+/* Sotto il 5% la barra e quasi invisibile comunque: smorzarla dice "questa
+   non conta" invece di far sembrare rotto un trattino di due pixel. */
+.jm-cs-bar.faint i { opacity: 0.35; }
+
+.jm-cs-note {
+  margin-top: calc(26px * var(--jm-space));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(16px * var(--jm-space)) 18px;
+  background: var(--color-surface);
+}
+.jm-cs-note-t {
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+.jm-cs-note-p {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+}
+.jm-cs-note-p code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  background: var(--color-surface-2);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Vuoto: dice PERCHE e vuoto. Zero e una risposta giusta, non un guasto. */
+.jm-cs-empty {
+  text-align: center;
+  padding: calc(50px * var(--jm-space)) 20px;
+}
+.jm-cs-empty-t {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 10px;
+}
+.jm-cs-empty-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.jm-cs-wait {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  padding: calc(30px * var(--jm-space)) 0;
+}
+
+/* Errore: si vede SCRITTO. Una schermata vuota dopo un 500 farebbe credere
+   di non aver speso niente. */
+.jm-cs-err {
+  border: 1px solid color-mix(in oklab, var(--color-danger) 35%, transparent);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(18px * var(--jm-space));
+  background: var(--color-surface);
+}
+.jm-cs-err-t {
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-danger);
+  margin-bottom: 8px;
+}
+.jm-cs-err-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+.jm-cs-err-d {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 10px;
+  word-break: break-word;
+}
+.jm-cs-retry {
+  margin-top: calc(14px * var(--jm-space));
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--jm-radius-lg);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+.jm-cs-retry:hover { background: var(--color-surface-2); }
+
+@media (min-width: 1024px) {
+  .jm-cs-total-v { font-size: calc(52px * var(--jm-ui-scale)); }
+}
+@media (max-width: 1023px) {
+  .jm-cs-total-v { font-size: calc(44px * var(--jm-ui-scale)); }
+}
+
+/* La riga "Consumi AI" nella rail destra del desktop. Su telefono la riga
+   sta nel gruppo Account insieme a Piano; su desktop quel gruppo non
+   esiste, perche l'identita e passata nella rail — e li che va messa.
+   Eredita .jm-st-rrow di globals.css per allineamento, bordo e misure:
+   qui resta solo cio che serve a farne un bottone. Nota che globals.css
+   viene DOPO questo file, quindi non provare a sovrascrivere .jm-st-rrow
+   da qui: si perde. */
+.jm-cs-rrow {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-cs-rrow:hover .v { color: var(--color-ink); }
+.jm-cs-rrow .v {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.jm-cs-chev {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   MESE, AVANTI E INDIETRO  (mockup design/mockups/mese-navigazione.html,
+   variante 03 approvata il 21 agosto)
+   Solo desktop: .jm-mese-wrap e display:none sotto lg, quindi qui non
+   serve nessuna media query. Le regole stanno in questo file e non in
+   globals.css per non scontrarsi con l'altra sessione.
+   ============================================================ */
+
+.jm-mese-hrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+/* Il titolo prende lo spazio che gli serve e non un pixel di piu: le
+   frecce vanno all'altro capo, non subito dopo la parola. */
+.jm-mese-navpair {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.jm-mese-nav {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-mese-nav svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-mese-nav:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+.jm-mese-nav:active:not(:disabled) {
+  transform: scale(0.97);
+}
+/* Spento, non nascosto. */
+.jm-mese-nav:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+/* ============================================================
+   IL SEGNO DI JOURNAL.ME  (src/components/brand/brand-mark.tsx)
+   Un file solo per tutto il sito: public/logo.png.
+   ============================================================ */
+
+.jm-logo {
+  /* In em, non in px: il segno segue il testo accanto a cui sta, quindi
+     una regola sola vale per la rail (serif 21px), la splash (sans 30px),
+     il login e lo sblocco (22px) — e segue anche "Dimensione del testo". */
+  height: 1.55em;
+  width: auto;
+  display: inline-block;
+  /* Il file ha un margine trasparente suo (circa il 15 per cento per lato):
+     l'allineamento e quindi ottico e misurato a schermo, non calcolato. */
+  vertical-align: -0.44em;
+  margin-right: 0.18em;
+  flex: 0 0 auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Sui temi scuri il marrone del segno sparisce sul fondo nero. Il file
+   resta UNO: e il CSS che lo schiarisce, e si puo fare anche su un PNG.
+   invert(1) da un segno chiaro ma di colore complementare (azzurro);
+   hue-rotate(180deg) subito dopo riporta la tinta nella famiglia calda di
+   partenza. Il risultato e un beige caldo, non il marrone originale: e il
+   prezzo di tenere un file solo, ed e stato guardato a schermo prima di
+   sceglierlo, non dedotto. */
+[data-mode="dark"] .jm-logo {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ============================================================
+   LE ICONE DELLE AREE  (src/components/aree/area-icon.tsx,
+   mockup design/mockups/icone-aree.html §01, approvato il 22 agosto)
+   Venti pixel accanto all'etichetta, dentro la riga che c'e gia: la
+   scheda non cresce di un pixel e l'ordine di lettura non cambia.
+   ============================================================ */
+
+/* La riga dell'etichetta diventa una fila. `display` non e dichiarato su
+   .jm-fv-area .l in globals.css, quindi qui non si scontra niente — e non
+   si puo contare sull'ordine dei file, perche features.css viene PRIMA. */
+.jm-fv-area .l {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+/* Il contenitore e alto UNA riga di testo e il disegno gli esce fuori senza
+   essere tagliato: cosi l'icona si vede grande quanto deve, ma la riga
+   dell'etichetta non si alza e la scheda resta alta identica a prima. Era
+   la promessa della collocazione scelta, e senza questo la scheda cresceva
+   di quattro pixel. */
+.jm-area-icw {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: 1em;
+  line-height: 0;
+}
+.jm-area-ic {
+  /* La misura NON e moltiplicata per --jm-ui-scale: l'etichetta accanto si,
+     e il disegno la segue da solo perche l'altezza e in em. */
+  width: 1.82em;
+  height: 1.82em;
+  margin-top: -0.41em;
+  margin-bottom: -0.41em;
+  /* Il tratto e grosso e nero pieno peserebbe piu della parola che
+     accompagna: un filo indietro e l'icona torna al suo posto. */
+  opacity: 0.85;
+  color: var(--color-ink);
+  /* La terracotta dei disegni originali: sta qui e non nel componente,
+     cosi si cambia senza toccare il codice. */
+  --jm-area-dot: #C96F4A;
+}

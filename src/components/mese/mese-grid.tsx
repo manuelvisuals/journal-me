@@ -32,6 +32,8 @@ type Props = {
   entries: Entry[];
   today: Today;
   onTitleClick: () => void;
+  /** Un mese avanti (+1) o indietro (-1). Vedi design/mockups/mese-navigazione.html. */
+  onStep: (delta: -1 | 1) => void;
   onDayClick: (iso: string) => void;
   /** Oggi senza giornata: si va a scriverla. */
   onWriteToday: () => void;
@@ -124,6 +126,7 @@ export function MeseGrid({
   entries,
   today,
   onTitleClick,
+  onStep,
   onDayClick,
   onWriteToday,
 }: Props) {
@@ -161,14 +164,47 @@ export function MeseGrid({
     <>
       <div className="jm-mese-wrap">
         <div className="jm-mese-head">
-          <button
-            type="button"
-            className="jm-mese-t"
-            onClick={onTitleClick}
-            aria-haspopup="dialog"
-          >
-            {formatMonthTitle(year, month)}
-          </button>
+          {/* Titolo a sinistra e frecce all'altro capo della riga: e la
+              variante 03 del mockup, scelta da Manuel il 21 agosto. Una
+              freccia PRIMA del titolo lo avrebbe spinto 48px a destra e il
+              mese non sarebbe piu stato incolonnato con il lunedi della
+              griglia. Il titolo resta un bottone e continua ad aprire il
+              salto rapido: le frecce fanno il gesto corto, lui quello lungo. */}
+          <div className="jm-mese-hrow">
+            <button
+              type="button"
+              className="jm-mese-t"
+              onClick={onTitleClick}
+              aria-haspopup="dialog"
+            >
+              {formatMonthTitle(year, month)}
+            </button>
+            <div className="jm-mese-navpair">
+              <button
+                type="button"
+                className="jm-mese-nav"
+                onClick={() => onStep(-1)}
+                aria-label={t("Mese precedente")}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              {/* Sul mese corrente resta al suo posto, spento: se sparisse,
+                  il titolo ballerebbe ogni volta che si torna a oggi. */}
+              <button
+                type="button"
+                className="jm-mese-nav"
+                onClick={() => onStep(1)}
+                disabled={isCurrent}
+                aria-label={t("Mese successivo")}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+          </div>
           <div className="jm-mese-s" suppressHydrationWarning>
             {t("{fatte} giornate raccontate su {totali} {periodo}", {
               fatte: formatNumber(done),

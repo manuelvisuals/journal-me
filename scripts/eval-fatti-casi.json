@@ -1,0 +1,128 @@
+{
+  "nota": "Prova dell'estrazione dei fatti (SPEC-fatti.md §11.1). Ogni caso e un racconto scritto a mano nello stile in cui si parla davvero: telegrafico, sgrammaticato, con le trappole dentro. 'attesi' e cio che DEVE uscire; 'vietati' e cio che non deve uscire per nessun motivo. La soglia per dire che funziona non e 'gira': e trovare quasi tutto senza inventare niente, perche un fatto inventato finisce nei conteggi e non si distingue da uno vero.",
+  "casi": [
+    {
+      "id": "colazione-semplice",
+      "testo": "colazione al bar con Marco, cappuccino e cornetto",
+      "attesi": [
+        { "kind": "cibo", "label_key": "cappuccino" },
+        { "kind": "cibo", "label_key": "cornetto" },
+        { "kind": "persona", "label_key": "marco" }
+      ]
+    },
+    {
+      "id": "proposito-non-e-fatto",
+      "testo": "giornata pigra, ho lavorato un po'. vorrei andare in palestra domani e mangiare piu sano",
+      "attesi": [{ "kind": "lavoro", "label_key": "lavoro" }],
+      "vietati": ["palestra"],
+      "perche": "Un proposito non e un fatto. Se 'vorrei andare in palestra' conta come allenamento, i conteggi diventano una lista di buone intenzioni."
+    },
+    {
+      "id": "ricordo-non-e-oggi",
+      "testo": "oggi a casa a leggere. mi e tornato in mente quando l'anno scorso sono andato a Roma con Giulia",
+      "attesi": [],
+      "vietati": ["roma", "giulia"],
+      "perche": "Un ricordo raccontato oggi non e successo oggi. Senza questa regola ogni giornata nostalgica popola il diario di fatti falsi."
+    },
+    {
+      "id": "palestra-serie",
+      "testo": "un'ora di palestra, panca 60 per 10, poi 65 per 8 e 65 per 6. quattro serie di trazioni",
+      "attesi": [
+        { "kind": "attivita", "label_key": "panca piana" },
+        { "kind": "attivita", "label_key": "trazioni" }
+      ]
+    },
+    {
+      "id": "palestra-altro-modo",
+      "testo": "in sala pesi ho fatto panca piana, tre serie da 60 chili",
+      "attesi": [{ "kind": "attivita", "label_key": "panca piana" }],
+      "stessa_chiave_di": "palestra-serie",
+      "perche": "'panca' e 'panca piana' sono lo stesso esercizio. Se danno due chiavi diverse, il grafico dei progressi si spezza in due meta che non si sommano mai."
+    },
+    {
+      "id": "pizza-vestita-da-locale",
+      "testo": "stasera una margherita da Gino con Christian e Anna",
+      "attesi": [
+        { "kind": "cibo", "label_key": "pizza" },
+        { "kind": "persona", "label_key": "christian" },
+        { "kind": "persona", "label_key": "anna" }
+      ],
+      "perche": "Il piatto va contato come 'pizza' anche quando lo si nomina con il locale: e la domanda 'quante volte ho mangiato la pizza' a dover funzionare."
+    },
+    {
+      "id": "pizza-detta-normale",
+      "testo": "a pranzo pizza con i colleghi",
+      "attesi": [{ "kind": "cibo", "label_key": "pizza" }],
+      "stessa_chiave_di": "pizza-vestita-da-locale"
+    },
+    {
+      "id": "niente-cibo",
+      "testo": "giornata di lavoro dall'inizio alla fine, riunioni e mail, poi crollato sul divano",
+      "attesi": [{ "kind": "lavoro", "label_key": "lavoro" }],
+      "vietati": ["caffe", "pranzo", "cena", "colazione"],
+      "perche": "Nessun cibo e nominato. Un'app che aggiunge un caffe perche 'di solito si fa' e peggio di un'app che non conta niente."
+    },
+    {
+      "id": "corsa-e-persone",
+      "testo": "corsa di 40 minuti al parco la mattina, poi pranzo con mia sorella",
+      "attesi": [
+        { "kind": "attivita", "label_key": "corsa" },
+        { "kind": "persona", "label_key": "sorella" }
+      ]
+    },
+    {
+      "id": "telegrafico",
+      "testo": "cantato lezione con Anna Katereta. lavorato. riletto diario. stasera cena con amici",
+      "attesi": [
+        { "kind": "persona", "label_key": "anna katereta" },
+        { "kind": "lavoro", "label_key": "lavoro" }
+      ],
+      "perche": "E lo stile in cui si parla davvero. Se un racconto cosi produce zero fatti, il sistema non serve a niente."
+    },
+    {
+      "id": "luogo-non-persona",
+      "testo": "pomeriggio da Bubba Cafe a lavorare al computer",
+      "attesi": [
+        { "kind": "luogo", "label_key": "bubba cafe" },
+        { "kind": "lavoro", "label_key": "lavoro" }
+      ],
+      "vietati": ["bubba"],
+      "perche": "Un locale con un nome che sembra un nome di persona non deve finire fra le persone: la scheda persona di 'Bubba' non ha senso."
+    },
+    {
+      "id": "piu-pasti-un-giorno",
+      "testo": "colazione avocado toast, pranzo una bowl con pollo e insalata, cena pad thai",
+      "attesi": [
+        { "kind": "cibo", "label_key": "avocado toast" },
+        { "kind": "cibo", "label_key": "pad thai" }
+      ],
+      "perche": "Tre pasti nello stesso racconto: nessuno deve mangiarsi gli altri."
+    },
+    {
+      "id": "negazione",
+      "testo": "oggi niente palestra e niente alcol. solo una camminata di mezz'ora",
+      "attesi": [{ "kind": "attivita", "label_key": "camminata" }],
+      "vietati": ["palestra", "alcol"],
+      "perche": "'Niente palestra' e l'opposto di 'palestra'. Un estrattore che pesca le parole senza leggerle segna un allenamento che non c'e stato."
+    },
+    {
+      "id": "meditazione-e-hobby",
+      "testo": "venti minuti di meditazione la mattina, poi due ore di chitarra",
+      "attesi": [
+        { "kind": "attivita", "label_key": "meditazione" },
+        { "kind": "attivita", "label_key": "chitarra" }
+      ]
+    },
+    {
+      "id": "misto-lungo",
+      "testo": "sveglia presto, palestra un'ora, bicipiti e tricipiti e 15 minuti di cyclette. pranzo veloce, un panino. pomeriggio riunione con Luca e Francesco. sera pizza a casa e film",
+      "attesi": [
+        { "kind": "attivita", "label_key": "cyclette" },
+        { "kind": "cibo", "label_key": "panino" },
+        { "kind": "cibo", "label_key": "pizza" },
+        { "kind": "persona", "label_key": "luca" },
+        { "kind": "persona", "label_key": "francesco" }
+      ]
+    }
+  ]
+}

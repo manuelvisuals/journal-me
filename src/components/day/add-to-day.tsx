@@ -138,7 +138,7 @@ export function AddToDay({
     <>
       <button
         type="button"
-        className="jm-day-add"
+        className={variant === "empty" ? "jm-day-add empty" : "jm-day-add"}
         onClick={() => setSheet("menu")}
         disabled={saving}
       >
@@ -153,10 +153,10 @@ export function AddToDay({
           <path d="M12 5v14M5 12h14" />
         </svg>
         {saving
-          ? t("salvo...")
+          ? t("Salvo...")
           : variant === "empty"
-            ? t("racconta il {giorno}", { giorno: dayName })
-            : t("aggiungi a questa giornata")}
+            ? t("Racconta il {giorno}", { giorno: dayName })
+            : t("Aggiungi a questa giornata")}
       </button>
 
       {sheet === "menu" && (

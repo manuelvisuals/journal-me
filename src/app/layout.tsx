@@ -7,6 +7,7 @@ import { BiometricLock } from "@/components/biometric-lock";
 import { ThemeWatcher } from "@/components/theme-watcher";
 import { LangWatcher } from "@/components/lang-watcher";
 import { Toaster } from "@/components/ui/toast";
+import { PremiumWelcome } from "@/components/premium-welcome";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
 import { themeBootScript } from "@/themes/boot";
 
@@ -168,6 +169,9 @@ export default function RootLayout({
         <LangWatcher />
         {/* L'avviso di caricamento: uno solo, montato qui, usato da tutti. */}
         <Toaster />
+        {/* Il popup dopo l'attivazione del premium: si accende solo con
+            ?premium=1 nell'indirizzo, quindi qui non costa nulla. */}
+        <PremiumWelcome />
         {/* Splash is a client component but server-rendered into the initial
             HTML, so it covers the cold load. It removes itself via React state
             only — never manual DOM removal (that crashed body re-renders). */}

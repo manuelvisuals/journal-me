@@ -48,6 +48,34 @@ function setPlan(p: Plan): void {
   emit();
 }
 
+/**
+ * Scrive il piano adesso, senza aspettare la rilettura dal database.
+ *
+ * La usa il checkout finto (src/app/checkout-finto/client.tsx): dopo il
+ * pagamento la schermata successiva deve essere GIA quella premium. Senza,
+ * il popup di congratulazioni comparirebbe sopra un'app ancora bloccata,
+ * che e peggio di nessun popup.
+ *
+ * Non e una scorciatoia per aggirare il server: il piano vero l'ha appena
+ * scritto la rotta, questa riga aggiorna solo cio che il browser ricorda.
+ */
+export function setPlanNow(p: Plan): void {
+  setPlan(p);
+}
+
+/**
+ * Rilegge il piano dal database anche se il refresh e gia stato fatto.
+ *
+ * `refreshStarted` esiste per non chiedere il piano a ogni montaggio, ma
+ * significa anche che dopo un cambio di piano nella stessa sessione la
+ * verita nuova non arriverebbe mai fino a un ricaricamento della pagina:
+ * era esattamente il "sono premium ma l'app non se ne accorge" da evitare.
+ */
+export async function forcePlanRefresh(): Promise<void> {
+  refreshStarted = false;
+  await refreshPlan();
+}
+
 /** Da chiamare al logout / cambio account. */
 export function clearPlanCache(): void {
   plan = null;

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Cosa ho capito di oggi</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --danger:#C0392B;
+  --font:"Inter",system-ui,-apple-system,sans-serif; --serif:"Newsreader",Georgia,serif;
+  --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+  --danger:#FF6B60;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.65;max-width:820px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:38px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 20px;max-width:900px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.row2{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+.phone{width:390px;height:740px;border-radius:34px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);display:flex;flex-direction:column;position:relative}
+.scr{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:26px 22px 0}
+
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.back{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-muted);font-size:15px}
+.h1{font-size:22px;font-weight:650;letter-spacing:-.02em}
+.sub{font-size:12.5px;color:var(--ink-faint);margin:2px 0 18px 42px}
+.gl{font-size:10px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin:20px 0 8px}
+.list{border-top:1px solid var(--line)}
+.f{display:flex;align-items:center;gap:12px;min-height:56px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.f .txt{flex:1;min-width:0}
+.f .lab{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.f .det{font-size:12px;color:var(--ink-faint);margin-top:3px}
+.f .key{font-size:11px;color:var(--ink-faint);font-variant-numeric:tabular-nums;white-space:nowrap;
+  border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.f .dots{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-faint);flex:0 0 26px}
+.f.manual .lab::after{content:" . tuo";font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.f.dubbio{background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.f.dubbio .lab{color:var(--ink-muted)}
+.chip-conf{font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);
+  border:1px dashed var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap}
+
+.riga-entra{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;margin-top:22px;padding:0 2px;
+  border-top:1px solid var(--line);color:var(--ink-muted);font-size:14.5px;font-weight:500}
+.riga-entra .n{margin-left:auto;color:var(--ink-faint);font-size:13px}
+
+.add{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:52px;margin-top:18px;
+  background:transparent;border:1px solid var(--line);border-radius:var(--r-md);color:var(--ink-muted);
+  font-family:var(--font);font-size:14px;font-weight:600}
+
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:flex-end}
+.sheet{width:100%;background:var(--bg-app);border-radius:20px 20px 0 0;padding:20px 22px 28px;border-top:1px solid var(--line)}
+.grip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px}
+.sheet h3{font-size:17px;font-weight:650;letter-spacing:-.01em;margin-bottom:4px}
+.sheet p{font-size:13px;color:var(--ink-muted);line-height:1.55;margin-bottom:16px}
+.inp{width:100%;min-height:50px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);
+  padding:0 14px;display:flex;align-items:center;font-size:15px;color:var(--ink)}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:14px 2px;border-bottom:1px solid var(--line)}
+.opt:last-of-type{border-bottom:none}
+.rad{width:20px;height:20px;flex:0 0 20px;border-radius:50%;border:1.5px solid var(--line);margin-top:2px}
+.rad.on{border-color:var(--accent);background:radial-gradient(circle at center,var(--accent) 0 42%,transparent 44%)}
+.opt .t{font-size:14.5px;font-weight:500;color:var(--ink)}
+.opt .d{font-size:12.5px;color:var(--ink-faint);margin-top:3px;line-height:1.5}
+.btn{width:100%;min-height:52px;border:none;border-radius:var(--r-md);background:var(--accent);color:var(--on-accent);
+  font-family:var(--font);font-size:15px;font-weight:600;margin-top:18px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-muted);margin-top:10px;min-height:46px;font-weight:500}
+.btn.danger{background:transparent;border:1px solid color-mix(in srgb,var(--danger) 35%,transparent);color:var(--danger);margin-top:10px;min-height:46px}
+.menu{position:absolute;right:20px;top:250px;width:220px;background:var(--bg-app);border:1px solid var(--line);
+  border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.4)}
+.menu div{padding:14px 16px;font-size:14px;color:var(--ink);border-bottom:1px solid var(--line)}
+.menu div:last-child{border-bottom:none;color:var(--danger)}
+</style>
+</head>
+<body>
+
+<div class="page-title">Cosa ho capito di oggi</div>
+<div class="page-sub">
+  I fatti che l'AI ha letto nel tuo racconto, come li ha salvati davvero.
+  Serve a una cosa sola: <b>correggerli</b>. Senza un posto dove dire "no,
+  questa non era pizza", ogni errore si ripete all'infinito e i conteggi
+  diventano numeri falsi detti con sicurezza.
+</div>
+
+<div class="divider"></div>
+
+<div class="label">01 . da dove ci si entra</div>
+<div class="caption">
+  Una riga sotto la giornata. Non un avviso, non un passaggio obbligato: chi
+  non vuole controllare niente <b>non deve fare niente</b>, e i fatti sono
+  gia salvati. Il numero dice quanto c'e da guardare.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone" style="height:420px">
+      <div class="scr">
+        <div class="h1" style="font-size:20px">giornata fra palestra e pizza</div>
+        <div style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-muted);margin:8px 0 4px;line-height:1.5">
+          Un'ora di palestra con panca. A pranzo pizza margherita con Christian.
+        </div>
+        <div class="riga-entra">
+          <svg viewBox="0 0 24 24" style="width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+          Cosa ho capito di oggi
+          <span class="n">8 &#8250;</span>
+        </div>
+      </div>
+    </div>
+    <div class="cap">chiaro</div>
+  </div>
+  <div class="dark">
+    <div class="phone" style="height:420px">
+      <div class="scr">
+        <div class="h1" style="font-size:20px">giornata fra palestra e pizza</div>
+        <div style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-muted);margin:8px 0 4px;line-height:1.5">
+          Un'ora di palestra con panca. A pranzo pizza margherita con Christian.
+        </div>
+        <div class="riga-entra">
+          <svg viewBox="0 0 24 24" style="width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+          Cosa ho capito di oggi
+          <span class="n">8 &#8250;</span>
+        </div>
+      </div>
+    </div>
+    <div class="cap">scuro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">02 . la schermata</div>
+<div class="caption">
+  I fatti veri, quelli usciti ieri dal database. A sinistra <b>come l'hai
+  detto tu</b>, a destra <b>la parola con cui si conta</b>: sono due cose
+  diverse e vederle accanto e l'unico modo per capire perche un conteggio
+  dice quello che dice. Sotto l'etichetta, i dettagli che l'AI ha capito -
+  i pesi e le ripetizioni ci sono davvero.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone">
+      <div class="scr">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+        <div class="sub">mercoledi 12 agosto . 8 fatti</div>
+
+        <div class="gl">Attivita</div>
+        <div class="list">
+          <div class="f"><span class="txt"><span class="lab">panca</span><span class="det">60 minuti . 60kg x 10, 65kg x 8</span></span><span class="key">panca</span><span class="dots">&#8942;</span></div>
+          <div class="f"><span class="txt"><span class="lab">palestra</span><span class="det">un'ora</span></span><span class="key">palestra</span><span class="dots">&#8942;</span></div>
+        </div>
+
+        <div class="gl">Cibo</div>
+        <div class="list">
+          <div class="f"><span class="txt"><span class="lab">pizza margherita</span><span class="det">pranzo</span></span><span class="key">pizza</span><span class="dots">&#8942;</span></div>
+          <div class="f"><span class="txt"><span class="lab">birra</span><span class="det">sera</span></span><span class="key">birra</span><span class="dots">&#8942;</span></div>
+        </div>
+
+        <div class="gl">Persone</div>
+        <div class="list">
+          <div class="f"><span class="txt"><span class="lab">Christian</span></span><span class="key">christian</span><span class="dots">&#8942;</span></div>
+          <div class="f"><span class="txt"><span class="lab">Luca</span></span><span class="key">luca</span><span class="dots">&#8942;</span></div>
+        </div>
+
+        <div class="gl">Luoghi</div>
+        <div class="list">
+          <div class="f dubbio"><span class="txt"><span class="lab">palestra</span><span class="det">gia contata come attivita</span></span><span class="chip-conf">da controllare</span><span class="dots">&#8942;</span></div>
+          <div class="f"><span class="txt"><span class="lab">da Gino</span></span><span class="key">gino</span><span class="dots">&#8942;</span></div>
+        </div>
+
+        <button class="add">+ Aggiungi un fatto</button>
+      </div>
+    </div>
+    <div class="cap">la schermata . scuro</div>
+  </div>
+
+  <div>
+    <div class="phone">
+      <div class="scr">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+        <div class="sub">mercoledi 12 agosto . 8 fatti</div>
+        <div class="gl">Attivita</div>
+        <div class="list">
+          <div class="f"><span class="txt"><span class="lab">panca</span><span class="det">60 minuti . 60kg x 10, 65kg x 8</span></span><span class="key">panca</span><span class="dots">&#8942;</span></div>
+          <div class="f"><span class="txt"><span class="lab">palestra</span><span class="det">un'ora</span></span><span class="key">palestra</span><span class="dots">&#8942;</span></div>
+        </div>
+        <div class="gl">Cibo</div>
+        <div class="list">
+          <div class="f"><span class="txt"><span class="lab">pizza margherita</span><span class="det">pranzo</span></span><span class="key">pizza</span><span class="dots">&#8942;</span></div>
+          <div class="f manual"><span class="txt"><span class="lab">insalata</span><span class="det">cena . aggiunta da te</span></span><span class="key">insalata</span><span class="dots">&#8942;</span></div>
+        </div>
+        <div class="gl">Persone</div>
+        <div class="list">
+          <div class="f"><span class="txt"><span class="lab">Christian</span></span><span class="key">christian</span><span class="dots">&#8942;</span></div>
+        </div>
+        <button class="add">+ Aggiungi un fatto</button>
+      </div>
+    </div>
+    <div class="cap">chiaro, con un fatto aggiunto a mano</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">03 . correggere un'etichetta - la domanda che conta</div>
+<div class="caption">
+  Il cuore di tutto. Correggi "panca" in "panca piana", e l'app ti chiede
+  <b>se vale solo oggi o per sempre</b>. Se scegli per sempre, quella
+  correzione viene ricordata e la prossima volta il modello ci si aggancia da
+  solo. Senza questa domanda, la stessa fatica si rifa ogni settimana e i
+  conteggi restano spazzatura.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone">
+      <div class="scr" style="opacity:.25">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+        <div class="sub">mercoledi 12 agosto . 8 fatti</div>
+      </div>
+      <div class="scrim">
+        <div class="sheet">
+          <div class="grip"></div>
+          <h3>Come si conta questo?</h3>
+          <p>Tu hai detto <b>"panca"</b>. Cambia la parola con cui viene contato: tutte le volte che dici la stessa cosa finiranno insieme.</p>
+          <div class="inp">panca piana</div>
+          <div style="height:18px"></div>
+          <div class="opt"><span class="rad"></span><span><span class="t">Solo per oggi</span><span class="d">Cambia questa riga e basta.</span></span></div>
+          <div class="opt"><span class="rad on"></span><span><span class="t">Sempre: "panca" vale "panca piana"</span><span class="d">Da adesso in poi lo ricordo, e non te lo chiedo piu.</span></span></div>
+          <button class="btn">Salva</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap">rinomina . scuro</div>
+  </div>
+
+  <div>
+    <div class="phone">
+      <div class="scr" style="opacity:.25">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+      </div>
+      <div class="menu">
+        <div>Cambia come si conta</div>
+        <div>Cambia tipo</div>
+        <div>Modifica i dettagli</div>
+        <div>Non era vero, togli</div>
+      </div>
+    </div>
+    <div class="cap">il menu di un fatto . chiaro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">03b . e il passato?</div>
+<div class="caption">
+  La domanda che mancava, ed e quella che decide se i conteggi valgono
+  qualcosa. Creata la regola, l'app chiede se applicarla anche alle giornate
+  gia scritte, e <b>dice quante righe cambierebbe prima di toccarle</b>.
+  Senza, crei la regola oggi e "panca" e "panca piana" continuano a non
+  sommarsi per tutti i mesi precedenti - cioe proprio quelli che volevi
+  contare.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="height:520px">
+      <div class="scr" style="opacity:.25">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+      </div>
+      <div class="scrim">
+        <div class="sheet">
+          <div class="grip"></div>
+          <h3>Anche nelle giornate passate?</h3>
+          <p>La regola vale da adesso in poi. Vuoi che riscriva anche quello che c'e gia? <b>Cambierebbe 12 righe in 9 giornate.</b></p>
+          <div class="opt"><span class="rad on"></span><span><span class="t">Si, sistema anche il passato</span><span class="d">I conteggi dei mesi scorsi diventano giusti.</span></span></div>
+          <div class="opt"><span class="rad"></span><span><span class="t">No, solo da oggi</span><span class="d">Lo storico resta com'e.</span></span></div>
+          <button class="btn">Applica</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap">la domanda sul passato . scuro</div>
+  </div>
+  <div>
+    <div class="phone" style="height:520px">
+      <div class="scr">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+        <div class="sub">mercoledi 12 agosto</div>
+        <div class="gl">Da controllare</div>
+        <div class="list">
+          <div class="f dubbio"><span class="txt"><span class="lab">palestra</span><span class="det">gia contata come attivita</span></span><span class="chip-conf">doppia</span><span class="dots">&#8942;</span></div>
+          <div class="f dubbio"><span class="txt"><span class="lab">bowl con pollo</span><span class="det">mai vista prima</span></span><span class="chip-conf">nuova</span><span class="dots">&#8942;</span></div>
+        </div>
+        <div class="riga-entra" style="margin-top:20px">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8"><path d="M6 9l6 6 6-6"/></svg>
+          Le altre 24 cose che ho capito
+          <span class="n">&#8250;</span>
+        </div>
+      </div>
+    </div>
+    <div class="cap">giornata piena: prima i dubbi, il resto chiuso</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">04 . togliere un fatto sbagliato</div>
+<div class="caption">
+  Il caso vero trovato ieri: la palestra contata <b>due volte</b>, una come
+  attivita e una come luogo. Togliendola, l'app chiede la stessa cosa - vale
+  solo oggi, o e una regola? La differenza fra correggere un errore e
+  insegnare qualcosa.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="height:560px">
+      <div class="scr" style="opacity:.25">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+      </div>
+      <div class="scrim">
+        <div class="sheet">
+          <div class="grip"></div>
+          <h3>Togliere "palestra" dai luoghi?</h3>
+          <p>Resta contata come attivita. Il tuo racconto non cambia: si toglie solo questo fatto.</p>
+          <div class="opt"><span class="rad on"></span><span><span class="t">Solo per oggi</span></span></div>
+          <div class="opt"><span class="rad"></span><span><span class="t">Sempre: la palestra non e un luogo</span><span class="d">Non la conto piu fra i posti, in nessuna giornata.</span></span></div>
+          <button class="btn danger" style="margin-top:18px">Togli</button>
+          <button class="btn ghost">Annulla</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap">togli . scuro</div>
+  </div>
+
+  <div>
+    <div class="phone" style="height:560px">
+      <div class="scr" style="opacity:.25">
+        <div class="hd"><span class="back">&#8249;</span><span class="h1">Cosa ho capito</span></div>
+      </div>
+      <div class="scrim">
+        <div class="sheet">
+          <div class="grip"></div>
+          <h3>Aggiungi un fatto</h3>
+          <p>Quello che aggiungi qui e tuo: nessuna rilettura del racconto potra mai cancellarlo.</p>
+          <div class="inp" style="color:var(--ink-faint)">che cosa?</div>
+          <div style="height:10px"></div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <span class="key" style="padding:8px 14px;font-size:13px">Cibo</span>
+            <span class="key" style="padding:8px 14px;font-size:13px;background:var(--accent);color:var(--on-accent);border-color:var(--accent)">Attivita</span>
+            <span class="key" style="padding:8px 14px;font-size:13px">Persona</span>
+            <span class="key" style="padding:8px 14px;font-size:13px">Lavoro</span>
+            <span class="key" style="padding:8px 14px;font-size:13px">Luogo</span>
+          </div>
+          <button class="btn">Aggiungi</button>
+        </div>
+      </div>
+    </div>
+    <div class="cap">aggiungi a mano . chiaro</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">05 . la regola che tiene tutto insieme</div>
+<div class="caption">
+  Nessuna etichetta contiene un giudizio - mai "pizza (sgarro)". L'app conta
+  quello che mangi e quello che fai, e <b>non dice se e giusto o sbagliato</b>.
+  Se vorrai dividere il cibo in categorie, quelle categorie le scegli tu, con
+  parole tue, e restano tue.
+</div>
+<div class="page-sub" style="margin-top:26px">
+  <b>Come funziona sotto</b> (SPEC-fatti-decisioni.md): i fatti non sono piu
+  solo il risultato della lettura del testo, sono
+  <b>lettura del testo + le tue decisioni</b>, riapplicate a ogni rilettura.
+  E per questo che "solo per oggi" adesso regge: prima sarebbe stato
+  cancellato dal primo salvataggio successivo.
+</div>
+
+</body>
+</html>

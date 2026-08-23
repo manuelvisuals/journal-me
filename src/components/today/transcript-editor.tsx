@@ -56,6 +56,11 @@ export function TranscriptEditor({
             >
               {t("Annulla")}
             </button>
+            {/* Spento se non hai cambiato niente: senza modifiche non c'e
+                niente da ricalcolare, e rifare l'analisi a vuoto costerebbe
+                soldi per riscrivere lo stesso risultato (regola del 21
+                agosto 2026: il testo cambia -> si ricalcola tutto; il testo
+                non cambia -> non parte niente). */}
             <button
               type="button"
               className="jm-editor-btn save"

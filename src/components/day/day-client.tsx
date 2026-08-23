@@ -6,6 +6,8 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { AddToDay } from "@/components/day/add-to-day";
+import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
+import { usePlaces } from "@/lib/use-places";
 import {
   compactDayDate,
   parseISODate,
@@ -43,6 +45,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
   const t = useT();
   const router = useRouter();
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
+  const optimisticGoals = useOptimisticGoals();
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -60,13 +63,23 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     }
   };
 
+  // La spunta si accende SUBITO e poi si salva: vedi
+  // src/lib/use-optimistic-goals.ts.
+  const goalsForView = optimisticGoals.view(entry?.goals ?? []);
+
+  // I luoghi arrivano dai fatti, non dall'entry: si ricaricano ogni volta
+  // che la giornata viene risalvata (il testo cambia, l'analisi riparte).
+  const places = usePlaces(mode, date, entry?.transcript ?? null);
+
   const handleGoalToggle = async (label: string) => {
-    try {
-      const updated = await toggleGoal(mode, date, label);
-      setEntry(updated);
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t("Errore"));
-    }
+    await optimisticGoals.toggle(goalsForView, label, async () => {
+      try {
+        const updated = await toggleGoal(mode, date, label);
+        setEntry(updated);
+      } catch (err) {
+        setSaveError(err instanceof Error ? err.message : t("Errore"));
+      }
+    });
   };
 
   const handleTranscriptSave = async (newTranscript: string) => {
@@ -136,7 +149,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
               onClick={() => setEditorOpen(true)}
               className="jm-day-head-action"
             >
-              {t("originale")} &#8599;
+              {t("modifica")} &#8599;
             </button>
             <button
               type="button"
@@ -188,8 +201,16 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           snippet={entry.snippet}
           areas={entry.areas}
           metrics={entry.metrics}
-          goals={entry.goals}
+          goals={goalsForView}
           people={entry.people}
+          places={places}
+          editHeadline={{
+            dateISO: date,
+            mode,
+            locked: entry.headlineLocked === true,
+            onSaved: (e) => setEntry(e),
+            onError: setSaveError,
+          }}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
           footer={

@@ -20,6 +20,7 @@ export type AiRoute =
   | "process-entry"
   | "split-by-date"
   | "extract-people"
+  | "extract-facts"
   | "classify"
   | "recap";
 
@@ -29,6 +30,12 @@ export const MODEL_PRICES_USD: Record<
   { input: number; output: number }
 > = {
   "gpt-4o-mini": { input: 0.15, output: 0.6 },
+  // La famiglia corrente. Luna e il modello dell'estrazione dei fatti dal 22
+  // agosto 2026 (vedi RISULTATI-prova-modelli.md).
+  "gpt-5.6-luna": { input: 0.2, output: 1.2 },
+  "gpt-5.6-terra": { input: 2, output: 12 },
+  "gpt-4.1-mini": { input: 0.4, output: 1.6 },
+  "gpt-5-mini": { input: 0.25, output: 2 },
   "gpt-4o": { input: 2.5, output: 10 },
   // Trascrizione: input = token AUDIO (circa 1 minuto ~ 600 token, ~0,006 $/min).
   "gpt-4o-transcribe": { input: 6, output: 10 },

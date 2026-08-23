@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { apiFetch } from "@/lib/api";
 import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/components/today/empty-state";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
@@ -23,7 +22,6 @@ import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import {
   deleteEntry,
-  saveEntryPeople,
   toggleGoal,
   updateEntryTranscript,
   updateMetric,
@@ -32,6 +30,8 @@ import {
 import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import { useT } from "@/lib/i18n";
+import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
+import { usePlaces } from "@/lib/use-places";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
 type View =
@@ -68,18 +68,34 @@ type Props = {
   autoRecord?: boolean;
 };
 
-async function extractPeople(transcript: string): Promise<string[]> {
+/**
+ * I nomi per cui hai gia detto "non ora".
+ *
+ * Serve perche adesso i nomi si rileggono da tutto il testo a ogni
+ * salvataggio: senza memoria del rifiuto, la stessa domanda tornerebbe a
+ * ogni riga che aggiungi alla giornata. Sta nel dispositivo, come le altre
+ * preferenze, e non e un dato del diario.
+ */
+const DECLINED_KEY = "jm:persone-rifiutate";
+
+function declinedPeople(): Set<string> {
   try {
-    const resp = await apiFetch("/api/extract-people", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transcript }),
-    });
-    if (!resp.ok) return [];
-    const data = (await resp.json()) as { people?: string[] };
-    return Array.isArray(data.people) ? data.people : [];
+    const raw = window.localStorage.getItem(DECLINED_KEY);
+    const list: unknown = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(list)) return new Set();
+    return new Set(list.filter((x): x is string => typeof x === "string"));
   } catch {
-    return [];
+    return new Set();
+  }
+}
+
+function declinePeople(names: readonly string[]): void {
+  try {
+    const set = declinedPeople();
+    for (const n of names) set.add(n.trim().toLowerCase());
+    window.localStorage.setItem(DECLINED_KEY, JSON.stringify([...set]));
+  } catch {
+    // storage negato: al massimo la domanda ricompare
   }
 }
 
@@ -101,6 +117,7 @@ export function TodayClient({
   const canVoice = useCan("voice");
   const canAI = useCan("aiSummary");
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
+  const optimisticGoals = useOptimisticGoals();
   const [view, setView] = useState<View>(
     autoRecord
       ? canVoice
@@ -192,10 +209,19 @@ export function TodayClient({
 
   // Goals to render: the entry's own goal state if present, otherwise the
   // live definitions rendered all-off. No hardcoded list anywhere.
-  const goalsForView: GoalDot[] =
+  // La spunta appena toccata vince sul dato salvato finche il salvataggio
+  // non torna: vedi src/lib/use-optimistic-goals.ts.
+  const goalsForView: GoalDot[] = optimisticGoals.view(
     entry?.goals && entry.goals.length > 0
       ? entry.goals
-      : goalDefs.map((d) => ({ id: d.id, label: d.label, on: false }));
+      : goalDefs.map((d) => ({ id: d.id, label: d.label, on: false })),
+  );
+
+  // La giornata mostrata da Oggi non e sempre quella di oggi: se hai
+  // raccontato dopo mezzanotte, l'entry appartiene a ieri. I luoghi vanno
+  // letti dalla data dell'entry, non dal calendario.
+  const dateVista = entry?.entryDate ?? todayISO();
+  const places = usePlaces(mode, dateVista, entry?.transcript ?? null);
 
   const handleStartRecording = () => {
     setSaveError(null);
@@ -268,25 +294,35 @@ export function TodayClient({
       if (todayEntry) setEntry(todayEntry);
       setSavedDates(saved.map((e) => e.entryDate));
 
-      // People detection — compare against the existing roster. In locale
-      // niente rete: nessuna estrazione, i nomi si aggiungono a mano. Col
-      // "salva e basta" niente AI, quindi nemmeno questa chiamata.
-      const found =
-        !canAI || !opts.withAI ? [] : await extractPeople(text);
+      // I nomi sono GIA sulla giornata: li ha letti l'analisi, sul testo
+      // completo, insieme al riassunto (src/lib/actions/analyze-day.ts).
+      // Qui non si chiede piu chi c'era - lo sappiamo - si chiede solo se
+      // le facce nuove vanno aggiunte alla rubrica di Ricorda. E una
+      // domanda diversa, ed e l'unica che ha ancora bisogno di una persona.
+      const attachDate = todayEntry
+        ? today
+        : saved[0]?.entryDate ?? opts.targetDate;
+      const entryForDate =
+        saved.find((e) => e.entryDate === attachDate) ?? todayEntry ?? null;
+      const found = entryForDate?.people ?? [];
       if (found.length > 0) {
         const roster = await loadPersonaNames(mode);
         const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
+        const declined = declinedPeople();
         const existing = found.filter((p) => rosterLower.has(p.toLowerCase()));
-        const suggested = found.filter((p) => !rosterLower.has(p.toLowerCase()));
-        const attachDate = todayEntry
-          ? today
-          : saved[0]?.entryDate ?? opts.targetDate;
-        const entryForDate =
-          saved.find((e) => e.entryDate === attachDate) ?? todayEntry ?? null;
-        setPeopleData({ existing, suggested, attachDate, entryForDate });
-        setPending(null);
-        setView("people");
-        return;
+        const suggested = found.filter(
+          (p) =>
+            !rosterLower.has(p.toLowerCase()) && !declined.has(p.toLowerCase()),
+        );
+        // Niente da decidere, niente schermata: se sono tutti gia in
+        // rubrica (o li hai gia rifiutati una volta), fermare l'utente per
+        // fargli premere "ok" e solo un ostacolo.
+        if (suggested.length > 0) {
+          setPeopleData({ existing, suggested, attachDate, entryForDate });
+          setPending(null);
+          setView("people");
+          return;
+        }
       }
 
       setPending(null);
@@ -316,12 +352,10 @@ export function TodayClient({
       if (newOnes.length > 0) {
         await addPersonas(mode, newOnes);
       }
-      await saveEntryPeople(mode, attachDate, allPeople);
-      // Base the view on the real saved entry (which has the headline/areas),
-      // with people merged in — never a headline-less shell.
-      const base = entryForDate
-        ? { ...entryForDate, people: allPeople }
-        : null;
+      // La giornata NON si tocca: le sue persone sono il risultato della
+      // lettura del testo, e il testo e l'unica autorita (decisione del 21
+      // agosto 2026). Qui si e appena deciso chi entra in rubrica.
+      const base = entryForDate;
       const showToday = attachDate === todayISO();
       if (base && showToday) setEntry(base);
       setPeopleData(null);
@@ -361,15 +395,19 @@ export function TodayClient({
 
   const handleGoalToggle = async (label: string) => {
     const dateISO = entry?.entryDate ?? todayISO();
-    try {
-      const updated = await toggleGoal(mode, dateISO, label);
-      setEntry(updated);
-      // Su desktop, mentre si scrive, la colonna resta l'editor: toccare
-      // una metrica o un obiettivo dalla rail non deve chiuderlo.
-      if (view === "empty" && !isDesktop) setView("filled");
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
-    }
+    await optimisticGoals.toggle(goalsForView, label, async () => {
+      try {
+        const updated = await toggleGoal(mode, dateISO, label);
+        setEntry(updated);
+        // Su desktop, mentre si scrive, la colonna resta l'editor: toccare
+        // una metrica o un obiettivo dalla rail non deve chiuderlo.
+        if (view === "empty" && !isDesktop) setView("filled");
+      } catch (err) {
+        setSaveError(
+          err instanceof Error ? err.message : t("Errore nel salvataggio"),
+        );
+      }
+    });
   };
 
   const handleEditorDelete = async () => {
@@ -475,7 +513,7 @@ export function TodayClient({
                 fontFamily: "inherit",
               }}
             >
-              {t("originale")} &#8599;
+              {t("modifica")} &#8599;
             </button>
             <button
               type="button"
@@ -600,7 +638,22 @@ export function TodayClient({
           areas={entry?.areas ?? []}
           metrics={entry?.metrics ?? null}
           people={entry?.people ?? []}
+          places={places}
           goals={goalsForView}
+          editHeadline={
+            // Solo a giornata salvata e con l'AI: senza AI il titolo non
+            // esiste proprio (la prima riga del testo fa da titolo), e non
+            // c'e niente da riscrivere.
+            entry && canAI
+              ? {
+                  dateISO: entry.entryDate,
+                  mode,
+                  locked: entry.headlineLocked === true,
+                  onSaved: (e) => setEntry(e),
+                  onError: setSaveError,
+                }
+              : null
+          }
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
           freeProse={
@@ -656,7 +709,12 @@ export function TodayClient({
           existing={peopleData.existing}
           suggested={peopleData.suggested}
           onConfirm={finishPeople}
-          onSkip={(existingPeople) => finishPeople(existingPeople, [])}
+          onSkip={(existingPeople) => {
+            // "Non ora" vale per sempre su quei nomi: la giornata li ha
+            // gia, e chiederlo di nuovo a ogni riga sarebbe assillante.
+            declinePeople(peopleData.suggested);
+            void finishPeople(existingPeople, []);
+          }}
           saving={peopleSaving}
         />
       )}

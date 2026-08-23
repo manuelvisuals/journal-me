@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Mockup . Mese, avanti e indietro</title>
+<style>
+/* Font VERI del repo, non Google Fonts (HANDOVER, trappola mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --r-sm:8px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin-top:10px;line-height:1.6}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1180px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:840px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.frame-wrap{overflow-x:auto;padding-bottom:8px}
+.row2{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+
+.win{position:relative;width:1180px;margin:0 auto;background:var(--bg-app);border-radius:14px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);display:flex;color:var(--ink)}
+.rail-l{width:222px;flex:0 0 222px;border-right:1px solid var(--line);padding:24px 14px 18px;display:flex;flex-direction:column}
+.brand{font-family:var(--serif);font-size:21px;font-weight:400;padding:0 10px 24px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);font-size:13.5px;font-weight:600;color:var(--ink-faint)}
+.nav-i.on{background:var(--surface);color:var(--ink)}
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+
+/* ---------- l'intestazione del mese: la parte che cambia ---------- */
+.mese-head{padding:28px 28px 16px}
+
+/* La riga del titolo. Le frecce sono alte quanto il titolo e ci stanno
+   in fila: chi guarda vede un unico blocco "mese", non tre controlli. */
+.mh-row{display:flex;align-items:center;gap:10px}
+.mh-t{
+  display:inline-flex;background:transparent;border:none;padding:0;cursor:pointer;
+  font-family:var(--serif);font-size:40px;font-weight:400;letter-spacing:-.022em;line-height:1.05;
+  color:var(--ink);text-align:left;
+}
+.mh-t:hover{color:var(--accent);opacity:.75}
+.mh-nav{
+  width:38px;height:38px;flex:0 0 38px;border-radius:50%;
+  border:1px solid var(--line);background:transparent;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.mh-nav svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mh-nav:hover{background:var(--surface-2)}
+.mh-nav.foc{outline:2px solid var(--accent);outline-offset:2px}
+/* Disattivato: non sparisce, resta li spento. Un bottone che sparisce
+   sposta il titolo e fa ballare l'intestazione a ogni mese. */
+.mh-nav[disabled]{opacity:.28;cursor:default;background:transparent}
+.mh-s{font-size:12.5px;color:var(--ink-faint);margin-top:9px}
+
+/* variante B */
+.mh-row.b{justify-content:flex-start}
+.mh-row.b .mh-pair{margin-left:auto;display:flex;gap:8px}
+
+/* ---------- griglia, solo per contesto ---------- */
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:0 28px 10px}
+.wk div{font-size:9.5px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);padding-left:2px}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;padding:0 28px 28px}
+.cell{height:96px;border-radius:var(--r-sm);border-left:2px solid transparent;border-bottom:1px solid var(--line);padding:8px 10px;display:flex;flex-direction:column;overflow:hidden}
+.cn{font-size:22px;font-weight:300;line-height:1;font-variant-numeric:tabular-nums}
+.ch{font-size:13px;line-height:1.4;color:var(--ink-muted);margin-top:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cell.empty .ch{font-family:var(--serif);font-style:italic;color:var(--ink-faint)}
+.cell.out{border-bottom-color:transparent}
+.cell.out .cn{color:color-mix(in oklab,var(--ink-faint) 50%,transparent)}
+.cell.future{opacity:.3}
+.cell.today{border-left-color:var(--accent);background:linear-gradient(90deg,color-mix(in oklab,var(--accent) 10%,transparent),transparent 60%)}
+.dots{margin-top:auto;display:flex;gap:4px}
+.dots i{width:5px;height:5px;border-radius:50%;background:color-mix(in oklab,var(--ink) 14%,transparent);display:block}
+.dots i.on{background:var(--accent)}
+
+/* rail destra, contesto */
+.rail-r{width:250px;flex:0 0 250px;border-left:1px solid var(--line);padding:26px 22px}
+.rr-l{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+.rr-v{font-size:32px;font-weight:300;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.rr-v span{font-size:18px;color:var(--ink-faint)}
+.rr-k{font-size:12px;color:var(--ink-muted);margin:4px 0 20px}
+
+/* telefono */
+.phone{width:390px;border-radius:36px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+.ph-sticky{padding:20px 20px 12px;border-bottom:1px solid var(--line)}
+.ph-m{font-family:var(--serif);font-size:26px;font-weight:400}
+.ph-s{font-size:12px;color:var(--ink-faint);margin-top:6px}
+.ph-row{display:flex;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.ph-d{font-size:20px;font-weight:300;width:34px;flex:0 0 34px;font-variant-numeric:tabular-nums}
+.ph-h{font-size:13.5px;line-height:1.45;color:var(--ink-muted)}
+.note{max-width:840px;margin:22px auto 0;border:1px solid rgba(255,255,255,.10);border-radius:var(--r-lg);padding:16px 18px;background:rgba(255,255,255,.03)}
+.note-t{font-size:13px;font-weight:600;color:#D8D8DE;margin-bottom:6px}
+.note-p{font-size:12.5px;line-height:1.65;color:#9A9AA0}
+.note-p code{font-family:ui-monospace,monospace;font-size:11.5px;background:rgba(255,255,255,.07);padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="page-title">Mese: avanti e indietro</div>
+<div class="page-sub">Due frecce ai lati del titolo. Il titolo resta cliccabile e continua ad aprire il salto rapido.<br>Riguarda solo il desktop: sul telefono Mese e un feed continuo e le frecce non servono.</div>
+
+<div class="divider"></div>
+
+<!-- ============ 01 ============ -->
+<div class="label">01 . Come si vede, su un mese passato</div>
+<div class="caption">Frecce tonde da 38px ai lati del titolo, alte quanto lui. Il titolo <b>resta un bottone</b> e continua a fare quello che fa oggi: apre il salto rapido a un mese qualsiasi. Le frecce servono per il gesto piu frequente, che e "quello prima"; il titolo per il salto lungo.</div>
+<div class="frame-wrap">
+<div class="win">
+  <div class="rail-l">
+    <div class="brand">Journal<span style="color:var(--ink-faint)">.me</span></div>
+    <div class="nav">
+      <div class="nav-i">Oggi</div><div class="nav-i on">Mese</div><div class="nav-i">Ricorda</div>
+      <div class="nav-i">Recap</div><div class="nav-i">Impostazioni</div>
+    </div>
+  </div>
+  <div class="col-c">
+    <div class="mese-head">
+      <div class="mh-row">
+        <button class="mh-nav" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="mh-t">Luglio 2026</button>
+        <button class="mh-nav" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <div class="mh-s">27 giornate raccontate su 31 del mese</div>
+    </div>
+    <div class="wk"><div>lun</div><div>mar</div><div>mer</div><div>gio</div><div>ven</div><div>sab</div><div>dom</div></div>
+    <div class="grid">
+      <div class="cell out"><div class="cn">29</div></div>
+      <div class="cell out"><div class="cn">30</div></div>
+      <div class="cell"><div class="cn">1</div><div class="ch">preavviso dato, il cantiere entra nel conto alla rovescia</div><div class="dots"><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">2</div><div class="ch">centoquaranta coperti e una brigata in meno</div><div class="dots"><i></i><i></i><i></i><i class="on"></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">3</div><div class="ch">salvate le cementine sotto il linoleum</div><div class="dots"><i class="on"></i><i></i><i class="on"></i><i></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">4</div><div class="ch">doppio turno di sabato, piedi gonfi e un panino</div><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">5</div><div class="ch">lasagne di luglio, e una bugia all'ottanta per cento</div><div class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
+      <div class="cell empty"><div class="cn">6</div><div class="ch">vuota</div></div>
+      <div class="cell"><div class="cn">7</div><div class="ch">ottomila euro tagliati dalla lista in due ore</div><div class="dots"><i></i><i></i><i class="on"></i><i></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">8</div><div class="ch">il forno arriva sbagliato, e l'affitto corre</div><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">9</div><div class="ch">il forno giusto arriva il ventidue</div><div class="dots"><i></i><i></i><i></i><i></i><i class="on"></i><i></i></div></div>
+      <div class="cell"><div class="cn">10</div><div class="ch">la salvia fritta e a posto, olio a centosessanta</div><div class="dots"><i></i><i></i><i></i><i></i><i class="on"></i><i class="on"></i></div></div>
+      <div class="cell"><div class="cn">11</div><div class="ch">due birre sul marciapiede con Duccio</div><div class="dots"><i></i><i></i><i class="on"></i><i></i><i></i><i></i></div></div>
+      <div class="cell"><div class="cn">12</div><div class="ch">quattro righe da Marta dopo cinque mesi</div><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="rr-l">Il mese</div>
+    <div class="rr-v">27<span>/31</span></div>
+    <div class="rr-k">giornate raccontate</div>
+    <div class="rr-v">3,1</div>
+    <div class="rr-k">umore medio</div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 02 ============ -->
+<div class="label">02 . Sul mese corrente, la freccia avanti e spenta</div>
+<div class="caption">Agosto 2026 e il mese di oggi: il mese dopo non esiste ancora, quindi la freccia destra e <b>disabilitata, non nascosta</b>. Nasconderla farebbe saltare il titolo di 48px ogni volta che arrivi al mese corrente, e un'intestazione che balla e peggio di un bottone spento. A destra: lo stesso bottone col <b>focus da tastiera</b>, perche a questa schermata ci si arriva anche col Tab.</div>
+<div class="frame-wrap">
+<div class="row2">
+  <div class="win" style="width:560px">
+    <div class="col-c">
+      <div class="mese-head">
+        <div class="mh-row">
+          <button class="mh-nav" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="mh-t">Agosto 2026</button>
+          <button class="mh-nav" disabled aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <div class="mh-s">0 giornate raccontate su 21 passate</div>
+      </div>
+      <div class="wk"><div>lun</div><div>mar</div><div>mer</div><div>gio</div><div>ven</div><div>sab</div><div>dom</div></div>
+      <div class="grid">
+        <div class="cell out"><div class="cn">27</div></div><div class="cell out"><div class="cn">28</div></div>
+        <div class="cell out"><div class="cn">29</div></div><div class="cell out"><div class="cn">30</div></div>
+        <div class="cell out"><div class="cn">31</div></div>
+        <div class="cell empty"><div class="cn">1</div><div class="ch">vuota</div></div>
+        <div class="cell empty"><div class="cn">2</div><div class="ch">vuota</div></div>
+        <div class="cell empty"><div class="cn">17</div><div class="ch">vuota</div></div>
+        <div class="cell empty"><div class="cn">18</div><div class="ch">vuota</div></div>
+        <div class="cell empty"><div class="cn">19</div><div class="ch">vuota</div></div>
+        <div class="cell empty"><div class="cn">20</div><div class="ch">vuota</div></div>
+        <div class="cell today"><div class="cn">21</div><div class="ch">vuota</div></div>
+        <div class="cell future"><div class="cn">22</div></div>
+        <div class="cell future"><div class="cn">23</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win dark" style="width:560px">
+    <div class="col-c">
+      <div class="mese-head">
+        <div class="mh-row">
+          <button class="mh-nav foc" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="mh-t">Agosto 2026</button>
+          <button class="mh-nav" disabled aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+        <div class="mh-s">0 giornate raccontate su 21 passate</div>
+      </div>
+      <div class="wk"><div>lun</div><div>mar</div><div>mer</div><div>gio</div><div>ven</div><div>sab</div><div>dom</div></div>
+      <div class="grid">
+        <div class="cell out"><div class="cn">27</div></div><div class="cell out"><div class="cn">28</div></div>
+        <div class="cell out"><div class="cn">29</div></div><div class="cell out"><div class="cn">30</div></div>
+        <div class="cell out"><div class="cn">31</div></div>
+        <div class="cell empty"><div class="cn">1</div><div class="ch">vuota</div></div>
+        <div class="cell empty"><div class="cn">2</div><div class="ch">vuota</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 03 ============ -->
+<div class="label">03 . La variante, se l'allineamento conta piu del gesto</div>
+<div class="caption">C'e un prezzo nella soluzione qui sopra e va detto: la freccia sinistra spinge il titolo <b>48px a destra</b>, e "Luglio 2026" non e piu incolonnato con il lunedi della griglia. Se quell'allineamento ti sta a cuore, questa e l'alternativa: titolo al suo posto, le due frecce insieme all'altro capo della riga. Perde la simmetria che hai chiesto, guadagna la colonna.</div>
+<div class="frame-wrap">
+<div class="win" style="width:820px">
+  <div class="col-c">
+    <div class="mese-head">
+      <div class="mh-row b">
+        <button class="mh-t">Luglio 2026</button>
+        <span class="mh-pair">
+          <button class="mh-nav" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="mh-nav" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </span>
+      </div>
+      <div class="mh-s">27 giornate raccontate su 31 del mese</div>
+    </div>
+    <div class="wk"><div>lun</div><div>mar</div><div>mer</div><div>gio</div><div>ven</div><div>sab</div><div>dom</div></div>
+    <div class="grid">
+      <div class="cell out"><div class="cn">29</div></div><div class="cell out"><div class="cn">30</div></div>
+      <div class="cell"><div class="cn">1</div><div class="ch">preavviso dato, il cantiere entra nel conto alla rovescia</div></div>
+      <div class="cell"><div class="cn">2</div><div class="ch">centoquaranta coperti e una brigata in meno</div></div>
+      <div class="cell"><div class="cn">3</div><div class="ch">salvate le cementine sotto il linoleum</div></div>
+      <div class="cell"><div class="cn">4</div><div class="ch">doppio turno di sabato</div></div>
+      <div class="cell"><div class="cn">5</div><div class="ch">lasagne di luglio</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ 04 ============ -->
+<div class="label">04 . Il telefono non cambia</div>
+<div class="caption">Sul telefono Mese non e una griglia: e un <b>feed continuo</b> che scorre all'indietro da solo e carica il mese prima quando arrivi in fondo. Due frecce li non aggiungerebbero niente e toglierebbero spazio all'intestazione appiccicata in alto. <b>Questa schermata resta identica.</b></div>
+<div class="frame-wrap">
+<div class="row2">
+  <div class="phone">
+    <div class="ph-sticky">
+      <div class="ph-m">Luglio 2026</div>
+      <div class="ph-s">27 giornate raccontate su 31 del mese</div>
+    </div>
+    <div class="ph-row"><div class="ph-d">31</div><div class="ph-h">primo servizio: trentadue coperti, venti minuti di panico, in pari a mezzanotte</div></div>
+    <div class="ph-row"><div class="ph-d">30</div><div class="ph-h">prova generale a locale pieno di amici, tre piatti sbagliati</div></div>
+    <div class="ph-row"><div class="ph-d">29</div><div class="ph-h">collaudo passato, la cappa e conforme</div></div>
+    <div class="ph-row"><div class="ph-d">28</div><div class="ph-h">sette anni finiti con una teglia di lasagne e un coltello</div></div>
+    <div class="ph-row"><div class="ph-d">27</div><div class="ph-h">la cappa e su, cinquemilaquattrocento e due giorni</div></div>
+  </div>
+</div>
+</div>
+
+<div class="note">
+  <div class="note-t">Le tre decisioni dentro questo disegno</div>
+  <div class="note-p">
+    <b>Il bottone spento non sparisce.</b> Sul mese corrente la freccia destra resta al suo posto, al 28 per cento di opacita e non cliccabile. Un bottone che scompare sposta il titolo ogni volta che torni al mese di oggi.<br><br>
+    <b>Il titolo continua a fare il suo mestiere.</b> Le frecce coprono il gesto corto (il mese prima), il titolo il salto lungo (un mese qualsiasi, il salto rapido che c'e gia). Non si toglie niente.<br><br>
+    <b>Indietro non ha un fondo.</b> Si puo andare indietro senza limite, anche su mesi in cui non hai scritto niente, e quelli si vedono vuoti. L'alternativa sarebbe fermarsi alla prima giornata mai scritta: si fa, ma va deciso, perche vuol dire che un bottone si spegne per un motivo che non e scritto da nessuna parte.<br><br>
+    Le frecce della tastiera restano libere: <code>sinistra</code> e <code>destra</code> possono fare la stessa cosa dei due bottoni, ed e mezz'ora di lavoro in piu.
+  </div>
+</div>
+
+</body>
+</html>

@@ -21,6 +21,8 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { todayISO } from "@/lib/format";
 import type {
+  Fact,
+  NewFact,
   AreaSummary,
   Entry,
   EntryMetrics,
@@ -51,6 +53,7 @@ type LocalEntryRecord = {
   headline: string | null;
   snippet: string | null;
   areas: AreaSummary[];
+  headlineLocked?: boolean;
   metrics: EntryMetrics;
   /** Le etichette accese; i GoalDot completi si costruiscono in lettura. */
   goalsOn: string[];
@@ -74,12 +77,21 @@ interface JournalDB extends DBSchema {
     indexes: { kind: string };
   };
   recaps: { key: string; value: Recap };
+  facts: {
+    key: string;
+    value: Fact;
+    indexes: { entryDate: string };
+  };
   drafts: { key: string; value: DraftRecord };
   meta: { key: string; value: MetaRecord };
 }
 
 const DB_NAME = "journalme";
-const DB_VERSION = 1;
+// 2 dal 22 agosto 2026: si aggiunge lo store dei fatti (SPEC-fatti §3.4).
+// La funzione di aggiornamento riceve la versione da cui si arriva: chi ha
+// gia il diario sul telefono NON deve perdere niente, quindi si creano solo
+// i pezzi che mancano.
+const DB_VERSION = 2;
 
 function uuid(): string {
   return crypto.randomUUID();
@@ -95,19 +107,25 @@ export class LocalStore implements JournalStore {
   private db(): Promise<IDBPDatabase<JournalDB>> {
     if (!this.dbPromise) {
       this.dbPromise = openDB<JournalDB>(DB_NAME, DB_VERSION, {
-        upgrade(db) {
-          const entries = db.createObjectStore("entries", {
-            keyPath: "entryDate",
-          });
-          void entries;
-          db.createObjectStore("goals", { keyPath: "id" });
-          const remembers = db.createObjectStore("remembers", {
-            keyPath: "id",
-          });
-          remembers.createIndex("kind", "kind");
-          db.createObjectStore("recaps", { keyPath: "id" });
-          db.createObjectStore("drafts", { keyPath: "entryDate" });
-          db.createObjectStore("meta", { keyPath: "key" });
+        upgrade(db, vecchia) {
+          if (vecchia < 1) {
+            const entries = db.createObjectStore("entries", {
+              keyPath: "entryDate",
+            });
+            void entries;
+            db.createObjectStore("goals", { keyPath: "id" });
+            const remembers = db.createObjectStore("remembers", {
+              keyPath: "id",
+            });
+            remembers.createIndex("kind", "kind");
+            db.createObjectStore("recaps", { keyPath: "id" });
+            db.createObjectStore("drafts", { keyPath: "entryDate" });
+            db.createObjectStore("meta", { keyPath: "key" });
+          }
+          if (vecchia < 2) {
+            const facts = db.createObjectStore("facts", { keyPath: "id" });
+            facts.createIndex("entryDate", "entryDate");
+          }
         },
       }).then(async (db) => {
         // Seed dei goal di default SOLO alla creazione: se meta.schemaVersion
@@ -253,6 +271,7 @@ export class LocalStore implements JournalStore {
         on: on.has(d.label.toLowerCase()),
       })),
       people: rec.people,
+      headlineLocked: rec.headlineLocked === true,
       createdAt: rec.createdAt,
     };
   }
@@ -295,6 +314,69 @@ export class LocalStore implements JournalStore {
       .sort((a, b) => (a.entryDate < b.entryDate ? 1 : -1));
   }
 
+  async loadAllEntries(): Promise<Entry[]> {
+    const db = await this.db();
+    const [recs, defs] = await Promise.all([
+      db.getAll("entries"),
+      this.loadGoalDefs(),
+    ]);
+    return recs
+      .sort((a, b) => (a.entryDate < b.entryDate ? -1 : 1))
+      .map((r) => this.recordToEntryWith(r, defs));
+  }
+
+  /* ----------------- fatti (SPEC-fatti §3.4) ----------------- */
+
+  async replaceAiFacts(dateISO: string, facts: NewFact[]): Promise<Fact[]> {
+    const db = await this.db();
+    const tx = db.transaction("facts", "readwrite");
+    const store = tx.objectStore("facts");
+    const delGiorno = await store.index("entryDate").getAll(dateISO);
+    // Solo i fatti letti dall'AI: quelli scritti a mano non si toccano mai.
+    for (const f of delGiorno) {
+      if (f.origin !== "manual") await store.delete(f.id);
+    }
+    for (const f of facts) {
+      await store.put({
+        ...f,
+        id: uuid(),
+        entryDate: dateISO,
+        origin: f.origin ?? "ai",
+      });
+    }
+    await tx.done;
+    return this.loadFactsForDate(dateISO);
+  }
+
+  async loadFactsForDate(dateISO: string): Promise<Fact[]> {
+    const db = await this.db();
+    return db.getAllFromIndex("facts", "entryDate", dateISO);
+  }
+
+  async loadFactsForMonth(year: number, month: number): Promise<Fact[]> {
+    const db = await this.db();
+    const prefisso = `${year}-${String(month).padStart(2, "0")}`;
+    const tutti = await db.getAll("facts");
+    return tutti
+      .filter((f) => f.entryDate.startsWith(prefisso))
+      .sort((a, b) => (a.entryDate < b.entryDate ? 1 : -1));
+  }
+
+  async loadKnownLabels(limit = 120): Promise<string[]> {
+    const db = await this.db();
+    const tutti = await db.getAll("facts");
+    const conteggio = new Map<string, number>();
+    for (const f of tutti) {
+      const k = (f.labelKey ?? "").trim();
+      if (!k) continue;
+      conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+    }
+    return [...conteggio.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([k]) => k);
+  }
+
   async countEntries(): Promise<number> {
     const db = await this.db();
     return db.count("entries");
@@ -316,10 +398,26 @@ export class LocalStore implements JournalStore {
     const rec: LocalEntryRecord = {
       ...(existing ?? this.blankRecord(dateISO)),
       transcript,
-      headline: ai.headline,
+      // Titolo bloccato = scritto a mano: nessuna rilettura lo tocca.
+      ...(existing?.headlineLocked ? {} : { headline: ai.headline }),
       snippet: ai.snippet,
       areas: ai.areas,
+      // Assente = non toccare (vedi AIFields): senza questo ramo, una
+      // lettura vuota cancellerebbe i nomi gia salvati.
+      ...(ai.people ? { people: ai.people } : {}),
       durationSeconds,
+    };
+    await db.put("entries", rec);
+    return this.recordToEntry(rec);
+  }
+
+  async saveHeadline(dateISO: string, headline: string): Promise<Entry> {
+    const db = await this.db();
+    const existing = await db.get("entries", dateISO);
+    const rec: LocalEntryRecord = {
+      ...(existing ?? this.blankRecord(dateISO)),
+      headline: headline.trim(),
+      headlineLocked: true,
     };
     await db.put("entries", rec);
     return this.recordToEntry(rec);

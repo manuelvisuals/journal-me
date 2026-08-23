@@ -154,7 +154,8 @@ Label in maiuscoletto con tracking positivo; headline con tracking negativo.
 Mockup in `design/mockups/`: `login`, `today`, `mese`, `recap`, `remember`, `settings`,
 `altro`, `metrics-editable`, `recording-flow-v2`, `recording-overlay-v3`,
 `notte-feedback-persone`, `idee-feature`.
-Aggiunti il 17 agosto: `desktop-v1`, `due-modalita`, `temi` (vedi §13).
+Aggiunti in agosto: `desktop-v1`, `due-modalita`, `temi`, `impostazioni`,
+`marketplace-temi`, `testo-e-giorno`, `consumi-ai` (elenco completo in §13).
 
 ---
 
@@ -284,6 +285,17 @@ eliminato; `user_settings.glossary` resta solo come fallback legacy lato server.
 ---
 
 ## 7. Trappole gia pagate (non ripeterle)
+
+### Il foglio di stile che non cambia (21 agosto 2026)
+
+Dopo aver copiato `src` in `/tmp/jm-build`, il dev server puo continuare a
+servire il VECCHIO `globals.css`: Turbopack tiene la sua cache in `.next` e
+il pezzo di CSS mantiene lo stesso nome. Il sintomo inganna, perche il
+componente nuovo c'e (i suoi elementi si trovano nel DOM) ma e senza stile:
+sembra un errore di CSS scritto male, ed e solo roba vecchia servita.
+
+Cura: `rm -rf /tmp/jm-build/.next` prima di riavviare. Controprova rapida:
+`curl` sull'indirizzo del CSS e `grep` di una classe nuova.
 
 - **`src/proxy.ts`, non `middleware.ts`.** Next 16 ha rinominato il middleware.
 - **`entries` non ha la colonna `duration_seconds`.** Metterla in un `select` fa fallire
@@ -539,7 +551,7 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
 
 ## 13. Journal.me v2 — desktop, due modalita, temi (progettato il 17 agosto 2026)
 
-Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2026):**
+Progettazione chiusa e approvata da Manuel. **Stato implementazione (21 agosto 2026):**
 
 - **PR 1 `api-auth`: fatta e verificata in produzione** (commit `6ef18fc`). Tutte le
   route AI dietro `requirePremium` (401/402), migration `006_profiles.sql` applicata,
@@ -1042,54 +1054,62 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   tiene il titolo della PRIMA riga scritta quel giorno, che e coerente col
   mockup ("il titolo e la prima riga") ma sorprende chi crede di riscrivere.
 
-**Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
-(oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop
-diventa la scrittura invece del microfono, e nascono **due modalita**: una versione gratis
-che tiene tutto sul dispositivo e non fa **nessuna** richiesta di rete, e una premium con
-cloud e AI. Sopra a tutto, un sistema di **temi** con due assi indipendenti (identita del
-tema, e chiaro/scuro/sistema).
-
-**Dove sta la specifica.**
-
-```
-SPEC-temi.md                       contratto dei token, 5 temi, appearance. PR 0
-SPEC-v2.md                         architettura dati, gating, layout desktop. PR 1..12
-design/mockups/temi.html           i 5 temi in chiaro e scuro + picker
-design/mockups/desktop-v1.html     Oggi, focus, giornata piena, Mese a griglia
-design/mockups/due-modalita.html   scelta iniziale, giornata gratis, backup, muro premium
-```
-
-**Le tre cose da sapere prima di aprire qualsiasi file.**
-
-1. **P0 di sicurezza, indipendente dal resto.** Nessuna delle route sotto `/api/*` rifiuta
-   una richiesta non autenticata, e il CORS e `*`. Chiunque conosca
-   `journal-me-weld.vercel.app` puo spendere la chiave OpenAI. Finche l'app era privata era
-   teorico; distribuendola non lo e piu. E la PR 1 e va fatta comunque.
-   Collegato: `/api/realtime/session` non ha piu nessun chiamante
-   (`src/lib/realtime/prewarm.ts:8-9`) ed e da **cancellare**, non da proteggere.
-2. **La PR 0 (temi) viene prima di tutto il visivo.** Il grosso dei componenti nuovi nasce
-   nelle PR 6-10: se il contratto dei token arriva dopo, quei componenti nascono con
-   valori letterali dentro e vanno riscritti.
-3. **Il brandbook cambia ruolo.** Da "il look dell'app" a due cose: il contratto (regole
-   valide per ogni tema) e la definizione del tema `wine`. Serve un capitolo 00 che lo
-   dica, altrimenti ogni revisione futura bocciera i temi citando il brandbook.
-   Il tema di **default** e `minimal` (Inter + Newsreader), non `wine`.
-
-**Le trappole gia mappate** (dettaglio con file e riga nelle spec): `AuthGate` manda a
-`/login` chiunque non abbia sessione, e un utente locale non ne ha mai; la tab bar non e in
-`layout.tsx` ma la rendono dodici punti, e si spegne con `lg:hidden` in
-`src/components/ui/tab-bar.tsx:108`; `resolveMode()` e per forza asincrona; le funzioni dati
-hanno `_mode` come primo parametro su 26 call-site; `saveRecording` e `generateAndSaveRecap`
-chiamano `/api/*` dal livello dati e vanno spostate fuori dallo store.
-
-**Trappola di verifica dei mockup.** Il sandbox non raggiunge `fonts.googleapis.com`,
-quindi un mockup renderizzato li dentro mostra **Georgia** al posto di ogni serif senza
-dirtelo, e ogni giudizio sui font che ne esce e falso. Procedura corretta in
-`SPEC-temi.md`, in testa al documento.
-
-**Ancora aperto:** prezzo dell'abbonamento; App Store rinviato a dopo il web; capitolo 20
-del brandbook per focus e hover su desktop (oggi non esiste nessuno stato
-`:focus-visible` in tutto il repo); Recap come voce di primo livello o dentro Altro;
-privacy policy e termini, che servono anche per la sola versione gratis.
-
 ---
+
+### Dove sta la specifica
+
+```
+SPEC-temi.md                          contratto dei token, 5 temi, appearance (PR 0)
+SPEC-v2.md                            architettura dati, gating, layout desktop (PR 1..12)
+SPEC-fatti.md                         dal racconto ai dati - BOZZA, in attesa di approvazione
+design/mockups/temi.html              i 5 temi in chiaro e scuro + picker
+design/mockups/desktop-v1.html        Oggi, focus, giornata piena, Mese a griglia
+design/mockups/due-modalita.html      scelta iniziale, giornata gratis, backup, muro premium
+design/mockups/impostazioni.html      rail destra a tre righe + Impostazioni a gruppi
+design/mockups/marketplace-temi.html  PR 12, design approvato
+design/mockups/testo-e-giorno.html    dimensione del testo + aggiungi a una giornata
+design/mockups/consumi-ai.html        consumi AI (mockup approvato, UI non implementata)
+```
+
+Le spec sono la fonte del **perche**. Per **cosa c'e adesso** vince questa sezione, e
+sopra tutto vince il codice.
+
+### Cosa e chiuso, in una riga
+
+**PR 0..11 implementate e verificate.** Fuori spec sono arrivati anche: bilingue
+italiano/inglese, contatore consumi AI, Impostazioni a gruppi, dimensione del testo,
+avviso di caricamento, cache tra i tab, e una ventina di bugfix.
+
+Le trappole mappate in fase di progetto — `AuthGate` a tre esiti, tab bar spenta con
+`lg:hidden` in un punto solo, `resolveStorageMode()` asincrona, `_mode` invariato sui
+call-site, azioni AI fuori dal livello dati — **sono tutte chiuse**. Non sono piu
+avvisi da leggere: sono codice in produzione. Se in una spec leggi ancora "da fare",
+la spec e vecchia e vince il codice.
+
+### Cosa manca davvero (21 agosto 2026)
+
+| Cosa | Stato |
+|---|---|
+| PR 12 marketplace temi | design approvato, **codice zero** |
+| SPEC-fatti | bozza scritta, **serve l'ok di Manuel** prima di implementare |
+| Schermata dei consumi AI | mockup pronto, `/api/usage` gia in piedi, **UI da scrivere** |
+| Bundle iOS | ancora pre-temi: `npm run build:ios` prima di rimettere le mani sul telefono |
+| Migration 008 (`stripe_customer_id`) | scritta, **non applicata** in produzione |
+| Stripe | codice pronto e inerte (503 onesto) - rimandato per scelta di Manuel |
+| Privacy policy e termini | non esistono, e servono anche per la sola versione gratis |
+| Trial "primo mese incluso" | non esiste: `PREMIUM_HAS_FREE_TRIAL = false` in `pricing.ts` |
+
+### Trappola di verifica dei mockup
+
+Il sandbox non raggiunge `fonts.googleapis.com`: un mockup che carica i font da Google
+renderizza **Georgia** al posto di ogni serif senza dirtelo, e ogni giudizio tipografico
+che ne esce e falso. I mockup nuovi caricano i woff2 di `src/fonts/` con un percorso
+relativo: fai lo stesso. Controprova: misura la larghezza dello stesso testo e
+confrontala con Georgia. `document.fonts.check()` torna `true` anche col fallback e
+**non e una prova**.
+
+### Lavorare in parallelo
+
+Se piu chat lavorano insieme sullo stesso repo, leggi `WORKERS.md`: branch per worker,
+nessuno tocca `main`, file disgiunti dichiarati prima di partire. Due chat che pushano
+su `main` si sovrascrivono, e il tempo risparmiato lo perdi nel conflitto.

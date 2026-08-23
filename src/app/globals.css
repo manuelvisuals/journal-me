@@ -1,4 +1,9 @@
 @import "tailwindcss";
+/* Le funzioni in lavorazione su rami paralleli: vedi features.css.
+   Sta QUI e non in fondo perche un @import dopo le regole e ignorato dai
+   browser: il file sarebbe stato caricato dal bundler e buttato via dal
+   browser, cioe il tipo di guasto che non da nessun errore. */
+@import "./features.css";
 
 @theme inline {
   --color-bg: var(--jm-bg);
@@ -1176,41 +1181,95 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 12%, transparent);
 }
 
-/* Goal dots (clickable in filled view).
-   Il pallino resta 14px: e il disegno approvato di quella riga, e allargarlo
-   cambierebbe la spaziatura di tutto il gruppo. Ma 14px come BERSAGLIO sono
-   meno di un terzo del minimo del brandbook (cap. 05: 36-44px), ed e la
-   ragione per cui prenderli e un terno al lotto. Il bersaglio si allarga con
-   uno pseudo-elemento invisibile: tutta l'altezza disponibile in verticale
-   (dove non c'e nulla da invadere) e meta del gap in orizzontale (di piu
-   farebbe accavallare due obiettivi, che e peggio di un bersaglio piccolo:
-   accenderesti quello sbagliato). Da 14x14 a 23x40, area per cinque, e cio
-   che si vede non cambia di un pixel. */
-.jm-goal-dot {
-  position: relative;
-  width: 14px;
-  height: 14px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
-  border: 1px solid color-mix(in oklab, var(--color-ink) 6%, transparent);
+/* Gli obiettivi del giorno, sul telefono (mockup obiettivi-mobile.html §A,
+   approvato il 21 agosto 2026). Sostituiscono i pallini da 14px: erano
+   sotto la misura del polpastrello (44px) e, soprattutto, non dicevano di
+   quale obiettivo si trattasse. Vedi src/components/today/goal-list.tsx.
+
+   Righe separate da una linea sottile e nessun riquadro attorno: cinque
+   obiettivi dentro cinque scatole peserebbero piu del diario, che e la
+   cosa per cui si e qui. */
+.jm-goals {
+  padding: calc(20px * var(--jm-space)) 0 calc(4px * var(--jm-space));
+}
+.jm-goals-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: calc(8px * var(--jm-space));
+}
+.jm-goals-head .l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.jm-goals-head .c {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.jm-goals-list {
+  border-top: 1px solid var(--color-line);
+}
+/* Il bersaglio e TUTTA la riga, non la casella: 52px di altezza per la
+   scala 1, e si alza con il testo quando l'utente ingrandisce (la riga
+   deve restare piu alta di cio che contiene, o il nome tocca i bordi). */
+.jm-goal-row {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  width: 100%;
+  min-height: calc(52px * var(--jm-ui-scale));
+  padding: calc(8px * var(--jm-space)) 2px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
   cursor: pointer;
-  transition: transform 120ms, background-color 120ms, box-shadow 120ms;
-  padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
-.jm-goal-dot::after {
-  content: "";
-  position: absolute;
-  inset: -13px -4px;
+.jm-goal-row:hover {
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
 }
-.jm-goal-dot:hover {
-  transform: scale(1.15);
+.jm-goal-box {
+  width: calc(22px * var(--jm-ui-scale));
+  height: calc(22px * var(--jm-ui-scale));
+  flex: 0 0 calc(22px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-sm);
+  border: 1.5px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 120ms, border-color 120ms;
 }
-.jm-goal-dot.on {
+.jm-goal-box svg {
+  width: calc(13px * var(--jm-ui-scale));
+  height: calc(13px * var(--jm-ui-scale));
+  stroke: var(--color-on-accent);
+  stroke-width: 2.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+.jm-goal-row.on .jm-goal-box {
   background: var(--color-accent);
-  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
-  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 40%, transparent);
+  border-color: var(--color-accent);
 }
+.jm-goal-row.on .jm-goal-box svg { opacity: 1; }
+.jm-goal-lab {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(15.5px * var(--jm-ui-scale));
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-ink-muted);
+}
+.jm-goal-row.on .jm-goal-lab { color: var(--color-ink); }
 
 /* Day detail page (/giorno/[date]) — opens when tapping a row in /mese */
 .jm-day-head {
@@ -3348,6 +3407,102 @@ summary:active {
   color: var(--color-ink-faint);
   font-style: italic;
 }
+/* Il titolo si puo riscrivere a mano. La matita compare accanto finche il
+   titolo e dell'AI; appena e tuo, al suo posto resta la targhetta. La
+   targhetta NON e un bottone: da qui non si torna indietro (vedi
+   headline-editable.tsx). */
+.jm-fv-hbox {
+  position: relative;
+}
+.jm-fv-htap {
+  cursor: text;
+  border-radius: 10px;
+  /* Il titolo resta dov'era: il riquadro dell'editor cade esattamente sopra
+     grazie ai margini negativi speculari. */
+  padding: 0;
+}
+.jm-fv-htap:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+.jm-fv-htap.saving {
+  opacity: 0.5;
+}
+.jm-fv-hpen {
+  width: calc(15px * var(--jm-ui-scale));
+  height: calc(15px * var(--jm-ui-scale));
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+/* Sul telefono non esiste il passaggio del mouse: la matita si vede sempre,
+   se no il titolo sembra non toccabile. */
+@media (hover: none) {
+  .jm-fv-hpen {
+    opacity: 0.65;
+  }
+}
+.jm-fv-htap:hover .jm-fv-hpen,
+.jm-fv-htap:focus-visible .jm-fv-hpen {
+  opacity: 1;
+}
+.jm-fv-tuo {
+  display: inline-flex;
+  align-items: center;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px 9px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.jm-fv-hedit {
+  display: block;
+  width: calc(100% + 20px);
+  resize: none;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin: -4px -10px 4px;
+  font-family: inherit;
+}
+.jm-fv-hedit:focus {
+  outline: none;
+}
+.jm-fv-hhint {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+/* I luoghi, accanto alle persone: stessa pastiglia, con lo spillo davanti
+   perche a colpo d'occhio si distingua un posto da una persona. */
+.jm-railr-chip .jm-pin,
+.jm-person-pill .jm-pin {
+  width: calc(11px * var(--jm-ui-scale));
+  height: calc(11px * var(--jm-ui-scale));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-right: 5px;
+  vertical-align: -1px;
+}
+
 .jm-fv-sn {
   font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 400;
@@ -4023,6 +4178,14 @@ summary:active {
   margin-top: 3px;
   word-break: break-all;
 }
+/* Premium: la targhetta si riempie invece di restare contornata. Prima
+   "Gratis" e "Premium" erano lo stesso oggetto con dentro una parola
+   diversa: per accorgersi del cambio bisognava leggerla. */
+.jm-st-pill.on {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
 .jm-st-pill {
   display: inline-block;
   margin-top: 10px;
@@ -4178,33 +4341,63 @@ summary:active {
    stretto e appiccicato al cestino. Tratteggiato perche e un invito, non
    l'azione principale della schermata — quella e leggere.
    ============================================================= */
+/* Il tasto per aggiungere qualcosa alla giornata (mockup
+   design/mockups/tasto-aggiungi.html §C, approvato il 22 agosto 2026).
+
+   Com'era: bordo tratteggiato e sei pixel d'aria sopra. Due difetti in uno.
+   Il tratteggiato, ovunque nel mondo, vuol dire "campo da riempire": il
+   tasto sembrava un segnaposto rimasto li. E sei pixel non sono spazio,
+   sono un errore di stampa - stava appiccicato all'ultima area.
+
+   Com'e: la stessa forma delle aree - stesso fondo, stesso bordo, stesso
+   raggio - ma vuota, con il piu al centro. Si legge come LA CASELLA CHE
+   MANCA, e non ha bisogno di spiegazioni. Sopra, trenta pixel di respiro:
+   la giornata finisce, e poi c'e questo. */
 .jm-day-add {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 10px;
   width: 100%;
-  min-height: 52px;
-  margin: calc(6px * var(--jm-space)) 0 calc(22px * var(--jm-space));
-  background: transparent;
-  border: 1px dashed var(--color-line);
+  min-height: calc(64px * var(--jm-ui-scale));
+  margin: calc(30px * var(--jm-space)) 0 calc(24px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  /* --jm-radius-md e non lg: e lo stesso raggio delle schede delle aree
+     (.jm-fv-area da lg in su). Su desktop il tasto deve essere
+     indistinguibile da loro nella forma, o l'idea della "casella che manca"
+     non funziona. */
   border-radius: var(--jm-radius-md);
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: calc(14px * var(--jm-ui-scale));
+  font-size: calc(14.5px * var(--jm-ui-scale));
   font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
+  transition: background-color 140ms, color 140ms;
   -webkit-tap-highlight-color: transparent;
 }
-.jm-day-add:hover { background: var(--color-surface); }
+.jm-day-add:hover {
+  background: var(--color-surface-2);
+  color: var(--color-ink);
+}
 .jm-day-add:disabled { opacity: 0.55; cursor: default; }
 .jm-day-add svg {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 16px;
+  width: calc(16px * var(--jm-ui-scale));
+  height: calc(16px * var(--jm-ui-scale));
+  flex: 0 0 calc(16px * var(--jm-ui-scale));
   fill: none;
   stroke: currentColor;
+  stroke-width: 2.2;
 }
+/* Sulla giornata VUOTA il tasto e l'unica cosa sullo schermo: li non deve
+   somigliare a una scheda in una lista, deve essere un invito. Niente
+   fondo, e l'aria sopra la mette gia il centraggio verticale. */
+.jm-day-add.empty {
+  background: transparent;
+  margin-top: calc(10px * var(--jm-space));
+}
+.jm-day-add.empty:hover { background: var(--color-surface); }
 
 /* Giornata vuota: era un vicolo cieco, ora e un invito con un'azione. */
 .jm-day-empty-wrap {
@@ -4411,12 +4604,10 @@ summary:active {
   border-radius: var(--jm-radius-md);
   padding: 16px 18px;
 }
-/* Dentro una jm-st-box (pannello Impostazioni sul telefono) la card
-   e gia in una scatola: niente doppio bordo. */
-.jm-usage.plain {
-  background: transparent;
-  border: none;
-  border-radius: 0;
+/* Dentro il pannello Consumi AI la card respira dal sottotitolo del mese
+   sopra e dal totale sotto. */
+.jm-cs .jm-usage {
+  margin: calc(14px * var(--jm-space)) 0 calc(18px * var(--jm-space));
 }
 .jm-usage-top {
   display: flex;
@@ -4455,4 +4646,439 @@ summary:active {
   font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   line-height: 1.5;
+}
+
+/* ============================================================
+   Checkout finto e popup di congratulazioni (mockup
+   design/mockups/checkout-finto.html, approvato il 21 agosto 2026).
+   Esiste solo in ambiente di prova: vedi src/lib/dev-checkout.ts.
+   ============================================================ */
+.jm-ck {
+  padding: 0 calc(26px * var(--jm-space));
+}
+.jm-ck-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: calc(18px * var(--jm-space));
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-ck-bar svg {
+  width: 12px;
+  height: 12px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  fill: none;
+}
+.jm-ck-mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: calc(20px * var(--jm-space));
+}
+.jm-ck-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 7px;
+  font-size: calc(10.5px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 6px 12px;
+  margin-bottom: calc(26px * var(--jm-space));
+}
+.jm-ck-tag i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jm-radius-circle);
+  background: #e0a800;
+  display: block;
+}
+.jm-ck-t {
+  font-family: var(--font-serif);
+  font-size: calc(31px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--color-ink);
+  /* Il titolo va su due righe e dove spezzare lo decide la traduzione, con
+     un a capo dentro la stringa: stesso motivo di .jm-wall-t. */
+  white-space: pre-line;
+}
+.jm-ck-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-top: calc(14px * var(--jm-space));
+}
+.jm-ck-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: calc(30px * var(--jm-space)) 0 6px;
+}
+/* Il prezzo e sbarrato: pieno, su una pagina che non incassa, e il modo
+   piu rapido per dimenticarsi che e una prova. */
+.jm-ck-amount .n {
+  font-family: var(--font-serif);
+  font-size: calc(44px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.45;
+}
+.jm-ck-amount .per {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-ck-strike {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-ck-err {
+  margin-top: calc(22px * var(--jm-space));
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-danger);
+}
+.jm-ck-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: calc(20px * var(--jm-space));
+}
+.jm-ck-quiet {
+  width: 100%;
+  min-height: calc(40px * var(--jm-ui-scale));
+  border: none;
+  background: transparent;
+  color: var(--color-ink-faint);
+  font-family: inherit;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  cursor: pointer;
+}
+.jm-ck-quiet:disabled { opacity: 0.5; cursor: default; }
+.jm-ck-foot {
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-faint);
+  border-top: 1px solid var(--color-line);
+  padding: calc(16px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+}
+
+.jm-cong-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: color-mix(in oklab, var(--color-shadow) 72%, transparent);
+  backdrop-filter: blur(7px);
+}
+.jm-cong {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: 34px 28px 24px;
+  text-align: center;
+  box-shadow: 0 18px 40px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+}
+.jm-cong-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 22px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg-phone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jm-cong-mark svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-cong-t {
+  font-family: var(--font-serif);
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+.jm-cong-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-top: 12px;
+}
+.jm-cong-list {
+  text-align: left;
+  margin: 22px 0 24px;
+  border-top: 1px solid var(--color-line);
+}
+.jm-cong-li {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-cong-li i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  flex: 0 0 5px;
+  margin-top: 7px;
+  display: block;
+}
+.jm-cong-li span {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+}
+
+/* =============================================================
+   Scheda persona (/persona?nome=). La domanda a cui risponde e
+   "da quanto non lo vedo": per questo il numero grande e quello,
+   e non il totale degli incontri.
+   ============================================================= */
+.jm-pers-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space))
+    calc(40px * var(--jm-space));
+}
+.jm-pers-top {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  margin-bottom: calc(20px * var(--jm-space));
+}
+.jm-pers-av {
+  width: calc(56px * var(--jm-ui-scale));
+  height: calc(56px * var(--jm-ui-scale));
+  flex: 0 0 calc(56px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent);
+}
+.jm-pers-id { min-width: 0; }
+.jm-pers-name {
+  font-size: calc(23px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.jm-pers-last {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+}
+.jm-pers-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: calc(8px * var(--jm-space));
+}
+.jm-pers-stat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(14px * var(--jm-space)) 6px;
+  text-align: center;
+}
+.jm-pers-stat .n {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-pers-stat .k {
+  font-size: calc(9.5px * var(--jm-ui-scale));
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-top: 4px;
+}
+/* Un fatto con i suoi numeri accanto, non una pagella: il diario non da
+   voti, e chi legge sa cosa farsene del confronto. */
+.jm-pers-trend {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  margin-top: calc(14px * var(--jm-space));
+}
+.jm-pers-l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin: calc(26px * var(--jm-space)) 0 calc(8px * var(--jm-space));
+}
+.jm-pers-days { border-top: 1px solid var(--color-line); }
+.jm-pers-day {
+  display: flex;
+  align-items: baseline;
+  gap: calc(12px * var(--jm-space));
+  width: 100%;
+  min-height: calc(52px * var(--jm-ui-scale));
+  padding: calc(10px * var(--jm-space)) 2px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-pers-day:hover {
+  background: color-mix(in oklab, var(--color-ink) 3%, transparent);
+}
+.jm-pers-day .d {
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+}
+.jm-pers-day .x {
+  flex: 1;
+  min-width: 0;
+  font-size: calc(14.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.4;
+}
+.jm-pers-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 calc(30px * var(--jm-space)) calc(60px * var(--jm-space));
+}
+.jm-pers-empty-h {
+  font-family: var(--font-serif);
+  font-size: calc(24px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+.jm-pers-empty-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-top: calc(12px * var(--jm-space));
+  max-width: 280px;
+}
+/* La pill diventa un bottone: stesso disegno, piu il fatto che si prema. */
+.jm-person-pill.link {
+  cursor: pointer;
+  font-family: inherit;
+}
+.jm-person-pill.link:hover {
+  background: var(--color-surface-2);
+}
+.jm-railr-chip.link {
+  cursor: pointer;
+  font-family: inherit;
+}
+.jm-railr-chip.link:hover {
+  background: var(--color-surface-2);
+}
+
+/* Moduli: l'interruttore, e la schermata di un modulo ancora in
+   costruzione. */
+.jm-sw {
+  width: calc(42px * var(--jm-ui-scale));
+  height: calc(25px * var(--jm-ui-scale));
+  flex: 0 0 calc(42px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 140ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-sw i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(19px * var(--jm-ui-scale));
+  height: calc(19px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  transition: transform 140ms;
+}
+.jm-sw.on { background: var(--color-accent); border-color: var(--color-accent); }
+.jm-sw.on i {
+  transform: translateX(calc(17px * var(--jm-ui-scale)));
+  background: var(--color-on-accent);
+  border-color: transparent;
+}
+.jm-st-row.presto .jm-st-t { color: var(--color-ink-faint); }
+
+.jm-mod-soon {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 calc(30px * var(--jm-space)) calc(60px * var(--jm-space));
+}
+.jm-mod-soon-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: calc(20px * var(--jm-space));
+  color: var(--color-ink-faint);
+}
+.jm-mod-soon-ic svg { width: 24px; height: 24px; }
+.jm-mod-soon-h {
+  font-family: var(--font-serif);
+  font-size: calc(23px * var(--jm-ui-scale));
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.jm-mod-soon-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin: calc(12px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+  max-width: 300px;
 }

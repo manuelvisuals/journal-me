@@ -4,11 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { useT } from "@/lib/i18n";
+import { MODULE_ICONS } from "@/components/ui/module-icons";
+import { useActiveModules } from "@/lib/modules";
 
 /**
  * La rail sinistra del guscio desktop (mockup desktop-v1.html): brand,
- * navigazione, "Racconta a voce", account con badge modalita in fondo.
+ * navigazione, "Racconta" (una parola: vedi sotto), account con badge in fondo.
  *
  * Le voci vengono dal mockup approvato: Recap e di primo livello e
  * l'etichetta e "Ricorda" (SPEC-v2 §10.7 le segnava come decisione aperta;
@@ -88,6 +91,7 @@ type Account = { name: string; badge: string };
 
 export function RailLeft() {
   const t = useT();
+  const moduli = useActiveModules();
   const pathname = usePathname();
   const mode = useStorageMode();
   const active = activeKeyFor(pathname);
@@ -131,6 +135,7 @@ export function RailLeft() {
   return (
     <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
       <div className="jm-rail-brand">
+        <BrandMark />
         Journal<span>.me</span>
       </div>
       <div className="jm-rail-nav">
@@ -145,13 +150,34 @@ export function RailLeft() {
             {t(item.label)}
           </Link>
         ))}
+
+        {/* I moduli accesi: sul desktop ci stanno TUTTI, incolonnati, perche
+            qui lo spazio c'e (sul telefono la barra ne mostra uno solo).
+            Sono sotto le voci fisse e sopra il separatore: sono sezioni,
+            non azioni. */}
+        {moduli.map((m) => (
+          <Link
+            key={m.id}
+            href={m.href}
+            className={`jm-rail-i${pathname === m.href ? " on" : ""}`}
+            aria-current={pathname === m.href ? "page" : undefined}
+          >
+            {MODULE_ICONS[m.id]}
+            {t(m.label)}
+          </Link>
+        ))}
+
         <div className="jm-rail-sep" />
         <Link href="/?record=1" className="jm-rail-i rec">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="9" y="3" width="6" height="11" rx="3" />
             <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
           </svg>
-          {mode === "local" ? t("Scrivi la giornata") : t("Racconta a voce")}
+          {/* Una parola sola: "Racconta a voce" andava a capo dentro i 222px
+              della rail, e una voce di navigazione su due righe rompe la
+              colonna che tutte le altre tengono. Il verbo resta quello del
+              progetto — si racconta la giornata — solo senza il complemento. */}
+          {mode === "local" ? t("Scrivi") : t("Racconta")}
           <span className="jm-rail-kbd">{"⌘⇧R"}</span>
         </Link>
       </div>

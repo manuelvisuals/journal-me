@@ -1,9 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { AreaIcon } from "@/components/aree/area-icon";
 import { MetricCards } from "@/components/today/metric-cards";
-import { GoalDots } from "@/components/today/goal-dots";
+import { GoalList } from "@/components/today/goal-list";
 import { RailToday } from "@/components/today/rail-today";
-import type { AreaSummary, EntryMetrics, GoalDot } from "@/lib/types";
+import { HeadlineEditable } from "@/components/today/headline-editable";
+import { PlacePin } from "@/components/ui/place-pin";
+import type { AreaSummary, Entry, EntryMetrics, GoalDot } from "@/lib/types";
+import type { DataMode } from "@/lib/data/entries";
 import { useT } from "@/lib/i18n";
 
 type Props = {
@@ -13,6 +18,20 @@ type Props = {
   metrics: EntryMetrics | null;
   goals: GoalDot[];
   people?: string[];
+  /** I luoghi della giornata (fatti di tipo luogo), accanto alle persone. */
+  places?: string[];
+  /**
+   * Presente = il titolo si puo riscrivere a mano. Lo passano le schermate
+   * che hanno una giornata salvata sotto (Oggi e /giorno); dove non c'e
+   * ancora niente da titolare, il titolo resta una scritta e basta.
+   */
+  editHeadline?: {
+    dateISO: string;
+    mode: DataMode;
+    locked: boolean;
+    onSaved: (entry: Entry) => void;
+    onError?: (message: string) => void;
+  } | null;
   onMetricChange: (patch: Partial<EntryMetrics>) => void;
   onGoalToggle: (label: string) => void;
   /**
@@ -38,6 +57,8 @@ export function FilledView({
   metrics,
   goals,
   people,
+  places,
+  editHeadline = null,
   onMetricChange,
   onGoalToggle,
   freeProse = null,
@@ -45,10 +66,12 @@ export function FilledView({
   footer = null,
 }: Props) {
   const t = useT();
+  const router = useRouter();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
-  const realAreas = areas?.filter((a) => a.text.trim().length > 0) ?? [];
+  const realAreas = orderAreas(areas ?? []);
   const peopleList = (people ?? []).filter((p) => p.trim().length > 0);
+  const placeList = (places ?? []).filter((p) => p.trim().length > 0);
 
   const proseParagraphs = freeProse
     ? freeProse.transcript
@@ -63,7 +86,16 @@ export function FilledView({
       {/* Stili in classi jm-fv-*: sotto lg replicano ESATTAMENTE i valori
           inline storici; da lg il mockup desktop-v1 §03 (headline 27px,
           snippet serif corsivo, aree su due colonne a card). */}
-      {hasHeadline ? (
+      {editHeadline ? (
+        <HeadlineEditable
+          headline={headline}
+          locked={editHeadline.locked}
+          dateISO={editHeadline.dateISO}
+          mode={editHeadline.mode}
+          onSaved={editHeadline.onSaved}
+          onError={editHeadline.onError}
+        />
+      ) : hasHeadline ? (
         <h1 className="jm-fv-h">{headline}</h1>
       ) : (
         <h1 className="jm-fv-h placeholder">
@@ -109,7 +141,10 @@ export function FilledView({
             <div className="jm-fv-areas">
               {realAreas.map((area) => (
                 <div key={area.label} className="jm-fv-area">
-                  <div className="l">{t(area.label)}</div>
+                  <div className="l">
+                    <AreaIcon label={area.label} />
+                    {t(area.label)}
+                  </div>
                   <div className="x">{area.text}</div>
                 </div>
               ))}
@@ -142,7 +177,14 @@ export function FilledView({
             </div>
             <div className="jm-pill-row">
               {peopleList.map((name) => (
-                <span key={name} className="jm-person-pill">
+                <button
+                  key={name}
+                  type="button"
+                  className="jm-person-pill link"
+                  onClick={() =>
+                    router.push(`/persona?nome=${encodeURIComponent(name)}`)
+                  }
+                >
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -158,6 +200,34 @@ export function FilledView({
                     <path d="M4 21a8 8 0 0 1 16 0" />
                   </svg>
                   {name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {placeList.length > 0 && (
+          <div
+            className="jm-places"
+            style={{ padding: peopleList.length > 0 ? "0 0 14px" : "14px 0" }}
+          >
+            <div
+              style={{
+                fontSize: "calc(10px * var(--jm-ui-scale))",
+                fontWeight: 650,
+                color: "var(--color-accent)",
+                letterSpacing: "0.20em",
+                textTransform: "uppercase",
+                marginBottom: 10,
+              }}
+            >
+              {t("Luoghi")}
+            </div>
+            <div className="jm-pill-row">
+              {placeList.map((nome) => (
+                <span key={nome} className="jm-person-pill">
+                  <PlacePin />
+                  {nome}
                 </span>
               ))}
             </div>
@@ -167,7 +237,7 @@ export function FilledView({
         <Separator />
 
         <MetricCards metrics={metrics} onChange={onMetricChange} />
-        <GoalDots goals={goals} onToggle={onGoalToggle} />
+        <GoalList goals={goals} onToggle={onGoalToggle} />
       </div>
 
       {footer}
@@ -176,11 +246,54 @@ export function FilledView({
         metrics={metrics}
         goals={goals}
         people={peopleList}
+        places={placeList}
         onMetricChange={onMetricChange}
         onGoalToggle={onGoalToggle}
       />
     </div>
   );
+}
+
+/**
+ * L'ordine in cui le macro-aree compaiono nella giornata, e la garanzia che
+ * ognuna compaia una volta sola.
+ *
+ * ORDINE FISSO. Il modello restituisce le aree nell'ordine in cui gli
+ * vengono, quindi ieri "Cibo" stava in cima e oggi in fondo: una pagina che
+ * si riordina da sola costringe a rileggerla tutta ogni volta. L'ordine
+ * qui sotto segue la giornata come la si racconta: fuori (lavoro,
+ * relazioni), poi il corpo (cibo, movimento, il resto), poi dentro.
+ *
+ * NIENTE DOPPIONI. Se il modello restituisse due volte la stessa etichetta,
+ * la lista le userebbe come identificativo e le due righe si
+ * sovrascriverebbero a vicenda. Qui i testi si uniscono invece di sparire.
+ */
+const AREA_ORDER: string[] = [
+  "Lavoro",
+  "Relazioni",
+  "Cibo",
+  "Movimento",
+  "Corpo",
+  "Emozioni",
+];
+
+function orderAreas(areas: AreaSummary[]): AreaSummary[] {
+  const merged = new Map<string, string>();
+  for (const a of areas) {
+    const text = a.text.trim();
+    if (text.length === 0) continue;
+    const prev = merged.get(a.label);
+    merged.set(a.label, prev ? `${prev} ${text}` : text);
+  }
+  return [...merged.entries()]
+    .map(([label, text]) => ({ label, text }))
+    .sort((x, y) => {
+      const ix = AREA_ORDER.indexOf(x.label);
+      const iy = AREA_ORDER.indexOf(y.label);
+      // Un'etichetta sconosciuta (una giornata vecchia, un'area futura) va
+      // in fondo invece di sparire.
+      return (ix === -1 ? 99 : ix) - (iy === -1 ? 99 : iy);
+    });
 }
 
 function Separator() {

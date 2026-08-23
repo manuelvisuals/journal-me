@@ -44,7 +44,23 @@ const DINAMICHE = {
     "Su tutti i dispositivi",
     "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.",
   ],
-  "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
+  "components/premium-welcome.tsx (FEATURES)": [
+    "Racconti a voce, il testo si scrive da solo",
+    "Titolo, sintesi e macro-aree di ogni giornata",
+    "Recap del mese e letture sui pattern",
+  ],
+  "app/checkout-finto/client.tsx (PREMIUM_PRICE_PERIOD da lib/pricing.ts)": [
+    "al mese",
+  ],
+  "lib/modules.ts (MODULES: nomi e descrizioni)": [
+    "Palestra", "Cibo", "Sonno", "Meditazione",
+    "Allenamenti, serie e progressi",
+    "Cosa mangi, quanto spesso, e come cambia",
+    "Ore, regolarita, e come va il giorno dopo",
+    "Minuti, costanza, e cosa cambia nei giorni in cui la fai",
+  ],
+  "components/settings/settings-client.tsx (PANEL_TITLES, moduli)": ["Moduli"],
+    "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
   "components/remember/quick-capture.tsx (KIND_OPTIONS)": [
     "Nota", "Persona", "Todo", "Luogo", "Idea",
   ],
@@ -59,10 +75,10 @@ const DINAMICHE = {
     "molto bene", "bene", "cosi cosi", "giu", "male",
   ],
   "components/today/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
-    "Lavoro", "Relazioni", "Corpo", "Emozioni",
+    "Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni",
   ],
   "lib/ui-scale.ts (UI_SCALE_LABELS)": [
-    "Piccolo", "Normale", "Grande", "Molto grande", "Massimo",
+    "Molto piccolo", "Piccolo", "Normale", "Grande", "Molto grande",
   ],
 };
 
@@ -72,12 +88,17 @@ function check(name, ok, extra = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "\n      " + extra : ""}`);
 }
 
-/* ---- il catalogo ---- */
-const src = readFileSync("src/lib/i18n/en.ts", "utf8");
-const body = src.slice(src.indexOf("{", src.indexOf("export const EN")));
+/* ---- il catalogo: en.ts + en-extra.ts (i rami paralleli) ---- */
 const CATALOG = new Map();
-for (const m of body.matchAll(/^\s*("(?:[^"\\]|\\.)*")\s*:\s*("(?:[^"\\]|\\.)*")\s*,\s*$/gm)) {
-  CATALOG.set(JSON.parse(m[1]), JSON.parse(m[2]));
+for (const [file, marker] of [
+  ["src/lib/i18n/en.ts", "export const EN"],
+  ["src/lib/i18n/en-extra.ts", "export const EN_EXTRA"],
+]) {
+  const src = readFileSync(file, "utf8");
+  const body = src.slice(src.indexOf("{", src.indexOf(marker)));
+  for (const m of body.matchAll(/^\s*("(?:[^"\\]|\\.)*")\s*:\s*("(?:[^"\\]|\\.)*")\s*,\s*$/gm)) {
+    CATALOG.set(JSON.parse(m[1]), JSON.parse(m[2]));
+  }
 }
 check("catalogo: si legge e non e vuoto", CATALOG.size > 200, `${CATALOG.size} voci`);
 
@@ -126,6 +147,8 @@ check(
 const UGUALI_OK = new Set([
   "Premium", "premium", "Email", "Account", "Idea", "Recap", "Todo",
   "mood", "Mood", "ok", "Cloud", "Snippet",
+  // Nome del prodotto: si scrive uguale nelle due lingue.
+  "Journal.me\nPremium",
 ]);
 const sospette = [...CATALOG.entries()].filter(
   ([it, en]) => it === en && !UGUALI_OK.has(it),

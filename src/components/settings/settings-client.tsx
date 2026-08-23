@@ -33,12 +33,18 @@ import {
   GoalsPanel,
   LanguagePanel,
   LANG_NAMES,
+  ModuliPanel,
   TextSizePanel,
   ThemePanel,
   WherePanel,
 } from "@/components/settings/panels";
 import { BackupBanner } from "@/components/settings/data-section";
-import { UsageCard, UsageSection } from "@/components/settings/usage-section";
+import { useActiveModules } from "@/lib/modules";
+import {
+  ConsumiPanel,
+  ConsumiRailRow,
+  ConsumiRow,
+} from "@/components/consumi/consumi-panel";
 import {
   eraseLocalData,
   exportBackup,
@@ -67,7 +73,9 @@ type Props = {
   latestRecap: { title: string; periodLabel: string } | null;
 };
 
-type Panel = "root" | "goals" | "theme" | "where" | "language" | "textsize";
+type Panel =
+  | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi"
+  | "moduli";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -75,6 +83,8 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   where: "Dove sono le mie giornate",
   language: "Lingua",
   textsize: "Dimensione del testo",
+  consumi: "Consumi AI",
+  moduli: "Moduli",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -212,6 +222,8 @@ export function SettingsClient({
     router.push("/login");
   };
 
+  const moduliAttivi = useActiveModules();
+
   const themeName = THEMES.find((t) => t.id === themeId)?.name ?? "";
   const accountName = isLocal
     ? "Questo dispositivo"
@@ -240,6 +252,8 @@ export function SettingsClient({
         {panel === "language" && <LanguagePanel />}
         {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
+        {panel === "consumi" && <ConsumiPanel />}
+        {panel === "moduli" && <ModuliPanel />}
 
         {panel === "root" && (
           <>
@@ -273,6 +287,25 @@ export function SettingsClient({
                 desc={t("Le caselle che accendi ogni giorno.")}
                 value={`${formatNumber(goals.length)} ${goals.length === 1 ? t("attivo") : t("attivi")}`}
                 onClick={() => setPanel("goals")}
+              />
+              <SetRow
+                title={t("Moduli")}
+                desc={t("Sezioni in piu: palestra, cibo, sonno.")}
+                value={
+                  moduliAttivi.length === 0
+                    ? t("nessuno")
+                    : moduliAttivi.map((m) => t(m.label)).join(" . ")
+                }
+                onClick={() => setPanel("moduli")}
+              />
+              {/* Sul telefono un modulo acceso prende il posto di Ricorda
+                  nella barra in basso: questa riga e la strada che gli
+                  resta, e per questo non e nascosta dietro il modulo. */}
+              <SetRow
+                title={t("Ricorda")}
+                desc={t("Persone, posti e idee salvate al volo.")}
+                onClick={() => router.push("/remember")}
+                chevron
               />
             </SetGroup>
 
@@ -393,6 +426,7 @@ export function SettingsClient({
                       title={t("Piano")}
                       value={plan === "premium" ? t("Premium") : t("Gratis")}
                     />
+                    <ConsumiRow onOpen={() => setPanel("consumi")} />
                   </>
                 )}
                 <SetRow title={t("Versione")} value={APP_VERSION} />
@@ -407,11 +441,6 @@ export function SettingsClient({
                   />
                 )}
               </SetGroup>
-
-              {/* La quota AI del mese (richiesta Manuel 19 ago): sul
-                  telefono sta qui sotto l'account; su desktop e nella
-                  rail destra. In locale non si monta. */}
-              <UsageSection />
             </div>
 
             {isLocal && (
@@ -457,7 +486,9 @@ export function SettingsClient({
           {isLocal ? (
             <span className="jm-st-pill">{t("Locale")}</span>
           ) : (
-            <span className="jm-st-pill">
+            <span
+              className={plan === "premium" ? "jm-st-pill on" : "jm-st-pill"}
+            >
               {plan === "premium" ? t("Premium") : t("Gratis")}
             </span>
           )}
@@ -480,6 +511,7 @@ export function SettingsClient({
               </span>
             </div>
           )}
+          {!isLocal && <ConsumiRailRow onOpen={() => setPanel("consumi")} />}
           <div className="jm-st-rrow">
             <span className="k">{t("Versione")}</span>
             <span className="v">{APP_VERSION}</span>
@@ -505,11 +537,6 @@ export function SettingsClient({
             </button>
           )}
         </div>
-
-        {/* La quota AI del mese, "nell'account stesso" come chiesto da
-            Manuel: qui su desktop, sotto l'account nel pannello sul
-            telefono. In locale non si monta. */}
-        <UsageCard />
       </RailRight>
 
       <TabBar active="settings" />

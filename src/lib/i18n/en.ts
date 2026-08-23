@@ -84,7 +84,7 @@ export const EN: Record<string, string> = {
   "non ora": "not now",
   "un attimo...": "one moment...",
   "Eliminare questa giornata? Non puoi annullare.": "Delete this day? You cannot undo this.",
-  "originale": "original",
+  "modifica": "edit",
   "Elimina giornata": "Delete day",
   "Vai a": "Go to",
   "Oggi": "Today",
@@ -164,6 +164,9 @@ export const EN: Record<string, string> = {
   "Titolo": "Title",
   "Snippet": "Snippet",
   "Corpo": "Body",
+  // Nate il 21 agosto 2026 staccandole da "Corpo": vedi process-entry.
+  "Cibo": "Food",
+  "Movimento": "Movement",
   "paragrafi separati da riga vuota . citazioni tra virgolette": "paragraphs separated by a blank line . quotes between quotation marks",
   "Semestre {n} {anno}": "Half {n} {anno}",
   "Anno {anno}": "Year {anno}",
@@ -177,6 +180,7 @@ export const EN: Record<string, string> = {
   "Eliminare questo elemento?": "Delete this item?",
   "Nota": "Note",
   "Persona": "Person",
+  "giornata raccontata": "day told",
   "Todo": "Todo",
   "Luogo": "Place",
   "Idea": "Idea",
@@ -385,9 +389,7 @@ export const EN: Record<string, string> = {
   "Due minuti di voce, e la giornata resta.": "Two minutes of your voice, and the day is kept.",
   "Giornata raccontata": "Day told",
   "Giornata scritta": "Day written",
-  "aggiungi a questa giornata": "add to this day",
   "Aggiungi a questa giornata": "Add to this day",
-  "salvo...": "saving...",
   "Scrivi altro": "Write more",
   "Si aggiunge in fondo a quello che c'e gia": "It gets added below what is already there",
   "Con la data del {giorno} gia impostata": "With {giorno} already set as the date",
@@ -404,8 +406,7 @@ export const EN: Record<string, string> = {
   "Normale": "Normal",
   "Grande": "Large",
   "Molto grande": "Very large",
-  "Massimo": "Largest",
-  "racconta il {giorno}": "tell {giorno}",
+  "Racconta il {giorno}": "Tell {giorno}",
   "Salvo nella giornata...": "Saving to the day...",
   "Aggiunto alla giornata": "Added to the day",
   "Salvato sul {giorno}": "Saved on {giorno}",
@@ -417,7 +418,73 @@ export const EN: Record<string, string> = {
   "Elimino la giornata...": "Deleting the day...",
   "Giornata eliminata": "Day deleted",
   "Ci sta mettendo troppo. Riprova.": "This is taking too long. Try again.",
-  "AI di questo mese": "AI this month",
   "Quota inclusa nell'abbonamento": "Quota included in your subscription",
   "{n} token usati questo mese. La quota si azzera il primo del mese.": "{n} tokens used this month. The quota resets on the first of the month.",
+
+  // Checkout finto (solo ambiente di prova) e popup di congratulazioni.
+  "pagamento simulato . nessun addebito": "simulated payment . no charge",
+  "ambiente di prova": "test environment",
+  "Journal.me\nPremium": "Journal.me\nPremium",
+  "Questa pagina non e collegata a nessun sistema di pagamento. Serve a provare l'app come la vede chi ha pagato.":
+    "This page is not connected to any payment system. It is here so you can try the app the way a paying user sees it.",
+  "al mese": "per month",
+  "Non verra addebitato nulla.": "Nothing will be charged.",
+  "Simula pagamento riuscito": "Simulate a successful payment",
+  "Simula pagamento fallito": "Simulate a failed payment",
+  "Annulla e torna al diario": "Cancel and go back to the journal",
+  "Riporta questo account al piano gratis": "Put this account back on the free plan",
+  "Pagina visibile solo in ambiente di prova e solo agli account autorizzati. Il piano viene scritto dal server, mai dal browser.":
+    "This page is visible only in the test environment and only to allowed accounts. The plan is written by the server, never by the browser.",
+  "Il pagamento non e andato a buon fine. Non e stato addebitato nulla e il tuo piano non e cambiato.":
+    "The payment did not go through. Nothing was charged and your plan has not changed.",
+  "Pagamento non riuscito. Sei ancora al piano gratis.": "Payment failed. You are still on the free plan.",
+  "Attivo il premium...": "Turning on premium...",
+  "Torno al piano gratis...": "Going back to the free plan...",
+  "Sei tornato al piano gratis": "You are back on the free plan",
+  "Non sono riuscito a cambiare il piano.": "I could not change the plan.",
+  "Sei premium": "You are premium",
+  "Da adesso l'app lavora insieme a te. Ecco cosa e cambiato.":
+    "From now on the app works alongside you. Here is what changed.",
+  "Racconti a voce, il testo si scrive da solo": "Speak, and the text writes itself",
+  "Titolo, sintesi e macro-aree di ogni giornata": "A title, a summary and the macro-areas of every day",
+  "Recap del mese e letture sui pattern": "Monthly recaps and readings on your patterns",
+  "Provalo adesso": "Try it now",
+
+  // Scheda persona (/persona?nome=), 21 agosto 2026.
+  "giorni fa": "days ago",
+  "in 2 mesi": "in 2 months",
+  "Le giornate": "The days",
+  "l'ultima volta oggi": "last time today",
+  "l'ultima volta ieri": "last time yesterday",
+  "l'ultima volta {giorni} giorni fa": "last time {giorni} days ago",
+  "l'ultima volta il {giorno}": "last time on {giorno}",
+  "{recenti} negli ultimi due mesi": "{recenti} in the last two months",
+  "{recenti} negli ultimi due mesi, prima erano {prima}":
+    "{recenti} in the last two months, before that {prima}",
+  "Questo nome non compare in nessuna giornata. Comparira da solo la prossima volta che lo nomini raccontando.":
+    "This name does not appear in any day yet. It will show up on its own the next time you mention it.",
+
+  // Moduli (21 agosto 2026) e la sezione Palestra, primo passo.
+  "Moduli": "Modules",
+  "Sezioni in piu: palestra, cibo, sonno.": "Extra sections: gym, food, sleep.",
+  "nessuno": "none",
+  "Presto": "Coming soon",
+  "presto": "soon",
+  "Palestra": "Gym",
+  "Meditazione": "Meditation",
+  "Allenamenti, serie e progressi": "Workouts, sets and progress",
+  "Allenamenti, serie e progressi.": "Workouts, sets and progress.",
+  "Cosa mangi, quanto spesso, e come cambia": "What you eat, how often, and how it changes",
+  "Ore, regolarita, e come va il giorno dopo": "Hours, regularity, and how the next day goes",
+  "Minuti, costanza, e cosa cambia nei giorni in cui la fai":
+    "Minutes, consistency, and what changes on the days you do it",
+  "Sezioni in piu, accese solo se le vuoi. Quella che accendi per ultima prende il quarto posto nella barra in basso; sul computer ci sono tutte nella colonna di sinistra.":
+    "Extra sections, on only if you want them. The one you turn on last takes the fourth spot in the bottom bar; on a computer they are all in the left column.",
+  "Spegnendo un modulo la voce sparisce dalla barra, ma quello che hai registrato resta dov'e: riaccendendolo lo ritrovi.":
+    "Turning a module off removes it from the bar, but what you recorded stays where it is: turn it back on and you find it again.",
+  "Persone, posti e idee salvate al volo.": "People, places and ideas saved on the fly.",
+  "La sezione c'e, il dentro no": "The section is here, the inside is not",
+  "Registrare serie e ripetizioni ha bisogno di un posto dove salvarle, e quel posto lo sto costruendo. Intanto quello che racconti sulla palestra finisce comunque nella giornata, sotto Movimento.":
+    "Recording sets and reps needs a place to store them, and that place is being built. In the meantime what you say about the gym still lands in the day, under Movement.",
+  "Torna a Oggi": "Back to Today",
 };

@@ -19,9 +19,11 @@ import type {
   AreaSummary,
   Entry,
   EntryMetrics,
+  Fact,
   GoalDef,
   GoalDot,
   Mood,
+  NewFact,
   Recap,
   RecapPeriod,
   Remember,
@@ -116,7 +118,7 @@ function blankEntryShell(dateISO: string): Entry {
 }
 
 const ENTRY_COLS_FULL =
-  "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, created_at";
+  "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, people, headline_locked, created_at";
 const ENTRY_COLS_BASE =
   "id, entry_date, transcript, headline, snippet, areas, mood, weight_kg, sleep_hours, goals_on, created_at";
 
@@ -144,6 +146,7 @@ function rowToEntry(row: Record<string, unknown>, goalDefs: GoalDef[]): Entry {
     metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
     goals: buildGoals(goalDefs, parseStringArray(row.goals_on)),
     people: parseStringArray(row.people),
+    headlineLocked: row.headline_locked === true,
     createdAt: row.created_at as string,
   };
 }
@@ -157,10 +160,36 @@ export class CloudStore implements JournalStore {
     return createClient();
   }
 
+  /**
+   * L'id dell'utente, per ogni lettura e ogni scrittura.
+   *
+   * PRIMA passava da `auth.getUser()`, che NON legge la sessione salvata:
+   * fa una chiamata di rete a Supabase per farsi validare il token, a ogni
+   * singola operazione. Due conseguenze, viste tutte e due dal vivo il 22
+   * agosto 2026:
+   *
+   *  - un intoppo di rete di mezzo secondo faceva tornare `user` nullo, e la
+   *    giornata non si salvava con scritto in faccia "Not authenticated" —
+   *    in inglese, e per giunta falso: la sessione era validissima;
+   *  - ogni salvataggio pagava un giro di rete in piu prima di cominciare.
+   *
+   * Ora si legge la sessione gia in memoria (`getSession`), che non tocca la
+   * rete. Non e un buco di sicurezza: chi puo scrivere davvero lo decide il
+   * database riga per riga con le regole RLS — se questo id fosse sbagliato,
+   * la scrittura verrebbe rifiutata li. `getUser()` resta come seconda
+   * strada per il primo avvio, quando la sessione non e ancora in memoria.
+   *
+   * Non si tiene in cache: `getSession()` e gia locale, e ricordarselo
+   * significherebbe scrivere con l'identita di ieri dopo un cambio account.
+   */
   private async userId(): Promise<string> {
+    const supabase = this.supabase();
+    const { data: sessione } = await supabase.auth.getSession();
+    const fromSession = sessione.session?.user?.id;
+    if (fromSession) return fromSession;
     const {
       data: { user },
-    } = await this.supabase().auth.getUser();
+    } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
     return user.id;
   }
@@ -249,19 +278,32 @@ export class CloudStore implements JournalStore {
     durationSeconds: number,
   ): Promise<Entry> {
     const userId = await this.userId();
+    // `people` entra nella riga SOLO se l'analisi lo ha prodotto: assente
+    // vuol dire "non toccare", vedi AIFields in store/types.ts.
+    // Il titolo scritto a mano vince su qualunque rilettura: si guarda
+    // prima se questa giornata lo ha bloccato, e in quel caso non lo si
+    // manda nemmeno. Vedi migration 012.
+    const { data: prima } = await this.supabase()
+      .from("entries")
+      .select("headline_locked")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .maybeSingle();
+    const bloccato = (prima as { headline_locked?: boolean } | null)
+      ?.headline_locked === true;
+
+    const row: Record<string, unknown> = {
+      user_id: userId,
+      entry_date: dateISO,
+      transcript,
+      snippet: ai.snippet,
+      areas: ai.areas,
+    };
+    if (!bloccato) row.headline = ai.headline;
+    if (ai.people) row.people = ai.people;
     const { error } = await this.supabase()
       .from("entries")
-      .upsert(
-        {
-          user_id: userId,
-          entry_date: dateISO,
-          transcript,
-          headline: ai.headline,
-          snippet: ai.snippet,
-          areas: ai.areas,
-        },
-        { onConflict: "user_id,entry_date" },
-      );
+      .upsert(row, { onConflict: "user_id,entry_date" });
     if (error) {
       throw new Error(error.message ?? "Failed to save entry");
     }
@@ -270,6 +312,18 @@ export class CloudStore implements JournalStore {
     const reloaded = await this.loadEntryRow(dateISO);
     if (reloaded) return { ...reloaded, durationSeconds };
     return blankEntryShell(dateISO);
+  }
+
+  async saveHeadline(dateISO: string, headline: string): Promise<Entry> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("entries")
+      .update({ headline: headline.trim(), headline_locked: true })
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO);
+    if (error) throw new Error(error.message);
+    const reloaded = await this.loadEntryRow(dateISO);
+    return reloaded ?? blankEntryShell(dateISO);
   }
 
   async updateEntryTranscript(dateISO: string, text: string): Promise<Entry> {
@@ -365,6 +419,119 @@ export class CloudStore implements JournalStore {
       throw new Error(error.message);
     }
     return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+  }
+
+  /* ----------------- fatti (SPEC-fatti §3) ----------------- */
+
+  private factRow(r: Record<string, unknown>): Fact {
+    return {
+      id: r.id as string,
+      entryDate: r.entry_date as string,
+      kind: r.kind as Fact["kind"],
+      label: (r.label as string) ?? "",
+      labelKey: (r.label_key as string) ?? "",
+      attrs:
+        r.attrs && typeof r.attrs === "object"
+          ? (r.attrs as Record<string, unknown>)
+          : {},
+      confidence: typeof r.confidence === "number" ? r.confidence : null,
+      origin: r.origin === "manual" ? "manual" : "ai",
+    };
+  }
+
+  async replaceAiFacts(dateISO: string, facts: NewFact[]): Promise<Fact[]> {
+    const userId = await this.userId();
+    const supabase = this.supabase();
+
+    // Prima si cancellano SOLO i fatti letti dall'AI per quel giorno: quelli
+    // scritti a mano restano, sempre.
+    const { error: delError } = await supabase
+      .from("facts")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .eq("origin", "ai");
+    if (delError) throw new Error(delError.message);
+
+    if (facts.length === 0) return this.loadFactsForDate(dateISO);
+
+    // entry_id: se la giornata esiste, i fatti spariscono con lei.
+    const { data: entryRow } = await supabase
+      .from("entries")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .maybeSingle();
+    const entryId = (entryRow as { id?: string } | null)?.id ?? null;
+
+    const { error } = await supabase.from("facts").insert(
+      facts.map((f) => ({
+        user_id: userId,
+        entry_id: entryId,
+        entry_date: dateISO,
+        kind: f.kind,
+        label: f.label,
+        label_key: f.labelKey,
+        attrs: f.attrs ?? {},
+        confidence: f.confidence,
+        origin: f.origin ?? "ai",
+      })),
+    );
+    if (error) throw new Error(error.message);
+    return this.loadFactsForDate(dateISO);
+  }
+
+  async loadFactsForDate(dateISO: string): Promise<Fact[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+  }
+
+  async loadFactsForMonth(year: number, month: number): Promise<Fact[]> {
+    const userId = await this.userId();
+    const from = `${year}-${String(month).padStart(2, "0")}-01`;
+    const to =
+      month === 12
+        ? `${year + 1}-01-01`
+        : `${year}-${String(month + 1).padStart(2, "0")}-01`;
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("*")
+      .eq("user_id", userId)
+      .gte("entry_date", from)
+      .lt("entry_date", to)
+      .order("entry_date", { ascending: false });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+  }
+
+  async loadKnownLabels(limit = 120): Promise<string[]> {
+    const userId = await this.userId();
+    // Le ultime 600 righe bastano: le etichette che uno usa davvero
+    // ricompaiono spesso, e una query di aggregazione qui non vale la pena.
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("label_key")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(600);
+    if (error || !data) return [];
+    const conteggio = new Map<string, number>();
+    for (const r of data as { label_key?: string }[]) {
+      const k = (r.label_key ?? "").trim();
+      if (!k) continue;
+      conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+    }
+    return [...conteggio.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([k]) => k);
   }
 
   /* ----------------- goals ----------------- */
@@ -627,7 +794,7 @@ export class CloudStore implements JournalStore {
 
   /* ----------------- backup (SPEC-v2 §4) ----------------- */
 
-  private async loadAllEntries(): Promise<Entry[]> {
+  async loadAllEntries(): Promise<Entry[]> {
     const supabase = this.supabase();
     const goalDefs = await this.loadGoalDefs();
     const full = await supabase
