@@ -29,9 +29,6 @@ async function newPage(width, height) {
   await ctx.addInitScript(() => {
     try {
       window.localStorage.setItem("jm.mode", "local");
-      // Il passo di partenza del testo e 1,15 dal 22 agosto: queste prove
-      // misurano il contratto tipografico a scala 1, quindi la fissano.
-      window.localStorage.setItem("jm:scale", "1");
     } catch {}
   });
   const page = await ctx.newPage();
