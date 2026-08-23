@@ -22,9 +22,14 @@ il banco esce rosso sui 3 controlli giusti).
   route `/api/account/delete` autenticata: cancella l'utente Supabase e la cascata
   `on delete cascade` (verificata su tutte le migration) porta via ogni riga.
 - 1c: `/api/review-login` con doppia variabile `JM_REVIEW_EMAILS` +
-  `JM_REVIEW_CODE` (da configurare su Vercel prima della sottomissione): per le
-  email in elenco il codice fisso apre una sessione vera via magic link
-  amministrativo. Porta spenta = indistinguibile da inesistente (verificato).
+  `JM_REVIEW_CODE`. CONFIGURATO su Vercel il 23 agosto (Production e Preview,
+  Sensitive) e VERIFICATO in produzione dal Chrome di Manuel: login completo con
+  appreview@journal.me + codice fisso, account creato, reso premium via SQL
+  (profiles.plan='premium', plan_source='manual'), e una giornata demo scritta e
+  elaborata dall'AI (titolo, sintesi, aree, persone, luoghi, chiarimenti inclusi).
+  Il revisore trova un'app viva. Per le Review Notes: email appreview@journal.me,
+  codice 424242. Se il nome dell'app cambia, cambiare l'email e un minuto
+  (variabile su Vercel + eventualmente l'account demo).
 
 ### 1a. L'acquisto premium dentro l'app iOS (guideline 3.1.1) — IL blocco
 
