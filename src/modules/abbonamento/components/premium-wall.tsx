@@ -24,6 +24,7 @@ import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
 import { useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
+import { isNative } from "@/lib/native/platform";
 
 export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns";
 
@@ -190,23 +191,44 @@ export function PremiumWall() {
             </div>
           </div>
         ))}
-        {cloudNote && (
+        {/* Dentro il guscio iOS l'acquisto NON esiste (App Store 3.1.1,
+            deciso da Manuel il 23 ago: v1 senza acquisto su iOS). Niente
+            bottone col prezzo, niente inviti a comprare altrove: solo la
+            verita, e - per chi un account ce l'ha gia - la via del login.
+            L'In-App Purchase arriva in un aggiornamento. */}
+        {(cloudNote || isNative()) && (
           <div className="jm-wall-note">
             {t(
               "L'abbonamento si attiva a breve: l'acquisto dentro l'app sta arrivando.",
             )}
           </div>
         )}
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={() => void tryPremium()}
-          disabled={busy}
-        >
-          {busy
-            ? t("un attimo...")
-            : `${t("prova premium")} . ${PREMIUM_PRICE_LABEL}`}
-        </button>
+        {isNative() ? (
+          mode === "local" && (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                closePremiumWall();
+                setCloudNote(false);
+                router.push("/login");
+              }}
+            >
+              {t("Ho gia un account")}
+            </button>
+          )
+        ) : (
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => void tryPremium()}
+            disabled={busy}
+          >
+            {busy
+              ? t("un attimo...")
+              : `${t("prova premium")} . ${PREMIUM_PRICE_LABEL}`}
+          </button>
+        )}
         <button type="button" className="btn-ghost" onClick={dismiss}>
           {t("non ora")}
         </button>

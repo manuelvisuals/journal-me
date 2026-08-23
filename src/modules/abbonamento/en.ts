@@ -46,4 +46,5 @@ export const ABBONAMENTO: Record<string, string> = {
   "Titolo, sintesi e macro-aree di ogni giornata": "A title, a summary and the macro-areas of every day",
   "Recap del mese e letture sui pattern": "Monthly recaps and readings on your patterns",
   "Provalo adesso": "Try it now",
+  "Ho gia un account": "I already have an account",
 };

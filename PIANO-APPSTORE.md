@@ -8,7 +8,23 @@ Il guscio c'e gia (Capacitor 8, `npm run build:ios`, progetto in `ios/App`,
 `NSMicrophoneUsageDescription` presente). Quello che manca non e infrastruttura:
 sono TRE blocchi da revisione, piu il lavoro di App Store Connect.
 
-## 1. I tre blocchi da risolvere PRIMA di sottomettere
+## 1. I tre blocchi da risolvere PRIMA di sottomettere — FATTI il 23 agosto
+
+Decisione di Manuel: **v1 senza acquisto su iOS**. Implementati tutti e tre nello
+stesso giorno, con il banco `scripts/verify-appstore.mjs` (11 controlli, guscio iOS
+simulato via CapacitorCustomPlatform, morso provato: rimettendo la vendita su iOS
+il banco esce rosso sui 3 controlli giusti).
+
+- 1a: dentro il guscio (`isNative()`) il muro premium non mostra prezzo ne bottone
+  d'acquisto; resta la nota onesta e, per chi un account ce l'ha, "Ho gia un
+  account" -> login. Sul web la vendita non cambia.
+- 1b: riga "Elimina l'account" nella zona pericolosa (solo cloud), due tocchi,
+  route `/api/account/delete` autenticata: cancella l'utente Supabase e la cascata
+  `on delete cascade` (verificata su tutte le migration) porta via ogni riga.
+- 1c: `/api/review-login` con doppia variabile `JM_REVIEW_EMAILS` +
+  `JM_REVIEW_CODE` (da configurare su Vercel prima della sottomissione): per le
+  email in elenco il codice fisso apre una sessione vera via magic link
+  amministrativo. Porta spenta = indistinguibile da inesistente (verificato).
 
 ### 1a. L'acquisto premium dentro l'app iOS (guideline 3.1.1) — IL blocco
 

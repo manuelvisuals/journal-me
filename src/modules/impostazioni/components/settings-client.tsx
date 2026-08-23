@@ -94,7 +94,7 @@ const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] 
   { value: "system", label: "Sistema", short: "Sist" },
 ];
 
-type Busy = "idle" | "export" | "import" | "erase";
+type Busy = "idle" | "export" | "import" | "erase" | "deleteAccount";
 
 export function SettingsClient({
   mode,
@@ -121,6 +121,7 @@ export function SettingsClient({
   const [note, setNote] = useState<string | null>(null);
   const [noteErr, setNoteErr] = useState<boolean>(false);
   const [eraseArmed, setEraseArmed] = useState<boolean>(false);
+  const [deleteArmed, setDeleteArmed] = useState<boolean>(false);
   const [signingOut, setSigningOut] = useState<boolean>(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -225,6 +226,46 @@ export function SettingsClient({
     document.cookie =
       "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     router.push("/login");
+  };
+
+  /**
+   * Cancellazione dell'ACCOUNT (App Store 5.1.1(v), PIANO-APPSTORE §1b):
+   * due tocchi come la zona pericolosa locale, poi la route autenticata
+   * elimina l'utente Supabase e la cascata porta via tutte le sue righe.
+   * Dopo, questo browser torna vergine: via la sessione, la cache del
+   * piano, la memoria della scansione e la scelta della modalita — il
+   * prossimo avvio riparte da /benvenuto.
+   */
+  const handleDeleteAccount = async () => {
+    if (busy !== "idle") return;
+    if (!deleteArmed) {
+      setDeleteArmed(true);
+      return;
+    }
+    setBusy("deleteAccount");
+    say("");
+    try {
+      const { apiFetch } = await import("@/lib/api");
+      const resp = await apiFetch("/api/account/delete", { method: "POST" });
+      if (!resp.ok) throw new Error(t("Cancellazione non riuscita."));
+      const { createClient } = await import("@/lib/supabase/client");
+      await createClient().auth.signOut();
+      clearPlanCache();
+      dimenticaScansione();
+      try {
+        window.localStorage.removeItem("jm.mode");
+      } catch {}
+      document.cookie =
+        "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      router.push("/benvenuto");
+    } catch (err) {
+      setDeleteArmed(false);
+      say(
+        err instanceof Error ? err.message : t("Cancellazione non riuscita."),
+        true,
+      );
+      setBusy("idle");
+    }
   };
 
   const moduliAttivi = useActiveModules();
@@ -447,6 +488,32 @@ export function SettingsClient({
                 )}
               </SetGroup>
             </div>
+
+            {!isLocal && (
+              <SetGroup label={t("Zona pericolosa")}>
+                <SetRow
+                  title={t("Elimina l'account")}
+                  desc={
+                    deleteArmed
+                      ? t(
+                          "Sicuro? Account e giornate spariscono anche dal cloud. Non si torna indietro.",
+                        )
+                      : t("Cancella l'account e tutte le giornate dal cloud.")
+                  }
+                  value={
+                    busy === "deleteAccount"
+                      ? t("elimino...")
+                      : deleteArmed
+                        ? t("si, elimina")
+                        : undefined
+                  }
+                  danger
+                  chevron={!deleteArmed}
+                  onClick={() => void handleDeleteAccount()}
+                  disabled={busy !== "idle"}
+                />
+              </SetGroup>
+            )}
 
             {isLocal && (
               <SetGroup label={t("Zona pericolosa")}>

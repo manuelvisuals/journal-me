@@ -150,4 +150,9 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "ufficiali": "official ones",
   "che OpenAI riporta a ogni risposta, quindi il conteggio e esatto. Il prezzo no: e un listino salvato ad agosto 2026 in": "OpenAI reports with every response, so the count is exact. The price is not: it is a price list saved in August 2026 in",
   ", e se OpenAI lo cambia questa cifra resta indietro finche non lo aggiorni. Il conto vero e sul tuo pannello OpenAI.": ", and if OpenAI changes it this figure stays behind until you update it. The real bill is on your OpenAI dashboard.",
+  "Elimina l'account": "Delete account",
+  "Cancella l'account e tutte le giornate dal cloud.": "Deletes your account and all your days from the cloud.",
+  "Sicuro? Account e giornate spariscono anche dal cloud. Non si torna indietro.": "Sure? Account and days disappear from the cloud too. There is no way back.",
+  "elimino...": "deleting...",
+  "si, elimina": "yes, delete",
 };
