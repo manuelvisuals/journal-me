@@ -38,6 +38,7 @@ import {
   type JournalStore,
   type StorageMode,
 } from "./types";
+import { t } from "@/lib/i18n";
 
 /* ----------------- helpers condivisi (da entries.ts) ----------------- */
 
@@ -673,7 +674,7 @@ export class CloudStore implements JournalStore {
 
   async importAll(file: BackupFile): Promise<ImportReport> {
     if (file.format !== BACKUP_FORMAT || file.version !== BACKUP_VERSION) {
-      throw new Error("File di backup non riconosciuto.");
+      throw new Error(t("File di backup non riconosciuto."));
     }
     const userId = await this.userId();
     const supabase = this.supabase();

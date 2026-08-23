@@ -1,3 +1,7 @@
+"use client";
+
+import { useT } from "@/lib/i18n";
+
 /**
  * Generic loading skeleton shown while a route's data is being fetched on its
  * first (uncached) visit. With the router cache, revisits are instant and this
@@ -5,12 +9,13 @@
  * animated "loading" placeholder, never a frozen one.
  */
 export function PageSkeleton() {
+  const t = useT();
   return (
     <div
       className="flex flex-1 flex-col"
       style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
       aria-busy="true"
-      aria-label="Caricamento"
+      aria-label={t("Caricamento")}
     >
       {/* Title */}
       <div

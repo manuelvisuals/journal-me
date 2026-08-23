@@ -1,7 +1,7 @@
 # Handover · Journal.me
 
 Documento di riferimento per chi (Claude o umano) riprende lo sviluppo.
-Aggiornato al **17 agosto 2026**, allineato al commit `d1da4ef` di `main`.
+Aggiornato al **20 agosto 2026**. Lo stato del lavoro in corso e in §13.
 Per il lavoro in corso (desktop, due modalita, temi) vedi §13 e le due SPEC in root.
 
 Regola numero uno: **la fonte di verita del codice e il repo GitHub, non questo file.**
@@ -166,35 +166,47 @@ esistono, salvano su Supabase e sono state verificate in Chrome sul deploy live.
 ### Navigazione
 
 Tab bar a 5 slot: **Oggi** (`/`) · **Mese** (`/mese`) · **mic centrale ambra** (apre la
-registrazione via `/?record=1`) · **Ricorda** (`/remember`) · **Altro** (`/settings`).
-Recap non e piu un tab: si raggiunge dalla card editoriale in cima ad Altro.
+registrazione via `/?record=1`) · **Ricorda** (`/remember`) · **Impostazioni**
+(`/settings`). Recap non e piu un tab: su desktop e una voce della rail sinistra,
+sul telefono si raggiunge dalla card editoriale in cima a Impostazioni.
 
 ### Route
 
 ```
 /                    Today (empty / recording / review / processing / people /
                      filled / manual / no-capture — macchina a stati in today-client)
-/giorno/[date]       Dettaglio giorno, riusa FilledView con tutti i controlli
+/giorno?d=YYYY-MM-DD Dettaglio giorno, riusa FilledView con tutti i controlli
+                     (era /giorno/[date]: un segmento dinamico non si
+                     prerenderizza nell'export statico del guscio iOS)
 /mese                Feed infinito newest-first, sticky month header, jump picker
 /recap               Segmented Mensili/Semestrali/Annuali + detail con dropcap
 /remember            Filtri a chip, raggruppamento per fascia temporale, quick-capture
-/settings            "Altro": card Recap, micro-goal CRUD, account, logout
-/login               Magic link + bottone App Tour
+/settings            "Impostazioni": elenco a gruppi + pannelli (obiettivi, tema, lingua, dati)
+/benvenuto           La scelta locale/cloud al primo avvio (PR 5)
+/login               Codice a 6 cifre via email (niente piu magic link)
 /auth/callback       Scambio code -> sessione (PKCE)
 ```
 
 ### API (tutte server-side, la chiave OpenAI non tocca mai il browser)
 
+Tutte dietro `requirePremium` (401 senza token, 402 senza premium) tranne
+dove indicato. Il client le chiama SOLO via `apiFetch` (bearer + timeout).
+
 ```
-/api/realtime/session      relay SDP per OpenAI Realtime (gpt-4o-transcribe)
-/api/transcribe-fallback   trascrizione full-clip di riserva (gpt-4o-transcribe)
+/api/transcribe-fallback   trascrizione dell'intero clip (gpt-4o-transcribe)
 /api/process-entry         gpt-4o-mini -> headline, snippet, aree macro
 /api/split-by-date         gpt-4o-mini -> smista un racconto multi-giorno
 /api/extract-people        gpt-4o-mini -> persone citate nella giornata
 /api/remember/classify     gpt-4o-mini -> riclassifica le note in persona/todo/luogo/idea
 /api/recap/generate        gpt-4o (non mini, serve la prosa) -> recap letterario
-/api/demo                  login sull'account condiviso demo@journal.me
+/api/usage                 consumi AI del mese (requireUser: basta essere loggati)
+/api/stripe/checkout       sessione di Checkout (requireUser: compra chi NON e premium)
+/api/stripe/webhook        l'unico posto che scrive profiles.plan (firma Stripe)
 ```
+
+**Cancellate:** `/api/realtime/session` (con la PR 1: non aveva piu chiamanti)
+e `/api/demo` (con la PR 5: il tour anonimo e stato sostituito dalla modalita
+locale). Se le trovi citate altrove in un documento, il documento e vecchio.
 
 ### Livello dati
 
@@ -205,16 +217,26 @@ Il parametro `mode` sopravvive nelle firme solo per stabilita dei call-site ed e
 ### Migration
 
 ```
-001_init.sql             entries, goals, entry_goals, remembers, recaps + RLS + seed goal
-002_user_settings.sql    user_settings.glossary (legacy, vedi sotto)
+001_init.sql              entries, goals, entry_goals, remembers, recaps + RLS + seed goal
+002_user_settings.sql     user_settings.glossary (legacy, vedi sotto)
 003_entry_goals_jsonb.sql entries.goals_on jsonb
-004_remove_libro.sql     toglie 'libro' dal check di remembers.kind
-005_entry_people.sql     entries.people jsonb
+004_remove_libro.sql      toglie 'libro' dal check di remembers.kind
+005_entry_people.sql      entries.people jsonb
+006_profiles.sql          profiles (plan/plan_source/current_period_end) + trigger + RLS
+007_user_settings_theme.sql  user_settings.theme, user_settings.appearance
+008_profiles_stripe.sql   profiles.stripe_customer_id + unique index
+009_ai_usage.sql          ai_usage (token ufficiali per chiamata) + RLS + indice
+010_default_goals.sql     riscrive seed_default_goals() con i sei micro-goal nuovi
 ```
 
-001, 002, 003, 005 risultano applicate. **004 e da confermare** (nell'ultimo giro
-risultava ancora da eseguire da parte di Manuel nel SQL Editor). Prima di toccare
-Remember, verifica.
+**Tutte e dieci applicate su `fljshsmpmpzapcczsbwc`, verificato il 20 agosto
+2026** interrogando `information_schema` (e `pg_proc` per la 010) invece di
+fidarsi degli appunti: 004 risultava "da confermare" ed era gia applicata, 008
+risultava non applicata ed era gia applicata, 009 mancava davvero ed e stata
+eseguita quel giorno; la 010 e stata applicata la sera dello stesso giorno e
+verificata leggendo il corpo della funzione (`prosrc like '%mosso il corpo%'`)
+piu il trigger `seed_goals_on_user_create` su `auth.users`, ancora abilitato.
+Morale: prima di riscrivere una migration, chiedi al database.
 
 ### Pipeline di registrazione (riscritta il 12 agosto 2026)
 
@@ -329,7 +351,8 @@ per qualsiasi fallimento — ma se la richiesta si appende non mostra nemmeno qu
 passate settimane senza che l'app dicesse niente. Da fare: timeout sulle chiamate al
 backend e messaggio d'errore vero al posto del silenzio.
 
-**D. Migration 004** possibilmente non applicata (vedi §6).
+**D. ~~Migration 004~~ CHIUSO il 20 agosto.** Verificata applicata: il check
+di `remembers.kind` e gia senza 'libro'. Vedi §6 per lo stato di tutte e nove.
 
 **E. Scrittura manuale** e raggiungibile dallo stato vuoto e dal giorno pieno, ma il
 percorso non e simmetrico ovunque: verificare prima di dare per scontato.
@@ -357,7 +380,7 @@ L'audit (designer Apple-style, UX senior, esperto dettatura) e in
 - P1: rimuovere logging e poll `getStats` dalla produzione (§8B); conferma o undo
   sull'annulla registrazione (oggi il cestino scarta tutto senza rete).
 - P2: casing tipografico incoerente; glow troppo neon rispetto al linguaggio Apple
-  attuale; spaziature a mano invece di un ritmo 8pt; icone "Oggi" (mirino) e "Altro"
+  attuale; spaziature a mano invece di un ritmo 8pt; icone "Oggi" (mirino) e "Impostazioni"
   (tre puntini) ambigue; haptics ed earcon su start/stop; valutare light mode;
   `logprobs` richiesti e mai usati (si potrebbero evidenziare le parole a bassa
   confidenza); stati `:focus` scarsi.
@@ -499,7 +522,12 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
   il deploy gia in produzione — serve un nuovo build.
 - **Migrations e GitHub:** il progetto e collegato al repo ma manca `supabase/config.toml`
   e i file sono `001_...` invece che `<timestamp>_...`, quindi il deploy automatico delle
-  migration NON e attivo. Per ora si passa dal SQL Editor.
+  migration NON e attivo. Per ora si passa dal SQL Editor — o, quando la finestra
+  di Chrome non e in primo piano e il dashboard non disegna niente, dalla
+  Management API di Supabase (`POST https://api.supabase.com/v1/projects/<ref>/
+  database/query`) chiamata via `fetch` dalla scheda del dashboard gia loggata:
+  usa il token di sessione del dashboard, che la pagina rinnova da sola a ogni
+  navigazione, e non richiede nessuna chiave di servizio.
 - **Registrazione**: il guscio usa ancora la pipeline WebRTC/Realtime dentro WKWebView,
   bug A compreso. Da valutare il passaggio a registrazione nativa full-clip verso
   `/api/transcribe-fallback`: perde la trascrizione dal vivo, guadagna affidabilita.
@@ -519,7 +547,7 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   `/api/realtime/session` cancellata. Manuel e `premium` (`plan_source=manual`).
 - **PR 0 `temi`: fatta.** Contratto in `src/themes/contract.ts`, cinque temi
   (`minimal` default, `wine`, `carta`, `malva`, `macchina`), validatore di contrasto
-  (10/10 set passano), boot script inline senza flash, `Altro > Aspetto` con switch
+  (10/10 set passano), boot script inline senza flash, `Impostazioni > Tema` con switch
   chiaro/scuro/sistema e griglia con anteprime vive. `globals.css` rifattorizzato:
   zero colori di marca letterali (tutto token o `color-mix` su token), radii e
   spaziatura sui token (`--jm-*`), sei famiglie font locali in `layout.tsx`.
@@ -561,7 +589,7 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   toccare le ombre dei bottoni) e regola `:focus-visible` globale. `src/components/
   desktop/`: `desktop-shell.tsx` (sotto lg e `display:contents`, il telefono non se
   ne accorge; da lg griglia rail 222px + colonna + rail destra 296px, nascosta se
-  vuota), `rail-left.tsx` (nav dal mockup: Oggi/Mese/Ricorda/Recap/Altro + Racconta
+  vuota), `rail-left.tsx` (nav dal mockup: Oggi/Mese/Ricorda/Recap/Impostazioni + Racconta
   a voce — che in locale diventa "Scrivi la giornata" — account badge
   Premium/Cloud/Locale), `rail-right.tsx` (slot via portal: le pagine riempiono la
   colonna destra con `<RailRight>`). Tab bar spenta con `lg:hidden` in
@@ -619,7 +647,7 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   controlla `defaultPrevented` e non spara due volte, e fuori dal fuoco
   rilancia un CustomEvent `jm:shortcut` che l'editor montato ascolta.
   `command-palette.tsx`: store modulo aperta/chiusa (stesso pattern del
-  focus), Vai a (Oggi/Mese/Ricorda/Recap/Altro), Racconta a voce / Scrivi la
+  focus), Vai a (Oggi/Mese/Ricorda/Recap/Impostazioni), Racconta a voce / Scrivi la
   giornata, Modalita focus (solo pathname "/"), e cattura rapida in Ricorda
   (qualsiasi testo digitato -> "Salva in Ricorda", feedback inline, si chiude
   da sola senza portarti via dalla pagina; l'auto-classificazione AI del tipo
@@ -744,6 +772,275 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (19 agosto 2
   luglio 2026) come ottimizzazione futura.
 - La PR 12 (marketplace temi) e APPROVATA nel design e non ancora
   implementata.
+- **20 agosto 2026 — giro di bugfix, nessuna funzione nuova.** Sei
+  correzioni uscite dalla rilettura integrale del codice, piu la
+  migration 009 finalmente applicata.
+  1. **Il mic della cattura rapida in Ricorda non era protetto.**
+     `quick-capture.tsx` montava `RecordingOverlay` senza nessun
+     `can("voice")`: in modalita locale premere quel microfono mandava
+     l'audio a `/api/transcribe-fallback`. Era l'ULTIMO buco nella
+     promessa "in locale nemmeno una richiesta di rete" (l'altro,
+     `/api/remember/classify`, era stato chiuso nella PR 10). Ora apre
+     il muro premium; il campo di testo accanto resta l'uscita gratuita.
+  2. **`/benvenuto` prometteva "primo mese incluso"** e aveva il prezzo
+     scritto a mano. Il trial non esiste da nessuna parte: la sessione
+     Stripe non ha `trial_period_days`. Il prezzo ora viene da
+     `src/lib/pricing.ts`, che espone anche `PREMIUM_HAS_FREE_TRIAL =
+     false`: finche quella costante e falsa nessuna schermata puo
+     promettere un mese gratis. Se un giorno il trial si attiva, si
+     accende li e si aggiunge al checkout.
+  3. **Il titolo di Ricorda diceva ancora "Remember"** (P2 dell'audit di
+     giugno), come pure due stringhe in `people-review`. Tab bar, rail e
+     palette dicevano gia "Ricorda".
+  4. **`clearPlanCache()` non era chiamata da nessuna parte.** Il piano
+     e cache in `localStorage` ("jm.plan") ed e OTTIMISTA: dopo un logout
+     restava "premium" addosso al browser, e il prossimo account gratis
+     vedeva la UI premium fino al refresh in background — cioe un 402 a
+     sorpresa, che SPEC-v2 §3.3 vieta esplicitamente. Ora il logout la
+     chiama.
+  5. **Pulizia:** `src/lib/types/speech.d.ts` eliminato (i tipi Web Speech
+     non servono da quando la trascrizione e full-clip); `navigator.platform`
+     (deprecato) sostituito da `userAgentData`/`userAgent` in
+     `use-shortcuts.ts`; il warning del ref della waveform chiuso copiando
+     `barRefs.current` dentro l'effetto; `argsIgnorePattern: "^_"` in
+     `eslint.config.mjs`, perche i `_mode` sono deliberati (spec §2.2) e
+     non devono sporcare ogni lint. `npx eslint .` ora e a **zero warning**.
+  6. **Migration 009 applicata** (vedi §6). Da qui in avanti `logAiUsage`
+     scrive davvero e `/api/usage` ha dati da aggregare.
+  7. **Rail destra su tre righe e obiettivi cliccabili** (commit `272e127`):
+     `MetricCards` nella rail sbordava di 31px appena si apriva l'editor del
+     mood, e i pallini degli obiettivi erano bersagli da 14px. Ora una riga
+     per metrica con l'editor sotto a tutta larghezza (`rail-metrics.tsx`) e
+     caselle da 22px dentro righe da 44px.
+  8. **Migration 010 applicata la sera stessa** (vedi §6): i micro-goal di
+     default per i nuovi utenti non sono piu la lista personale di maggio.
+     `default-goals.ts` tiene la stessa lista per la modalita locale.
+  9. **`madh52@gmail.com` promosso a premium a mano**, su richiesta di
+     Manuel: `update public.profiles set plan='premium',
+     plan_source='manual', current_period_end=null where user_id =
+     'd771049e-b74e-4476-b36e-51d6bb569b2f'`. Nessun cliente Stripe
+     collegato, quindi il webhook non ha niente da sovrascrivere; se un
+     giorno quell'account paga davvero, il webhook riscrivera plan_source a
+     `stripe`. Lato client basta ricaricare l'app: `plan.ts` rilegge
+     `profiles.plan` in background a ogni load e sostituisce la cache
+     `jm.plan`, senza bisogno di rifare il login.
+
+  10. **"Altro" e diventato "Impostazioni"** (mockup impostazioni.html
+     §03/§04, approvato). Era un cassetto: banner, card Recap, temi,
+     obiettivi a chip, dati, account e logout tutti aperti nella stessa
+     colonna, senza gerarchia. Ora e un elenco a gruppi dove ogni riga
+     dice la cosa E il suo valore attuale (quanti obiettivi, che tema,
+     quante giornate), e cio che vuole spazio si apre in un pannello con
+     un "indietro": Obiettivi, Tema, "Dove sono le mie giornate".
+     Su desktop l'identita passa nella rail destra e la card Recap
+     sparisce dalla colonna (Recap e gia nella rail sinistra); sul
+     telefono succede il contrario. File nuovi: `settings/rows.tsx`
+     (SetGroup, SetRow, PanelHead) e `settings/panels.tsx`;
+     `appearance-section.tsx` e `goals-section.tsx` sono spariti,
+     `data-section.tsx` e rimasto solo col banner. Tolti da globals.css
+     11.471 caratteri di CSS che non aveva piu nessun utente.
+
+     **Due righe del mockup NON sono state implementate, di proposito.**
+     "Promemoria della sera" mostrerebbe un orario senza che arrivi mai
+     nessuna notifica: l'app non ha un sistema di notifiche. "Lingua"
+     mostrerebbe un selettore che non traduce niente: il bilingue e la
+     task 27 e non esiste ancora. Sono la stessa bugia del "primo mese
+     incluso" tolto la mattina dello stesso giorno, e tornano nel
+     momento in cui esiste la cosa che promettono.
+
+  11. **Bilingue italiano/inglese in tutta l'app** (task 27). Il modello:
+     **la chiave di traduzione E la frase italiana** — `t("Esci
+     dall'account")`, non `t("settings.account.logout")`. Tre motivi: il
+     codice resta leggibile senza aprire un secondo file; se una frase non
+     e tradotta esce in italiano invece di mostrare una chiave al cliente;
+     e si scrive un catalogo solo (`src/lib/i18n/en.ts`, 370 voci) invece
+     di due. Il difetto noto — cambiare la frase italiana scollega la
+     traduzione in silenzio — e coperto da `scripts/verify-i18n.mjs`, che
+     fallisce sia sulle frasi senza traduzione sia sulle traduzioni
+     rimaste orfane.
+
+     **La lingua la sceglie il dispositivo**, come chiesto: la preferenza
+     di default e "system" e `navigator.language` decide al primo avvio.
+     Da Impostazioni > Lingua si puo forzare italiano o inglese, e si puo
+     TORNARE all'automatico (chi cambia telefono altrimenti non avrebbe
+     piu modo di farlo).
+
+     **Perche la traduzione si accende dopo l'idratazione.** Il server non
+     sa che lingua ha il dispositivo e renderizza sempre in italiano. Se
+     il client partisse subito in inglese React troverebbe un HTML diverso
+     da quello atteso e urlerebbe in console — e le suite Playwright
+     falliscono su "zero errori console". Quindi `t()` risponde italiano
+     finche `LangWatcher` non chiama `markHydrated()`: un render in piu,
+     zero mismatch.
+
+     **Cambia anche cio che scrive l'AI.** `apiFetch` manda `x-jm-lang` e
+     le sei route AI scelgono la lingua dell'output (`src/lib/server/lang.ts`).
+     Un'interfaccia inglese che genera un titolo in italiano e tradotta a
+     meta, cioe rotta. **Le etichette delle macro-aree restano pero in
+     italiano** ('Lavoro', 'Relazioni', 'Corpo', 'Emozioni'): sono un enum
+     salvato a database, non testo, e se l'AI cominciasse a scrivere
+     'Work' le giornate vecchie e nuove dello stesso utente finirebbero
+     con etichette diverse. A schermo le traduce `t()` come tutto il resto.
+
+     **Numeri e date seguono la lingua**: `LOCALE` non e piu una costante,
+     `format.ts` chiede il tag a `localeTag()` a ogni chiamata. Il peso si
+     scrive 81,4 in italiano e 81.4 in inglese, e i nomi dei mesi arrivano
+     da Intl — le tre liste `MONTHS_IT` copiate a mano sono sparite, come
+     le tre copie di `periodLabel` (ora `src/lib/recap-labels.ts`).
+
+  12. **Il codice di accesso e finito nel TITOLO della mail** (task 26).
+     L'oggetto era "Il tuo codice Journal.me" e il numero stava solo nel
+     corpo: iPhone la proposta di riempimento automatico la costruisce
+     dal messaggio, e col numero nascosto dentro l'HTML bisognava aprire
+     Mail, leggere, tornare indietro e ribattere sei cifre. Adesso
+     l'oggetto **comincia** col codice:
+     `{{ .Token }} e il tuo codice Journal.me / your Journal.me code`,
+     e il corpo e stato riscritto in due lingue col codice grande in
+     cima. Cambiati tutti e due i template — `magic_link` E `confirmation`,
+     perche al PRIMO accesso di un'email nuova Supabase usa il secondo, ed
+     era gia la trappola che aveva rotto il login a giugno.
+
+     **Come e stato fatto, visto che il dashboard non si vede:** con la
+     Management API (`PATCH /v1/projects/<ref>/config/auth`) chiamata dalla
+     scheda Chrome gia loggata, come per le migration (vedi §6). I template
+     precedenti sono salvati nel localStorage di quel browser sotto
+     `jm.backup.mailer.20260820`: se il nuovo non piace, si rimettono da li
+     senza doverli riscrivere a memoria.
+
+  13. **La dimensione dell'interfaccia si puo cambiare** (Impostazioni >
+     Lingua e aspetto > Dimensione del testo). E accessibilita, non una
+     preferenza: Manuel non vede bene e l'app gli era troppo piccola.
+
+     **Perche zoom e non font piu grandi.** In globals.css ci sono 166
+     misure di testo scritte in pixel, e accanto altezze e spaziature
+     anch'esse in pixel: scalare solo i font vuol dire testo grande dentro
+     righe rimaste piccole. Convertire tutto in rem sarebbe la strada da
+     manuale ma tocca ogni riga del foglio di stile. Si usa `zoom` sulla
+     radice, provato nel browser PRIMA di scriverlo: ingrandisce testo,
+     spazi e bersagli insieme, gli overlay `fixed` continuano a coprire lo
+     schermo, la tab bar resta in fondo.
+
+     **L'unica cosa che lo zoom rompe e `100dvh`**: dentro una radice
+     zoomata al 125% vale il 125% dello schermo, e su una pagina vuota
+     compare una barra di scorrimento. I tredici punti sono diventati la
+     classe `.jm-screen`, cioe `calc(100dvh / var(--jm-ui-scale))`.
+
+     Cinque passi (0,9 / 1 / 1,15 / 1,3 / 1,5). La scala si applica nello
+     script inline di boot, insieme a tema e chiaro/scuro: applicarla da
+     React vorrebbe dire vedere l'app piccola per un istante e poi
+     saltare. Nel pannello **ogni riga e disegnata alla sua misura** e non
+     c'e nessun tasto "salva": chi apre quella schermata lo fa perche non
+     vede bene, e deve poter scegliere guardando.
+
+     `src/lib/ui-scale-contract.ts` non importa React di proposito: lo
+     importa anche `themes/boot.ts`, che gira come modulo server, e un
+     solo hook li dentro fa fallire la compilazione della pagina.
+
+  14. **Dalla giornata si puo aggiungere qualcosa** (`/giorno`). Prima era
+     un vicolo cieco: una giornata vuota diceva "vai su Oggi" e una gia
+     raccontata non poteva ricevere una riga in piu. Ora un tasto in fondo
+     al racconto (non nell'intestazione: lassu ci sono gia indietro,
+     originale ed elimina, e un quarto bersaglio sarebbe appiccicato al
+     cestino) apre un foglio con tre voci: scrivi altro, racconta a voce,
+     salva in Ricorda.
+
+     Sotto il cofano non c'e niente di nuovo: `ManualWrite`,
+     `RecordingOverlay` e `QuickCapture` sono gli stessi di Oggi e di
+     Ricorda, e `saveRecording` con `defaultDate` accodava gia al
+     transcript esistente. **La voce non compare in gratis** — assente,
+     non spenta con la targhetta "Premium": quello e solo un modo elegante
+     di dire di no (SPEC-v2 §3.3).
+
+     Se l'utente sposta la data dentro l'overlay di registrazione, vince
+     lui: il foglio non riporta di forza il testo su questa giornata.
+
+  15. **La dimensione del testo rifatta: si scala SOLO il testo** (21
+     agosto). La prima versione usava `zoom` sulla radice e cresceva tutto
+     insieme, margini compresi: sullo schermo entrava la stessa quantita
+     di parole, solo piu grosse. Manuel l'ha bocciata in mezz'ora ("il gap
+     destra e sinistra cambia, volevo solo il font") e aveva ragione: chi
+     ingrandisce il testo lo fa per LEGGERE DI PIU. Ora ogni misura di
+     testo del progetto — 175 in globals.css, 14 dai token dei temi, 37
+     inline, 9 in classi Tailwind — e `calc(<valore> * var(--jm-ui-scale))`.
+     Margini e larghezze non si toccano; `.jm-screen` e tornata a 100dvh
+     perche senza zoom non c'era piu niente da correggere. Il test misura
+     margine sinistro e larghezza del contenuto a ogni scala: se qualcuno
+     riprova con lo zoom, fallisce.
+
+  16. **L'avviso di caricamento, uno per tutta l'app**
+     (`src/components/ui/toast.tsx`). Premevi "Continua" per aggiungere
+     testo a una giornata e per qualche secondo non succedeva niente:
+     nessuna rotella, nessuna scritta. Store nel modulo come premium-wall
+     e palette, montato una volta sola nel layout, tre stati (loading che
+     dura finche non lo sostituisci, ok 2,5s, errore 6s). Lo usano
+     l'aggiunta a una giornata, il salvataggio del transcript e
+     l'eliminazione; le schermate che gia avevano un'attesa visibile
+     (Oggi con "elaborazione", Recap col tasto che cambia testo) non ne
+     hanno bisogno e non lo usano — un secondo avviso sopra un'attesa gia
+     mostrata e rumore.
+
+  17. **BUG VERO: il testo aggiunto finiva su un ALTRO giorno.** Manuel ha
+     detto "non li salva". Il database ha detto un'altra cosa: alle
+     09:27:15 del 21 agosto l'entry del 2026-08-20 era stata aggiornata,
+     con il separatore dell'append dentro. Salvava eccome — sul giorno
+     sbagliato. Causa: `saveRecording` chiama `/api/split-by-date`, che
+     legge i marker temporali del testo ("ieri", "lunedi") e sposta il
+     racconto sulla data giusta. Su Oggi e cio che serve; su `/giorno` no,
+     perche la data l'hai gia scelta tu aprendo quella schermata, e il
+     testo spariva da sotto gli occhi. Aggiunta l'opzione `skipSplit`, che
+     AddToDay passa sempre. Se la data viene spostata a mano nel
+     registratore l'avviso lo dice invece di tacere.
+
+     **Da qui una regola:** quando "non salva", chiedere al database prima
+     di leggere il codice. Sarebbe bastato un `select` per non cercare nel
+     posto sbagliato.
+
+  18. **Passare da un tab all'altro era lento: cache + precaricamento**
+     (`src/lib/data/cache.ts`, `warm.ts`). Ogni schermata caricava i suoi
+     dati al montaggio e in cloud ogni lettura e un giro fino a Supabase,
+     rifatto da capo a ogni ritorno. Ora le letture passano da una cache
+     in memoria (60 secondi, stale-while-revalidate: la seconda visita
+     disegna subito e rilegge in sottofondo) e, appena la PRIMA schermata
+     e pronta, gli altri tab si precaricano da soli.
+
+     La cache sta dentro `src/lib/data/*.ts` — l'unico punto d'accesso ai
+     dati — e non nelle pagine: cosi una schermata scritta domani la
+     eredita senza saperlo. **L'invalidazione e grossolana di proposito:**
+     qualsiasi scrittura svuota tutto. Una giornata salvata cambia anche
+     il conteggio del mese, i micro-goal di quel giorno e magari un
+     remember estratto; tenere quella mappa a mano e il tipo di cosa che
+     si rompe in silenzio sei mesi dopo. **Attenzione:** le scritture che
+     NON passano da `data/*.ts` (saveRecording, generateAndSaveRecap,
+     import ed erase del backup) chiamano `invalidateAll()` a mano — se se
+     ne aggiunge una e ci si dimentica, l'app mostra dati vecchi fino allo
+     scadere del minuto.
+
+  **Verificato**, non dichiarato: `npx tsc --noEmit` e `npx eslint .` puliti;
+  `next build` (web) e `JM_MOBILE=1 next build` (export statico iOS) entrambi
+  verdi; le suite Playwright rieseguite senza regressioni (PR 7 24/24,
+  PR 8 21/21, PR 9 25/25, PR 10 26/26) piu quattro nuove:
+  `scripts/verify-fix-20260820.mjs` 52/53, `scripts/verify-impostazioni.mjs`
+  55/55, `scripts/verify-i18n.mjs` 6/6 (analisi statica del catalogo),
+  `scripts/verify-lingua.mjs` 25/25 (l'app vera, in tutte e due le lingue) e
+  `scripts/verify-testo-giorno.mjs` 46/46 — che fra le altre cose misura
+  margine sinistro e larghezza del contenuto a ogni misura del testo, cioe
+  la cosa che Manuel ha chiesto — e `scripts/verify-toast-cache.mjs` 12/12,
+  che riproduce il bug del giorno sbagliato scrivendo "ieri" dentro il testo
+  e ricaricando la pagina.
+
+  L'unico FAIL, `benvenuto: zero errori console`, e un artefatto
+  dell'ambiente e non una regressione: senza `.env.local` il client
+  Supabase urla "Supabase non configurato" e `/benvenuto` lo costruisce.
+  Verificato rimettendo il `src` di `eb93806` sullo stesso dev server:
+  fallisce identico anche li. Da rifare quando l'ambiente ha le env.
+
+  **NON fatto, e da decidere:** `/api/usage` non ha ancora nessuna schermata
+  che lo mostri (il contatore consumi esiste solo lato server: serve un
+  mockup prima); il bundle iOS in `ios/App/App/public` e ancora
+  pre-temi, quindi `npm run build:ios` va rifatto prima di rimettere le mani
+  sul telefono; l'append-by-default di una giornata gia scritta in locale
+  tiene il titolo della PRIMA riga scritta quel giorno, che e coerente col
+  mockup ("il titolo e la prima riga") ma sorprende chi crede di riscrivere.
 
 **Cosa cambia.** L'app diventa usabile a schermo intero su MacBook con la tastiera
 (oggi e una colonna da 440px in mezzo allo schermo), l'ingresso della giornata su desktop

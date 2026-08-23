@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
+import { useT } from "@/lib/i18n";
 
 /**
  * La rail sinistra del guscio desktop (mockup desktop-v1.html): brand,
@@ -63,7 +64,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   {
     key: "altro",
     href: "/settings",
-    label: "Altro",
+    label: "Impostazioni",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
         <circle cx="5" cy="12" r="2" />
@@ -86,6 +87,7 @@ function activeKeyFor(pathname: string): NavKey | null {
 type Account = { name: string; badge: string };
 
 export function RailLeft() {
+  const t = useT();
   const pathname = usePathname();
   const mode = useStorageMode();
   const active = activeKeyFor(pathname);
@@ -127,7 +129,7 @@ export function RailLeft() {
   }, [mode]);
 
   return (
-    <nav className="jm-rail-l" aria-label="Navigazione principale">
+    <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
       <div className="jm-rail-brand">
         Journal<span>.me</span>
       </div>
@@ -140,7 +142,7 @@ export function RailLeft() {
             aria-current={active === item.key ? "page" : undefined}
           >
             {item.icon}
-            {item.label}
+            {t(item.label)}
           </Link>
         ))}
         <div className="jm-rail-sep" />
@@ -149,7 +151,7 @@ export function RailLeft() {
             <rect x="9" y="3" width="6" height="11" rx="3" />
             <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
           </svg>
-          {mode === "local" ? "Scrivi la giornata" : "Racconta a voce"}
+          {mode === "local" ? t("Scrivi la giornata") : t("Racconta a voce")}
           <span className="jm-rail-kbd">{"⌘⇧R"}</span>
         </Link>
       </div>
@@ -159,12 +161,14 @@ export function RailLeft() {
             {account ? account.name.slice(0, 1).toUpperCase() : "•"}
           </div>
           <div className="jm-rail-acct-txt">
-            <div className="jm-rail-acct-nm">{account?.name ?? "…"}</div>
+            <div className="jm-rail-acct-nm">
+              {account ? t(account.name) : "…"}
+            </div>
             {account && (
               <span
                 className={`jm-rail-pill${account.badge === "Premium" ? " prem" : ""}`}
               >
-                {account.badge}
+                {t(account.badge)}
               </span>
             )}
           </div>

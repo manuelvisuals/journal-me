@@ -7,6 +7,11 @@
  * loggati da ogni chiamata OpenAI); la quota per tier sta in plan_limits
  * e la modifichera la pagina admin (solo master).
  *
+ * Due punti di montaggio, stessa card: sul telefono dentro il pannello
+ * radice di Impostazioni (UsageSection, dentro un SetGroup), su desktop
+ * nella rail destra insieme all'account (UsageCard da sola), perche
+ * Manuel l'ha chiesta "nell'account stesso".
+ *
  * Solo cloud: in locale l'AI non esiste e la sezione non si monta.
  * Se la chiamata fallisce (rete, 401) la sezione sparisce in silenzio:
  * mai un errore rosso per un widget informativo.
@@ -16,6 +21,8 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { formatNumber } from "@/lib/format";
 import { useStorageMode } from "@/lib/data/store";
+import { useT } from "@/lib/i18n";
+import { SetGroup } from "@/components/settings/rows";
 
 type Usage = {
   totalTokens: number;
@@ -24,7 +31,7 @@ type Usage = {
   pct: number | null;
 };
 
-export function UsageSection() {
+function useAiUsage(): Usage | null {
   const mode = useStorageMode();
   const [usage, setUsage] = useState<Usage | null>(null);
 
@@ -46,39 +53,62 @@ export function UsageSection() {
     };
   }, [mode]);
 
-  if (mode !== "cloud" || !usage) return null;
+  return mode === "cloud" ? usage : null;
+}
+
+/**
+ * La card nuda, per la rail destra su desktop. `plain` la spoglia di
+ * sfondo e bordo, per quando vive gia dentro una jm-st-box.
+ */
+export function UsageCard({ plain = false }: { plain?: boolean }) {
+  const t = useT();
+  const usage = useAiUsage();
+  if (!usage) return null;
 
   const pct = usage.pct ?? 0;
   const width = Math.max(0, Math.min(100, pct));
   const warn = pct >= 90;
 
   return (
-    <section className="jm-set-section">
-      <div className="jm-set-section-h">AI di questo mese</div>
-      <div className="jm-usage">
-        <div className="jm-usage-top">
-          <span className="jm-usage-t">Quota inclusa nell&apos;abbonamento</span>
-          <span className="jm-usage-pct" suppressHydrationWarning>
-            {usage.pct !== null ? `${formatNumber(pct)}%` : "—"}
-          </span>
-        </div>
-        <div
-          className="jm-usage-bar"
-          role="progressbar"
-          aria-valuenow={width}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
-          <div
-            className={`jm-usage-fill${warn ? " warn" : ""}`}
-            style={{ width: `${width}%` }}
-          />
-        </div>
-        <div className="jm-usage-sub" suppressHydrationWarning>
-          {formatNumber(usage.totalTokens)} token usati questo mese. La quota
-          si azzera il primo del mese.
-        </div>
+    <div className={`jm-usage${plain ? " plain" : ""}`}>
+      <div className="jm-usage-top">
+        <span className="jm-usage-t">
+          {plain ? t("Quota inclusa nell'abbonamento") : t("AI di questo mese")}
+        </span>
+        <span className="jm-usage-pct" suppressHydrationWarning>
+          {usage.pct !== null ? `${formatNumber(pct)}%` : "—"}
+        </span>
       </div>
-    </section>
+      <div
+        className="jm-usage-bar"
+        role="progressbar"
+        aria-valuenow={width}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div
+          className={`jm-usage-fill${warn ? " warn" : ""}`}
+          style={{ width: `${width}%` }}
+        />
+      </div>
+      <div className="jm-usage-sub" suppressHydrationWarning>
+        {t("{n} token usati questo mese. La quota si azzera il primo del mese.", {
+          n: formatNumber(usage.totalTokens),
+        })}
+      </div>
+    </div>
+  );
+}
+
+/** La stessa card dentro un gruppo di Impostazioni, per il telefono. */
+export function UsageSection() {
+  const t = useT();
+  const usage = useAiUsage();
+  if (!usage) return null;
+
+  return (
+    <SetGroup label={t("AI di questo mese")}>
+      <UsageCard plain />
+    </SetGroup>
   );
 }

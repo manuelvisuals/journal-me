@@ -1,6 +1,7 @@
 "use client";
 
 import { formatDecimal, formatSleep, shortWeekday } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import type { Entry, Mood } from "@/lib/types";
 
 type Props = {
@@ -30,6 +31,7 @@ export function DayRow({
   loading = false,
   onClick,
 }: Props) {
+  const t = useT();
   const date = new Date(year, month - 1, day);
   const weekday = shortWeekday(date);
 
@@ -93,7 +95,7 @@ export function DayRow({
             </div>
           </>
         ) : (
-          <div className="jm-day-empty">&mdash; giornata vuota &mdash;</div>
+          <div className="jm-day-empty">{t("\u2014 giornata vuota \u2014")}</div>
         )}
       </div>
 

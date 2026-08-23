@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
+import { langName, langOf } from "@/lib/server/lang";
 
 /**
  * Extracts the names of people the user mentioned or interacted with in a
@@ -35,8 +36,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ people: [] });
   }
 
+  const lingua = langName(langOf(req));
+
   const systemPrompt = [
-    "Sei l'assistente di un diario personale italiano.",
+    `Sei l'assistente di un diario personale. Il transcript e in ${lingua}.`,
     "Ricevi il transcript di una persona che racconta la sua giornata a voce libera.",
     "Devi estrarre i NOMI DELLE PERSONE che l'autore ha nominato o con cui ha avuto a che fare oggi.",
     "",

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
+import { AddToDay } from "@/components/day/add-to-day";
 import {
   compactDayDate,
   parseISODate,
@@ -19,6 +20,8 @@ import {
   type DataMode,
 } from "@/lib/data/entries";
 import type { Entry, EntryMetrics } from "@/lib/types";
+import { useT } from "@/lib/i18n";
+import { toast } from "@/components/ui/toast";
 
 type Props = {
   mode: DataMode;
@@ -27,12 +30,17 @@ type Props = {
 };
 
 /**
- * Detail view for an arbitrary past day. Reached from Mese by tapping a day
- * row. Reuses all of Today's edit affordances (FilledView, transcript editor,
- * metric upsert, goal toggle, delete) but locked to a fixed date and without
- * the recording entry-point — to re-record, go back to Today.
+ * La schermata di una giornata qualsiasi, aperta da Mese. Riusa tutto quello
+ * che Oggi sa fare (FilledView, editor del transcript, metriche, obiettivi,
+ * eliminazione) ma con la data fissa.
+ *
+ * Dal 20 agosto 2026 ha anche un modo per AGGIUNGERE (mockup
+ * testo-e-giorno.html §03): prima non ce l'aveva, e una giornata vuota
+ * diceva solo "vai su Oggi" — un vicolo cieco, per giunta su una schermata
+ * che ti sei aperto apposta per quel giorno.
  */
 export function DayClient({ mode, date, initialEntry }: Props) {
+  const t = useT();
   const router = useRouter();
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
@@ -48,7 +56,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       const updated = await updateMetric(mode, date, patch);
       setEntry(updated);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
@@ -57,43 +65,52 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       const updated = await toggleGoal(mode, date, label);
       setEntry(updated);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
   const handleTranscriptSave = async (newTranscript: string) => {
     setEditorOpen(false);
+    // Rigenera titolo, sintesi e aree passando dall'AI: sono secondi, e
+    // senza avviso sembra che il tasto non abbia fatto niente.
+    toast.loading(t("Salvo le modifiche..."));
     try {
       const updated = await updateEntryTranscript(mode, date, newTranscript);
       setEntry(updated);
+      toast.ok(t("Salvato"));
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      const msg = err instanceof Error ? err.message : t("Errore");
+      setSaveError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDelete = async () => {
     if (deleting) return;
-    if (!confirm("Eliminare questa giornata? Non puoi annullare.")) return;
+    if (!confirm(t("Eliminare questa giornata? Non puoi annullare."))) return;
     setDeleting(true);
+    toast.loading(t("Elimino la giornata..."));
     try {
       await deleteEntry(mode, date);
+      toast.ok(t("Giornata eliminata"));
       router.push("/mese");
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Errore");
+      const msg = err instanceof Error ? err.message : t("Errore");
+      setSaveError(msg);
+      toast.error(msg);
       setDeleting(false);
     }
   };
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       <header className="jm-day-head">
         <button
           type="button"
           onClick={() => router.push("/mese")}
-          aria-label="Indietro"
+          aria-label={t("Indietro")}
           className="jm-day-back"
         >
           <svg
@@ -119,13 +136,13 @@ export function DayClient({ mode, date, initialEntry }: Props) {
               onClick={() => setEditorOpen(true)}
               className="jm-day-head-action"
             >
-              originale &#8599;
+              {t("originale")} &#8599;
             </button>
             <button
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              aria-label="Elimina giornata"
+              aria-label={t("Elimina giornata")}
               className="jm-day-head-del"
             >
               <svg
@@ -158,7 +175,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
             border: "1px solid var(--color-danger)",
             borderRadius: 10,
             color: "var(--color-danger)",
-            fontSize: 12,
+            fontSize: "calc(12px * var(--jm-ui-scale))",
           }}
         >
           {saveError}
@@ -175,39 +192,33 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           people={entry.people}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
+          footer={
+            <AddToDay
+              mode={mode}
+              date={date}
+              onSaved={(e) => setEntry(e)}
+              onError={setSaveError}
+            />
+          }
         />
       ) : (
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "0 32px",
-            textAlign: "center",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                fontSize: 14,
-                color: "var(--color-ink-muted)",
-                marginBottom: 6,
-              }}
-            >
-              Nessuna giornata registrata
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--color-ink-faint)",
-                lineHeight: 1.5,
-              }}
-            >
-              Vai su Oggi per registrarla. Nel selettore data dell&apos;overlay
-              puoi scegliere questo giorno.
-            </div>
+        /* Giornata vuota: il vicolo cieco diventa un'azione. La data resta
+           questa, non diventa oggi — ed e la cosa che il testo deve dire,
+           perche e l'unico dubbio vero di chi sta per scrivere. */
+        <div className="jm-day-empty-wrap">
+          <div className="jm-day-empty-h">
+            {t("Non hai raccontato questo giorno")}
           </div>
+          <div className="jm-day-empty-p">
+            {t("Puoi farlo adesso: la data resta quella, non diventa oggi.")}
+          </div>
+          <AddToDay
+            mode={mode}
+            date={date}
+            variant="empty"
+            onSaved={(e) => setEntry(e)}
+            onError={setSaveError}
+          />
         </div>
       )}
 

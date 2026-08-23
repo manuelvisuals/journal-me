@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatDecimal, formatSleep } from "@/lib/format";
 import type { EntryMetrics, Mood } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   metrics: EntryMetrics | null;
@@ -11,12 +12,12 @@ type Props = {
 
 type EditMode = "none" | "weight" | "sleep" | "mood";
 
-const MOOD_OPTIONS: { value: Mood; emoji: string }[] = [
-  { value: "great", emoji: "\u{1F60A}" },
-  { value: "good", emoji: "\u{1F642}" },
-  { value: "neutral", emoji: "\u{1F610}" },
-  { value: "low", emoji: "\u{1F614}" },
-  { value: "bad", emoji: "\u{1F641}" },
+const MOOD_OPTIONS: { value: Mood; emoji: string; label: string }[] = [
+  { value: "great", emoji: "\u{1F60A}", label: "molto bene" },
+  { value: "good", emoji: "\u{1F642}", label: "bene" },
+  { value: "neutral", emoji: "\u{1F610}", label: "cosi cosi" },
+  { value: "low", emoji: "\u{1F614}", label: "giu" },
+  { value: "bad", emoji: "\u{1F641}", label: "male" },
 ];
 
 function moodEmoji(m: Mood | null): string {
@@ -104,12 +105,12 @@ function CardShell({
 }
 
 const unitStyle: React.CSSProperties = {
-  fontSize: 10,
+  fontSize: "calc(10px * var(--jm-ui-scale))",
   color: "var(--color-ink-faint)",
   fontWeight: 500,
 };
 const labelStyle: React.CSSProperties = {
-  fontSize: 9,
+  fontSize: "calc(9px * var(--jm-ui-scale))",
   fontWeight: 600,
   color: "var(--color-ink-faint)",
   letterSpacing: "0.18em",
@@ -117,7 +118,7 @@ const labelStyle: React.CSSProperties = {
   marginTop: 5,
 };
 const valueStyle: React.CSSProperties = {
-  fontSize: 18,
+  fontSize: "calc(18px * var(--jm-ui-scale))",
   fontWeight: 600,
   color: "var(--color-ink)",
   letterSpacing: "-0.01em",
@@ -132,13 +133,14 @@ function WeightDisplay({
   value: number | null;
   onOpen: () => void;
 }) {
+  const t = useT();
   return (
     <CardShell editing={false} onClick={onOpen}>
       <div style={valueStyle}>
         {value != null ? formatDecimal(value, 1) : "—"}
         <span style={unitStyle}> kg</span>
       </div>
-      <div style={labelStyle}>peso</div>
+      <div style={labelStyle}>{t("peso")}</div>
     </CardShell>
   );
 }
@@ -152,6 +154,7 @@ function WeightEditor({
   onCommit: (v: number | null) => void;
   onCancel: () => void;
 }) {
+  const t = useT();
   // Initial state from props, set once. Editor is unmounted when not editing,
   // so this re-initializes naturally each time it opens.
   const [text, setText] = useState<string>(
@@ -196,7 +199,7 @@ function WeightEditor({
           else if (e.key === "Escape") onCancel();
         }}
         size={5}
-        aria-label="Peso in kg"
+        aria-label={t("Peso in kg")}
       />
       <div className="jm-stepper">
         <button
@@ -205,7 +208,7 @@ function WeightEditor({
             e.preventDefault();
             step(-0.1);
           }}
-          aria-label="Meno"
+          aria-label={t("Meno")}
         >
           &minus;
         </button>
@@ -215,12 +218,12 @@ function WeightEditor({
             e.preventDefault();
             step(+0.1);
           }}
-          aria-label="Piu"
+          aria-label={t("Piu")}
         >
           +
         </button>
       </div>
-      <div style={labelStyle}>peso kg</div>
+      <div style={labelStyle}>{t("peso kg")}</div>
     </CardShell>
   );
 }
@@ -233,10 +236,11 @@ function SleepDisplay({
   value: number | null;
   onOpen: () => void;
 }) {
+  const t = useT();
   return (
     <CardShell editing={false} onClick={onOpen}>
       <div style={valueStyle}>{value != null ? formatSleep(value) : "—"}</div>
-      <div style={labelStyle}>sonno</div>
+      <div style={labelStyle}>{t("sonno")}</div>
     </CardShell>
   );
 }
@@ -250,6 +254,7 @@ function SleepEditor({
   onCommit: (v: number | null) => void;
   onCancel: () => void;
 }) {
+  const t = useT();
   const initH = value != null ? Math.floor(value) : 7;
   const initM = value != null ? Math.round((value - Math.floor(value)) * 60) : 0;
   const [h, setH] = useState<string>(String(initH));
@@ -279,7 +284,7 @@ function SleepEditor({
             if (e.key === "Enter") commit();
             else if (e.key === "Escape") onCancel();
           }}
-          aria-label="Ore di sonno"
+          aria-label={t("Ore di sonno")}
         />
         <span className="sep">h</span>
         <input
@@ -292,10 +297,10 @@ function SleepEditor({
             if (e.key === "Enter") commit();
             else if (e.key === "Escape") onCancel();
           }}
-          aria-label="Minuti di sonno"
+          aria-label={t("Minuti di sonno")}
         />
       </div>
-      <div style={labelStyle}>sonno</div>
+      <div style={labelStyle}>{t("sonno")}</div>
     </CardShell>
   );
 }
@@ -308,10 +313,11 @@ function MoodDisplay({
   value: Mood | null;
   onOpen: () => void;
 }) {
+  const t = useT();
   return (
     <CardShell editing={false} onClick={onOpen}>
-      <div style={{ fontSize: 22, lineHeight: 1 }}>{moodEmoji(value)}</div>
-      <div style={labelStyle}>mood</div>
+      <div style={{ fontSize: "calc(22px * var(--jm-ui-scale))", lineHeight: 1 }}>{moodEmoji(value)}</div>
+      <div style={labelStyle}>{t("mood")}</div>
     </CardShell>
   );
 }
@@ -323,6 +329,7 @@ function MoodEditor({
   value: Mood | null;
   onPick: (m: Mood) => void;
 }) {
+  const t = useT();
   return (
     <CardShell editing>
       <div className="jm-mood-picker">
@@ -332,13 +339,13 @@ function MoodEditor({
             type="button"
             onClick={() => onPick(o.value)}
             className={value === o.value ? "opt on" : "opt"}
-            aria-label={`Mood ${o.value}`}
+            aria-label={t(o.label)}
           >
             {o.emoji}
           </button>
         ))}
       </div>
-      <div style={labelStyle}>mood</div>
+      <div style={labelStyle}>{t("mood")}</div>
     </CardShell>
   );
 }

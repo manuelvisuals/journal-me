@@ -2,9 +2,12 @@
 
 import { useRef, useState } from "react";
 import { RecordingOverlay } from "@/components/today/recording-overlay";
+import { openPremiumWall } from "@/components/premium-wall";
+import { useCan } from "@/lib/capabilities";
 import { todayISO } from "@/lib/format";
 import type { DataMode } from "@/lib/data/entries";
 import type { RememberKind } from "@/lib/types";
+import { t, useT } from "@/lib/i18n";
 
 type Props = {
   mode: DataMode;
@@ -21,6 +24,13 @@ const KIND_OPTIONS: { key: RememberKind; label: string }[] = [
 ];
 
 export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
+  const t = useT();
+  // La voce e una capability come nel resto dell'app (SPEC-v2 §3.3): questo
+  // mic apriva la registrazione senza nessun controllo, quindi in modalita
+  // locale mandava l'audio a /api/transcribe-fallback e rompeva la promessa
+  // "nemmeno una richiesta di rete". In gratis apre il muro premium; il
+  // campo di testo resta li accanto ed e l'uscita gratuita.
+  const canVoice = useCan("voice");
   const [text, setText] = useState<string>("");
   const [kind, setKind] = useState<RememberKind>(defaultKind);
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
@@ -45,12 +55,13 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
 
   const submit = async () => {
     if (submittingRef.current) return;
-    const t = text.trim();
-    if (!t) return;
+    // `clean` e non `t`: `t` e la funzione di traduzione.
+    const clean = text.trim();
+    if (!clean) return;
     submittingRef.current = true;
     setSubmitting(true);
     try {
-      await onAdd(t, kind);
+      await onAdd(clean, kind);
       setText("");
     } finally {
       submittingRef.current = false;
@@ -71,8 +82,8 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Ricorda..."
-          aria-label="Cosa vuoi ricordare"
+          placeholder={t("Ricorda...")}
+          aria-label={t("Cosa vuoi ricordare")}
         />
         <button
           type="button"
@@ -84,8 +95,14 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
         <button
           type="button"
           className="jm-qc-mic"
-          aria-label="Aggiungi con voce"
-          onClick={() => setRecorderOpen(true)}
+          aria-label={t("Aggiungi con voce")}
+          onClick={() => {
+            if (!canVoice) {
+              openPremiumWall("voice");
+              return;
+            }
+            setRecorderOpen(true);
+          }}
         >
           <svg
             viewBox="0 0 24 24"
@@ -106,7 +123,7 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
         <button
           type="submit"
           className="jm-qc-add"
-          aria-label="Aggiungi"
+          aria-label={t("Aggiungi")}
           disabled={!text.trim() || submitting}
           aria-busy={submitting}
         >
@@ -126,13 +143,13 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
                 setPickerOpen(false);
               }}
             >
-              {o.label}
+              {t(o.label)}
             </button>
           ))}
         </div>
       )}
 
-      {recorderOpen && (
+      {recorderOpen && canVoice && (
         <RecordingOverlay
           mode={mode}
           defaultDate={todayISO()}
@@ -145,5 +162,5 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
 }
 
 function labelOf(k: RememberKind): string {
-  return KIND_OPTIONS.find((o) => o.key === k)?.label ?? k;
+  return t(KIND_OPTIONS.find((o) => o.key === k)?.label ?? k);
 }

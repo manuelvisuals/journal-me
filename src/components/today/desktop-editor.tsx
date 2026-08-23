@@ -25,6 +25,7 @@ import {
   SHORTCUT_EVENT,
   type EditorShortcut,
 } from "@/components/desktop/use-shortcuts";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   /** Data (YYYY-MM-DD) su cui scrive e su cui salva la bozza. */
@@ -63,6 +64,7 @@ export function DesktopEditor({
   onWords,
   onDraftSaved,
 }: Props) {
+  const t = useT();
   const [value, setValue] = useState<string>(initialText);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -160,13 +162,13 @@ export function DesktopEditor({
           spellCheck
           autoCorrect="on"
           autoCapitalize="sentences"
-          placeholder="Com'e andata oggi?"
+          placeholder={t("Com'e andata oggi?")}
         />
       </div>
 
       <div className="jm-ed-foot">
         <div className="jm-ed-hint">
-          Bozza salvata in automatico . {"⌘K"} comandi
+          {t("Bozza salvata in automatico")} . {"\u2318K"} {t("comandi")}
         </div>
         <div className="jm-ed-acts">
           {onCancel && (
@@ -176,7 +178,7 @@ export function DesktopEditor({
               onClick={onCancel}
               disabled={saving}
             >
-              annulla
+              {t("annulla")}
             </button>
           )}
           {aiAvailable ? (
@@ -187,7 +189,7 @@ export function DesktopEditor({
                 onClick={() => submit(false)}
                 disabled={isEmpty || saving}
               >
-                salva e basta <span className="jm-ed-k">{"⌘S"}</span>
+                {t("salva e basta")} <span className="jm-ed-k">{"\u2318S"}</span>
               </button>
               <button
                 type="button"
@@ -195,8 +197,8 @@ export function DesktopEditor({
                 onClick={() => submit(true)}
                 disabled={isEmpty || saving}
               >
-                chiudi la giornata{" "}
-                <span className="jm-ed-k">{"⌘⏎"}</span>
+                {t("chiudi la giornata")}{" "}
+                <span className="jm-ed-k">{"\u2318\u23CE"}</span>
               </button>
             </>
           ) : (
@@ -206,7 +208,8 @@ export function DesktopEditor({
               onClick={() => submit(false)}
               disabled={isEmpty || saving}
             >
-              salva la giornata <span className="jm-ed-k">{"⌘⏎"}</span>
+              {t("salva la giornata")}{" "}
+              <span className="jm-ed-k">{"\u2318\u23CE"}</span>
             </button>
           )}
         </div>

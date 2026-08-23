@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/lib/i18n";
 
 export type TabKey =
   | "today"
@@ -82,7 +83,9 @@ const SIDE_TABS_RIGHT: Tab[] = [
   },
   {
     key: "settings",
-    label: "Altro",
+    // "Impost." e non "Impostazioni": la tab bar ha cinque slot su 390px
+    // e la parola intera li sfonda (mockup impostazioni.html §04).
+    label: "Impost.",
     href: "/settings",
     icon: (
       <svg
@@ -104,6 +107,7 @@ const SIDE_TABS_RIGHT: Tab[] = [
 ];
 
 export function TabBar({ active }: Props) {
+  const t = useT();
   return (
     <nav
       className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur lg:hidden"
@@ -122,7 +126,7 @@ export function TabBar({ active }: Props) {
       {/* Mic centrale — premium iOS-like, sempre disponibile */}
       <Link
         href="/?record=1"
-        aria-label="Registra"
+        aria-label={t("Registra")}
         className="flex flex-col items-center select-none"
         style={{
           gap: 4,
@@ -150,13 +154,13 @@ export function TabBar({ active }: Props) {
         </span>
         <span
           style={{
-            fontSize: 9,
+            fontSize: "calc(9px * var(--jm-ui-scale))",
             fontWeight: 600,
             letterSpacing: "0.10em",
             textTransform: "uppercase",
           }}
         >
-          Registra
+          {t("Registra")}
         </span>
       </Link>
 
@@ -168,6 +172,7 @@ export function TabBar({ active }: Props) {
 }
 
 function SideTab({ tab, active }: { tab: Tab; active: boolean }) {
+  const t = useT();
   return (
     <Link
       href={tab.href}
@@ -183,13 +188,13 @@ function SideTab({ tab, active }: { tab: Tab; active: boolean }) {
       </span>
       <span
         style={{
-          fontSize: 9,
+          fontSize: "calc(9px * var(--jm-ui-scale))",
           fontWeight: 600,
           letterSpacing: "0.10em",
           textTransform: "uppercase",
         }}
       >
-        {tab.label}
+        {t(tab.label)}
       </span>
     </Link>
   );

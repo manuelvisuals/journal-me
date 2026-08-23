@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 
 const LAST_EMAIL_KEY = "journalme-last-email";
 const CODE_LENGTH = 6;
@@ -34,6 +35,7 @@ function subscribeToLastEmail(callback: () => void) {
  * perche al primo accesso di un'email nuova Supabase usa il secondo.
  */
 export default function LoginPage() {
+  const t = useT();
   const savedEmail = useSyncExternalStore(
     subscribeToLastEmail,
     readLastEmail,
@@ -100,7 +102,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10">
       <div className="w-full max-w-sm">
         <p
-          className="text-center text-[22px] font-semibold mb-16 tracking-tight"
+          className="text-center text-[calc(22px*var(--jm-ui-scale))] font-semibold mb-16 tracking-tight"
           style={{ letterSpacing: "-0.01em" }}
         >
           Journal
@@ -116,13 +118,13 @@ export default function LoginPage() {
         {sent ? (
           <>
             <h1
-              className="text-center text-[32px] leading-[1.1] mb-3 text-ink"
+              className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
               style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
             >
-              Il codice
+              {t("Il codice")}
             </h1>
             <p className="text-center text-sm text-ink-muted leading-[1.55] mb-9 px-3">
-              Sei cifre inviate a{" "}
+              {t("Sei cifre inviate a")}{" "}
               <span className="text-accent font-semibold">{email}</span>.
             </p>
 
@@ -143,7 +145,7 @@ export default function LoginPage() {
                 className="input-base mb-3.5"
                 style={{
                   textAlign: "center",
-                  fontSize: 30,
+                  fontSize: "calc(30px * var(--jm-ui-scale))",
                   fontWeight: 600,
                   letterSpacing: "0.34em",
                   textIndent: "0.34em",
@@ -156,23 +158,23 @@ export default function LoginPage() {
                 type="submit"
                 disabled={verifying || code.length !== CODE_LENGTH}
               >
-                {verifying ? "Controllo..." : "Entra"}
+                {verifying ? t("Controllo...") : t("Entra")}
               </Button>
               {error && (
-                <p className="text-center text-[12px] text-danger mt-3">
+                <p className="text-center text-[calc(12px*var(--jm-ui-scale))] text-danger mt-3">
                   {error}
                 </p>
               )}
             </form>
 
-            <p className="text-center text-[11px] text-ink-faint leading-[1.6] mt-7">
-              Non arriva? Guarda nello spam, oppure{" "}
+            <p className="text-center text-[calc(11px*var(--jm-ui-scale))] text-ink-faint leading-[1.6] mt-7">
+              {t("Non arriva? Guarda nello spam, oppure")}{" "}
               <button
                 onClick={() => void sendCode()}
                 disabled={loading}
                 className="text-accent font-semibold"
               >
-                {loading ? "invio..." : "chiedine un altro"}
+                {loading ? t("invio...") : t("chiedine un altro")}
               </button>
               .
               <br />
@@ -184,22 +186,26 @@ export default function LoginPage() {
                 }}
                 className="text-accent font-semibold mt-1"
               >
-                Cambia email
+                {t("Cambia email")}
               </button>
             </p>
           </>
         ) : (
           <>
             <h1
-              className="text-center text-[32px] leading-[1.1] mb-3 text-ink"
+              className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
               style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
             >
-              {isReturning ? "Bentornato" : "Benvenuto"}
+              {isReturning ? t("Bentornato") : t("Benvenuto")}
             </h1>
             <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3">
               {isReturning
-                ? "Inserisci l'email che hai usato l'ultima volta: ti mando un codice."
-                : "Inserisci la tua email. Ti mando un codice di sei cifre, niente password."}
+                ? t(
+                    "Inserisci l'email che hai usato l'ultima volta: ti mando un codice.",
+                  )
+                : t(
+                    "Inserisci la tua email. Ti mando un codice di sei cifre, niente password.",
+                  )}
             </p>
             <form onSubmit={sendCode}>
               <input
@@ -207,17 +213,17 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmailOverride(e.target.value)}
-                placeholder="tu@dominio.com"
+                placeholder={t("tu@dominio.com")}
                 className="input-base mb-3.5"
                 disabled={loading}
                 autoComplete="email"
                 inputMode="email"
               />
               <Button type="submit" disabled={loading || !email}>
-                {loading ? "Sto inviando..." : "Mandami il codice"}
+                {loading ? t("Sto inviando...") : t("Mandami il codice")}
               </Button>
               {error && (
-                <p className="text-center text-[12px] text-danger mt-3">
+                <p className="text-center text-[calc(12px*var(--jm-ui-scale))] text-danger mt-3">
                   {error}
                 </p>
               )}
@@ -230,8 +236,8 @@ export default function LoginPage() {
                     "linear-gradient(90deg, transparent, var(--color-line), transparent)",
                 }}
               ></div>
-              <span className="text-[10px] font-semibold tracking-[0.2em] uppercase text-ink-faint">
-                oppure
+              <span className="text-[calc(10px*var(--jm-ui-scale))] font-semibold tracking-[0.2em] uppercase text-ink-faint">
+                {t("oppure")}
               </span>
               <div
                 className="flex-1 h-px"
@@ -245,12 +251,12 @@ export default function LoginPage() {
               variant="ghost"
               onClick={() => router.push("/benvenuto")}
             >
-              Tienilo solo su questo dispositivo
+              {t("Tienilo solo su questo dispositivo")}
             </Button>
-            <p className="text-center text-[11px] text-ink-faint leading-[1.6] mt-7">
-              Il codice vale un&apos;ora.
+            <p className="text-center text-[calc(11px*var(--jm-ui-scale))] text-ink-faint leading-[1.6] mt-7">
+              {t("Il codice vale un'ora.")}
               <br />
-              La versione gratis non ha bisogno di email: resta tutto qui.
+              {t("La versione gratis non ha bisogno di email: resta tutto qui.")}
             </p>
           </>
         )}

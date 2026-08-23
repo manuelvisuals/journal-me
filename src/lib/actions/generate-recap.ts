@@ -9,6 +9,8 @@
 import { apiFetch } from "@/lib/api";
 import { can } from "@/lib/capabilities";
 import { getStore } from "@/lib/data/store";
+import { t } from "@/lib/i18n";
+import { invalidateAll } from "@/lib/data/cache";
 import type { Entry, Recap, RecapPeriod } from "@/lib/types";
 
 async function loadEntriesForPeriod(
@@ -37,12 +39,12 @@ export async function generateAndSaveRecap(
   periodEnd: string,
 ): Promise<Recap> {
   if (!can("recap")) {
-    throw new Error("I recap non sono disponibili in questa modalita.");
+    throw new Error(t("I recap non sono disponibili in questa modalita."));
   }
   const entries = await loadEntriesForPeriod(periodType, periodStart);
   const usable = entries.filter((e) => e.transcript.trim().length > 0);
   if (usable.length === 0) {
-    throw new Error("Nessuna giornata raccontata in questo periodo.");
+    throw new Error(t("Nessuna giornata raccontata in questo periodo."));
   }
 
   // A semester of entries through gpt-4o takes longer than the 15s default
@@ -73,7 +75,7 @@ export async function generateAndSaveRecap(
     body: string;
   };
 
-  return getStore().saveRecap({
+  const saved = await getStore().saveRecap({
     periodType,
     periodStart,
     periodEnd,
@@ -81,4 +83,6 @@ export async function generateAndSaveRecap(
     snippet: ai.snippet,
     body: ai.body,
   });
+  invalidateAll();
+  return saved;
 }

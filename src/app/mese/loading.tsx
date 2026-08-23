@@ -1,4 +1,7 @@
+"use client";
+
 import { TabBar } from "@/components/ui/tab-bar";
+import { useT } from "@/lib/i18n";
 
 /**
  * Mese-specific loading skeleton. Mirrors the day list (big day number on the
@@ -7,13 +10,14 @@ import { TabBar } from "@/components/ui/tab-bar";
  * visit; with the router cache, revisiting Mese is instant and this never flashes.
  */
 export default function Loading() {
+  const t = useT();
   return (
     <>
       <div
         className="flex flex-1 flex-col"
         style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
         aria-busy="true"
-        aria-label="Caricamento"
+        aria-label={t("Caricamento")}
       >
         {/* Month title */}
         <div

@@ -22,6 +22,8 @@ import {
   type ImportReport,
 } from "@/lib/data/store/types";
 import { todayISO } from "@/lib/format";
+import { t } from "@/lib/i18n";
+import { invalidateAll } from "@/lib/data/cache";
 
 export function backupFilename(): string {
   return `journal-me-backup-${todayISO()}.json`;
@@ -66,15 +68,18 @@ export async function readBackupFile(file: File): Promise<BackupFile> {
   try {
     parsed = JSON.parse(await file.text());
   } catch {
-    throw new Error("Questo file non e un backup di Journal.me.");
+    throw new Error(t("Questo file non e un backup di Journal.me."));
   }
   const b = parsed as Partial<BackupFile> | null;
   if (!b || b.format !== BACKUP_FORMAT) {
-    throw new Error("Questo file non e un backup di Journal.me.");
+    throw new Error(t("Questo file non e un backup di Journal.me."));
   }
   if (b.version !== BACKUP_VERSION) {
     throw new Error(
-      `Questo backup e della versione ${String(b.version)}: serve un'app piu recente per importarlo.`,
+      t(
+        "Questo backup e della versione {v}: serve un'app piu recente per importarlo.",
+        { v: String(b.version) },
+      ),
     );
   }
   return b as BackupFile;
@@ -83,28 +88,36 @@ export async function readBackupFile(file: File): Promise<BackupFile> {
 /** Importa (merge) un backup nello store corrente. */
 export async function importBackup(file: File): Promise<ImportReport> {
   const backup = await readBackupFile(file);
-  return getStore().importAll(backup);
+  const report = await getStore().importAll(backup);
+  invalidateAll();
+  return report;
 }
 
 /** Frase del report, leggibile: "Aggiunte 41 giornate. 86 erano gia qui." */
 export function importReportText(r: ImportReport): string {
   const parts: string[] = [];
-  const dayWord = (n: number) => (n === 1 ? "giornata" : "giornate");
+  // Singolare e plurale come frasi INTERE e non pezzi incollati: in
+  // italiano cambia la desinenza ("aggiunta/aggiunte"), in inglese no, e
+  // una frase spezzata a meta non e traducibile.
   parts.push(
-    r.entries.added > 0
-      ? `Aggiunt${r.entries.added === 1 ? "a" : "e"} ${r.entries.added} ${dayWord(r.entries.added)}.`
-      : "Nessuna giornata nuova.",
+    r.entries.added === 0
+      ? t("Nessuna giornata nuova.")
+      : r.entries.added === 1
+        ? t("Aggiunta 1 giornata.")
+        : t("Aggiunte {n} giornate.", { n: r.entries.added }),
   );
   if (r.entries.skipped > 0) {
     parts.push(
-      `${r.entries.skipped} ${r.entries.skipped === 1 ? "era" : "erano"} gia qui.`,
+      r.entries.skipped === 1
+        ? t("1 era gia qui.")
+        : t("{n} erano gia qui.", { n: r.entries.skipped }),
     );
   }
   const extras = r.goals.added + r.remembers.added + r.recaps.added;
   if (extras > 0) {
-    parts.push(`Piu ${extras} fra obiettivi, Ricorda e recap.`);
+    parts.push(t("Piu {n} fra obiettivi, Ricorda e recap.", { n: extras }));
   }
-  parts.push("Nessuna e stata sovrascritta.");
+  parts.push(t("Nessuna e stata sovrascritta."));
   return parts.join(" ");
 }
 
@@ -151,7 +164,8 @@ export async function backupBannerState(): Promise<BackupBannerState> {
 export async function eraseLocalData(): Promise<void> {
   const store = getStore();
   if (!(store instanceof LocalStore)) {
-    throw new Error("La cancellazione locale vale solo in modalita locale.");
+    throw new Error(t("La cancellazione locale vale solo in modalita locale."));
   }
   await store.eraseEverything();
+  invalidateAll();
 }

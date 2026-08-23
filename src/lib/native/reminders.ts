@@ -1,6 +1,7 @@
 "use client";
 
 import { isNative } from "@/lib/native/platform";
+import { t } from "@/lib/i18n";
 
 /**
  * The evening nudge.
@@ -37,8 +38,8 @@ export async function ensureEveningReminder(): Promise<void> {
       notifications: [
         {
           id: REMINDER_ID,
-          title: "Com'e andata oggi?",
-          body: "Due minuti di voce, e la giornata resta.",
+          title: t("Com'e andata oggi?"),
+          body: t("Due minuti di voce, e la giornata resta."),
           schedule: {
             // `on` without a day repeats daily at that time, in device-local
             // time — which is what "sera" means here, wherever he is.

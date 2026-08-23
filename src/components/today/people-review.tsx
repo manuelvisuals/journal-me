@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   /** People already in the roster that were mentioned today (read-only chips). */
@@ -37,6 +38,7 @@ export function PeopleReview({
   onSkip,
   saving = false,
 }: Props) {
+  const t = useT();
   const [newPeople, setNewPeople] = useState<NewPerson[]>(
     suggested.map((s) => ({ id: nextId(), value: s })),
   );
@@ -78,33 +80,34 @@ export function PeopleReview({
         <header style={{ padding: "30px 24px 6px" }}>
           <div
             style={{
-              fontSize: 11,
+              fontSize: "calc(11px * var(--jm-ui-scale))",
               fontWeight: 700,
               color: "var(--color-accent)",
               letterSpacing: "0.20em",
               textTransform: "uppercase",
             }}
           >
-            persone di oggi
+            {t("persone di oggi")}
           </div>
         </header>
 
         <div className="flex-1 overflow-y-auto" style={{ padding: "8px 24px 0" }}>
           <p
             style={{
-              fontSize: 14,
+              fontSize: "calc(14px * var(--jm-ui-scale))",
               color: "var(--color-ink-muted)",
               lineHeight: 1.55,
               margin: "0 0 22px",
             }}
           >
-            Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver
-            sbagliato lo spelling), poi salvali in Remember.
+            {t(
+              "Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver sbagliato lo spelling), poi salvali in Ricorda.",
+            )}
           </p>
 
           {existing.length > 0 && (
             <>
-              <div className="jm-pr-label">gia in remember</div>
+              <div className="jm-pr-label">{t("gia in ricorda")}</div>
               <div className="jm-pill-row" style={{ marginBottom: 22 }}>
                 {existing.map((name) => (
                   <span key={name} className="jm-person-pill is-known">
@@ -129,7 +132,9 @@ export function PeopleReview({
           )}
 
           <div className="jm-pr-label accent">
-            {newPeople.length > 0 ? "nuove . tocca per correggere" : "nuove persone"}
+            {newPeople.length > 0
+              ? t("nuove . tocca per correggere")
+              : t("nuove persone")}
           </div>
           <div className="jm-pill-row">
             {newPeople.map((p, idx) => (
@@ -144,12 +149,12 @@ export function PeopleReview({
                   spellCheck={false}
                   autoCapitalize="words"
                   autoComplete="off"
-                  aria-label="Nome persona"
+                  aria-label={t("Nome persona")}
                 />
                 <button
                   type="button"
                   className="x"
-                  aria-label={`Rimuovi ${p.value || "persona"}`}
+                  aria-label={t("Rimuovi {nome}", { nome: p.value || t("persona") })}
                   onClick={() => removePerson(p.id)}
                 >
                   &times;
@@ -163,7 +168,7 @@ export function PeopleReview({
             className="jm-add-person"
             onClick={addPerson}
           >
-            + aggiungi persona
+            {t("+ aggiungi persona")}
           </button>
         </div>
 
@@ -174,7 +179,7 @@ export function PeopleReview({
             onClick={handleConfirm}
             disabled={saving}
           >
-            {saving ? "Salvo..." : "Salva e continua"}
+            {saving ? t("Salvo...") : t("Salva e continua")}
           </button>
           <button
             type="button"
@@ -182,7 +187,7 @@ export function PeopleReview({
             onClick={() => onSkip(existing)}
             disabled={saving}
           >
-            Salta
+            {t("Salta")}
           </button>
         </div>
       </div>
@@ -194,12 +199,13 @@ function dedupe(names: string[]): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const n of names) {
-    const t = n.trim();
-    if (!t) continue;
-    const k = t.toLowerCase();
+    // `name` e non `t`: `t` e la funzione di traduzione.
+    const name = n.trim();
+    if (!name) continue;
+    const k = name.toLowerCase();
     if (seen.has(k)) continue;
     seen.add(k);
-    out.push(t);
+    out.push(name);
   }
   return out;
 }

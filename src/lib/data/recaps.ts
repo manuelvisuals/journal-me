@@ -10,11 +10,12 @@
  */
 
 import { getStore } from "@/lib/data/store";
+import { cached, invalidateAll } from "@/lib/data/cache";
 import type { DataMode } from "@/lib/data/entries";
 import type { Recap } from "@/lib/types";
 
 export async function loadRecaps(_mode: DataMode): Promise<Recap[]> {
-  return getStore().loadRecaps();
+  return cached("recaps", () => getStore().loadRecaps());
 }
 
 export async function updateRecap(
@@ -22,6 +23,7 @@ export async function updateRecap(
   id: string,
   patch: { title?: string; snippet?: string; body?: string },
 ): Promise<Recap> {
+  invalidateAll();
   return getStore().updateRecap(id, patch);
 }
 

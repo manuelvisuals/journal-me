@@ -7,19 +7,8 @@ import { resolveStorageMode } from "@/lib/data/store";
 import { loadGoalDefs } from "@/lib/data/goals";
 import { loadRecaps } from "@/lib/data/recaps";
 import { signalReady } from "@/lib/app-ready";
+import { recapPeriodLabel } from "@/lib/recap-labels";
 import type { GoalDef } from "@/lib/types";
-
-const MONTH_NAMES_IT = [
-  "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
-];
-
-function periodLabelFor(periodType: string, periodStart: string): string {
-  const [y, m] = periodStart.split("-").map(Number);
-  if (periodType === "month") return `${MONTH_NAMES_IT[m - 1]} ${y}`;
-  if (periodType === "semester") return `Semestre ${m <= 6 ? 1 : 2} ${y}`;
-  return `Anno ${y}`;
-}
 
 type Boot = {
   email: string | null;
@@ -61,7 +50,7 @@ export default function SettingsPage() {
         latestRecap: newest
           ? {
               title: newest.title,
-              periodLabel: periodLabelFor(newest.periodType, newest.periodStart),
+              periodLabel: recapPeriodLabel(newest.periodType, newest.periodStart),
             }
           : null,
       });

@@ -7,6 +7,9 @@ import { openPremiumWall } from "@/components/premium-wall";
 import { useCan } from "@/lib/capabilities";
 import { monthBoundaries } from "@/lib/data/recaps";
 import { generateAndSaveRecap } from "@/lib/actions/generate-recap";
+import { formatMonthTitle } from "@/lib/format";
+import { useT } from "@/lib/i18n";
+import { recapPeriodLabel } from "@/lib/recap-labels";
 import type { DataMode } from "@/lib/data/entries";
 import type { Recap, RecapPeriod } from "@/lib/types";
 
@@ -21,12 +24,8 @@ const PERIODS: { key: RecapPeriod; label: string }[] = [
   { key: "year", label: "Annuali" },
 ];
 
-const MONTH_NAMES_IT = [
-  "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
-];
-
 export function RecapClient({ mode, initialRecaps }: Props) {
+  const t = useT();
   const canRecap = useCan("recap");
   const [recaps, setRecaps] = useState<Recap[]>(initialRecaps);
   const [period, setPeriod] = useState<RecapPeriod>("month");
@@ -50,7 +49,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
     (r) => r.periodStart === suggestedStart,
   );
   const showSuggestion = period === "month" && !alreadyGenerated;
-  const suggestedLabel = `${MONTH_NAMES_IT[suggestedMonth - 1]} ${suggestedYear}`;
+  const suggestedLabel = formatMonthTitle(suggestedYear, suggestedMonth);
 
   const handleGenerate = async () => {
     if (generating) return;
@@ -74,7 +73,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
       ]);
       setSelected(r);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore di generazione");
+      setError(err instanceof Error ? err.message : t("Errore di generazione"));
     } finally {
       setGenerating(false);
     }
@@ -96,8 +95,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       <header className="jm-rec-head">
         <h1 className="jm-rec-h">Recap</h1>
@@ -111,7 +109,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
               className={period === p.key ? "seg on" : "seg"}
               onClick={() => setPeriod(p.key)}
             >
-              {p.label}
+              {t(p.label)}
             </button>
           ))}
         </div>
@@ -150,7 +148,9 @@ export function RecapClient({ mode, initialRecaps }: Props) {
 function RecapCard({ recap, onClick }: { recap: Recap; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="jm-rec-card">
-      <div className="when">{periodLabel(recap)}</div>
+      <div className="when">
+        {recapPeriodLabel(recap.periodType, recap.periodStart)}
+      </div>
       <div className="t">{recap.title}</div>
       <div className="s">{recap.snippet}</div>
     </button>
@@ -168,12 +168,16 @@ function SuggestionCard({
   error: string | null;
   onClick: () => void;
 }) {
+  const t = useT();
   return (
     <div className="jm-rec-suggest">
-      <div className="title">Genera il recap di {label}</div>
+      <div className="title">
+        {t("Genera il recap di {periodo}", { periodo: label })}
+      </div>
       <div className="hint">
-        Lo scrittore intimista rilegge tutte le giornate del mese e ne fa una
-        prosa narrativa di 300-450 parole.
+        {t(
+          "Lo scrittore intimista rilegge tutte le giornate del mese e ne fa una prosa narrativa di 300-450 parole.",
+        )}
       </div>
       {error && <div className="err">{error}</div>}
       <button
@@ -182,32 +186,22 @@ function SuggestionCard({
         onClick={onClick}
         disabled={generating}
       >
-        {generating ? "Sto leggendo le tue giornate..." : `Genera ${label}`}
+        {generating
+          ? t("Sto leggendo le tue giornate...")
+          : t("Genera {periodo}", { periodo: label })}
       </button>
     </div>
   );
 }
 
 function EmptyState() {
+  const t = useT();
   return (
     <div className="jm-rec-empty">
-      <div className="em-h">Nessun recap ancora</div>
+      <div className="em-h">{t("Nessun recap ancora")}</div>
       <div className="em-p">
-        Servono almeno alcune giornate raccontate per generarne uno.
+        {t("Servono almeno alcune giornate raccontate per generarne uno.")}
       </div>
     </div>
   );
-}
-
-function periodLabel(r: Recap): string {
-  if (r.periodType === "month") {
-    const [y, m] = r.periodStart.split("-").map(Number);
-    return `${MONTH_NAMES_IT[m - 1]} ${y}`;
-  }
-  if (r.periodType === "semester") {
-    const [y, m] = r.periodStart.split("-").map(Number);
-    return `Semestre ${m <= 6 ? 1 : 2} ${y}`;
-  }
-  const [y] = r.periodStart.split("-").map(Number);
-  return `Anno ${y}`;
 }

@@ -13,6 +13,7 @@ import {
 } from "@/lib/data/remembers";
 import type { DataMode } from "@/lib/data/entries";
 import type { Remember, RememberKind } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   mode: DataMode;
@@ -31,6 +32,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 ];
 
 export function RememberClient({ mode, initial }: Props) {
+  const t = useT();
   const [items, setItems] = useState<Remember[]>(initial);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export function RememberClient({ mode, initial }: Props) {
         void classifyAndReslot(r.id, text);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore");
+      setError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
@@ -86,7 +88,7 @@ export function RememberClient({ mode, initial }: Props) {
       await deleteRemember(mode, id);
       setItems((prev) => prev.filter((r) => r.id !== id));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore");
+      setError(err instanceof Error ? err.message : t("Errore"));
     }
   };
 
@@ -98,11 +100,12 @@ export function RememberClient({ mode, initial }: Props) {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col relative"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col relative"
     >
       <header className="jm-rem-head">
-        <h1 className="jm-rem-h">Remember</h1>
+        {/* "Ricorda", come la tab bar, la rail desktop e la palette. Era
+            l'ultimo punto in inglese di una UI tutta italiana. */}
+        <h1 className="jm-rem-h">{t("Ricorda")}</h1>
         <div className="jm-rem-filter">
           {FILTERS.map((f) => (
             <button
@@ -111,7 +114,7 @@ export function RememberClient({ mode, initial }: Props) {
               className={filter === f.key ? "f-chip on" : "f-chip"}
               onClick={() => setFilter(f.key)}
             >
-              {f.label}
+              {t(f.label)}
             </button>
           ))}
         </div>
@@ -123,17 +126,17 @@ export function RememberClient({ mode, initial }: Props) {
             style={{
               padding: "40px 24px",
               textAlign: "center",
-              fontSize: 13,
+              fontSize: "calc(13px * var(--jm-ui-scale))",
               color: "var(--color-ink-faint)",
               fontStyle: "italic",
             }}
           >
-            niente da ricordare in questa categoria.
+            {t("niente da ricordare in questa categoria.")}
           </div>
         ) : groups ? (
           groups.map((g) => (
             <div key={g.label}>
-              <div className="jm-rem-day-header">{g.label}</div>
+              <div className="jm-rem-day-header">{t(g.label)}</div>
               {g.items.map((r) => (
                 <RememberItem
                   key={r.id}
@@ -167,7 +170,7 @@ export function RememberClient({ mode, initial }: Props) {
             border: "1px solid var(--color-danger)",
             borderRadius: 10,
             color: "var(--color-danger)",
-            fontSize: 12,
+            fontSize: "calc(12px * var(--jm-ui-scale))",
             zIndex: 5,
           }}
         >

@@ -36,10 +36,17 @@ export type EditorShortcut = "save" | "saveAI";
 
 export const SHORTCUT_EVENT = "jm:shortcut";
 
+/**
+ * Mac o no, per scegliere fra metaKey e ctrlKey (SPEC-v2 §5.4: mai tutti e
+ * due alla cieca). Si legge lo userAgent e non `navigator.platform`, che e
+ * deprecato e che i browser hanno gia iniziato a congelare su valori finti.
+ */
 function isMac(): boolean {
-  return (
-    typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform)
-  );
+  if (typeof navigator === "undefined") return false;
+  const uaData = (navigator as Navigator & { userAgentData?: { platform?: string } })
+    .userAgentData;
+  if (uaData?.platform) return /mac/i.test(uaData.platform);
+  return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 export function useShortcuts(): void {

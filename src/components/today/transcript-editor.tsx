@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   initialTranscript: string;
@@ -21,6 +22,7 @@ export function TranscriptEditor({
   onCancel,
   onDelete,
 }: Props) {
+  const t = useT();
   const [value, setValue] = useState<string>(initialTranscript);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -36,7 +38,7 @@ export function TranscriptEditor({
 
   const handleDeleteClick = () => {
     if (!onDelete) return;
-    if (window.confirm("Eliminare definitivamente questa giornata?")) {
+    if (window.confirm(t("Eliminare definitivamente questa giornata?"))) {
       void onDelete();
     }
   };
@@ -45,14 +47,14 @@ export function TranscriptEditor({
     <div className="jm-editor-overlay" role="dialog" aria-modal="true">
       <div className="jm-editor-card">
         <div className="jm-editor-header">
-          <span className="jm-editor-title">Modifica transcript</span>
+          <span className="jm-editor-title">{t("Modifica transcript")}</span>
           <div className="jm-editor-actions">
             <button
               type="button"
               className="jm-editor-btn cancel"
               onClick={onCancel}
             >
-              Annulla
+              {t("Annulla")}
             </button>
             <button
               type="button"
@@ -60,7 +62,7 @@ export function TranscriptEditor({
               onClick={() => onSave(value)}
               disabled={!isDirty || isEmpty}
             >
-              Salva
+              {t("Salva")}
             </button>
           </div>
         </div>
@@ -73,7 +75,7 @@ export function TranscriptEditor({
           spellCheck
           autoCorrect="on"
           autoCapitalize="sentences"
-          placeholder="Trascrizione vuota."
+          placeholder={t("Trascrizione vuota.")}
         />
 
         <div className="jm-editor-footer-row">
@@ -83,13 +85,13 @@ export function TranscriptEditor({
               className="jm-editor-btn danger"
               onClick={handleDeleteClick}
             >
-              Elimina giornata
+              {t("Elimina giornata")}
             </button>
           ) : (
             <span />
           )}
           <span className="jm-editor-hint-inline">
-            al salvataggio . headline e aree vengono rigenerate
+            {t("al salvataggio . headline e aree vengono rigenerate")}
           </span>
         </div>
       </div>

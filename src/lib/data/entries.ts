@@ -9,9 +9,15 @@
  * Il corpo delle funzioni vive in src/lib/data/store/cloud.ts (CloudStore).
  * `saveRecording` non abita piu qui: e orchestrazione AI e sta in
  * src/lib/actions/save-recording.ts.
+ *
+ * Le LETTURE passano dalla cache (src/lib/data/cache.ts) e le SCRITTURE la
+ * svuotano. Sta qui e non nelle pagine perche queste funzioni sono l'unico
+ * punto d'accesso ai dati: cosi ogni schermata, anche una scritta domani,
+ * eredita il precaricamento senza doverselo ricordare.
  */
 
 import { getStore } from "@/lib/data/store";
+import { cached, invalidateAll } from "@/lib/data/cache";
 import { reprocessEntryTranscript } from "@/lib/actions/save-recording";
 import type { Entry, EntryMetrics } from "@/lib/types";
 
@@ -24,14 +30,14 @@ import type { Entry, EntryMetrics } from "@/lib/types";
 export type DataMode = "auth";
 
 export async function loadTodayEntry(_mode?: DataMode): Promise<Entry | null> {
-  return getStore().loadTodayEntry();
+  return cached("entry:today", () => getStore().loadTodayEntry());
 }
 
 export async function loadEntryForDate(
   _mode: DataMode,
   dateISO: string,
 ): Promise<Entry | null> {
-  return getStore().loadEntryForDate(dateISO);
+  return cached(`entry:${dateISO}`, () => getStore().loadEntryForDate(dateISO));
 }
 
 export async function loadMonthEntries(
@@ -39,13 +45,16 @@ export async function loadMonthEntries(
   year: number,
   month: number,
 ): Promise<Entry[]> {
-  return getStore().loadMonthEntries(year, month);
+  return cached(`month:${year}-${month}`, () =>
+    getStore().loadMonthEntries(year, month),
+  );
 }
 
 export async function deleteEntry(
   _mode: DataMode,
   dateISO: string,
 ): Promise<void> {
+  invalidateAll();
   return getStore().deleteEntry(dateISO);
 }
 
@@ -59,6 +68,7 @@ export async function updateEntryTranscript(
   dateISO: string,
   newTranscript: string,
 ): Promise<Entry> {
+  invalidateAll();
   return reprocessEntryTranscript(dateISO, newTranscript);
 }
 
@@ -67,6 +77,7 @@ export async function updateMetric(
   dateISO: string,
   patch: Partial<EntryMetrics>,
 ): Promise<Entry> {
+  invalidateAll();
   return getStore().updateMetric(dateISO, patch);
 }
 
@@ -75,6 +86,7 @@ export async function toggleGoal(
   dateISO: string,
   label: string,
 ): Promise<Entry> {
+  invalidateAll();
   return getStore().toggleGoal(dateISO, label);
 }
 
@@ -83,5 +95,6 @@ export async function saveEntryPeople(
   dateISO: string,
   people: string[],
 ): Promise<Entry> {
+  invalidateAll();
   return getStore().saveEntryPeople(dateISO, people);
 }

@@ -16,6 +16,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { useT } from "@/lib/i18n";
 
 const KEY = "jm.focus";
 
@@ -83,6 +84,7 @@ export function useFocusMode(): boolean {
  * pagina che il bottone non ce l'ha.
  */
 export function FocusEscape() {
+  const t = useT();
   const on = useFocusMode();
 
   useEffect(() => {
@@ -101,19 +103,20 @@ export function FocusEscape() {
 
   if (!on || typeof document === "undefined") return null;
   return createPortal(
-    <div className="jm-focus-note">esc per uscire</div>,
+    <div className="jm-focus-note">{t("esc per uscire")}</div>,
     document.body,
   );
 }
 
 export function FocusToggle() {
+  const t = useT();
   const on = useFocusMode();
 
   return (
     <button
       type="button"
       className="jm-focus-btn"
-      aria-label={on ? "Esci dalla modalita focus" : "Modalita focus"}
+      aria-label={on ? t("Esci dalla modalita focus") : t("Modalita focus")}
       aria-pressed={on}
       onClick={() => setFocusMode(!on)}
     >

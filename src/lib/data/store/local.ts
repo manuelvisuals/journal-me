@@ -40,6 +40,7 @@ import {
   type JournalStore,
   type StorageMode,
 } from "./types";
+import { t } from "@/lib/i18n";
 
 /* ----------------- schema ----------------- */
 
@@ -519,11 +520,11 @@ export class LocalStore implements JournalStore {
   async updateRecap(): Promise<Recap> {
     // Meglio un metodo che esplode che un'interfaccia con meta dei metodi
     // opzionali (SPEC-v2 §2.2).
-    throw new Error("I recap non sono disponibili in modalita locale.");
+    throw new Error(t("I recap non sono disponibili in modalita locale."));
   }
 
   async saveRecap(): Promise<Recap> {
-    throw new Error("I recap non sono disponibili in modalita locale.");
+    throw new Error(t("I recap non sono disponibili in modalita locale."));
   }
 
   /* ----------------- backup ----------------- */
@@ -562,7 +563,7 @@ export class LocalStore implements JournalStore {
 
   async importAll(file: BackupFile): Promise<ImportReport> {
     if (file.format !== BACKUP_FORMAT || file.version !== BACKUP_VERSION) {
-      throw new Error("File di backup non riconosciuto.");
+      throw new Error(t("File di backup non riconosciuto."));
     }
     const db = await this.db();
     const report: ImportReport = {

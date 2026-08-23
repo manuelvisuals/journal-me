@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
+import { langName, langOf } from "@/lib/server/lang";
 
 /**
  * Post-processes a daily journal transcript: produces headline, snippet,
@@ -33,20 +34,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Empty transcript" }, { status: 400 });
   }
 
+  // La lingua dell'utente arriva in x-jm-lang: headline, snippet e testo
+  // delle aree escono in quella lingua. Le ETICHETTE delle aree no: sono
+  // un enum salvato a database (vedi src/lib/server/lang.ts).
+  const lingua = langName(langOf(req));
+
   const systemPrompt = [
-    "Sei l'assistente di un diario personale italiano.",
+    `Sei l'assistente di un diario personale. L'utente scrive in ${lingua} e tutto cio che produci va scritto in ${lingua}.`,
     "Ricevi il transcript di una persona che racconta la sua giornata a voce libera.",
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
-    "  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in italiano, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.",
+    `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
     "  - snippet: 1-2 frasi (max 30 parole totali) che riassumono i fatti principali della giornata.",
-    "  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Etichette ammesse SOLO: 'Lavoro', 'Relazioni', 'Corpo', 'Emozioni'. Includi solo le aree effettivamente menzionate (puoi anche restituire array vuoto). Per ogni area, scrivi 1-2 frasi factual (cosa è successo, no interpretazioni psicologiche), max 25 parole.",
+    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Corpo', 'Emozioni'. Includi solo le aree effettivamente menzionate (puoi anche restituire array vuoto). Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 25 parole.`,
     "",
     "Regole assolute:",
     "  - Niente moralismi, giudizi o coaching.",
     "  - Niente emoji.",
     "  - Niente apostrofo curvo: solo l'apostrofo dritto ASCII.",
     "  - Mantieni i nomi propri come pronunciati dall'utente.",
-    "  - Se il transcript è troppo breve o incomprensibile, restituisci headline 'Giornata raccontata' + snippet con il transcript troncato + areas vuoto.",
+    `  - Se il transcript e troppo breve o incomprensibile, restituisci una headline generica in ${lingua} (in italiano sarebbe 'giornata raccontata') + snippet con il transcript troncato + areas vuoto.`,
   ].join("\n");
 
   const completion = await fetch("https://api.openai.com/v1/chat/completions", {

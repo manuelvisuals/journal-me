@@ -5,6 +5,12 @@ import { useEffect, useState } from "react";
 import { chooseLocalMode, getStore } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
 import { signalReady } from "@/lib/app-ready";
+import {
+  PREMIUM_HAS_FREE_TRIAL,
+  PREMIUM_PRICE_AMOUNT,
+  PREMIUM_PRICE_PERIOD,
+} from "@/lib/pricing";
+import { useT } from "@/lib/i18n";
 
 /**
  * /benvenuto — la scelta, al primo avvio (SPEC-v2 §7.1, mockup
@@ -15,6 +21,7 @@ import { signalReady } from "@/lib/app-ready";
  * che copre legalmente, e sta QUI, non in un PDF che nessuno apre.
  */
 export default function BenvenutoPage() {
+  const t = useT();
   const router = useRouter();
   const [starting, setStarting] = useState<boolean>(false);
 
@@ -39,34 +46,33 @@ export default function BenvenutoPage() {
 
   return (
     <main
-      className="jm-benv mx-auto w-full max-w-[440px] flex-1"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen jm-benv mx-auto w-full max-w-[440px] flex-1"
     >
-      <h1 className="jm-benv-hero">
-        Dove vuoi tenere
-        <br />
-        il tuo diario?
+      {/* Titolo su due righe: dove spezzare lo decide la traduzione. */}
+      <h1 className="jm-benv-hero" style={{ whiteSpace: "pre-line" }}>
+        {t("Dove vuoi tenere\nil tuo diario?")}
       </h1>
       <p className="jm-benv-sub">
-        Puoi cambiare idea dopo. Quello che hai scritto viene con te.
+        {t("Puoi cambiare idea dopo. Quello che hai scritto viene con te.")}
       </p>
 
       <div className="jm-benv-cards">
         <div className="jm-benv-card">
-          <div className="jm-benv-tag">Gratis, per sempre</div>
-          <div className="jm-benv-t">Solo su questo dispositivo</div>
+          <div className="jm-benv-tag">{t("Gratis, per sempre")}</div>
+          <div className="jm-benv-t">{t("Solo su questo dispositivo")}</div>
           <p className="jm-benv-p">
-            Le tue giornate restano qui. Nessun account, nessun server, nessuno
-            che possa leggerle. Nemmeno io.
+            {t(
+              "Le tue giornate restano qui. Nessun account, nessun server, nessuno che possa leggerle. Nemmeno io.",
+            )}
           </p>
           <ul className="jm-benv-list">
-            <li>Scrivi la giornata, quando vuoi</li>
-            <li>Obiettivi, peso, sonno, umore</li>
-            <li>Mese e Ricorda</li>
-            <li>Backup su file, quando vuoi tu</li>
-            <li className="no">Niente racconto a voce</li>
-            <li className="no">Niente titoli, sintesi e recap AI</li>
-            <li className="no">Un dispositivo solo</li>
+            <li>{t("Scrivi la giornata, quando vuoi")}</li>
+            <li>{t("Obiettivi, peso, sonno, umore")}</li>
+            <li>{t("Mese e Ricorda")}</li>
+            <li>{t("Backup su file, quando vuoi tu")}</li>
+            <li className="no">{t("Niente racconto a voce")}</li>
+            <li className="no">{t("Niente titoli, sintesi e recap AI")}</li>
+            <li className="no">{t("Un dispositivo solo")}</li>
           </ul>
           <button
             type="button"
@@ -74,26 +80,32 @@ export default function BenvenutoPage() {
             onClick={() => void startLocal()}
             disabled={starting}
           >
-            {starting ? "preparo..." : "inizia cosi"}
+            {starting ? t("preparo...") : t("inizia cosi")}
           </button>
         </div>
 
         <div className="jm-benv-card pick">
-          <div className="jm-benv-tag">Premium</div>
-          <div className="jm-benv-t">Nel cloud, con l&apos;AI</div>
+          <div className="jm-benv-tag">{t("Premium")}</div>
+          <div className="jm-benv-t">{t("Nel cloud, con l'AI")}</div>
           <p className="jm-benv-p">
-            Il diario ti segue ovunque. Racconti a voce e ci pensa lui a
-            scriverlo, riassumerlo e ricordartelo.
+            {t(
+              "Il diario ti segue ovunque. Racconti a voce e ci pensa lui a scriverlo, riassumerlo e ricordartelo.",
+            )}
           </p>
           <ul className="jm-benv-list">
-            <li>Tutto quello della versione gratis</li>
-            <li>Racconti a voce, si trascrive da solo</li>
-            <li>Titolo, sintesi e macro-aree della giornata</li>
-            <li>Recap mensili, semestrali, annuali</li>
-            <li>Mac, iPhone, iPad sempre allineati</li>
+            <li>{t("Tutto quello della versione gratis")}</li>
+            <li>{t("Racconti a voce, si trascrive da solo")}</li>
+            <li>{t("Titolo, sintesi e macro-aree della giornata")}</li>
+            <li>{t("Recap mensili, semestrali, annuali")}</li>
+            <li>{t("Mac, iPhone, iPad sempre allineati")}</li>
           </ul>
+          {/* Il prezzo viene da src/lib/pricing.ts, non da qui: era
+              scritto a mano e prometteva anche "primo mese incluso", che
+              nessuna parte del codice mantiene (il checkout Stripe non ha
+              trial). Si dice cio che succede davvero. */}
           <div className="jm-benv-price">
-            <b>4,99 &euro;</b> al mese . primo mese incluso
+            <b>{PREMIUM_PRICE_AMOUNT}</b> {PREMIUM_PRICE_PERIOD}
+            {PREMIUM_HAS_FREE_TRIAL ? ` . ${t("primo mese incluso")}` : ""}
           </div>
           <button
             type="button"
@@ -101,18 +113,19 @@ export default function BenvenutoPage() {
             onClick={() => router.push("/login")}
             disabled={starting}
           >
-            prova premium
+            {t("prova premium")}
           </button>
         </div>
       </div>
 
       <p className="jm-benv-foot">
-        Nella versione gratis nessun dato lascia il dispositivo: non c&apos;e
-        un server a cui mandarli.
+        {t(
+          "Nella versione gratis nessun dato lascia il dispositivo: non c'e un server a cui mandarli.",
+        )}
         <br />
-        Nella versione premium le tue giornate vengono salvate cifrate e il
-        testo passa dai modelli AI per essere riassunto. Puoi cancellare tutto
-        in qualsiasi momento.
+        {t(
+          "Nella versione premium le tue giornate vengono salvate cifrate e il testo passa dai modelli AI per essere riassunto. Puoi cancellare tutto in qualsiasi momento.",
+        )}
       </p>
     </main>
   );

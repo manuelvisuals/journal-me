@@ -8,6 +8,7 @@ import { MonthSection } from "@/components/mese/month-section";
 import { MeseGrid } from "@/components/mese/mese-grid";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { formatMonthTitle, daysInMonth, nowAppParts } from "@/lib/format";
+import { useT } from "@/lib/i18n";
 import {
   loadMonthEntries,
   type DataMode,
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export function MeseClient({ mode, initialMonth }: Props) {
+  const t = useT();
   const router = useRouter();
   const [loaded, setLoaded] = useState<LoadedMonth[]>([initialMonth]);
   const [currentMonth, setCurrentMonth] = useState<{
@@ -208,8 +210,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
   return (
     <main
       ref={scrollRef}
-      className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
-      style={{ minHeight: "100dvh" }}
+      className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       {/* Mese a griglia: esiste solo da lg (CSS), il telefono non lo vede */}
       {deskEntries !== undefined && (
@@ -280,14 +281,14 @@ export function MeseClient({ mode, initialMonth }: Props) {
             style={{
               padding: 16,
               textAlign: "center",
-              fontSize: 11,
+              fontSize: "calc(11px * var(--jm-ui-scale))",
               fontWeight: 600,
               color: "var(--color-ink-faint)",
               letterSpacing: "0.20em",
               textTransform: "uppercase",
             }}
           >
-            carico...
+            {t("carico...")}
           </div>
         )}
       </div>

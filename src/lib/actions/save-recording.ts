@@ -18,6 +18,8 @@
 import { apiFetch } from "@/lib/api";
 import { can } from "@/lib/capabilities";
 import { getStore, type AIFields } from "@/lib/data/store";
+import { invalidateAll } from "@/lib/data/cache";
+import { t } from "@/lib/i18n";
 import type { Entry } from "@/lib/types";
 
 export type RecordingInput = {
@@ -31,6 +33,18 @@ export type RecordingInput = {
    * (localFields), zero chiamate a /api.
    */
   skipAI?: boolean;
+  /**
+   * NON dividere il testo per data. Serve quando la giornata l'ha scelta
+   * l'utente aprendo /giorno: li lo split e attivamente dannoso, perche
+   * una frase come "ieri sono andato in palestra" sposta il testo su un
+   * altro giorno e sulla schermata aperta non compare niente. E successo
+   * davvero il 21 agosto 2026: il testo era stato salvato — sul giorno
+   * sbagliato — e da fuori sembrava perso.
+   *
+   * Su Oggi lo split resta: li la data non l'hai scelta tu, e raccontare
+   * "ieri sera" mentre registri stamattina e la norma.
+   */
+  skipSplit?: boolean;
 };
 
 const SEGMENT_SEP = "\n---\n";
@@ -40,7 +54,7 @@ type DateSegment = { date: string; text: string };
 function fallbackAIFields(transcript: string): AIFields {
   const firstSentence = transcript.trim().split(/(?<=[.!?])\s/)[0] ?? "";
   return {
-    headline: "Giornata raccontata",
+    headline: t("Giornata raccontata"),
     snippet: firstSentence.slice(0, 240),
     areas: [],
   };
@@ -61,7 +75,7 @@ function localFields(transcript: string): AIFields {
   const headline =
     firstLine.length > 90 ? `${firstLine.slice(0, 89).trimEnd()}\u2026` : firstLine;
   return {
-    headline: headline || "Giornata scritta",
+    headline: headline || t("Giornata scritta"),
     snippet: "",
     areas: [],
   };
@@ -112,9 +126,10 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
   const store = getStore();
   const useAI = can("aiSummary") && !input.skipAI;
 
-  const segments = useAI
-    ? await callSplitByDate(input.transcript, input.defaultDate)
-    : [{ date: input.defaultDate, text: input.transcript }];
+  const segments =
+    useAI && !input.skipSplit
+      ? await callSplitByDate(input.transcript, input.defaultDate)
+      : [{ date: input.defaultDate, text: input.transcript }];
 
   const saved: Entry[] = [];
   for (const seg of segments) {
@@ -128,6 +143,9 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
     saved.push(await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur));
   }
+  // La cache delle letture non sa niente di questa scrittura: senza,
+  // tornando su Mese si vedrebbe ancora il mese di prima.
+  invalidateAll();
   return saved;
 }
 
@@ -144,5 +162,7 @@ export async function reprocessEntryTranscript(
   const ai = can("aiSummary")
     ? await callProcessEntry(newTranscript)
     : localFields(newTranscript);
-  return store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
+  const saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
+  invalidateAll();
+  return saved;
 }

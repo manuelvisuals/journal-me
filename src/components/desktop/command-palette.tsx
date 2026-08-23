@@ -17,6 +17,7 @@ import { toggleFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { addRemember } from "@/lib/data/remembers";
 import { useStorageMode } from "@/lib/data/store";
+import { useT } from "@/lib/i18n";
 
 /* ----------------- store aperta/chiusa ----------------- */
 
@@ -64,6 +65,7 @@ type Command = {
 /* ----------------- componente ----------------- */
 
 export function CommandPalette() {
+  const t = useT();
   const open = usePaletteOpen();
   const isDesktop = useIsDesktop();
   const router = useRouter();
@@ -90,15 +92,16 @@ export function CommandPalette() {
   if (!open || !isDesktop) return null;
 
   const navCommands: Command[] = [
-    { id: "oggi", group: "Vai a", label: "Oggi", run: () => router.push("/") },
-    { id: "mese", group: "Vai a", label: "Mese", run: () => router.push("/mese") },
-    { id: "ricorda", group: "Vai a", label: "Ricorda", run: () => router.push("/remember") },
-    { id: "recap", group: "Vai a", label: "Recap", run: () => router.push("/recap") },
-    { id: "altro", group: "Vai a", label: "Altro", run: () => router.push("/settings") },
+    { id: "oggi", group: t("Vai a"), label: t("Oggi"), run: () => router.push("/") },
+    { id: "mese", group: t("Vai a"), label: t("Mese"), run: () => router.push("/mese") },
+    { id: "ricorda", group: t("Vai a"), label: t("Ricorda"), run: () => router.push("/remember") },
+    { id: "recap", group: t("Vai a"), label: "Recap", run: () => router.push("/recap") },
+    { id: "altro", group: t("Vai a"), label: t("Impostazioni"), run: () => router.push("/settings") },
     {
       id: "record",
-      group: "Azioni",
-      label: storageMode === "local" ? "Scrivi la giornata" : "Racconta a voce",
+      group: t("Azioni"),
+      label:
+        storageMode === "local" ? t("Scrivi la giornata") : t("Racconta a voce"),
       run: () => router.push("/?record=1"),
     },
     // Il focus esiste solo dove esiste l'editor (Oggi).
@@ -106,8 +109,8 @@ export function CommandPalette() {
       ? [
           {
             id: "focus",
-            group: "Azioni",
-            label: "Modalita focus",
+            group: t("Azioni"),
+            label: t("Modalita focus"),
             run: () => toggleFocusMode(),
           },
         ]
@@ -124,8 +127,8 @@ export function CommandPalette() {
   if (query.trim().length > 0) {
     commands.push({
       id: "capture",
-      group: "Ricorda",
-      label: `Salva in Ricorda: "${query.trim()}"`,
+      group: t("Ricorda"),
+      label: t('Salva in Ricorda: "{testo}"', { testo: query.trim() }),
       run: async () => {
         await addRemember("auth", query.trim(), "nota");
       },
@@ -178,7 +181,7 @@ export function CommandPalette() {
       className="jm-pal-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label="Palette comandi"
+      aria-label={t("Palette comandi")}
       onClick={() => closePalette()}
     >
       <div className="jm-pal" onClick={(e) => e.stopPropagation()}>
@@ -192,16 +195,20 @@ export function CommandPalette() {
             setCaptured(null);
           }}
           onKeyDown={onKeyDown}
-          placeholder="Dove vuoi andare? O scrivi una cosa da ricordare..."
+          placeholder={t("Dove vuoi andare? O scrivi una cosa da ricordare...")}
           spellCheck={false}
-          aria-label="Cerca un comando"
+          aria-label={t("Cerca un comando")}
         />
         <div className="jm-pal-list" role="listbox">
           {captured && (
-            <div className="jm-pal-done">salvato in Ricorda: {captured}</div>
+            <div className="jm-pal-done">
+              {t("salvato in Ricorda: {testo}", { testo: captured })}
+            </div>
           )}
           {commands.length === 0 && !captured && (
-            <div className="jm-pal-empty">niente da fare con questo testo.</div>
+            <div className="jm-pal-empty">
+              {t("niente da fare con questo testo.")}
+            </div>
           )}
           {commands.map((cmd, i) => {
             const showGroup = cmd.group !== lastGroup;
@@ -224,7 +231,9 @@ export function CommandPalette() {
           })}
         </div>
         <div className="jm-pal-foot">
-          <span>frecce per muoverti . invio per eseguire . esc per chiudere</span>
+          <span>
+            {t("frecce per muoverti . invio per eseguire . esc per chiudere")}
+          </span>
         </div>
       </div>
     </div>

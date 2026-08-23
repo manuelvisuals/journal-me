@@ -16,6 +16,22 @@ const eslintConfig = defineConfig([
     ".next-mobile/**",
     "ios/**",
   ]),
+  {
+    rules: {
+      // Il primo parametro `_mode` delle funzioni in src/lib/data/* e
+      // deliberato (SPEC-v2 §2.2: le firme storiche restano identiche,
+      // la modalita la decide la factory). Non e codice dimenticato, e
+      // non deve continuare a produrre warning a ogni lint.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

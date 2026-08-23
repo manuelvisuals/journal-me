@@ -69,7 +69,7 @@ body > * {
   color: var(--color-on-accent);
   border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   font-family: var(--font-sans);
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   font-weight: 650;
   padding: calc(16px * var(--jm-space));
   border-radius: var(--jm-radius-md);
@@ -109,7 +109,7 @@ body > * {
   color: var(--color-ink-muted);
   border: 1px solid var(--color-line);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   padding: calc(14px * var(--jm-space));
   border-radius: var(--jm-radius-md);
@@ -147,7 +147,7 @@ body > * {
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-md);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   padding: calc(16px * var(--jm-space)) calc(18px * var(--jm-space));
@@ -313,7 +313,7 @@ body > * {
   border-radius: var(--jm-radius-md);
   padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -380,7 +380,7 @@ body > * {
 .jm-splash-mark {
   position: relative;
   font-family: var(--font-sans);
-  font-size: 30px;
+  font-size: calc(30px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--color-ink);
@@ -522,7 +522,7 @@ summary:active {
   border-bottom: 1px solid var(--color-line);
 }
 .jm-rec-h {
-  font-size: 24px;
+  font-size: calc(24px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
@@ -534,7 +534,7 @@ summary:active {
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
   padding: calc(3px * var(--jm-space));
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -579,7 +579,7 @@ summary:active {
   border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
 }
 .jm-rec-card .when {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -588,7 +588,7 @@ summary:active {
 }
 .jm-rec-card .t {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.2;
   color: var(--color-ink);
@@ -596,7 +596,7 @@ summary:active {
   letter-spacing: -0.005em;
 }
 .jm-rec-card .s {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.5;
 }
@@ -610,20 +610,20 @@ summary:active {
 }
 .jm-rec-suggest .title {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   margin-bottom: calc(8px * var(--jm-space));
 }
 .jm-rec-suggest .hint {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.55;
   margin-bottom: calc(16px * var(--jm-space));
   padding: 0 calc(6px * var(--jm-space));
 }
 .jm-rec-suggest .err {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-danger);
   margin-bottom: calc(12px * var(--jm-space));
 }
@@ -634,7 +634,7 @@ summary:active {
   border-radius: var(--jm-radius-md);
   padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.005em;
   cursor: pointer;
@@ -651,13 +651,13 @@ summary:active {
   text-align: center;
 }
 .jm-rec-empty .em-h {
-  font-size: 17px;
+  font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-ink);
   margin-bottom: calc(6px * var(--jm-space));
 }
 .jm-rec-empty .em-p {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.55;
 }
@@ -684,7 +684,7 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-det-meta {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -696,7 +696,7 @@ summary:active {
   border: none;
   color: var(--color-accent);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.04em;
   cursor: pointer;
@@ -726,7 +726,7 @@ summary:active {
   min-height: 200px;
 }
 .jm-recap-field-label {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -738,7 +738,7 @@ summary:active {
   border-radius: var(--jm-radius-sm);
   padding: calc(12px * var(--jm-space)) calc(14px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   resize: vertical;
   outline: none;
@@ -748,13 +748,13 @@ summary:active {
 }
 .jm-recap-field-input.title {
   font-family: var(--font-serif);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.2;
 }
 .jm-recap-field-input.body {
   font-family: var(--font-serif);
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   line-height: 1.65;
   min-height: 200px;
   flex: 1;
@@ -766,7 +766,7 @@ summary:active {
 }
 .jm-det-title {
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: calc(28px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.15;
   color: var(--color-ink);
@@ -775,7 +775,7 @@ summary:active {
 }
 .jm-det-body p {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 400;
   line-height: 1.65;
   color: var(--color-ink-muted);
@@ -784,7 +784,7 @@ summary:active {
 }
 .jm-det-body p:first-of-type::first-letter {
   font-family: var(--font-serif);
-  font-size: 48px;
+  font-size: calc(48px * var(--jm-ui-scale));
   font-weight: 600;
   float: left;
   line-height: 0.95;
@@ -793,7 +793,7 @@ summary:active {
 }
 .jm-drop-quote {
   font-family: var(--font-serif);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-style: italic;
   color: var(--color-ink-faint);
   border-left: 2px solid var(--color-accent);
@@ -810,7 +810,7 @@ summary:active {
   padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
 }
 .jm-rem-h {
-  font-size: 24px;
+  font-size: calc(24px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
@@ -828,7 +828,7 @@ summary:active {
   display: none;
 }
 .f-chip {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -854,7 +854,7 @@ summary:active {
   padding: calc(14px * var(--jm-space)) 0 calc(130px * var(--jm-space)); /* leave room for floating quick capture + tab bar */
 }
 .jm-rem-day-header {
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-ink-faint);
   letter-spacing: 0.20em;
@@ -887,7 +887,7 @@ summary:active {
   min-width: 0;
 }
 .jm-rem-text {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   line-height: 1.4;
   font-weight: 500;
@@ -897,7 +897,7 @@ summary:active {
   display: flex;
   align-items: center;
   gap: calc(8px * var(--jm-space));
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -911,7 +911,7 @@ summary:active {
   font-style: italic;
   text-transform: none;
   letter-spacing: 0;
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
 }
 .jm-rem-del {
   align-self: center;
@@ -921,7 +921,7 @@ summary:active {
   background: transparent;
   border: none;
   color: var(--color-ink-faint);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   cursor: pointer;
   opacity: 0.5;
   font-family: inherit;
@@ -961,7 +961,7 @@ summary:active {
   border: none;
   outline: none;
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink);
   padding: calc(10px * var(--jm-space)) 0;
 }
@@ -969,7 +969,7 @@ summary:active {
   color: var(--color-ink-faint);
 }
 .jm-qc-kind {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-accent);
   letter-spacing: 0.10em;
@@ -1010,7 +1010,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: calc(20px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
@@ -1043,7 +1043,7 @@ summary:active {
   text-align: left;
   padding: calc(10px * var(--jm-space)) calc(12px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   background: transparent;
@@ -1091,7 +1091,7 @@ summary:active {
   outline: none;
   font-family: var(--font-sans);
   color: var(--color-accent-hi);
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 600;
   text-align: center;
   width: 60px;
@@ -1109,7 +1109,7 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 10%, transparent);
   color: var(--color-accent);
   font-weight: 600;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   border: none;
   display: flex;
   align-items: center;
@@ -1134,13 +1134,13 @@ summary:active {
   border: none;
   outline: none;
   text-align: center;
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-accent-hi);
   padding: 0;
 }
 .jm-sleep-inputs .sep {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin: 0 2px;
 }
@@ -1157,7 +1157,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   opacity: 0.45;
   transition: opacity 100ms, transform 100ms, background-color 100ms;
   background: transparent;
@@ -1176,8 +1176,18 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 12%, transparent);
 }
 
-/* Goal dots (clickable in filled view) */
+/* Goal dots (clickable in filled view).
+   Il pallino resta 14px: e il disegno approvato di quella riga, e allargarlo
+   cambierebbe la spaziatura di tutto il gruppo. Ma 14px come BERSAGLIO sono
+   meno di un terzo del minimo del brandbook (cap. 05: 36-44px), ed e la
+   ragione per cui prenderli e un terno al lotto. Il bersaglio si allarga con
+   uno pseudo-elemento invisibile: tutta l'altezza disponibile in verticale
+   (dove non c'e nulla da invadere) e meta del gap in orizzontale (di piu
+   farebbe accavallare due obiettivi, che e peggio di un bersaglio piccolo:
+   accenderesti quello sbagliato). Da 14x14 a 23x40, area per cinque, e cio
+   che si vede non cambia di un pixel. */
 .jm-goal-dot {
+  position: relative;
   width: 14px;
   height: 14px;
   border-radius: var(--jm-radius-circle);
@@ -1187,6 +1197,11 @@ summary:active {
   transition: transform 120ms, background-color 120ms, box-shadow 120ms;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+}
+.jm-goal-dot::after {
+  content: "";
+  position: absolute;
+  inset: -13px -4px;
 }
 .jm-goal-dot:hover {
   transform: scale(1.15);
@@ -1222,7 +1237,7 @@ summary:active {
 .jm-day-back:active { background: var(--color-surface-2); }
 .jm-day-head-label {
   flex: 1;
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   letter-spacing: 0.20em;
@@ -1238,7 +1253,7 @@ summary:active {
   flex-shrink: 0;
 }
 .jm-day-head-action {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-accent);
   background: transparent;
@@ -1263,301 +1278,6 @@ summary:active {
 }
 .jm-day-head-del:active { background: color-mix(in oklab, var(--color-danger) 14%, transparent); }
 .jm-day-head-del:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* Altro page (formerly Settings — now contains Recap link, Glossario,
-   Account, Logout). The legacy .jm-set-* classes are kept below so the
-   inline sections (Glossary, Account) render as before. */
-.jm-altro-head {
-  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(18px * var(--jm-space));
-}
-.jm-altro-h {
-  font-size: 26px;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  color: var(--color-ink);
-}
-
-/* Recap card — premium editorial CTA inside Altro that opens /recap. */
-.jm-recap-card {
-  position: relative;
-  display: block;
-  margin: 0 24px 24px;
-  padding: calc(20px * var(--jm-space)) calc(22px * var(--jm-space)) calc(18px * var(--jm-space));
-  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, color-mix(in oklab, var(--color-accent) 1%, transparent) 60%, transparent 100%),
-    linear-gradient(140deg, color-mix(in oklab, var(--color-accent) 9%, transparent) 0%, transparent 55%),
-    var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-lg);
-  text-decoration: none;
-  color: var(--color-ink);
-  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--color-ink) 6%, transparent),
-    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-recap-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 22px;
-  right: 22px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-accent) 40%, transparent), transparent);
-}
-.jm-recap-card:active {
-  transform: scale(0.99);
-  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.jm-recap-card .meta {
-  display: flex;
-  align-items: center;
-  gap: calc(10px * var(--jm-space));
-  font-size: 10px;
-  font-weight: 650;
-  color: var(--color-accent);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  margin-bottom: calc(12px * var(--jm-space));
-}
-.jm-recap-card .meta::after {
-  content: "";
-  height: 1px;
-  flex: 1;
-  max-width: 36px;
-  background: linear-gradient(90deg, color-mix(in oklab, var(--color-accent) 50%, transparent), transparent);
-}
-.jm-recap-card .title {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-  color: var(--color-ink);
-  margin-bottom: calc(8px * var(--jm-space));
-}
-.jm-recap-card .sub {
-  font-size: 12px;
-  color: var(--color-ink-muted);
-  line-height: 1.5;
-  margin-bottom: calc(14px * var(--jm-space));
-}
-.jm-recap-card .last {
-  display: flex;
-  align-items: center;
-  gap: calc(10px * var(--jm-space));
-  padding-top: calc(14px * var(--jm-space));
-  border-top: 1px solid color-mix(in oklab, var(--color-ink) 5%, transparent);
-}
-.jm-recap-card .last .lbl {
-  font-size: 9px;
-  font-weight: 650;
-  color: var(--color-ink-faint);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-.jm-recap-card .last .name {
-  flex: 1;
-  font-family: var(--font-serif);
-  font-size: 13px;
-  color: var(--color-ink-muted);
-  font-style: italic;
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.jm-recap-card .last .chev {
-  width: 26px;
-  height: 26px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
-  border: 1px solid color-mix(in oklab, var(--color-accent) 20%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-accent);
-  flex-shrink: 0;
-}
-
-/* Logout button at bottom of Altro */
-.jm-logout-wrap {
-  padding: calc(8px * var(--jm-space)) calc(24px * var(--jm-space)) 0;
-}
-.jm-logout-btn {
-  width: 100%;
-  background: transparent;
-  color: var(--color-danger);
-  border: 1px solid color-mix(in oklab, var(--color-danger) 30%, transparent);
-  border-radius: 12px;
-  padding: calc(14px * var(--jm-space));
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 120ms;
-}
-.jm-logout-btn:active {
-  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
-}
-.jm-logout-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Settings page (legacy classes kept for inline Account/Glossario sections) */
-.jm-set-head {
-  display: flex;
-  align-items: center;
-  gap: calc(14px * var(--jm-space));
-  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(16px * var(--jm-space));
-  border-bottom: 1px solid var(--color-line);
-}
-.jm-set-back {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--jm-radius-circle);
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  color: var(--color-ink-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-set-back:active { background: var(--color-surface-2); }
-.jm-set-title {
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-  color: var(--color-ink);
-}
-.jm-set-section { padding: 14px 24px 26px; }
-.jm-set-section-h {
-  font-size: 10px;
-  font-weight: 650;
-  color: var(--color-accent);
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  margin-bottom: calc(8px * var(--jm-space));
-}
-.jm-set-section-hint {
-  font-size: 13px;
-  color: var(--color-ink-muted);
-  line-height: 1.5;
-  margin-bottom: calc(16px * var(--jm-space));
-}
-.jm-set-section-hint b { color: var(--color-ink); font-weight: 600; }
-.jm-set-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(14px * var(--jm-space)) 0;
-  border-bottom: 1px solid var(--color-line);
-  font-family: var(--font-sans);
-  text-align: left;
-}
-.jm-set-row:last-child { border-bottom: none; }
-.jm-set-row .lbl {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-ink);
-}
-.jm-set-row .v {
-  font-size: 13px;
-  color: var(--color-ink-muted);
-}
-.jm-set-row.action .v {
-  color: var(--color-accent);
-  font-weight: 600;
-}
-
-/* Glossary chips */
-.jm-glossary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(8px * var(--jm-space));
-  margin-bottom: calc(12px * var(--jm-space));
-}
-.jm-gloss-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(6px * var(--jm-space));
-  padding: calc(8px * var(--jm-space)) calc(8px * var(--jm-space)) calc(8px * var(--jm-space)) calc(14px * var(--jm-space));
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-pill);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-ink);
-  letter-spacing: -0.005em;
-}
-.jm-gloss-tag .x {
-  width: 18px;
-  height: 18px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
-  color: var(--color-ink-faint);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  line-height: 1;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-gloss-tag .x:hover {
-  background: color-mix(in oklab, var(--color-danger) 15%, transparent);
-  color: var(--color-danger);
-}
-.jm-gloss-input {
-  display: flex;
-  align-items: center;
-  gap: calc(8px * var(--jm-space));
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-md);
-  padding: calc(4px * var(--jm-space)) calc(4px * var(--jm-space)) calc(4px * var(--jm-space)) calc(16px * var(--jm-space));
-}
-.jm-gloss-input input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  color: var(--color-ink);
-  padding: calc(12px * var(--jm-space)) 0;
-}
-.jm-gloss-input input::placeholder {
-  color: var(--color-ink-faint);
-}
-.jm-gloss-input .add {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--jm-radius-circle);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 10px color-mix(in oklab, var(--color-shadow) 30%, transparent);
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-gloss-input .add:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
 
 /* Settings icon button in the filled-view header */
 .jm-settings-btn {
@@ -1613,7 +1333,7 @@ summary:active {
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
   padding: calc(7px * var(--jm-space)) calc(14px * var(--jm-space)) calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink-muted);
   letter-spacing: 0.01em;
@@ -1637,7 +1357,7 @@ summary:active {
   font-weight: 600;
 }
 .jm-date-chip .chev {
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-left: 2px;
 }
@@ -1683,7 +1403,7 @@ summary:active {
   background: color-mix(in oklab, var(--color-accent) 10%, transparent);
 }
 .jm-date-row .pr-label {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   text-align: left;
@@ -1693,7 +1413,7 @@ summary:active {
   font-weight: 600;
 }
 .jm-date-row .pr-meta {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1739,7 +1459,7 @@ summary:active {
   border-bottom: 1px solid var(--color-line);
 }
 .jm-editor-title {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-ink);
   letter-spacing: -0.01em;
@@ -1752,7 +1472,7 @@ summary:active {
   background: transparent;
   border: none;
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   padding: calc(8px * var(--jm-space)) calc(12px * var(--jm-space));
   border-radius: var(--jm-radius-sm);
@@ -1780,13 +1500,13 @@ summary:active {
   resize: none;
   padding: calc(18px * var(--jm-space)) calc(20px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   line-height: 1.55;
   letter-spacing: -0.005em;
   width: 100%;
 }
 .jm-editor-hint {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1813,7 +1533,7 @@ summary:active {
   border-color: color-mix(in oklab, var(--color-danger) 55%, transparent);
 }
 .jm-editor-hint-inline {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -1888,7 +1608,7 @@ summary:active {
   padding: 0;
   cursor: pointer;
   font-family: var(--font-sans);
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.025em;
   color: var(--color-ink);
@@ -1896,13 +1616,13 @@ summary:active {
   touch-action: manipulation;
 }
 .jm-month-chevron {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-accent);
   opacity: 0.85;
   transform: translateY(2px);
 }
 .jm-month-count {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
@@ -1926,7 +1646,7 @@ summary:active {
     var(--color-bg-phone) 70%,
     transparent 100%
   );
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.20em;
@@ -1991,7 +1711,7 @@ summary:active {
   text-align: right;
 }
 .jm-day-num .n {
-  font-size: 30px;
+  font-size: calc(30px * var(--jm-ui-scale));
   font-weight: 300;
   line-height: 1;
   color: var(--color-ink);
@@ -2002,7 +1722,7 @@ summary:active {
   color: var(--color-accent-hi);
 }
 .jm-day-num .wd {
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
@@ -2018,7 +1738,7 @@ summary:active {
   padding-top: calc(2px * var(--jm-space));
 }
 .jm-day-headline {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   line-height: 1.35;
@@ -2029,7 +1749,7 @@ summary:active {
   -webkit-box-orient: vertical;
 }
 .jm-day-empty {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-style: italic;
   color: var(--color-ink-faint);
   letter-spacing: 0.01em;
@@ -2042,7 +1762,7 @@ summary:active {
   margin-top: calc(2px * var(--jm-space));
 }
 .jm-meta-chip {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink-faint);
   letter-spacing: 0.01em;
@@ -2052,7 +1772,7 @@ summary:active {
   color: var(--color-ink-muted);
 }
 .jm-meta-mood {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1;
 }
 .jm-dots-mini {
@@ -2103,14 +1823,14 @@ summary:active {
   margin-bottom: calc(12px * var(--jm-space));
 }
 .jm-picker-year .y {
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
 }
 .jm-picker-year .nav {
-  font-size: 18px;
+  font-size: calc(18px * var(--jm-ui-scale));
   color: var(--color-accent);
   font-weight: 500;
   padding: 0 calc(8px * var(--jm-space));
@@ -2128,7 +1848,7 @@ summary:active {
 .jm-picker-cell {
   padding: calc(14px * var(--jm-space)) calc(6px * var(--jm-space));
   text-align: center;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
   letter-spacing: 0.10em;
@@ -2169,7 +1889,7 @@ summary:active {
   border: none;
   color: var(--color-ink-faint);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -2199,7 +1919,7 @@ summary:active {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   letter-spacing: -0.005em;
@@ -2225,7 +1945,7 @@ summary:active {
   outline: none;
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   min-width: 36px;
   padding: 0;
@@ -2240,7 +1960,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   line-height: 1;
   cursor: pointer;
   font-family: inherit;
@@ -2255,7 +1975,7 @@ summary:active {
 
 /* Section labels in the people-review screen */
 .jm-pr-label {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 700;
   color: var(--color-ink-faint);
   letter-spacing: 0.18em;
@@ -2273,7 +1993,7 @@ summary:active {
   background: transparent;
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 500;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -2345,7 +2065,6 @@ summary:active {
 
 .jm-day-head,
 .jm-rem-head,
-.jm-altro-head,
 .jm-rec-head {
   padding-top: calc(22px + env(safe-area-inset-top, 0px));
 }
@@ -2389,7 +2108,7 @@ summary:active {
   border: none;
   padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
   font-family: var(--font-sans);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -2402,7 +2121,7 @@ summary:active {
 .jm-rec-sep {
   color: var(--color-ink-faint);
   opacity: 0.3;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
 }
 
 /* Gli anelli attorno al microfono premuto. Prima la sola differenza fra "mic
@@ -2445,58 +2164,13 @@ summary:active {
 }
 
 /* =============================================================
-   Altro > Aspetto — switch appearance + griglia dei temi (PR 0).
-   Componente nuovo: SOLO token del contratto, nessun valore di
-   marca. Le taglie fisse delle anteprime sono miniature del
-   picker, non ruoli tipografici dell'app.
+   Impostazioni > Tema — la griglia dei temi (PR 0). Lo switch
+   chiaro/scuro non e piu qui: dal 20 agosto 2026 e una riga
+   dell'elenco di Impostazioni (.jm-st-seg). Componente nuovo:
+   SOLO token del contratto, nessun valore di marca. Le taglie
+   fisse delle anteprime sono miniature del picker, non ruoli
+   tipografici dell'app.
    ============================================================= */
-.jm-appearance-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(12px * var(--jm-space));
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-lg);
-  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
-  margin-bottom: calc(16px * var(--jm-space));
-}
-.jm-appearance-t {
-  font-size: var(--jm-text-body);
-  font-weight: 600;
-  color: var(--color-ink);
-}
-.jm-appearance-p {
-  font-size: var(--jm-text-meta);
-  color: var(--color-ink-muted);
-  margin-top: 3px;
-  line-height: 1.45;
-}
-.jm-seg {
-  display: flex;
-  flex: none;
-  background: var(--color-bg-phone);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-pill);
-  padding: 3px;
-}
-.jm-seg-opt {
-  font-family: var(--font-sans);
-  font-size: var(--jm-text-meta);
-  font-weight: 600;
-  color: var(--color-ink-faint);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--jm-radius-pill);
-  padding: 7px 12px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-seg-opt.on {
-  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
-  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
-  color: var(--color-accent);
-}
 .jm-theme-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -2531,14 +2205,14 @@ summary:active {
 }
 .jm-theme-prev-t {
   font-family: var(--jm-font-serif);
-  font-size: 16px;
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: var(--jm-weight-prose);
   letter-spacing: -0.01em;
   color: var(--jm-ink);
 }
 .jm-theme-prev-p {
   font-family: var(--jm-font-sans);
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   line-height: 1.45;
   color: var(--jm-ink-muted);
   margin-top: 5px;
@@ -2567,19 +2241,19 @@ summary:active {
 }
 .jm-theme-name {
   display: block;
-  font-size: var(--jm-text-body);
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
 }
 .jm-theme-fonts {
   display: block;
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-top: 2px;
 }
 .jm-theme-footnote {
   margin-top: calc(14px * var(--jm-space));
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   line-height: 1.55;
 }
@@ -2598,85 +2272,15 @@ summary:active {
     0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 .jm-backup-warn-t {
-  font-size: var(--jm-text-body);
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
   margin-bottom: 6px;
 }
 .jm-backup-warn-p {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1.6;
   color: var(--color-ink-muted);
-}
-.jm-data-box {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-md);
-  overflow: hidden;
-}
-.jm-data-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(14px * var(--jm-space));
-  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
-  border-bottom: 1px solid var(--color-line);
-}
-.jm-data-row:last-child {
-  border-bottom: none;
-}
-.jm-data-t {
-  font-size: var(--jm-text-body);
-  font-weight: 600;
-  color: var(--color-ink);
-}
-.jm-data-t.danger {
-  color: var(--color-danger);
-}
-.jm-data-p {
-  font-size: 12.5px;
-  color: var(--color-ink-muted);
-  margin-top: 4px;
-  line-height: 1.5;
-}
-.jm-data-btn {
-  flex: none;
-  background: transparent;
-  color: var(--color-ink-muted);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-sm);
-  font-family: var(--font-sans);
-  font-size: var(--jm-text-meta);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 9px 14px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.jm-data-btn.primary {
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
-  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 28%, transparent),
-    0 8px 16px color-mix(in oklab, var(--color-shadow) 40%, transparent);
-}
-.jm-data-btn.danger {
-  color: var(--color-danger);
-  border-color: color-mix(in oklab, var(--color-danger) 30%, transparent);
-}
-.jm-data-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.jm-data-note {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--color-success);
-}
-.jm-data-note.err {
-  color: var(--color-danger);
 }
 
 /* =============================================================
@@ -2690,7 +2294,7 @@ summary:active {
 }
 .jm-benv-hero {
   font-family: var(--font-serif);
-  font-size: var(--jm-text-display);
+  font-size: calc(var(--jm-text-display) * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: var(--jm-tracking-headline);
   line-height: var(--jm-leading-display);
@@ -2699,7 +2303,7 @@ summary:active {
   margin-top: calc(22px * var(--jm-space));
 }
 .jm-benv-sub {
-  font-size: var(--jm-text-body);
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   text-align: center;
   margin-top: 14px;
@@ -2724,7 +2328,7 @@ summary:active {
   background: linear-gradient(165deg, color-mix(in oklab, var(--color-accent) 6%, transparent), var(--color-surface));
 }
 .jm-benv-tag {
-  font-size: var(--jm-text-label);
+  font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: var(--jm-tracking-label);
   text-transform: uppercase;
@@ -2735,14 +2339,14 @@ summary:active {
   color: var(--color-accent);
 }
 .jm-benv-t {
-  font-size: var(--jm-text-title);
+  font-size: calc(var(--jm-text-title) * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.015em;
   color: var(--color-ink);
   margin-bottom: 8px;
 }
 .jm-benv-p {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   line-height: 1.6;
   color: var(--color-ink-muted);
   margin-bottom: 16px;
@@ -2753,7 +2357,7 @@ summary:active {
   padding: 0;
 }
 .jm-benv-list li {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1.5;
   color: var(--color-ink-muted);
   padding: 5px 0 5px 22px;
@@ -2778,18 +2382,18 @@ summary:active {
   top: 10px;
 }
 .jm-benv-price {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-bottom: 14px;
 }
 .jm-benv-price b {
   color: var(--color-ink);
-  font-size: 19px;
+  font-size: calc(19px * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: -0.01em;
 }
 .jm-benv-foot {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   text-align: center;
   margin-top: calc(26px * var(--jm-space));
@@ -2859,7 +2463,7 @@ summary:active {
 
 .jm-rail-brand {
   font-family: var(--font-serif);
-  font-size: 21px;
+  font-size: calc(21px * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--color-ink);
@@ -2880,7 +2484,7 @@ summary:active {
   padding: 10px 12px;
   border-radius: var(--jm-radius-sm);
   border: 1px solid transparent;
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   font-weight: 600;
   letter-spacing: -0.005em;
   color: var(--color-ink-faint);
@@ -2944,7 +2548,7 @@ summary:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
 }
@@ -2952,7 +2556,7 @@ summary:active {
   min-width: 0;
 }
 .jm-rail-acct-nm {
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink-muted);
   white-space: nowrap;
@@ -2962,7 +2566,7 @@ summary:active {
 .jm-rail-pill {
   display: inline-block;
   margin-top: 4px;
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -2983,7 +2587,7 @@ summary:active {
   margin-bottom: calc(30px * var(--jm-space));
 }
 .jm-railr-l {
-  font-size: var(--jm-text-label);
+  font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: var(--jm-tracking-label);
   text-transform: uppercase;
@@ -3001,65 +2605,253 @@ summary:active {
   border-bottom: none;
 }
 .jm-railr-k {
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   letter-spacing: 0.02em;
 }
 .jm-railr-v {
-  font-size: 19px;
+  font-size: calc(19px * var(--jm-ui-scale));
   font-weight: 300;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 .jm-railr-v small {
-  font-size: 11px;
+  font-size: calc(11px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-left: 3px;
   font-weight: 400;
 }
 .jm-railr-v.empty {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   font-style: italic;
   font-family: var(--font-serif);
 }
+/* Obiettivi nella rail: il bersaglio era gia tutta la riga, ma alta 36px
+   e con un pallino da 14px come unica cosa che sembrasse cliccabile. Il
+   brandbook (cap. 05) chiede 36-44px di minimo. Ora e una casella da 22px
+   dentro una riga da 44px, con la spunta: si legge come un interruttore. */
 .jm-railr-goal {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  width: 100%;
+  gap: 14px;
+  min-height: 44px;
+  padding: 0 10px;
+  margin: 0 -10px;
+  width: calc(100% + 20px);
   background: transparent;
   border: none;
+  border-radius: var(--jm-radius-sm);
   cursor: pointer;
   font-family: var(--font-sans);
   text-align: left;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
 }
-.jm-railr-gdot {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--jm-radius-circle);
-  border: 1.5px solid color-mix(in oklab, var(--color-ink) 16%, transparent);
-  flex: 0 0 14px;
+.jm-railr-goal:hover {
+  background: var(--color-surface);
+}
+.jm-railr-gbox {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 7px;
+  border: 1.5px solid color-mix(in oklab, var(--color-ink) 22%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 120ms, border-color 120ms;
 }
-.jm-railr-goal.on .jm-railr-gdot {
+.jm-railr-gbox svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--color-on-accent);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.jm-railr-goal.on .jm-railr-gbox {
   background: var(--color-accent);
   border-color: var(--color-accent);
   box-shadow: 0 0 10px color-mix(in oklab, var(--color-glow) 35%, transparent);
 }
+.jm-railr-goal.on .jm-railr-gbox svg {
+  opacity: 1;
+}
 .jm-railr-gname {
-  font-size: 13px;
+  font-size: calc(14px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: -0.003em;
 }
 .jm-railr-goal.on .jm-railr-gname {
   color: var(--color-ink);
+  font-weight: 500;
 }
 .jm-railr-goal:hover .jm-railr-gname {
   color: var(--color-ink-muted);
+}
+.jm-railr-count {
+  float: right;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--color-ink-faint);
+}
+
+/* --- metriche della rail: una riga per voce, editor sotto (rail-metrics.tsx) --- */
+.jm-rm-block {
+  border-bottom: 1px solid var(--color-line);
+}
+.jm-rm-block:last-child {
+  border-bottom: none;
+}
+.jm-rm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: calc(100% + 20px);
+  min-height: 52px;
+  padding: 8px 10px;
+  margin: 0 -10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--jm-radius-md);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
+}
+.jm-rm-row:hover {
+  background: var(--color-surface);
+}
+.jm-rm-k {
+  display: block;
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.jm-rm-v {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.jm-rm-v small {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-left: 3px;
+  font-weight: 400;
+}
+.jm-rm-v.empty {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(15px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-rm-face {
+  font-size: calc(20px * var(--jm-ui-scale));
+}
+.jm-rm-edit {
+  padding: 2px 0 14px;
+}
+.jm-rm-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.jm-rm-stepper input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-sm);
+  padding: 11px 10px;
+  font-family: var(--font-sans);
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.jm-rm-stepper input:focus {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+.jm-rm-stepper input::placeholder {
+  color: var(--color-ink-faint);
+}
+.jm-rm-stepper button {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-rm-stepper button:hover {
+  background: var(--color-surface-2);
+}
+.jm-rm-stepper .jm-rm-ok {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0 14px;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
+}
+.jm-rm-sep {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-rm-moods {
+  display: flex;
+  gap: 6px;
+}
+.jm-rm-moods button {
+  flex: 1;
+  height: 44px;
+  min-width: 0;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: calc(22px * var(--jm-ui-scale));
+  line-height: 1;
+  opacity: 0.4;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 120ms, background-color 120ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-rm-moods button:hover {
+  opacity: 0.8;
+}
+.jm-rm-moods button.on {
+  opacity: 1;
+  background: var(--color-surface-2);
+  border-color: var(--color-line);
 }
 .jm-railr-chips {
   display: flex;
@@ -3067,7 +2859,7 @@ summary:active {
   gap: 7px;
 }
 .jm-railr-chip {
-  font-size: var(--jm-text-meta);
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   background: var(--color-surface);
   border: 1px solid var(--color-line);
@@ -3110,7 +2902,7 @@ summary:active {
     border: none;
     resize: none;
     font-family: var(--font-sans);
-    font-size: 17px;
+    font-size: calc(17px * var(--jm-ui-scale));
     font-weight: 400;
     line-height: 1.6;
     color: var(--color-ink);
@@ -3131,7 +2923,7 @@ summary:active {
   .jm-ed-notice {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     color: var(--color-accent);
     margin-bottom: 14px;
   }
@@ -3145,7 +2937,7 @@ summary:active {
     padding: 0 28px;
   }
   .jm-ed-hint {
-    font-size: 12px;
+    font-size: calc(12px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.01em;
   }
@@ -3158,13 +2950,13 @@ summary:active {
   .jm-ed-acts .btn-ghost {
     width: auto;
     padding: 13px 18px;
-    font-size: 14px;
+    font-size: calc(14px * var(--jm-ui-scale));
   }
   .jm-ed-acts .btn-ghost {
-    font-size: 12px;
+    font-size: calc(12px * var(--jm-ui-scale));
   }
   .jm-ed-k {
-    font-size: 10.5px;
+    font-size: calc(10.5px * var(--jm-ui-scale));
     font-weight: 600;
     opacity: 0.65;
     margin-left: 6px;
@@ -3173,7 +2965,7 @@ summary:active {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 11.5px;
+    font-size: calc(11.5px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.01em;
     font-variant-numeric: tabular-nums;
@@ -3202,7 +2994,7 @@ summary:active {
     position: fixed;
     top: 22px;
     right: 26px;
-    font-size: 11px;
+    font-size: calc(11px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.02em;
     z-index: 40;
@@ -3234,7 +3026,7 @@ summary:active {
   .jm-rail-kbd {
     display: inline;
     margin-left: auto;
-    font-size: 10px;
+    font-size: calc(10px * var(--jm-ui-scale));
     font-weight: 600;
     color: var(--color-ink-faint);
     letter-spacing: 0.04em;
@@ -3269,7 +3061,7 @@ summary:active {
     border: none;
     border-bottom: 1px solid var(--color-line);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: calc(15px * var(--jm-ui-scale));
     color: var(--color-ink);
     caret-color: var(--color-accent);
   }
@@ -3285,7 +3077,7 @@ summary:active {
     padding: 8px;
   }
   .jm-pal-l {
-    font-size: 10px;
+    font-size: calc(10px * var(--jm-ui-scale));
     font-weight: 650;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -3303,7 +3095,7 @@ summary:active {
     background: transparent;
     border-radius: var(--jm-radius-sm);
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: calc(14px * var(--jm-ui-scale));
     color: var(--color-ink-muted);
     cursor: pointer;
   }
@@ -3315,21 +3107,21 @@ summary:active {
     padding: 18px 12px;
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
   }
   .jm-pal-done {
     padding: 10px 12px;
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     color: var(--color-success);
   }
   .jm-pal-foot {
     flex: 0 0 auto;
     padding: 10px 18px;
     border-top: 1px solid var(--color-line);
-    font-size: 11px;
+    font-size: calc(11px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     letter-spacing: 0.02em;
   }
@@ -3365,7 +3157,7 @@ summary:active {
     padding: 0;
     cursor: pointer;
     font-family: var(--font-serif);
-    font-size: 40px;
+    font-size: calc(40px * var(--jm-ui-scale));
     font-weight: 400;
     letter-spacing: -0.022em;
     line-height: 1.05;
@@ -3376,7 +3168,7 @@ summary:active {
     color: var(--color-accent);
   }
   .jm-mese-s {
-    font-size: 12.5px;
+    font-size: calc(12.5px * var(--jm-ui-scale));
     color: var(--color-ink-faint);
     margin-top: 9px;
   }
@@ -3387,7 +3179,7 @@ summary:active {
     padding: 0 28px 10px;
   }
   .jm-mese-wk div {
-    font-size: 9.5px;
+    font-size: calc(9.5px * var(--jm-ui-scale));
     font-weight: 650;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -3429,7 +3221,7 @@ summary:active {
     opacity: 0.3;
   }
   .jm-mese-cn {
-    font-size: 22px;
+    font-size: calc(22px * var(--jm-ui-scale));
     font-weight: 300;
     color: var(--color-ink);
     line-height: 1;
@@ -3451,7 +3243,7 @@ summary:active {
     font-weight: 400;
   }
   .jm-mese-ch {
-    font-size: 13px;
+    font-size: calc(13px * var(--jm-ui-scale));
     line-height: 1.4;
     color: var(--color-ink-muted);
     margin-top: 8px;
@@ -3493,18 +3285,18 @@ summary:active {
   border-bottom: none;
 }
 .jm-railr-stat .v {
-  font-size: 26px;
+  font-size: calc(26px * var(--jm-ui-scale));
   font-weight: 300;
   letter-spacing: -0.015em;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
 }
 .jm-railr-stat .v span {
-  font-size: 15px;
+  font-size: calc(15px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
 .jm-railr-stat .k {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-top: 2px;
   letter-spacing: 0.01em;
@@ -3522,14 +3314,14 @@ summary:active {
     0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
 }
 .jm-railr-locked .t {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
   margin-bottom: 6px;
   line-height: 1.45;
 }
 .jm-railr-locked .p {
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   line-height: 1.55;
   color: var(--color-ink-muted);
 }
@@ -3541,7 +3333,7 @@ summary:active {
    corsivo, aree macro su due colonne a card.
    ============================================================= */
 .jm-fv-h {
-  font-size: 26px;
+  font-size: calc(26px * var(--jm-ui-scale));
   font-weight: 650;
   line-height: 1.15;
   letter-spacing: -0.025em;
@@ -3549,7 +3341,7 @@ summary:active {
   margin: 4px 0 10px;
 }
 .jm-fv-h.placeholder {
-  font-size: 22px;
+  font-size: calc(22px * var(--jm-ui-scale));
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: normal;
@@ -3557,7 +3349,7 @@ summary:active {
   font-style: italic;
 }
 .jm-fv-sn {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 400;
   color: var(--color-ink-muted);
   line-height: 1.55;
@@ -3572,7 +3364,7 @@ summary:active {
   padding: 14px 0;
 }
 .jm-fv-area .l {
-  font-size: 10px;
+  font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);
   letter-spacing: 0.2em;
@@ -3580,14 +3372,14 @@ summary:active {
   margin-bottom: 6px;
 }
 .jm-fv-area .x {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink);
   line-height: 1.55;
 }
 .jm-fv-noareas {
   padding: 20px 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   font-style: italic;
   text-align: center;
@@ -3596,7 +3388,7 @@ summary:active {
 
 @media (min-width: 1024px) {
   .jm-fv-h {
-    font-size: 27px;
+    font-size: calc(27px * var(--jm-ui-scale));
     letter-spacing: -0.018em;
     line-height: 1.22;
     margin: 4px 0 14px;
@@ -3604,7 +3396,7 @@ summary:active {
   .jm-fv-sn {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: 17px;
+    font-size: calc(17px * var(--jm-ui-scale));
     line-height: 1.6;
     margin-bottom: 30px;
   }
@@ -3625,11 +3417,11 @@ summary:active {
       0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
   }
   .jm-fv-area .l {
-    font-size: 11px;
+    font-size: calc(11px * var(--jm-ui-scale));
     margin-bottom: 9px;
   }
   .jm-fv-area .x {
-    font-size: 13.5px;
+    font-size: calc(13.5px * var(--jm-ui-scale));
     font-weight: 400;
     color: var(--color-ink-muted);
     line-height: 1.62;
@@ -3666,15 +3458,20 @@ summary:active {
 }
 .jm-wall-t {
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: calc(28px * var(--jm-ui-scale));
   font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--color-ink);
   margin-bottom: 12px;
+  /* Il titolo va su due righe e il punto dove spezzare lo decide la
+     traduzione, con un a capo dentro la stringa (vedi premium-wall.tsx).
+     Prima era un <br/> nel JSX, cioe il punto giusto per l'italiano e
+     uno a caso per l'inglese. */
+  white-space: pre-line;
 }
 .jm-wall-p {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   line-height: 1.65;
   color: var(--color-ink-muted);
   margin-bottom: 20px;
@@ -3699,12 +3496,12 @@ summary:active {
   display: block;
 }
 .jm-wall-feat .t {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
 }
 .jm-wall-feat .p {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   margin-top: 4px;
   line-height: 1.5;
@@ -3712,7 +3509,7 @@ summary:active {
 .jm-wall-note {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-accent);
   margin-bottom: 14px;
   line-height: 1.5;
@@ -3723,14 +3520,14 @@ summary:active {
 
 /* --- giornata gratis: sub, prosa, nudge --- */
 .jm-fv-sub {
-  font-size: 11.5px;
+  font-size: calc(11.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   letter-spacing: 0.01em;
   margin: -4px 0 22px;
 }
 .jm-fv-prose p {
   font-family: var(--font-serif);
-  font-size: 17px;
+  font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 400;
   line-height: 1.6;
   color: var(--color-ink-muted);
@@ -3747,7 +3544,7 @@ summary:active {
   background: color-mix(in oklab, var(--color-surface) 70%, transparent);
 }
 .jm-fv-nudge .t {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   line-height: 1.5;
 }
@@ -3758,7 +3555,7 @@ summary:active {
 .jm-fv-nudge .btn-ghost {
   width: auto;
   padding: 10px 16px;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   white-space: nowrap;
   flex: 0 0 auto;
 }
@@ -3767,7 +3564,7 @@ summary:active {
 .jm-railr-pill {
   display: inline-block;
   margin-left: 8px;
-  font-size: 9px;
+  font-size: calc(9px * var(--jm-ui-scale));
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -3780,21 +3577,84 @@ summary:active {
 }
 
 /* =============================================================
-   Larghezze desktop riviste (feedback Manuel 19 ago: "sfrutta
-   BENE lo spazio del body"). I CONTENITORI si allargano (Mese
-   1080px, pagine contenuto 860px — vedi lg:max-w-* nei client);
-   il TESTO da leggere/scrivere resta su una riga leggibile.
+   Gli editor a schermo intero (Modifica transcript, Rileggi prima
+   di processare, Modifica recap) da lg in su.
+
+   Erano una card di 480px centrata: su un monitor da 2600px
+   lasciava 1060px vuoti PER LATO. Stessa regola del resto del
+   desktop — margini fissi, dentro si allarga.
+
+   Due difetti che venivano da qui e si vedevano nello stesso
+   scatto. (1) La card ha `background: var(--color-bg-phone)` e
+   l'overlay e `var(--color-bg)` all'85%: nei temi chiari sono lo
+   stesso bianco, quindi la card non aveva nessun bordo visibile e
+   il testo galleggiava senza contenitore. (2) L'unico bordo che
+   si vedeva era il focus ring: `.jm-editor-textarea` dichiara
+   `outline: none`, ma la regola globale `:focus-visible` (cap. 20
+   del brandbook) ha la stessa specificita e arriva dopo nel file,
+   quindi vinceva lei e disegnava un rettangolo alto quanto tutta
+   l'area di scrittura. Nell'editor desktop il fuoco lo racconta
+   gia il caret e l'anello e spento: qui vale lo stesso.
    ============================================================= */
+.jm-editor-textarea:focus,
+.jm-editor-textarea:focus-visible,
+.jm-recap-field-input:focus-visible {
+  outline: none;
+}
+
 @media (min-width: 1024px) {
-  /* La colonna di scrittura resta ~75 caratteri, centrata nel
-     contenitore largo (come l'editor del mockup dentro col-c). */
-  .jm-ed-ta,
-  .jm-ed-notice {
-    max-width: 680px;
-    margin-left: auto;
-    margin-right: auto;
+  .jm-editor-overlay {
+    padding: 40px 28px;
   }
-  /* Prosa della giornata gratis e sintesi serif: riga leggibile. */
+  .jm-editor-card {
+    max-width: none;
+    border: 1px solid var(--color-line);
+    border-radius: var(--jm-radius-lg);
+    box-shadow: 0 24px 60px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+    overflow: hidden;
+  }
+  .jm-editor-header,
+  .jm-editor-textarea,
+  .jm-editor-hint,
+  .jm-editor-footer-row {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  .jm-recap-editor-body {
+    padding: calc(20px * var(--jm-space)) 28px;
+  }
+}
+
+/* =============================================================
+   Larghezze desktop (regola di Manuel, ribadita il 20 ago sulla
+   schermata di scrittura): l'unica cosa FISSA sono i margini
+   interni, il resto si allarga con lo schermo. Niente piu
+   colonna di 680px centrata che lasciava 700px vuoti a destra su
+   un monitor largo. Il margine e uno solo per tutta la colonna
+   centrale — header, testo e footer partono dalla stessa
+   verticale — e vale a partire dal bordo della rail.
+   ============================================================= */
+
+/* Il margine unico della colonna centrale. Sul telefono resta 24px
+   come e sempre stato; da lg passa a 28px, il valore del mockup
+   desktop-v1 gia usato da .jm-ed-scroll e .jm-ed-foot. Vive qui e
+   non in uno style inline perche l'inline non si puo scavalcare
+   con una media query. */
+.jm-col-head {
+  padding: calc(26px + env(safe-area-inset-top, 0px)) 24px 6px;
+}
+.jm-fv-wrap {
+  padding: 0 24px;
+}
+
+@media (min-width: 1024px) {
+  .jm-col-head,
+  .jm-fv-wrap {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  /* Prosa della giornata gratis e sintesi serif: qui la riga di
+     lettura resta, perche e testo che si LEGGE e non si scrive. */
   .jm-fv-prose,
   .jm-fv-sn {
     max-width: 700px;
@@ -3815,7 +3675,7 @@ summary:active {
     justify-content: center;
   }
   .jm-benv-hero {
-    font-size: 44px;
+    font-size: calc(44px * var(--jm-ui-scale));
     margin-top: 0;
   }
   .jm-benv-cards {
@@ -3833,15 +3693,730 @@ summary:active {
 }
 
 /* =============================================================
+   DIMENSIONE DEL TESTO (src/lib/ui-scale.ts)
+
+   Si scala SOLO il testo: ogni `font-size` del progetto e scritto come
+   calc(<valore> * var(--jm-ui-scale)). Margini e spaziature restano quelli,
+   cosi ingrandendo entra piu roba leggibile invece degli stessi margini
+   piu larghi. `.jm-screen` resta perche le schermate a tutta altezza
+   condividevano gia questa misura in tredici punti.
+   ============================================================= */
+:root {
+  --jm-ui-scale: 1;
+}
+.jm-screen {
+  min-height: 100dvh;
+}
+
+/* =============================================================
+   IMPOSTAZIONI (ex "Altro") — mockup design/mockups/impostazioni.html
+   §03 e §04, approvato il 20 agosto 2026.
+
+   Le misure sono quelle del mockup, con due sole traduzioni:
+    - i colori letterali diventano token del contratto temi (un tema
+      nuovo non deve poter rompere questa pagina);
+    - le spaziature passano da calc(N * var(--jm-space)) come tutto il
+      resto dell'app, cosi la densita segue il tema.
+
+   La riga e alta almeno 56px: oltre i 44px del brandbook cap. 05, che
+   era il problema numero due della segnalazione del 20 agosto.
+   ============================================================= */
+
+.jm-st-h1 {
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.jm-st-sub {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: calc(6px * var(--jm-space));
+}
+
+/* Il corpo scorrevole: stessi margini della colonna centrale altrove
+   (24px sul telefono, 28px da lg), cosi titolo e righe partono dalla
+   stessa verticale. */
+.jm-st-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: calc(20px * var(--jm-space)) 24px calc(26px * var(--jm-space));
+}
+
+.jm-st-group {
+  margin-bottom: calc(28px * var(--jm-space));
+}
+.jm-st-gl {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin: 0 0 calc(10px * var(--jm-space)) 2px;
+}
+.jm-st-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  overflow: hidden;
+}
+
+.jm-st-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 56px;
+  padding: calc(12px * var(--jm-space)) 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-row:last-child { border-bottom: none; }
+.jm-st-row:hover { background: var(--color-surface-2); }
+.jm-st-row:disabled { cursor: default; opacity: 0.55; }
+.jm-st-row.static { cursor: default; }
+.jm-st-row.static:hover { background: transparent; }
+.jm-st-grow { flex: 1; min-width: 0; }
+.jm-st-t {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.jm-st-d {
+  display: block;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+.jm-st-val {
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  flex: 0 0 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 52%;
+}
+.jm-st-chev {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.6;
+}
+.jm-st-row.danger .jm-st-t { color: var(--color-danger); }
+.jm-st-row.danger .jm-st-val { color: var(--color-danger); font-weight: 600; }
+
+/* "togli" dentro il pannello Obiettivi: bersaglio pieno, non una x da 18px */
+.jm-st-x {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--jm-radius-pill);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-x:hover {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+}
+
+/* Segmented chiaro/scuro/sistema dentro la riga. Sul telefono usa le
+   sigle: la parola intera piu il titolo non ci stanno in 390px. */
+.jm-st-seg {
+  display: flex;
+  flex: 0 0 auto;
+  background: var(--color-bg-phone);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 3px;
+}
+.jm-st-seg button {
+  font-family: var(--font-sans);
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--jm-radius-pill);
+  padding: 7px 11px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-seg button.on {
+  background: var(--color-surface);
+  border-color: var(--color-line);
+  color: var(--color-ink);
+}
+.jm-st-seg .lg { display: none; }
+.jm-st-seg .sm { display: inline; }
+
+/* Intestazione dei pannelli */
+.jm-st-phead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.jm-st-back {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  margin-left: -8px;
+  border-radius: var(--jm-radius-circle);
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-back:hover { background: var(--color-surface-2); }
+.jm-st-phead .jm-st-h1 { font-size: calc(20px * var(--jm-ui-scale)); }
+
+.jm-st-lede {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+  margin-bottom: calc(22px * var(--jm-space));
+  max-width: 62ch;
+}
+
+.jm-st-note {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) 14px;
+  margin-bottom: calc(24px * var(--jm-space));
+}
+.jm-st-note.err {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+  background: color-mix(in oklab, var(--color-danger) 7%, transparent);
+}
+
+/* Aggiunta di un obiettivo */
+.jm-st-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 5px 5px 5px 16px;
+}
+.jm-st-add input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  padding: 12px 0;
+}
+.jm-st-add input::placeholder { color: var(--color-ink-faint); }
+.jm-st-add button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--jm-radius-md);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-sans);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-add button:disabled { opacity: 0.4; cursor: default; }
+
+/* Card Recap: solo sul telefono, dove la tab bar non ha uno slot Recap. */
+.jm-st-recap {
+  display: block;
+  padding: calc(20px * var(--jm-space)) 22px calc(18px * var(--jm-space));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, transparent 100%),
+    var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  margin-bottom: calc(28px * var(--jm-space));
+  text-decoration: none;
+  color: inherit;
+}
+.jm-st-recap .meta {
+  display: block;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+.jm-st-recap .title {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: calc(23px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+.jm-st-recap .sub {
+  display: block;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+.jm-st-recap .last {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-line);
+}
+
+/* Rail destra di Impostazioni: l'identita, non le impostazioni */
+.jm-st-acct { margin-bottom: 30px; }
+.jm-st-av {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  margin-bottom: 14px;
+}
+.jm-st-nm { font-size: calc(15px * var(--jm-ui-scale)); font-weight: 600; color: var(--color-ink); }
+.jm-st-em {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 3px;
+  word-break: break-all;
+}
+.jm-st-pill {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-surface-2);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+}
+.jm-st-rrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: calc(12.5px * var(--jm-ui-scale));
+}
+.jm-st-rrow:last-of-type { border-bottom: none; }
+.jm-st-rrow .k { color: var(--color-ink-faint); flex: 0 0 auto; }
+.jm-st-rrow .v { color: var(--color-ink-muted); text-align: right; min-width: 0; }
+.jm-st-out {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px;
+  min-height: 44px;
+  border-radius: var(--jm-radius-md);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-out:hover { background: var(--color-surface-2); }
+.jm-st-out.danger {
+  color: var(--color-danger);
+  border-color: color-mix(in oklab, var(--color-danger) 35%, transparent);
+}
+.jm-st-out:disabled { opacity: 0.55; cursor: default; }
+
+/* Solo telefono. NON si usa `lg:hidden` di Tailwind: le utility hanno la
+   stessa specificita di queste regole e vince l'ordine nel bundle, che qui
+   dava .jm-st-recap { display: block } sopra .lg\:hidden. Meglio dirlo una
+   volta sola, con una media query nostra. */
+@media (min-width: 1024px) {
+  .jm-st-phoneonly { display: none; }
+}
+
+@media (min-width: 1024px) {
+  .jm-st-scroll {
+    padding-left: 28px;
+    padding-right: 28px;
+    /* L'elenco e fatto di righe corte: oltre 640px il valore a destra
+       finisce a mezzo metro dal titolo e la riga non si legge piu come
+       una coppia. Il mockup §03 usa esattamente questa misura. */
+    max-width: 668px;
+  }
+  .jm-st-seg .lg { display: inline; }
+  .jm-st-seg .sm { display: none; }
+  .jm-st-seg button { padding: 7px 13px; }
+}
+
+/* =============================================================
+   IMPOSTAZIONI > DIMENSIONE DEL TESTO
+   (mockup design/mockups/testo-e-giorno.html §02)
+
+   Le righe non hanno una misura fissa: ognuna si disegna alla taglia che
+   rappresenta, con font-size e altezza scritti inline dal componente. Qui
+   ci sta solo cio che NON dipende dalla taglia.
+   ============================================================= */
+.jm-st-prev {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(18px * var(--jm-space));
+  margin-bottom: calc(22px * var(--jm-space));
+}
+.jm-st-prev-l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: 10px;
+}
+.jm-st-prev-h {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+}
+.jm-st-prev-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
+.jm-st-szrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-st-szrow:last-child { border-bottom: none; }
+.jm-st-szrow:hover { background: var(--color-surface-2); }
+.jm-st-szrow.on { background: var(--color-surface-2); }
+.jm-st-szname {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  color: var(--color-ink);
+  /* eredita la misura dalla riga: e il punto di questa schermata */
+  font-size: inherit;
+}
+.jm-st-szdemo {
+  flex: 0 0 auto;
+  font-weight: 500;
+  color: var(--color-ink-faint);
+  font-size: inherit;
+  white-space: nowrap;
+}
+.jm-st-szcheck {
+  flex: 0 0 auto;
+  color: var(--color-ink);
+  font-size: inherit;
+}
+
+/* =============================================================
+   LA GIORNATA: AGGIUNGERE QUALCOSA
+   (mockup design/mockups/testo-e-giorno.html §03/§04)
+
+   Il tasto sta in fondo al racconto e non nell'intestazione: lassu ci sono
+   gia indietro, "originale" ed elimina, e un quarto bersaglio sarebbe
+   stretto e appiccicato al cestino. Tratteggiato perche e un invito, non
+   l'azione principale della schermata — quella e leggere.
+   ============================================================= */
+.jm-day-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 52px;
+  margin: calc(6px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+  background: transparent;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--jm-radius-md);
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-day-add:hover { background: var(--color-surface); }
+.jm-day-add:disabled { opacity: 0.55; cursor: default; }
+.jm-day-add svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+}
+
+/* Giornata vuota: era un vicolo cieco, ora e un invito con un'azione. */
+.jm-day-empty-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 30px;
+}
+.jm-day-empty-h {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 8px;
+}
+.jm-day-empty-p {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-faint);
+  margin-bottom: calc(26px * var(--jm-space));
+  max-width: 300px;
+}
+/* Qui il tasto e l'unica cosa sullo schermo: pieno, non tratteggiato. */
+.jm-day-empty-wrap .jm-day-add {
+  max-width: 280px;
+  margin: 0;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.jm-day-empty-wrap .jm-day-add:hover {
+  background: var(--color-accent-pressed, var(--color-accent));
+}
+
+/* Il foglio delle scelte */
+.jm-sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+.jm-sheet {
+  background: var(--color-bg-phone);
+  border-top: 1px solid var(--color-line);
+  border-radius: 20px 20px 0 0;
+  padding: 10px 16px calc(30px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -18px 40px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.jm-sheet-grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-line);
+  margin: 0 auto 14px;
+}
+.jm-sheet-head {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  padding: 0 6px 10px;
+}
+.jm-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 6px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-sheet-row:last-child { border-bottom: none; }
+.jm-sheet-row:hover { background: var(--color-surface); }
+.jm-sheet-ic {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jm-sheet-ic svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-ink-muted);
+  fill: none;
+}
+.jm-sheet-txt { flex: 1; min-width: 0; }
+.jm-sheet-t {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+}
+.jm-sheet-d {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* =============================================================
+   L'AVVISO DI CARICAMENTO, uno per tutta l'app
+   (src/components/ui/toast.tsx)
+
+   Sta in basso, sopra la tab bar, e non copre niente di cliccabile:
+   non e un dialogo, e una notizia. `pointer-events: none` sul
+   contenitore perche non deve mai rubare un tocco all'app sotto.
+   ============================================================= */
+.jm-toast-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  pointer-events: none;
+}
+@media (min-width: 1024px) {
+  /* Da lg la tab bar non c'e: l'avviso puo stare piu in basso. */
+  .jm-toast-wrap { bottom: 28px; }
+}
+.jm-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 420px;
+  padding: 12px 18px;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  font-family: var(--font-sans);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 500;
+  line-height: 1.35;
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+  animation: jm-toast-in 160ms ease-out;
+}
+.jm-toast.error {
+  background: var(--color-danger);
+  color: #fff;
+}
+@keyframes jm-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.jm-toast-t { min-width: 0; }
+.jm-toast-ic {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-toast-spin {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  animation: jm-toast-spin 700ms linear infinite;
+}
+@keyframes jm-toast-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jm-toast { animation: none; }
+  .jm-toast-spin { animation-duration: 2s; }
+}
+
+/* =============================================================
    Quota AI del mese (richiesta Manuel 19 ago): barra di progresso
-   della quota inclusa nell'abbonamento, dentro Altro. Vale a
-   tutte le larghezze.
+   della quota inclusa nell'abbonamento, dentro Impostazioni.
+   Vale a tutte le larghezze.
    ============================================================= */
 .jm-usage {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-md);
   padding: 16px 18px;
+}
+/* Dentro una jm-st-box (pannello Impostazioni sul telefono) la card
+   e gia in una scatola: niente doppio bordo. */
+.jm-usage.plain {
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 .jm-usage-top {
   display: flex;
@@ -3851,12 +4426,12 @@ summary:active {
   margin-bottom: 10px;
 }
 .jm-usage-t {
-  font-size: 14px;
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
 }
 .jm-usage-pct {
-  font-size: 13px;
+  font-size: calc(13px * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -3877,7 +4452,7 @@ summary:active {
 }
 .jm-usage-sub {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   line-height: 1.5;
 }

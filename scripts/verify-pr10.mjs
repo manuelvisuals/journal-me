@@ -37,8 +37,23 @@ async function newPage(width, height) {
   // Larghezze: editor a riga leggibile in colonna larga
   const mainW = (await page.locator("main").first().boundingBox())?.width;
   check("oggi: contenitore fluido (>=900)", (mainW ?? 0) >= 900, String(mainW));
-  const taW = (await page.locator(".jm-ed-ta").boundingBox())?.width;
-  check("oggi: textarea 680", taW === 680, String(taW));
+  // Larghezza dell'editor: FLUIDA (regola di Manuel del 20 ago). L'unica
+  // cosa fissa e il margine di 28px per lato dal bordo della colonna, e il
+  // testo deve partire dalla stessa verticale della data nell'header.
+  const scrollBox = await page.locator(".jm-ed-scroll").boundingBox();
+  const taBox = await page.locator(".jm-ed-ta").boundingBox();
+  const headBox = await page.locator(".jm-col-head span").first().boundingBox();
+  check(
+    "oggi: editor fluido con margini 28px",
+    Math.round(taBox.x - scrollBox.x) === 28 &&
+      Math.round(scrollBox.x + scrollBox.width - (taBox.x + taBox.width)) === 28,
+    `left=${Math.round(taBox.x - scrollBox.x)} right=${Math.round(scrollBox.x + scrollBox.width - (taBox.x + taBox.width))} w=${Math.round(taBox.width)}`,
+  );
+  check(
+    "oggi: testo allineato alla data dell'header",
+    Math.round(taBox.x) === Math.round(headBox.x),
+    `${Math.round(taBox.x)} vs ${Math.round(headBox.x)}`,
+  );
 
   // Salva una giornata senza AI -> vista gratis con prosa e nudge
   await page.locator(".jm-ed-ta").click();

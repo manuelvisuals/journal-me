@@ -4,6 +4,7 @@ import { MetricCards } from "@/components/today/metric-cards";
 import { GoalDots } from "@/components/today/goal-dots";
 import { RailToday } from "@/components/today/rail-today";
 import type { AreaSummary, EntryMetrics, GoalDot } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type Props = {
   headline?: string | null;
@@ -21,6 +22,13 @@ type Props = {
    */
   freeProse?: { transcript: string; createdAt: string; spoken: boolean } | null;
   onSeePremium?: () => void;
+  /**
+   * Slot in fondo alla colonna, sotto metriche e obiettivi. Lo usa la
+   * schermata della giornata per il tasto "aggiungi" (mockup
+   * testo-e-giorno.html §03). Uno slot e non un bottone fisso perche su
+   * Oggi quel tasto non serve: stai gia scrivendo.
+   */
+  footer?: React.ReactNode;
 };
 
 export function FilledView({
@@ -34,7 +42,9 @@ export function FilledView({
   onGoalToggle,
   freeProse = null,
   onSeePremium,
+  footer = null,
 }: Props) {
+  const t = useT();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = areas?.filter((a) => a.text.trim().length > 0) ?? [];
@@ -49,7 +59,7 @@ export function FilledView({
   const proseTime = freeProse ? timeLabel(freeProse.createdAt) : null;
 
   return (
-    <div className="flex flex-1 flex-col" style={{ padding: "0 24px" }}>
+    <div className="jm-fv-wrap flex flex-1 flex-col">
       {/* Stili in classi jm-fv-*: sotto lg replicano ESATTAMENTE i valori
           inline storici; da lg il mockup desktop-v1 §03 (headline 27px,
           snippet serif corsivo, aree su due colonne a card). */}
@@ -57,7 +67,7 @@ export function FilledView({
         <h1 className="jm-fv-h">{headline}</h1>
       ) : (
         <h1 className="jm-fv-h placeholder">
-          giornata raccontata, l&apos;AI non ha ancora generato un titolo
+          {t("giornata raccontata, l'AI non ha ancora generato un titolo")}
         </h1>
       )}
 
@@ -65,7 +75,10 @@ export function FilledView({
         <>
           {proseTime && (
             <div className="jm-fv-sub" suppressHydrationWarning>
-              {freeProse.spoken ? "raccontata" : "scritta"} alle {proseTime}
+              {t(
+                freeProse.spoken ? "raccontata alle {ora}" : "scritta alle {ora}",
+                { ora: proseTime },
+              )}
             </div>
           )}
           <div className="jm-fv-prose">
@@ -75,13 +88,13 @@ export function FilledView({
           </div>
           <div className="jm-fv-nudge">
             <div className="t">
-              Con <b>premium</b> questa giornata avrebbe un titolo, una
-              sintesi e le macro-aree. E la puoi raccontare a voce, invece di
-              scriverla.
+              {t(
+                "Con premium questa giornata avrebbe un titolo, una sintesi e le macro-aree. E la puoi raccontare a voce, invece di scriverla.",
+              )}
             </div>
             {onSeePremium && (
               <button type="button" className="btn-ghost" onClick={onSeePremium}>
-                vedi
+                {t("vedi")}
               </button>
             )}
           </div>
@@ -96,13 +109,15 @@ export function FilledView({
             <div className="jm-fv-areas">
               {realAreas.map((area) => (
                 <div key={area.label} className="jm-fv-area">
-                  <div className="l">{area.label}</div>
+                  <div className="l">{t(area.label)}</div>
                   <div className="x">{area.text}</div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="jm-fv-noareas">aree macro non ancora estratte</div>
+            <div className="jm-fv-noareas">
+              {t("aree macro non ancora estratte")}
+            </div>
           )}
         </>
       )}
@@ -115,7 +130,7 @@ export function FilledView({
           <div style={{ padding: "14px 0" }}>
             <div
               style={{
-                fontSize: 10,
+                fontSize: "calc(10px * var(--jm-ui-scale))",
                 fontWeight: 650,
                 color: "var(--color-accent)",
                 letterSpacing: "0.20em",
@@ -123,7 +138,7 @@ export function FilledView({
                 marginBottom: 10,
               }}
             >
-              Social
+              {t("Social")}
             </div>
             <div className="jm-pill-row">
               {peopleList.map((name) => (
@@ -154,6 +169,8 @@ export function FilledView({
         <MetricCards metrics={metrics} onChange={onMetricChange} />
         <GoalDots goals={goals} onToggle={onGoalToggle} />
       </div>
+
+      {footer}
 
       <RailToday
         metrics={metrics}
