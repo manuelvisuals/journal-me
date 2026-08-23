@@ -21,6 +21,8 @@
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { todayISO } from "@/lib/format";
 import type {
+  Alias,
+  DayExclusion,
   Fact,
   NewFact,
   AreaSummary,
@@ -82,6 +84,10 @@ interface JournalDB extends DBSchema {
     value: Fact;
     indexes: { entryDate: string };
   };
+  /** I soprannomi chiariti. Chiave: "kind|alias". */
+  aliases: { key: string; value: LocalAliasRecord };
+  /** Cosa e stato tolto da una giornata. Chiave: "data|kind|labelKey". */
+  exclusions: { key: string; value: LocalExclusionRecord };
   drafts: { key: string; value: DraftRecord };
   meta: { key: string; value: MetaRecord };
 }
@@ -91,7 +97,20 @@ const DB_NAME = "journalme";
 // La funzione di aggiornamento riceve la versione da cui si arriva: chi ha
 // gia il diario sul telefono NON deve perdere niente, quindi si creano solo
 // i pezzi che mancano.
-const DB_VERSION = 2;
+const DB_VERSION = 4;
+
+/** Un alias sul dispositivo. `id` e "kind|alias": una riga per soprannome. */
+type LocalAliasRecord = Alias & { id: string };
+
+function aliasId(kind: string, alias: string): string {
+  return `${kind}|${alias}`;
+}
+
+type LocalExclusionRecord = DayExclusion & { id: string };
+
+function exclusionId(e: DayExclusion): string {
+  return `${e.entryDate}|${e.kind}|${e.labelKey}`;
+}
 
 function uuid(): string {
   return crypto.randomUUID();
@@ -125,6 +144,12 @@ export class LocalStore implements JournalStore {
           if (vecchia < 2) {
             const facts = db.createObjectStore("facts", { keyPath: "id" });
             facts.createIndex("entryDate", "entryDate");
+          }
+          if (vecchia < 3 && !db.objectStoreNames.contains("aliases")) {
+            db.createObjectStore("aliases", { keyPath: "id" });
+          }
+          if (vecchia < 4 && !db.objectStoreNames.contains("exclusions")) {
+            db.createObjectStore("exclusions", { keyPath: "id" });
           }
         },
       }).then(async (db) => {
@@ -348,6 +373,36 @@ export class LocalStore implements JournalStore {
     return this.loadFactsForDate(dateISO);
   }
 
+  async loadAliases(): Promise<Alias[]> {
+    const db = await this.db();
+    const righe = await db.getAll("aliases");
+    return righe.map(({ kind, alias, labelKey }) => ({ kind, alias, labelKey }));
+  }
+
+  async saveAlias(alias: Alias): Promise<Alias[]> {
+    const db = await this.db();
+    await db.put("aliases", { ...alias, id: aliasId(alias.kind, alias.alias) });
+    return this.loadAliases();
+  }
+
+  async loadExclusions(dateISO: string): Promise<DayExclusion[]> {
+    const db = await this.db();
+    const tutte = await db.getAll("exclusions");
+    return tutte
+      .filter((e) => e.entryDate === dateISO)
+      .map(({ entryDate, kind, labelKey }) => ({ entryDate, kind, labelKey }));
+  }
+
+  async addExclusion(e: DayExclusion): Promise<void> {
+    const db = await this.db();
+    await db.put("exclusions", { ...e, id: exclusionId(e) });
+  }
+
+  async removeExclusion(e: DayExclusion): Promise<void> {
+    const db = await this.db();
+    await db.delete("exclusions", exclusionId(e));
+  }
+
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {
     const db = await this.db();
     return db.getAllFromIndex("facts", "entryDate", dateISO);
@@ -421,6 +476,15 @@ export class LocalStore implements JournalStore {
     };
     await db.put("entries", rec);
     return this.recordToEntry(rec);
+  }
+
+  async saveAreas(dateISO: string, areas: AreaSummary[]): Promise<Entry> {
+    const db = await this.db();
+    const existing = await db.get("entries", dateISO);
+    if (!existing) throw new Error("Giornata non trovata");
+    const record = { ...existing, areas };
+    await db.put("entries", record);
+    return this.recordToEntry(record);
   }
 
   async updateEntryTranscript(dateISO: string, text: string): Promise<Entry> {

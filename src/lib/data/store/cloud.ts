@@ -16,6 +16,8 @@
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
 import type {
+  Alias,
+  DayExclusion,
   AreaSummary,
   Entry,
   EntryMetrics,
@@ -326,6 +328,18 @@ export class CloudStore implements JournalStore {
     return reloaded ?? blankEntryShell(dateISO);
   }
 
+  async saveAreas(dateISO: string, areas: AreaSummary[]): Promise<Entry> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("entries")
+      .update({ areas })
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO);
+    if (error) throw new Error(error.message);
+    const reloaded = await this.loadEntryRow(dateISO);
+    return reloaded ?? blankEntryShell(dateISO);
+  }
+
   async updateEntryTranscript(dateISO: string, text: string): Promise<Entry> {
     // NOTA (spec §2.2): la ri-elaborazione AI del transcript modificato NON
     // sta qui — la fa l'azione reprocessEntryTranscript (src/lib/actions),
@@ -479,6 +493,84 @@ export class CloudStore implements JournalStore {
     );
     if (error) throw new Error(error.message);
     return this.loadFactsForDate(dateISO);
+  }
+
+  async loadAliases(): Promise<Alias[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("fact_aliases")
+      .select("kind, alias, label_key")
+      .eq("user_id", userId);
+    // Un soprannome mancante fa tornare il soprannome al posto del nome: e
+    // brutto, ma e molto meglio di una giornata che non si apre.
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => ({
+      kind: String(r.kind) as Alias["kind"],
+      alias: String(r.alias),
+      labelKey: String(r.label_key),
+    }));
+  }
+
+  async saveAlias(alias: Alias): Promise<Alias[]> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("fact_aliases")
+      .upsert(
+        {
+          user_id: userId,
+          kind: alias.kind,
+          alias: alias.alias,
+          label_key: alias.labelKey,
+        },
+        { onConflict: "user_id,kind,alias" },
+      );
+    if (error) throw new Error(error.message);
+    return this.loadAliases();
+  }
+
+  async loadExclusions(dateISO: string): Promise<DayExclusion[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("day_exclusions")
+      .select("entry_date, kind, label_key")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO);
+    // Se la lettura fallisce si mostra tutto: e meglio rivedere una persona
+    // che avevi tolto, che una giornata che non si apre.
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => ({
+      entryDate: String(r.entry_date),
+      kind: String(r.kind) as DayExclusion["kind"],
+      labelKey: String(r.label_key),
+    }));
+  }
+
+  async addExclusion(e: DayExclusion): Promise<void> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("day_exclusions")
+      .upsert(
+        {
+          user_id: userId,
+          entry_date: e.entryDate,
+          kind: e.kind,
+          label_key: e.labelKey,
+        },
+        { onConflict: "user_id,entry_date,kind,label_key" },
+      );
+    if (error) throw new Error(error.message);
+  }
+
+  async removeExclusion(e: DayExclusion): Promise<void> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("day_exclusions")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", e.entryDate)
+      .eq("kind", e.kind)
+      .eq("label_key", e.labelKey);
+    if (error) throw new Error(error.message);
   }
 
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {

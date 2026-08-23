@@ -104,7 +104,15 @@ const GROUPS: { id: UsageActivityId; routes: string[] }[] = [
   // pezzi di storia e peggio di uno con una voce in piu.
   {
     id: "ricorda",
-    routes: ["split-by-date", "extract-people", "extract-facts", "classify"],
+    routes: [
+      "split-by-date",
+      "extract-people",
+      "extract-facts",
+      "classify",
+      // Chiedere costa: se un giorno la sera diventa un questionario, la
+      // spesa lo dice prima che se ne accorga l'utente.
+      "chiarimenti",
+    ],
   },
 ];
 

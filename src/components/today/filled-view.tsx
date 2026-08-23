@@ -1,13 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { AreaIcon } from "@/components/aree/area-icon";
 import { MetricCards } from "@/components/today/metric-cards";
 import { GoalList } from "@/components/today/goal-list";
 import { RailToday } from "@/components/today/rail-today";
 import { HeadlineEditable } from "@/components/today/headline-editable";
-import { PlacePin } from "@/components/ui/place-pin";
-import type { AreaSummary, Entry, EntryMetrics, GoalDot } from "@/lib/types";
+import { PillRow } from "@/components/today/pill-row";
+import type {
+  AreaSummary,
+  Entry,
+  EntryMetrics,
+  FactKind,
+  GoalDot,
+} from "@/lib/types";
 import type { DataMode } from "@/lib/data/entries";
 import { useT } from "@/lib/i18n";
 
@@ -20,6 +25,11 @@ type Props = {
   people?: string[];
   /** I luoghi della giornata (fatti di tipo luogo), accanto alle persone. */
   places?: string[];
+  /** La X sulle pastiglie: toglie una voce da questa giornata. */
+  onTogli?: (kind: FactKind, nome: string) => void;
+  /** Cosa e stato tolto durante questa visita, per poterlo rimettere. */
+  tolte?: { kind: FactKind; nome: string }[];
+  onRimetti?: (kind: FactKind, nome: string) => void;
   /**
    * Presente = il titolo si puo riscrivere a mano. Lo passano le schermate
    * che hanno una giornata salvata sotto (Oggi e /giorno); dove non c'e
@@ -58,6 +68,9 @@ export function FilledView({
   goals,
   people,
   places,
+  onTogli,
+  tolte = [],
+  onRimetti,
   editHeadline = null,
   onMetricChange,
   onGoalToggle,
@@ -66,7 +79,6 @@ export function FilledView({
   footer = null,
 }: Props) {
   const t = useT();
-  const router = useRouter();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = orderAreas(areas ?? []);
@@ -163,46 +175,16 @@ export function FilledView({
       <div className="lg:hidden">
         {peopleList.length > 0 && (
           <div style={{ padding: "14px 0" }}>
-            <div
-              style={{
-                fontSize: "calc(10px * var(--jm-ui-scale))",
-                fontWeight: 650,
-                color: "var(--color-accent)",
-                letterSpacing: "0.20em",
-                textTransform: "uppercase",
-                marginBottom: 10,
-              }}
-            >
-              {t("Social")}
-            </div>
-            <div className="jm-pill-row">
-              {peopleList.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  className="jm-person-pill link"
-                  onClick={() =>
-                    router.push(`/persona?nome=${encodeURIComponent(name)}`)
-                  }
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--color-ink-faint)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    width="12"
-                    height="12"
-                    aria-hidden="true"
-                  >
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21a8 8 0 0 1 16 0" />
-                  </svg>
-                  {name}
-                </button>
-              ))}
-            </div>
+            <div className="jm-fv-social-l">{t("Persone incontrate")}</div>
+            <PillRow
+              nomi={peopleList}
+              kind="persona"
+              variante="colonna"
+              cliccabile
+              onTogli={(kk, n) => onTogli?.(kk, n)}
+              tolte={tolte.filter((x) => x.kind === "persona").map((x) => x.nome)}
+              onRimetti={onRimetti}
+            />
           </div>
         )}
 
@@ -211,26 +193,15 @@ export function FilledView({
             className="jm-places"
             style={{ padding: peopleList.length > 0 ? "0 0 14px" : "14px 0" }}
           >
-            <div
-              style={{
-                fontSize: "calc(10px * var(--jm-ui-scale))",
-                fontWeight: 650,
-                color: "var(--color-accent)",
-                letterSpacing: "0.20em",
-                textTransform: "uppercase",
-                marginBottom: 10,
-              }}
-            >
-              {t("Luoghi")}
-            </div>
-            <div className="jm-pill-row">
-              {placeList.map((nome) => (
-                <span key={nome} className="jm-person-pill">
-                  <PlacePin />
-                  {nome}
-                </span>
-              ))}
-            </div>
+            <div className="jm-fv-social-l">{t("Luoghi visitati")}</div>
+            <PillRow
+              nomi={placeList}
+              kind="luogo"
+              variante="colonna"
+              onTogli={(kk, n) => onTogli?.(kk, n)}
+              tolte={tolte.filter((x) => x.kind === "luogo").map((x) => x.nome)}
+              onRimetti={onRimetti}
+            />
           </div>
         )}
 
@@ -247,6 +218,9 @@ export function FilledView({
         goals={goals}
         people={peopleList}
         places={placeList}
+        onTogli={onTogli}
+        tolte={tolte}
+        onRimetti={onRimetti}
         onMetricChange={onMetricChange}
         onGoalToggle={onGoalToggle}
       />

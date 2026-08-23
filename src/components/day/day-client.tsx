@@ -7,7 +7,14 @@ import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { AddToDay } from "@/components/day/add-to-day";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
-import { usePlaces } from "@/lib/use-places";
+import { useDayLists } from "@/lib/use-day-lists";
+import { ChiarimentiScreen } from "@/components/today/chiarimenti-screen";
+import {
+  applicaRisposte,
+  chiediChiarimenti,
+  type Domanda,
+  type Risposta,
+} from "@/lib/chiarimenti";
 import {
   compactDayDate,
   parseISODate,
@@ -21,8 +28,9 @@ import {
   updateMetric,
   type DataMode,
 } from "@/lib/data/entries";
-import type { Entry, EntryMetrics } from "@/lib/types";
+import type { Entry, EntryMetrics, FactKind } from "@/lib/types";
 import { useT } from "@/lib/i18n";
+import { useCan } from "@/lib/capabilities";
 import { toast } from "@/components/ui/toast";
 
 type Props = {
@@ -49,6 +57,18 @@ export function DayClient({ mode, date, initialEntry }: Props) {
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
+  // Le domande dell'AI. Vivono anche qui e non solo su Oggi: la strada piu
+  // battuta per cambiare una giornata e "aggiungi a questa giornata", e se
+  // i dubbi si chiedessero solo al primo salvataggio, tutto cio che aggiungi
+  // dopo tornerebbe a essere indovinato.
+  const [domande, setDomande] = useState<Domanda[] | null>(null);
+  const [domandeSaving, setDomandeSaving] = useState<boolean>(false);
+  // Un soprannome appena chiarito deve vedersi SUBITO, senza ricaricare la
+  // pagina. I soprannomi si ricaricano quando cambia la giornata, ma
+  // rispondere a una domanda non sempre cambia la giornata: puo scrivere
+  // solo l'alias. Questo contatore e l'altro motivo per rileggerli.
+  const [aliasRev, setAliasRev] = useState(0);
+  const canAI = useCan("aiSummary");
 
   const targetDateObj = parseISODate(date);
   const todayObj = parseISODate(todayISO());
@@ -69,7 +89,15 @@ export function DayClient({ mode, date, initialEntry }: Props) {
 
   // I luoghi arrivano dai fatti, non dall'entry: si ricaricano ogni volta
   // che la giornata viene risalvata (il testo cambia, l'analisi riparte).
-  const places = usePlaces(mode, date, entry?.transcript ?? null);
+  // Persone e luoghi pronti da mostrare: soprannomi applicati e cose tolte a
+  // mano gia fuori. Vedi src/lib/use-day-lists.ts.
+  const liste = useDayLists(
+    mode,
+    date,
+    entry?.people ?? [],
+    `${entry?.transcript ?? ""}|${aliasRev}`,
+  );
+  const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
 
   const handleGoalToggle = async (label: string) => {
     await optimisticGoals.toggle(goalsForView, label, async () => {
@@ -82,6 +110,36 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     });
   };
 
+  /**
+   * Dopo ogni rilettura del testo: cosa non ha capito?
+   *
+   * Solo se l'AI c'e davvero. Senza, non c'e stata nessuna rilettura e non
+   * c'e niente da chiarire: chiedere lo stesso vorrebbe dire una richiesta
+   * buttata a ogni salvataggio di ogni utente gratis, e un errore rosso in
+   * console che non riguarda nessuno.
+   */
+  const chiediDopoAnalisi = async (aggiornata: Entry) => {
+    if (!canAI) return;
+    const q = await chiediChiarimenti(mode, aggiornata.transcript, {
+      people: aggiornata.people ?? [],
+      areas: aggiornata.areas ?? [],
+    });
+    if (q.length > 0) setDomande(q);
+  };
+
+  const finishDomande = async (risposte: Risposta[]) => {
+    setDomandeSaving(true);
+    try {
+      const aggiornata = await applicaRisposte(mode, date, entry, risposte);
+      if (aggiornata) setEntry(aggiornata);
+      setAliasRev((n) => n + 1);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : t("Errore"));
+    }
+    setDomande(null);
+    setDomandeSaving(false);
+  };
+
   const handleTranscriptSave = async (newTranscript: string) => {
     setEditorOpen(false);
     // Rigenera titolo, sintesi e aree passando dall'AI: sono secondi, e
@@ -91,6 +149,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       const updated = await updateEntryTranscript(mode, date, newTranscript);
       setEntry(updated);
       toast.ok(t("Salvato"));
+      await chiediDopoAnalisi(updated);
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("Errore");
       setSaveError(msg);
@@ -114,6 +173,18 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       setDeleting(false);
     }
   };
+
+  if (domande) {
+    return (
+      <ChiarimentiScreen
+        domande={domande}
+        saving={domandeSaving}
+        onDone={(risposte) => {
+          void finishDomande(risposte);
+        }}
+      />
+    );
+  }
 
   return (
     <main
@@ -202,8 +273,17 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           areas={entry.areas}
           metrics={entry.metrics}
           goals={goalsForView}
-          people={entry.people}
-          places={places}
+          people={liste.people}
+          places={liste.places}
+          onTogli={(kind, nome) => {
+            void liste.togli(kind, nome);
+            setTolte((p) => [...p.filter((x) => x.nome !== nome), { kind, nome }]);
+          }}
+          tolte={tolte}
+          onRimetti={(kind, nome) => {
+            void liste.rimetti(kind, nome);
+            setTolte((p) => p.filter((x) => x.nome !== nome));
+          }}
           editHeadline={{
             dateISO: date,
             mode,
@@ -217,7 +297,10 @@ export function DayClient({ mode, date, initialEntry }: Props) {
             <AddToDay
               mode={mode}
               date={date}
-              onSaved={(e) => setEntry(e)}
+              onSaved={(e) => {
+                setEntry(e);
+                void chiediDopoAnalisi(e);
+              }}
               onError={setSaveError}
             />
           }

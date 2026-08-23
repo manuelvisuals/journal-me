@@ -12,13 +12,12 @@
  * 31px appena si apriva l'editor del mood. Vedi rail-metrics.tsx.
  */
 
-import { useRouter } from "next/navigation";
 import { RailMetrics } from "@/components/today/rail-metrics";
 import { RailRight } from "@/components/desktop/rail-right";
-import { PlacePin } from "@/components/ui/place-pin";
+import { PillRow } from "@/components/today/pill-row";
 import { formatNumber } from "@/lib/format";
 import { useT } from "@/lib/i18n";
-import type { EntryMetrics, GoalDot } from "@/lib/types";
+import type { EntryMetrics, FactKind, GoalDot } from "@/lib/types";
 
 type Props = {
   metrics: EntryMetrics | null;
@@ -26,6 +25,11 @@ type Props = {
   people: string[];
   /** I luoghi della giornata, sotto le persone (mockup titolo-riassunto-luoghi §03). */
   places?: string[];
+  /** La X: toglie una voce da questa giornata. Vedi src/lib/use-day-lists.ts. */
+  onTogli?: (kind: FactKind, nome: string) => void;
+  /** Cosa e stato tolto durante questa visita, per poterlo rimettere. */
+  tolte?: { kind: FactKind; nome: string }[];
+  onRimetti?: (kind: FactKind, nome: string) => void;
   onMetricChange: (patch: Partial<EntryMetrics>) => void;
   onGoalToggle: (label: string) => void;
 };
@@ -35,11 +39,13 @@ export function RailToday({
   goals,
   people,
   places,
+  onTogli,
+  tolte = [],
+  onRimetti,
   onMetricChange,
   onGoalToggle,
 }: Props) {
   const t = useT();
-  const router = useRouter();
   const peopleList = people.filter((p) => p.trim().length > 0);
   const placeList = (places ?? []).filter((p) => p.trim().length > 0);
   const done = goals.filter((g) => g.on).length;
@@ -83,21 +89,16 @@ export function RailToday({
 
       {peopleList.length > 0 && (
         <div className="jm-railr-sec">
-          <div className="jm-railr-l">{t("Persone")}</div>
-          <div className="jm-railr-chips">
-            {peopleList.map((name) => (
-              <button
-                key={name}
-                type="button"
-                className="jm-railr-chip link"
-                onClick={() =>
-                  router.push(`/persona?nome=${encodeURIComponent(name)}`)
-                }
-              >
-                {name}
-              </button>
-            ))}
-          </div>
+          <div className="jm-railr-l">{t("Persone incontrate")}</div>
+          <PillRow
+            nomi={peopleList}
+            kind="persona"
+            variante="rail"
+            cliccabile
+            onTogli={(k, n) => onTogli?.(k, n)}
+            tolte={tolte.filter((x) => x.kind === "persona").map((x) => x.nome)}
+            onRimetti={onRimetti}
+          />
         </div>
       )}
 
@@ -106,15 +107,15 @@ export function RailToday({
           scheda esiste, diventano bottoni come sopra. */}
       {placeList.length > 0 && (
         <div className="jm-railr-sec jm-places">
-          <div className="jm-railr-l">{t("Luoghi")}</div>
-          <div className="jm-railr-chips">
-            {placeList.map((nome) => (
-              <span key={nome} className="jm-railr-chip">
-                <PlacePin />
-                {nome}
-              </span>
-            ))}
-          </div>
+          <div className="jm-railr-l">{t("Luoghi visitati")}</div>
+          <PillRow
+            nomi={placeList}
+            kind="luogo"
+            variante="rail"
+            onTogli={(k, n) => onTogli?.(k, n)}
+            tolte={tolte.filter((x) => x.kind === "luogo").map((x) => x.nome)}
+            onRimetti={onRimetti}
+          />
         </div>
       )}
     </RailRight>

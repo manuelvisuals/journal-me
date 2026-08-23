@@ -313,7 +313,6 @@ export const EN: Record<string, string> = {
   "giornata raccontata, l'AI non ha ancora generato un titolo": "day told, the AI has not generated a title yet",
   "Con premium questa giornata avrebbe un titolo, una sintesi e le macro-aree. E la puoi raccontare a voce, invece di scriverla.": "With premium this day would have a title, a summary and its areas. And you could talk it out loud instead of typing it.",
   "aree macro non ancora estratte": "areas not extracted yet",
-  "Social": "People",
   "Scrivi la tua giornata": "Write your day",
   "senza parlare a voce alta": "without saying it out loud",
   "Oggi ho visto Mario e ho parlato con Luca al telefono. Chiuso il progetto al lavoro...": "Today I saw Mario and talked to Luca on the phone. Wrapped up the project at work...",
