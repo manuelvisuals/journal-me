@@ -20,3 +20,6 @@ Pagina: `src/app/checkout-finto/`.
   web/iOS vivra qui.
 - Banchi prima del push: `verify-checkout-obiettivi` (piu tsc, eslint,
   verify-i18n).
+- Le API del modulo (passo E): `src/modules/abbonamento/server/` —
+  stripe-checkout, stripe-webhook, dev-checkout. Le route in `src/app/api/` sono
+  gusci. Le chiavi Stripe restano nell'ambiente Vercel.

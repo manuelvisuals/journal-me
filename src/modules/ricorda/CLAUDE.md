@@ -14,3 +14,5 @@ persona. Pagine: `src/app/remember/` e `src/app/persona/`.
 - La porta esporta QuickCapture (la usa Oggi in /giorno per aggiungere).
 - Banchi prima del push: `verify-pr8`, `verify-persona-moduli` (piu tsc,
   eslint, verify-i18n).
+- Le API del modulo (passo E): `src/modules/ricorda/server/classify.ts`; la route
+  in `src/app/api/remember/classify/` e un guscio.

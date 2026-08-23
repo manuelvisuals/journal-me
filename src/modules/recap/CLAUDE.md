@@ -14,3 +14,5 @@ Pagina: `src/app/recap/`; la generazione passa da `src/app/api/recap/generate`
 - Prefissi CSS (misurati): `jm-recap`, `jm-det`, `jm-gen`, `jm-period`, `jm-drop`.
 - Banchi prima del push: tsc, eslint, verify-i18n (un banco dedicato ancora
   non esiste: se lo scrivi, chiamalo `verify-recap.mjs` e provalo a mordere).
+- Le API del modulo (passo E): `src/modules/recap/server/generate.ts`; la route
+  in `src/app/api/recap/generate/` e un guscio.

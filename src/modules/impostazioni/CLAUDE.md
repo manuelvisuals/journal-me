@@ -18,3 +18,5 @@ con la barra della quota. Pagina: `src/app/settings/`.
 - Banchi prima del push: `verify-impostazioni`, `verify-lingua`,
   `verify-parole-misure`, `verify-checkout-obiettivi`, `verify-consumi`
   (piu tsc, eslint, verify-i18n).
+- Le API del modulo (passo E): `src/modules/impostazioni/server/usage.ts`; la
+  route in `src/app/api/usage/` e un guscio.

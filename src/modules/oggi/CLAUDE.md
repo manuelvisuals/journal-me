@@ -22,3 +22,6 @@ schermata /giorno di una data scelta. Pagine che lo montano:
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re` (piu tsc, eslint,
   verify-i18n).
+- Le API del modulo (passo E): `src/modules/oggi/server/` — chiarimenti,
+  process-entry, extract-facts, split-by-date, transcribe-fallback. Le route in
+  `src/app/api/` sono gusci e non si toccano.

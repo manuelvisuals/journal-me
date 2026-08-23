@@ -25,7 +25,12 @@ Apple senza sorprese.
   passano dalle porte: RecordingOverlay (oggi), QuickCapture (ricorda), il muro
   premium (abbonamento, il piu importato). Il lint dei confini e a ERRORE: l'interno
   di un modulo altrui non si importa piu, e zero warning residui.
-- passi E-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
+- passo E — FATTO il 23 agosto: la logica delle 11 route API vive in
+  src/modules/<nome>/server/ (oggi 5, abbonamento 3, recap/ricorda/impostazioni 1);
+  le route in app/api sono gusci di poche righe che ri-esportano gli handler (i
+  segment config, tipo runtime/maxDuration, restano letterali nel guscio perche
+  Next li vuole li).
+- passo F — da fare.
 
 **Chi apre una sessione su questo repo legge questo file PRIMA di toccare codice**, poi
 il CLAUDE.md della cartella in cui lavora. Se lavori a un modulo, il tuo perimetro e
@@ -159,7 +164,7 @@ Il rename grosso (components/today → modules/oggi/components, ecc.), `index.ts
 modulo, ESLint da warning a ERRORE. E il passo piu rumoroso nel git (ogni file cambia
 path) e va fatto per ultimo, a B e C digeriti, in una finestra tranquilla.
 
-**E. Le route API diventano gusci.**
+**E. Le route API diventano gusci. FATTO il 23 agosto 2026.**
 La logica delle 8 route scende in `modules/<nome>/server.ts`. Facoltativo e senza
 fretta: le route sono gia piccole (68-268 righe) e ben separate.
 
