@@ -205,6 +205,21 @@ for (const [nome, larghezza] of [
   // "Bubba Cafe" e "bubba cafe" sono lo stesso bar: una pastiglia sola.
   const quante = (testo.match(/bubba cafe/g) ?? []).length;
   check(`${nome}: lo stesso posto non compare due volte`, quante === 1, `volte: ${quante}`);
+
+  // Lo spillo sta ACCANTO al nome, non sopra. Il 23 agosto 2026, in
+  // produzione, stava sopra: il reset di Tailwind mette display:block su
+  // ogni <svg>, e la pastiglia dei luoghi (a differenza di quella delle
+  // persone) non era inline-flex. Risultato: pastiglie alte il doppio.
+  // Si misura confrontandola con la pastiglia di una PERSONA, che e la
+  // stessa cosa con un'icona diversa e deve essere alta uguale.
+  const hLuogo = (await blocco.locator("*:has(> .jm-pin)").first().boundingBox())?.height ?? 0;
+  const selPersona = larghezza >= 1024 ? ".jm-railr-chip.link" : ".jm-person-pill.link";
+  const hPersona = (await page.locator(selPersona).first().boundingBox())?.height ?? 0;
+  check(
+    `${nome}: la pastiglia di un luogo e alta come quella di una persona (una riga)`,
+    hPersona > 0 && Math.abs(hLuogo - hPersona) <= 2,
+    `luogo ${Math.round(hLuogo)}px contro persona ${Math.round(hPersona)}px`,
+  );
   await ctx.close();
 }
 
