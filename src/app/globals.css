@@ -2918,6 +2918,14 @@ summary:active {
   gap: 7px;
 }
 .jm-railr-chip {
+  /* In riga, non in colonna. Il reset di Tailwind mette display:block su
+     TUTTI gli <svg>, quindi lo spillo di un luogo si prendeva una riga sua e
+     la pastiglia diventava alta il doppio (visto in produzione il 23 agosto
+     2026). Le pastiglie delle persone non lo mostravano perche sono
+     inline-flex da sempre: questa non lo era. */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
   background: var(--color-surface);
@@ -3494,13 +3502,13 @@ summary:active {
 .jm-person-pill .jm-pin {
   width: calc(11px * var(--jm-ui-scale));
   height: calc(11px * var(--jm-ui-scale));
+  /* Non si schiaccia quando il nome del posto e lungo. */
+  flex: 0 0 auto;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
-  margin-right: 5px;
-  vertical-align: -1px;
 }
 
 .jm-fv-sn {

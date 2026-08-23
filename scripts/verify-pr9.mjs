@@ -1,5 +1,6 @@
 // Verifica PR 9 (Mese a griglia + stats rail + aree a card) — modalita locale.
 import { chromium } from "playwright-core";
+import { scalaUi, eAllaScala, spiega } from "./lib/misure.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = "http://localhost:3100";
@@ -168,7 +169,16 @@ async function seed(page) {
     const s = getComputedStyle(el);
     return `${s.fontSize}|${s.fontWeight}|${s.letterSpacing}`;
   });
-  check("phone: headline 26px/650", h.startsWith("26px|650"), h);
+  // 26px e 10/14px qui sotto sono le misure A SCALA 1. L'app parte da 1,15
+  // dal 22 agosto 2026, e un test che pretende il numero assoluto diventa
+  // rosso senza che niente sia rotto. Vedi scripts/lib/misure.mjs.
+  const scalaTel = await scalaUi(page);
+  const [hSize, hPeso] = h.split("|");
+  check(
+    "phone: headline 26/650 alla misura corrente",
+    eAllaScala(hSize, 26, scalaTel) && hPeso === "650",
+    spiega(hSize, 26, scalaTel) + " . " + h,
+  );
   // Dalla PR 10 in locale le aree non si renderizzano (vista gratis =
   // prosa): CSS verificato su DOM iniettato, come sopra.
   const phoneArea = await page.evaluate(() => {
@@ -184,7 +194,21 @@ async function seed(page) {
     d.remove();
     return out;
   });
-  check("phone: aree in pila, 14px 0, label 10px, testo 14px/500", phoneArea === "block|14px|0px|0px|10px|14px|500", phoneArea);
+  {
+    const [disp, padT, padL, raggio, lSize, xSize, xPeso] = phoneArea.split("|");
+    check(
+      "phone: aree in pila, 14px 0, senza raccordo",
+      disp === "block" && padT === "14px" && padL === "0px" && raggio === "0px",
+      phoneArea,
+    );
+    check(
+      "phone: etichetta 10 e testo 14/500 alla misura corrente",
+      eAllaScala(lSize, 10, scalaTel) &&
+        eAllaScala(xSize, 14, scalaTel) &&
+        xPeso === "500",
+      `${spiega(lSize, 10, scalaTel)} ; ${spiega(xSize, 14, scalaTel)}`,
+    );
+  }
 
   check("phone: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
   await ctx.close();
