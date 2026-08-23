@@ -11,7 +11,7 @@
 import { cached, invalidateAll } from "@/lib/data/cache";
 import { getStore } from "@/lib/data/store";
 import type { DataMode } from "@/lib/data/entries";
-import type { Fact, NewFact } from "@/lib/types";
+import type { Alias, Fact, NewFact } from "@/lib/types";
 
 export async function loadFactsForDate(
   _mode: DataMode,
@@ -43,4 +43,22 @@ export async function replaceAiFacts(
 ): Promise<Fact[]> {
   invalidateAll();
   return getStore().replaceAiFacts(dateISO, facts);
+}
+
+/**
+ * I soprannomi gia chiariti. Passano dalla cache come tutto il resto: li
+ * legge ogni schermata che mostra persone o luoghi, quindi sarebbero
+ * altrimenti la lettura piu frequente dell'app.
+ */
+export async function loadAliases(_mode?: DataMode): Promise<Alias[]> {
+  return cached("aliases", () => getStore().loadAliases());
+}
+
+/** Chiarisce un soprannome, per sempre. Vale da subito su tutto lo storico. */
+export async function saveAlias(
+  _mode: DataMode,
+  alias: Alias,
+): Promise<Alias[]> {
+  invalidateAll();
+  return getStore().saveAlias(alias);
 }

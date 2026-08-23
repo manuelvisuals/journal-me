@@ -19,7 +19,7 @@
 import { getStore } from "@/lib/data/store";
 import { cached, invalidateAll } from "@/lib/data/cache";
 import { reprocessEntryTranscript } from "@/lib/actions/save-recording";
-import type { Entry, EntryMetrics } from "@/lib/types";
+import type { AreaSummary, Entry, EntryMetrics } from "@/lib/types";
 
 /**
  * After the move to Supabase Anonymous Auth, every user has a real
@@ -114,4 +114,18 @@ export async function saveHeadline(
 ): Promise<Entry> {
   invalidateAll();
   return getStore().saveHeadline(dateISO, headline);
+}
+
+/**
+ * Riscrive solo le aree di una giornata. La usano le risposte ai chiarimenti:
+ * vedi il contratto in src/lib/data/store/types.ts per il perche non si
+ * rianalizza il testo.
+ */
+export async function saveAreas(
+  _mode: DataMode,
+  dateISO: string,
+  areas: AreaSummary[],
+): Promise<Entry> {
+  invalidateAll();
+  return getStore().saveAreas(dateISO, areas);
 }

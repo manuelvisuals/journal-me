@@ -31,7 +31,18 @@ import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import { useT } from "@/lib/i18n";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
+import { ChiarimentiScreen } from "@/components/today/chiarimenti-screen";
+import {
+  applicaRisposte,
+  chiediChiarimenti,
+  type Domanda,
+  type Risposta,
+} from "@/lib/chiarimenti";
+import { indicizza } from "@/lib/aliases";
+import { loadAliases } from "@/lib/data/facts";
 import { usePlaces } from "@/lib/use-places";
+import { useAliases } from "@/lib/use-aliases";
+import { risolviLista } from "@/lib/aliases";
 import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
 
 type View =
@@ -41,6 +52,7 @@ type View =
   | "no-capture"
   | "review"
   | "processing"
+  | "chiarimenti"
   | "people"
   | "filled";
 
@@ -133,6 +145,18 @@ export function TodayClient({
   const [pending, setPending] = useState<PendingRecording | null>(null);
   const [peopleData, setPeopleData] = useState<PeopleData | null>(null);
   const [peopleSaving, setPeopleSaving] = useState<boolean>(false);
+  // Le domande dell'AI e la giornata a cui si riferiscono.
+  const [chiarimenti, setChiarimenti] = useState<{
+    domande: Domanda[];
+    attachDate: string;
+    entryForDate: Entry | null;
+  } | null>(null);
+  const [chiarimentiSaving, setChiarimentiSaving] = useState<boolean>(false);
+  // Un soprannome appena chiarito deve vedersi SUBITO, senza ricaricare la
+  // pagina. I soprannomi si ricaricano quando cambia la giornata, ma
+  // rispondere a una domanda non sempre cambia la giornata: puo scrivere
+  // solo l'alias. Questo contatore e l'altro motivo per rileggerli.
+  const [aliasRev, setAliasRev] = useState(0);
 
   // --- editor desktop + bozze (PR 7, SPEC-v2 §5.3/§6) ---
   const isDesktop = useIsDesktop();
@@ -223,6 +247,11 @@ export function TodayClient({
   const dateVista = entry?.entryDate ?? todayISO();
   const places = usePlaces(mode, dateVista, entry?.transcript ?? null);
 
+  // Vedi day-client: i soprannomi si applicano quando si mostra.
+  const aliases = useAliases(mode, `${entry?.transcript ?? ""}|${aliasRev}`);
+  const peopleShown = risolviLista(entry?.people ?? [], "persona", aliases);
+  const placesShown = risolviLista(places, "luogo", aliases);
+
   const handleStartRecording = () => {
     setSaveError(null);
     setSavedDates([]);
@@ -304,34 +333,101 @@ export function TodayClient({
         : saved[0]?.entryDate ?? opts.targetDate;
       const entryForDate =
         saved.find((e) => e.entryDate === attachDate) ?? todayEntry ?? null;
-      const found = entryForDate?.people ?? [];
-      if (found.length > 0) {
-        const roster = await loadPersonaNames(mode);
-        const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
-        const declined = declinedPeople();
-        const existing = found.filter((p) => rosterLower.has(p.toLowerCase()));
-        const suggested = found.filter(
-          (p) =>
-            !rosterLower.has(p.toLowerCase()) && !declined.has(p.toLowerCase()),
-        );
-        // Niente da decidere, niente schermata: se sono tutti gia in
-        // rubrica (o li hai gia rifiutati una volta), fermare l'utente per
-        // fargli premere "ok" e solo un ostacolo.
-        if (suggested.length > 0) {
-          setPeopleData({ existing, suggested, attachDate, entryForDate });
+
+      // PRIMA i chiarimenti, POI la rubrica, e l'ordine non e casuale: se
+      // "mio fratello" diventa Daniele adesso, la domanda dopo offre di
+      // salvare Daniele. Al contrario si finirebbe con "mio fratello" nella
+      // rubrica delle persone, che e esattamente il difetto di partenza.
+      // `canAI`, non `opts.withAI`: il secondo dice cosa e stato CHIESTO, il
+      // primo dice se l'AI c'e davvero. In modalita locale la scrittura a
+      // mano passa comunque da withAI=true, e chiedere dei chiarimenti a
+      // un'AI che non esiste voleva dire una richiesta buttata a ogni
+      // giornata scritta da un utente gratis.
+      if (canAI && entryForDate) {
+        const domande = await chiediChiarimenti(mode, entryForDate.transcript, {
+          people: entryForDate.people ?? [],
+          areas: entryForDate.areas ?? [],
+        });
+        if (domande.length > 0) {
+          setChiarimenti({ domande, attachDate, entryForDate });
           setPending(null);
-          setView("people");
+          setView("chiarimenti");
           return;
         }
       }
 
-      setPending(null);
-      setView(todayEntry || entry ? "filled" : "empty");
+      await vaiAlPassoPersone(attachDate, entryForDate);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
       setPending(null);
       setView("empty");
     }
+  };
+
+  /**
+   * Il passo della rubrica: le facce nuove vanno salvate in Ricorda?
+   *
+   * I nomi sono GIA sulla giornata (li ha letti l'analisi sul testo
+   * completo). Qui non si chiede piu chi c'era: si chiede solo chi entra in
+   * rubrica. E se una schermata di chiarimenti e appena passata, i nomi che
+   * arrivano qui sono gia quelli veri.
+   */
+  const vaiAlPassoPersone = async (
+    attachDate: string,
+    entryForDate: Entry | null,
+  ) => {
+    const found = entryForDate?.people ?? [];
+    if (found.length > 0) {
+      const [roster, aliasList] = await Promise.all([
+        loadPersonaNames(mode),
+        loadAliases(mode).catch(() => []),
+      ]);
+      // I soprannomi appena chiariti valgono da subito: se hai appena detto
+      // che "mio fratello" e Daniele, in rubrica ci va Daniele.
+      const veri = risolviLista(found, "persona", indicizza(aliasList));
+      const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
+      const declined = declinedPeople();
+      const existing = veri.filter((p) => rosterLower.has(p.toLowerCase()));
+      const suggested = veri.filter(
+        (p) =>
+          !rosterLower.has(p.toLowerCase()) && !declined.has(p.toLowerCase()),
+      );
+      // Niente da decidere, niente schermata: se sono tutti gia in rubrica
+      // (o li hai gia rifiutati una volta), fermare l'utente per fargli
+      // premere "ok" e solo un ostacolo.
+      if (suggested.length > 0) {
+        setPeopleData({ existing, suggested, attachDate, entryForDate });
+        setPending(null);
+        setView("people");
+        return;
+      }
+    }
+    setPending(null);
+    setView(entryForDate || entry ? "filled" : "empty");
+  };
+
+  /**
+   * Le risposte alle domande. I soprannomi valgono per sempre, le aree solo
+   * per questa giornata: vedi src/lib/chiarimenti.ts.
+   */
+  const finishChiarimenti = async (risposte: Risposta[]) => {
+    if (!chiarimenti) return;
+    const { attachDate, entryForDate } = chiarimenti;
+    setChiarimentiSaving(true);
+    let aggiornata = entryForDate;
+    try {
+      aggiornata = await applicaRisposte(mode, attachDate, entryForDate, risposte);
+    } catch (err) {
+      // Una risposta non applicata non deve far perdere la giornata.
+      setSaveError(
+        err instanceof Error ? err.message : t("Errore salvataggio persone"),
+      );
+    }
+    if (aggiornata && attachDate === todayISO()) setEntry(aggiornata);
+    setAliasRev((n) => n + 1);
+    setChiarimenti(null);
+    setChiarimentiSaving(false);
+    await vaiAlPassoPersone(attachDate, aggiornata);
   };
 
   // User confirmed the (possibly corrected) transcript — same pipeline.
@@ -637,8 +733,8 @@ export function TodayClient({
           snippet={entry?.snippet ?? null}
           areas={entry?.areas ?? []}
           metrics={entry?.metrics ?? null}
-          people={entry?.people ?? []}
-          places={places}
+          people={peopleShown}
+          places={placesShown}
           goals={goalsForView}
           editHeadline={
             // Solo a giornata salvata e con l'AI: senza AI il titolo non
@@ -701,6 +797,16 @@ export function TodayClient({
           targetDate={pending.targetDate}
           onConfirm={handleConfirmReview}
           onCancel={handleCancelReview}
+        />
+      )}
+
+      {view === "chiarimenti" && chiarimenti && (
+        <ChiarimentiScreen
+          domande={chiarimenti.domande}
+          saving={chiarimentiSaving}
+          onDone={(risposte) => {
+            void finishChiarimenti(risposte);
+          }}
         />
       )}
 

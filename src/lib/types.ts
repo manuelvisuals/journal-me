@@ -103,6 +103,27 @@ export type Remember = {
  */
 export type FactKind = "cibo" | "attivita" | "persona" | "lavoro" | "luogo";
 
+/**
+ * Un soprannome, e la cosa che sta dietro.
+ *
+ * Nel racconto dici "mio fratello", "da Charlie", "in palestra". L'AI non
+ * puo sapere da sola chi sia tuo fratello, ne che "da Charlie" sia un
+ * ristorante e non un amico: sono cose che sai solo tu. Quando te lo chiede
+ * e rispondi, la risposta finisce qui e non te la chiede mai piu.
+ *
+ * Il racconto NON viene mai riscritto: continua a dire "mio fratello". Il
+ * soprannome si applica quando si MOSTRA, quindi vale anche sulle giornate
+ * di marzo, senza migrare niente.
+ */
+export type Alias = {
+  /** Di che specie e la cosa vera: una persona, un luogo, un cibo... */
+  kind: FactKind;
+  /** Come lo dici tu, gia normalizzato in minuscolo senza accenti. */
+  alias: string;
+  /** Chi o cosa e davvero, nella grafia da mostrare: "Daniele". */
+  labelKey: string;
+};
+
 export type Fact = {
   id: string;
   /** YYYY-MM-DD */

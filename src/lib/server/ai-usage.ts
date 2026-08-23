@@ -21,6 +21,8 @@ export type AiRoute =
   | "split-by-date"
   | "extract-people"
   | "extract-facts"
+  // Le domande che l'AI fa invece di indovinare (23 agosto 2026).
+  | "chiarimenti"
   | "classify"
   | "recap";
 

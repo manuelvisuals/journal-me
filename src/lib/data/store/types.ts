@@ -1,4 +1,5 @@
 import type {
+  Alias,
   AreaSummary,
   Fact,
   Entry,
@@ -80,6 +81,16 @@ export interface JournalStore {
    * rielaborazione AI lo sovrascrive (vedi Entry.headlineLocked).
    */
   saveHeadline(dateISO: string, headline: string): Promise<Entry>;
+
+  /**
+   * Riscrive SOLO le aree di una giornata, senza rileggere il testo.
+   *
+   * Serve alle risposte ai chiarimenti (src/lib/chiarimenti.ts): quando dici
+   * che la piscina di oggi era stare con gli amici, la giornata non va
+   * rianalizzata — si sa gia dove mettere quella riga, e rianalizzare
+   * cambierebbe anche cose che non avevi chiesto di cambiare.
+   */
+  saveAreas(dateISO: string, areas: AreaSummary[]): Promise<Entry>;
   updateMetric(dateISO: string, patch: Partial<EntryMetrics>): Promise<Entry>;
   toggleGoal(dateISO: string, label: string): Promise<Entry>;
   saveEntryPeople(dateISO: string, people: string[]): Promise<Entry>;
@@ -121,6 +132,21 @@ export interface JournalStore {
    * normalizzazione, e senza, "panca" e "panca piana" restano due cose.
    */
   loadKnownLabels(limit?: number): Promise<string[]>;
+
+  /* soprannomi (fact_aliases, migrazione 011) */
+
+  /**
+   * I soprannomi gia chiariti: "mio fratello" e Daniele, "da Charlie" e un
+   * posto. Si leggono per DUE motivi, e servono tutti e due:
+   *   1. per mostrare il nome vero al posto del soprannome, ovunque;
+   *   2. per passarli al modello, che cosi non richiede una cosa gia decisa.
+   */
+  loadAliases(): Promise<Alias[]>;
+  /**
+   * Scrive un soprannome chiarito. Se esisteva gia, lo sostituisce: cambiare
+   * idea su chi sia "mio fratello" deve essere possibile.
+   */
+  saveAlias(alias: Alias): Promise<Alias[]>;
 
   /* goals */
   loadGoalDefs(): Promise<GoalDef[]>;
