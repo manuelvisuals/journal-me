@@ -1,11 +1,20 @@
-# Journal.me — scheletro e moduli (proposta, 23 agosto 2026)
+# Journal.me — scheletro e moduli
 
 Richiesta di Manuel: una struttura fissa (scheletro) piu moduli indipendenti, cosi ogni
 chat lavora su un modulo solo senza rompere il resto, anche quando l'app diventa
 gigantesca. Obiettivo finale: app iOS su App Store, premium, qualita alta, revisione
 Apple senza sorprese.
 
-Questo documento e una PROPOSTA: niente di quanto scritto qui e ancora stato fatto.
+**Approvato da Manuel il 23 agosto 2026** (opzione: partire dal passo A). Stato:
+
+- passo A — FATTO il 23 agosto: questa mappa, un CLAUDE.md di recinto in ogni cartella
+  di modulo, la regola ESLint sui confini in modalita warning, WORKERS.md vincolante,
+  PROMPT-WORKER.md per aprire chat nuove.
+- passi B-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
+
+**Chi apre una sessione su questo repo legge questo file PRIMA di toccare codice**, poi
+il CLAUDE.md della cartella in cui lavora. Se lavori a un modulo, il tuo perimetro e
+scritto li; se un compito ti chiede di uscire dal perimetro, fermati e dillo a Manuel.
 
 ---
 
@@ -99,9 +108,12 @@ I moduli, ricalcando i confini che il codice ha gia:
    `verify-i18n.mjs` (esiste gia, 6 controlli) impara a segnalare chiavi duplicate fra
    cataloghi. `en-extra.ts` muore: era la pezza per non avere questa struttura.
 3. **Confini di import.** Regola ESLint (`no-restricted-imports`): un modulo importa lo
-   scheletro e se stesso; di un altro modulo puo importare SOLO `index.ts`. Gli
-   attraversamenti attuali (day→editor di today, remember→pill di today) si risolvono
-   promuovendo quei due pezzi a `components/ui/` oppure passandoli da index.
+   scheletro e se stesso; di un altro modulo puo importare SOLO `index.ts`. Attiva in
+   WARNING dal 23 agosto; la fotografia dice DUE attraversamenti veri:
+   `day/add-to-day` → `remember/quick-capture` (oggi→ricorda) e
+   `remember/remember-client` → `today/recording-overlay` (ricorda→oggi). Si risolvono
+   al passo D promuovendo quei pezzi condivisi nello scheletro; fino ad allora i due
+   warning restano e NON se ne aggiungono di nuovi.
 4. **Un CLAUDE.md per modulo.** Claude legge automaticamente il CLAUDE.md della cartella
    in cui lavora: e il posto dove il recinto e scritto PER la chat, non per l'umano.
    Il CLAUDE.md di root resta corto e rimanda: mappa dei moduli + regole dello scheletro.
@@ -116,12 +128,11 @@ I moduli, ricalcando i confini che il codice ha gia:
 
 ## 3. Il piano, in ordine di sicurezza (uno step = un branch = una verifica)
 
-**A. La mappa e i recinti (zero codice spostato — si puo fare subito).**
-`PIANO-ARCHITETTURA.md` diventa `ARCHITETTURA.md` (la mappa), nasce il CLAUDE.md di ogni
-futura cartella modulo (per ora puntando ai path attuali), la regola ESLint sui confini
-entra in modalita WARNING (fotografa gli attraversamenti senza rompere nessuno),
-WORKERS.md diventa vincolante. Rischio: zero. Beneficio: da domani ogni chat sa il suo
-recinto.
+**A. La mappa e i recinti (zero codice spostato). FATTO il 23 agosto 2026.**
+`PIANO-ARCHITETTURA.md` e diventato `ARCHITETTURA.md` (la mappa), ogni cartella di
+modulo ha il suo CLAUDE.md (per ora puntano ai path attuali), la regola ESLint sui
+confini e in modalita WARNING (fotografa gli attraversamenti senza rompere nessuno),
+WORKERS.md e vincolante. Da adesso ogni chat sa il suo recinto.
 
 **B. Lo spacchettamento del CSS (il passo che vale di piu).**
 `globals.css` 5.092 righe → `styles/base.css` + un file per modulo, `@import` in cima.

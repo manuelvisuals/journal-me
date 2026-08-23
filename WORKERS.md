@@ -3,6 +3,12 @@
 Due o tre chat che lavorano insieme sullo stesso repo. Serve a andare piu veloce, ma
 funziona solo se non si pestano i piedi. Questo file e il protocollo.
 
+**Dal 23 agosto 2026 questo protocollo e VINCOLANTE, non un consiglio** (decisione di
+Manuel, ARCHITETTURA.md). La divisione del lavoro non si inventa piu volta per volta:
+un worker = un MODULO della mappa in ARCHITETTURA.md §2, e il suo perimetro e scritto
+nel CLAUDE.md della cartella del modulo. Il prompt per aprire un worker nuovo e
+`PROMPT-WORKER.md`.
+
 ## Regola numero uno: nessun worker tocca `main`
 
 Ogni worker lavora su un branch suo e pusha quello. Manuel apre la pull request su GitHub
