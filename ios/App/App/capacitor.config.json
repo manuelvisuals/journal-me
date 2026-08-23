@@ -16,6 +16,8 @@
 	"packageClassList": [
 		"BiometricAuthNative",
 		"AppPlugin",
-		"LocalNotificationsPlugin"
+		"FilesystemPlugin",
+		"LocalNotificationsPlugin",
+		"SharePlugin"
 	]
 }
