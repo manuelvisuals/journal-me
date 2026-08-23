@@ -180,7 +180,8 @@ const base = JSON.parse(readFileSync(BASELINE, "utf8"));
 let pass = 0;
 let fail = 0;
 const say = (ok, name, extra = "") => {
-  ok ? pass++ : fail++;
+  if (ok) pass++;
+  else fail++;
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "  -- " + extra : ""}`);
 };
 
