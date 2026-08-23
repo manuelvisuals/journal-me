@@ -266,6 +266,15 @@ async function seed(page) {
     const nelMese = new Date(Y, M, 0).getDate();
     check("phone: un quadratino per giorno del mese", giorni === nelMese, `${giorni} vs ${nelMese}`);
 
+    // L'intestazione non deve andare a capo: titolo, frecce e icona in una
+    // riga sola, anche sul telefono stretto.
+    const altezzaHead = (await page.locator(".jm-month-header").boundingBox())?.height ?? 0;
+    check("phone: intestazione su una riga sola", altezzaHead < 90, `${Math.round(altezzaHead)}px`);
+    check(
+      "phone: in griglia il contatore lascia il posto alle frecce",
+      (await page.locator(".jm-month-header .jm-month-count").count()) === 0,
+    );
+
     // Le frecce cambiano mese senza uscire dalla griglia.
     const frecce = page.locator(".jm-month-header .jm-mese-nav");
     check("phone: due frecce nell'intestazione", (await frecce.count()) === 2);

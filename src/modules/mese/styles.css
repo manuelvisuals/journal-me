@@ -640,3 +640,12 @@
 .jm-mese-solo .jm-mese-mini-hint {
   margin-top: auto;
 }
+
+/* Il titolo del mese non va mai a capo: con le frecce accanto, "Settembre
+   2026" spezzato in due farebbe ballare tutta l'intestazione. */
+.jm-month-header .jm-month-title {
+  white-space: nowrap;
+}
+.jm-month-right {
+  flex: 0 0 auto;
+}

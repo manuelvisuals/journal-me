@@ -310,7 +310,10 @@ export function MeseClient({ mode, initialMonth }: Props) {
               </button>
             </span>
           )}
-          {contatore && (
+          {/* Il contatore sta nella lista. In griglia sparisce: le due
+              frecce hanno bisogno di quello spazio, e il conto dei giorni
+              raccontati la griglia lo dice gia coi quadratini pieni. */}
+          {!griglia && contatore && (
             <span className="jm-month-count">
               {contatore.done} / {contatore.total}
             </span>
