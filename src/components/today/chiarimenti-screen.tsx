@@ -18,6 +18,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
+import { compactDayDate, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
 import { NON_E_UNA_PERSONA, type Domanda, type Risposta } from "@/lib/chiarimenti";
 
 type Props = {
@@ -93,6 +94,10 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
             })}
           </span>
         </div>
+
+        {/* Di che giornata si parla. Senza, con l'arretrato di un mese si
+            leggono cinque domande che dicono tutte "oggi". */}
+        <div className="jm-ch-quando">{quando(d.entryDate)}</div>
 
         <div className="jm-ch-bars" aria-hidden="true">
           {domande.map((q, n) => (
@@ -188,16 +193,6 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
         </div>
 
         <div className="jm-ch-foot">
-          {domande.length > 1 && (
-            <button
-              type="button"
-              className="jm-ch-basta"
-              disabled={saving}
-              onClick={() => onDone(date.current)}
-            >
-              {t("basta per adesso")}
-            </button>
-          )}
           <button
             type="button"
             className="jm-ch-skip"
@@ -215,7 +210,34 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
             {ultima ? t("Fine") : t("Avanti")}
           </button>
         </div>
+
+        {/* L'uscita, sotto e piccola: non cancella niente, le domande
+            restano in coda e tornano. Serve con l'arretrato addosso, dove
+            rispondere a quaranta domande per tornare al diario sarebbe una
+            trappola. */}
+        {domande.length > 1 && (
+          <div className="jm-ch-basta-riga">
+            <button
+              type="button"
+              className="jm-ch-basta"
+              disabled={saving}
+              onClick={() => onDone(date.current)}
+            >
+              {t("basta per adesso")}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+/** "ieri", "dom 23 ago": la giornata da cui viene la domanda. */
+function quando(dateISO: string): string {
+  try {
+    const d = parseISODate(dateISO);
+    return `${relativeDayLabel(d, parseISODate(todayISO()))} . ${compactDayDate(d)}`;
+  } catch {
+    return dateISO;
+  }
 }

@@ -352,6 +352,14 @@ check(
     "c'e una via d'uscita che non cancella niente",
     /basta per adesso/.test(sch),
   );
+  check(
+    "ogni domanda dice di che giornata parla",
+    /jm-ch-quando/.test(sch) && /relativeDayLabel/.test(sch),
+  );
+  check(
+    "il tasto Avanti batte .btn-primary invece di perdere contro globals.css",
+    /\.jm-ch-foot \.jm-ch-next \{/.test(leggi("src/app/features.css")),
+  );
 }
 {
   const scan = leggi("src/lib/actions/scan-archivio.ts");
@@ -370,6 +378,10 @@ check(
   check(
     "una per volta: sono chiamate a pagamento, non c'e fretta",
     !/Promise\.all/.test(scan),
+  );
+  check(
+    "una scansione interrotta riprende invece di ricominciare",
+    /loadQuestionDates/.test(scan) && /giaViste/.test(scan),
   );
   check(
     "la scansione parte una volta sola, e il logout la dimentica",

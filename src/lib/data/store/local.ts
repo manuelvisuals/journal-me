@@ -468,6 +468,12 @@ export class LocalStore implements JournalStore {
     await db.put("questions", { ...q, risposta: risposta ?? "non-saprei" });
   }
 
+  async loadQuestionDates(): Promise<string[]> {
+    const db = await this.db();
+    const tutte = await db.getAll("questions");
+    return [...new Set(tutte.map((q) => q.entryDate))];
+  }
+
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {
     const db = await this.db();
     return db.getAllFromIndex("facts", "entryDate", dateISO);

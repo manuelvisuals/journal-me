@@ -183,6 +183,12 @@ export interface JournalStore {
   saveOpenQuestions(dateISO: string, domande: Domanda[]): Promise<void>;
   /** Segna una domanda come decisa. `risposta` null = "non saprei", che e una risposta. */
   answerQuestion(id: string, risposta: string | null): Promise<void>;
+  /**
+   * Le giornate su cui l'AI ha gia detto la sua, con una domanda o con un
+   * silenzio. Serve alla scansione dell'archivio per riprendere da dove si
+   * era fermata invece di ricominciare da capo, che costerebbe due volte.
+   */
+  loadQuestionDates(): Promise<string[]>;
 
   /* goals */
   loadGoalDefs(): Promise<GoalDef[]>;
