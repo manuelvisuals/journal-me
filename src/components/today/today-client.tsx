@@ -38,12 +38,16 @@ import {
   type Domanda,
   type Risposta,
 } from "@/lib/chiarimenti";
-import { indicizza } from "@/lib/aliases";
+import { indicizza, risolviLista } from "@/lib/aliases";
 import { loadAliases } from "@/lib/data/facts";
-import { usePlaces } from "@/lib/use-places";
-import { useAliases } from "@/lib/use-aliases";
-import { risolviLista } from "@/lib/aliases";
-import type { Entry, EntryMetrics, GoalDef, GoalDot } from "@/lib/types";
+import { useDayLists } from "@/lib/use-day-lists";
+import type {
+  Entry,
+  EntryMetrics,
+  FactKind,
+  GoalDef,
+  GoalDot,
+} from "@/lib/types";
 
 type View =
   | "empty"
@@ -245,12 +249,14 @@ export function TodayClient({
   // raccontato dopo mezzanotte, l'entry appartiene a ieri. I luoghi vanno
   // letti dalla data dell'entry, non dal calendario.
   const dateVista = entry?.entryDate ?? todayISO();
-  const places = usePlaces(mode, dateVista, entry?.transcript ?? null);
-
-  // Vedi day-client: i soprannomi si applicano quando si mostra.
-  const aliases = useAliases(mode, `${entry?.transcript ?? ""}|${aliasRev}`);
-  const peopleShown = risolviLista(entry?.people ?? [], "persona", aliases);
-  const placesShown = risolviLista(places, "luogo", aliases);
+  // Vedi day-client: soprannomi e cose tolte si applicano quando si mostra.
+  const liste = useDayLists(
+    mode,
+    dateVista,
+    entry?.people ?? [],
+    `${entry?.transcript ?? ""}|${aliasRev}`,
+  );
+  const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
 
   const handleStartRecording = () => {
     setSaveError(null);
@@ -733,8 +739,17 @@ export function TodayClient({
           snippet={entry?.snippet ?? null}
           areas={entry?.areas ?? []}
           metrics={entry?.metrics ?? null}
-          people={peopleShown}
-          places={placesShown}
+          people={liste.people}
+          places={liste.places}
+          onTogli={(kind, nome) => {
+            void liste.togli(kind, nome);
+            setTolte((p) => [...p.filter((x) => x.nome !== nome), { kind, nome }]);
+          }}
+          tolte={tolte}
+          onRimetti={(kind, nome) => {
+            void liste.rimetti(kind, nome);
+            setTolte((p) => p.filter((x) => x.nome !== nome));
+          }}
           goals={goalsForView}
           editHeadline={
             // Solo a giornata salvata e con l'AI: senza AI il titolo non

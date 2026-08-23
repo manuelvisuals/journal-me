@@ -11,7 +11,7 @@
 import { cached, invalidateAll } from "@/lib/data/cache";
 import { getStore } from "@/lib/data/store";
 import type { DataMode } from "@/lib/data/entries";
-import type { Alias, Fact, NewFact } from "@/lib/types";
+import type { Alias, DayExclusion, Fact, NewFact } from "@/lib/types";
 
 export async function loadFactsForDate(
   _mode: DataMode,
@@ -61,4 +61,29 @@ export async function saveAlias(
 ): Promise<Alias[]> {
   invalidateAll();
   return getStore().saveAlias(alias);
+}
+
+/* --- cose tolte a mano da una giornata (migrazione 013) --- */
+
+export async function loadExclusions(
+  _mode: DataMode,
+  dateISO: string,
+): Promise<DayExclusion[]> {
+  return cached(`escluse:${dateISO}`, () => getStore().loadExclusions(dateISO));
+}
+
+export async function addExclusion(
+  _mode: DataMode,
+  e: DayExclusion,
+): Promise<void> {
+  invalidateAll();
+  return getStore().addExclusion(e);
+}
+
+export async function removeExclusion(
+  _mode: DataMode,
+  e: DayExclusion,
+): Promise<void> {
+  invalidateAll();
+  return getStore().removeExclusion(e);
 }

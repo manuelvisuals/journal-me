@@ -17,6 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
 import type {
   Alias,
+  DayExclusion,
   AreaSummary,
   Entry,
   EntryMetrics,
@@ -525,6 +526,51 @@ export class CloudStore implements JournalStore {
       );
     if (error) throw new Error(error.message);
     return this.loadAliases();
+  }
+
+  async loadExclusions(dateISO: string): Promise<DayExclusion[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("day_exclusions")
+      .select("entry_date, kind, label_key")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO);
+    // Se la lettura fallisce si mostra tutto: e meglio rivedere una persona
+    // che avevi tolto, che una giornata che non si apre.
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => ({
+      entryDate: String(r.entry_date),
+      kind: String(r.kind) as DayExclusion["kind"],
+      labelKey: String(r.label_key),
+    }));
+  }
+
+  async addExclusion(e: DayExclusion): Promise<void> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("day_exclusions")
+      .upsert(
+        {
+          user_id: userId,
+          entry_date: e.entryDate,
+          kind: e.kind,
+          label_key: e.labelKey,
+        },
+        { onConflict: "user_id,entry_date,kind,label_key" },
+      );
+    if (error) throw new Error(error.message);
+  }
+
+  async removeExclusion(e: DayExclusion): Promise<void> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("day_exclusions")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", e.entryDate)
+      .eq("kind", e.kind)
+      .eq("label_key", e.labelKey);
+    if (error) throw new Error(error.message);
   }
 
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {

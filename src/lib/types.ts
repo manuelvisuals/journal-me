@@ -124,6 +124,22 @@ export type Alias = {
   labelKey: string;
 };
 
+/**
+ * Una cosa che quel giorno NON c'entra, tolta a mano.
+ *
+ * Il racconto continua a nominarla — magari hai scritto "dovevo vedere Marco
+ * ma ha annullato" — e l'AI continuera a leggerla, giustamente. Questa riga
+ * dice che in QUELLA giornata non va mostrata. Vale per il giorno e non per
+ * sempre: domani Marco potresti vederlo davvero.
+ */
+export type DayExclusion = {
+  /** YYYY-MM-DD */
+  entryDate: string;
+  kind: FactKind;
+  /** La forma normalizzata: "Marco" e "marco" sono la stessa persona. */
+  labelKey: string;
+};
+
 export type Fact = {
   id: string;
   /** YYYY-MM-DD */

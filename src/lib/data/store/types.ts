@@ -1,5 +1,6 @@
 import type {
   Alias,
+  DayExclusion,
   AreaSummary,
   Fact,
   Entry,
@@ -147,6 +148,19 @@ export interface JournalStore {
    * idea su chi sia "mio fratello" deve essere possibile.
    */
   saveAlias(alias: Alias): Promise<Alias[]>;
+
+  /* cose tolte a mano da una giornata (migrazione 013) */
+
+  /**
+   * Cosa hai tolto da questa giornata. Si legge insieme alle persone e ai
+   * luoghi e si applica quando si MOSTRA: cosi la rilettura del testo, che
+   * rifa tutto da zero, non puo rimettere dentro cio che avevi tolto.
+   */
+  loadExclusions(dateISO: string): Promise<DayExclusion[]>;
+  /** Toglie una persona o un luogo da una giornata. */
+  addExclusion(e: DayExclusion): Promise<void>;
+  /** Ci ripensa: la rimette. */
+  removeExclusion(e: DayExclusion): Promise<void>;
 
   /* goals */
   loadGoalDefs(): Promise<GoalDef[]>;

@@ -18,12 +18,15 @@ che lo montano: `src/app/page.tsx` e `src/app/giorno/`.
 - Banchi da far girare prima del push: `verify-pr7`, `verify-testo-giorno`,
   `verify-aree`, `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`, `verify-chiarimenti`
-  (gira con `node --experimental-strip-types`) e `verify-chiarimenti-vivo`
-  (piu tsc, eslint, verify-i18n).
+  (gira con `node --experimental-strip-types`), `verify-chiarimenti-vivo` e
+  `verify-togli-pill` (piu tsc, eslint, verify-i18n).
 - Le domande che l'AI fa invece di indovinare (23 ago): `chiarimenti-screen.tsx` qui,
   la logica in `src/lib/chiarimenti*.ts`, i soprannomi in `src/lib/aliases.ts`, la
   rotta in `src/app/api/chiarimenti/`. Il disegno approvato:
   `design/mockups/domande-analisi.html`. Due regole da non tradire: le domande di
   IDENTITA valgono per sempre e quelle di EPISODIO solo per quella giornata; e
   "non saprei" lascia il buco invece di scegliere.
+- Persone e luoghi di una giornata passano TUTTI da `src/lib/use-day-lists.ts`:
+  prima i soprannomi, poi le cose tolte con la X. Non leggere `entry.people`
+  direttamente in una schermata nuova, o la X non varrebbe li.
 - NON toccare: gli altri moduli, `globals.css`, `en.ts`, `src/lib/**` (scheletro).

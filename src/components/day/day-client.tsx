@@ -7,9 +7,7 @@ import { FilledView } from "@/components/today/filled-view";
 import { TranscriptEditor } from "@/components/today/transcript-editor";
 import { AddToDay } from "@/components/day/add-to-day";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
-import { usePlaces } from "@/lib/use-places";
-import { useAliases } from "@/lib/use-aliases";
-import { risolviLista } from "@/lib/aliases";
+import { useDayLists } from "@/lib/use-day-lists";
 import { ChiarimentiScreen } from "@/components/today/chiarimenti-screen";
 import {
   applicaRisposte,
@@ -30,7 +28,7 @@ import {
   updateMetric,
   type DataMode,
 } from "@/lib/data/entries";
-import type { Entry, EntryMetrics } from "@/lib/types";
+import type { Entry, EntryMetrics, FactKind } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { useCan } from "@/lib/capabilities";
 import { toast } from "@/components/ui/toast";
@@ -91,13 +89,15 @@ export function DayClient({ mode, date, initialEntry }: Props) {
 
   // I luoghi arrivano dai fatti, non dall'entry: si ricaricano ogni volta
   // che la giornata viene risalvata (il testo cambia, l'analisi riparte).
-  const places = usePlaces(mode, date, entry?.transcript ?? null);
-
-  // "Mio fratello" diventa Daniele, e "da Charlie" sparisce dalle persone
-  // perche e un posto. Il racconto resta com'e: vedi src/lib/aliases.ts.
-  const aliases = useAliases(mode, `${entry?.transcript ?? ""}|${aliasRev}`);
-  const peopleShown = risolviLista(entry?.people ?? [], "persona", aliases);
-  const placesShown = risolviLista(places, "luogo", aliases);
+  // Persone e luoghi pronti da mostrare: soprannomi applicati e cose tolte a
+  // mano gia fuori. Vedi src/lib/use-day-lists.ts.
+  const liste = useDayLists(
+    mode,
+    date,
+    entry?.people ?? [],
+    `${entry?.transcript ?? ""}|${aliasRev}`,
+  );
+  const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
 
   const handleGoalToggle = async (label: string) => {
     await optimisticGoals.toggle(goalsForView, label, async () => {
@@ -273,8 +273,17 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           areas={entry.areas}
           metrics={entry.metrics}
           goals={goalsForView}
-          people={peopleShown}
-          places={placesShown}
+          people={liste.people}
+          places={liste.places}
+          onTogli={(kind, nome) => {
+            void liste.togli(kind, nome);
+            setTolte((p) => [...p.filter((x) => x.nome !== nome), { kind, nome }]);
+          }}
+          tolte={tolte}
+          onRimetti={(kind, nome) => {
+            void liste.rimetti(kind, nome);
+            setTolte((p) => p.filter((x) => x.nome !== nome));
+          }}
           editHeadline={{
             dateISO: date,
             mode,

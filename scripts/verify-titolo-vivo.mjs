@@ -212,9 +212,13 @@ for (const [nome, larghezza] of [
   // persone) non era inline-flex. Risultato: pastiglie alte il doppio.
   // Si misura confrontandola con la pastiglia di una PERSONA, che e la
   // stessa cosa con un'icona diversa e deve essere alta uguale.
-  const hLuogo = (await blocco.locator("*:has(> .jm-pin)").first().boundingBox())?.height ?? 0;
-  const selPersona = larghezza >= 1024 ? ".jm-railr-chip.link" : ".jm-person-pill.link";
-  const hPersona = (await page.locator(selPersona).first().boundingBox())?.height ?? 0;
+  // Dal 23 agosto la pastiglia porta anche la X, e la classe `link` sta sul
+  // nome dentro: si misura la pastiglia intera, in un blocco e nell'altro.
+  const hLuogo = (await blocco.locator(".jm-pill-x").first().boundingBox())?.height ?? 0;
+  const bloccoPersone = larghezza >= 1024
+    ? page.locator(".jm-railr-sec:has(.jm-pill-x):visible").first()
+    : page.locator(".lg\\:hidden .jm-pill-row:visible").first();
+  const hPersona = (await bloccoPersone.locator(".jm-pill-x").first().boundingBox())?.height ?? 0;
   check(
     `${nome}: la pastiglia di un luogo e alta come quella di una persona (una riga)`,
     hPersona > 0 && Math.abs(hLuogo - hPersona) <= 2,

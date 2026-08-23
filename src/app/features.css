@@ -642,3 +642,101 @@
     margin-top: 34px;
   }
 }
+
+/* =============================================================
+   La X sulle pastiglie: togliere una persona o un luogo da una
+   giornata (23 agosto 2026, richiesta di Manuel).
+
+   Toglie da QUELLA giornata, non dal diario: il racconto continua
+   a nominarla. Vedi supabase/migrations/013_day_exclusions.sql.
+   ============================================================= */
+.jm-fv-social-l {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.jm-pill-x {
+  /* La pastiglia diventa un contenitore: il nome da una parte, la X
+     dall'altra. Prima era il bottone stesso. */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.jm-pill-name {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+.jm-pill-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  /* Il bersaglio del dito e piu grande del segno: la X si vede piccola e
+     discreta, ma si prende 22px per non costringere a mirare. */
+  width: calc(22px * var(--jm-ui-scale));
+  height: calc(22px * var(--jm-ui-scale));
+  margin-right: calc(-6px * var(--jm-ui-scale));
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.jm-pill-del svg {
+  width: calc(11px * var(--jm-ui-scale));
+  height: calc(11px * var(--jm-ui-scale));
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+/* Sul telefono non esiste il passaggio del mouse: la X si vede sempre, se no
+   nessuno saprebbe che si puo togliere qualcosa. */
+@media (hover: none) {
+  .jm-pill-del {
+    opacity: 0.5;
+  }
+}
+.jm-pill-x:hover .jm-pill-del,
+.jm-pill-del:focus-visible {
+  opacity: 1;
+}
+.jm-pill-del:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+.jm-pill-del:hover svg {
+  stroke: var(--color-ink);
+}
+
+/* La riga per rimettere quello che hai appena tolto. Vive finche resti sulla
+   giornata: un tocco sbagliato si annulla, ma domani non ti ritrovi un
+   elenco di ripensamenti da gestire. */
+.jm-undo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+.jm-undo button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

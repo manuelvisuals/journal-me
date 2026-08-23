@@ -151,14 +151,18 @@ check(
 
 // ---------------------------------------------------------------- 3. luoghi
 
-const places = leggi("src/lib/use-places.ts");
+// use-places.ts e use-aliases.ts sono confluiti in use-day-lists.ts il 23
+// agosto: persone, luoghi, soprannomi e cose tolte a mano si decidono
+// insieme, e l'ordine fra loro conta (prima si risolve, poi si toglie).
+const places = leggi("src/lib/use-day-lists.ts");
 check(
   "i luoghi si leggono dai fatti di tipo luogo",
   /loadFactsForDate/.test(places) && /kind === "luogo"/.test(places),
 );
 check(
   "lo stesso posto detto due volte e una pastiglia sola",
-  /toLowerCase\(\)/.test(places) && /Set<string>/.test(places),
+  /risolviLista/.test(places) &&
+    /visti\.has/.test(leggi("src/lib/aliases.ts")),
 );
 check(
   "i luoghi si ricaricano quando la giornata cambia",
@@ -167,22 +171,26 @@ check(
     /entry\?\.transcript/.test(today),
 );
 check(
+  '"Luoghi" e diventato "Luoghi visitati", e "Social" non esiste piu',
+  !/t\("Social"\)/.test(filled) && /Persone incontrate/.test(filled),
+);
+check(
   "se la lettura dei fatti fallisce la giornata non mostra un errore",
-  /catch\s*\{[\s\S]{0,80}setPlaces\(\[\]\)/.test(places),
+  /\.catch\(\(\) => \[\]\)/.test(places),
 );
 
 const rail = leggi("src/components/today/rail-today.tsx");
 check(
   "i luoghi sono nella rail destra del desktop",
-  /t\("Luoghi"\)/.test(rail) && /placeList\.map/.test(rail),
+  /t\("Luoghi visitati"\)/.test(rail) && /nomi={placeList}/.test(rail),
 );
 check(
   "i luoghi ci sono anche sul telefono, non solo sul desktop",
-  /t\("Luoghi"\)/.test(filled) && /placeList\.map/.test(filled),
+  /t\("Luoghi visitati"\)/.test(filled) && /nomi={placeList}/.test(filled),
 );
 check(
   "un luogo si distingue da una persona a colpo d'occhio",
-  /PlacePin/.test(rail) && /PlacePin/.test(filled),
+  /PlacePin/.test(leggi("src/components/today/pill-row.tsx")),
 );
 
 // ------------------------------------------------------------------ i18n

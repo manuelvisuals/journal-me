@@ -81,4 +81,10 @@ export const EN_EXTRA: Record<string, string> = {
   "Lascialo com'e": "Leave it as it is",
   "Fine": "Done",
   "Avanti": "Next",
+  // Le sezioni della giornata e la X che toglie (23 agosto 2026)
+  "Persone incontrate": "People you saw",
+  "Luoghi visitati": "Places you went",
+  "togli {nome} da questa giornata": "remove {nome} from this day",
+  "tolti da questa giornata:": "removed from this day:",
+  "rimetti {nome}": "put {nome} back",
 };
