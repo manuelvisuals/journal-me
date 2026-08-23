@@ -68,3 +68,31 @@ try{var zr=Number(localStorage.getItem(${JSON.stringify(UI_SCALE_STORAGE_KEY)}))
 e.style.setProperty("--jm-ui-scale",String(z));
 }catch(err){}})();`;
 }
+
+
+/**
+ * La CINTURA DI SICUREZZA dei token (24 agosto 2026, guscio iOS).
+ *
+ * Lo script di boot scrive i token via JavaScript: se per qualunque motivo
+ * non arriva a fondo (successo davvero dentro il WKWebView: app "nuda",
+ * testo a serif, niente spaziature), l'app resta senza un solo token e il
+ * CSS che dice var(--jm-*) muore in silenzio. Questo blocco emette il tema
+ * di DEFAULT come CSS vero, nel <style> del layout: il primo paint e gia
+ * vestito, e lo script di boot — quando gira — sovrascrive con il tema
+ * scelto dall'utente. STESSA fonte di verita (cssVarsFor sul contratto):
+ * non e un secondo elenco da tenere in sync, e la stessa funzione resa in
+ * due forme.
+ */
+export function defaultThemeCss(): string {
+  const theme = THEMES.find((t) => t.id === DEFAULT_THEME_ID) ?? THEMES[0];
+  const render = (vars: Record<string, string>) =>
+    Object.entries(vars)
+      .map(([k, v]) => `${k}:${v}`)
+      .join(";");
+  const light = render(cssVarsFor(theme, "light"));
+  const dark = render(cssVarsFor(theme, "dark"));
+  return (
+    `:root{${light};--jm-ui-scale:${DEFAULT_UI_SCALE}}` +
+    `@media (prefers-color-scheme: dark){:root{${dark}}}`
+  );
+}

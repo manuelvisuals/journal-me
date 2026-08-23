@@ -9,7 +9,7 @@ import { LangWatcher } from "@/components/lang-watcher";
 import { Toaster } from "@/components/ui/toast";
 import { PremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
-import { themeBootScript } from "@/themes/boot";
+import { defaultThemeCss, themeBootScript } from "@/themes/boot";
 
 /**
  * Fonts ship with the app instead of coming from next/font/google.
@@ -164,6 +164,10 @@ export default function RootLayout({
         {/* Tema e appearance PRIMA del primo paint (SPEC-temi §5): script
             inline sincrono, mai aspettare React o l'app lampeggia bianca.
             I valori vengono da src/themes/*.ts, serializzati qui dal server. */}
+        {/* La cintura: il tema di default come CSS vero, cosi il primo
+            paint e vestito anche se lo script qui sotto inciampa (successo
+            nel guscio iOS il 24 agosto). Stessa fonte, due forme. */}
+        <style dangerouslySetInnerHTML={{ __html: defaultThemeCss() }} />
         <script dangerouslySetInnerHTML={{ __html: themeBootScript() }} />
         <ThemeWatcher />
         <LangWatcher />
