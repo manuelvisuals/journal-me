@@ -236,6 +236,59 @@ async function seed(page) {
     );
   }
 
+  // --- Mese a griglia sul telefono (23 agosto 2026, mockup
+  // mese-griglia-mobile.html): l'icona nell'intestazione scambia lista e
+  // griglia, i quadratini prendono il colore dell'umore, il tocco mostra
+  // il titolo invece di portare via.
+  {
+    const icona = page.locator(".jm-mese-vista");
+    check("phone: c'e l'icona lista/griglia", (await icona.count()) === 1);
+    const areaIcona = await icona.boundingBox();
+    check(
+      "phone: l'icona e toccabile (44 punti)",
+      Math.round(areaIcona?.width ?? 0) >= 44 && Math.round(areaIcona?.height ?? 0) >= 44,
+      `${Math.round(areaIcona?.width ?? 0)}x${Math.round(areaIcona?.height ?? 0)}`,
+    );
+    check("phone: si parte dalla lista", (await page.locator(".jm-mese-mini").count()) === 0);
+
+    await icona.click();
+    await page.waitForTimeout(400);
+    check("phone: l'icona accende la griglia", (await page.locator(".jm-mese-mini").count()) > 0);
+    check("phone: la lista sparisce", (await page.locator(".jm-day-row").count()) === 0);
+    const celle = await page.locator(".jm-mese-mini .jm-mese-mini-c").count();
+    check("phone: celle multiple di 7", celle % 7 === 0 && celle >= 28, String(celle));
+
+    // Oggi ha umore "good" (il seed): quarto gradino su cinque.
+    check(
+      "phone: il quadratino di oggi prende il colore dell'umore",
+      (await page.locator(".jm-mese-mini-c.today.m4").count()) === 1,
+    );
+
+    // Un tocco NON naviga: seleziona e mostra il titolo.
+    const primo = page.locator(".jm-mese-mini-c.full").first();
+    await primo.click();
+    await page.waitForTimeout(300);
+    check("phone: il tocco non porta via", page.url().includes("/mese"), page.url());
+    const anteprima = page.locator(".jm-mese-mini-prev").first();
+    check("phone: il tocco mostra il titolo", await anteprima.isVisible());
+
+    // La riga di anteprima apre la giornata.
+    await anteprima.click();
+    await page.waitForTimeout(1200);
+    check("phone: l'anteprima apre la giornata", page.url().includes("/giorno?d="), page.url());
+
+    // La scelta si ricorda.
+    await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+    await page.waitForTimeout(900);
+    check(
+      "phone: la griglia si ricorda dopo un giro",
+      (await page.locator(".jm-mese-mini").count()) > 0,
+    );
+    await page.locator(".jm-mese-vista").click();
+    await page.waitForTimeout(400);
+    check("phone: l'icona riporta alla lista", (await page.locator(".jm-day-row").count()) > 0);
+  }
+
   check("phone: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
   await ctx.close();
 }
