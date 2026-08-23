@@ -1,0 +1,52 @@
+/**
+ * Il catalogo inglese del modulo ACCESSO (/benvenuto e login).
+ *
+ * Nato dallo spacchettamento di en.ts (passo C, ARCHITETTURA.md, 23
+ * agosto 2026). Chiave = frase italiana esatta nel codice; le regole di
+ * traduzione sono nel commento di en.ts. Una voce per riga, sempre
+ * "chiave": "valore", — verify-i18n legge questo formato.
+ */
+export const ACCESSO: Record<string, string> = {
+  "Dove vuoi tenere\nil tuo diario?": "Where do you want\nto keep your diary?",
+  "Puoi cambiare idea dopo. Quello che hai scritto viene con te.": "You can change your mind later. What you have written comes with you.",
+  "Gratis, per sempre": "Free, forever",
+  "Le tue giornate restano qui. Nessun account, nessun server, nessuno che possa leggerle. Nemmeno io.": "Your days stay here. No account, no server, nobody who can read them. Not even me.",
+  "Scrivi la giornata, quando vuoi": "Write your day, whenever you want",
+  "Obiettivi, peso, sonno, umore": "Goals, weight, sleep, mood",
+  "Mese e Ricorda": "Month and Remember",
+  "Backup su file, quando vuoi tu": "Backup to a file, whenever you want",
+  "Niente racconto a voce": "No voice journaling",
+  "Niente titoli, sintesi e recap AI": "No AI titles, summaries or recaps",
+  "Un dispositivo solo": "One device only",
+  "preparo...": "getting ready...",
+  "inizia cosi": "start this way",
+  "Nel cloud, con l'AI": "In the cloud, with AI",
+  "Il diario ti segue ovunque. Racconti a voce e ci pensa lui a scriverlo, riassumerlo e ricordartelo.": "Your diary follows you everywhere. You talk, it writes it down, sums it up and remembers it for you.",
+  "Tutto quello della versione gratis": "Everything in the free version",
+  "Racconti a voce, si trascrive da solo": "Speak, and it transcribes itself",
+  "Titolo, sintesi e macro-aree della giornata": "Title, summary and areas of the day",
+  "Recap mensili, semestrali, annuali": "Monthly, half-yearly and yearly recaps",
+  "Mac, iPhone, iPad sempre allineati": "Mac, iPhone and iPad always in sync",
+  "primo mese incluso": "first month included",
+  "Nella versione gratis nessun dato lascia il dispositivo: non c'e un server a cui mandarli.": "In the free version no data leaves the device: there is no server to send it to.",
+  "Nella versione premium le tue giornate vengono salvate cifrate e il testo passa dai modelli AI per essere riassunto. Puoi cancellare tutto in qualsiasi momento.": "In the premium version your days are stored encrypted and the text goes through AI models to be summarised. You can delete everything at any time.",
+  "Il codice": "The code",
+  "Sei cifre inviate a": "Six digits sent to",
+  "Controllo...": "Checking...",
+  "Entra": "Enter",
+  "Non arriva? Guarda nello spam, oppure": "Not arriving? Check your spam, or",
+  "invio...": "sending...",
+  "chiedine un altro": "ask for another one",
+  "Cambia email": "Change email",
+  "Bentornato": "Welcome back",
+  "Benvenuto": "Welcome",
+  "Inserisci l'email che hai usato l'ultima volta: ti mando un codice.": "Enter the email you used last time: I will send you a code.",
+  "Inserisci la tua email. Ti mando un codice di sei cifre, niente password.": "Enter your email. I will send you a six-digit code, no password.",
+  "tu@dominio.com": "you@domain.com",
+  "Sto inviando...": "Sending...",
+  "Mandami il codice": "Send me the code",
+  "oppure": "or",
+  "Tienilo solo su questo dispositivo": "Keep it on this device only",
+  "Il codice vale un'ora.": "The code is valid for one hour.",
+  "La versione gratis non ha bisogno di email: resta tutto qui.": "The free version needs no email: everything stays here.",
+};

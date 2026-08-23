@@ -21,8 +21,10 @@ Le regole comuni, valide in ogni cartella:
    `src/styles/<modulo>.css` (dal passo B ogni modulo ha il suo; `globals.css` e solo
    l'indice degli import e non si tocca). Un pezzo che serve a piu moduli va discusso:
    `base.css` o `overrides.css` sono scheletro. `features.css` resta per gli innesti
-   temporanei trasversali. Traduzioni nuove da branch: `src/lib/i18n/en-extra.ts`,
-   mai in coda a `en.ts` (il passo C non e ancora fatto).
+   temporanei trasversali. Traduzioni: nel catalogo del TUO modulo,
+   `src/lib/i18n/catalogs/<modulo>.ts` (dal passo C `en.ts` e solo l'unione e non
+   si tocca; una frase condivisa va discussa per `comune.ts`, che e scheletro).
+   `en-extra.ts` resta come innesto d'emergenza per frasi fuori dal tuo modulo.
 4. **Solo token, mai valori a mano**: colori, raggi e spazi vengono dal contratto temi
    (`--color-*`, `--jm-*`); ogni `font-size` e `calc(Npx * var(--jm-ui-scale))`.
    Testo a schermo sempre via `t()` (`@/lib/i18n`).

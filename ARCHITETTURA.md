@@ -15,7 +15,12 @@ Apple senza sorprese.
   degli stili calcolati (scripts/verify-css-split.mjs) ha certificato 18/18 scatti
   identici prima/dopo, e tutte le 21 suite sono verdi. L'ordine degli import e parte
   del contratto: base prima dei moduli, overrides dopo.
-- passi C-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
+- passo C — FATTO il 23 agosto: en.ts (521 voci) e diventato l'unione di
+  src/lib/i18n/catalogs/<modulo>.ts (9 cataloghi, divisi per uso misurato della
+  frase; le condivise in comune.ts). en-extra.ts e svuotato e resta come innesto
+  d'emergenza. verify-i18n ora legge i cataloghi e ha un controllo nuovo, provato
+  a mordere: una chiave definita in due cataloghi e un rosso.
+- passi D-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
 
 **Chi apre una sessione su questo repo legge questo file PRIMA di toccare codice**, poi
 il CLAUDE.md della cartella in cui lavora. Se lavori a un modulo, il tuo perimetro e
@@ -147,7 +152,7 @@ non si guarda il diff). Le 24 sezioni commentate del file dicono gia dove taglia
 ⚠️ Da fare in una finestra in cui NESSUN'ALTRA sessione scrive CSS, o il merge sara
 sanguinoso: e il passo da coordinare con te.
 
-**C. Lo spacchettamento delle traduzioni.**
+**C. Lo spacchettamento delle traduzioni. FATTO il 23 agosto 2026.**
 `en.ts` 490 righe → un catalogo per modulo + unione nel runtime; `en-extra.ts` si
 riassorbe. La guardia c'e gia (verify-i18n) e si estende ai duplicati. Stesso avviso
 di coordinamento del punto B, ma il file e piu piccolo e il merge meno pericoloso.

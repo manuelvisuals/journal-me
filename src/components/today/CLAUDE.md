@@ -12,7 +12,8 @@ che lo montano: `src/app/page.tsx` e `src/app/giorno/`.
 - Prefissi CSS del modulo (misurati il 23 ago): `jm-ed`, `jm-editor`, `jm-fv`,
   `jm-rec`, `jm-day`, `jm-area`, `jm-metric`, `jm-stepper`, `jm-rm`, `jm-goal*`,
   `jm-write`, `jm-add`, `jm-ptt`. L'elenco vero e nei componenti: in dubbio, grep.
-  CSS nuovo da branch: in `src/app/features.css`, con questi prefissi.
+  Il CSS del modulo vive in `src/styles/oggi.css` (passo B, 23 ago).
+- Le traduzioni del modulo vivono in `src/lib/i18n/catalogs/oggi.ts` (passo C).
 - Orchestrazione del salvataggio: `src/lib/actions/save-recording.ts` (e scheletro:
   se serve cambiarla, chiedi a Manuel).
 - Banchi da far girare prima del push: `verify-pr7`, `verify-testo-giorno`,
@@ -33,4 +34,4 @@ che lo montano: `src/app/page.tsx` e `src/app/giorno/`.
 - Persone e luoghi di una giornata passano TUTTI da `src/lib/use-day-lists.ts`:
   prima i soprannomi, poi le cose tolte con la X. Non leggere `entry.people`
   direttamente in una schermata nuova, o la X non varrebbe li.
-- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro — con UNA eccezione: il catalogo del tuo modulo in `src/lib/i18n/catalogs/`).

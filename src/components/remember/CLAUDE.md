@@ -9,6 +9,7 @@ perimetro unico con `src/components/persona` (la scheda di una persona). Pagine:
 
 - Prefissi CSS (misurati il 23 ago): `jm-rem`, `jm-pers`, `jm-qc`. (`jm-person` e
   la pill delle persone e sta nel modulo Oggi.) il CSS del modulo vive in `src/styles/ricorda.css` (passo B, 23 ago).
+- Le traduzioni del modulo vivono in `src/lib/i18n/catalogs/ricorda.ts` (passo C).
 - Banchi prima del push: `verify-pr8`, `verify-persona-moduli` (piu tsc, eslint,
   verify-i18n).
-- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro).
+- NON toccare: gli altri moduli, `src/styles/base.css`/`overrides.css`, `en.ts`, `src/lib/**` (scheletro — con UNA eccezione: il catalogo del tuo modulo in `src/lib/i18n/catalogs/`).

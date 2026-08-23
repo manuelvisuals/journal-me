@@ -15,7 +15,7 @@
 // dice sempre il file di provenienza.
 //
 // Non serve il dev server: e analisi statica.
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { collectKeys } from "./i18n-keys.mjs";
 
 /** Chiavi passate a t() tramite variabile, con la loro provenienza. */
@@ -88,19 +88,35 @@ function check(name, ok, extra = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "\n      " + extra : ""}`);
 }
 
-/* ---- il catalogo: en.ts + en-extra.ts (i rami paralleli) ---- */
+/* ---- il catalogo: un file per modulo (passo C) + en-extra (innesto) ---- */
 const CATALOG = new Map();
-for (const [file, marker] of [
-  ["src/lib/i18n/en.ts", "export const EN"],
-  ["src/lib/i18n/en-extra.ts", "export const EN_EXTRA"],
-]) {
+const OWNER = new Map(); // chiave -> [file che la definiscono]
+const catalogFiles = readdirSync("src/lib/i18n/catalogs")
+  .filter((f) => f.endsWith(".ts"))
+  .map((f) => `src/lib/i18n/catalogs/${f}`)
+  .concat(["src/lib/i18n/en-extra.ts"]);
+for (const file of catalogFiles) {
   const src = readFileSync(file, "utf8");
-  const body = src.slice(src.indexOf("{", src.indexOf(marker)));
+  const body = src.slice(src.indexOf("{", src.indexOf("export const")));
   for (const m of body.matchAll(/^\s*("(?:[^"\\]|\\.)*")\s*:\s*("(?:[^"\\]|\\.)*")\s*,\s*$/gm)) {
-    CATALOG.set(JSON.parse(m[1]), JSON.parse(m[2]));
+    const k = JSON.parse(m[1]);
+    CATALOG.set(k, JSON.parse(m[2]));
+    if (!OWNER.has(k)) OWNER.set(k, []);
+    OWNER.get(k).push(file);
   }
 }
-check("catalogo: si legge e non e vuoto", CATALOG.size > 200, `${CATALOG.size} voci`);
+check("catalogo: si legge e non e vuoto", CATALOG.size > 200, `${CATALOG.size} voci in ${catalogFiles.length} file`);
+
+/* ---- nessuna chiave definita in due cataloghi ----
+   Con lo spread in en.ts vincerebbe in silenzio l'ultimo import (e a
+   runtime EN_EXTRA su tutti): due definizioni della stessa frase sono un
+   conflitto che nessun merge segnala. Qui diventa rosso. */
+const doppie = [...OWNER.entries()].filter(([, files]) => files.length > 1);
+check(
+  "nessuna chiave definita in due cataloghi",
+  doppie.length === 0,
+  doppie.slice(0, 8).map(([k, files]) => `${JSON.stringify(k)} in ${files.join(" e ")}`).join("\n      "),
+);
 
 /* ---- chiavi usate ---- */
 const statiche = collectKeys("src");
