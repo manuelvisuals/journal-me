@@ -73,7 +73,9 @@ mai attiva per il pubblico. Le credenziali si scrivono nelle Review Notes.
 - **Bug aperti**: passata su HANDOVER §8 e sul referto registrazione
   (`modules/oggi/HANDOVER-recording-bug.md`): il retry di getUserMedia va
   verificato SU DEVICE prima di sottomettere — e il cuore dell'app.
-- **Privacy**: serve una pagina privacy policy pubblica (URL obbligatorio) che
+- **Privacy — FATTA il 23 agosto**: pagina statica bilingue su /privacy (l'URL per
+  App Store Connect e https://journal-me-weld.vercel.app/privacy, o il dominio che
+  Manuel scegliera). Diceva e dice: serviva una pagina privacy policy pubblica che
   dica: email per l'accesso, testo del diario cifrato nel cloud, il testo passa
   a OpenAI per titolo/sintesi/trascrizione, niente pubblicita, cancellazione
   possibile. Le etichette App Privacy in App Store Connect devono dire lo
