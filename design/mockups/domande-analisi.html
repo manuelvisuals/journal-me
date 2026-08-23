@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Le domande dopo l'analisi</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif; --serif:"Newsreader",Georgia,serif;
+  --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.65;max-width:860px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:38px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 20px;max-width:940px;line-height:1.65}
+.caption b{color:#D8D8DE;font-weight:600}
+.row2{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:10px;letter-spacing:.04em}
+.phone{width:390px;border-radius:34px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);padding:28px 22px 26px;position:relative;min-height:620px;
+  display:flex;flex-direction:column}
+
+/* --- intestazione della domanda --- */
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.q-kicker{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.q-count{font-size:11px;color:var(--ink-faint);letter-spacing:.04em}
+.bars{display:flex;gap:4px;margin-bottom:30px}
+.bar{height:3px;flex:1;border-radius:2px;background:var(--line)}
+.bar.on{background:var(--ink)}
+
+/* --- la citazione dal racconto --- */
+.quote{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.6;color:var(--ink-muted);
+  border-left:2px solid var(--line);padding-left:14px;margin-bottom:22px}
+.quote mark{background:none;color:var(--ink);font-style:normal;font-weight:600}
+
+.q-text{font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.3;margin-bottom:6px}
+.q-why{font-size:12.5px;color:var(--ink-faint);line-height:1.55;margin-bottom:22px}
+
+/* --- risposte a bottoni --- */
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 16px;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--line);color:var(--ink);font-size:15px;font-weight:500;font-family:inherit;cursor:pointer}
+.opt .ic{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:var(--ink-faint);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.opt .sub{display:block;font-size:12px;font-weight:400;color:var(--ink-faint);margin-top:2px}
+.opt.sel{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.opt.sel .ic{stroke:var(--on-accent)}
+.opt.sel .sub{color:var(--on-accent);opacity:.72}
+.opt.ghost{background:transparent}
+
+.q-foot{margin-top:auto;padding-top:24px;display:flex;align-items:center;justify-content:space-between}
+.skip{font-size:13px;color:var(--ink-faint);background:none;border:none;font-family:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.btn{padding:12px 20px;border-radius:999px;background:var(--accent);color:var(--on-accent);border:none;font-family:inherit;
+  font-size:14px;font-weight:600;cursor:pointer}
+.btn[disabled]{opacity:.3}
+
+/* --- campo libero --- */
+.field{width:100%;padding:14px 16px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--ink);
+  color:var(--ink);font-size:15px;font-family:inherit}
+.hint{font-size:11.5px;color:var(--ink-faint);margin-top:8px}
+
+/* --- schermata "sto capendo" --- */
+.think{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+.think .t{font-size:19px;font-weight:600;letter-spacing:-.02em}
+.think .s{font-size:13px;color:var(--ink-faint);line-height:1.55;max-width:250px}
+.dots{display:flex;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);opacity:.35}
+.dot.on{opacity:1;background:var(--ink)}
+
+/* --- riepilogo finale --- */
+.done-l{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);margin:22px 0 10px}
+.done-row{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.45}
+.done-row:last-child{border-bottom:none}
+.done-row .k{width:16px;height:16px;flex:0 0 auto;margin-top:2px;fill:none;stroke:var(--ink-faint);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.done-row .v{color:var(--ink-faint);font-size:12px;display:block;margin-top:2px}
+.badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:6px;color:var(--ink-faint);vertical-align:1px}
+
+table{border-collapse:collapse;margin:0 auto;font-size:13px;max-width:1000px;width:100%}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.09);vertical-align:top;line-height:1.5}
+th{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A8A90;font-weight:600}
+td b{color:#EDEDED}
+td.dim{color:#9A9AA0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#C9C9D2;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px}
+</style>
+</head>
+<body>
+
+<div class="page-title">L'AI non indovina: chiede</div>
+<div class="page-sub">
+  Quando legge la giornata e trova qualcosa che dal testo non si puo sapere, si ferma e te lo domanda.
+  A bottoni, uno per volta, subito dopo "estraggo il succo". Quello che rispondi finisce in due posti diversi,
+  e capire quali e la cosa piu importante di questo documento.
+</div>
+
+<div class="divider"></div>
+
+<div class="label">00 . le due specie di domanda, e non vanno confuse</div>
+<div class="caption">
+  Me l'hai detto tu con l'esempio della piscina: <b>oggi era sociale, domani potrebbe essere allenamento</b>.
+  Quindi quella risposta vale per OGGI e basta. Ma <b>"mio fratello" e Daniele per sempre</b>, e
+  <b>"da Charlie" e un ristorante per sempre</b>. Se le trattassimo allo stesso modo, o ti richiederei
+  ogni giorno chi e tuo fratello, o deciderei per sempre che la piscina e sport.
+</div>
+<table>
+  <tr><th style="width:120px">specie</th><th>domanda</th><th style="width:180px">dove finisce</th><th style="width:200px">te la richiede?</th></tr>
+  <tr>
+    <td><b>IDENTITA</b></td>
+    <td>"mio fratello" chi e? . "da Charlie" e una persona o un posto?</td>
+    <td class="dim">tabella <code>fact_aliases</code><br>(gia esiste, migrazione 011)</td>
+    <td class="dim"><b>Mai piu.</b> Vale su tutte le giornate, anche quelle gia scritte.</td>
+  </tr>
+  <tr>
+    <td><b>EPISODIO</b></td>
+    <td>La piscina di oggi: allenamento o stare con gli amici?</td>
+    <td class="dim">solo su questa giornata</td>
+    <td class="dim"><b>Ogni volta</b> che il caso torna ambiguo. Perche la risposta cambia col giorno.</td>
+  </tr>
+</table>
+
+<div class="divider"></div>
+
+<div class="label">01 . mentre estrae il succo</div>
+<div class="caption">
+  Nessuna schermata nuova prima del tempo: e la stessa attesa di adesso. Cambia solo cosa dice quando
+  ha finito di leggere.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="think">
+        <div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span></div>
+        <div class="t">Sto leggendo la giornata</div>
+        <div class="s">Tiro fuori quello che conta: le persone, i posti, cosa hai fatto.</div>
+      </div>
+    </div>
+    <div class="cap">come adesso</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="think">
+        <div class="dots"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></div>
+        <div class="t">Tre cose non le ho capite</div>
+        <div class="s">Preferisco chiedertele che inventarmele. Ci vogliono venti secondi.</div>
+        <button class="btn" style="margin-top:8px">Chiedimi pure</button>
+      </div>
+    </div>
+    <div class="cap">quando ha dei dubbi</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">02 . una domanda di IDENTITA . chi e "mio fratello"</div>
+<div class="caption">
+  I bottoni non sono inventati: sono <b>le persone che hai gia in Ricorda</b>. Il campo libero esiste, ma
+  e l'ultima riga, non la prima - perche scrivere a mano un nome e il modo piu facile per crearne
+  una seconda versione con l'accento sbagliato.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">1 di 3</span></div>
+      <div class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></div>
+      <div class="quote">"...poi la sera e passato <mark>mio fratello</mark> e abbiamo guardato la partita."</div>
+      <div class="q-text">Chi e "mio fratello"?</div>
+      <div class="q-why">Se me lo dici una volta, lo riconosco per sempre - anche nelle giornate che hai gia scritto.</div>
+      <div class="opts">
+        <button class="opt"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Daniele</button>
+        <button class="opt"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Christian</button>
+        <button class="opt ghost"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Un altro nome<span class="sub">lo scrivo io</span></button>
+      </div>
+      <div class="q-foot">
+        <button class="skip">Lascialo com'e</button>
+        <button class="btn" disabled>Avanti</button>
+      </div>
+    </div>
+    <div class="cap">i nomi che hai gia, piu una via d'uscita</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">1 di 3</span></div>
+      <div class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span></div>
+      <div class="quote">"...poi la sera e passato <mark>mio fratello</mark> e abbiamo guardato la partita."</div>
+      <div class="q-text">Chi e "mio fratello"?</div>
+      <div class="q-why">Se me lo dici una volta, lo riconosco per sempre - anche nelle giornate che hai gia scritto.</div>
+      <div class="opts">
+        <input class="field" value="Daniele" />
+        <div class="hint">Da adesso "mio fratello" e Daniele in tutto il diario.</div>
+      </div>
+      <div class="q-foot">
+        <button class="skip">Lascialo com'e</button>
+        <button class="btn">Avanti</button>
+      </div>
+    </div>
+    <div class="cap">il campo libero, quando serve davvero</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">03 . una domanda di EPISODIO . la piscina di oggi</div>
+<div class="caption">
+  Questa non diventa una regola, e la schermata lo dice: <b>"vale solo per oggi"</b>. Domani, se vai a fare
+  vasche da solo, te la richiede - ed e giusto cosi, perche e una giornata diversa.
+</div>
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">2 di 3</span></div>
+      <div class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar"></span></div>
+      <div class="quote">"...<mark>pomeriggio in piscina</mark> con Keyko, Ky e gli amici, fino al tramonto."</div>
+      <div class="q-text">La piscina di oggi, cos'era?</div>
+      <div class="q-why">Vale solo per oggi. Un altro giorno te lo richiedo, perche puo cambiare.</div>
+      <div class="opts">
+        <button class="opt sel"><svg class="ic" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Stare con gli amici<span class="sub">finisce in Relazioni</span></button>
+        <button class="opt"><svg class="ic" viewBox="0 0 24 24"><path d="M4 12h3l2-5 3 10 2-5h6"/></svg>Allenamento<span class="sub">finisce in Movimento</span></button>
+        <button class="opt"><svg class="ic" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg>Tutte e due<span class="sub">compare in tutte e due</span></button>
+      </div>
+      <div class="q-foot">
+        <button class="skip">Non saprei</button>
+        <button class="btn">Avanti</button>
+      </div>
+    </div>
+    <div class="cap">scelta chiusa, e si vede dove va a finire</div>
+  </div>
+  <div class="dark">
+    <div class="phone">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">3 di 3</span></div>
+      <div class="bars"><span class="bar on"></span><span class="bar on"></span><span class="bar on"></span></div>
+      <div class="quote">"...cena <mark>da Charlie</mark>, si e parlato a lungo del viaggio."</div>
+      <div class="q-text">"Da Charlie" cos'e?</div>
+      <div class="q-why">Se me lo dici una volta, non te lo chiedo mai piu.</div>
+      <div class="opts">
+        <button class="opt"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Una persona<span class="sub">Charlie, che gia conosco</span></button>
+        <button class="opt sel"><svg class="ic" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Un posto<span class="sub">un ristorante che si chiama cosi</span></button>
+        <button class="opt"><svg class="ic" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Casa di Charlie<span class="sub">il posto e la persona insieme</span></button>
+      </div>
+      <div class="q-foot">
+        <button class="skip">Lascialo com'e</button>
+        <button class="btn">Fine</button>
+      </div>
+    </div>
+    <div class="cap">l'ambiguita che oggi sbaglia in silenzio</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">04 . "non saprei" non e una scappatoia: e una risposta</div>
+<div class="caption">
+  Hai detto che l'AI non deve MAI indovinare. Allora deve valere anche quando <b>salti</b> la domanda:
+  l'attivita resta <b>senza area</b> invece di finirne in una a caso, e la giornata lo dice.
+  Un buco onesto e meglio di un dato inventato - se no fra sei mesi leggi statistiche che non sono le tue.
+</div>
+<div class="row2">
+  <div class="dark">
+    <div class="phone" style="min-height:auto">
+      <div class="q-kicker" style="margin-bottom:18px">Cosa ho capito</div>
+      <div class="done-row">
+        <svg class="k" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <div>mio fratello = <b>Daniele</b><span class="badge">per sempre</span><span class="v">aggiornate anche 4 giornate di prima</span></div>
+      </div>
+      <div class="done-row">
+        <svg class="k" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <div>piscina = <b>Relazioni</b><span class="badge">solo oggi</span></div>
+      </div>
+      <div class="done-row">
+        <svg class="k" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        <div>da Charlie = <b>un posto</b><span class="badge">per sempre</span></div>
+      </div>
+      <div class="done-row">
+        <svg class="k" viewBox="0 0 24 24" style="stroke:#C08A8A"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+        <div>la corsa di stamattina: <b>senza area</b><span class="v">hai risposto "non saprei", e non me la invento</span></div>
+      </div>
+    </div>
+    <div class="cap">il riepilogo, prima di tornare alla giornata</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="label">05 . la cosa che mi preoccupa, detta chiara</div>
+<div class="caption" style="max-width:900px">
+  "Chiedi tutto quello che serve" preso alla lettera puo trasformare ogni sera in un questionario. La difesa
+  non e <b>chiedere di meno</b>: e <b>chiedere solo cio che cambia qualcosa</b>. Se la risposta non
+  cambierebbe niente di cio che rileggerai, la domanda non si fa. E le domande di identita si
+  esauriscono da sole: la prima settimana saranno tante, il secondo mese quasi zero, perche tuo
+  fratello, il tuo bar e la tua palestra si chiedono una volta sola nella vita.
+</div>
+<table>
+  <tr><th style="width:230px">chiede</th><th>non chiede</th></tr>
+  <tr>
+    <td><b>"mio fratello" chi e</b><br><span style="color:#8A8A90">cambia chi compare in Social e nella sua scheda</span></td>
+    <td class="dim">Se "cappuccino" e un caffe o una colazione - nessuno dei due cambia cosa rileggi</td>
+  </tr>
+  <tr>
+    <td><b>piscina: sport o amici</b><br><span style="color:#8A8A90">cambia in che area finisce la giornata</span></td>
+    <td class="dim">Come si scrive "Bubba Cafe" - lo scrive come l'hai detto tu, e basta</td>
+  </tr>
+  <tr>
+    <td><b>"da Charlie": persona o posto</b><br><span style="color:#8A8A90">oggi sbaglia in silenzio e ti sporca le persone</span></td>
+    <td class="dim">Dettagli che il testo dice gia chiaramente. Se e scritto, non si domanda.</td>
+  </tr>
+</table>
+
+</body>
+</html>
