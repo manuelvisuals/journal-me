@@ -405,3 +405,31 @@
      cosi si cambia senza toccare il codice. */
   --jm-area-dot: #C96F4A;
 }
+
+/* ============================================================
+   LA SINTESI USA TUTTA LA COLONNA  (22 agosto 2026, chiesto da Manuel
+   guardando il 22 agosto sul sito)
+   ============================================================ */
+
+/* globals.css tiene la sintesi entro 700px con una motivazione buona: sotto
+   i settantacinque caratteri per riga si legge meglio. Il problema e che
+   sopra e sotto quel paragrafo tutto il resto — il titolo, le schede delle
+   aree, il tasto "aggiungi" — corre per tutta la colonna, e la sintesi si
+   ferma a meta come se mancasse qualcosa. Su una colonna larga il buco si
+   vede piu di quanto pesi la riga lunga.
+
+   Il limite sale, non sparisce: sopra i novanta caratteri l'occhio perde
+   il capo della riga tornando a sinistra, e questo e testo che si legge
+   davvero, non un'etichetta. 980px con il testo da 17px sono circa
+   novanta caratteri.
+
+   La PROSA della giornata gratis (.jm-fv-prose) resta a 700px: sono piu
+   paragrafi di fila, e li la riga di lettura conta per davvero.
+
+   Due classi invece di una perche features.css e importato PRIMA di
+   globals.css: a parita di specificita vincerebbe globals. */
+@media (min-width: 1024px) {
+  .jm-fv-wrap .jm-fv-sn {
+    max-width: 980px;
+  }
+}
