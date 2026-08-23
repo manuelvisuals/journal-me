@@ -90,4 +90,10 @@ export const EN_EXTRA: Record<string, string> = {
   "basta per adesso": "enough for now",
   "Non e una persona": "Not a person",
   "non chiedermelo piu": "stop asking me this",
+  // I tipi, scritti dal codice e non dal modello (23 agosto 2026)
+  "Una persona": "A person",
+  "Un posto": "A place",
+  "Qualcosa da mangiare": "Something to eat",
+  "Un'attivita": "An activity",
+  "Lavoro": "Work",
 };

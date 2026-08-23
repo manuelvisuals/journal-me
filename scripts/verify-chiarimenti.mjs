@@ -244,6 +244,15 @@ check(
   /chiediChiarimenti/.test(today) && /chiediChiarimenti/.test(day),
 );
 check(
+  "su una domanda di tipo, il bottone dice il TIPO e non un nome",
+  /function nomeDelTipo/.test(schermata) &&
+    /d\.azione === "specie" \? nomeDelTipo/.test(schermata),
+);
+check(
+  "e il nome scende sotto, per far vedere come verra mostrato",
+  /o\.nomeVero \|\| o\.etichetta/.test(schermata),
+);
+check(
   "ogni risposta si applica SUBITO, non alla fine di tutte",
   /onRisposta/.test(schermata) && /applicaUnaRisposta/.test(today),
 );

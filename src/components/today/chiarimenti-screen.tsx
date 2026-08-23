@@ -148,23 +148,35 @@ export function ChiarimentiScreen({
             </div>
           ) : (
             <div className="jm-ch-opts">
-              {d.opzioni.map((o) => (
-                <button
-                  key={o.valore + o.etichetta}
-                  type="button"
-                  className={`jm-ch-opt${scelta === o.valore ? " sel" : ""}`}
-                  onClick={() => {
-                    setScelta(o.valore);
-                    setNomeVero(o.nomeVero);
-                  }}
-                  aria-pressed={scelta === o.valore}
-                >
-                  <span className="jm-ch-lab">
-                    {o.etichetta}
-                    {o.sotto && <span className="sub">{o.sotto}</span>}
-                  </span>
-                </button>
-              ))}
+              {d.opzioni.map((o) => {
+                // Su una domanda di SPECIE la risposta e il tipo, non il
+                // nome: l'etichetta la scrive il codice, non il modello.
+                // Il 23 agosto, in produzione, la domanda «"Da Gino" chi o
+                // che cosa indica?» offriva "Gino" e "da Gino" — due nomi,
+                // e nessuno dei due diceva quale fosse la persona e quale il
+                // posto. Il nome scende sotto, dove serve a capire come
+                // verra mostrato.
+                const tipo = d.azione === "specie" ? nomeDelTipo(o.valore, t) : null;
+                const titolo = tipo ?? o.etichetta;
+                const sotto = tipo ? o.nomeVero || o.etichetta : o.sotto;
+                return (
+                  <button
+                    key={o.valore + o.etichetta}
+                    type="button"
+                    className={`jm-ch-opt${scelta === o.valore ? " sel" : ""}`}
+                    onClick={() => {
+                      setScelta(o.valore);
+                      setNomeVero(o.nomeVero);
+                    }}
+                    aria-pressed={scelta === o.valore}
+                  >
+                    <span className="jm-ch-lab">
+                      {titolo}
+                      {sotto && <span className="sub">{sotto}</span>}
+                    </span>
+                  </button>
+                );
+              })}
 
               {/* Non e una persona: "nuovi amici" e un gruppo, non
                   qualcuno. E una risposta vera e chiude la domanda per
@@ -246,6 +258,31 @@ export function ChiarimentiScreen({
       </div>
     </div>
   );
+}
+
+/**
+ * Come si chiama un tipo, in parole.
+ *
+ * Non passa dal modello di proposito: e l'unica cosa della schermata che
+ * DEVE essere esatta, perche e la risposta stessa. Un tipo sconosciuto torna
+ * null e si ricade sull'etichetta scritta dal modello, che e sempre meglio
+ * di un bottone vuoto.
+ */
+function nomeDelTipo(valore: string, t: (s: string) => string): string | null {
+  switch (valore) {
+    case "persona":
+      return t("Una persona");
+    case "luogo":
+      return t("Un posto");
+    case "cibo":
+      return t("Qualcosa da mangiare");
+    case "attivita":
+      return t("Un'attivita");
+    case "lavoro":
+      return t("Lavoro");
+    default:
+      return null;
+  }
 }
 
 /** "ieri", "dom 23 ago": la giornata da cui viene la domanda. */
