@@ -223,7 +223,7 @@ check(
   /if \(!valore\) continue;/.test(chiar),
 );
 
-const schermata = leggi("src/components/today/chiarimenti-screen.tsx");
+const schermata = leggi("src/modules/oggi/components/chiarimenti-screen.tsx");
 check(
   "NON c'e la schermata di permesso (tolta da Manuel)",
   !/chiedimi pure/i.test(senzaCommenti(schermata)),
@@ -237,8 +237,8 @@ check(
   schermata.indexOf("d.opzioni.map") < schermata.indexOf("Un altro nome"),
 );
 
-const today = leggi("src/components/today/today-client.tsx");
-const day = leggi("src/components/day/day-client.tsx");
+const today = leggi("src/modules/oggi/components/today-client.tsx");
+const day = leggi("src/modules/oggi/components/day-client.tsx");
 check(
   "si chiede sia al primo salvataggio sia quando aggiungi a una giornata",
   /chiediChiarimenti/.test(today) && /chiediChiarimenti/.test(day),
@@ -281,7 +281,14 @@ check(
   today.indexOf("setView(\"chiarimenti\")") < today.indexOf("vaiAlPassoPersone"),
 );
 
-const extra = leggi("src/lib/i18n/en-extra.ts");
+// Dal passo C il catalogo e spezzato per modulo: la frase puo vivere in
+// qualunque catalogo, il contratto e che esista.
+import { readdirSync as _rd } from "node:fs";
+const _catalogo = ["src/lib/i18n/catalogs/comune.ts", "src/lib/i18n/en-extra.ts"]
+  .concat(_rd("src/modules").map((m) => `src/modules/${m}/en.ts`))
+  .map((f) => leggi(f))
+  .join("\n");
+const extra = _catalogo;
 for (const frase of ["Da chiarire", "Non adesso", "Non e una persona", "Un altro nome", "Avanti"]) {
   check(`"${frase}" e bilingue`, extra.includes(`"${frase}":`));
 }
@@ -372,7 +379,7 @@ check(
   /suo\.labelKey\.trim\(\) \? suo\.labelKey : null/.test(leggi("src/lib/aliases.ts")),
 );
 {
-  const sch = leggi("src/components/today/chiarimenti-screen.tsx");
+  const sch = leggi("src/modules/oggi/components/chiarimenti-screen.tsx");
   check(
     'il tasto dice "Non adesso", non piu "lascialo com\'e"',
     /t\("Non adesso"\)/.test(sch) && !/Lascialo com/.test(senzaCommenti(sch)),
@@ -414,8 +421,8 @@ check(
   );
   check(
     "la scansione parte una volta sola, e il logout la dimentica",
-    /scansioneGiaFatta/.test(leggi("src/components/today/today-client.tsx")) &&
-      /dimenticaScansione/.test(leggi("src/components/settings/settings-client.tsx")),
+    /scansioneGiaFatta/.test(leggi("src/modules/oggi/components/today-client.tsx")) &&
+      /dimenticaScansione/.test(leggi("src/modules/impostazioni/components/settings-client.tsx")),
   );
 }
 

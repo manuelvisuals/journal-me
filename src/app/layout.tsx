@@ -7,7 +7,7 @@ import { BiometricLock } from "@/components/biometric-lock";
 import { ThemeWatcher } from "@/components/theme-watcher";
 import { LangWatcher } from "@/components/lang-watcher";
 import { Toaster } from "@/components/ui/toast";
-import { PremiumWelcome } from "@/components/premium-welcome";
+import { PremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
 import { themeBootScript } from "@/themes/boot";
 

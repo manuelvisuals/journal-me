@@ -3,41 +3,31 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
 /**
- * I confini fra moduli (ARCHITETTURA.md, passo A — 23 agosto 2026).
+ * I confini fra moduli (ARCHITETTURA.md; ERRORE dal passo D, 23 ago 2026).
  *
- * Ogni modulo puo importare lo scheletro e se stesso; degli ALTRI moduli,
- * niente. Per ora la regola e un WARNING: fotografa gli attraversamenti
- * esistenti senza rompere nessuno. Diventera errore al passo D, quando i
- * moduli avranno un index.ts come porta.
- *
- * Le cartelle di un modulo stanno insieme anche se sono piu di una: e la
- * stessa tabella di ARCHITETTURA.md §2.
+ * Ogni modulo vive in src/modules/<nome>/ e importa lo scheletro e se
+ * stesso; degli ALTRI moduli importa SOLO la porta (l'index.ts, cioe
+ * "@/modules/<nome>" nudo). L'interno altrui e fuori confine.
  */
-const MODULE_DIRS = {
-  oggi: ["src/components/today", "src/components/day", "src/components/aree"],
-  mese: ["src/components/mese"],
-  ricorda: ["src/components/remember", "src/components/persona"],
-  recap: ["src/components/recap"],
-  impostazioni: ["src/components/settings", "src/components/consumi"],
-  accesso: ["src/app/login", "src/app/benvenuto"],
-  palestra: ["src/app/palestra"],
-};
+const MODULES = [
+  "oggi", "mese", "ricorda", "recap", "impostazioni",
+  "accesso", "abbonamento", "palestra",
+];
 
-const boundaryOverrides = Object.entries(MODULE_DIRS).map(([name, dirs]) => {
-  const others = Object.entries(MODULE_DIRS)
-    .filter(([n]) => n !== name)
-    .flatMap(([, d]) => d)
-    .map((d) => d.replace(/^src/, "@") + "/*");
+const boundaryOverrides = MODULES.map((name) => {
+  const others = MODULES.filter((n) => n !== name);
   return {
-    files: dirs.map((d) => `${d}/**/*.{ts,tsx}`),
+    files: [`src/modules/${name}/**/*.{ts,tsx}`],
     rules: {
       "no-restricted-imports": [
-        "warn",
+        "error",
         {
           patterns: [
             {
-              group: others,
-              message: `Confine fra moduli (ARCHITETTURA.md): "${name}" non importa dagli altri moduli. Se il pezzo serve a tutti, va promosso nello scheletro (components/ui): dillo a Manuel.`,
+              // Dei moduli ALTRUI si importa solo la porta (@/modules/<nome>),
+              // mai l'interno (@/modules/<nome>/...).
+              group: others.map((n) => `@/modules/${n}/*`),
+              message: `Confine fra moduli (ARCHITETTURA.md): "${name}" importa dagli altri moduli solo la porta index.ts (import ... from "@/modules/<nome>"). Se il pezzo serve a tutti, va promosso nello scheletro: dillo a Manuel.`,
             },
           ],
         },

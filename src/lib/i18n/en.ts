@@ -18,14 +18,14 @@
  * traduzione e rimasta orfana.
  */
 import { COMUNE } from "@/lib/i18n/catalogs/comune";
-import { OGGI } from "@/lib/i18n/catalogs/oggi";
-import { MESE } from "@/lib/i18n/catalogs/mese";
-import { RICORDA } from "@/lib/i18n/catalogs/ricorda";
-import { RECAP } from "@/lib/i18n/catalogs/recap";
-import { IMPOSTAZIONI } from "@/lib/i18n/catalogs/impostazioni";
-import { ACCESSO } from "@/lib/i18n/catalogs/accesso";
-import { ABBONAMENTO } from "@/lib/i18n/catalogs/abbonamento";
-import { PALESTRA } from "@/lib/i18n/catalogs/palestra";
+import { OGGI } from "@/modules/oggi/en";
+import { MESE } from "@/modules/mese/en";
+import { RICORDA } from "@/modules/ricorda/en";
+import { RECAP } from "@/modules/recap/en";
+import { IMPOSTAZIONI } from "@/modules/impostazioni/en";
+import { ACCESSO } from "@/modules/accesso/en";
+import { ABBONAMENTO } from "@/modules/abbonamento/en";
+import { PALESTRA } from "@/modules/palestra/en";
 
 export const EN: Record<string, string> = {
   ...COMUNE,

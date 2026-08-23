@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RecapClient } from "@/components/recap/recap-client";
+import { RecapClient } from "@/modules/recap/components/recap-client";
 import RecapLoading from "./loading";
 import { loadRecaps } from "@/lib/data/recaps";
 import { signalReady } from "@/lib/app-ready";

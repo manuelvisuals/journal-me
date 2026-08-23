@@ -4,19 +4,19 @@
    browser: il file sarebbe stato caricato dal bundler e buttato via dal
    browser, cioe il tipo di guasto che non da nessun errore. */
 @import "./features.css";
-/* I moduli e lo scheletro (passo B, ARCHITETTURA.md): ogni modulo ha il
-   suo foglio in src/styles/. L'ORDINE di questi import e parte del
-   contratto: base prima dei moduli, overrides dopo. Il CSS nuovo di un
-   modulo va nel SUO file (da un branch: features.css).*/
+/* I moduli e lo scheletro (passi B e D, ARCHITETTURA.md): ogni modulo ha
+   il suo foglio in src/modules/<nome>/styles.css; base e overrides sono
+   scheletro (src/styles/). L'ORDINE di questi import e parte del
+   contratto: base prima dei moduli, overrides dopo. */
 @import "../styles/base.css";
-@import "../styles/oggi.css";
-@import "../styles/recap.css";
-@import "../styles/ricorda.css";
-@import "../styles/mese.css";
-@import "../styles/impostazioni.css";
-@import "../styles/accesso.css";
-@import "../styles/abbonamento.css";
-@import "../styles/palestra.css";
+@import "../modules/oggi/styles.css";
+@import "../modules/recap/styles.css";
+@import "../modules/ricorda/styles.css";
+@import "../modules/mese/styles.css";
+@import "../modules/impostazioni/styles.css";
+@import "../modules/accesso/styles.css";
+@import "../modules/abbonamento/styles.css";
+@import "../modules/palestra/styles.css";
 @import "../styles/overrides.css";
 
 @theme inline {

@@ -7,7 +7,7 @@ import { signalReady } from "@/lib/app-ready";
 import { forcePlanRefresh, setPlanNow, usePlan } from "@/lib/plan";
 import { PREMIUM_PRICE_AMOUNT, PREMIUM_PRICE_PERIOD } from "@/lib/pricing";
 import { toast } from "@/components/ui/toast";
-import { openPremiumWelcome } from "@/components/premium-welcome";
+import { openPremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 import { useT } from "@/lib/i18n";
 
 /**

@@ -20,7 +20,12 @@ Apple senza sorprese.
   frase; le condivise in comune.ts). en-extra.ts e svuotato e resta come innesto
   d'emergenza. verify-i18n ora legge i cataloghi e ha un controllo nuovo, provato
   a mordere: una chiave definita in due cataloghi e un rosso.
-- passi D-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
+- passo D — FATTO il 23 agosto: i moduli vivono in src/modules/<nome>/ (components,
+  styles.css, en.ts, index.ts la porta, CLAUDE.md il recinto). I tre pezzi condivisi
+  passano dalle porte: RecordingOverlay (oggi), QuickCapture (ricorda), il muro
+  premium (abbonamento, il piu importato). Il lint dei confini e a ERRORE: l'interno
+  di un modulo altrui non si importa piu, e zero warning residui.
+- passi E-F — da fare, nell'ordine del §3, ognuno con l'ok esplicito di Manuel.
 
 **Chi apre una sessione su questo repo legge questo file PRIMA di toccare codice**, poi
 il CLAUDE.md della cartella in cui lavora. Se lavori a un modulo, il tuo perimetro e
@@ -95,17 +100,12 @@ src/modules/<nome>/
 
 I moduli, ricalcando i confini che il codice ha gia:
 
-| modulo | oggi vive in | prefissi CSS |
-|---|---|---|
-| oggi | components/today + day + aree | jm-ed, jm-fv, jm-day, jm-area |
-| mese | components/mese | jm-month, jm-mg |
-| ricorda | components/remember + persona | jm-rem, jm-person |
-| recap | components/recap | jm-recap |
-| impostazioni | components/settings + consumi | jm-st, jm-cs |
-| abbonamento | premium-wall, pricing, stripe, checkout-finto | jm-pw, jm-ck |
-| accesso | login, benvenuto, auth | jm-login, jm-benv |
-| palestra (e i prossimi moduli utente) | app/palestra, lib/modules.ts | jm-gym |
-| admin (futuro: allowance per tier, solo master) | da creare | jm-adm |
+Dal passo D questa struttura E la realta: `src/modules/{oggi, mese, ricorda,
+recap, impostazioni, accesso, abbonamento, palestra}`. I prefissi CSS veri di
+ogni modulo sono nel suo CLAUDE.md (misurati, non a memoria). Le pagine di
+`src/app/` restano dove Next le vuole e sono gusci; ognuna appartiene a un
+modulo (elencato nel CLAUDE.md del modulo). Il modulo `admin` (allowance per
+tier, solo master) e futuro e nascera gia in questa forma.
 
 ### Le guardie (cio che rende la struttura vera invece che decorativa)
 
@@ -117,13 +117,10 @@ I moduli, ricalcando i confini che il codice ha gia:
 2. **Traduzioni senza piu imbuto.** `en.ts` diventa l'unione dei cataloghi dei moduli;
    `verify-i18n.mjs` (esiste gia, 6 controlli) impara a segnalare chiavi duplicate fra
    cataloghi. `en-extra.ts` muore: era la pezza per non avere questa struttura.
-3. **Confini di import.** Regola ESLint (`no-restricted-imports`): un modulo importa lo
-   scheletro e se stesso; di un altro modulo puo importare SOLO `index.ts`. Attiva in
-   WARNING dal 23 agosto; la fotografia dice DUE attraversamenti veri:
-   `day/add-to-day` → `remember/quick-capture` (oggi→ricorda) e
-   `remember/remember-client` → `today/recording-overlay` (ricorda→oggi). Si risolvono
-   al passo D promuovendo quei pezzi condivisi nello scheletro; fino ad allora i due
-   warning restano e NON se ne aggiungono di nuovi.
+3. **Confini di import.** Regola ESLint (`no-restricted-imports`), a ERRORE dal
+   passo D: un modulo importa lo scheletro e se stesso; di un altro modulo puo
+   importare SOLO la porta (`import ... from "@/modules/<nome>"`). Le porte vive:
+   RecordingOverlay (oggi), QuickCapture (ricorda), il muro premium (abbonamento).
 4. **Un CLAUDE.md per modulo.** Claude legge automaticamente il CLAUDE.md della cartella
    in cui lavora: e il posto dove il recinto e scritto PER la chat, non per l'umano.
    Il CLAUDE.md di root resta corto e rimanda: mappa dei moduli + regole dello scheletro.
@@ -157,7 +154,7 @@ sanguinoso: e il passo da coordinare con te.
 riassorbe. La guardia c'e gia (verify-i18n) e si estende ai duplicati. Stesso avviso
 di coordinamento del punto B, ma il file e piu piccolo e il merge meno pericoloso.
 
-**D. Lo spostamento dei folder in `src/modules/`.**
+**D. Lo spostamento dei folder in `src/modules/`. FATTO il 23 agosto 2026.**
 Il rename grosso (components/today → modules/oggi/components, ecc.), `index.ts` per
 modulo, ESLint da warning a ERRORE. E il passo piu rumoroso nel git (ogni file cambia
 path) e va fatto per ultimo, a B e C digeriti, in una finestra tranquilla.

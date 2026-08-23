@@ -25,12 +25,12 @@ const DINAMICHE = {
     "Oggi", "Mese", "Ricorda", "Recap", "Impostazioni",
     "questo dispositivo", "Locale", "Cloud", "Premium",
   ],
-  "components/settings/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [
+  "modules/impostazioni/components/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [
     "Chiaro", "Scuro", "Sistema", "Ch", "Sc", "Sist",
     "Obiettivi", "Tema", "Dove sono le mie giornate", "Lingua",
     "Questo dispositivo",
   ],
-  "components/premium-wall.tsx (TITLES, FEATURES)": [
+  "modules/abbonamento/components/premium-wall.tsx (TITLES, FEATURES)": [
     "Per raccontare a voce\nserve premium",
     "Per il titolo e la sintesi\nserve premium",
     "Per i recap del mese\nserve premium",
@@ -44,7 +44,7 @@ const DINAMICHE = {
     "Su tutti i dispositivi",
     "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.",
   ],
-  "components/premium-welcome.tsx (FEATURES)": [
+  "modules/abbonamento/components/premium-welcome.tsx (FEATURES)": [
     "Racconti a voce, il testo si scrive da solo",
     "Titolo, sintesi e macro-aree di ogni giornata",
     "Recap del mese e letture sui pattern",
@@ -59,22 +59,22 @@ const DINAMICHE = {
     "Ore, regolarita, e come va il giorno dopo",
     "Minuti, costanza, e cosa cambia nei giorni in cui la fai",
   ],
-  "components/settings/settings-client.tsx (PANEL_TITLES, moduli)": ["Moduli"],
-    "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
-  "components/remember/quick-capture.tsx (KIND_OPTIONS)": [
+  "modules/impostazioni/components/settings-client.tsx (PANEL_TITLES, moduli)": ["Moduli"],
+    "modules/recap/components/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
+  "modules/ricorda/components/quick-capture.tsx (KIND_OPTIONS)": [
     "Nota", "Persona", "Todo", "Luogo", "Idea",
   ],
-  "components/remember/remember-client.tsx (FILTERS, bande)": [
+  "modules/ricorda/components/remember-client.tsx (FILTERS, bande)": [
     "Tutti", "Persone", "Todo", "Note", "Luoghi", "Idee",
     "Oggi", "Ieri", "Settimana scorsa", "Mese scorso", "Più indietro",
   ],
-  "components/mese/mese-grid.tsx (WEEKDAYS)": [
+  "modules/mese/components/mese-grid.tsx (WEEKDAYS)": [
     "lun", "mar", "mer", "gio", "ven", "sab", "dom",
   ],
-  "components/today/metric-cards.tsx + rail-metrics.tsx (MOOD_OPTIONS)": [
+  "modules/oggi/components/metric-cards.tsx + rail-metrics.tsx (MOOD_OPTIONS)": [
     "molto bene", "bene", "cosi cosi", "giu", "male",
   ],
-  "components/today/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
+  "modules/oggi/components/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
     "Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni",
   ],
   "lib/ui-scale.ts (UI_SCALE_LABELS)": [
@@ -94,7 +94,10 @@ const OWNER = new Map(); // chiave -> [file che la definiscono]
 const catalogFiles = readdirSync("src/lib/i18n/catalogs")
   .filter((f) => f.endsWith(".ts"))
   .map((f) => `src/lib/i18n/catalogs/${f}`)
-  .concat(["src/lib/i18n/en-extra.ts"]);
+  .concat(
+    readdirSync("src/modules").map((m) => `src/modules/${m}/en.ts`),
+    ["src/lib/i18n/en-extra.ts"],
+  );
 for (const file of catalogFiles) {
   const src = readFileSync(file, "utf8");
   const body = src.slice(src.indexOf("{", src.indexOf("export const")));

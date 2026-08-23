@@ -26,15 +26,16 @@ Le regole che rompono tutto se le sbagli:
   SOLO quello. Il merge su main lo decide Manuel. Se il push risponde 403 "access
   denied by the git proxy", non e un permesso mancante: ripeti con
   `env -u https_proxy -u HTTPS_PROXY -u http_proxy -u HTTP_PROXY -u ALL_PROXY -u all_proxy git push origin <branch>`.
-- **Solo il tuo modulo.** Niente modifiche a `src/lib/**` (eccetto il catalogo del
-  tuo modulo in `src/lib/i18n/catalogs/`), `src/themes/**`, `src/components/ui/**`,
-  `src/components/desktop/**`, `globals.css`, `en.ts`, ne agli altri moduli. Se il compito sembra richiederlo, fermati e dillo a Manuel: o e un
-  compito da sessione scheletro, o c'e una strada dentro il tuo recinto.
-- **Il CSS del tuo modulo vive in `src/styles/<modulo>.css`** (il tuo CLAUDE.md dice
-  quale): scrivi li, con le classi col prefisso del tuo modulo. `globals.css` e solo
-  l'indice degli import; `base.css` e `overrides.css` sono scheletro e non si toccano.
-  **Le traduzioni del tuo modulo vivono in
-  `src/lib/i18n/catalogs/<modulo>.ts`** (en.ts e solo l'unione, non si tocca). Solo token del tema (`--color-*`, `--jm-*`), mai colori o misure a mano;
+- **Solo il tuo modulo.** Lavori dentro `src/modules/<modulo>/` (piu le pagine di
+  `src/app/` che il CLAUDE.md del modulo elenca). Niente modifiche a `src/lib/**`,
+  `src/themes/**`, `src/components/**`, `src/styles/**`, `globals.css`, ne agli altri
+  moduli — di un altro modulo puoi importare solo la sua porta
+  (`import ... from "@/modules/<nome>"`). Se il compito sembra richiedere di piu,
+  fermati e dillo a Manuel: o e un compito da sessione scheletro, o c'e una strada
+  dentro il tuo recinto.
+- **Il CSS del tuo modulo vive in `src/modules/<modulo>/styles.css`**, con le classi
+  col prefisso del modulo, e **le traduzioni in `src/modules/<modulo>/en.ts`**
+  (`globals.css` e `src/lib/i18n/en.ts` sono solo indici, non si toccano). Solo token del tema (`--color-*`, `--jm-*`), mai colori o misure a mano;
   ogni font-size e `calc(Npx * var(--jm-ui-scale))`; ogni testo a schermo passa da
   `t()` di `@/lib/i18n`.
 - **git**: email `spamming.madh52@gmail.com`; `git add <file espliciti>`, mai `-A`;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TodayClient } from "@/components/today/today-client";
+import { TodayClient } from "@/modules/oggi/components/today-client";
 import { TabBar } from "@/components/ui/tab-bar";
 import { loadTodayEntry } from "@/lib/data/entries";
 import { loadGoalDefs } from "@/lib/data/goals";
