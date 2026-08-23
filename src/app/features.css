@@ -521,6 +521,10 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  /* L'ultima risposta non deve finire sotto i bottoni. Con la rubrica piena
+     le opzioni sono otto piu due, e in produzione l'ultima spariva dietro il
+     fondo della schermata: si vedeva mezza e sembrava un errore. */
+  padding-bottom: 10px;
 }
 /* La citazione dal racconto: serve a ricordarsi di cosa si parla, quindi e
    il TUO testo e si vede che lo e — corsivo serif, come la sintesi. */
@@ -672,7 +676,10 @@
     padding-bottom: 60px;
   }
   .jm-ch-scroll {
+    /* Al centro dello schermo, ma non oltre: se le risposte sono tante
+       scorre invece di sfondare la finestra. */
     flex: 0 1 auto;
+    max-height: 62vh;
   }
   .jm-ch-foot {
     margin-top: 34px;

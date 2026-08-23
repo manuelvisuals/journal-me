@@ -23,8 +23,18 @@ import { NON_E_UNA_PERSONA, type Domanda, type Risposta } from "@/lib/chiariment
 
 type Props = {
   domande: Domanda[];
+  /**
+   * Chiamata a OGNI risposta, non alla fine.
+   *
+   * Il 23 agosto sera, in produzione: si rispondeva alla prima domanda, si
+   * passava alla seconda, si chiudeva la scheda — e la prima tornava, come
+   * se non avessi risposto. Le risposte si applicavano tutte insieme alla
+   * fine, e "la fine" con un arretrato di cinque domande non arriva quasi
+   * mai. Ora ogni risposta vale nel momento in cui la dai.
+   */
+  onRisposta: (risposta: Risposta) => void;
   /** `interrotto` = ha premuto "basta per adesso": le altre restano in coda. */
-  onDone: (risposte: Risposta[], interrotto?: boolean) => void;
+  onDone: (interrotto?: boolean) => void;
   saving?: boolean;
 };
 
@@ -39,14 +49,18 @@ type Props = {
  * risposta, non una fuga.
  */
 
-export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
+export function ChiarimentiScreen({
+  domande,
+  onRisposta,
+  onDone,
+  saving = false,
+}: Props) {
   const t = useT();
   const [i, setI] = useState(0);
   const [scelta, setScelta] = useState<string | null>(null);
   const [nomeVero, setNomeVero] = useState<string>("");
   const [liberoScelto, setLiberoScelto] = useState(false);
   const [testoLibero, setTestoLibero] = useState("");
-  const date = useRef<Risposta[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const d = domande[i];
@@ -71,9 +85,10 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
   const puoAvanzare = !!valoreScelto && valoreScelto.length > 0;
 
   function avanti(valore: string | null) {
-    date.current.push({ domanda: d, valore, nomeVero });
+    // Subito, non alla fine: vedi onRisposta nei Props.
+    onRisposta({ domanda: d, valore, nomeVero });
     if (ultima) {
-      onDone(date.current);
+      onDone();
       return;
     }
     setI((n) => n + 1);
@@ -222,7 +237,7 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
               type="button"
               className="jm-ch-basta"
               disabled={saving}
-              onClick={() => onDone(date.current, true)}
+              onClick={() => onDone(true)}
             >
               {t("basta per adesso")}
             </button>

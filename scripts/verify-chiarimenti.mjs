@@ -244,6 +244,14 @@ check(
   /chiediChiarimenti/.test(today) && /chiediChiarimenti/.test(day),
 );
 check(
+  "ogni risposta si applica SUBITO, non alla fine di tutte",
+  /onRisposta/.test(schermata) && /applicaUnaRisposta/.test(today),
+);
+check(
+  "una risposta si applica alla SUA giornata, non a quella che guardi",
+  /r\.domanda\.entryDate/.test(today) && /loadEntryForDate/.test(today),
+);
+check(
   "le domande in coda si chiedono all'APERTURA, non solo dopo un'analisi",
   /domandeInSospeso/.test(today) && /scansioneGiaFatta\(\)\) await/.test(today),
 );

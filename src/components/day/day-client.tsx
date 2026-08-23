@@ -25,6 +25,7 @@ import {
 import {
   deleteEntry,
   toggleGoal,
+  loadEntryForDate,
   updateEntryTranscript,
   updateMetric,
   type DataMode,
@@ -63,7 +64,6 @@ export function DayClient({ mode, date, initialEntry }: Props) {
   // i dubbi si chiedessero solo al primo salvataggio, tutto cio che aggiungi
   // dopo tornerebbe a essere indovinato.
   const [domande, setDomande] = useState<Domanda[] | null>(null);
-  const [domandeSaving, setDomandeSaving] = useState<boolean>(false);
   // Un soprannome appena chiarito deve vedersi SUBITO, senza ricaricare la
   // pagina. I soprannomi si ricaricano quando cambia la giornata, ma
   // rispondere a una domanda non sempre cambia la giornata: puo scrivere
@@ -128,17 +128,23 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     if (q.length > 0) setDomande(q);
   };
 
-  const finishDomande = async (risposte: Risposta[]) => {
-    setDomandeSaving(true);
+  /** Vedi today-client: ogni risposta si applica alla SUA giornata, subito. */
+  const applicaUnaRisposta = async (r: Risposta) => {
+    const dataDomanda = r.domanda.entryDate;
     try {
-      const aggiornata = await applicaRisposte(mode, date, entry, risposte);
-      if (aggiornata) setEntry(aggiornata);
+      const suaEntry =
+        dataDomanda === date ? entry : await loadEntryForDate(mode, dataDomanda);
+      const aggiornata = await applicaRisposte(mode, dataDomanda, suaEntry, [r]);
+      if (aggiornata && dataDomanda === date) setEntry(aggiornata);
       setAliasRev((n) => n + 1);
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : t("Errore"));
     }
+  };
+
+  const finishDomande = () => {
     setDomande(null);
-    setDomandeSaving(false);
+    setAliasRev((n) => n + 1);
   };
 
   const handleTranscriptSave = async (newTranscript: string) => {
@@ -179,10 +185,12 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     return (
       <ChiarimentiScreen
         domande={domande}
-        saving={domandeSaving}
-        onDone={(risposte, interrotto) => {
+        onRisposta={(r) => {
+          void applicaUnaRisposta(r);
+        }}
+        onDone={(interrotto) => {
           if (interrotto) metteInPausa();
-          void finishDomande(risposte);
+          finishDomande();
         }}
       />
     );

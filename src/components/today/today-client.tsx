@@ -22,6 +22,7 @@ import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import {
   deleteEntry,
+  loadEntryForDate,
   toggleGoal,
   updateEntryTranscript,
   updateMetric,
@@ -160,7 +161,6 @@ export function TodayClient({
     attachDate: string;
     entryForDate: Entry | null;
   } | null>(null);
-  const [chiarimentiSaving, setChiarimentiSaving] = useState<boolean>(false);
   // Un soprannome appena chiarito deve vedersi SUBITO, senza ricaricare la
   // pagina. I soprannomi si ricaricano quando cambia la giornata, ma
   // rispondere a una domanda non sempre cambia la giornata: puo scrivere
@@ -471,24 +471,39 @@ export function TodayClient({
    * Le risposte alle domande. I soprannomi valgono per sempre, le aree solo
    * per questa giornata: vedi src/lib/chiarimenti.ts.
    */
-  const finishChiarimenti = async (risposte: Risposta[]) => {
-    if (!chiarimenti) return;
-    const { attachDate, entryForDate } = chiarimenti;
-    setChiarimentiSaving(true);
-    let aggiornata = entryForDate;
+  /**
+   * Una risposta, applicata subito.
+   *
+   * Le domande arrivano da giornate diverse, quindi ognuna si applica alla
+   * SUA — non a quella che si sta guardando. Per le domande di identita non
+   * cambia niente (valgono ovunque), per quelle di area e tutto: mettere la
+   * piscina del 19 fra le aree del 23 sarebbe scrivere il falso.
+   */
+  const applicaUnaRisposta = async (r: Risposta) => {
+    const dataDomanda = r.domanda.entryDate;
     try {
-      aggiornata = await applicaRisposte(mode, attachDate, entryForDate, risposte);
+      const suaEntry =
+        dataDomanda === entry?.entryDate
+          ? entry
+          : await loadEntryForDate(mode, dataDomanda);
+      const aggiornata = await applicaRisposte(mode, dataDomanda, suaEntry, [r]);
+      if (aggiornata && aggiornata.entryDate === entry?.entryDate) {
+        setEntry(aggiornata);
+      }
+      setAliasRev((n) => n + 1);
     } catch (err) {
-      // Una risposta non applicata non deve far perdere la giornata.
       setSaveError(
         err instanceof Error ? err.message : t("Errore salvataggio persone"),
       );
     }
-    if (aggiornata && attachDate === todayISO()) setEntry(aggiornata);
-    setAliasRev((n) => n + 1);
+  };
+
+  const finishChiarimenti = async () => {
+    if (!chiarimenti) return;
+    const { attachDate, entryForDate } = chiarimenti;
     setChiarimenti(null);
-    setChiarimentiSaving(false);
-    await vaiAlPassoPersone(attachDate, aggiornata);
+    setAliasRev((n) => n + 1);
+    await vaiAlPassoPersone(attachDate, entryForDate);
   };
 
   // User confirmed the (possibly corrected) transcript — same pipeline.
@@ -873,10 +888,12 @@ export function TodayClient({
       {view === "chiarimenti" && chiarimenti && (
         <ChiarimentiScreen
           domande={chiarimenti.domande}
-          saving={chiarimentiSaving}
-          onDone={(risposte, interrotto) => {
+          onRisposta={(r) => {
+            void applicaUnaRisposta(r);
+          }}
+          onDone={(interrotto) => {
             if (interrotto) metteInPausa();
-            void finishChiarimenti(risposte);
+            void finishChiarimenti();
           }}
         />
       )}
