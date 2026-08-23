@@ -657,6 +657,18 @@ export class CloudStore implements JournalStore {
     if (error) throw new Error(error.message);
   }
 
+  async loadQuestionDates(): Promise<string[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("open_questions")
+      .select("entry_date")
+      .eq("user_id", userId);
+    if (error || !data) return [];
+    return [
+      ...new Set((data as Record<string, unknown>[]).map((r) => String(r.entry_date))),
+    ];
+  }
+
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {
     const userId = await this.userId();
     const { data, error } = await this.supabase()

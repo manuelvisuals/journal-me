@@ -110,7 +110,7 @@ export interface JournalStore {
     durationSeconds: number,
   ): Promise<Entry>;
 
-  /* fatti (SPEC-fatti.md §3) */
+  /* fatti (src/modules/oggi/SPEC-fatti.md §3) */
 
   /**
    * Rifa i fatti 'ai' di una giornata: cancella quelli vecchi e scrive i
@@ -183,6 +183,12 @@ export interface JournalStore {
   saveOpenQuestions(dateISO: string, domande: Domanda[]): Promise<void>;
   /** Segna una domanda come decisa. `risposta` null = "non saprei", che e una risposta. */
   answerQuestion(id: string, risposta: string | null): Promise<void>;
+  /**
+   * Le giornate su cui l'AI ha gia detto la sua, con una domanda o con un
+   * silenzio. Serve alla scansione dell'archivio per riprendere da dove si
+   * era fermata invece di ricominciare da capo, che costerebbe due volte.
+   */
+  loadQuestionDates(): Promise<string[]>;
 
   /* goals */
   loadGoalDefs(): Promise<GoalDef[]>;

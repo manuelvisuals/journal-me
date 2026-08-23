@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SettingsClient } from "@/components/settings/settings-client";
+import { SettingsClient } from "@/modules/impostazioni/components/settings-client";
 import SettingsLoading from "./loading";
 import { resolveStorageMode } from "@/lib/data/store";
 import { loadGoalDefs } from "@/lib/data/goals";

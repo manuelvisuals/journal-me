@@ -1,0 +1,341 @@
+/* =============================================================
+   Modulo ABBONAMENTO: muro premium, checkout finto, congratulazioni.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+/* =============================================================
+   Muro premium + giornata gratis (PR 10, mockup due-modalita
+   §02/§04). Il muro funziona a TUTTE le larghezze: il telefono
+   gratis e il suo primo cliente.
+   ============================================================= */
+.jm-wall-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: color-mix(in oklab, var(--color-shadow) 72%, transparent);
+  backdrop-filter: blur(7px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.jm-wall {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
+  border-radius: var(--jm-radius-lg);
+  padding: 28px;
+  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
+}
+
+.jm-wall-t {
+  font-family: var(--font-serif);
+  font-size: calc(28px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-ink);
+  margin-bottom: 12px;
+  /* Il titolo va su due righe e il punto dove spezzare lo decide la
+     traduzione, con un a capo dentro la stringa (vedi premium-wall.tsx).
+     Prima era un <br/> nel JSX, cioe il punto giusto per l'italiano e
+     uno a caso per l'inglese. */
+  white-space: pre-line;
+}
+
+.jm-wall-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-bottom: 20px;
+}
+
+.jm-wall-feat {
+  display: flex;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-wall-feat:last-of-type {
+  border-bottom: none;
+  margin-bottom: 18px;
+}
+
+.jm-wall-feat i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex: 0 0 6px;
+  margin-top: 7px;
+  display: block;
+}
+
+.jm-wall-feat .t {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.jm-wall-feat .p {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.jm-wall-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-accent);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.jm-wall .btn-primary + .btn-ghost {
+  margin-top: 10px;
+}
+
+/* ============================================================
+   Checkout finto e popup di congratulazioni (mockup
+   design/mockups/checkout-finto.html, approvato il 21 agosto 2026).
+   Esiste solo in ambiente di prova: vedi src/lib/dev-checkout.ts.
+   ============================================================ */
+.jm-ck {
+  padding: 0 calc(26px * var(--jm-space));
+}
+
+.jm-ck-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: calc(18px * var(--jm-space));
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-ck-bar svg {
+  width: 12px;
+  height: 12px;
+  stroke: var(--color-ink-faint);
+  stroke-width: 2;
+  fill: none;
+}
+
+.jm-ck-mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: calc(20px * var(--jm-space));
+}
+
+.jm-ck-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 7px;
+  font-size: calc(10.5px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 6px 12px;
+  margin-bottom: calc(26px * var(--jm-space));
+}
+
+.jm-ck-tag i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jm-radius-circle);
+  background: #e0a800;
+  display: block;
+}
+
+.jm-ck-t {
+  font-family: var(--font-serif);
+  font-size: calc(31px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--color-ink);
+  /* Il titolo va su due righe e dove spezzare lo decide la traduzione, con
+     un a capo dentro la stringa: stesso motivo di .jm-wall-t. */
+  white-space: pre-line;
+}
+
+.jm-ck-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-top: calc(14px * var(--jm-space));
+}
+
+.jm-ck-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: calc(30px * var(--jm-space)) 0 6px;
+}
+
+/* Il prezzo e sbarrato: pieno, su una pagina che non incassa, e il modo
+   piu rapido per dimenticarsi che e una prova. */
+.jm-ck-amount .n {
+  font-family: var(--font-serif);
+  font-size: calc(44px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  opacity: 0.45;
+}
+
+.jm-ck-amount .per {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-ck-strike {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-ck-err {
+  margin-top: calc(22px * var(--jm-space));
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-danger);
+}
+
+.jm-ck-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: calc(20px * var(--jm-space));
+}
+
+.jm-ck-quiet {
+  width: 100%;
+  min-height: calc(40px * var(--jm-ui-scale));
+  border: none;
+  background: transparent;
+  color: var(--color-ink-faint);
+  font-family: inherit;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  cursor: pointer;
+}
+
+.jm-ck-quiet:disabled { opacity: 0.5; cursor: default; }
+
+.jm-ck-foot {
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-faint);
+  border-top: 1px solid var(--color-line);
+  padding: calc(16px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+}
+
+.jm-cong-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: color-mix(in oklab, var(--color-shadow) 72%, transparent);
+  backdrop-filter: blur(7px);
+}
+
+.jm-cong {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: 34px 28px 24px;
+  text-align: center;
+  box-shadow: 0 18px 40px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+}
+
+.jm-cong-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 22px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg-phone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jm-cong-mark svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm-cong-t {
+  font-family: var(--font-serif);
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.jm-cong-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-top: 12px;
+}
+
+.jm-cong-list {
+  text-align: left;
+  margin: 22px 0 24px;
+  border-top: 1px solid var(--color-line);
+}
+
+.jm-cong-li {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-cong-li i {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  flex: 0 0 5px;
+  margin-top: 7px;
+  display: block;
+}
+
+.jm-cong-li span {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.45;
+  color: var(--color-ink-muted);
+}

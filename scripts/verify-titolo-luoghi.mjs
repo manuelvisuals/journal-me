@@ -82,7 +82,7 @@ check(
   );
 }
 
-const editor = leggi("src/components/today/headline-editable.tsx");
+const editor = leggi("src/modules/oggi/components/headline-editable.tsx");
 check(
   "il titolo si apre in scrittura e si salva uscendo",
   /onBlur=\{conferma\}/.test(editor) && /saveHeadline\(/.test(editor),
@@ -103,14 +103,14 @@ check(
     /<span className="jm-fv-tuo">/.test(editor),
 );
 
-const filled = leggi("src/components/today/filled-view.tsx");
+const filled = leggi("src/modules/oggi/components/filled-view.tsx");
 check(
   "la giornata monta l'editor del titolo",
   /HeadlineEditable/.test(filled) && /editHeadline/.test(filled),
 );
 
-const day = leggi("src/components/day/day-client.tsx");
-const today = leggi("src/components/today/today-client.tsx");
+const day = leggi("src/modules/oggi/components/day-client.tsx");
+const today = leggi("src/modules/oggi/components/today-client.tsx");
 check(
   "il titolo si modifica sia su Oggi sia su /giorno",
   /locked: entry\.headlineLocked === true/.test(day) &&
@@ -179,7 +179,7 @@ check(
   /\.catch\(\(\) => \[\]\)/.test(places),
 );
 
-const rail = leggi("src/components/today/rail-today.tsx");
+const rail = leggi("src/modules/oggi/components/rail-today.tsx");
 check(
   "i luoghi sono nella rail destra del desktop",
   /t\("Luoghi visitati"\)/.test(rail) && /nomi={placeList}/.test(rail),
@@ -190,13 +190,20 @@ check(
 );
 check(
   "un luogo si distingue da una persona a colpo d'occhio",
-  /PlacePin/.test(leggi("src/components/today/pill-row.tsx")),
+  /PlacePin/.test(leggi("src/modules/oggi/components/pill-row.tsx")),
 );
 
 // ------------------------------------------------------------------ i18n
 
-const extra = leggi("src/lib/i18n/en-extra.ts");
-const en = leggi("src/lib/i18n/en.ts");
+// Dal passo C il catalogo e spezzato per modulo: la frase puo vivere in
+// qualunque catalogo, il contratto e che esista.
+import { readdirSync as _rd } from "node:fs";
+const _catalogo = ["src/lib/i18n/catalogs/comune.ts", "src/lib/i18n/en-extra.ts"]
+  .concat(_rd("src/modules").map((m) => `src/modules/${m}/en.ts`))
+  .map((f) => leggi(f))
+  .join("\n");
+const extra = _catalogo;
+const en = _catalogo;
 for (const frase of [
   "tuo",
   "tocca fuori per salvare",

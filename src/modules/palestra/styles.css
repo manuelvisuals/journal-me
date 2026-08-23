@@ -1,0 +1,45 @@
+/* =============================================================
+   Modulo PALESTRA: lo stato 'presto'.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+.jm-mod-soon {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 calc(30px * var(--jm-space)) calc(60px * var(--jm-space));
+}
+
+.jm-mod-soon-ic {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: calc(20px * var(--jm-space));
+  color: var(--color-ink-faint);
+}
+
+.jm-mod-soon-ic svg { width: 24px; height: 24px; }
+
+.jm-mod-soon-h {
+  font-family: var(--font-serif);
+  font-size: calc(23px * var(--jm-ui-scale));
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.jm-mod-soon-p {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin: calc(12px * var(--jm-space)) 0 calc(22px * var(--jm-space));
+  max-width: 300px;
+}

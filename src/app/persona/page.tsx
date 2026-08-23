@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PersonaClient } from "@/components/persona/persona-client";
+import { PersonaClient } from "@/modules/ricorda/components/persona-client";
 import { loadPersonCard, type PersonCard } from "@/lib/data/people";
 import { signalReady } from "@/lib/app-ready";
 

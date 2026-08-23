@@ -50,6 +50,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Accesso del revisore Apple (PIANO-APPSTORE §1c): se il server dice che
+  // questa email e da revisione, il codice non viaggia via email — e quello
+  // fisso delle Review Notes, verificato lato server.
+  const [reviewMode, setReviewMode] = useState(false);
 
   const email = emailOverride !== null ? emailOverride : (savedEmail ?? "");
   const isReturning = savedEmail !== null;
@@ -58,6 +62,31 @@ export default function LoginPage() {
     e?.preventDefault();
     setError(null);
     setLoading(true);
+    // La porta del revisore: chiede al server se questa email e da
+    // revisione. Per chiunque non lo sia la risposta e no e non cambia
+    // niente; se la porta non e configurata, idem.
+    try {
+      const { apiFetch } = await import("@/lib/api");
+      const probe = await apiFetch("/api/review-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (probe.ok) {
+        const data = (await probe.json()) as { review?: boolean };
+        if (data.review) {
+          setReviewMode(true);
+          setLoading(false);
+          localStorage.setItem(LAST_EMAIL_KEY, email);
+          setCode("");
+          setSent(true);
+          return;
+        }
+      }
+    } catch {
+      // La porta non risponde: si prosegue col flusso vero.
+    }
+    setReviewMode(false);
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithOtp({
       email,
@@ -80,6 +109,33 @@ export default function LoginPage() {
     setError(null);
     setVerifying(true);
     const supabase = createClient();
+    if (reviewMode) {
+      // Il codice fisso va al server, che se e giusto risponde con l'hash
+      // di un magic link: lo scambio qui sotto produce una sessione IDENTICA
+      // a una vera. Nessun percorso speciale dopo il login.
+      try {
+        const { apiFetch } = await import("@/lib/api");
+        const resp = await apiFetch("/api/review-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, code }),
+        });
+        if (!resp.ok) throw new Error("codice");
+        const { tokenHash } = (await resp.json()) as { tokenHash: string };
+        const { error: authError } = await supabase.auth.verifyOtp({
+          token_hash: tokenHash,
+          type: "magiclink",
+        });
+        if (authError) throw new Error(authError.message);
+        setVerifying(false);
+        router.replace("/");
+        return;
+      } catch {
+        setVerifying(false);
+        setError("Codice non valido. Ricontrolla le sei cifre.");
+        return;
+      }
+    }
     // type "email" copre sia il primo accesso (signup) sia i successivi
     // (magiclink): e Supabase a sapere quale token ha emesso.
     const { error: authError } = await supabase.auth.verifyOtp({

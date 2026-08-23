@@ -1,0 +1,218 @@
+/* =============================================================
+   Modulo RECAP: lista, dettaglio, editor dei recap.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+.jm-period-seg {
+  display: flex;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: calc(3px * var(--jm-space));
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.jm-period-seg .seg {
+  flex: 1;
+  text-align: center;
+  padding: calc(8px * var(--jm-space)) calc(6px * var(--jm-space));
+  border-radius: var(--jm-radius-pill);
+  color: var(--color-ink-faint);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms, color 120ms;
+}
+
+.jm-period-seg .seg.on {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: 0 4px 10px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+
+.jm-gen-btn {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  border-radius: var(--jm-radius-md);
+  padding: calc(12px * var(--jm-space)) calc(22px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 30%, transparent),
+    0 12px 24px color-mix(in oklab, var(--color-shadow) 50%, transparent);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-gen-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Recap detail */
+.jm-det-head {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  padding: calc(18px * var(--jm-space)) calc(24px * var(--jm-space)) calc(16px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-det-back {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-det-meta {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  flex: 1;
+}
+
+.jm-det-edit {
+  background: transparent;
+  border: none;
+  color: var(--color-accent);
+  font-family: var(--font-sans);
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  padding: calc(8px * var(--jm-space)) calc(4px * var(--jm-space));
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-det-edit:hover {
+  color: var(--color-accent-hi);
+}
+
+/* Recap editor specifics (multi-field form inside the editor card) */
+.jm-recap-editor-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(16px * var(--jm-space)) calc(20px * var(--jm-space));
+  display: flex;
+  flex-direction: column;
+  gap: calc(18px * var(--jm-space));
+}
+
+.jm-recap-field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--jm-space));
+}
+
+.jm-recap-field.grow {
+  flex: 1;
+  min-height: 200px;
+}
+
+.jm-recap-field-label {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+}
+
+.jm-recap-field-input {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-sm);
+  padding: calc(12px * var(--jm-space)) calc(14px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  resize: vertical;
+  outline: none;
+}
+
+.jm-recap-field-input:focus {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+}
+
+.jm-recap-field-input.title {
+  font-family: var(--font-serif);
+  font-size: calc(18px * var(--jm-ui-scale));
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.jm-recap-field-input.body {
+  font-family: var(--font-serif);
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.65;
+  min-height: 200px;
+  flex: 1;
+}
+
+.jm-det-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: calc(24px * var(--jm-space)) calc(28px * var(--jm-space)) calc(28px * var(--jm-space));
+}
+
+.jm-det-title {
+  font-family: var(--font-serif);
+  font-size: calc(28px * var(--jm-ui-scale));
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--color-ink);
+  letter-spacing: -0.015em;
+  margin-bottom: calc(22px * var(--jm-space));
+}
+
+.jm-det-body p {
+  font-family: var(--font-serif);
+  font-size: calc(16px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--color-ink-muted);
+  margin-bottom: calc(16px * var(--jm-space));
+  letter-spacing: -0.005em;
+}
+
+.jm-det-body p:first-of-type::first-letter {
+  font-family: var(--font-serif);
+  font-size: calc(48px * var(--jm-ui-scale));
+  font-weight: 600;
+  float: left;
+  line-height: 0.95;
+  margin: 4px 8px 0 0;
+  color: var(--color-accent-hi);
+}
+
+.jm-drop-quote {
+  font-family: var(--font-serif);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-style: italic;
+  color: var(--color-ink-faint);
+  border-left: 2px solid var(--color-accent);
+  padding-left: calc(14px * var(--jm-space));
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.jm-det-head {
+  padding-top: calc(18px + env(safe-area-inset-top, 0px));
+}

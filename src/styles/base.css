@@ -1,0 +1,1407 @@
+/* =============================================================
+   Lo SCHELETRO, parte 1: primitive condivise da tutti i moduli
+   (bottoni, splash, guscio desktop, palette, tab bar, toast, pill
+   condivise). Importato PRIMA dei moduli.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--jm-warmth);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--jm-grain);
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http: //www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.34'/></svg>");
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8px * var(--jm-space));
+  width: 100%;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  font-family: var(--font-sans);
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 650;
+  padding: calc(16px * var(--jm-space));
+  border-radius: var(--jm-radius-md);
+  cursor: pointer;
+  letter-spacing: -0.005em;
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 28%, transparent),
+    0 12px 24px color-mix(in oklab, var(--color-shadow) 50%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.32);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(var(--jm-press));
+  background: var(--color-accent-pressed);
+  box-shadow: 0 0 6px color-mix(in oklab, var(--color-glow) 10%, transparent),
+    0 2px 6px color-mix(in oklab, var(--color-shadow) 45%, transparent),
+    inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 28%, transparent);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8px * var(--jm-space));
+  width: 100%;
+  background: transparent;
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  padding: calc(14px * var(--jm-space));
+  border-radius: var(--jm-radius-md);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.btn-ghost:active:not(:disabled) {
+  transform: scale(var(--jm-press));
+  background: var(--color-surface);
+  border-color: color-mix(in oklab, var(--color-accent) 20%, transparent);
+  color: var(--color-ink);
+  box-shadow: inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 25%, transparent);
+}
+
+.btn-ghost:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.input-base {
+  display: block;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  font-family: var(--font-sans);
+  font-size: calc(16px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  padding: calc(16px * var(--jm-space)) calc(18px * var(--jm-space));
+  outline: none;
+  text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 12px 24px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input-base::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.input-base:focus {
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px color-mix(in oklab, var(--color-glow) 20%, transparent),
+    0 0 22px color-mix(in oklab, var(--color-glow) 18%, transparent);
+}
+
+/* Today screen — big mic button (empty state) */
+.mic-big-btn {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  cursor: pointer;
+  box-shadow: 0 0 36px color-mix(in oklab, var(--color-glow) 40%, transparent),
+    0 18px 36px color-mix(in oklab, var(--color-shadow) 55%, transparent),
+    inset 0 1px 2px rgba(255, 255, 255, 0.40);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.mic-big-btn:active {
+  transform: scale(0.96);
+  background: var(--color-accent-pressed);
+  box-shadow: 0 0 14px color-mix(in oklab, var(--color-glow) 20%, transparent),
+    0 6px 14px color-mix(in oklab, var(--color-shadow) 50%, transparent),
+    inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 28%, transparent);
+}
+
+/* Today screen — recording overlay controls */
+.rec-ctl {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 6px 14px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.rec-ctl:active {
+  transform: scale(0.94);
+  background: var(--color-surface-2);
+}
+
+/* Stop/Save — PRIMARY, safe action. Amber (not red): red is reserved for the
+   destructive cancel below, so the two controls no longer read as twin alarms. */
+.rec-ctl-stop {
+  width: 76px;
+  height: 76px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 34%, transparent);
+  box-shadow: 0 0 24px color-mix(in oklab, var(--color-glow) 42%, transparent),
+    0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.36);
+}
+
+.rec-ctl-stop:active {
+  transform: scale(0.95);
+  background: var(--color-accent-pressed);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 30%, transparent),
+    0 4px 10px color-mix(in oklab, var(--color-shadow) 45%, transparent),
+    inset 0 2px 5px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+
+/* Cancel button — trash bin styled as danger (Manuel's request: the X looked
+   neutral, now it's a red trash to make the destructive action unambiguous). */
+.rec-ctl-cancel {
+  color: var(--color-danger);
+  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
+  border-color: color-mix(in oklab, var(--color-danger) 30%, transparent);
+}
+
+.rec-ctl-cancel:active {
+  background: color-mix(in oklab, var(--color-danger) 14%, transparent);
+}
+
+/* Accessibility: honor the OS "Reduce Motion" setting. Apple HIG requires it;
+   without this the waveform, pulse dots and caret keep animating. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Push-to-talk button (recording overlay). Hold to capture; :active gives the
+   "holding" amber glow for free while the finger is down. */
+.rec-ptt {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 30%, transparent);
+  background: var(--color-surface-2);
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--color-shadow) 50%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.06);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 120ms,
+    box-shadow 120ms,
+    color 120ms,
+    border-color 120ms;
+}
+
+.rec-ptt:active:not(:disabled) {
+  transform: scale(1.05);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: color-mix(in oklab, var(--color-ink) 50%, transparent);
+  box-shadow: 0 0 46px color-mix(in oklab, var(--color-glow) 55%, transparent),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 55%, transparent),
+    inset 0 1px 2px rgba(255, 255, 255, 0.50);
+}
+
+.rec-ptt:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* App splash / preloader — server-rendered in the layout so it paints before
+   hydration and covers the cold JS load. .jm-splash class beats the
+   `body > * { z-index: 1 }` rule by specificity, so it sits on top. */
+.jm-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  opacity: 1;
+  transition: opacity 380ms ease;
+}
+
+.jm-splash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--jm-warmth);
+}
+
+.jm-splash-hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.jm-splash-mark {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: calc(30px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: jm-splash-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.jm-splash-dot {
+  color: var(--color-accent);
+  text-shadow: 0 0 14px color-mix(in oklab, var(--color-glow) 60%, transparent);
+}
+
+.jm-splash-halo {
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  border-radius: var(--jm-radius-circle);
+  background: radial-gradient(circle, color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 62%);
+  filter: blur(6px);
+  animation: jm-splash-breathe 2.6s ease-in-out infinite;
+}
+
+.jm-splash-bar {
+  position: absolute;
+  bottom: 84px;
+  width: 120px;
+  height: 3px;
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
+  overflow: hidden;
+}
+
+.jm-splash-bar i {
+  position: absolute;
+  left: -40%;
+  top: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent),
+    transparent
+  );
+  animation: jm-splash-slide 1.25s ease-in-out infinite;
+}
+
+@keyframes jm-splash-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes jm-splash-breathe {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes jm-splash-slide {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Universal press feedback: anything tappable shrinks slightly on press.
+   Element-specific :active rules (e.g. the hold button that GROWS, or the
+   primary buttons with their own scale) override this by specificity, so this
+   only fills the gaps (tab bar, chips, cards, list rows, icon buttons). */
+button,
+a[href],
+[role="button"],
+summary {
+  transition: transform 90ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled):active,
+a[href]:active,
+[role="button"]:active,
+summary:active {
+  transform: scale(var(--jm-press));
+}
+
+/* Skeleton shimmer for loading states. */
+.jm-skel {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-2) 37%,
+    var(--color-surface) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: var(--jm-radius-sm);
+  animation: jm-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes jm-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* Caret blink for live transcript */
+.live-caret {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: var(--color-ink);
+  vertical-align: middle;
+  margin-left: 3px;
+  animation: jm-blink 1s infinite;
+}
+
+@keyframes jm-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Inline tagged-entity span (AI-extracted in real version, placeholder now) */
+.tagged {
+  background: color-mix(in oklab, var(--color-accent) 15%, transparent);
+  color: var(--color-accent-hi);
+  padding: calc(1px * var(--jm-space)) calc(5px * var(--jm-space));
+  border-radius: 4px;
+}
+
+.f-chip {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.f-chip.on {
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  color: var(--color-accent-hi);
+}
+
+/* Day detail page (/giorno/[date]) — opens when tapping a row in /mese */
+.jm-day-head {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--jm-space));
+  padding: calc(22px * var(--jm-space)) calc(24px * var(--jm-space)) calc(14px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-day-back {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.jm-day-back:active { background: var(--color-surface-2); }
+
+.jm-day-head-label {
+  flex: 1;
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jm-day-head-actions {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+  flex-shrink: 0;
+}
+
+.jm-day-head-action {
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-day-head-del {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-danger) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 25%, transparent);
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-day-head-del:active { background: color-mix(in oklab, var(--color-danger) 14%, transparent); }
+
+.jm-day-head-del:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Settings icon button in the filled-view header */
+.jm-settings-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  text-decoration: none;
+}
+
+.jm-settings-btn:active {
+  background: var(--color-surface-2);
+}
+
+/* Tab bar central mic (premium iOS-like, always reachable) */
+.jm-mic-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 40%, transparent),
+    0 8px 18px color-mix(in oklab, var(--color-shadow) 50%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.40);
+  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-mic-circle:active {
+  transform: scale(0.94);
+  background: var(--color-accent-pressed);
+}
+
+/* Larger tap target for the settings icon too */
+.jm-settings-btn {
+  width: 44px;
+  height: 44px;
+}
+
+@keyframes jm-spin {
+  to { transform: rotate(360deg); }
+}
+
+.jm-day-list {
+  flex: 1;
+  padding: calc(4px * var(--jm-space)) 0 calc(8px * var(--jm-space));
+}
+
+.jm-day-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: calc(16px * var(--jm-space));
+  padding: calc(14px * var(--jm-space)) calc(24px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+  cursor: pointer;
+  transition: background-color 80ms ease,
+    transform 120ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-day-row:active {
+  background: color-mix(in oklab, var(--color-ink) 2%, transparent);
+  transform: scale(0.975);
+}
+
+.jm-day-row.is-loading {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.jm-day-spinner {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  margin-top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, var(--color-ink) 12%, transparent);
+  border-top-color: var(--color-accent);
+  animation: jm-spin 0.8s linear infinite;
+}
+
+.jm-day-row.is-today {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-accent) 6%, transparent) 0%,
+    transparent 60%
+  );
+}
+
+.jm-day-row.is-today::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: var(--color-accent);
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px color-mix(in oklab, var(--color-glow) 45%, transparent);
+}
+
+.jm-day-num {
+  text-align: right;
+}
+
+.jm-day-num .n {
+  font-size: calc(30px * var(--jm-ui-scale));
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-day-row.is-today .jm-day-num .n {
+  color: var(--color-accent-hi);
+}
+
+.jm-day-num .wd {
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: calc(4px * var(--jm-space));
+}
+
+.jm-day-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--jm-space));
+  padding-top: calc(2px * var(--jm-space));
+}
+
+.jm-day-headline {
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.jm-day-empty {
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-style: italic;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.01em;
+}
+
+.jm-day-meta {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--jm-space));
+  flex-wrap: wrap;
+  margin-top: calc(2px * var(--jm-space));
+}
+
+.jm-dot-mini {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-ink) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 5%, transparent);
+  display: inline-block;
+}
+
+.jm-dot-mini.on {
+  background: var(--color-accent);
+  border-color: color-mix(in oklab, var(--color-accent) 50%, transparent);
+  box-shadow: 0 0 4px color-mix(in oklab, var(--color-glow) 35%, transparent);
+}
+
+/* Skeleton shimmer (route-level loading + transitions) */
+.jm-skel {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-2) 37%,
+    var(--color-surface) 63%
+  );
+  background-size: 400% 100%;
+  animation: jm-skel-shimmer 1.3s ease infinite;
+}
+
+@keyframes jm-skel-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* Connecting pulse (recording overlay, while priming the mic) */
+.jm-dot-pulse {
+  display: inline-flex;
+  gap: calc(5px * var(--jm-space));
+}
+
+.jm-dot-pulse i {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-accent);
+  display: inline-block;
+  animation: jm-dot-pulse 1s ease-in-out infinite;
+}
+
+.jm-dot-pulse i:nth-child(2) { animation-delay: 0.16s; }
+
+.jm-dot-pulse i:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes jm-dot-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.jm-day-head,
+.jm-rem-head,
+.jm-rec-head {
+  padding-top: calc(22px + env(safe-area-inset-top, 0px));
+}
+
+/* Schermate senza intestazione dedicata (Oggi, scheletri di caricamento,
+   overlay di registrazione): il contenitore si prende l'inset da solo. */
+.jm-safe-top {
+  padding-top: calc(24px + env(safe-area-inset-top, 0px)) !important;
+}
+
+/* Gli anelli attorno al microfono premuto. Prima la sola differenza fra "mic
+   chiuso" e "sto registrando" era una scritta: adesso il pulsante cambia forma,
+   e lo vedi con la coda dell'occhio mentre parli guardando altrove. */
+.rec-ptt::before,
+.rec-ptt::after {
+  content: "";
+  position: absolute;
+  border-radius: var(--jm-radius-circle);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+
+.rec-ptt::before { inset: -14px; }
+
+.rec-ptt::after { inset: -31px; border-color: color-mix(in oklab, var(--color-accent) 12%, transparent); }
+
+.rec-ptt:active:not(:disabled)::before,
+.rec-ptt:active:not(:disabled)::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-ptt::before,
+  .rec-ptt::after { transition: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Macchina da scrivere: angoli vivi anche dove il raggio non e (ancora) un
+   token. I raggi tokenizzati sono gia 0; questo copre i residui (4/8/12/16px)
+   finche le PR 6-10 non riscrivono i componenti sul contratto.
+--------------------------------------------------------------------------- */
+[data-theme="macchina"] *,
+[data-theme="macchina"] *::before,
+[data-theme="macchina"] *::after {
+  border-radius: 0 !important;
+}
+
+/* =============================================================
+   Guscio desktop (PR 6, mockup desktop-v1.html). Sotto lg il
+   guscio e display:contents e le rail non esistono: il telefono
+   non se ne accorge. Solo token del contratto.
+   ============================================================= */
+.jm-shell,
+.jm-shell-c {
+  display: contents;
+}
+
+.jm-rail-l,
+.jm-rail-r {
+  display: none;
+}
+
+/* Il focus ring del capitolo 20 del brandbook: outline, non box-shadow,
+   cosi non tocca le ombre gia presenti sui bottoni. Solo da tastiera. */
+:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--color-accent) 45%, transparent);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .jm-shell {
+    display: flex;
+    flex: 1;
+    min-height: 100dvh;
+    width: 100%;
+  }
+  .jm-shell-c {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .jm-rail-l {
+    display: flex;
+    flex-direction: column;
+    width: 222px;
+    flex: 0 0 222px;
+    border-right: 1px solid var(--color-line);
+    padding: calc(24px * var(--jm-space)) 14px calc(18px * var(--jm-space));
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+  }
+  .jm-rail-r {
+    display: block;
+    width: 296px;
+    flex: 0 0 296px;
+    border-left: 1px solid var(--color-line);
+    padding: calc(22px * var(--jm-space)) 20px;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+  }
+  .jm-rail-r:empty {
+    display: none;
+  }
+}
+
+.jm-rail-brand {
+  font-family: var(--font-serif);
+  font-size: calc(21px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  padding: 0 10px calc(24px * var(--jm-space));
+}
+
+.jm-rail-brand span {
+  color: var(--color-accent);
+}
+
+.jm-rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.jm-rail-i {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--color-ink-faint);
+  text-decoration: none;
+  transition: color 120ms, background-color 120ms, border-color 120ms;
+}
+
+.jm-rail-i svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.jm-rail-i svg[fill="currentColor"] {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Hover: un passo di scala, mai un salto (brandbook cap. 20). */
+.jm-rail-i:hover {
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+}
+
+.jm-rail-i.on {
+  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+  color: var(--color-accent);
+}
+
+.jm-rail-i.rec {
+  color: var(--color-accent);
+}
+
+.jm-rail-i.rec:hover {
+  color: var(--color-accent-hi);
+  background: color-mix(in oklab, var(--color-accent) 8%, transparent);
+}
+
+.jm-rail-sep {
+  height: 1px;
+  background: var(--color-line);
+  margin: calc(16px * var(--jm-space)) 12px;
+}
+
+.jm-rail-foot {
+  margin-top: auto;
+  padding: 12px 10px 0;
+  border-top: 1px solid var(--color-line);
+}
+
+.jm-rail-acct {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jm-rail-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--jm-radius-circle);
+  flex: 0 0 28px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.jm-rail-acct-txt {
+  min-width: 0;
+}
+
+.jm-rail-acct-nm {
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-rail-pill {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--jm-radius-pill);
+  background: color-mix(in oklab, var(--color-ink) 5%, transparent);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-line);
+}
+
+.jm-rail-pill.prem {
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  color: var(--color-accent-hi);
+  border-color: color-mix(in oklab, var(--color-accent) 28%, transparent);
+}
+
+/* --- contenuto della rail destra (sezioni La giornata / Obiettivi / Persone) --- */
+.jm-railr-sec {
+  margin-bottom: calc(30px * var(--jm-space));
+}
+
+.jm-railr-l {
+  font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: var(--jm-tracking-label);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 14px;
+}
+
+.jm-railr-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-railr-row:last-child {
+  border-bottom: none;
+}
+
+.jm-railr-k {
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.jm-railr-v {
+  font-size: calc(19px * var(--jm-ui-scale));
+  font-weight: 300;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.jm-railr-v small {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-left: 3px;
+  font-weight: 400;
+}
+
+.jm-railr-v.empty {
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+/* Obiettivi nella rail: il bersaglio era gia tutta la riga, ma alta 36px
+   e con un pallino da 14px come unica cosa che sembrasse cliccabile. Il
+   brandbook (cap. 05) chiede 36-44px di minimo. Ora e una casella da 22px
+   dentro una riga da 44px, con la spunta: si legge come un interruttore. */
+.jm-railr-goal {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  padding: 0 10px;
+  margin: 0 -10px;
+  width: calc(100% + 20px);
+  background: transparent;
+  border: none;
+  border-radius: var(--jm-radius-sm);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms;
+}
+
+.jm-railr-goal:hover {
+  background: var(--color-surface);
+}
+
+.jm-railr-gbox {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border-radius: 7px;
+  border: 1.5px solid color-mix(in oklab, var(--color-ink) 22%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 120ms, border-color 120ms;
+}
+
+.jm-railr-gbox svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--color-on-accent);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+.jm-railr-goal.on .jm-railr-gbox {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--color-glow) 35%, transparent);
+}
+
+.jm-railr-goal.on .jm-railr-gbox svg {
+  opacity: 1;
+}
+
+.jm-railr-gname {
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: -0.003em;
+}
+
+.jm-railr-goal.on .jm-railr-gname {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+.jm-railr-goal:hover .jm-railr-gname {
+  color: var(--color-ink-muted);
+}
+
+.jm-railr-count {
+  float: right;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--color-ink-faint);
+}
+
+.jm-railr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.jm-railr-chip {
+  /* In riga, non in colonna. Il reset di Tailwind mette display:block su
+     TUTTI gli <svg>, quindi lo spillo di un luogo si prendeva una riga sua e
+     la pastiglia diventava alta il doppio (visto in produzione il 23 agosto
+     2026). Le pastiglie delle persone non lo mostravano perche sono
+     inline-flex da sempre: questa non lo era. */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 6px 12px;
+}
+
+/* =============================================================
+   Palette comandi Cmd+K + hint kbd (PR 8, SPEC-v2 §5.4).
+   Solo da lg: sotto, la palette non esiste proprio.
+   ============================================================= */
+.jm-pal-overlay,
+.jm-rail-kbd {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .jm-rail-kbd {
+    display: inline;
+    margin-left: auto;
+    font-size: calc(10px * var(--jm-ui-scale));
+    font-weight: 600;
+    color: var(--color-ink-faint);
+    letter-spacing: 0.04em;
+  }
+  .jm-pal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 14vh;
+    background: color-mix(in oklab, var(--color-shadow) 40%, transparent);
+    backdrop-filter: blur(4px);
+  }
+  .jm-pal {
+    width: 560px;
+    max-height: 55vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
+    border-radius: var(--jm-radius-lg);
+    box-shadow: 0 24px 70px color-mix(in oklab, var(--color-shadow) 55%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    overflow: hidden;
+  }
+  .jm-pal-input {
+    flex: 0 0 auto;
+    padding: 16px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-sans);
+    font-size: calc(15px * var(--jm-ui-scale));
+    color: var(--color-ink);
+    caret-color: var(--color-accent);
+  }
+  .jm-pal-input:focus,
+  .jm-pal-input:focus-visible {
+    outline: none;
+  }
+  .jm-pal-input::placeholder {
+    color: var(--color-ink-faint);
+  }
+  .jm-pal-list {
+    overflow-y: auto;
+    padding: 8px;
+  }
+  .jm-pal-l {
+    font-size: calc(10px * var(--jm-ui-scale));
+    font-weight: 650;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    padding: 10px 12px 4px;
+  }
+  .jm-pal-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    gap: 10px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: var(--jm-radius-sm);
+    font-family: var(--font-sans);
+    font-size: calc(14px * var(--jm-ui-scale));
+    color: var(--color-ink-muted);
+    cursor: pointer;
+  }
+  .jm-pal-item.sel {
+    background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+    color: var(--color-ink);
+  }
+  .jm-pal-empty {
+    padding: 18px 12px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: calc(13px * var(--jm-ui-scale));
+    color: var(--color-ink-faint);
+  }
+  .jm-pal-done {
+    padding: 10px 12px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: calc(13px * var(--jm-ui-scale));
+    color: var(--color-success);
+  }
+  .jm-pal-foot {
+    flex: 0 0 auto;
+    padding: 10px 18px;
+    border-top: 1px solid var(--color-line);
+    font-size: calc(11px * var(--jm-ui-scale));
+    color: var(--color-ink-faint);
+    letter-spacing: 0.02em;
+  }
+}
+
+/* Statistiche del mese nella rail destra + card Pattern (teaser). Vivono
+   dentro .jm-rail-r, che sotto lg e display:none: niente media query. */
+.jm-railr-stat {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-railr-stat:last-child {
+  border-bottom: none;
+}
+
+.jm-railr-stat .v {
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-railr-stat .v span {
+  font-size: calc(15px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-railr-stat .k {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+
+.jm-railr-locked {
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
+  border-radius: var(--jm-radius-md);
+  padding: 16px;
+  background: linear-gradient(
+    165deg,
+    color-mix(in oklab, var(--color-accent) 9%, transparent),
+    var(--color-surface)
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 14px 30px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+}
+
+.jm-railr-locked .t {
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 6px;
+  line-height: 1.45;
+}
+
+.jm-railr-locked .p {
+  font-size: calc(12px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+
+/* pill "premium" accanto alle etichette della rail */
+.jm-railr-pill {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--jm-radius-pill);
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 28%, transparent);
+  vertical-align: middle;
+}
+

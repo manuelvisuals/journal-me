@@ -96,6 +96,16 @@ export async function scansionaArchivio(
 ): Promise<EsitoScansione> {
   const store = getStore();
   const entries = await store.loadAllEntries();
+  // Le giornate su cui l'AI ha gia detto la sua. Una scansione interrotta a
+  // meta — chiudi la scheda, cade la rete — riprende da qui invece di
+  // ricominciare: dieci secondi a giornata sono minuti veri, e sono minuti
+  // pagati due volte.
+  let giaViste = new Set<string>();
+  try {
+    giaViste = new Set(await store.loadQuestionDates());
+  } catch {
+    // Nel dubbio si rifa tutto: costa, ma non lascia buchi.
+  }
   // Dalla piu recente: se qualcosa va storto a meta, e meglio aver sistemato
   // le giornate che l'utente rileggera per prime.
   const daFare = entries
@@ -129,11 +139,13 @@ export async function scansionaArchivio(
       }
       // Le domande nascono qui, come dopo ogni analisi. chiediChiarimenti le
       // mette in coda da solo, quindi a fine giro sono tutte li.
-      await chiediChiarimenti(mode, corrente.entryDate, corrente.transcript, {
-        people: corrente.people ?? [],
-        areas: corrente.areas ?? [],
-      });
-      interrogate += 1;
+      if (!giaViste.has(corrente.entryDate)) {
+        await chiediChiarimenti(mode, corrente.entryDate, corrente.transcript, {
+          people: corrente.people ?? [],
+          areas: corrente.areas ?? [],
+        });
+        interrogate += 1;
+      }
     } catch {
       // Una giornata che non si lascia leggere non deve fermare le altre
       // trenta. Restera senza analisi, e la prossima volta che la tocchi

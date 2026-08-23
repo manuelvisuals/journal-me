@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RememberClient } from "@/components/remember/remember-client";
+import { RememberClient } from "@/modules/ricorda/components/remember-client";
 import RememberLoading from "./loading";
 import { loadRemembers } from "@/lib/data/remembers";
 import { signalReady } from "@/lib/app-ready";

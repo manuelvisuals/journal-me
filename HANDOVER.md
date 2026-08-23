@@ -1,8 +1,14 @@
 # Handover · Journal.me
 
 Documento di riferimento per chi (Claude o umano) riprende lo sviluppo.
-Aggiornato al **20 agosto 2026**. Lo stato del lavoro in corso e in §13.
-Per il lavoro in corso (desktop, due modalita, temi) vedi §13 e le due SPEC in root.
+Aggiornato al **23 agosto 2026**.
+
+DAL 23 AGOSTO LA STRUTTURA E CAMBIATA (passi A-F, tutti fatti): la mappa vive in
+**ARCHITETTURA.md**, il perimetro di ogni modulo nel suo
+`src/modules/<nome>/CLAUDE.md`, il protocollo di lavoro in WORKERS.md, e il prompt
+per aprire una chat worker in PROMPT-WORKER.md. Questo file resta per la storia, lo
+stack, le regole operative e le ricette del sandbox — e NON cresce piu: lo stato di
+un modulo si scrive nel CLAUDE.md del modulo.
 
 Regola numero uno: **la fonte di verita del codice e il repo GitHub, non questo file.**
 Se qui leggi qualcosa che il codice smentisce, vince il codice — e poi correggi qui.
@@ -38,12 +44,16 @@ Motivo: in passato il progetto viveva in tre posti (mirror in `~/Documents`, clo
 Documenti versionati nella root e in `design/`:
 
 ```
-HANDOVER.md                  questo file, unica fonte di contesto
+ARCHITETTURA.md              la mappa: scheletro e moduli, stato dei passi A-F
+HANDOVER.md                  questo file: storia, stack, regole, sandbox
+PROMPT-WORKER.md             il prompt con cui Manuel apre una chat worker
+WORKERS.md                   protocollo di lavoro in parallelo (vincolante)
 SPEC-temi.md                 contratto dei token e temi. E la PR 0 di v2
 SPEC-v2.md                   desktop + due modalita (locale/cloud). 13 PR in ordine
-HANDOVER-recording-bug.md    referto del bug mic iOS (utile finche e aperto, vedi §8)
-AUDIT-tre-esperti.md         audit di giugno, stato aggiornato in §9
-design/brandbook.html        fonte di verita del look (diventa: contratto + tema wine)
+src/modules/<nome>/          il modulo: CLAUDE.md, componenti, stile, traduzioni,
+                             API e i suoi documenti (SPEC-fatti in oggi, ecc.)
+docs/storia/                 documenti chiusi (audit, prompt storici)
+design/brandbook.html        fonte di verita del look (contratto + tema wine)
 design/mockups/              mockup approvati
 ```
 

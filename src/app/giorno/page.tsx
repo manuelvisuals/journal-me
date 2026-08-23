@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DayClient } from "@/components/day/day-client";
+import { DayClient } from "@/modules/oggi/components/day-client";
 import DayLoading from "./loading";
 import { loadEntryForDate } from "@/lib/data/entries";
 import { signalReady } from "@/lib/app-ready";

@@ -15,7 +15,7 @@
 // dice sempre il file di provenienza.
 //
 // Non serve il dev server: e analisi statica.
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { collectKeys } from "./i18n-keys.mjs";
 
 /** Chiavi passate a t() tramite variabile, con la loro provenienza. */
@@ -25,12 +25,12 @@ const DINAMICHE = {
     "Oggi", "Mese", "Ricorda", "Recap", "Impostazioni",
     "questo dispositivo", "Locale", "Cloud", "Premium",
   ],
-  "components/settings/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [
+  "modules/impostazioni/components/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [
     "Chiaro", "Scuro", "Sistema", "Ch", "Sc", "Sist",
     "Obiettivi", "Tema", "Dove sono le mie giornate", "Lingua",
     "Questo dispositivo",
   ],
-  "components/premium-wall.tsx (TITLES, FEATURES)": [
+  "modules/abbonamento/components/premium-wall.tsx (TITLES, FEATURES)": [
     "Per raccontare a voce\nserve premium",
     "Per il titolo e la sintesi\nserve premium",
     "Per i recap del mese\nserve premium",
@@ -44,7 +44,7 @@ const DINAMICHE = {
     "Su tutti i dispositivi",
     "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.",
   ],
-  "components/premium-welcome.tsx (FEATURES)": [
+  "modules/abbonamento/components/premium-welcome.tsx (FEATURES)": [
     "Racconti a voce, il testo si scrive da solo",
     "Titolo, sintesi e macro-aree di ogni giornata",
     "Recap del mese e letture sui pattern",
@@ -59,22 +59,22 @@ const DINAMICHE = {
     "Ore, regolarita, e come va il giorno dopo",
     "Minuti, costanza, e cosa cambia nei giorni in cui la fai",
   ],
-  "components/settings/settings-client.tsx (PANEL_TITLES, moduli)": ["Moduli"],
-    "components/recap/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
-  "components/remember/quick-capture.tsx (KIND_OPTIONS)": [
+  "modules/impostazioni/components/settings-client.tsx (PANEL_TITLES, moduli)": ["Moduli"],
+    "modules/recap/components/recap-client.tsx (PERIODS)": ["Mensili", "Semestrali", "Annuali"],
+  "modules/ricorda/components/quick-capture.tsx (KIND_OPTIONS)": [
     "Nota", "Persona", "Todo", "Luogo", "Idea",
   ],
-  "components/remember/remember-client.tsx (FILTERS, bande)": [
+  "modules/ricorda/components/remember-client.tsx (FILTERS, bande)": [
     "Tutti", "Persone", "Todo", "Note", "Luoghi", "Idee",
     "Oggi", "Ieri", "Settimana scorsa", "Mese scorso", "Più indietro",
   ],
-  "components/mese/mese-grid.tsx (WEEKDAYS)": [
+  "modules/mese/components/mese-grid.tsx (WEEKDAYS)": [
     "lun", "mar", "mer", "gio", "ven", "sab", "dom",
   ],
-  "components/today/metric-cards.tsx + rail-metrics.tsx (MOOD_OPTIONS)": [
+  "modules/oggi/components/metric-cards.tsx + rail-metrics.tsx (MOOD_OPTIONS)": [
     "molto bene", "bene", "cosi cosi", "giu", "male",
   ],
-  "components/today/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
+  "modules/oggi/components/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
     "Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni",
   ],
   "lib/ui-scale.ts (UI_SCALE_LABELS)": [
@@ -88,19 +88,38 @@ function check(name, ok, extra = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "\n      " + extra : ""}`);
 }
 
-/* ---- il catalogo: en.ts + en-extra.ts (i rami paralleli) ---- */
+/* ---- il catalogo: un file per modulo (passo C) + en-extra (innesto) ---- */
 const CATALOG = new Map();
-for (const [file, marker] of [
-  ["src/lib/i18n/en.ts", "export const EN"],
-  ["src/lib/i18n/en-extra.ts", "export const EN_EXTRA"],
-]) {
+const OWNER = new Map(); // chiave -> [file che la definiscono]
+const catalogFiles = readdirSync("src/lib/i18n/catalogs")
+  .filter((f) => f.endsWith(".ts"))
+  .map((f) => `src/lib/i18n/catalogs/${f}`)
+  .concat(
+    readdirSync("src/modules").map((m) => `src/modules/${m}/en.ts`),
+    ["src/lib/i18n/en-extra.ts"],
+  );
+for (const file of catalogFiles) {
   const src = readFileSync(file, "utf8");
-  const body = src.slice(src.indexOf("{", src.indexOf(marker)));
+  const body = src.slice(src.indexOf("{", src.indexOf("export const")));
   for (const m of body.matchAll(/^\s*("(?:[^"\\]|\\.)*")\s*:\s*("(?:[^"\\]|\\.)*")\s*,\s*$/gm)) {
-    CATALOG.set(JSON.parse(m[1]), JSON.parse(m[2]));
+    const k = JSON.parse(m[1]);
+    CATALOG.set(k, JSON.parse(m[2]));
+    if (!OWNER.has(k)) OWNER.set(k, []);
+    OWNER.get(k).push(file);
   }
 }
-check("catalogo: si legge e non e vuoto", CATALOG.size > 200, `${CATALOG.size} voci`);
+check("catalogo: si legge e non e vuoto", CATALOG.size > 200, `${CATALOG.size} voci in ${catalogFiles.length} file`);
+
+/* ---- nessuna chiave definita in due cataloghi ----
+   Con lo spread in en.ts vincerebbe in silenzio l'ultimo import (e a
+   runtime EN_EXTRA su tutti): due definizioni della stessa frase sono un
+   conflitto che nessun merge segnala. Qui diventa rosso. */
+const doppie = [...OWNER.entries()].filter(([, files]) => files.length > 1);
+check(
+  "nessuna chiave definita in due cataloghi",
+  doppie.length === 0,
+  doppie.slice(0, 8).map(([k, files]) => `${JSON.stringify(k)} in ${files.join(" e ")}`).join("\n      "),
+);
 
 /* ---- chiavi usate ---- */
 const statiche = collectKeys("src");

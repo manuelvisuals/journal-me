@@ -36,8 +36,8 @@ function funzione(src, firma) {
 
 const analisi = leggi("src/lib/actions/analyze-day.ts");
 const salva = leggi("src/lib/actions/save-recording.ts");
-const oggi = leggi("src/components/today/today-client.tsx");
-const editor = leggi("src/components/today/transcript-editor.tsx");
+const oggi = leggi("src/modules/oggi/components/today-client.tsx");
+const editor = leggi("src/modules/oggi/components/transcript-editor.tsx");
 const cloud = leggi("src/lib/data/store/cloud.ts");
 const locale = leggi("src/lib/data/store/local.ts");
 

@@ -69,7 +69,7 @@ export async function apiFetch(
     if (resp.status === 402) {
       // Import dinamico per non trascinare il componente dentro ogni
       // modulo dati; se il muro non e montato non succede niente.
-      void import("@/components/premium-wall")
+      void import("@/modules/abbonamento/components/premium-wall")
         .then((m) => m.openPremiumWall("aiSummary"))
         .catch(() => undefined);
     }

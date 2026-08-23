@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MeseClient } from "@/components/mese/mese-client";
+import { MeseClient } from "@/modules/mese/components/mese-client";
 import MeseLoading from "./loading";
 import { loadMonthEntries } from "@/lib/data/entries";
 import { nowAppParts } from "@/lib/format";

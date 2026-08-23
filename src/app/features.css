@@ -494,6 +494,15 @@
   color: var(--color-ink-faint);
   letter-spacing: 0.04em;
 }
+/* Di che giornata si sta parlando. Serve dal momento in cui si chiede
+   l'arretrato: cinque domande di cinque giorni diversi che dicono tutte
+   "oggi" sono cinque domande a cui non si puo rispondere. */
+.jm-ch-quando {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
 .jm-ch-bars {
   display: flex;
   gap: 4px;
@@ -512,6 +521,10 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  /* L'ultima risposta non deve finire sotto i bottoni. Con la rubrica piena
+     le opzioni sono otto piu due, e in produzione l'ultima spariva dietro il
+     fondo della schermata: si vedeva mezza e sembrava un errore. */
+  padding-bottom: 10px;
 }
 /* La citazione dal racconto: serve a ricordarsi di cosa si parla, quindi e
    il TUO testo e si vede che lo e — corsivo serif, come la sintesi. */
@@ -596,6 +609,9 @@
   margin-top: 8px;
   line-height: 1.5;
 }
+/* Due righe, non tre bottoni in fila. Con l'arretrato di un mese la fila
+   diventava "basta per adesso | Non adesso | Avanti" tutti appiccicati, e i
+   tre pesi non sono uguali: due sono uscite, uno e la strada. */
 .jm-ch-foot {
   margin-top: auto;
   padding-top: 22px;
@@ -603,6 +619,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+.jm-ch-basta-riga {
+  margin-top: 14px;
+  text-align: center;
 }
 .jm-ch-skip {
   font-size: calc(13px * var(--jm-ui-scale));
@@ -627,17 +647,23 @@
   border: none;
   font-family: inherit;
   white-space: nowrap;
-  flex: 0 0 auto;
-  margin-right: auto;
   opacity: 0.75;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
-.jm-ch-next {
+/* La classe da sola PERDE contro .btn-primary di globals.css: features.css e
+   importato in cima, quindi a parita di specificita vince l'altro. E scritto
+   nell'intestazione di questo file, e me ne sono accorto lo stesso solo
+   vedendo il bottone largo trecento pixel in produzione. Da qui in giu si
+   qualifica col genitore. */
+.jm-ch-foot .jm-ch-next {
   padding: 12px 22px;
   /* Non si allarga per riempire la riga: e un bottone, non una barra. */
   flex: 0 0 auto;
+  width: auto;
   min-width: calc(112px * var(--jm-ui-scale));
 }
-.jm-ch-next:disabled {
+.jm-ch-foot .jm-ch-next:disabled {
   opacity: 0.3;
 }
 
@@ -650,7 +676,10 @@
     padding-bottom: 60px;
   }
   .jm-ch-scroll {
+    /* Al centro dello schermo, ma non oltre: se le risposte sono tante
+       scorre invece di sfondare la finestra. */
     flex: 0 1 auto;
+    max-height: 62vh;
   }
   .jm-ch-foot {
     margin-top: 34px;

@@ -28,9 +28,9 @@ rifiutato, prova a risolvere da solo, e li si perde un'ora. E successo a tutti.
 Prima di far partire due worker, guarda quali file toccano. Se due elenchi si
 sovrappongono, quei due lavori **non vanno in parallelo**: vanno in fila.
 
-La divisione viva di oggi sta in **`PROMPT-sorella.md`**, scritto per la sessione che
-implementa la fase 1 dei fatti: e l'esempio di riferimento di come si fa una divisione
-buona. Da notare due invenzioni che valgono per qualunque coppia futura:
+La divisione oggi e quella dei MODULI (ARCHITETTURA.md): il prompt vivo per aprire un
+worker e **`PROMPT-WORKER.md`**. Il vecchio `PROMPT-sorella.md` (in `docs/storia/`) resta
+come esempio storico di una divisione fatta a mano, prima dei recinti. Da notare due invenzioni che valgono per qualunque coppia futura:
 
 - **`src/app/features.css`**, importato in cima a `globals.css`: il worker nuovo scrive
   solo li, e `globals.css` resta di chi lo aveva gia in mano.

@@ -10,20 +10,25 @@ e modulo. Poi leggi il `CLAUDE.md` della cartella in cui lavori: e il tuo recint
 
 Le regole comuni, valide in ogni cartella:
 
-1. **Un modulo per chat.** Lavori nel perimetro scritto nel CLAUDE.md del tuo modulo.
-   Se il compito richiede di toccare lo scheletro (`src/lib`, `src/themes`,
-   `src/components/ui`, `src/components/desktop`, `src/app/globals.css`, `en.ts`) o un
-   altro modulo, fermati e dillo a Manuel invece di sconfinare.
+1. **Un modulo per chat.** Lavori dentro `src/modules/<tuo modulo>/` (piu le pagine
+   di `src/app/` che il tuo CLAUDE.md elenca). Se il compito richiede di toccare lo
+   scheletro (`src/lib`, `src/themes`, `src/components`, `src/styles`, `src/app/globals.css`)
+   o un altro modulo, fermati e dillo a Manuel invece di sconfinare.
 2. **Branch, non main** (`WORKERS.md`): un modulo = un branch = una chat. Su `main` si
    arriva per merge. Eccezione: una sessione scheletro dichiarata, quando e l'unica
    attiva.
-3. **Punti d'innesto finche B e C non sono fatti** (vedi ARCHITETTURA.md §3): CSS nuovo
-   in `src/app/features.css` col prefisso del tuo modulo, traduzioni nuove in
-   `src/lib/i18n/en-extra.ts`. Mai in coda a `globals.css`/`en.ts` da un branch.
+3. **Dove si scrive cio che e nuovo.** Dal passo D ogni modulo e una cartella,
+   `src/modules/<nome>/`: dentro ci sono `components/`, `styles.css` (il CSS del
+   modulo), `en.ts` (le sue traduzioni) e `index.ts` (la PORTA: l'unica cosa che gli
+   altri moduli possono importare — il lint dei confini e a ERRORE). `globals.css` e
+   `src/lib/i18n/en.ts` sono solo indici e non si toccano; `src/styles/base.css` e
+   `overrides.css` e `catalogs/comune.ts` sono scheletro (un pezzo condiviso nuovo va
+   discusso). `features.css` e `en-extra.ts` restano come innesti d'emergenza.
 4. **Solo token, mai valori a mano**: colori, raggi e spazi vengono dal contratto temi
    (`--color-*`, `--jm-*`); ogni `font-size` e `calc(Npx * var(--jm-ui-scale))`.
    Testo a schermo sempre via `t()` (`@/lib/i18n`).
 5. **Prima di ogni push**: `npx tsc --noEmit && npx eslint .` puliti, piu il banco del
    tuo modulo (elencato nel suo CLAUDE.md) e `node scripts/verify-i18n.mjs`.
-   I warning ESLint "confine fra moduli" non bloccano ma vanno riferiti a Manuel.
+   Un errore ESLint "confine fra moduli" significa che sei fuori recinto: rientra
+   (o passa dalla porta `@/modules/<nome>`), non chiedere eccezioni al lint.
 <!-- END:nextjs-agent-rules -->

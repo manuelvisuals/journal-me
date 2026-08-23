@@ -1,0 +1,362 @@
+/* =============================================================
+   Modulo MESE: vista mensile, griglia, navigazione.
+   Nato dallo spacchettamento di globals.css (passo B,
+   ARCHITETTURA.md, 23 agosto 2026). L'ordine interno dei blocchi
+   e quello che avevano in globals.css: non riordinare.
+   ============================================================= */
+
+/* =============================================================
+   Mese view (jm- prefix to avoid collisions with future utilities)
+   ============================================================= */
+
+.jm-month-header {
+  padding: calc(16px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  background: var(--color-bg-phone);
+  border-bottom: 1px solid var(--color-line);
+  z-index: 3;
+}
+
+.jm-month-title {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(7px * var(--jm-space));
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-month-chevron {
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-accent);
+  opacity: 0.85;
+  transform: translateY(2px);
+}
+
+.jm-month-count {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-month-section-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: calc(18px * var(--jm-space)) calc(24px * var(--jm-space)) calc(10px * var(--jm-space));
+  background: linear-gradient(
+    to bottom,
+    var(--color-bg-phone) 0%,
+    var(--color-bg-phone) 70%,
+    transparent 100%
+  );
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-accent);
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--color-line);
+}
+
+.jm-meta-chip {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-meta-chip .v {
+  color: var(--color-ink-muted);
+}
+
+.jm-meta-mood {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1;
+}
+
+.jm-dots-mini {
+  display: flex;
+  gap: calc(4px * var(--jm-space));
+  margin-left: auto;
+}
+
+/* Jump picker overlay */
+.jm-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(8px);
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(110px * var(--jm-space));
+}
+
+.jm-picker {
+  width: min(320px, calc(100vw - 32px));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(16px * var(--jm-space));
+  box-shadow: 0 24px 48px color-mix(in oklab, var(--color-shadow) 60%, transparent);
+}
+
+.jm-picker-year {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(4px * var(--jm-space)) calc(6px * var(--jm-space)) calc(14px * var(--jm-space));
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: calc(12px * var(--jm-space));
+}
+
+.jm-picker-year .y {
+  font-size: calc(16px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-picker-year .nav {
+  font-size: calc(18px * var(--jm-ui-scale));
+  color: var(--color-accent);
+  font-weight: 500;
+  padding: 0 calc(8px * var(--jm-space));
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(6px * var(--jm-space));
+}
+
+.jm-picker-cell {
+  padding: calc(14px * var(--jm-space)) calc(6px * var(--jm-space));
+  text-align: center;
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 80ms ease;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-picker-cell:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+
+.jm-picker-cell.future,
+.jm-picker-cell:disabled {
+  color: var(--color-ink-faint);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.jm-picker-cell.current {
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  color: var(--color-accent-hi);
+  border-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Safe area in cima.
+
+   Nel guscio iOS la webview parte da y=0: `viewportFit: cover` piu
+   `contentInset: "never"` in capacitor.config sono cio che permette allo sfondo
+   di arrivare fino ai bordi, ma lasciano anche il contenuto libero di finire
+   sotto l'orologio e la Dynamic Island. Su Safari non si vedeva perche la barra
+   del browser spingeva tutto piu in basso.
+
+   La correzione sta qui e non nelle singole schermate: ogni intestazione si
+   allunga verso l'alto della misura che iOS dichiara e la copre con il proprio
+   sfondo. Le intestazioni sticky (Mese) restano incollate a top: 0 e coprono la
+   striscia mentre la lista scorre sotto. Sul web `env()` vale 0 e non cambia
+   niente.
+
+   Se aggiungi una schermata nuova, aggiungi qui la sua intestazione: e il
+   difetto piu facile da reintrodurre.
+--------------------------------------------------------------------------- */
+.jm-month-header {
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+}
+
+/* Il jump picker di Mese cadeva a 110px dal bordo assoluto dello schermo. */
+.jm-picker-overlay {
+  padding-top: calc(110px + env(safe-area-inset-top, 0px));
+}
+
+/* =============================================================
+   Mese a griglia (PR 9, SPEC-v2 §5.6, mockup desktop-v1 §04).
+   Solo da lg: sotto resta il feed verticale, intoccato.
+   ============================================================= */
+.jm-mese-wrap {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .jm-mese-wrap {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  /* L'header sticky del telefono ha un suo `display:flex` NON layered, che
+     vince sulla utility lg:hidden (le utility Tailwind v4 stanno in @layer,
+     il CSS nudo no). Si spegne qui, esplicitamente. */
+  .jm-month-header {
+    display: none;
+  }
+  .jm-mese-head {
+    padding: 28px 28px 16px;
+  }
+  .jm-mese-t {
+    display: inline-flex;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--font-serif);
+    font-size: calc(40px * var(--jm-ui-scale));
+    font-weight: 400;
+    letter-spacing: -0.022em;
+    line-height: 1.05;
+    color: var(--color-ink);
+    text-align: left;
+  }
+  .jm-mese-t:hover {
+    color: var(--color-accent);
+  }
+  .jm-mese-s {
+    font-size: calc(12.5px * var(--jm-ui-scale));
+    color: var(--color-ink-faint);
+    margin-top: 9px;
+  }
+  .jm-mese-wk {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding: 0 28px 10px;
+  }
+  .jm-mese-wk div {
+    font-size: calc(9.5px * var(--jm-ui-scale));
+    font-weight: 650;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+    text-align: left;
+    padding-left: 2px;
+  }
+  .jm-mese-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    padding: 0 28px 28px;
+  }
+  .jm-mese-cell {
+    height: 112px;
+    border-radius: var(--jm-radius-sm);
+    border: none;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid var(--color-line);
+    background: transparent;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    overflow: hidden;
+    font-family: var(--font-sans);
+  }
+  button.jm-mese-cell {
+    cursor: pointer;
+  }
+  button.jm-mese-cell:hover {
+    background: color-mix(in oklab, var(--color-ink) 4%, transparent);
+  }
+  .jm-mese-cell.out {
+    border-bottom-color: transparent;
+  }
+  .jm-mese-cell.future {
+    opacity: 0.3;
+  }
+  .jm-mese-cn {
+    font-size: calc(22px * var(--jm-ui-scale));
+    font-weight: 300;
+    color: var(--color-ink);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .jm-mese-cell.out .jm-mese-cn {
+    color: color-mix(in oklab, var(--color-ink-faint) 50%, transparent);
+  }
+  .jm-mese-cell.today {
+    border-left-color: var(--color-accent);
+    background: linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-accent) 10%, transparent),
+      transparent 60%
+    );
+  }
+  .jm-mese-cell.today .jm-mese-cn {
+    color: var(--color-accent);
+    font-weight: 400;
+  }
+  .jm-mese-ch {
+    font-size: calc(13px * var(--jm-ui-scale));
+    line-height: 1.4;
+    color: var(--color-ink-muted);
+    margin-top: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .jm-mese-cell.empty .jm-mese-ch {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-ink-faint);
+  }
+  .jm-mese-dots {
+    margin-top: auto;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .jm-mese-dots i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--color-ink) 14%, transparent);
+    display: block;
+  }
+  .jm-mese-dots i.on {
+    background: var(--color-accent);
+  }
+}
