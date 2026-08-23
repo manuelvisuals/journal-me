@@ -615,3 +615,28 @@
   align-items: center;
   gap: calc(14px * var(--jm-space));
 }
+
+/* Un mese e basta: in griglia la schermata contiene intestazione, mese e
+   anteprima, e nient'altro. Niente feed sotto, niente mese dopo che sbava
+   da sotto il bordo (era il difetto visto sul telefono il 23 agosto). */
+.jm-mese-solo {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.jm-mese-solo .jm-mese-mini {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* L'anteprima si appoggia in fondo, sopra la barra dei tab: cosi lo spazio
+   che avanza sta in un posto solo invece di galleggiare fra le due parti. */
+.jm-mese-solo .jm-mese-mini-prev,
+.jm-mese-solo .jm-mese-mini-hint {
+  margin-top: auto;
+}

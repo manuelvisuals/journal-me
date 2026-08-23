@@ -255,8 +255,28 @@ async function seed(page) {
     await page.waitForTimeout(400);
     check("phone: l'icona accende la griglia", (await page.locator(".jm-mese-mini").count()) > 0);
     check("phone: la lista sparisce", (await page.locator(".jm-day-row").count()) === 0);
-    const celle = await page.locator(".jm-mese-mini .jm-mese-mini-c").count();
-    check("phone: celle multiple di 7", celle % 7 === 0 && celle >= 28, String(celle));
+    // UN mese per schermata: il feed non e nascosto, non e proprio montato,
+    // e sotto non sbava il mese dopo (difetto visto sul telefono il 23 ago).
+    check("phone: un mese solo", (await page.locator(".jm-mese-mini").count()) === 1);
+    check(
+      "phone: niente intestazioni di altri mesi",
+      (await page.locator(".jm-month-section-header").count()) === 0,
+    );
+    const giorni = await page.locator(".jm-mese-mini-c:not(.out)").count();
+    const nelMese = new Date(Y, M, 0).getDate();
+    check("phone: un quadratino per giorno del mese", giorni === nelMese, `${giorni} vs ${nelMese}`);
+
+    // Le frecce cambiano mese senza uscire dalla griglia.
+    const frecce = page.locator(".jm-month-header .jm-mese-nav");
+    check("phone: due frecce nell'intestazione", (await frecce.count()) === 2);
+    check("phone: la freccia avanti e spenta sul mese corrente", await frecce.nth(1).isDisabled());
+    const titoloPrima = await page.locator(".jm-month-title").innerText();
+    await frecce.nth(0).click();
+    await page.waitForTimeout(700);
+    const titoloDopo = await page.locator(".jm-month-title").innerText();
+    check("phone: la freccia indietro cambia mese", titoloPrima !== titoloDopo, `${titoloPrima} -> ${titoloDopo}`);
+    await frecce.nth(1).click();
+    await page.waitForTimeout(700);
 
     // Oggi ha umore "good" (il seed): quarto gradino su cinque.
     check(

@@ -83,7 +83,9 @@ export function MeseClient({ mode, initialMonth }: Props) {
   const deskEntries = deskCache[deskKey];
 
   useEffect(() => {
-    if (!isDesktop || deskCache[deskKey] !== undefined) return;
+    // La stessa cache serve alla griglia grande (desktop) e a quella
+    // compatta del telefono: e sempre "un mese per volta".
+    if ((!isDesktop && !griglia) || deskCache[deskKey] !== undefined) return;
     let cancelled = false;
     void (async () => {
       const entries = await loadMonthEntries(
@@ -98,7 +100,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDesktop, deskKey]);
+  }, [isDesktop, griglia, deskKey]);
 
   // initialMonth.entries is always populated server-side now.
 
@@ -174,7 +176,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
   const handlePickerSelect = async (year: number, month: number) => {
     setPickerOpen(false);
     // Su desktop il picker cambia il mese della griglia, non scrolla il feed.
-    if (isDesktop) {
+    if (isDesktop || griglia) {
       setDeskMonth({ year, month });
       return;
     }
@@ -224,6 +226,21 @@ export function MeseClient({ mode, initialMonth }: Props) {
   );
   const counter = visibleMonth ? counterFor(visibleMonth, today) : null;
 
+  // In griglia si guarda UN mese per volta, come sul computer: il titolo,
+  // il contatore e le frecce parlano di quello, non di cio che il feed ha
+  // sotto il dito (il feed in griglia non esiste piu).
+  const mesePieno = isDesktop || griglia ? deskMonth : currentMonth;
+  const counterGriglia =
+    griglia && deskEntries !== undefined
+      ? counterFor(
+          { year: deskMonth.year, month: deskMonth.month, entries: deskEntries },
+          today,
+        )
+      : null;
+  const contatore = griglia ? counterGriglia : counter;
+  const meseCorrente =
+    deskMonth.year === today.year && deskMonth.month === today.month;
+
   return (
     <main
       ref={scrollRef}
@@ -261,14 +278,41 @@ export function MeseClient({ mode, initialMonth }: Props) {
           aria-expanded={pickerOpen}
         >
           <span suppressHydrationWarning>
-            {formatMonthTitle(currentMonth.year, currentMonth.month)}
+            {formatMonthTitle(mesePieno.year, mesePieno.month)}
           </span>
           <span className="jm-month-chevron">&#9662;</span>
         </button>
         <span className="jm-month-right">
-          {counter && (
+          {/* In griglia il mese non si scorre piu: si cambia con le frecce,
+              come sul computer. Il salto lungo resta sul titolo. */}
+          {griglia && (
+            <span className="jm-mese-navpair">
+              <button
+                type="button"
+                className="jm-mese-nav"
+                onClick={() => setDeskMonth((m) => stepMonth(m, -1))}
+                aria-label={t("Mese precedente")}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="jm-mese-nav"
+                onClick={() => setDeskMonth((m) => stepMonth(m, 1))}
+                disabled={meseCorrente}
+                aria-label={t("Mese successivo")}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </span>
+          )}
+          {contatore && (
             <span className="jm-month-count">
-              {counter.done} / {counter.total}
+              {contatore.done} / {contatore.total}
             </span>
           )}
           {/* Lista <-> griglia. Un solo bottone, nello stesso punto:
@@ -299,30 +343,30 @@ export function MeseClient({ mode, initialMonth }: Props) {
         </span>
       </header>
 
+      {/* Griglia compatta: UN mese, quanto sta nello schermo, senza il
+          mese dopo che sbava da sotto. Il feed non c'e proprio: non e
+          nascosto, non e montato. */}
+      {griglia && deskEntries !== undefined && (
+        <div className="jm-mese-solo lg:hidden">
+          <MeseMini
+            year={deskMonth.year}
+            month={deskMonth.month}
+            entries={deskEntries}
+            today={today}
+            onDayClick={(iso) => {
+              setPendingDate(iso);
+              startNav(() => {
+                router.push(`/giorno?d=${iso}`);
+              });
+            }}
+          />
+        </div>
+      )}
+
       {/* Day list (solo telefono: da lg c'e la griglia) */}
+      {!griglia && (
       <div className="jm-day-list lg:hidden">
-        {loaded.map((m, idx) =>
-          griglia ? (
-            <div key={`g-${m.year}-${m.month}`}>
-              {idx > 0 && (
-                <div className="jm-month-section-header" suppressHydrationWarning>
-                  {formatMonthTitle(m.year, m.month)}
-                </div>
-              )}
-              <MeseMini
-                year={m.year}
-                month={m.month}
-                entries={m.entries}
-                today={today}
-                onDayClick={(iso) => {
-                  setPendingDate(iso);
-                  startNav(() => {
-                    router.push(`/giorno?d=${iso}`);
-                  });
-                }}
-              />
-            </div>
-          ) : (
+        {loaded.map((m, idx) => (
           <MonthSection
             key={`${m.year}-${m.month}`}
             year={m.year}
@@ -340,8 +384,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
               });
             }}
           />
-          ),
-        )}
+        ))}
         <div ref={sentinelRef} style={{ height: 1 }} aria-hidden="true" />
         {loadingMore && (
           <div
@@ -359,13 +402,14 @@ export function MeseClient({ mode, initialMonth }: Props) {
           </div>
         )}
       </div>
+      )}
 
       <TabBar active="month" />
 
       <JumpPicker
         open={pickerOpen}
-        currentYear={isDesktop ? deskMonth.year : currentMonth.year}
-        currentMonth={isDesktop ? deskMonth.month : currentMonth.month}
+        currentYear={mesePieno.year}
+        currentMonth={mesePieno.month}
         todayYear={today.year}
         todayMonth={today.month}
         onSelect={handlePickerSelect}
