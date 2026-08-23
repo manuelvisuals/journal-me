@@ -23,7 +23,8 @@ import { NON_E_UNA_PERSONA, type Domanda, type Risposta } from "@/lib/chiariment
 
 type Props = {
   domande: Domanda[];
-  onDone: (risposte: Risposta[]) => void;
+  /** `interrotto` = ha premuto "basta per adesso": le altre restano in coda. */
+  onDone: (risposte: Risposta[], interrotto?: boolean) => void;
   saving?: boolean;
 };
 
@@ -221,7 +222,7 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
               type="button"
               className="jm-ch-basta"
               disabled={saving}
-              onClick={() => onDone(date.current)}
+              onClick={() => onDone(date.current, true)}
             >
               {t("basta per adesso")}
             </button>

@@ -43,7 +43,7 @@ import {
   scansionaArchivio,
   scansioneGiaFatta,
 } from "@/lib/actions/scan-archivio";
-import { domandeInSospeso } from "@/lib/chiarimenti";
+import { bastaPerOra, domandeInSospeso, metteInPausa } from "@/lib/chiarimenti";
 import { loadAliases } from "@/lib/data/facts";
 import { useDayLists } from "@/lib/use-day-lists";
 import type {
@@ -264,20 +264,31 @@ export function TodayClient({
   const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
 
   /**
-   * Appena si diventa premium, l'AI legge tutto il diario e poi fa le
-   * domande. Vedi src/lib/actions/scan-archivio.ts per il perche.
+   * All'apertura dell'app: se c'e qualcosa da chiarire, lo chiede.
    *
-   * Parte una volta sola per browser, in sottofondo, e non blocca niente:
-   * chi ha appena pagato vuole usare l'app, non guardare una barra. Alla
-   * fine, se e rimasto qualcosa da chiarire, lo chiede.
+   * Due cose in un effetto solo, e sono in fila per forza:
+   *
+   *   1. se e la prima volta da premium, l'AI legge tutto il diario
+   *      (src/lib/actions/scan-archivio.ts) — le giornate scritte gratis non
+   *      le ha mai lette nessuno;
+   *   2. poi guarda la coda e chiede.
+   *
+   * IL PASSO 2 VALE SEMPRE, non solo dopo una scansione, e questa e la
+   * correzione del 23 agosto sera: le domande comparivano solo subito dopo
+   * un'analisi. Riaprendo l'app le cinque domande in coda restavano li in
+   * silenzio, e la regola di Manuel — "le richiede a sfinimento finche
+   * l'utente non risponde a tutto" — era vera solo il primo minuto.
+   *
+   * "Basta per adesso" mette in pausa fino alla prossima apertura, non di
+   * piu: e cio che dice il tasto.
    */
   useEffect(() => {
-    if (!canAI || scansioneGiaFatta()) return;
+    if (!canAI) return;
     let vivo = true;
     void (async () => {
       try {
-        const esito = await scansionaArchivio(mode);
-        if (!vivo || esito.domande === 0) return;
+        if (!scansioneGiaFatta()) await scansionaArchivio(mode);
+        if (!vivo || bastaPerOra()) return;
         const coda = await domandeInSospeso(mode);
         if (!vivo || coda.length === 0) return;
         setChiarimenti({
@@ -285,17 +296,20 @@ export function TodayClient({
           attachDate: entry?.entryDate ?? todayISO(),
           entryForDate: entry,
         });
-        setView("chiarimenti");
+        setView((v) =>
+          // Non si interrompe chi sta gia raccontando o scrivendo: le
+          // domande aspettano, sono in coda apposta.
+          v === "filled" || v === "empty" ? "chiarimenti" : v,
+        );
       } catch {
-        // Una scansione fallita non deve rovinare il primo giorno da
-        // premium: le giornate si leggeranno quando le tocchi.
+        // Niente domande: si scrive lo stesso. Non e questa la funzione per
+        // cui uno apre il diario.
       }
     })();
     return () => {
       vivo = false;
     };
-    // Volutamente senza `entry`: la scansione parte una volta, non a ogni
-    // salvataggio.
+    // Volutamente senza `entry`: parte all'apertura, non a ogni salvataggio.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canAI, mode]);
 
@@ -860,7 +874,8 @@ export function TodayClient({
         <ChiarimentiScreen
           domande={chiarimenti.domande}
           saving={chiarimentiSaving}
-          onDone={(risposte) => {
+          onDone={(risposte, interrotto) => {
+            if (interrotto) metteInPausa();
             void finishChiarimenti(risposte);
           }}
         />

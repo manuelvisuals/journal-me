@@ -136,6 +136,32 @@ export async function chiediChiarimenti(
   }
 }
 
+/**
+ * "Basta per adesso" mette in pausa fino alla prossima apertura dell'app,
+ * non di piu — e cio che promette il tasto, ed e il massimo che si puo
+ * concedere senza tradire la regola: nessuna domanda si perde, si rimanda.
+ *
+ * Vive in sessionStorage e non in localStorage di proposito: muore con la
+ * scheda. Riaprire il diario domani vuol dire ritrovarsele.
+ */
+const PAUSA = "jm:domande-pausa";
+
+export function metteInPausa(): void {
+  try {
+    window.sessionStorage.setItem(PAUSA, "1");
+  } catch {
+    // storage negato: le domande ricompariranno prima. Pazienza.
+  }
+}
+
+export function bastaPerOra(): boolean {
+  try {
+    return window.sessionStorage.getItem(PAUSA) === "1";
+  } catch {
+    return false;
+  }
+}
+
 /** Solo la coda, senza analizzare niente. La usa chi arriva su una giornata. */
 export async function domandeInSospeso(mode: DataMode): Promise<Domanda[]> {
   try {

@@ -12,6 +12,7 @@ import { ChiarimentiScreen } from "@/components/today/chiarimenti-screen";
 import {
   applicaRisposte,
   chiediChiarimenti,
+  metteInPausa,
   type Domanda,
   type Risposta,
 } from "@/lib/chiarimenti";
@@ -179,7 +180,8 @@ export function DayClient({ mode, date, initialEntry }: Props) {
       <ChiarimentiScreen
         domande={domande}
         saving={domandeSaving}
-        onDone={(risposte) => {
+        onDone={(risposte, interrotto) => {
+          if (interrotto) metteInPausa();
           void finishDomande(risposte);
         }}
       />

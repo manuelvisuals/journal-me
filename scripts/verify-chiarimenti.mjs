@@ -244,6 +244,18 @@ check(
   /chiediChiarimenti/.test(today) && /chiediChiarimenti/.test(day),
 );
 check(
+  "le domande in coda si chiedono all'APERTURA, non solo dopo un'analisi",
+  /domandeInSospeso/.test(today) && /scansioneGiaFatta\(\)\) await/.test(today),
+);
+check(
+  '"basta per adesso" mette in pausa fino alla prossima apertura, non di piu',
+  /sessionStorage/.test(chiar) && /metteInPausa/.test(today),
+);
+check(
+  "chi sta gia scrivendo non viene interrotto",
+  /v === "filled" \|\| v === "empty" \? "chiarimenti" : v/.test(today),
+);
+check(
   "senza AI non si chiede niente, in nessuna delle due schermate",
   /if \(canAI && entryForDate\)/.test(today) && /if \(!canAI\) return;/.test(day),
 );
