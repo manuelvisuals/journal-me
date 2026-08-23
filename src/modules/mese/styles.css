@@ -360,3 +360,258 @@
     background: var(--color-accent);
   }
 }
+
+/* =============================================================
+   Mese a griglia sul TELEFONO (mockup mese-griglia-mobile.html,
+   approvato il 23 agosto 2026: quadratini colorati per umore piu
+   la riga di anteprima). Vive dentro un contenitore lg:hidden:
+   da lg comanda la griglia grande, questa non si vede mai.
+   ============================================================= */
+
+.jm-mese-mini {
+  padding: calc(14px * var(--jm-space)) calc(22px * var(--jm-space))
+    calc(22px * var(--jm-space));
+}
+
+.jm-mese-mini-wk {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: calc(6px * var(--jm-space));
+  padding-bottom: calc(8px * var(--jm-space));
+}
+
+.jm-mese-mini-wk div {
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  text-align: center;
+}
+
+.jm-mese-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: calc(6px * var(--jm-space));
+}
+
+/* Il quadrato: aspect-ratio 1 su sette colonne da 390 punti di telefono
+   fa 44 punti, che e la misura minima toccabile di Apple. */
+.jm-mese-mini-c {
+  aspect-ratio: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-sm);
+  background: transparent;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.jm-mese-mini-c:active {
+  transform: scale(var(--jm-press));
+}
+
+.jm-mese-mini-c .n {
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-mese-mini-c.out {
+  border-color: transparent;
+  pointer-events: none;
+}
+
+.jm-mese-mini-c.future {
+  opacity: 0.32;
+}
+
+/* Passato senza racconto: contorno tratteggiato, come nel mockup. */
+.jm-mese-mini-c.empty {
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--color-ink-faint) 28%, transparent);
+}
+
+/* I cinque gradini dell'umore: bad, low, neutral, good, great. I primi due
+   restano inchiostro spento (una giornata storta non si festeggia in
+   ambra), dal terzo in su entra l'accento e cresce. */
+.jm-mese-mini-c.m1 {
+  background: color-mix(in oklab, var(--color-ink) 8%, transparent);
+}
+.jm-mese-mini-c.m2 {
+  background: color-mix(in oklab, var(--color-ink) 14%, transparent);
+}
+.jm-mese-mini-c.m3 {
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 20%, transparent);
+}
+.jm-mese-mini-c.m4 {
+  background: color-mix(in oklab, var(--color-accent) 30%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 38%, transparent);
+}
+.jm-mese-mini-c.m5 {
+  background: color-mix(in oklab, var(--color-accent) 52%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 60%, transparent);
+}
+.jm-mese-mini-c.m3 .n,
+.jm-mese-mini-c.m4 .n,
+.jm-mese-mini-c.m5 .n {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+
+/* Raccontato ma senza umore salvato: il quadratino si riempie lo stesso,
+   altrimenti sembrerebbe un giorno mancante. */
+.jm-mese-mini-c.nomood {
+  background: color-mix(in oklab, var(--color-accent) 15%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 26%, transparent);
+}
+
+.jm-mese-mini-c.today {
+  border-color: var(--color-accent);
+  border-width: 2px;
+}
+.jm-mese-mini-c.today .n {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.jm-mese-mini-c.sel {
+  border-color: var(--color-accent);
+  border-width: 2px;
+  border-style: solid;
+  background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+}
+.jm-mese-mini-c.sel .n {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* La riga di anteprima sotto la griglia. */
+.jm-mese-mini-prev {
+  display: flex;
+  gap: calc(14px * var(--jm-space));
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
+  margin-top: calc(16px * var(--jm-space));
+  padding: calc(16px * var(--jm-space)) 0 0;
+  border: none;
+  border-top: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-mese-mini-prev .d {
+  min-width: calc(44px * var(--jm-space));
+}
+.jm-mese-mini-prev .dn {
+  display: block;
+  font-size: calc(30px * var(--jm-ui-scale));
+  font-weight: 300;
+  line-height: 1;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+.jm-mese-mini-prev .dw {
+  display: block;
+  margin-top: calc(6px * var(--jm-space));
+  font-size: calc(9.5px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.jm-mese-mini-prev .x {
+  flex: 1;
+}
+.jm-mese-mini-prev .h {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+.jm-mese-mini-prev .h.vuota {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-ink-faint);
+}
+.jm-mese-mini-prev .a {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(5px * var(--jm-space));
+  margin-top: calc(8px * var(--jm-space));
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+.jm-mese-mini-prev .a svg {
+  width: calc(11px * var(--jm-ui-scale));
+  height: calc(11px * var(--jm-ui-scale));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm-mese-mini-hint {
+  margin-top: calc(16px * var(--jm-space));
+  padding-top: calc(16px * var(--jm-space));
+  border-top: 1px solid var(--color-line);
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+/* L'icona nell'intestazione che scambia lista e griglia. Disegno 20,
+   area toccabile 44: i margini negativi la fanno crescere senza spostare
+   il contatore accanto. */
+.jm-mese-vista {
+  width: calc(44px * var(--jm-space));
+  height: calc(44px * var(--jm-space));
+  margin: calc(-12px * var(--jm-space)) calc(-10px * var(--jm-space))
+    calc(-12px * var(--jm-space)) 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--jm-radius-sm);
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-mese-vista svg {
+  width: calc(20px * var(--jm-ui-scale));
+  height: calc(20px * var(--jm-ui-scale));
+  fill: none;
+  stroke: var(--color-ink-faint);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.jm-mese-vista[aria-pressed="true"] {
+  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+}
+.jm-mese-vista[aria-pressed="true"] svg {
+  stroke: var(--color-accent);
+}
+
+/* Il gruppo a destra nell'intestazione del telefono: contatore piu icona.
+   L'header allinea alla linea di base; qui serve il centro, o il bottone
+   da 44 punti spingerebbe il contatore fuori asse. */
+.jm-month-right {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+}

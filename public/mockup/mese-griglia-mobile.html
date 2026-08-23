@@ -306,6 +306,40 @@ raggiungibili senza scorrere. Costa una riga di schermo in piu.
 
 <div class="divider"></div>
 
+<div class="label">Approvata . proposta 3 con i colori dell'umore</div>
+<div class="caption">
+Scelta di Manuel il 23 agosto 2026: <b>la griglia che risponde, coi quadratini
+colorati per umore</b>. Il colore dice come e andata, il tocco dice cosa e
+successo. Questo e il disegno che e stato scritto in codice.
+</div>
+<div class="row">
+  <div>
+    <div class="phone"><div class="mhead">
+      <div class="mtitle">Agosto 2026 <span class="mchev">&#9662;</span></div>
+      <div class="mright"><span class="mcount">8 / 23</span>
+      <button class="mtoggle on"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div>
+    </div>
+    <div class="inner">
+      <div class="wk"><div>lun</div><div>mar</div><div>mer</div><div>gio</div><div>ven</div><div>sab</div><div>dom</div></div>
+      <div class="grid" id="g5"></div>
+      <div class="prev">
+        <div><div class="pn">19</div><div class="pw">mer</div></div>
+        <div>
+          <div class="ph">approvato progetto in ufficio, nuova proposta di lavoro</div>
+          <div class="pa">apri la giornata
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <div class="cap">Il quadratino selezionato prende il contorno ambra pieno e
+    vince sul colore dell'umore: <b>non si perde mai dove hai il dito</b>.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <div class="label">Misure e vincoli</div>
 <div class="note">
 <ul>
@@ -359,7 +393,7 @@ function costruisci(id, modo, selezionato){
       if(pieno) cl.push("full");
     }
     if(d === OGGI) cl.push("today");
-    if(modo === "anteprima" && d === selezionato) cl.push("sel");
+    if(d === selezionato) cl.push("sel");
     html += '<div class="'+cl.join(" ")+'"><span class="n">'+d+'</span></div>';
   }
   var resto = (7 - ((PRIMO+TOT) % 7)) % 7;
@@ -372,6 +406,7 @@ costruisci("g1","pieno");
 costruisci("g2","pieno");
 costruisci("g3","umore");
 costruisci("g4","anteprima",19);
+costruisci("g5","umore",19);
 </script>
 </body>
 </html>
