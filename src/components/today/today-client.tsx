@@ -39,6 +39,11 @@ import {
   type Risposta,
 } from "@/lib/chiarimenti";
 import { indicizza, risolviLista } from "@/lib/aliases";
+import {
+  scansionaArchivio,
+  scansioneGiaFatta,
+} from "@/lib/actions/scan-archivio";
+import { domandeInSospeso } from "@/lib/chiarimenti";
 import { loadAliases } from "@/lib/data/facts";
 import { useDayLists } from "@/lib/use-day-lists";
 import type {
@@ -258,6 +263,42 @@ export function TodayClient({
   );
   const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
 
+  /**
+   * Appena si diventa premium, l'AI legge tutto il diario e poi fa le
+   * domande. Vedi src/lib/actions/scan-archivio.ts per il perche.
+   *
+   * Parte una volta sola per browser, in sottofondo, e non blocca niente:
+   * chi ha appena pagato vuole usare l'app, non guardare una barra. Alla
+   * fine, se e rimasto qualcosa da chiarire, lo chiede.
+   */
+  useEffect(() => {
+    if (!canAI || scansioneGiaFatta()) return;
+    let vivo = true;
+    void (async () => {
+      try {
+        const esito = await scansionaArchivio(mode);
+        if (!vivo || esito.domande === 0) return;
+        const coda = await domandeInSospeso(mode);
+        if (!vivo || coda.length === 0) return;
+        setChiarimenti({
+          domande: coda,
+          attachDate: entry?.entryDate ?? todayISO(),
+          entryForDate: entry,
+        });
+        setView("chiarimenti");
+      } catch {
+        // Una scansione fallita non deve rovinare il primo giorno da
+        // premium: le giornate si leggeranno quando le tocchi.
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+    // Volutamente senza `entry`: la scansione parte una volta, non a ogni
+    // salvataggio.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canAI, mode]);
+
   const handleStartRecording = () => {
     setSaveError(null);
     setSavedDates([]);
@@ -350,7 +391,7 @@ export function TodayClient({
       // un'AI che non esiste voleva dire una richiesta buttata a ogni
       // giornata scritta da un utente gratis.
       if (canAI && entryForDate) {
-        const domande = await chiediChiarimenti(mode, entryForDate.transcript, {
+        const domande = await chiediChiarimenti(mode, attachDate, entryForDate.transcript, {
           people: entryForDate.people ?? [],
           areas: entryForDate.areas ?? [],
         });

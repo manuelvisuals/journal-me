@@ -20,9 +20,11 @@
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { todayISO } from "@/lib/format";
+import { chiaveAlias } from "@/lib/aliases";
 import type {
   Alias,
   DayExclusion,
+  Domanda,
   Fact,
   NewFact,
   AreaSummary,
@@ -88,6 +90,8 @@ interface JournalDB extends DBSchema {
   aliases: { key: string; value: LocalAliasRecord };
   /** Cosa e stato tolto da una giornata. Chiave: "data|kind|labelKey". */
   exclusions: { key: string; value: LocalExclusionRecord };
+  /** Le domande dell'AI in coda. Chiave: "data|azione|soggettoKey". */
+  questions: { key: string; value: LocalQuestionRecord };
   drafts: { key: string; value: DraftRecord };
   meta: { key: string; value: MetaRecord };
 }
@@ -97,7 +101,7 @@ const DB_NAME = "journalme";
 // La funzione di aggiornamento riceve la versione da cui si arriva: chi ha
 // gia il diario sul telefono NON deve perdere niente, quindi si creano solo
 // i pezzi che mancano.
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 /** Un alias sul dispositivo. `id` e "kind|alias": una riga per soprannome. */
 type LocalAliasRecord = Alias & { id: string };
@@ -110,6 +114,17 @@ type LocalExclusionRecord = DayExclusion & { id: string };
 
 function exclusionId(e: DayExclusion): string {
   return `${e.entryDate}|${e.kind}|${e.labelKey}`;
+}
+
+/** Una domanda sul dispositivo. `risposta` vuota = ancora da chiedere. */
+type LocalQuestionRecord = Omit<Domanda, "id"> & {
+  id: string;
+  risposta: string | null;
+  createdAt: string;
+};
+
+function questionId(dateISO: string, azione: string, soggetto: string): string {
+  return `${dateISO}|${azione}|${chiaveAlias(soggetto)}`;
 }
 
 function uuid(): string {
@@ -150,6 +165,9 @@ export class LocalStore implements JournalStore {
           }
           if (vecchia < 4 && !db.objectStoreNames.contains("exclusions")) {
             db.createObjectStore("exclusions", { keyPath: "id" });
+          }
+          if (vecchia < 5 && !db.objectStoreNames.contains("questions")) {
+            db.createObjectStore("questions", { keyPath: "id" });
           }
         },
       }).then(async (db) => {
@@ -401,6 +419,53 @@ export class LocalStore implements JournalStore {
   async removeExclusion(e: DayExclusion): Promise<void> {
     const db = await this.db();
     await db.delete("exclusions", exclusionId(e));
+  }
+
+  async loadOpenQuestions(): Promise<Domanda[]> {
+    const db = await this.db();
+    const tutte = await db.getAll("questions");
+    return tutte
+      .filter((q) => q.risposta === null)
+      // Le piu recenti per prime: vedi il commento nel CloudStore.
+      .sort((a, b) => (a.entryDate < b.entryDate ? 1 : a.entryDate > b.entryDate ? -1 : a.createdAt < b.createdAt ? -1 : 1))
+      .map(({ risposta: _r, createdAt: _c, ...d }) => d);
+  }
+
+  async saveOpenQuestions(dateISO: string, domande: Domanda[]): Promise<void> {
+    const db = await this.db();
+    const tutte = await db.getAll("questions");
+    const tx = db.transaction("questions", "readwrite");
+    const store = tx.objectStore("questions");
+
+    // Le aperte di questa giornata si buttano e si rifanno; quelle gia
+    // decise restano, ed e cio che impedisce alla stessa domanda di
+    // episodio di tornare a ogni rilettura.
+    const decise = new Set<string>();
+    for (const q of tutte) {
+      if (q.entryDate !== dateISO) continue;
+      if (q.risposta === null) await store.delete(q.id);
+      else decise.add(q.id);
+    }
+    const adesso = new Date().toISOString();
+    for (const d of domande) {
+      const id = questionId(dateISO, d.azione, d.soggetto);
+      if (decise.has(id)) continue;
+      await store.put({
+        ...d,
+        id,
+        entryDate: dateISO,
+        risposta: null,
+        createdAt: adesso,
+      });
+    }
+    await tx.done;
+  }
+
+  async answerQuestion(id: string, risposta: string | null): Promise<void> {
+    const db = await this.db();
+    const q = await db.get("questions", id);
+    if (!q) return;
+    await db.put("questions", { ...q, risposta: risposta ?? "non-saprei" });
   }
 
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {

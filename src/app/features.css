@@ -617,6 +617,20 @@
   white-space: nowrap;
   flex: 0 0 auto;
 }
+/* "Basta per adesso": esce dalle domande senza cancellarne nessuna. Sta
+   staccato dagli altri due e scritto piccolo, perche e la via d'uscita e non
+   la strada principale. */
+.jm-ch-basta {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  background: none;
+  border: none;
+  font-family: inherit;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  margin-right: auto;
+  opacity: 0.75;
+}
 .jm-ch-next {
   padding: 12px 22px;
   /* Non si allarga per riempire la riga: e un bottone, non una barra. */

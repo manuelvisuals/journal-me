@@ -28,45 +28,49 @@
 
 import { apiFetch } from "@/lib/api";
 import { chiaveAlias } from "@/lib/aliases";
-import { saveAlias, loadAliases } from "@/lib/data/facts";
+import {
+  saveAlias,
+  loadAliases,
+  loadOpenQuestions,
+  saveOpenQuestions,
+  answerQuestion,
+} from "@/lib/data/facts";
 import { loadPersonaNames } from "@/lib/data/remembers";
 import { saveAreas } from "@/lib/data/entries";
 import type { DataMode } from "@/lib/data/entries";
 import { spostaFraAree } from "@/lib/chiarimenti-aree";
-import type { AreaSummary, Entry, FactKind } from "@/lib/types";
+import type { AreaSummary, Domanda, Entry, FactKind, Opzione } from "@/lib/types";
 
 export { spostaFraAree };
-
-export type Opzione = {
-  valore: string;
-  etichetta: string;
-  sotto: string;
-  /** Solo per azione 'specie': con che nome mostrarla d'ora in poi. */
-  nomeVero: string;
-};
-
-export type Domanda = {
-  id: string;
-  /** 'identita' vale per sempre, 'episodio' solo per questa giornata. */
-  specie: "identita" | "episodio";
-  azione: "persona" | "specie" | "area";
-  soggetto: string;
-  citazione: string;
-  testo: string;
-  perche: string;
-  opzioni: Opzione[];
-  libero: boolean;
-};
+export type { Domanda, Opzione };
 
 /** Il valore scelto, oppure null = "non saprei" (che e una risposta). */
+/**
+ * La risposta a una domanda.
+ *
+ * `valore` null vuol dire SALTATA, e saltare significa "non adesso": la
+ * domanda resta in coda e torna alla prossima analisi. Non esiste piu un
+ * modo per liberarsene senza rispondere (regola di Manuel, 23 agosto 2026) —
+ * l'unica uscita onesta per una cosa che non e una persona e il bottone che
+ * lo dice.
+ */
 export type Risposta = { domanda: Domanda; valore: string | null; nomeVero?: string };
+
+/**
+ * Il valore dell'opzione "non e una persona".
+ *
+ * Si scrive come soprannome SENZA nome vero (vedi src/lib/aliases.ts): da
+ * quel momento quella parola non compare piu fra le persone, in nessuna
+ * giornata. Non serviva una tabella nuova.
+ */
+export const NON_E_UNA_PERSONA = "__nessuno__";
 
 /**
  * Chiede all'AI cosa non ha capito. Se qualcosa va storto torna un elenco
  * vuoto: un dubbio non chiarito e un peccato, una giornata che non si salva
  * per colpa di un dubbio e un danno.
  */
-export async function chiediChiarimenti(
+async function generaDomande(
   mode: DataMode,
   transcript: string,
   contesto: { people?: string[]; areas?: AreaSummary[] },
@@ -90,6 +94,52 @@ export async function chiediChiarimenti(
     if (!resp.ok) return [];
     const data = (await resp.json()) as { domande?: Domanda[] };
     return Array.isArray(data.domande) ? data.domande : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Analizzata una giornata, cosa c'e da chiedere — di QUELLA giornata e di
+ * tutte le altre.
+ *
+ * La regola e di Manuel, 23 agosto 2026: "appena l'AI elabora roba, se ha
+ * domande anche vecchie le fa sempre all'utente, e le richiede a sfinimento
+ * finche non risponde a tutto". Quindi:
+ *
+ *   1. si chiede al modello cosa non ha capito di questa giornata;
+ *   2. quei dubbi si mettono in coda (le risposte gia date non si riaprono);
+ *   3. si torna TUTTA la coda, non solo la parte nuova.
+ *
+ * L'arretrato non e un caso di ripiego: e la strada normale per chi scrive
+ * gratis per un mese e poi passa a premium, e si ritrova un archivio che
+ * nessuno ha mai letto.
+ */
+export async function chiediChiarimenti(
+  mode: DataMode,
+  dateISO: string,
+  transcript: string,
+  contesto: { people?: string[]; areas?: AreaSummary[] },
+): Promise<Domanda[]> {
+  const nuove = await generaDomande(mode, transcript, contesto);
+  try {
+    await saveOpenQuestions(mode, dateISO, nuove);
+  } catch {
+    // La coda non si e scritta: si chiedono almeno quelle di adesso, invece
+    // di non chiedere niente.
+    return nuove;
+  }
+  try {
+    return await loadOpenQuestions(mode);
+  } catch {
+    return nuove;
+  }
+}
+
+/** Solo la coda, senza analizzare niente. La usa chi arriva su una giornata. */
+export async function domandeInSospeso(mode: DataMode): Promise<Domanda[]> {
+  try {
+    return await loadOpenQuestions(mode);
   } catch {
     return [];
   }
@@ -120,6 +170,20 @@ const SPECIE_VALIDE: FactKind[] = [
  * direzione e con un pavimento di tre lettere: cosi "fratello" dentro "mio
  * fratello" si aggancia, e "Ida" dentro "Guida turistica" no.
  */
+/**
+ * Segna una domanda come decisa, cosi non torna piu.
+ *
+ * Solo le RISPOSTE chiudono. Una domanda saltata non passa mai di qui, ed e
+ * il motivo per cui torna.
+ */
+async function chiudi(mode: DataMode, domanda: Domanda, valore: string) {
+  try {
+    await answerQuestion(mode, domanda.id, valore);
+  } catch {
+    // Non si e chiusa: la ritroverai. E il verso giusto in cui sbagliare.
+  }
+}
+
 function formeDelSoggetto(soggetto: string, personeDelGiorno: string[]): string[] {
   const base = chiaveAlias(soggetto);
   const forme = new Set<string>();
@@ -151,9 +215,15 @@ export async function applicaRisposte(
     const { domanda, valore } = r;
 
     if (domanda.azione === "persona") {
-      // "Non saprei" su un nome non scrive niente: meglio il soprannome che
-      // un nome sbagliato inciso per sempre.
+      // Saltata: non si scrive niente e la domanda resta aperta.
       if (!valore) continue;
+      if (valore === NON_E_UNA_PERSONA) {
+        for (const forma of formeDelSoggetto(domanda.soggetto, entry?.people ?? [])) {
+          await saveAlias(mode, { kind: "persona", alias: forma, labelKey: "" });
+        }
+        await chiudi(mode, domanda, valore);
+        continue;
+      }
       const nome = valore.trim();
       // TUTTE le grafie che quel giorno indicavano quella persona, non solo
       // quella della domanda. Visto in produzione il 23 agosto: la domanda
@@ -163,6 +233,7 @@ export async function applicaRisposte(
       for (const forma of formeDelSoggetto(domanda.soggetto, entry?.people ?? [])) {
         await saveAlias(mode, { kind: "persona", alias: forma, labelKey: nome });
       }
+      await chiudi(mode, domanda, valore);
       continue;
     }
 
@@ -178,10 +249,12 @@ export async function applicaRisposte(
         alias: chiaveAlias(domanda.soggetto),
         labelKey: nome,
       });
+      await chiudi(mode, domanda, valore);
       continue;
     }
 
     // azione === "area": solo questa giornata.
+    if (!valore) continue;
     const candidate = domanda.opzioni
       .flatMap((o) => o.valore.split("+"))
       .map((v) => v.trim())
@@ -192,6 +265,7 @@ export async function applicaRisposte(
     const prima = JSON.stringify(aree);
     aree = spostaFraAree(aree, domanda.soggetto, scelte, candidate);
     if (JSON.stringify(aree) !== prima) areeCambiate = true;
+    await chiudi(mode, domanda, valore);
   }
 
   if (!areeCambiate || !entry) return entry;

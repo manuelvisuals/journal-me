@@ -1,6 +1,7 @@
 import type {
   Alias,
   DayExclusion,
+  Domanda,
   AreaSummary,
   Fact,
   Entry,
@@ -161,6 +162,27 @@ export interface JournalStore {
   addExclusion(e: DayExclusion): Promise<void>;
   /** Ci ripensa: la rimette. */
   removeExclusion(e: DayExclusion): Promise<void>;
+
+  /* le domande dell'AI, in coda (migrazione 014) */
+
+  /**
+   * Tutte le domande ANCORA APERTE, di tutte le giornate.
+   *
+   * Si legge tutto il diario e non solo il giorno di oggi perche la regola e
+   * questa: ogni volta che l'AI elabora qualcosa, chiede anche l'arretrato.
+   * Una domanda saltata torna; una risposta data non torna mai.
+   */
+  loadOpenQuestions(): Promise<Domanda[]>;
+  /**
+   * Mette in coda le domande nate dall'analisi di una giornata.
+   *
+   * Le domande gia RISPOSTE per quella giornata non si riaprono: e cio che
+   * impedisce alla stessa domanda di episodio ("la piscina di oggi era sport
+   * o compagnia?") di tornare a ogni rilettura del testo.
+   */
+  saveOpenQuestions(dateISO: string, domande: Domanda[]): Promise<void>;
+  /** Segna una domanda come decisa. `risposta` null = "non saprei", che e una risposta. */
+  answerQuestion(id: string, risposta: string | null): Promise<void>;
 
   /* goals */
   loadGoalDefs(): Promise<GoalDef[]>;

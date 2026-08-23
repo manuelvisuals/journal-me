@@ -55,6 +55,7 @@ import { getStore, useStorageMode } from "@/lib/data/store";
 import { APP_VERSION } from "@/lib/data/store/types";
 import { formatNumber } from "@/lib/format";
 import { clearPlanCache, usePlan } from "@/lib/plan";
+import { dimenticaScansione } from "@/lib/actions/scan-archivio";
 import { openPremiumWall } from "@/components/premium-wall";
 import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
 import { useLang, useLangPref, useT } from "@/lib/i18n";
@@ -217,6 +218,10 @@ export function SettingsClient({
     // background non lo smentiva (con un 402 a sorpresa alla prima azione,
     // proprio cio che SPEC-v2 §3.3 vieta).
     clearPlanCache();
+    // Il prossimo account che entra da questo browser ha un altro diario:
+    // il suo archivio va letto, e questo browser non deve credere di averlo
+    // gia fatto (src/lib/actions/scan-archivio.ts).
+    dimenticaScansione();
     document.cookie =
       "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     router.push("/login");

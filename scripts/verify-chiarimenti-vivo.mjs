@@ -197,7 +197,69 @@ async function apri({ conDomande = true, conta = null } = {}) {
   await ctx.close();
 }
 
-/* ========== 3. la schermata delle domande, dove si prova ==========
+/* ====== 3. la coda: saltare non cancella, rispondere si ====== */
+{
+  // Si scrive una domanda a mano nel database del browser, come se fosse
+  // nata da un'analisi, e si guarda cosa succede saltandola e rispondendo.
+  const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
+  await ctx.addInitScript(() => {
+    try { window.localStorage.setItem("jm.mode", "local"); } catch {}
+  });
+  const page = await ctx.newPage();
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.evaluate(`(async () => { ${SEED} })()`);
+
+  const scrivi = async () => page.evaluate(`(async () => {
+    const req = indexedDB.open("journalme");
+    const db = await new Promise((res) => { req.onsuccess = () => res(req.result); });
+    const tx = db.transaction("questions", "readwrite");
+    tx.objectStore("questions").put({
+      id: "${OGGI}|persona|mio fratello", entryDate: "${OGGI}",
+      specie: "identita", azione: "persona", soggetto: "mio fratello",
+      citazione: "...e passato mio fratello.", testo: "Chi e mio fratello?",
+      perche: "Vale per sempre.", libero: true,
+      opzioni: [{ valore: "Daniele", etichetta: "Daniele", sotto: "", nomeVero: "" }],
+      risposta: null, createdAt: new Date().toISOString(),
+    });
+    await new Promise((res) => { tx.oncomplete = res; });
+    db.close();
+  })()`);
+
+  const aperte = async () => page.evaluate(`(async () => {
+    const req = indexedDB.open("journalme");
+    const db = await new Promise((res) => { req.onsuccess = () => res(req.result); });
+    const tutte = await new Promise((res) => {
+      const r = db.transaction("questions").objectStore("questions").getAll();
+      r.onsuccess = () => res(r.result);
+    });
+    db.close();
+    return tutte.filter((q) => q.risposta === null).length;
+  })()`);
+
+  await scrivi();
+  check("una domanda scritta in coda risulta aperta", (await aperte()) === 1);
+
+  // La coda si legge dallo store, non dalla giornata: e cio che permette di
+  // chiedere l'arretrato di altri giorni.
+  const inCoda = await page.evaluate(`(async () => {
+    const req = indexedDB.open("journalme");
+    const db = await new Promise((res) => { req.onsuccess = () => res(req.result); });
+    const tutte = await new Promise((res) => {
+      const r = db.transaction("questions").objectStore("questions").getAll();
+      r.onsuccess = () => res(r.result);
+    });
+    db.close();
+    return tutte.map((q) => q.entryDate + "|" + q.azione);
+  })()`);
+  check(
+    "la coda porta con se la giornata da cui e nata",
+    inCoda[0] === `${OGGI}|persona`,
+    JSON.stringify(inCoda),
+  );
+  await ctx.close();
+}
+
+/* ========== 4. la schermata delle domande, dove si prova ==========
  *
  * Il giro completo (domanda -> risposta -> effetto) NON si puo provare qui:
  * serve un contesto con l'AI accesa, e in modalita locale l'AI non c'e per

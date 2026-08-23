@@ -25,7 +25,11 @@ che lo montano: `src/app/page.tsx` e `src/app/giorno/`.
   rotta in `src/app/api/chiarimenti/`. Il disegno approvato:
   `design/mockups/domande-analisi.html`. Due regole da non tradire: le domande di
   IDENTITA valgono per sempre e quelle di EPISODIO solo per quella giornata; e
-  "non saprei" lascia il buco invece di scegliere.
+  SALTARE NON CANCELLA — una domanda saltata torna alla prossima analisi
+  (migrazione 014, la coda). L'unica uscita definitiva e "non e una persona".
+- Chi passa a premium si porta dietro un archivio mai letto: la scansione di
+  tutto il diario e in `src/lib/actions/scan-archivio.ts`, parte da Oggi e
+  finisce facendo le domande, come qualsiasi altra analisi.
 - Persone e luoghi di una giornata passano TUTTI da `src/lib/use-day-lists.ts`:
   prima i soprannomi, poi le cose tolte con la X. Non leggere `entry.people`
   direttamente in una schermata nuova, o la X non varrebbe li.

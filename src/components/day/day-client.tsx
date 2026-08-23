@@ -120,7 +120,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
    */
   const chiediDopoAnalisi = async (aggiornata: Entry) => {
     if (!canAI) return;
-    const q = await chiediChiarimenti(mode, aggiornata.transcript, {
+    const q = await chiediChiarimenti(mode, date, aggiornata.transcript, {
       people: aggiornata.people ?? [],
       areas: aggiornata.areas ?? [],
     });

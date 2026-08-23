@@ -63,7 +63,11 @@ export function risolvi(
   if (!chiave) return { mostra: null };
 
   const suo = indice.get(`${kind}|${chiave}`);
-  if (suo) return { mostra: suo.labelKey };
+  // Un soprannome senza nome vero vuol dire "questa cosa NON e di questo
+  // tipo, e non lo sara mai": e la risposta a "nuovi amici" o "il gruppo del
+  // calcetto", che sono persone al plurale, cioe nessuna persona in
+  // particolare. Non serviva una tabella nuova: bastava una casella vuota.
+  if (suo) return { mostra: suo.labelKey.trim() ? suo.labelKey : null };
 
   // Registrato sotto un'altra specie: qui non ci va. Si controllano tutte le
   // specie e non solo persona/luogo, perche il giorno che si chiarisce un

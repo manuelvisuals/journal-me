@@ -140,6 +140,37 @@ export type DayExclusion = {
   labelKey: string;
 };
 
+/**
+ * Una domanda dell'AI, in coda.
+ *
+ * Nasce da un'analisi e RESTA finche non le dai una risposta: saltarla vuol
+ * dire "non adesso", mai "mai piu" (regola di Manuel, 23 agosto 2026). Una
+ * volta risposta non torna, e la risposta resta scritta apposta per questo.
+ */
+export type Domanda = {
+  id: string;
+  /** La giornata da cui e nata. */
+  entryDate: string;
+  /** 'identita' vale per sempre, 'episodio' solo per quella giornata. */
+  specie: "identita" | "episodio";
+  azione: "persona" | "specie" | "area";
+  soggetto: string;
+  citazione: string;
+  testo: string;
+  perche: string;
+  opzioni: Opzione[];
+  /** Si puo scrivere un nome a mano (solo per le persone). */
+  libero: boolean;
+};
+
+export type Opzione = {
+  valore: string;
+  etichetta: string;
+  sotto: string;
+  /** Solo per azione 'specie': con che nome mostrarla d'ora in poi. */
+  nomeVero: string;
+};
+
 export type Fact = {
   id: string;
   /** YYYY-MM-DD */

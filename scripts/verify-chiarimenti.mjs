@@ -253,7 +253,7 @@ check(
 );
 
 const extra = leggi("src/lib/i18n/en-extra.ts");
-for (const frase of ["Da chiarire", "Non saprei", "Un altro nome", "Avanti"]) {
+for (const frase of ["Da chiarire", "Non adesso", "Non e una persona", "Un altro nome", "Avanti"]) {
   check(`"${frase}" e bilingue`, extra.includes(`"${frase}":`));
 }
 
@@ -305,6 +305,78 @@ check(
   "il CSS nuovo sta in features.css come vuole ARCHITETTURA.md",
   /jm-ch-wrap/.test(css) && !/jm-ch-wrap/.test(leggi("src/app/globals.css")),
 );
+
+
+/* ===== 5. la coda: saltare non cancella, rispondere si (23 ago 2026) ===== */
+
+const store = leggi("src/lib/data/store/types.ts");
+check(
+  "le domande vivono in una coda, non muoiono col salvataggio",
+  /loadOpenQuestions/.test(store) && /saveOpenQuestions/.test(store),
+);
+{
+  const cloud = leggi("src/lib/data/store/cloud.ts");
+  check(
+    "si rileggono le domande di TUTTE le giornate, non solo di oggi",
+    /from\("open_questions"\)[\s\S]{0,200}\.is\("risposta", null\)/.test(cloud),
+  );
+  check(
+    "rileggendo una giornata si rifanno solo le domande APERTE",
+    /\.delete\(\)[\s\S]{0,200}\.is\("risposta", null\)/.test(cloud),
+  );
+  check(
+    "una domanda gia risposta non si riapre",
+    /giaDeciso/.test(cloud),
+  );
+}
+check(
+  "solo una risposta chiude una domanda: saltare no",
+  /async function chiudi/.test(chiar) &&
+    !/chiudi\(mode, domanda, null\)/.test(chiar),
+);
+check(
+  '"non e una persona" e una risposta vera, e vale per sempre',
+  /NON_E_UNA_PERSONA/.test(chiar) && /labelKey: ""/.test(chiar),
+);
+check(
+  "un soprannome senza nome vero nasconde la voce",
+  /suo\.labelKey\.trim\(\) \? suo\.labelKey : null/.test(leggi("src/lib/aliases.ts")),
+);
+{
+  const sch = leggi("src/components/today/chiarimenti-screen.tsx");
+  check(
+    'il tasto dice "Non adesso", non piu "lascialo com\'e"',
+    /t\("Non adesso"\)/.test(sch) && !/Lascialo com/.test(senzaCommenti(sch)),
+  );
+  check(
+    "c'e una via d'uscita che non cancella niente",
+    /basta per adesso/.test(sch),
+  );
+}
+{
+  const scan = leggi("src/lib/actions/scan-archivio.ts");
+  check(
+    "passando a premium si legge tutto il diario",
+    /loadAllEntries/.test(scan) && /chiediChiarimenti/.test(scan),
+  );
+  check(
+    "le giornate gia lette non si rileggono da capo: costano e non cambiano",
+    /maiLetta/.test(scan),
+  );
+  check(
+    "una giornata che non si lascia leggere non ferma le altre",
+    /catch \{[\s\S]{0,200}\}/.test(scan),
+  );
+  check(
+    "una per volta: sono chiamate a pagamento, non c'e fretta",
+    !/Promise\.all/.test(scan),
+  );
+  check(
+    "la scansione parte una volta sola, e il logout la dimentica",
+    /scansioneGiaFatta/.test(leggi("src/components/today/today-client.tsx")) &&
+      /dimenticaScansione/.test(leggi("src/components/settings/settings-client.tsx")),
+  );
+}
 
 const falliti = results.filter((r) => !r.ok);
 console.log(

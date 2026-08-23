@@ -15,9 +15,11 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
+import { chiaveAlias } from "@/lib/aliases";
 import type {
   Alias,
   DayExclusion,
+  Domanda,
   AreaSummary,
   Entry,
   EntryMetrics,
@@ -573,6 +575,88 @@ export class CloudStore implements JournalStore {
     if (error) throw new Error(error.message);
   }
 
+  async loadOpenQuestions(): Promise<Domanda[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("open_questions")
+      .select("*")
+      .eq("user_id", userId)
+      .is("risposta", null)
+      // Le piu recenti per prime: si risponde meglio a un dubbio su ieri che
+      // a uno su marzo, e chi si stanca a meta ha sistemato le cose fresche.
+      .order("entry_date", { ascending: false })
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => domandaRow(r));
+  }
+
+  async saveOpenQuestions(dateISO: string, domande: Domanda[]): Promise<void> {
+    const userId = await this.userId();
+    const supabase = this.supabase();
+
+    // Le domande di questa giornata ancora aperte si buttano e si rifanno:
+    // il testo e cambiato, e i dubbi di prima potrebbero non esserlo piu.
+    // Quelle gia RISPOSTE restano dove sono, e non si riaprono.
+    const { error: delErr } = await supabase
+      .from("open_questions")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .is("risposta", null);
+    if (delErr) throw new Error(delErr.message);
+
+    if (domande.length === 0) return;
+
+    const { data: decise } = await supabase
+      .from("open_questions")
+      .select("azione, soggetto_key")
+      .eq("user_id", userId)
+      .eq("entry_date", dateISO)
+      .not("risposta", "is", null);
+    const giaDeciso = new Set(
+      ((decise as Record<string, unknown>[]) ?? []).map(
+        (r) => `${r.azione}|${r.soggetto_key}`,
+      ),
+    );
+
+    const righe = domande
+      .filter((d) => !giaDeciso.has(`${d.azione}|${chiaveAlias(d.soggetto)}`))
+      .map((d) => ({
+        user_id: userId,
+        entry_date: dateISO,
+        specie: d.specie,
+        azione: d.azione,
+        soggetto: d.soggetto,
+        soggetto_key: chiaveAlias(d.soggetto),
+        citazione: d.citazione,
+        testo: d.testo,
+        perche: d.perche,
+        opzioni: d.opzioni,
+        libero: d.libero,
+      }));
+    if (righe.length === 0) return;
+
+    const { error } = await supabase
+      .from("open_questions")
+      .upsert(righe, { onConflict: "user_id,entry_date,azione,soggetto_key" });
+    if (error) throw new Error(error.message);
+  }
+
+  async answerQuestion(id: string, risposta: string | null): Promise<void> {
+    const userId = await this.userId();
+    const { error } = await this.supabase()
+      .from("open_questions")
+      .update({
+        // Una domanda saltata resta aperta: "non adesso" non e "mai piu".
+        // Solo "non saprei" e una risposta, e si scrive come tale.
+        risposta: risposta ?? "non-saprei",
+        answered_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId)
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {
     const userId = await this.userId();
     const { data, error } = await this.supabase()
@@ -1044,4 +1128,28 @@ export class CloudStore implements JournalStore {
 
     return report;
   }
+}
+
+/** Da riga del database a domanda. Gli opzioni sono jsonb: si difendono. */
+function domandaRow(r: Record<string, unknown>): Domanda {
+  const opzioni = Array.isArray(r.opzioni)
+    ? (r.opzioni as Record<string, unknown>[]).map((o) => ({
+        valore: String(o.valore ?? ""),
+        etichetta: String(o.etichetta ?? o.valore ?? ""),
+        sotto: String(o.sotto ?? ""),
+        nomeVero: String(o.nomeVero ?? ""),
+      }))
+    : [];
+  return {
+    id: String(r.id),
+    entryDate: String(r.entry_date),
+    specie: r.specie === "identita" ? "identita" : "episodio",
+    azione: String(r.azione) as Domanda["azione"],
+    soggetto: String(r.soggetto ?? ""),
+    citazione: String(r.citazione ?? ""),
+    testo: String(r.testo ?? ""),
+    perche: String(r.perche ?? ""),
+    opzioni,
+    libero: r.libero === true,
+  };
 }

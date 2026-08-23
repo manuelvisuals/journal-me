@@ -11,7 +11,7 @@
 import { cached, invalidateAll } from "@/lib/data/cache";
 import { getStore } from "@/lib/data/store";
 import type { DataMode } from "@/lib/data/entries";
-import type { Alias, DayExclusion, Fact, NewFact } from "@/lib/types";
+import type { Alias, DayExclusion, Domanda, Fact, NewFact } from "@/lib/types";
 
 export async function loadFactsForDate(
   _mode: DataMode,
@@ -86,4 +86,31 @@ export async function removeExclusion(
 ): Promise<void> {
   invalidateAll();
   return getStore().removeExclusion(e);
+}
+
+/* --- le domande dell'AI, in coda (migrazione 014) --- */
+
+/**
+ * Tutte le domande ancora aperte, di tutte le giornate. NON passa dalla
+ * cache: una domanda appena risposta deve sparire subito, e una appena nata
+ * deve comparire subito. Sessanta secondi di ritardo, qui, si vedono.
+ */
+export async function loadOpenQuestions(_mode?: DataMode): Promise<Domanda[]> {
+  return getStore().loadOpenQuestions();
+}
+
+export async function saveOpenQuestions(
+  _mode: DataMode,
+  dateISO: string,
+  domande: Domanda[],
+): Promise<void> {
+  return getStore().saveOpenQuestions(dateISO, domande);
+}
+
+export async function answerQuestion(
+  _mode: DataMode,
+  id: string,
+  risposta: string | null,
+): Promise<void> {
+  return getStore().answerQuestion(id, risposta);
 }

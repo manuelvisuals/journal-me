@@ -18,13 +18,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
-import type { Domanda, Risposta } from "@/lib/chiarimenti";
+import { NON_E_UNA_PERSONA, type Domanda, type Risposta } from "@/lib/chiarimenti";
 
 type Props = {
   domande: Domanda[];
   onDone: (risposte: Risposta[]) => void;
   saving?: boolean;
 };
+
+/**
+ * SALTARE NON CANCELLA NIENTE. Dal 23 agosto 2026 una domanda saltata resta
+ * in coda e torna alla prossima analisi: e la regola di Manuel, "puo solo
+ * saltarla adesso, ma tanto poi te la rifaro dopo". Per questo il tasto dice
+ * "non adesso" e non "lascialo com'e": la seconda era una promessa falsa.
+ *
+ * L'unica uscita definitiva per una cosa che non e una persona — "nuovi
+ * amici", "il gruppo del calcetto" — e il bottone che lo dice. E una
+ * risposta, non una fuga.
+ */
 
 export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
   const t = useT();
@@ -134,6 +145,26 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
                 </button>
               ))}
 
+              {/* Non e una persona: "nuovi amici" e un gruppo, non
+                  qualcuno. E una risposta vera e chiude la domanda per
+                  sempre, in tutte le giornate. */}
+              {d.azione === "persona" && (
+                <button
+                  type="button"
+                  className={`jm-ch-opt${scelta === NON_E_UNA_PERSONA ? " sel" : ""}`}
+                  onClick={() => {
+                    setScelta(NON_E_UNA_PERSONA);
+                    setNomeVero("");
+                  }}
+                  aria-pressed={scelta === NON_E_UNA_PERSONA}
+                >
+                  <span className="jm-ch-lab">
+                    {t("Non e una persona")}
+                    <span className="sub">{t("non chiedermelo piu")}</span>
+                  </span>
+                </button>
+              )}
+
               {/* Il campo libero e l'ULTIMA riga, non la prima: scrivere un
                   nome a mano e il modo piu facile per ritrovarsi "Daniele" e
                   "daniele" come due persone diverse. */}
@@ -157,13 +188,23 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
         </div>
 
         <div className="jm-ch-foot">
+          {domande.length > 1 && (
+            <button
+              type="button"
+              className="jm-ch-basta"
+              disabled={saving}
+              onClick={() => onDone(date.current)}
+            >
+              {t("basta per adesso")}
+            </button>
+          )}
           <button
             type="button"
             className="jm-ch-skip"
             disabled={saving}
             onClick={() => avanti(null)}
           >
-            {d.azione === "area" ? t("Non saprei") : t("Lascialo com'e")}
+            {t("Non adesso")}
           </button>
           <button
             type="button"
