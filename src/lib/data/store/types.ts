@@ -110,7 +110,7 @@ export interface JournalStore {
     durationSeconds: number,
   ): Promise<Entry>;
 
-  /* fatti (SPEC-fatti.md §3) */
+  /* fatti (src/modules/oggi/SPEC-fatti.md §3) */
 
   /**
    * Rifa i fatti 'ai' di una giornata: cancella quelli vecchi e scrive i

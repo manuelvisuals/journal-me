@@ -16,7 +16,7 @@
  *
  * Il modello mentale, adesso, e uno solo e sta in una riga: LA GIORNATA E
  * IL SUO TESTO. Tutto il resto - titolo, sintesi, aree, persone, e domani i
- * fatti (SPEC-fatti.md) - e una funzione di quel testo, ricalcolata
+ * fatti (src/modules/oggi/SPEC-fatti.md) - e una funzione di quel testo, ricalcolata
  * ogni volta che il testo cambia. Nessun pezzo di stato sopravvive a una
  * modifica per conto suo.
  *
@@ -65,7 +65,7 @@ async function callProcessEntry(
 }
 
 /**
- * I FATTI della giornata (SPEC-fatti.md §4).
+ * I FATTI della giornata (src/modules/oggi/SPEC-fatti.md §4).
  *
  * Ha assorbito l'estrazione dei nomi: una persona e un fatto con
  * `kind: 'persona'`. Tenerle su due strade separate voleva dire due prompt,

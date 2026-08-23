@@ -13,7 +13,7 @@ import { useT } from "@/lib/i18n";
  * COSA C'E OGGI, detto senza giri di parole: la sezione esiste, si accende e
  * si spegne, prende il suo posto nella barra. Quello che ancora non c'e e il
  * contenuto: registrare serie e ripetizioni ha bisogno di un posto dove
- * salvarle, cioe della tabella dei fatti (SPEC-fatti.md), che non e ancora
+ * salvarle, cioe della tabella dei fatti (src/modules/oggi/SPEC-fatti.md), che non e ancora
  * costruita.
  *
  * Questa schermata lo DICE, invece di far finta. Una sezione vuota che

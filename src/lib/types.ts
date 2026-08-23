@@ -95,7 +95,7 @@ export type Remember = {
 };
 
 /**
- * Un FATTO: un giorno, un tipo, un'etichetta (SPEC-fatti.md §3).
+ * Un FATTO: un giorno, un tipo, un'etichetta (src/modules/oggi/SPEC-fatti.md §3).
  *
  * "Pizza", "panca piana" e "Christian" sono la stessa struttura con `kind`
  * diverso. E cio che permette di rispondere a "quante volte ho mangiato la

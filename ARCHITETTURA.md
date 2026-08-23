@@ -30,7 +30,11 @@ Apple senza sorprese.
   le route in app/api sono gusci di poche righe che ri-esportano gli handler (i
   segment config, tipo runtime/maxDuration, restano letterali nel guscio perche
   Next li vuole li).
-- passo F — da fare.
+- passo F — FATTO il 23 agosto: i documenti seguono i moduli (SPEC-fatti,
+  SPEC-fatti-decisioni, RISULTATI-prova-modelli e il referto del bug registrazione in
+  modules/oggi; HANDOVER-consumi in modules/impostazioni; BRIEF-checkout-finto in
+  modules/abbonamento), i chiusi stanno in docs/storia/ (audit, PROMPT-sorella), e
+  HANDOVER.md e dichiarato NON crescente: lo stato di un modulo vive nel suo CLAUDE.md.
 
 **Chi apre una sessione su questo repo legge questo file PRIMA di toccare codice**, poi
 il CLAUDE.md della cartella in cui lavora. Se lavori a un modulo, il tuo perimetro e
@@ -168,7 +172,7 @@ path) e va fatto per ultimo, a B e C digeriti, in una finestra tranquilla.
 La logica delle 8 route scende in `modules/<nome>/server.ts`. Facoltativo e senza
 fretta: le route sono gia piccole (68-268 righe) e ben separate.
 
-**F. I documenti seguono i moduli.**
+**F. I documenti seguono i moduli. FATTO il 23 agosto 2026.**
 HANDOVER.md resta la storia generale ma smette di crescere: lo stato di un modulo vive
 nel suo CLAUDE.md. (Oggi in root ci sono 14 documenti .md: la meta e roba di moduli.)
 
