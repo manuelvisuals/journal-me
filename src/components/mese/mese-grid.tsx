@@ -4,7 +4,8 @@
  * Il Mese a griglia (SPEC-v2 §5.6, mockup desktop-v1 §04): solo da lg.
  * Sette colonne, celle 112px, oggi con bordo ambra e gradiente caldo,
  * giorni futuri al 30%, vuoti passati in serif corsivo ("vuota", come nel
- * mockup approvato). Sotto lg resta il feed verticale di sempre: stessa
+ * mockup approvato) e cliccabili come i pieni: portano alla schermata di
+ * quel giorno, dove si puo ancora raccontarlo. Sotto lg resta il feed verticale di sempre: stessa
  * route, stesso componente client, layout diverso.
  *
  * La rail destra mostra le statistiche del mese: si calcolano QUI, in
@@ -221,8 +222,12 @@ export function MeseGrid({
         <div className="jm-mese-grid">
           {cells.map((c) => {
             const cls = `jm-mese-cell ${c.kind}${c.isToday ? " today" : ""}`;
-            const clickable =
-              c.kind === "full" || (c.isToday && c.kind === "empty");
+            // Anche una giornata passata e vuota si clicca: porta alla sua
+            // schermata, dove "Aggiungi a questa giornata" la fa compilare
+            // senza che la data diventi oggi (day-client.tsx, ramo !entry).
+            // Sul telefono era gia cosi da sempre (day-row.tsx: ogni riga e
+            // cliccabile, piena o no): era la griglia desktop l'eccezione.
+            const clickable = c.kind === "full" || c.kind === "empty";
             if (!clickable) {
               return (
                 <div key={c.key} className={cls}>
@@ -238,9 +243,12 @@ export function MeseGrid({
                 key={c.key}
                 type="button"
                 className={cls}
-                onClick={() =>
-                  c.entry && c.iso ? onDayClick(c.iso) : onWriteToday()
-                }
+                onClick={() => {
+                  // Oggi senza giornata resta l'eccezione: si va a Racconta,
+                  // non alla schermata del giorno.
+                  if (!c.entry && c.isToday) return onWriteToday();
+                  if (c.iso) onDayClick(c.iso);
+                }}
               >
                 <div className="jm-mese-cn">{c.day}</div>
                 {c.entry ? (
