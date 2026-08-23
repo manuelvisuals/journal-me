@@ -108,6 +108,30 @@ const SPECIE_VALIDE: FactKind[] = [
 /* -------------------------------------------------------------- applicare */
 
 /**
+ * Le chiavi su cui scrivere il soprannome: quella della domanda, piu ogni
+ * nome della giornata che indica la stessa persona.
+ *
+ * "Mio fratello" e "fratello" sono la stessa persona detta in due modi, e
+ * l'app li incontra tutti e due: l'uno nella domanda, l'altro nell'elenco
+ * salvato. Scrivere il soprannome su una sola delle due chiavi vuol dire
+ * rispondere e non vedere cambiare niente.
+ *
+ * Il confronto e per contenimento e non per uguaglianza, ma solo in una
+ * direzione e con un pavimento di tre lettere: cosi "fratello" dentro "mio
+ * fratello" si aggancia, e "Ida" dentro "Guida turistica" no.
+ */
+function formeDelSoggetto(soggetto: string, personeDelGiorno: string[]): string[] {
+  const base = chiaveAlias(soggetto);
+  const forme = new Set<string>();
+  if (base) forme.add(base);
+  for (const p of personeDelGiorno) {
+    const k = chiaveAlias(p);
+    if (k.length >= 3 && base.includes(k)) forme.add(k);
+  }
+  return [...forme];
+}
+
+/**
  * Applica tutte le risposte. Torna la giornata aggiornata se le aree sono
  * cambiate, altrimenti quella che aveva ricevuto.
  *
@@ -130,11 +154,15 @@ export async function applicaRisposte(
       // "Non saprei" su un nome non scrive niente: meglio il soprannome che
       // un nome sbagliato inciso per sempre.
       if (!valore) continue;
-      await saveAlias(mode, {
-        kind: "persona",
-        alias: chiaveAlias(domanda.soggetto),
-        labelKey: valore.trim(),
-      });
+      const nome = valore.trim();
+      // TUTTE le grafie che quel giorno indicavano quella persona, non solo
+      // quella della domanda. Visto in produzione il 23 agosto: la domanda
+      // diceva "mio fratello" mentre la giornata aveva salvato "fratello", e
+      // il soprannome finiva su una chiave che non compariva da nessuna
+      // parte. La persona restava "fratello" anche dopo aver risposto.
+      for (const forma of formeDelSoggetto(domanda.soggetto, entry?.people ?? [])) {
+        await saveAlias(mode, { kind: "persona", alias: forma, labelKey: nome });
+      }
       continue;
     }
 

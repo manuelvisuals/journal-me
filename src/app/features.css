@@ -602,7 +602,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
 }
 .jm-ch-skip {
   font-size: calc(13px * var(--jm-ui-scale));
@@ -612,10 +612,33 @@
   font-family: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
+  /* Su una riga. Andando a capo ("Lascialo / com'e") sembrava un errore di
+     impaginazione, e visto in produzione il 23 agosto lo sembrava davvero. */
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 .jm-ch-next {
   padding: 12px 22px;
+  /* Non si allarga per riempire la riga: e un bottone, non una barra. */
+  flex: 0 0 auto;
+  min-width: calc(112px * var(--jm-ui-scale));
 }
 .jm-ch-next:disabled {
   opacity: 0.3;
+}
+
+/* Sul desktop la domanda sta al centro dello schermo, non appesa in alto con
+   i bottoni schiacciati sul bordo di sotto: e una sola cosa da leggere, e
+   trecento pixel di vuoto sopra la facevano sembrare un residuo. */
+@media (min-width: 1024px) {
+  .jm-ch-col {
+    justify-content: center;
+    padding-bottom: 60px;
+  }
+  .jm-ch-scroll {
+    flex: 0 1 auto;
+  }
+  .jm-ch-foot {
+    margin-top: 34px;
+  }
 }

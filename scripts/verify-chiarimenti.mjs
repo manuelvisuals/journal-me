@@ -263,6 +263,49 @@ check(
   /"chiarimenti"/.test(usage),
 );
 
+
+/* ===== 4. i tre difetti visti in produzione il 23 agosto 2026 ===== */
+
+{
+  // "Mio fratello" nella domanda, "fratello" nell'elenco della giornata: il
+  // soprannome finiva su una chiave che non compariva da nessuna parte, e
+  // rispondere non cambiava niente. Ora si scrive su tutte e due.
+  check(
+    "il soprannome si scrive su tutte le grafie di quella persona",
+    /formeDelSoggetto/.test(chiar) && /base\.includes\(k\)/.test(chiar),
+  );
+  check(
+    "ma non su una parola corta contenuta per caso",
+    /k\.length >= 3/.test(chiar),
+  );
+}
+check(
+  "con azione persona il soggetto deve essere una persona della giornata",
+  /ESATTAMENTE una delle/.test(rotta),
+);
+check(
+  "la domanda non elenca le risposte che ha gia sotto forma di bottoni",
+  /Non elencare le risposte dentro la domanda/.test(rotta),
+);
+check(
+  "senza nomi da offrire si scrive direttamente, senza un tocco in piu",
+  /liberoScelto \|\| \(!!d && d\.libero/.test(schermata),
+);
+
+const css = leggi("src/app/features.css");
+check(
+  "il tasto per saltare sta su una riga sola",
+  /white-space: nowrap/.test(css.slice(css.indexOf(".jm-ch-skip"))),
+);
+check(
+  "sul desktop la domanda sta al centro, non appesa in alto",
+  /\.jm-ch-col \{\s*justify-content: center;/.test(css),
+);
+check(
+  "il CSS nuovo sta in features.css come vuole ARCHITETTURA.md",
+  /jm-ch-wrap/.test(css) && !/jm-ch-wrap/.test(leggi("src/app/globals.css")),
+);
+
 const falliti = results.filter((r) => !r.ok);
 console.log(
   `\n${results.length - falliti.length}/${results.length} PASS` +

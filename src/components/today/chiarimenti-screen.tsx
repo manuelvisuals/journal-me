@@ -31,12 +31,21 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
   const [i, setI] = useState(0);
   const [scelta, setScelta] = useState<string | null>(null);
   const [nomeVero, setNomeVero] = useState<string>("");
-  const [libero, setLibero] = useState(false);
+  const [liberoScelto, setLiberoScelto] = useState(false);
   const [testoLibero, setTestoLibero] = useState("");
   const date = useRef<Risposta[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const d = domande[i];
+
+  /**
+   * Si scrive a mano quando lo si e chiesto, oppure quando non c'e niente da
+   * scegliere: se la rubrica e vuota — ed e vuota per chiunque cominci oggi —
+   * una domanda sul nome di una persona non ha nessun bottone da offrire, e
+   * mostrare "un altro nome" come unica strada e un tocco chiesto per niente.
+   */
+  const libero =
+    liberoScelto || (!!d && d.libero && (d.opzioni?.length ?? 0) === 0);
 
   useEffect(() => {
     if (libero) inputRef.current?.focus();
@@ -57,7 +66,7 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
     setI((n) => n + 1);
     setScelta(null);
     setNomeVero("");
-    setLibero(false);
+    setLiberoScelto(false);
     setTestoLibero("");
   }
 
@@ -133,7 +142,7 @@ export function ChiarimentiScreen({ domande, onDone, saving = false }: Props) {
                   type="button"
                   className="jm-ch-opt ghost"
                   onClick={() => {
-                    setLibero(true);
+                    setLiberoScelto(true);
                     setScelta(null);
                   }}
                 >
