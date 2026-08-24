@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { chooseLocalMode, getStore } from "@/lib/data/store";
+import { chooseLocalMode, getStore, useStorageMode } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
 import { signalReady } from "@/lib/app-ready";
 import {
@@ -11,6 +11,9 @@ import {
   PREMIUM_PRICE_PERIOD,
 } from "@/lib/pricing";
 import { useT } from "@/lib/i18n";
+import { isNative } from "@/lib/native/platform";
+import { markWelcomeSeen } from "@/lib/welcome";
+import { openPremiumWall } from "@/modules/abbonamento";
 
 /**
  * /benvenuto — la scelta, al primo avvio (SPEC-v2 §7.1, mockup
@@ -24,6 +27,27 @@ export default function BenvenutoPage() {
   const t = useT();
   const router = useRouter();
   const [starting, setStarting] = useState<boolean>(false);
+  // Dal 24 agosto 2026 questa schermata si vede DOPO il login, non prima:
+  // arrivandoci con una sessione cloud in tasca, "gratis" non vuol piu dire
+  // "niente account" ma "piano free", e i due bottoni devono portare
+  // dentro invece che al bivio. Chi ci capita senza sessione (un vecchio
+  // segnalibro) trova il comportamento di sempre.
+  const mode = useStorageMode();
+  const postLogin = mode === "cloud";
+  // La modalita si risolve in un istante ma non a render zero: finche non
+  // si sa, i bottoni non partono. Un click in quel millisecondo sceglierebbe
+  // la modalita locale a un utente che ha appena fatto l'accesso.
+  const waiting = mode === "resolving";
+  // Dentro il guscio iOS non si mostrano prezzi ne inviti a comprare
+  // (App Store 3.1.1): la pagina resta questa, parola per parola, e
+  // spariscono soltanto due elementi — la riga del prezzo e il bottone
+  // "prova premium". Nient'altro cambia, per scelta esplicita di Manuel.
+  const native = isNative();
+
+  const enter = () => {
+    markWelcomeSeen();
+    router.replace("/");
+  };
 
   const startLocal = async () => {
     if (starting) return;
@@ -77,8 +101,8 @@ export default function BenvenutoPage() {
           <button
             type="button"
             className="btn-ghost"
-            onClick={() => void startLocal()}
-            disabled={starting}
+            onClick={() => (postLogin ? enter() : void startLocal())}
+            disabled={starting || waiting}
           >
             {starting ? t("preparo...") : t("inizia cosi")}
           </button>
@@ -103,18 +127,32 @@ export default function BenvenutoPage() {
               scritto a mano e prometteva anche "primo mese incluso", che
               nessuna parte del codice mantiene (il checkout Stripe non ha
               trial). Si dice cio che succede davvero. */}
-          <div className="jm-benv-price">
-            <b>{PREMIUM_PRICE_AMOUNT}</b> {PREMIUM_PRICE_PERIOD}
-            {PREMIUM_HAS_FREE_TRIAL ? ` . ${t("primo mese incluso")}` : ""}
-          </div>
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => router.push("/login")}
-            disabled={starting}
-          >
-            {t("prova premium")}
-          </button>
+          {!native && (
+            <div className="jm-benv-price">
+              <b>{PREMIUM_PRICE_AMOUNT}</b> {PREMIUM_PRICE_PERIOD}
+              {PREMIUM_HAS_FREE_TRIAL ? ` . ${t("primo mese incluso")}` : ""}
+            </div>
+          )}
+          {!native && (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                if (!postLogin) {
+                  router.push("/login");
+                  return;
+                }
+                // Post-login il muro sa gia dove mandare: Stripe se
+                // configurato, il pagamento simulato in prova. Qui non si
+                // duplica quella decisione, la si chiama.
+                markWelcomeSeen();
+                openPremiumWall("aiSummary");
+              }}
+              disabled={starting || waiting}
+            >
+              {t("prova premium")}
+            </button>
+          )}
         </div>
       </div>
 

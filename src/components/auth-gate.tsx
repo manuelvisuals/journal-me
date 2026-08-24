@@ -80,9 +80,17 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (settledOut && !publicPath) {
-      router.replace("/benvenuto");
-    } else if (auth === "in" && (pathname === "/login" || pathname === "/benvenuto")) {
-      // Fuori dalle pagine d'ingresso SOLO chi ha una sessione cloud vera.
+      // Dal 24 agosto 2026 la prima schermata e il LOGIN, non piu il bivio
+      // (deciso da Manuel: "app si apre e c'e una schermata di login").
+      // /benvenuto non sparisce: diventa cio che si vede DOPO l'accesso, e
+      // la via senza account resta la riga in fondo al login, che c'era
+      // gia — "Tienilo solo su questo dispositivo".
+      router.replace("/login");
+    } else if (auth === "in" && pathname === "/login") {
+      // Chi ha gia una sessione non resta sul login. /benvenuto NON e piu
+      // in questo elenco: adesso e la schermata post-accesso, quindi ci si
+      // arriva PROPRIO con la sessione in tasca, e rimbalzarla a / la
+      // renderebbe irraggiungibile. Ci pensa lei a portare dentro.
       // In modalita locale /login deve restare raggiungibile: e la strada
       // del "prova premium" (muro, PR 10) — rimbalzarlo a / era un vicolo
       // cieco. La migrazione locale->cloud vera e propria arriva con §7.2.

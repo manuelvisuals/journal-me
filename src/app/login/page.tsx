@@ -6,6 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
+import { welcomeSeen } from "@/lib/welcome";
+import { chooseLocalMode, clearLocalMode, getStore } from "@/lib/data/store";
+import { LocalStore } from "@/lib/data/store/local";
 
 const LAST_EMAIL_KEY = "journalme-last-email";
 const CODE_LENGTH = 6;
@@ -49,6 +52,43 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [startingLocal, setStartingLocal] = useState(false);
+
+  /**
+   * Dove si va dopo un codice giusto. Al PRIMO accesso su questo
+   * dispositivo si passa da /benvenuto — la schermata "gratis o premium",
+   * che dal 24 agosto 2026 sta qui invece che prima del login. Chi rientra
+   * la mattina va dritto dentro: rifare la domanda a ogni accesso sarebbe
+   * un pedaggio, non un benvenuto.
+   */
+  function afterLogin(): string {
+    // La modalita e in cache in un modulo, non nell'indirizzo: senza questa
+    // riga resterebbe "none" (com'era un istante fa, prima della sessione)
+    // e /benvenuto crederebbe di stare PRIMA del login. Rileggerla e
+    // l'unico modo di dirle che adesso c'e un account.
+    clearLocalMode();
+    return welcomeSeen() ? "/" : "/benvenuto";
+  }
+
+  /**
+   * La via senza account, che era gia qui in fondo alla pagina. Prima
+   * rimandava a /benvenuto perche la scelta viveva li; adesso il bivio non
+   * esiste piu e questa riga fa direttamente cio che dice: sceglie la
+   * modalita locale ed entra. Stessa sequenza del vecchio bottone di
+   * /benvenuto, persistenza compresa (SPEC-v2 §2.5: navigator.storage
+   * .persist() va chiesto DOPO un gesto dell'utente, e questo click lo e).
+   */
+  const startLocal = async () => {
+    if (startingLocal) return;
+    setStartingLocal(true);
+    chooseLocalMode();
+    const store = getStore();
+    if (store instanceof LocalStore) {
+      await store.requestPersistence().catch(() => false);
+      await store.setMeta("onboardingDone", true).catch(() => undefined);
+    }
+    router.replace("/");
+  };
   const [error, setError] = useState<string | null>(null);
   // Accesso del revisore Apple (PIANO-APPSTORE §1c): se il server dice che
   // questa email e da revisione, il codice non viaggia via email — e quello
@@ -128,7 +168,7 @@ export default function LoginPage() {
         });
         if (authError) throw new Error(authError.message);
         setVerifying(false);
-        router.replace("/");
+        router.replace(afterLogin());
         return;
       } catch {
         setVerifying(false);
@@ -152,7 +192,7 @@ export default function LoginPage() {
       );
       return;
     }
-    router.replace("/");
+    router.replace(afterLogin());
   }
 
   return (
@@ -307,7 +347,8 @@ export default function LoginPage() {
             </div>
             <Button
               variant="ghost"
-              onClick={() => router.push("/benvenuto")}
+              onClick={() => void startLocal()}
+              disabled={startingLocal}
             >
               {t("Tienilo solo su questo dispositivo")}
             </Button>
