@@ -8,6 +8,7 @@ import { ThemeWatcher } from "@/components/theme-watcher";
 import { LangWatcher } from "@/components/lang-watcher";
 import { Toaster } from "@/components/ui/toast";
 import { PremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
+import { SalutoAvvio } from "@/modules/accesso";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
 import { defaultThemeCss, themeBootScript } from "@/themes/boot";
 
@@ -187,6 +188,11 @@ export default function RootLayout({
           <AuthGate>
             {/* Da lg in su: rail + colonna + rail destra (PR 6). Sotto lg il
                 guscio e display:contents e non esiste. */}
+            {/* Il saluto all'avvio: dentro AuthGate, quindi un utente c'e
+                gia per costruzione. Si disegna prima del paint, cosi i
+                secondi in cui l'app finisce di caricarsi passano dietro
+                il velo invece che davanti a una schermata nuda. */}
+            <SalutoAvvio />
             <DesktopShell>{children}</DesktopShell>
           </AuthGate>
         </BiometricLock>

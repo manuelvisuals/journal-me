@@ -1,7 +1,6 @@
 /**
- * La porta del modulo ACCESSO (passo D, ARCHITETTURA.md). Vuota di
- * proposito: oggi nessun altro modulo ha bisogno di un pezzo di questo.
- * Se un giorno serve, il pezzo si esporta da QUI — mai importare
- * @/modules/accesso/* dall'esterno, il lint dei confini lo blocca.
+ * La porta del modulo ACCESSO (passo D, ARCHITETTURA.md). Da qui esce solo
+ * cio che lo scheletro deve montare: mai importare @/modules/accesso/*
+ * dall'esterno, il lint dei confini lo blocca.
  */
-export {};
+export { SalutoAvvio } from "@/modules/accesso/components/saluto-avvio";

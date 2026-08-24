@@ -169,3 +169,70 @@
     padding: 28px 28px 24px;
   }
 }
+
+/* =============================================================
+   Messaggio di benvenuto all'avvio: SOLO l'impianto.
+   Il disegno vero (colori, immagine, animazione, posizione) si fa
+   dopo, con Manuel. Quello che c'e qui e un riquadro qualsiasi che
+   dimostra che compare al momento giusto: non e una proposta.
+   ============================================================= */
+
+.jm-benv-sal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(24px * var(--jm-space));
+  background: color-mix(in oklab, var(--color-bg) 72%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.jm-benv-sal-box {
+  width: 100%;
+  max-width: calc(380px * var(--jm-space));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  background: var(--color-surface);
+  padding: calc(24px * var(--jm-space));
+  font-family: var(--font-sans);
+}
+
+.jm-benv-sal-h {
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.jm-benv-sal-p {
+  margin-top: calc(10px * var(--jm-space));
+  font-size: calc(14px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+
+.jm-benv-sal-c {
+  display: flex;
+  align-items: center;
+  gap: calc(9px * var(--jm-space));
+  margin-top: calc(18px * var(--jm-space));
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+}
+
+.jm-benv-sal-b {
+  width: 100%;
+  min-height: calc(48px * var(--jm-space));
+  margin-top: calc(18px * var(--jm-space));
+  border: none;
+  border-radius: var(--jm-radius-md);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-family: var(--font-sans);
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+}
