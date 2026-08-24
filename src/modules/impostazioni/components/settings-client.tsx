@@ -464,10 +464,28 @@ export function SettingsClient({
               {!isLocal && plan !== "premium" && <PremiumInvite />}
               <SetGroup label={t("Account")}>
                 {isLocal ? (
-                  <SetRow
-                    title={t("Dove")}
-                    value={t("Solo su questo dispositivo")}
-                  />
+                  <>
+                    <SetRow
+                      title={t("Dove")}
+                      value={t("Solo su questo dispositivo")}
+                    />
+                    {/* La via del ritorno. Chi sceglie "sul telefono" da
+                        /benvenuto finiva in un vicolo cieco: in locale non
+                        c'e account, non c'e piano, non c'e logout, e da
+                        queste impostazioni non esisteva NESSUN modo di
+                        accedere. L'unica uscita era premere il microfono e
+                        passare dal muro premium — cioe scoprirla per caso.
+                        Un revisore Apple che sceglie "sul telefono" resta
+                        chiuso fuori dal proprio account: e un motivo di
+                        rifiuto, oltre che una trappola per chiunque. */}
+                    <SetRow
+                      title={t("Accedi al tuo account")}
+                      desc={t(
+                        "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.",
+                      )}
+                      onClick={() => router.push("/login")}
+                    />
+                  </>
                 ) : (
                   <>
                     {email && <SetRow title={t("Email")} value={email} />}
@@ -595,6 +613,15 @@ export function SettingsClient({
             <span className="v">{APP_VERSION}</span>
           </div>
 
+          {isLocal && (
+            <button
+              type="button"
+              className="jm-st-out"
+              onClick={() => router.push("/login")}
+            >
+              {t("Accedi al tuo account")}
+            </button>
+          )}
           {!isLocal && plan !== "premium" && (
             <button
               type="button"
