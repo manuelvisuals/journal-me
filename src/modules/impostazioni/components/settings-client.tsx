@@ -57,7 +57,12 @@ import { formatNumber } from "@/lib/format";
 import { clearPlanCache, usePlan } from "@/lib/plan";
 import { dimenticaScansione } from "@/lib/actions/scan-archivio";
 import { openPremiumWall } from "@/modules/abbonamento";
-import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
+import {
+  PREMIUM_PRICE_AMOUNT,
+  PREMIUM_PRICE_LABEL,
+  PREMIUM_PRICE_PERIOD,
+} from "@/lib/pricing";
+import { isNative } from "@/lib/native/platform";
 import { useLang, useLangPref, useT } from "@/lib/i18n";
 import { UI_SCALE_LABELS, useUiScale } from "@/lib/ui-scale";
 import { THEMES } from "@/themes";
@@ -456,6 +461,7 @@ export function SettingsClient({
 
             {/* L'account sul telefono: su desktop vive nella rail destra. */}
             <div className="jm-st-phoneonly">
+              {!isLocal && plan !== "premium" && <PremiumInvite />}
               <SetGroup label={t("Account")}>
                 {isLocal ? (
                   <SetRow
@@ -615,3 +621,56 @@ export function SettingsClient({
     </main>
   );
 }
+
+/**
+ * L'invito a passare a premium, sul TELEFONO (mockup C, scelto da Manuel il
+ * 24 agosto 2026 — `mockup-piano-premium.html`).
+ *
+ * Perche serviva. Nella colonna destra del desktop il bottone "Passa a
+ * Premium" c'e da sempre; sul telefono no, e la riga "Piano" diceva "Gratis"
+ * e finiva li. Chi apriva le impostazioni per abbonarsi non trovava NIENTE
+ * da toccare: non una scelta di disegno, un buco.
+ *
+ * Perche non e un bottone d'acquisto. Dentro il guscio iOS non si puo
+ * vendere ne rimandare a un acquisto esterno (App Store 3.1.1). Qui non si
+ * vende: si apre il muro premium, che sa gia distinguere i due mondi — sul
+ * web offre l'abbonamento, dentro l'app dice soltanto che l'acquisto in-app
+ * sta arrivando. Quello che si aggiunge e la PORTA, non la cassa.
+ *
+ * Il prezzo, per la stessa ragione, si stampa solo fuori dal guscio: su
+ * iPhone la riga sparisce e il bottone smette di promettere un pagamento
+ * ("Scopri Premium" invece di "Passa a Premium"). Un prezzo scritto dentro
+ * l'app e esattamente cio che fa bocciare una submission.
+ */
+function PremiumInvite() {
+  const t = useT();
+  const native = isNative();
+  return (
+    <div className="jm-st-inv">
+      <div className="jm-st-inv-t">{t("Il diario a voce e spento")}</div>
+      <p className="jm-st-inv-p">
+        {t(
+          "Trascrizione e rielaborazione girano su un server e costano a ogni minuto registrato.",
+        )}
+      </p>
+      <ul className="jm-st-inv-l">
+        <li>{t("Racconti e basta: parli, il testo si scrive")}</li>
+        <li>{t("Titolo, sintesi e macro-aree di ogni giornata")}</li>
+        <li>{t("Recap del mese e letture sui pattern")}</li>
+      </ul>
+      <button
+        type="button"
+        className="btn-primary jm-st-inv-b"
+        onClick={() => openPremiumWall("aiSummary")}
+      >
+        {native ? t("Scopri Premium") : t("Passa a Premium")}
+      </button>
+      {!native && (
+        <div className="jm-st-inv-n">
+          {`${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)} . ${t("disdici quando vuoi")}`}
+        </div>
+      )}
+    </div>
+  );
+}
+

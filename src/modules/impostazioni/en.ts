@@ -155,4 +155,11 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Sicuro? Account e giornate spariscono anche dal cloud. Non si torna indietro.": "Sure? Account and days disappear from the cloud too. There is no way back.",
   "elimino...": "deleting...",
   "si, elimina": "yes, delete",
+  "Il diario a voce e spento": "The spoken journal is off",
+  "Trascrizione e rielaborazione girano su un server e costano a ogni minuto registrato.":
+    "Transcription and processing run on a server and cost money for every minute recorded.",
+  "Racconti e basta: parli, il testo si scrive":
+    "You just talk: you speak, the text writes itself",
+  "Scopri Premium": "See what Premium is",
+  "disdici quando vuoi": "cancel whenever you want",
 };
