@@ -8,7 +8,8 @@
  */
 export const ACCESSO: Record<string, string> = {
   "Questo e il posto del messaggio di benvenuto.": "This is where the welcome message goes.",
-  "Non mostrare piu questo messaggio": "Do not show this message again",
+  "Non mostrare piu (fino al prossimo accesso)": "Do not show again (until next sign-in)",
+  "Scrivimi": "Write to me",
   "Inizia": "Start",
   "Dove vuoi tenere\nil tuo diario?": "Where do you want\nto keep your diary?",
   "Puoi cambiare idea dopo. Quello che hai scritto viene con te.": "You can change your mind later. What you have written comes with you.",

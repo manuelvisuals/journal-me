@@ -36,6 +36,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { useStorageMode } from "@/lib/data/store";
+import { SELETTORE_LINGUETTA } from "@/modules/accesso/components/linguetta";
 import { useT } from "@/lib/i18n";
 import {
   azzeraApertura,
@@ -92,6 +93,19 @@ export function SalutoAvvio() {
   const apertoDaMe = useRef<boolean>(false);
   // Una risposta lenta non deve riaprire cio che l'utente ha gia chiuso.
   const chiusoPerSempre = useRef<boolean>(false);
+  // Due tocchi rapidi farebbero partire due animazioni sovrapposte.
+  const inChiusura = useRef<boolean>(false);
+  const veloRef = useRef<HTMLDivElement | null>(null);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const reteDiSicurezza = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (reteDiSicurezza.current !== null) {
+        window.clearTimeout(reteDiSicurezza.current);
+      }
+    };
+  }, []);
 
   /* ---------- strada veloce: prima del paint, zero rete ---------- */
   useEffettoPrimaDelPaint(() => {
@@ -138,7 +152,24 @@ export function SalutoAvvio() {
     };
   }, [pubblica, mode]);
 
+  /**
+   * La chiusura: il messaggio si risucchia dentro la linguetta.
+   *
+   * Si misurano dal vivo i due rettangoli, si calcola lo scarto fra i
+   * centri e il rapporto fra le dimensioni, e si anima il messaggio verso
+   * la linguetta. Due scelte che sembrano dettagli e non lo sono:
+   *
+   * - Web Animations API, non una transizione CSS. Impostare transizione e
+   *   nuovo transform nello stesso giro di JS parte "a volte": a meta corsa
+   *   lo stile calcolato risulta ancora identita. animate() parte sempre.
+   * - Si anima il MESSAGGIO, e del velo solo fondo e sfocatura. Il velo e
+   *   il genitore: animarne l'opacita porterebbe via anche il figlio, e il
+   *   messaggio viaggerebbe gia fantasma. Il viaggio deve vedersi, quindi
+   *   l'opacita del riquadro resta quasi piena fino all'ultimo fotogramma.
+   */
   const chiudi = useCallback(() => {
+    if (inChiusura.current) return;
+    inChiusura.current = true;
     chiusoPerSempre.current = true;
     if (spuntato) {
       void (async () => {
@@ -146,14 +177,99 @@ export function SalutoAvvio() {
         if (id) chiediSilenzio(id);
       })();
     }
-    setAperto(false);
+
+    const box = boxRef.current;
+    const velo = veloRef.current;
+    const ling = document.querySelector<HTMLElement>(SELETTORE_LINGUETTA);
+    // Ripieghi obbligatori: senza linguetta, o senza animate(), chiusura
+    // secca. Mai un crash, mai un messaggio che resta aperto.
+    if (!box || !ling || typeof box.animate !== "function") {
+      setAperto(false);
+      return;
+    }
+
+    const b = box.getBoundingClientRect();
+    const l = ling.getBoundingClientRect();
+    const dx = l.left + l.width / 2 - (b.left + b.width / 2);
+    const dy = l.top + l.height / 2 - (b.top + b.height / 2);
+    // Pavimento sulla scala: senza, un riquadro molto piu grande della
+    // linguetta collassa a zero e sparisce prima di arrivare.
+    const fine = Math.max(Math.min(l.width / b.width, l.height / b.height), 0.04);
+    const versoFine = (q: number) => 1 + (fine - 1) * q;
+    // Lo sbilanciamento fra X e Y durante il viaggio e cio che da la
+    // sensazione del risucchio: una scala uniforme sembra solo un
+    // rimpicciolimento.
+    const s55 = versoFine(0.55);
+    const s82 = versoFine(0.82);
+
+    box.animate(
+      [
+        {
+          transform: "translate(0px, 0px) scale(1, 1)",
+          borderRadius: "30px",
+          opacity: 1,
+        },
+        {
+          transform: `translate(${dx * 0.55}px, ${dy * 0.55}px) scale(${s55 * 1.12}, ${s55 * 0.84})`,
+          borderRadius: "40px",
+          opacity: 1,
+        },
+        {
+          transform: `translate(${dx * 0.82}px, ${dy * 0.82}px) scale(${s82 * 0.74}, ${s82 * 1.24})`,
+          borderRadius: "50px",
+          opacity: 0.98,
+        },
+        {
+          transform: `translate(${dx}px, ${dy}px) scale(${fine}, ${fine})`,
+          borderRadius: "60px",
+          opacity: 0.25,
+        },
+      ],
+      { duration: 480, easing: "cubic-bezier(.55,0,.72,.3)", fill: "forwards" },
+    );
+
+    if (velo && typeof velo.animate === "function") {
+      const fondo = getComputedStyle(velo).backgroundColor;
+      velo.animate(
+        [
+          {
+            backgroundColor: fondo,
+            WebkitBackdropFilter: "blur(14px)",
+            backdropFilter: "blur(14px)",
+          },
+          {
+            backgroundColor: "rgba(0, 0, 0, 0)",
+            WebkitBackdropFilter: "blur(0px)",
+            backdropFilter: "blur(0px)",
+          },
+        ],
+        { duration: 440, easing: "ease-out", fill: "forwards" },
+      );
+    }
+
+    // Il ricevimento: la linguetta fa un battito quando il messaggio
+    // arriva. Il translateY(-50%) va ripetuto in OGNI fotogramma, o al
+    // primo la linguetta salta di posto.
+    if (typeof ling.animate === "function") {
+      ling.animate(
+        [
+          { transform: "translateY(-50%) scale(1)" },
+          { transform: "translateY(-50%) scale(1.22)" },
+          { transform: "translateY(-50%) scale(1)" },
+        ],
+        { duration: 300, delay: 400, easing: "ease-out" },
+      );
+    }
+
+    // Cintura: onfinish non arriva se la scheda finisce in secondo piano.
+    reteDiSicurezza.current = window.setTimeout(() => setAperto(false), 900);
   }, [mode, spuntato]);
 
   if (!aperto) return null;
 
   return (
-    <div className="jm-benv-sal" role="dialog" aria-modal="true">
-      <div className="jm-benv-sal-box">
+    <div className="jm-benv-sal" role="dialog" aria-modal="true" ref={veloRef}>
+      <div className="jm-benv-sal-box" ref={boxRef}>
         <div className="jm-benv-sal-h">{t("Bentornato")}</div>
         <div className="jm-benv-sal-p">
           {t("Questo e il posto del messaggio di benvenuto.")}
@@ -165,7 +281,7 @@ export function SalutoAvvio() {
               checked={spuntato}
               onChange={(e) => setSpuntato(e.target.checked)}
             />
-            {t("Non mostrare piu questo messaggio")}
+            {t("Non mostrare piu (fino al prossimo accesso)")}
           </label>
         )}
         <button type="button" className="jm-benv-sal-b" onClick={chiudi}>

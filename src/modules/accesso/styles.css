@@ -180,14 +180,18 @@
 .jm-benv-sal {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: calc(24px * var(--jm-space));
   background: color-mix(in oklab, var(--color-bg) 72%, transparent);
-  backdrop-filter: blur(14px);
+  /* -webkit- PRIMA dello standard, sempre: il minificatore CSS di Next
+     collassa la coppia tenendo solo l'ultima dichiarazione. Con lo
+     standard per primo, in produzione sopravvive solo la versione
+     -webkit- e il vetro sparisce SOLO nel build di produzione. */
   -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .jm-benv-sal-box {
@@ -235,4 +239,31 @@
   font-size: calc(15px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
+}
+
+/* La linguetta sul bordo destro: bersaglio dell'animazione di chiusura.
+   z-index 1500, cioe SOTTO il velo del saluto (2000). Vive a livello di
+   <body> per stare fuori da ogni antenato trasformato: dentro un antenato
+   con transform, `fixed` diventa relativo a quello e la misura mente. */
+.jm-benv-ling {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1500;
+  border: 1px solid var(--color-line);
+  border-right: none;
+  border-radius: var(--jm-radius-md) 0 0 var(--jm-radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink-muted);
+  padding: calc(14px * var(--jm-space)) calc(7px * var(--jm-space));
+  font-family: var(--font-sans);
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
