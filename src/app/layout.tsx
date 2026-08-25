@@ -8,6 +8,7 @@ import { ThemeWatcher } from "@/components/theme-watcher";
 import { LangWatcher } from "@/components/lang-watcher";
 import { Toaster } from "@/components/ui/toast";
 import { PremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
+import { Linguetta, SalutoAvvio } from "@/modules/accesso";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
 import { defaultThemeCss, themeBootScript } from "@/themes/boot";
 
@@ -180,6 +181,11 @@ export default function RootLayout({
             HTML, so it covers the cold load. It removes itself via React state
             only — never manual DOM removal (that crashed body re-renders). */}
         <Splash />
+        {/* La linguetta: su OGNI schermata, anche per chi non e entrato, e
+            a livello di <body> perche l'animazione di chiusura del saluto
+            ne misura la posizione reale — dentro un antenato con transform
+            quella misura mentirebbe. */}
+        <Linguetta />
         {/* The auth redirect used to live in src/proxy.ts (Next middleware).
             A statically exported bundle has no server to run middleware, so
             the same rule is enforced here, in the app. */}
@@ -187,6 +193,11 @@ export default function RootLayout({
           <AuthGate>
             {/* Da lg in su: rail + colonna + rail destra (PR 6). Sotto lg il
                 guscio e display:contents e non esiste. */}
+            {/* Il saluto all'avvio: dentro AuthGate, quindi un utente c'e
+                gia per costruzione. Si disegna prima del paint, cosi i
+                secondi in cui l'app finisce di caricarsi passano dietro
+                il velo invece che davanti a una schermata nuda. */}
+            <SalutoAvvio />
             <DesktopShell>{children}</DesktopShell>
           </AuthGate>
         </BiometricLock>
