@@ -7,6 +7,7 @@
  * "chiave": "valore", — verify-i18n legge questo formato.
  */
 export const IMPOSTAZIONI: Record<string, string> = {
+  "Pacchetto": "Build",
   "aggiungi": "add",
   "togli": "remove",
   "Non hai mai fatto un backup": "You have never made a backup",

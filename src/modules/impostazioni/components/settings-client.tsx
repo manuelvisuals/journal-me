@@ -53,6 +53,7 @@ import {
 } from "@/lib/backup/backup";
 import { getStore, useStorageMode } from "@/lib/data/store";
 import { APP_VERSION } from "@/lib/data/store/types";
+import { BUILD_INFO } from "@/modules/impostazioni/build-info";
 import { formatNumber } from "@/lib/format";
 import { clearPlanCache, usePlan } from "@/lib/plan";
 import { dimenticaScansione } from "@/lib/actions/scan-archivio";
@@ -504,6 +505,9 @@ export function SettingsClient({
                   </>
                 )}
                 <SetRow title={t("Versione")} value={APP_VERSION} />
+                {/* La riga che risponde a "quale codice ho davvero addosso":
+                    il commit da cui e nato questo pacchetto. */}
+                <SetRow title={t("Pacchetto")} value={BUILD_INFO} chevron={false} />
                 {!isLocal && (
                   <SetRow
                     title={t("Esci dall'account")}
@@ -615,6 +619,10 @@ export function SettingsClient({
           <div className="jm-st-rrow">
             <span className="k">{t("Versione")}</span>
             <span className="v">{APP_VERSION}</span>
+          </div>
+          <div className="jm-st-rrow">
+            <span className="k">{t("Pacchetto")}</span>
+            <span className="v">{BUILD_INFO}</span>
           </div>
 
           {isLocal && (
