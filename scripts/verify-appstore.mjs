@@ -32,6 +32,20 @@ async function open({ native = false, mode = "local" } = {}) {
     ({ native, mode }) => {
       try {
         window.localStorage.setItem("jm.mode", mode);
+        // Il saluto all'avvio (modulo accesso) e un velo aria-modal che
+        // intercetta i click: qui si pianta il suo "non mostrare piu",
+        // legato all'identita giusta (saluto-stato.ts: in locale e l'id di
+        // dispositivo, in cloud "usr:<id>" perche il JWT finto non si
+        // decodifica e si ripiega sull'utente).
+        if (mode === "local") {
+          window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
+          window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+        } else {
+          window.localStorage.setItem(
+            "jm.saluto.silenzio",
+            "usr:00000000-0000-4000-8000-000000000001",
+          );
+        }
         if (mode === "cloud") {
           // Sessione finta (stessa ricetta dei banchi Stoqfolio): il client
           // Supabase la legge da localStorage e l'app si crede dentro. Il
@@ -167,6 +181,44 @@ async function open({ native = false, mode = "local" } = {}) {
     return resp.status;
   }, BASE);
   check("porta revisore spenta: il codice fisso viene rifiutato", r2 === 401);
+  await ctx.close();
+}
+
+/* -- 5. guscio iOS, /benvenuto post-login: la card Premium ha il tasto -- */
+// Il bug del 27 agosto: su iOS la card Premium era rimasta SENZA nessun
+// tasto (si nascondeva "prova premium" e basta). Adesso il tasto c'e,
+// dice solo "inizia cosi" (niente prezzo, niente lessico da acquisto:
+// App Store 3.1.1) e attiva il premium gratis della v1 (premium-v1.ts).
+{
+  const { ctx, page } = await open({ native: true, mode: "cloud" });
+  await page.goto(BASE + "/benvenuto", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
+  await page.waitForTimeout(600);
+  const main = await page.locator(".jm-benv").innerText();
+  check("guscio iOS: /benvenuto senza prezzo", !main.includes("4,99"));
+  check(
+    "guscio iOS: /benvenuto senza 'prova premium'",
+    !main.toLowerCase().includes("prova premium"),
+  );
+  const tastoPremium = await page
+    .locator(".jm-benv-card .btn-primary", { hasText: "inizia cosi" })
+    .count();
+  check("guscio iOS: la card Premium ha il tasto 'inizia cosi'", tastoPremium >= 1);
+  await ctx.close();
+}
+
+/* ------ 6. browser, /benvenuto post-login: la vendita web resta ------ */
+{
+  const { ctx, page } = await open({ native: false, mode: "cloud" });
+  await page.goto(BASE + "/benvenuto", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
+  await page.waitForTimeout(600);
+  const main = await page.locator(".jm-benv").innerText();
+  check("browser: /benvenuto ha il prezzo", main.includes("4,99"));
+  check(
+    "browser: /benvenuto ha 'prova premium'",
+    main.toLowerCase().includes("prova premium"),
+  );
   await ctx.close();
 }
 

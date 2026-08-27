@@ -10,3 +10,4 @@ export {
   type WallFeature,
 } from "@/modules/abbonamento/components/premium-wall";
 export { PremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
+export { startPremiumV1 } from "@/modules/abbonamento/premium-v1";

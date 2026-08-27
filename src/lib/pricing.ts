@@ -25,3 +25,21 @@ export const PREMIUM_PRICE_LABEL = `${PREMIUM_PRICE_AMOUNT} ${PREMIUM_PRICE_PERI
  * aggiunge `subscription_data.trial_period_days` nel checkout.
  */
 export const PREMIUM_HAS_FREE_TRIAL = false;
+
+/**
+ * iOS v1: il premium si attiva GRATIS dentro il guscio (deciso da Manuel
+ * il 27 agosto 2026, per la prima revisione Apple — guideline 3.1.1:
+ * niente vendita dentro l'app, quindi per ora niente prezzo e niente
+ * pagamento, il tasto della card Premium dice solo "inizia cosi").
+ *
+ * Chi lo tocca diventa premium DAVVERO (rotta /api/premium-v1,
+ * `plan_source = 'ios-v1'`): il marchio nel database distingue questi
+ * account da quelli Stripe, cosi quando arrivera il pagamento vero
+ * (In-App Purchase) si sapra chi convertire.
+ *
+ * L'UPGRADE FUTURO passa da qui: si mette questa costante a false (la
+ * rotta si spegne da sola, 404) e si sostituisce l'implementazione di
+ * `startPremiumV1` (modulo abbonamento) con l'acquisto IAP. Un punto
+ * solo, nessuna caccia al tesoro.
+ */
+export const PREMIUM_IOS_V1_GRATIS = true;

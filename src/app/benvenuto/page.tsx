@@ -13,7 +13,8 @@ import {
 import { useT } from "@/lib/i18n";
 import { isNative } from "@/lib/native/platform";
 import { markWelcomeSeen } from "@/lib/welcome";
-import { openPremiumWall } from "@/modules/abbonamento";
+import { openPremiumWall, startPremiumV1 } from "@/modules/abbonamento";
+import { toast } from "@/components/ui/toast";
 
 /**
  * /benvenuto — la scelta, al primo avvio (SPEC-v2 §7.1, mockup
@@ -39,14 +40,35 @@ export default function BenvenutoPage() {
   // la modalita locale a un utente che ha appena fatto l'accesso.
   const waiting = mode === "resolving";
   // Dentro il guscio iOS non si mostrano prezzi ne inviti a comprare
-  // (App Store 3.1.1): la pagina resta questa, parola per parola, e
-  // spariscono soltanto due elementi — la riga del prezzo e il bottone
-  // "prova premium". Nient'altro cambia, per scelta esplicita di Manuel.
+  // (App Store 3.1.1): la pagina resta questa, parola per parola.
+  // Sparisce la riga del prezzo, e il bottone della card Premium diventa
+  // "inizia cosi" (v1 gratis, deciso da Manuel il 27 agosto: vedi
+  // PREMIUM_IOS_V1_GRATIS in src/lib/pricing.ts).
   const native = isNative();
 
   const enter = () => {
     markWelcomeSeen();
     router.replace("/");
+  };
+
+  // La card Premium dentro il guscio iOS (v1): il tasto c'e di nuovo, dice
+  // solo "inizia cosi" (come quello della card gratis: niente prezzo,
+  // niente lessico da acquisto — App Store 3.1.1) e attiva il premium
+  // DAVVERO, gratis, via startPremiumV1. La decisione e il percorso di
+  // upgrade al pagamento vero sono scritti in un punto solo:
+  // PREMIUM_IOS_V1_GRATIS in src/lib/pricing.ts.
+  const [premiumBusy, setPremiumBusy] = useState<boolean>(false);
+  const startPremiumIos = async () => {
+    if (premiumBusy) return;
+    setPremiumBusy(true);
+    const ok = await startPremiumV1();
+    if (ok) {
+      markWelcomeSeen();
+      router.replace("/");
+      return;
+    }
+    toast.error(t("Non sono riuscito ad attivare il premium. Riprova."));
+    setPremiumBusy(false);
   };
 
   const startLocal = async () => {
@@ -133,7 +155,22 @@ export default function BenvenutoPage() {
               {PREMIUM_HAS_FREE_TRIAL ? ` . ${t("primo mese incluso")}` : ""}
             </div>
           )}
-          {!native && (
+          {native ? (
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => {
+                if (!postLogin) {
+                  router.push("/login");
+                  return;
+                }
+                void startPremiumIos();
+              }}
+              disabled={starting || waiting || premiumBusy}
+            >
+              {premiumBusy ? t("un attimo...") : t("inizia cosi")}
+            </button>
+          ) : (
             <button
               type="button"
               className="btn-primary"

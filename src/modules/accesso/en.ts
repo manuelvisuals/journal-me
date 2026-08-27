@@ -9,7 +9,8 @@
 export const ACCESSO: Record<string, string> = {
   "Questo e il posto del messaggio di benvenuto.": "This is where the welcome message goes.",
   "Non mostrare piu (fino al prossimo accesso)": "Do not show again (until next sign-in)",
-  "Scrivimi": "Write to me",
+  "Feedback": "Feedback",
+  "Non sono riuscito ad attivare il premium. Riprova.": "I could not turn premium on. Try again.",
   "Inizia": "Start",
   "Dove vuoi tenere\nil tuo diario?": "Where do you want\nto keep your diary?",
   "Puoi cambiare idea dopo. Quello che hai scritto viene con te.": "You can change your mind later. What you have written comes with you.",
