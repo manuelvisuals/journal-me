@@ -54,14 +54,15 @@ else
 fi
 
 # ---------- 4. dipendenze ----------
-if [ ! -d node_modules ]; then
-  wr "Manca node_modules: installo (ci vuole qualche minuto)..."
-  npm install --no-audit --no-fund >/tmp/jm-npm.log 2>&1 \
-    && ok "Dipendenze installate" \
-    || { ko "npm install fallito. Ultime righe:"; tail -12 /tmp/jm-npm.log; stop; }
-else
-  ok "Dipendenze presenti"
-fi
+# SEMPRE npm install, non solo se manca node_modules: il 27 agosto il build
+# e rimasto appeso per sempre perche il pull aveva portato un Next nuovo,
+# node_modules era vecchio, e npx chiedeva "Ok to proceed? (y)" dentro un
+# log dove nessuno puo rispondere. Con il lockfile gia allineato npm install
+# ci mette secondi; quando c'e roba nuova, la mette.
+info "controllo le dipendenze (secondi se sono gia aggiornate)..."
+npm install --no-audit --no-fund >/tmp/jm-npm.log 2>&1 \
+  && ok "Dipendenze aggiornate" \
+  || { ko "npm install fallito. Ultime righe:"; tail -12 /tmp/jm-npm.log; stop; }
 
 # ---------- 5. ricostruisco il pacchetto dell'app ----------
 SHA=$(git rev-parse --short HEAD)
@@ -71,12 +72,12 @@ export NEXT_PUBLIC_SUPABASE_URL="https://fljshsmpmpzapcczsbwc.supabase.co"
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="sb_publishable_PG0EigYjq38S0DY97VOKRA_i2u3Pqnm"
 export NEXT_PUBLIC_API_BASE="https://journal-me-weld.vercel.app"
 printf "     ricostruisco il pacchetto (%s)...\n" "$NEXT_PUBLIC_BUILD"
-if JM_MOBILE=1 npx next build >/tmp/jm-build.log 2>&1; then
+if JM_MOBILE=1 npx --no-install next build >/tmp/jm-build.log 2>&1; then
   ok "Pacchetto costruito"
 else
   ko "La costruzione e fallita. Ultime righe:"; tail -20 /tmp/jm-build.log; stop
 fi
-if npx cap sync ios >/tmp/jm-sync.log 2>&1; then
+if npx --no-install cap sync ios >/tmp/jm-sync.log 2>&1; then
   ok "Pacchetto copiato dentro l'app"
 else
   ko "La copia dentro l'app e fallita. Ultime righe:"; tail -12 /tmp/jm-sync.log; stop
