@@ -51,8 +51,30 @@ const RESPONSE_FORMAT = {
             required: ["label", "text"],
           },
         },
+        // Le misure del risveglio (Manuel, 27 agosto 2026): se il racconto
+        // le dice ESPLICITAMENTE, i campi dell'app si compilano da soli.
+        // null = "non l'ha detto", ed e la risposta normale: qui non si
+        // indovina mai (stessa regola dei chiarimenti).
+        metrics: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            weightKg: { type: ["number", "null"] },
+            sleepHours: { type: ["number", "null"] },
+            mood: {
+              anyOf: [
+                {
+                  type: "string",
+                  enum: ["great", "good", "neutral", "low", "bad"],
+                },
+                { type: "null" },
+              ],
+            },
+          },
+          required: ["weightKg", "sleepHours", "mood"],
+        },
       },
-      required: ["headline", "snippet", "areas"],
+      required: ["headline", "snippet", "areas", "metrics"],
     },
   },
 } as const;
@@ -97,6 +119,7 @@ export async function POST(req: NextRequest) {
       headline: langOf(req) === "en" ? "day told" : "giornata raccontata",
       snippet: transcript.slice(0, 240),
       areas: [],
+      metrics: { weightKg: null, sleepHours: null, mood: null },
     });
   }
 
@@ -127,6 +150,7 @@ export async function POST(req: NextRequest) {
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
     `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
     regolaSnippet,
+    "  - metrics: le misure del risveglio, SOLO se dette esplicitamente nel testo. weightKg: il peso corporeo in kg (numero, es. 83.3), se l'utente dice quanto pesava. sleepHours: le ore di sonno in ore frazionarie (8, 7.5), SOLO se dice un numero esatto di ore dormite: 'ho dormito poco' NON e un numero e resta null. mood: l'umore al risveglio o dell'inizio giornata, mappato su uno di 'great' (fantastico, euforico, alla grande), 'good' (bene, sereno, tranquillo), 'neutral' (normale, cosi cosi), 'low' (giu, stanco, triste), 'bad' (malissimo, pessimo). Esempio: 'mi sono svegliato alle 10, dopo 8 ore di sonno, pesavo 83.3kg e di mood sereno' -> weightKg 83.3, sleepHours 8, mood 'good'. Ogni campo che il testo non dice esplicitamente e null: qui NON SI INDOVINA MAI, un dato inventato in un diario e un danno.",
     `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
     "",
     "Cosa va in quale area, quando c'e il dubbio:",
@@ -162,6 +186,11 @@ export async function POST(req: NextRequest) {
     headline: string;
     snippet: string;
     areas: { label: string; text: string }[];
+    metrics: {
+      weightKg: number | null;
+      sleepHours: number | null;
+      mood: string | null;
+    };
   };
 
   /**

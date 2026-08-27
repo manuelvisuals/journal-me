@@ -55,6 +55,19 @@ export type AIFields = {
    * Li scrive saveRecording, subito dopo, con `replaceAiFacts`.
    */
   facts?: NewFact[];
+  /**
+   * Le misure del risveglio dette ESPLICITAMENTE nel racconto (Manuel, 27
+   * agosto 2026): peso in kg, ore esatte di sonno, umore al risveglio.
+   *
+   * Dentro ogni campo, null = "il testo non lo dice" e NON TOCCA il valore
+   * salvato: solo un valore vero compila (o aggiorna) il campo dell'app.
+   * Il testo e king anche qui: se dici il peso a voce, il numero detto
+   * vince su quello inserito a mano.
+   *
+   * Come i fatti, non le scrive `saveProcessedEntry`: le applica
+   * saveRecording con `updateMetric`, dopo il salvataggio.
+   */
+  metrics?: Partial<EntryMetrics>;
 };
 
 export interface JournalStore {

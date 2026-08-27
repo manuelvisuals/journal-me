@@ -98,7 +98,17 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
       ? await analyzeDay(fullTranscript)
       : localFields(fullTranscript);
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
-    const entry = await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur);
+    let entry = await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur);
+    // Le misure dette a voce (peso, ore di sonno, umore al risveglio:
+    // AIFields.metrics) compilano i campi da sole. Il patch contiene SOLO
+    // cio che il testo ha detto: il resto dei campi non viene toccato.
+    if (ai.metrics) {
+      try {
+        entry = await store.updateMetric(seg.date, ai.metrics);
+      } catch {
+        // Le misure sono un di piu: se non si scrivono, la giornata resta.
+      }
+    }
     // I fatti vanno scritti DOPO la giornata: hanno bisogno del suo id per
     // sparire insieme a lei. `undefined` significa "non letti" e non tocca
     // niente; una lista vuota e una risposta vera ("qui non c'e nessun
@@ -131,7 +141,14 @@ export async function reprocessEntryTranscript(
   const ai = can("aiSummary")
     ? await analyzeDay(newTranscript)
     : localFields(newTranscript);
-  const saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
+  let saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
+  if (ai.metrics) {
+    try {
+      saved = await store.updateMetric(dateISO, ai.metrics);
+    } catch {
+      // vedi saveRecording: le misure non possono far fallire un salvataggio
+    }
+  }
   if (ai.facts) {
     try {
       await store.replaceAiFacts(dateISO, ai.facts);

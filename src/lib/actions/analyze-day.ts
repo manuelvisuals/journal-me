@@ -39,9 +39,37 @@ import { apiFetch } from "@/lib/api";
 import { t } from "@/lib/i18n";
 import { loadKnownLabels } from "@/lib/data/facts";
 import type { AIFields } from "@/lib/data/store";
-import type { NewFact } from "@/lib/types";
+import type { EntryMetrics, Mood, NewFact } from "@/lib/types";
 
-/** Il riassunto: titolo, sintesi, aree. */
+/** Gli umori validi: l'unico posto client dove si valida cio che torna. */
+const UMORI: Mood[] = ["great", "good", "neutral", "low", "bad"];
+
+/**
+ * Le misure del risveglio, valide e SOLO quelle dette (vedi AIFields.metrics).
+ * Ogni campo si tiene solo se ha la forma giusta: un numero storto o un
+ * umore fuori elenco non hanno il diritto di toccare i campi dell'app.
+ */
+function misureValide(raw: unknown): Partial<EntryMetrics> | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const m = raw as Record<string, unknown>;
+  const out: Partial<EntryMetrics> = {};
+  if (typeof m.weightKg === "number" && m.weightKg > 20 && m.weightKg < 400) {
+    out.weightKg = m.weightKg;
+  }
+  if (
+    typeof m.sleepHours === "number" &&
+    m.sleepHours > 0 &&
+    m.sleepHours <= 24
+  ) {
+    out.sleepHours = m.sleepHours;
+  }
+  if (typeof m.mood === "string" && UMORI.includes(m.mood as Mood)) {
+    out.mood = m.mood as Mood;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+/** Il riassunto: titolo, sintesi, aree, misure del risveglio. */
 async function callProcessEntry(
   transcript: string,
 ): Promise<Omit<AIFields, "people"> | null> {
@@ -58,6 +86,7 @@ async function callProcessEntry(
       headline: data.headline,
       snippet: data.snippet,
       areas: Array.isArray(data.areas) ? data.areas : [],
+      metrics: misureValide(data.metrics),
     };
   } catch {
     return null;
