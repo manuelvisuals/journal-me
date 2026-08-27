@@ -278,3 +278,32 @@
   letter-spacing: 0.04em;
   font-size: calc(13px * var(--jm-ui-scale));
 }
+
+/* "Non chiedermelo piu" (solo post-login): una riga quieta fra le card e
+   la didascalia. La nota che compare alla spunta rassicura, non vende. */
+.jm-benv-stop-wrap {
+  margin-top: calc(18px * var(--jm-space));
+  text-align: center;
+}
+.jm-benv-stop {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(8px * var(--jm-space));
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.jm-benv-stop input {
+  width: calc(16px * var(--jm-ui-scale));
+  height: calc(16px * var(--jm-ui-scale));
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+.jm-benv-stop-nota {
+  margin-top: calc(8px * var(--jm-space));
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}

@@ -12,7 +12,8 @@ import {
 } from "@/lib/pricing";
 import { useT } from "@/lib/i18n";
 import { isNative } from "@/lib/native/platform";
-import { markWelcomeSeen } from "@/lib/welcome";
+import { haChiestoSilenzio, markWelcomeSeen, nonChiederePiu } from "@/lib/welcome";
+import { usePianoNoto } from "@/lib/plan";
 import { openPremiumWall, startPremiumV1 } from "@/modules/abbonamento";
 import { toast } from "@/components/ui/toast";
 
@@ -50,6 +51,25 @@ export default function BenvenutoPage() {
     markWelcomeSeen();
     router.replace("/");
   };
+
+  // Ai premium questa domanda non si fa MAI (Manuel, 27 agosto 2026): un
+  // abbonato che rientra non deve scegliere niente. Il piano pero al login
+  // non e ancora noto, quindi il filtro sta qui: appena risulta premium si
+  // entra da soli. usePianoNoto e senza ottimismo di proposito — con
+  // usePlan ("premium finche non si sa") entrerebbero da soli TUTTI.
+  const pianoNoto = usePianoNoto();
+  useEffect(() => {
+    if (postLogin && pianoNoto === "premium") {
+      markWelcomeSeen();
+      router.replace("/");
+    }
+    // router e stabile; enter() inline per non dipendere da una closure.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postLogin, pianoNoto]);
+
+  // "Non chiedermelo piu" (solo post-login): la scelta resta scritta sul
+  // dispositivo e la schermata non torna piu ogni dieci accessi.
+  const [stopScelto, setStopScelto] = useState<boolean>(() => haChiestoSilenzio());
 
   // La card Premium dentro il guscio iOS (v1): il tasto c'e di nuovo, dice
   // solo "inizia premium" (niente prezzo,
@@ -192,6 +212,33 @@ export default function BenvenutoPage() {
           )}
         </div>
       </div>
+
+      {/* "Non chiedermelo piu" (Manuel, 27 agosto 2026): la scelta torna
+          ogni dieci accessi ai gratis, e questa spunta la spegne per
+          sempre. Alla spunta si risponde con una porta aperta, non con un
+          addio: premium resta a un tocco dalle Impostazioni. */}
+      {postLogin && (
+        <div className="jm-benv-stop-wrap">
+          <label className="jm-benv-stop">
+            <input
+              type="checkbox"
+              checked={stopScelto}
+              onChange={(e) => {
+                setStopScelto(e.target.checked);
+                nonChiederePiu(e.target.checked);
+              }}
+            />
+            <span>{t("Non chiedermelo piu")}</span>
+          </label>
+          {stopScelto && (
+            <p className="jm-benv-stop-nota">
+              {t(
+                "Va bene. Quando vorrai passare a premium, potrai farlo dalle Impostazioni.",
+              )}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* La didascalia dice la verita del CONTESTO in cui la leggi (Manuel,
           27 agosto 2026). Prima del login "gratis" vuol dire "solo su questo

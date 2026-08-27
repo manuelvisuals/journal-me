@@ -57,7 +57,7 @@ import { BUILD_INFO } from "@/modules/impostazioni/build-info";
 import { formatNumber } from "@/lib/format";
 import { clearPlanCache, usePlan } from "@/lib/plan";
 import { dimenticaScansione } from "@/lib/actions/scan-archivio";
-import { clearWelcomeSeen } from "@/lib/welcome";
+
 import { openPremiumWall } from "@/modules/abbonamento";
 import {
   PREMIUM_PRICE_AMOUNT,
@@ -230,9 +230,10 @@ export function SettingsClient({
     // il suo archivio va letto, e questo browser non deve credere di averlo
     // gia fatto (src/lib/actions/scan-archivio.ts).
     dimenticaScansione();
-    // E il benvenuto post-accesso: il prossimo account che entra da qui
-    // ha diritto alla sua schermata "gratis o premium" (src/lib/welcome.ts).
-    clearWelcomeSeen();
+    // Il benvenuto post-accesso NON si dimentica piu al logout: era il bug
+    // del 27 agosto (esci, rientri, e ti richiede gratis-o-premium). La
+    // regola nuova — riproporlo ai gratis ogni dieci accessi, mai ai
+    // premium — vive in src/lib/welcome.ts e sopravvive di proposito.
     document.cookie =
       "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     router.push("/login");

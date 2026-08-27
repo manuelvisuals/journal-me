@@ -27,6 +27,8 @@ export const ACCESSO: Record<string, string> = {
   "inizia gratis": "start free",
   "inizia premium": "start premium",
   "Nella versione gratis scrivi a mano: niente racconto a voce e niente AI.": "In the free version you write by hand: no voice journaling and no AI.",
+  "Non chiedermelo piu": "Do not ask me again",
+  "Va bene. Quando vorrai passare a premium, potrai farlo dalle Impostazioni.": "All right. Whenever you want to go premium, you can do it from Settings.",
   "Nel cloud, con l'AI": "In the cloud, with AI",
   "Il diario ti segue ovunque. Racconti a voce e ci pensa lui a scriverlo, riassumerlo e ricordartelo.": "Your diary follows you everywhere. You talk, it writes it down, sums it up and remembers it for you.",
   "Tutto quello della versione gratis": "Everything in the free version",

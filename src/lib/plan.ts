@@ -124,6 +124,30 @@ export function getPlanSync(): Plan {
   return cachedPlan ?? "premium";
 }
 
+/**
+ * Il piano quando e NOTO davvero (cache locale o database), SENZA
+ * l'ottimismo di usePlan: null = "non lo so ancora".
+ *
+ * Serve a chi deve trattare i premium diversamente dai gratis e non puo
+ * permettersi di scambiare "non lo so" per "premium": /benvenuto, che
+ * dal 27 agosto entra da sola per i premium — con l'ottimismo entrerebbe
+ * da sola per TUTTI, e la scelta non si vedrebbe mai.
+ */
+export function usePianoNoto(): Plan | null {
+  return useSyncExternalStore(
+    (l) => {
+      listeners.add(l);
+      return () => listeners.delete(l);
+    },
+    () => {
+      const c = readCache();
+      void refreshPlan();
+      return c;
+    },
+    () => null,
+  );
+}
+
 export function usePlan(): Plan {
   return useSyncExternalStore(
     (l) => {

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
-import { welcomeSeen } from "@/lib/welcome";
+import { registraAccesso } from "@/lib/welcome";
 import { chooseLocalMode, clearLocalMode, getStore } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
 
@@ -57,9 +57,11 @@ export default function LoginPage() {
   /**
    * Dove si va dopo un codice giusto. Al PRIMO accesso su questo
    * dispositivo si passa da /benvenuto — la schermata "gratis o premium",
-   * che dal 24 agosto 2026 sta qui invece che prima del login. Chi rientra
-   * la mattina va dritto dentro: rifare la domanda a ogni accesso sarebbe
-   * un pedaggio, non un benvenuto.
+   * che dal 24 agosto 2026 sta qui invece che prima del login. Poi la
+   * scelta si RIPROPONE ogni dieci accessi ai gratis (Manuel, 27 agosto
+   * 2026), salvo "non chiedermelo piu": tutta la regola vive in
+   * src/lib/welcome.ts (registraAccesso). Ai premium ci pensa /benvenuto
+   * stessa, che quando il piano risulta premium entra da sola.
    */
   function afterLogin(): string {
     // La modalita e in cache in un modulo, non nell'indirizzo: senza questa
@@ -67,7 +69,7 @@ export default function LoginPage() {
     // e /benvenuto crederebbe di stare PRIMA del login. Rileggerla e
     // l'unico modo di dirle che adesso c'e un account.
     clearLocalMode();
-    return welcomeSeen() ? "/" : "/benvenuto";
+    return registraAccesso() ? "/benvenuto" : "/";
   }
 
   /**
