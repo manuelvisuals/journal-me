@@ -26,7 +26,7 @@ import { t } from "@/lib/i18n";
 import { invalidateAll } from "@/lib/data/cache";
 
 export function backupFilename(): string {
-  return `journal-me-backup-${todayISO()}.json`;
+  return `dayalogue-backup-${todayISO()}.json`;
 }
 
 /** Esporta tutto e consegna il file all'utente. Ritorna il numero di giornate. */
@@ -68,11 +68,11 @@ export async function readBackupFile(file: File): Promise<BackupFile> {
   try {
     parsed = JSON.parse(await file.text());
   } catch {
-    throw new Error(t("Questo file non e un backup di Journal.me."));
+    throw new Error(t("Questo file non e un backup di dayalogue."));
   }
   const b = parsed as Partial<BackupFile> | null;
   if (!b || b.format !== BACKUP_FORMAT) {
-    throw new Error(t("Questo file non e un backup di Journal.me."));
+    throw new Error(t("Questo file non e un backup di dayalogue."));
   }
   if (b.version !== BACKUP_VERSION) {
     throw new Error(

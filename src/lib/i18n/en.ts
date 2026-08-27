@@ -8,7 +8,7 @@
  *  - stesso tono dell'italiano: diretto, minuscolo dove l'italiano e
  *    minuscolo, niente maiuscole di stile inglese sui bottoni;
  *  - niente punto finale se l'italiano non ce l'ha;
- *  - i nomi propri dell'app non si traducono: Journal.me, Recap, Premium;
+ *  - i nomi propri dell'app non si traducono: dayalogue, Recap, Premium;
  *  - "Ricorda" e il nome di una schermata: diventa "Remember";
  *  - i micro-goal di default NON sono qui: vivono nel database e sono
  *    scritti dall'utente.

@@ -1,4 +1,4 @@
-# SPEC v2 · Journal.me — desktop e due modalita
+# SPEC v2 · dayalogue — desktop e due modalita
 
 Specifica di implementazione. Scritta il 17 agosto 2026 su `main` a `d1da4ef`.
 Destinatario: chi scrive il codice, senza il contesto della conversazione in cui e nata.
@@ -23,7 +23,7 @@ vanno riscritti. Non iniziare dalla PR 1 senza aver letto anche quella spec.
 
 ## 1. Cosa si sta costruendo, e perche
 
-Journal.me oggi e un'app mobile-first, voice-first, cloud-only, con un solo utente.
+dayalogue oggi e un'app mobile-first, voice-first, cloud-only, con un solo utente.
 Questa versione cambia tre cose insieme:
 
 1. **Desktop.** Il posto in cui l'app viene usata davvero e un MacBook a colazione, a
@@ -547,7 +547,7 @@ login", ed e esattamente l'assunzione che le due modalita rompono.
 
 Poi, due schermate, non di piu:
 
-1. Benvenuto: cos'e Journal.me, in quattro righe.
+1. Benvenuto: cos'e dayalogue, in quattro righe.
 2. La scelta locale/cloud di `due-modalita.html` schermata 01.
 
 Scegliendo **locale**: si crea il database, si seminano i goal, si chiede

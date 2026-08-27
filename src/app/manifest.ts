@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Journal.me",
-    short_name: "Journal.me",
+    name: "dayalogue",
+    short_name: "dayalogue",
     description: "Diario personale: voce, memoria, recap.",
     start_url: "/",
     display: "standalone",

@@ -1,5 +1,5 @@
 /**
- * Il bilingue di Journal.me (task 27, chiesta da Manuel il 20 agosto 2026).
+ * Il bilingue di dayalogue (task 27, chiesta da Manuel il 20 agosto 2026).
  *
  * SCELTA DI FONDO: la chiave di traduzione E la frase italiana.
  *   t("Esci dall'account")  ->  "Log out"

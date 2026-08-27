@@ -1,4 +1,4 @@
-// Verifica del segno di Journal.me (src/components/brand/brand-mark.tsx).
+// Verifica del segno di dayalogue (src/components/brand/brand-mark.tsx).
 // Locale, porta 3200.
 //
 // La promessa da difendere e una sola: UN FILE PER TUTTO IL SITO. Quindi

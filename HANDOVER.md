@@ -1,4 +1,4 @@
-# Handover · Journal.me
+# Handover · dayalogue
 
 Documento di riferimento per chi (Claude o umano) riprende lo sviluppo.
 Aggiornato al **23 agosto 2026**.
@@ -15,7 +15,7 @@ Se qui leggi qualcosa che il codice smentisce, vince il codice — e poi corregg
 
 ---
 
-## 1. Cos'e Journal.me
+## 1. Cos'e dayalogue
 
 Web app mobile-first di journaling personale (utente unico: Manuel, italiano, iPhone
 come device primario, installabile come PWA).
@@ -559,7 +559,7 @@ sono compilate dentro `ios/App/App/public`. Cambiare progetto Supabase vuol dire
 
 ---
 
-## 13. Journal.me v2 — desktop, due modalita, temi (progettato il 17 agosto 2026)
+## 13. dayalogue v2 — desktop, due modalita, temi (progettato il 17 agosto 2026)
 
 Progettazione chiusa e approvata da Manuel. **Stato implementazione (21 agosto 2026):**
 
@@ -911,12 +911,12 @@ Progettazione chiusa e approvata da Manuel. **Stato implementazione (21 agosto 2
      le tre copie di `periodLabel` (ora `src/lib/recap-labels.ts`).
 
   12. **Il codice di accesso e finito nel TITOLO della mail** (task 26).
-     L'oggetto era "Il tuo codice Journal.me" e il numero stava solo nel
+     L'oggetto era "Il tuo codice dayalogue" e il numero stava solo nel
      corpo: iPhone la proposta di riempimento automatico la costruisce
      dal messaggio, e col numero nascosto dentro l'HTML bisognava aprire
      Mail, leggere, tornare indietro e ribattere sei cifre. Adesso
      l'oggetto **comincia** col codice:
-     `{{ .Token }} e il tuo codice Journal.me / your Journal.me code`,
+     `{{ .Token }} e il tuo codice dayalogue / your dayalogue code`,
      e il corpo e stato riscritto in due lingue col codice grande in
      cima. Cambiati tutti e due i template — `magic_link` E `confirmation`,
      perche al PRIMO accesso di un'email nuova Supabase usa il secondo, ed

@@ -5,7 +5,7 @@ Manuel: copia il blocco qui sotto in una chat nuova, riempi le DUE righe segnate
 
 ---
 
-Lavori su Journal.me, repo `manuelvisuals/journal-me` (deploy automatico su Vercel).
+Lavori su dayalogue, repo `manuelvisuals/journal-me` (deploy automatico su Vercel).
 
 IL TUO MODULO: <<nome del modulo: oggi / mese / ricorda / recap / impostazioni /
 accesso / palestra — dalla tabella di ARCHITETTURA.md §2>>

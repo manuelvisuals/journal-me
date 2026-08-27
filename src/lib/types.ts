@@ -1,5 +1,5 @@
 /**
- * Domain types for Journal.me.
+ * Domain types for dayalogue.
  * Kept minimal — only what the UI actually consumes today.
  */
 

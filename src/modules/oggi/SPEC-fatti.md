@@ -1,4 +1,4 @@
-# SPEC fatti · Journal.me — dal racconto ai dati
+# SPEC fatti · dayalogue — dal racconto ai dati
 
 Specifica di implementazione. Scritta il 20 agosto 2026 su `main` a `3ab95bd`.
 Destinatario: chi scrive il codice, senza il contesto della conversazione in cui e nata.
@@ -12,7 +12,7 @@ vince il codice — e poi correggi qui.
 
 ## 1. Cosa si sta costruendo, e perche
 
-Oggi Journal.me sa **raccontare** una giornata e non sa **contarla**.
+Oggi dayalogue sa **raccontare** una giornata e non sa **contarla**.
 
 Se dici "stasera pizza con Christian, prima un'ora di palestra", l'app produce un
 titolo, due righe di sintesi e forse una frase sotto "Corpo". Fra un mese non

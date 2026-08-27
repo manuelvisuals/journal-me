@@ -1,4 +1,4 @@
-# Journal.me
+# dayalogue
 
 Diario personale. Voce, memoria, recap.
 

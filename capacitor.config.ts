@@ -14,8 +14,8 @@ import type { CapacitorConfig } from "@capacitor/cli";
  * for.
  */
 const config: CapacitorConfig = {
-  appId: "com.manuelvisuals.journalme",
-  appName: "Journal.me",
+  appId: "com.manuelvisuals.dayalogue",
+  appName: "dayalogue",
   webDir: ".next-mobile",
   ios: {
     // The app draws its own dark background under the status bar and home

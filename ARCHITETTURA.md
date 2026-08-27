@@ -1,4 +1,4 @@
-# Journal.me — scheletro e moduli
+# dayalogue — scheletro e moduli
 
 Richiesta di Manuel: una struttura fissa (scheletro) piu moduli indipendenti, cosi ogni
 chat lavora su un modulo solo senza rompere il resto, anche quando l'app diventa

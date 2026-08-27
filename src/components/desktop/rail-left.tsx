@@ -136,7 +136,7 @@ export function RailLeft() {
     <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
       <div className="jm-rail-brand">
         <BrandMark />
-        Journal<span>.me</span>
+        <span>day</span>alogue
       </div>
       <div className="jm-rail-nav">
         {NAV_ITEMS.map((item) => (

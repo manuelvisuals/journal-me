@@ -203,14 +203,13 @@ export default function LoginPage() {
           style={{ letterSpacing: "-0.01em" }}
         >
           <BrandMark />
-          Journal
           <span
             className="text-accent"
             style={{ textShadow: "0 0 12px color-mix(in oklab, var(--color-glow) 55%, transparent)" }}
           >
-            .
+            day
           </span>
-          me
+          alogue
         </p>
 
         {sent ? (

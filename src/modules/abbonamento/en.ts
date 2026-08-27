@@ -25,7 +25,7 @@ export const ABBONAMENTO: Record<string, string> = {
   "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.": "The days you already wrote here move to the cloud on your first sign-in.",
   "pagamento simulato . nessun addebito": "simulated payment . no charge",
   "ambiente di prova": "test environment",
-  "Journal.me\nPremium": "Journal.me\nPremium",
+  "dayalogue\nPremium": "dayalogue\nPremium",
   "Questa pagina non e collegata a nessun sistema di pagamento. Serve a provare l'app come la vede chi ha pagato.": "This page is not connected to any payment system. It is here so you can try the app the way a paying user sees it.",
   "al mese": "per month",
   "Non verra addebitato nulla.": "Nothing will be charged.",

@@ -1,4 +1,4 @@
-# Journal.me — verso la prima revisione Apple
+# dayalogue — verso la prima revisione Apple
 
 Scritto il 23 agosto 2026. Deciso da Manuel: da ora **niente funzioni nuove, solo
 bugfix**, e si prepara la sottomissione ad App Store Connect il prima possibile
@@ -24,10 +24,10 @@ il banco esce rosso sui 3 controlli giusti).
 - 1c: `/api/review-login` con doppia variabile `JM_REVIEW_EMAILS` +
   `JM_REVIEW_CODE`. CONFIGURATO su Vercel il 23 agosto (Production e Preview,
   Sensitive) e VERIFICATO in produzione dal Chrome di Manuel: login completo con
-  appreview@journal.me + codice fisso, account creato, reso premium via SQL
+  appreview@dayalogue.com + codice fisso, account creato, reso premium via SQL
   (profiles.plan='premium', plan_source='manual'), e una giornata demo scritta e
   elaborata dall'AI (titolo, sintesi, aree, persone, luoghi, chiarimenti inclusi).
-  Il revisore trova un'app viva. Per le Review Notes: email appreview@journal.me,
+  Il revisore trova un'app viva. Per le Review Notes: email appreview@dayalogue.com,
   codice 424242. Se il nome dell'app cambia, cambiare l'email e un minuto
   (variabile su Vercel + eventualmente l'account demo).
 
@@ -69,6 +69,24 @@ un'email di prova (es. `review@...`) che con un codice FISSO noto entra su un
 account precaricato con qualche giornata. Stessa filosofia del checkout finto
 (`JM_FAKE_CHECKOUT_EMAILS`): variabile d'ambiente server con le email ammesse,
 mai attiva per il pubblico. Le credenziali si scrivono nelle Review Notes.
+
+## 1-bis. Aggiornamenti del 27 agosto (rename + premium v1)
+
+- **L'app si chiama dayalogue** (era journal.me). Cambiato OVUNQUE il 27
+  agosto: marchio a schermo (accento su "day"), Info.plist, manifest,
+  bundle id `com.manuelvisuals.dayalogue` (deciso da Manuel: prima della
+  prima submission e l'unico momento in cui cambiarlo e gratis). I nomi
+  TECNICI restano: database locale `journalme`, chiavi localStorage,
+  formato backup `journal.me/backup`, dominio journal-me-weld.vercel.app
+  — cambiarli butterebbe i dati degli utenti, non il marchio.
+- **Premium v1 su iOS: gratis.** La card Premium di /benvenuto dentro il
+  guscio ha di nuovo il tasto, dice solo "inizia cosi" (niente prezzo,
+  App Store 3.1.1) e attiva il premium DAVVERO per chiunque
+  (`plan_source='ios-v1'`, rotta /api/premium-v1). La decisione e il
+  percorso di upgrade all'acquisto vero: PREMIUM_IOS_V1_GRATIS in
+  src/lib/pricing.ts.
+- **Email revisore: appreview@dayalogue.com** (da riconfigurare su Vercel
+  e da ripreparare l'account demo — il vecchio appreview era @journal.me).
 
 ## 2. Il resto della lista (necessario, ma senza decisioni)
 

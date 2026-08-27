@@ -1,4 +1,4 @@
-# Lavorare in parallelo su Journal.me
+# Lavorare in parallelo su dayalogue
 
 Due o tre chat che lavorano insieme sullo stesso repo. Serve a andare piu veloce, ma
 funziona solo se non si pestano i piedi. Questo file e il protocollo.

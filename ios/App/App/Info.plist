@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>Journal.me</string>
+        <string>dayalogue</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -25,9 +25,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Journal.me usa il microfono per registrare il racconto della tua giornata. L'audio resta sul telefono: viene trascritto e poi scartato, si salva solo il testo.</string>
+	<string>dayalogue usa il microfono per registrare il racconto della tua giornata. L'audio resta sul telefono: viene trascritto e poi scartato, si salva solo il testo.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Journal.me usa Face ID per aprire il diario solo a te.</string>
+	<string>dayalogue usa Face ID per aprire il diario solo a te.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

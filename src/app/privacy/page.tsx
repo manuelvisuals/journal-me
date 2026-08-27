@@ -17,7 +17,7 @@ import { BrandMark } from "@/components/brand/brand-mark";
  */
 
 export const metadata: Metadata = {
-  title: "Privacy · Journal.me",
+  title: "Privacy · dayalogue",
   robots: { index: true },
 };
 
@@ -58,7 +58,7 @@ export default function PrivacyPage() {
         style={{ fontSize: "calc(22px * var(--jm-ui-scale))" }}
       >
         <BrandMark />
-        Journal<span className="text-accent">.me</span>
+        <span className="text-accent">day</span>alogue
       </p>
 
       <h1
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
 
       <Sezione titolo="La cosa piu importante">
         <p>
-          Journal.me e un diario. Quello che scrivi e racconti e tuo: non lo
+          dayalogue e un diario. Quello che scrivi e racconti e tuo: non lo
           leggiamo, non lo vendiamo, non lo usiamo per pubblicita e non lo
           diamo a nessuno per addestrare modelli. Non ci sono inserzioni, non
           ci sono tracciatori pubblicitari, non ci sono analytics di terze
@@ -177,7 +177,7 @@ export default function PrivacyPage() {
 
       <Sezione titolo="What matters most">
         <p>
-          Journal.me is a diary. What you write and tell is yours: we do not
+          dayalogue is a diary. What you write and tell is yours: we do not
           read it, sell it, use it for advertising or hand it to anyone to
           train models. No ads, no ad trackers, no third-party analytics.
         </p>

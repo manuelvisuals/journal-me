@@ -165,9 +165,9 @@ check(
 // Alcune SONO uguali di proposito (Premium, Email, Account, Idea, Recap...).
 const UGUALI_OK = new Set([
   "Premium", "premium", "Email", "Account", "Idea", "Recap", "Todo",
-  "mood", "Mood", "ok", "Cloud", "Snippet",
+  "mood", "Mood", "ok", "Cloud", "Snippet", "Feedback",
   // Nome del prodotto: si scrive uguale nelle due lingue.
-  "Journal.me\nPremium",
+  "dayalogue\nPremium",
 ]);
 const sospette = [...CATALOG.entries()].filter(
   ([it, en]) => it === en && !UGUALI_OK.has(it),

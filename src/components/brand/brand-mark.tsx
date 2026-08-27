@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Il segno di Journal.me, davanti alla scritta.
+ * Il segno di dayalogue, davanti alla scritta.
  *
  * UN FILE SOLO PER TUTTO IL SITO: `public/logo.png`. Chi vuole cambiare il
  * logo sostituisce quel file e basta — rail, splash, login e sblocco
@@ -9,7 +9,7 @@
  * sta scritto una volta sola, qui sotto.
  *
  * Perche un componente e non un <img> copiato quattro volte: la scritta
- * "Journal.me" compare in quattro schermate con tipografie diverse (serif
+ * "dayalogue" compare in quattro schermate con tipografie diverse (serif
  * 21px nella rail, sans 30px nella splash, 22px in login e sblocco). Con
  * quattro copie, la quinta schermata che nasce si dimentica il logo, e le
  * quattro esistenti divergono al primo ritocco.
@@ -19,9 +19,9 @@
  * senza quattro misure diverse, e segue anche il cursore "Dimensione del
  * testo" delle Impostazioni.
  *
- * Il file e decorativo: la parola "Journal.me" e li accanto, scritta. Per
+ * Il file e decorativo: la parola "dayalogue" e li accanto, scritta. Per
  * questo `alt=""` e `aria-hidden` — un lettore di schermo che annuncia
- * "logo Journal.me Journal.me" dice la stessa cosa due volte.
+ * "logo dayalogue dayalogue" dice la stessa cosa due volte.
  */
 
 /** L'unico percorso del logo in tutto il progetto. */

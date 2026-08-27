@@ -75,7 +75,7 @@ export function Splash() {
       <div className="jm-splash-halo" />
       <div className="jm-splash-mark">
         <BrandMark />
-        Journal<span className="jm-splash-dot">.</span>me
+        <span className="jm-splash-dot">day</span>alogue
       </div>
       <div className="jm-splash-bar">
         <i />

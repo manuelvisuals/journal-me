@@ -92,7 +92,7 @@ export function CheckoutFintoClient() {
           <i aria-hidden="true" />
           {t("ambiente di prova")}
         </span>
-        <h1 className="jm-ck-t">{t("Journal.me\nPremium")}</h1>
+        <h1 className="jm-ck-t">{t("dayalogue\nPremium")}</h1>
         <p className="jm-ck-p">
           {t(
             "Questa pagina non e collegata a nessun sistema di pagamento. Serve a provare l'app come la vede chi ha pagato.",

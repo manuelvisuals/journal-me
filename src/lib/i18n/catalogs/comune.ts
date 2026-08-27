@@ -46,7 +46,7 @@ export const COMUNE: Record<string, string> = {
   "Cibo": "Food",
   "Semestre {n} {anno}": "Half {n} {anno}",
   "Anno {anno}": "Year {anno}",
-  "Questo file non e un backup di Journal.me.": "This file is not a Journal.me backup.",
+  "Questo file non e un backup di dayalogue.": "This file is not a dayalogue backup.",
   "Questo backup e della versione {v}: serve un'app piu recente per importarlo.": "This backup is from version {v}: you need a newer app to import it.",
   "Nessuna giornata nuova.": "No new days.",
   "Aggiunta 1 giornata.": "1 day added.",
