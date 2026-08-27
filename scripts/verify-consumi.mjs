@@ -82,9 +82,15 @@ async function open(opts) {
   await ctx.addInitScript(
     ([mode, sess]) => {
       try {
-        if (mode === "local") window.localStorage.setItem("jm.mode", "local");
+        if (mode === "local") {
+          window.localStorage.setItem("jm.mode", "local");
+          /* niente velo del saluto sui banchi */
+          window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
+          window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+        }
         else {
           window.localStorage.removeItem("jm.mode");
+          window.localStorage.setItem("jm.saluto.silenzio", "usr:00000000-0000-4000-8000-000000000001");
           // La chiave la deriva supabase-js dall'host del progetto:
           // https://example.supabase.co -> sb-example-auth-token.
           window.localStorage.setItem("sb-example-auth-token", sess);

@@ -26,7 +26,7 @@ async function open({ width = 1440, height = 950, appearance = "light", theme = 
   const ctx = await browser.newContext({ viewport: { width, height }, locale: "it-IT" });
   await ctx.addInitScript(([a, t]) => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
       window.localStorage.setItem("jm:appearance", a);
       window.localStorage.setItem("jm:theme", t);
     } catch {}

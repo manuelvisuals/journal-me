@@ -31,9 +31,14 @@ async function open(url, { width = 1440, height = 950, mode = "local", scale = n
   const ctx = await browser.newContext({ viewport: { width, height }, locale: "it-IT" });
   await ctx.addInitScript(([m, s, sess]) => {
     try {
-      if (m === "local") window.localStorage.setItem("jm.mode", "local");
-      else {
+      if (m === "local") {
+        window.localStorage.setItem("jm.mode", "local");
+        /* niente velo del saluto sui banchi */
+        window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
+        window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+      } else {
         window.localStorage.removeItem("jm.mode");
+        window.localStorage.setItem("jm.saluto.silenzio", "usr:00000000-0000-4000-8000-000000000001");
         window.localStorage.setItem("sb-example-auth-token", sess);
       }
       if (s) window.localStorage.setItem("jm:scale", s);
@@ -89,8 +94,11 @@ for (const [mode, parola, vietata] of [["local", "Scrivi", "Scrivi la giornata"]
   const v = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--jm-ui-scale").trim());
   check("misure: e l'app si disegna DAVVERO a 1.15", v === "1.15", v);
 
+  // Non si conta ".jm-st-out" nudo: dal 24 agosto quella classe veste anche
+  // "Accedi al tuo account" (impostazioni, modalita locale). Il ripristino
+  // si riconosce dal suo testo.
   check("misure: senza una scelta non compare il ripristino",
-    (await page.locator(".jm-st-out").count()) === 0);
+    (await page.locator(".jm-st-out", { hasText: "Torna alla misura normale" }).count()) === 0);
 
   const overflow = await page.locator(".jm-st-szrow").evaluateAll((els) =>
     els.filter((e) => e.scrollWidth > e.clientWidth + 1).length);

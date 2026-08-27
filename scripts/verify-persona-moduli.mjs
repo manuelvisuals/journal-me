@@ -51,7 +51,7 @@ const SEED = `
 async function apri(path, attesa) {
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
-    try { window.localStorage.setItem("jm.mode", "local"); } catch {}
+    try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco"); } catch {}
   });
   const page = await ctx.newPage();
   const errors = [];
@@ -190,7 +190,7 @@ async function apri(path, attesa) {
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
       window.localStorage.setItem("jm:moduli", JSON.stringify(["palestra"]));
     } catch {}
   });

@@ -119,7 +119,7 @@ check(
 
 // ------------------------------------------------------------- 2. riassunto
 
-const route = leggi("src/app/api/process-entry/route.ts");
+const route = leggi("src/modules/oggi/server/process-entry.ts") /* passo E: la logica vive nel modulo, la rotta e un guscio */;
 check(
   "il vecchio tetto fisso di 30 parole per il riassunto non c'e piu",
   !/snippet: 1-2 frasi \(max 30 parole totali\)/.test(route),

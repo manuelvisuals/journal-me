@@ -178,7 +178,7 @@ check(
 
 /* ============== 3. il collegamento: cosa deve esserci ============== */
 
-const rotta = leggi("src/app/api/chiarimenti/route.ts");
+const rotta = leggi("src/modules/oggi/server/chiarimenti.ts") /* passo E: la logica vive nel modulo, la rotta e un guscio */;
 check(
   "la rotta distingue le due specie di domanda",
   /identita/.test(rotta) && /episodio/.test(rotta),

@@ -28,7 +28,7 @@ async function newPage(width, height) {
   const ctx = await browser.newContext({ viewport: { width, height }, locale: "it-IT" });
   await ctx.addInitScript(() => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
     } catch {}
   });
   const page = await ctx.newPage();
@@ -241,6 +241,11 @@ async function seed(page) {
   // griglia, i quadratini prendono il colore dell'umore, il tocco mostra
   // il titolo invece di portare via.
   {
+    // L'icona vive nell'intestazione di /mese: i controlli della
+    // FilledView qui sopra hanno lasciato la pagina su "/", e senza
+    // questo ritorno il blocco cercava l'icona nella pagina sbagliata.
+    await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+    await page.waitForTimeout(800);
     const icona = page.locator(".jm-mese-vista");
     check("phone: c'e l'icona lista/griglia", (await icona.count()) === 1);
     const areaIcona = await icona.boundingBox();

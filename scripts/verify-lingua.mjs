@@ -38,7 +38,7 @@ async function open(locale, { path = "/settings", pref = null } = {}) {
   await ctx.addInitScript(
     ([p]) => {
       try {
-        window.localStorage.setItem("jm.mode", "local");
+        window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
         if (p) window.localStorage.setItem("jm:lang", p);
       } catch {}
     },

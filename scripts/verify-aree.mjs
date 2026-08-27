@@ -25,7 +25,7 @@ function check(name, ok, extra = "") {
 
 /* ============ 1. il contratto mandato al modello ============ */
 {
-  const src = readFileSync("src/app/api/process-entry/route.ts", "utf8");
+  const src = readFileSync("src/modules/oggi/server/process-entry.ts", "utf8") /* passo E: la logica vive nel modulo, la rotta e un guscio */;
   for (const etichetta of ["Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni"]) {
     check(`lo schema accetta "${etichetta}"`, src.includes(`"${etichetta}"`));
   }
@@ -52,7 +52,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
 {
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
-    try { window.localStorage.setItem("jm.mode", "local"); } catch {}
+    try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco"); } catch {}
   });
   const page = await ctx.newPage();
   const errors = [];
@@ -153,7 +153,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "en-GB" });
   await ctx.addInitScript(() => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
       window.localStorage.setItem("jm:lang", "en");
     } catch {}
   });
