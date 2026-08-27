@@ -1,6 +1,6 @@
 {
-	"appId": "com.manuelvisuals.journalme",
-	"appName": "Journal.me",
+	"appId": "com.manuelvisuals.dayalogue",
+	"appName": "dayalogue",
 	"webDir": ".next-mobile",
 	"ios": {
 		"contentInset": "never",
