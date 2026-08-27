@@ -861,6 +861,10 @@ export function TodayClient({
           onStop={handleStop}
           onCancel={handleCancel}
           onWriteManually={() => setView("manual")}
+          // Da "Racconta a voce" e dal microfono del dock l'intento e uno:
+          // registrare. Si parte subito, senza il secondo tocco (Manuel,
+          // 27 agosto 2026). Il push-to-talk resta: un tocco mette in pausa.
+          autoStart
         />
       )}
 

@@ -132,7 +132,9 @@ async function newPage(width, height) {
   check("phone: contenitore max 440 invariato", (mainW ?? 0) <= 440, String(mainW));
 
   // Scrivi e salva dalla ManualWrite -> vista gratis con prosa
-  await page.locator(".mic-big-btn").click(); // writeFirst: penna
+  /* Dal 27 agosto la schermata vuota ha i tasti pieni stile /benvenuto:
+     in locale (writeFirst) il primario e la penna. */
+  await page.locator("button.btn-primary", { hasText: "Scrivi la giornata" }).click();
   await page.waitForTimeout(400);
   await page.locator(".jm-editor-textarea").fill("Titolo dal telefono.\nRacconto del giorno scritto dal telefono.");
   await page.locator(".jm-editor-btn.save").click();
