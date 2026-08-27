@@ -29,9 +29,11 @@ export function Linguetta() {
   // Bottone e non <a> finche la destinazione non e decisa: un href finto
   // sarebbe una promessa rotta al primo tocco. Al meccanismo serve solo un
   // elemento fisso e misurabile con un selettore stabile.
+  // Si chiama "Feedback" (deciso da Manuel il 27 agosto 2026) e per ora,
+  // sempre per sua scelta, NON apre nulla.
   return (
     <button type="button" className="jm-benv-ling">
-      {t("Scrivimi")}
+      {t("Feedback")}
     </button>
   );
 }
