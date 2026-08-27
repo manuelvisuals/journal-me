@@ -57,6 +57,10 @@ import type {
 
 type View =
   | "empty"
+  /** La pagina Record dal microfono del dock (mockup record-due-tasti,
+   *  approvato da Manuel il 27 agosto 2026): PRIMA la scelta coi due tasti
+   *  pieni, POI l'ascolto — che dal tasto microfono parte subito. */
+  | "scelta"
   | "recording"
   | "manual"
   | "no-capture"
@@ -143,7 +147,7 @@ export function TodayClient({
   const [view, setView] = useState<View>(
     autoRecord
       ? canVoice
-        ? "recording"
+        ? "scelta"
         : "manual"
       : initialEntry
         ? "filled"
@@ -232,7 +236,12 @@ export function TodayClient({
         return;
       }
       warmRealtime();
-      setView((current) => (current === "recording" ? current : "recording"));
+      // Non piu dritti nell'ascolto: prima la scelta coi due tasti
+      // (mockup record-due-tasti, 27 agosto). Se stai GIA registrando,
+      // il tocco sul dock non ti butta fuori.
+      setView((current) =>
+        current === "recording" || current === "scelta" ? current : "scelta",
+      );
       router.replace("/", { scroll: false });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -774,6 +783,19 @@ export function TodayClient({
           writeFirst={!canVoice}
           onStartRecording={handleStartRecording}
           onWriteManually={handleWriteManually}
+        />
+      )}
+
+      {/* La pagina Record (microfono del dock): la STESSA schermata dei
+          due tasti, piu l'uscita. Da qui il microfono parte a registrare
+          subito; il cerchione dell'ascolto resta tieni-premuto-per-parlare
+          (regola di Manuel: solo cosi funziona nei posti rumorosi). */}
+      {view === "scelta" && (
+        <EmptyState
+          writeFirst={!canVoice}
+          onStartRecording={handleStartRecording}
+          onWriteManually={handleWriteManually}
+          onCancel={handleCancel}
         />
       )}
 

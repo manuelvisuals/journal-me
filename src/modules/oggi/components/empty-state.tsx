@@ -11,12 +11,19 @@ type Props = {
    * premium vero e proprio arriva con la PR 10 (gating-ui).
    */
   writeFirst?: boolean;
+  /**
+   * L'uscita quieta, quando questa schermata e la pagina Record aperta dal
+   * dock sopra una giornata gia raccontata: si torna da dove si e venuti.
+   * Assente sulla giornata vuota, dove non c'e nessun "indietro".
+   */
+  onCancel?: () => void;
 };
 
 export function EmptyState({
   onStartRecording,
   onWriteManually,
   writeFirst = false,
+  onCancel,
 }: Props) {
   const t = useT();
   return (
@@ -86,6 +93,16 @@ export function EmptyState({
               {t("Scrivi a mano")}
             </button>
           </>
+        )}
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="jm-write-link"
+            style={{ justifySelf: "center" }}
+          >
+            {t("Annulla")}
+          </button>
         )}
       </div>
     </div>
