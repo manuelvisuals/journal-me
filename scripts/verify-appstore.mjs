@@ -187,7 +187,7 @@ async function open({ native = false, mode = "local" } = {}) {
 /* -- 5. guscio iOS, /benvenuto post-login: la card Premium ha il tasto -- */
 // Il bug del 27 agosto: su iOS la card Premium era rimasta SENZA nessun
 // tasto (si nascondeva "prova premium" e basta). Adesso il tasto c'e,
-// dice solo "inizia cosi" (niente prezzo, niente lessico da acquisto:
+// dice solo "inizia premium" (niente prezzo, niente lessico da acquisto:
 // App Store 3.1.1) e attiva il premium gratis della v1 (premium-v1.ts).
 {
   const { ctx, page } = await open({ native: true, mode: "cloud" });
@@ -201,9 +201,9 @@ async function open({ native = false, mode = "local" } = {}) {
     !main.toLowerCase().includes("prova premium"),
   );
   const tastoPremium = await page
-    .locator(".jm-benv-card .btn-primary", { hasText: "inizia cosi" })
+    .locator(".jm-benv-card .btn-primary", { hasText: "inizia premium" })
     .count();
-  check("guscio iOS: la card Premium ha il tasto 'inizia cosi'", tastoPremium >= 1);
+  check("guscio iOS: la card Premium ha il tasto 'inizia premium'", tastoPremium >= 1);
   await ctx.close();
 }
 

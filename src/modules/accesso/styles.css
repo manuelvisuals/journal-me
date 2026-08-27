@@ -267,3 +267,14 @@
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
+
+/* I due tasti delle card devono parlare con la stessa voce: il ghost della
+   card gratis e maiuscolo per contratto (.btn-ghost, base.css), il primario
+   della card Premium no — e sullo schermo si leggeva "START THIS WAY" sopra
+   e "Start this way" sotto (Manuel, 27 agosto 2026). L'allineamento vive
+   QUI, nel recinto di /benvenuto: il .btn-primary globale non si tocca. */
+.jm-benv-card .btn-primary {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: calc(13px * var(--jm-ui-scale));
+}

@@ -30,7 +30,7 @@ export const PREMIUM_HAS_FREE_TRIAL = false;
  * iOS v1: il premium si attiva GRATIS dentro il guscio (deciso da Manuel
  * il 27 agosto 2026, per la prima revisione Apple — guideline 3.1.1:
  * niente vendita dentro l'app, quindi per ora niente prezzo e niente
- * pagamento, il tasto della card Premium dice solo "inizia cosi").
+ * pagamento, il tasto della card Premium dice solo "inizia premium").
  *
  * Chi lo tocca diventa premium DAVVERO (rotta /api/premium-v1,
  * `plan_source = 'ios-v1'`): il marchio nel database distingue questi

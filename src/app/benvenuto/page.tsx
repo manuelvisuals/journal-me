@@ -42,7 +42,7 @@ export default function BenvenutoPage() {
   // Dentro il guscio iOS non si mostrano prezzi ne inviti a comprare
   // (App Store 3.1.1): la pagina resta questa, parola per parola.
   // Sparisce la riga del prezzo, e il bottone della card Premium diventa
-  // "inizia cosi" (v1 gratis, deciso da Manuel il 27 agosto: vedi
+  // "inizia premium" (v1 gratis, deciso da Manuel il 27 agosto: vedi
   // PREMIUM_IOS_V1_GRATIS in src/lib/pricing.ts).
   const native = isNative();
 
@@ -52,7 +52,7 @@ export default function BenvenutoPage() {
   };
 
   // La card Premium dentro il guscio iOS (v1): il tasto c'e di nuovo, dice
-  // solo "inizia cosi" (come quello della card gratis: niente prezzo,
+  // solo "inizia premium" (niente prezzo,
   // niente lessico da acquisto — App Store 3.1.1) e attiva il premium
   // DAVVERO, gratis, via startPremiumV1. La decisione e il percorso di
   // upgrade al pagamento vero sono scritti in un punto solo:
@@ -126,7 +126,7 @@ export default function BenvenutoPage() {
             onClick={() => (postLogin ? enter() : void startLocal())}
             disabled={starting || waiting}
           >
-            {starting ? t("preparo...") : t("inizia cosi")}
+            {starting ? t("preparo...") : t("inizia gratis")}
           </button>
         </div>
 
@@ -168,7 +168,7 @@ export default function BenvenutoPage() {
               }}
               disabled={starting || waiting || premiumBusy}
             >
-              {premiumBusy ? t("un attimo...") : t("inizia cosi")}
+              {premiumBusy ? t("un attimo...") : t("inizia premium")}
             </button>
           ) : (
             <button
@@ -193,10 +193,19 @@ export default function BenvenutoPage() {
         </div>
       </div>
 
+      {/* La didascalia dice la verita del CONTESTO in cui la leggi (Manuel,
+          27 agosto 2026). Prima del login "gratis" vuol dire "solo su questo
+          dispositivo" e la vecchia frase e esatta. DOPO il login "gratis" e
+          il piano free di un account cloud: dire "nessun dato lascia il
+          dispositivo" li sarebbe falso. */}
       <p className="jm-benv-foot">
-        {t(
-          "Nella versione gratis nessun dato lascia il dispositivo: non c'e un server a cui mandarli.",
-        )}
+        {postLogin
+          ? t(
+              "Nella versione gratis scrivi a mano: niente racconto a voce e niente AI.",
+            )
+          : t(
+              "Nella versione gratis nessun dato lascia il dispositivo: non c'e un server a cui mandarli.",
+            )}
         <br />
         {t(
           "Nella versione premium le tue giornate vengono salvate cifrate e il testo passa dai modelli AI per essere riassunto. Puoi cancellare tutto in qualsiasi momento.",

@@ -8,7 +8,7 @@ import { PREMIUM_IOS_V1_GRATIS } from "@/lib/pricing";
  *
  * Somiglia al pagamento finto (dev-checkout) ma NON e lui: qui non c'e
  * elenco di email autorizzate, perche la decisione di Manuel e che nella
- * v1 CHIUNQUE tocchi "inizia cosi" sulla card Premium diventi premium.
+ * v1 CHIUNQUE tocchi "inizia premium" sulla card Premium diventi premium.
  * Le differenze deliberate:
  *
  *  - `plan_source = 'ios-v1'` (non 'dev'): nel database questi account si
