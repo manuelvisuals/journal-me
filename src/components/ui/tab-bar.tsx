@@ -1,9 +1,53 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useSyncExternalStore } from "react";
 import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
 import { useActiveModules } from "@/lib/modules";
+
+/**
+ * "Sono DENTRO l'app?" — il segnale, per chi deve saperlo da fuori.
+ *
+ * Dentro = una schermata col dock (questa TabBar) o col guscio desktop e
+ * montata. Login, /benvenuto, privacy e checkout non lo montano, e infatti
+ * li dentro non sei ancora.
+ *
+ * Nato il 27 agosto 2026 per la linguetta Feedback (modulo accesso):
+ * Manuel la vuole solo dopo l'ingresso, "quando vedi il dock". La linguetta
+ * pero DEVE stare montata a livello di body (vincolo di transform, vedi
+ * linguetta.tsx), quindi non puo semplicemente vivere accanto al dock: le
+ * serve questo segnale. Conteggio e non booleano: durante una navigazione
+ * la schermata nuova puo montare prima che la vecchia smonti.
+ */
+let schermateDentro = 0;
+const dentroListeners = new Set<() => void>();
+function dentroEmit(): void {
+  for (const l of dentroListeners) l();
+}
+
+/** Da chiamare in useEffect: registra "questa schermata e dentro l'app". */
+export function segnalaDentroApp(): () => void {
+  schermateDentro++;
+  dentroEmit();
+  return () => {
+    schermateDentro--;
+    dentroEmit();
+  };
+}
+
+/** True quando almeno una schermata col dock (o il guscio desktop) e viva. */
+export function useDentroApp(): boolean {
+  return useSyncExternalStore(
+    (l) => {
+      dentroListeners.add(l);
+      return () => dentroListeners.delete(l);
+    },
+    () => schermateDentro > 0,
+    // SSR: fuori. La linguetta compare all'idratazione, mai prima.
+    () => false,
+  );
+}
 
 export type TabKey =
   | "today"
@@ -111,6 +155,8 @@ const SIDE_TABS_RIGHT: Tab[] = [
 
 export function TabBar({ active }: Props) {
   const t = useT();
+  // La barra c'e = sei dentro (vedi segnalaDentroApp qui sopra).
+  useEffect(segnalaDentroApp, []);
   // Il modulo acceso piu di recente prende il quarto posto (richiesta di
   // Manuel del 21 agosto 2026). I posti sono cinque e il microfono al
   // centro non si tocca, quindi qualcosa deve spostarsi: si sposta

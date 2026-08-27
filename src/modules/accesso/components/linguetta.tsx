@@ -21,11 +21,21 @@
  */
 
 import { useT } from "@/lib/i18n";
+import { useDentroApp } from "@/components/ui/tab-bar";
 
 export const SELETTORE_LINGUETTA = ".jm-benv-ling";
 
 export function Linguetta() {
   const t = useT();
+  // Solo DENTRO l'app (Manuel, 27 agosto 2026: "quando vedi il dock").
+  // Su login, /benvenuto e le pagine pubbliche la linguetta non c'e: il
+  // segnale arriva dal dock stesso (segnalaDentroApp in tab-bar.tsx),
+  // perche questa DEVE restare montata a livello di body — vedi i vincoli
+  // qui sotto — e non puo stare fisicamente accanto alla barra.
+  // Il saluto non si rompe quando manca: ha gia la chiusura secca di
+  // ripiego (saluto-avvio.tsx), e comunque compare solo da dentro.
+  const dentro = useDentroApp();
+  if (!dentro) return null;
   // Bottone e non <a> finche la destinazione non e decisa: un href finto
   // sarebbe una promessa rotta al primo tocco. Al meccanismo serve solo un
   // elemento fisso e misurabile con un selettore stabile.
