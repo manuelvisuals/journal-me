@@ -1,5 +1,5 @@
 #!/bin/bash
-# Journal.me - aggiorna, ricostruisce il pacchetto dell'app e apre Xcode.
+# dayalogue - aggiorna, ricostruisce il pacchetto dell'app e apre Xcode.
 # Doppio clic, oppure incolla il contenuto nel Terminale.
 
 clear
@@ -10,7 +10,7 @@ wr(){ printf "${Y}[!!] %s${V}\n" "$1"; }
 info(){ printf "${D}     %s${V}\n" "$1"; }
 stop(){ echo; read -n 1 -s -r -p "Premi un tasto per chiudere."; echo; exit 1; }
 
-printf "${B}Journal.me - aggiorna, ricostruisci, apri Xcode${V}\n\n"
+printf "${B}dayalogue - aggiorna, ricostruisci, apri Xcode${V}\n\n"
 
 # ---------- 1. la cartella giusta ----------
 REPO=$(git rev-parse --show-toplevel 2>/dev/null)
