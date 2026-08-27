@@ -19,7 +19,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { compactDayDate, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
-import { NON_E_UNA_PERSONA, type Domanda, type Risposta } from "@/lib/chiarimenti";
+import {
+  NON_APPARTIENE,
+  NON_E_UNA_PERSONA,
+  type Domanda,
+  type Risposta,
+} from "@/lib/chiarimenti";
 
 type Props = {
   domande: Domanda[];
@@ -84,6 +89,13 @@ export function ChiarimentiScreen({
   const valoreScelto = libero ? testoLibero.trim() : scelta;
   const puoAvanzare = !!valoreScelto && valoreScelto.length > 0;
 
+  function pulisci() {
+    setScelta(null);
+    setNomeVero("");
+    setLiberoScelto(false);
+    setTestoLibero("");
+  }
+
   function avanti(valore: string | null) {
     // Subito, non alla fine: vedi onRisposta nei Props.
     onRisposta({ domanda: d, valore, nomeVero });
@@ -92,10 +104,20 @@ export function ChiarimentiScreen({
       return;
     }
     setI((n) => n + 1);
-    setScelta(null);
-    setNomeVero("");
-    setLiberoScelto(false);
-    setTestoLibero("");
+    pulisci();
+  }
+
+  /**
+   * Un passo indietro (Manuel, 27 agosto 2026: "consentimi di tornare
+   * indietro se ci ripenso"). La risposta gia data resta applicata — le
+   * risposte valgono nel momento in cui le dai — ma rispondere di nuovo
+   * la sovrascrive: soprannomi e aree si riscrivono, e la domanda si
+   * richiude con l'ultima parola detta.
+   */
+  function indietro() {
+    if (i === 0) return;
+    setI((n) => n - 1);
+    pulisci();
   }
 
   return (
@@ -198,6 +220,27 @@ export function ChiarimentiScreen({
                 </button>
               )}
 
+              {/* Non c'entra con nessuna sfera: riparare una gomma non e
+                  movimento ne lavoro, e solo una cosa fatta (Manuel, 27
+                  agosto 2026). E una risposta vera: chiude la domanda per
+                  sempre e non tocca le aree. */}
+              {d.azione === "area" && (
+                <button
+                  type="button"
+                  className={`jm-ch-opt${scelta === NON_APPARTIENE ? " sel" : ""}`}
+                  onClick={() => {
+                    setScelta(NON_APPARTIENE);
+                    setNomeVero("");
+                  }}
+                  aria-pressed={scelta === NON_APPARTIENE}
+                >
+                  <span className="jm-ch-lab">
+                    {t("Non c'entra con nessuna sfera")}
+                    <span className="sub">{t("era solo una cosa da fare")}</span>
+                  </span>
+                </button>
+              )}
+
               {/* Il campo libero e l'ULTIMA riga, non la prima: scrivere un
                   nome a mano e il modo piu facile per ritrovarsi "Daniele" e
                   "daniele" come due persone diverse. */}
@@ -221,6 +264,17 @@ export function ChiarimentiScreen({
         </div>
 
         <div className="jm-ch-foot">
+          {/* Il passo indietro compare solo quando c'e un indietro. */}
+          {i > 0 && (
+            <button
+              type="button"
+              className="jm-ch-skip"
+              disabled={saving}
+              onClick={indietro}
+            >
+              {t("indietro")}
+            </button>
+          )}
           <button
             type="button"
             className="jm-ch-skip"

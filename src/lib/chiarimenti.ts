@@ -24,6 +24,13 @@
  *             deve farlo nemmeno al posto tuo quando salti la domanda. Un
  *             buco onesto e meglio di un dato inventato: fra sei mesi
  *             rileggeresti statistiche che non sono le tue.
+ *
+ * E la quinta (Manuel, 27 agosto 2026, dopo "repairing the scooter tire"):
+ *
+ *   non c'entra   La cosa NON appartiene a nessuna sfera: riparare una gomma
+ *                 non e movimento ne lavoro, e solo una cosa fatta. E una
+ *                 risposta vera: chiude la domanda per sempre e non tocca
+ *                 le aree della giornata.
  */
 
 import { apiFetch } from "@/lib/api";
@@ -64,6 +71,15 @@ export type Risposta = { domanda: Domanda; valore: string | null; nomeVero?: str
  * giornata. Non serviva una tabella nuova.
  */
 export const NON_E_UNA_PERSONA = "__nessuno__";
+
+/**
+ * Il valore dell'opzione "non c'entra con nessuna sfera" (domande di area).
+ *
+ * E una risposta piena: passa da answerQuestion e la domanda non torna piu.
+ * Non sposta niente fra le aree — il punto e proprio che quella cosa non ne
+ * merita una.
+ */
+export const NON_APPARTIENE = "__nessuna_sfera__";
 
 /**
  * Chiede all'AI cosa non ha capito. Se qualcosa va storto torna un elenco
@@ -281,6 +297,12 @@ export async function applicaRisposte(
 
     // azione === "area": solo questa giornata.
     if (!valore) continue;
+    // "Non c'entra con nessuna sfera": la domanda si chiude per sempre e le
+    // aree restano come sono. Vedi NON_APPARTIENE qui sopra.
+    if (valore === NON_APPARTIENE) {
+      await chiudi(mode, domanda, valore);
+      continue;
+    }
     const candidate = domanda.opzioni
       .flatMap((o) => o.valore.split("+"))
       .map((v) => v.trim())
