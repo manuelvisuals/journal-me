@@ -79,16 +79,18 @@ type Props = {
   onCancel: () => void;
   /** Switch from voice to manual typing (tears down the live session first). */
   onWriteManually?: () => void;
-  /**
-   * Parte a registrare da solo appena il microfono e armato.
-   *
-   * Chiesto da Manuel il 27 agosto 2026: dal tasto "Racconta a voce" il
-   * secondo tocco per iniziare era un pedaggio. Il push-to-talk NON muore:
-   * un tocco sul cerchione mette in pausa (pointerup -> endTalk), e da li
-   * in poi tieni-premuto-per-parlare funziona come sempre.
-   */
-  autoStart?: boolean;
 };
+
+/*
+ * NIENTE AVVIO AUTOMATICO — MAI. C'e stato per mezza giornata (27 agosto
+ * 2026, prop `autoStart`) e Manuel l'ha bocciato provandolo: "devo cliccare
+ * e tenere premuto il tasto registra per registrare, push to talk come un
+ * walkie talkie". Il motivo e la regola stessa del push-to-talk: si
+ * cattura SOLO mentre il dito preme, cosi i bar e i caffe di sottofondo
+ * restano fuori dal nastro. Un overlay che parte a registrare da solo
+ * registra il locale, non la persona. Se ti viene voglia di rimetterlo,
+ * questa nota e qui per fermarti.
+ */
 
 type RecState = "connecting" | "recording" | "paused" | "error";
 
@@ -125,7 +127,6 @@ export function RecordingOverlay({
   onStop,
   onCancel,
   onWriteManually,
-  autoStart = false,
 }: Props) {
   const t = useT();
   const [seconds, setSeconds] = useState<number>(0);
@@ -616,21 +617,6 @@ export function RecordingOverlay({
     cleanup();
     onWriteManually?.();
   }
-
-  // L'avvio automatico (vedi Props.autoStart): quando l'armamento finisce
-  // ("paused"), si parte una volta sola. Passa da beginTalk, che e l'unica
-  // strada onesta per aprire il rubinetto: timer, stato e resume() del
-  // recorder restano in un posto solo.
-  const autoAvviatoRef = useRef<boolean>(false);
-  useEffect(() => {
-    if (!autoStart || autoAvviatoRef.current) return;
-    if (state !== "paused") return;
-    autoAvviatoRef.current = true;
-    beginTalk();
-    // beginTalk e dichiarata sotto e non e memoizzata: qui serve solo al
-    // passaggio connecting -> paused, e le dipendenze vere sono queste due.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoStart, state]);
 
   // Push-to-talk: capture only while the button is held. Pausing the recorder
   // (rather than muting the track) means the gaps are absent from the clip

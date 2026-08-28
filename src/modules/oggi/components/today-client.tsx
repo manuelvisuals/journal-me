@@ -58,8 +58,9 @@ import type {
 type View =
   | "empty"
   /** La pagina Record dal microfono del dock (mockup record-due-tasti,
-   *  approvato da Manuel il 27 agosto 2026): PRIMA la scelta coi due tasti
-   *  pieni, POI l'ascolto — che dal tasto microfono parte subito. */
+   *  27 agosto 2026): PRIMA la scelta coi due tasti pieni, POI l'ascolto —
+   *  che si apre ARMATO ma muto: si registra solo tenendo premuto il
+   *  cerchione (walkie-talkie, regola di Manuel). */
   | "scelta"
   | "recording"
   | "manual"
@@ -787,9 +788,10 @@ export function TodayClient({
       )}
 
       {/* La pagina Record (microfono del dock): la STESSA schermata dei
-          due tasti, piu l'uscita. Da qui il microfono parte a registrare
-          subito; il cerchione dell'ascolto resta tieni-premuto-per-parlare
-          (regola di Manuel: solo cosi funziona nei posti rumorosi). */}
+          due tasti, piu l'uscita. "Racconta a voce" apre l'ascolto ARMATO
+          ma muto: si registra SOLO tenendo premuto il cerchione, come un
+          walkie-talkie (regola di Manuel: solo cosi i bar di sottofondo
+          restano fuori dal nastro). */}
       {view === "scelta" && (
         <EmptyState
           writeFirst={!canVoice}
@@ -883,10 +885,6 @@ export function TodayClient({
           onStop={handleStop}
           onCancel={handleCancel}
           onWriteManually={() => setView("manual")}
-          // Da "Racconta a voce" e dal microfono del dock l'intento e uno:
-          // registrare. Si parte subito, senza il secondo tocco (Manuel,
-          // 27 agosto 2026). Il push-to-talk resta: un tocco mette in pausa.
-          autoStart
         />
       )}
 
