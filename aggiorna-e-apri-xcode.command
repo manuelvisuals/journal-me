@@ -43,6 +43,16 @@ ok "GitHub raggiunto"
 
 PRIMA=$(git rev-parse --short HEAD)
 git checkout main >/dev/null 2>&1
+# Il pacchetto dentro ios/ e generato ma versionato: ricostruirlo qui sporca
+# file che il pull vuole aggiornare, e al giro dopo il rebase si pianta con
+# "Pulling is not possible because you have unmerged files". Si butta PRIMA
+# di tirare, tanto lo rifacciamo trenta secondi dopo. E se un rebase e
+# rimasto a meta da un tentativo precedente, si abortisce: se no resta
+# bloccato per sempre.
+git rebase --abort >/dev/null 2>&1
+git merge --abort >/dev/null 2>&1
+git checkout -- ios >/dev/null 2>&1
+git clean -fdq ios >/dev/null 2>&1
 if git -c rebase.autoStash=true pull --rebase origin main >/tmp/jm-pull.log 2>&1; then
   DOPO=$(git rev-parse --short HEAD)
   if [ "$PRIMA" = "$DOPO" ]; then ok "Codice gia aggiornato ($DOPO)"; else ok "Codice aggiornato: $PRIMA -> $DOPO"; fi
