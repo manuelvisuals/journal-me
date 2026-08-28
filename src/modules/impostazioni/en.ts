@@ -179,4 +179,14 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Foto tolta. Resta la tua iniziale.": "Photo removed. Your initial stays.",
   "Non sono riuscito a leggere questa immagine.": "I could not read this image.",
   "Salvataggio non riuscito": "Could not save",
+  "Il tuo nome": "Your name",
+  "Cambia il tuo nome": "Change your name",
+  "Come vuoi essere chiamato dentro l'app. L'email non cambia.":
+    "What you want the app to call you. Your email does not change.",
+  "Senza nome l'app ti chiama {n}, come la tua email.":
+    "With no name the app calls you {n}, after your email.",
+  "Adesso ti chiami {n}.": "You are now {n}.",
+  "Nome tolto. Torna quello della tua email.":
+    "Name removed. The one from your email is back.",
+  "ospite": "guest",
 };

@@ -17,36 +17,60 @@ con la barra della quota. Pagina: `src/app/settings/`.
   (scheletro).
 - Banchi prima del push: `verify-impostazioni`, `verify-lingua`,
   `verify-parole-misure`, `verify-checkout-obiettivi`, `verify-consumi`,
-  `verify-foto-profilo` (piu tsc, eslint, verify-i18n).
+  `verify-foto-profilo`, `verify-nome-profilo` (piu tsc, eslint,
+  verify-i18n). I due banchi del profilo si eseguono con
+  `node --experimental-strip-types`: leggono un contratto `.ts`.
 - Le API del modulo (passo E): `src/modules/impostazioni/server/usage.ts`,
-  `delete-account.ts`, `avatar.ts`; le rotte in `src/app/api/` sono gusci.
+  `delete-account.ts`, `avatar.ts`, `nome.ts`; le rotte in `src/app/api/`
+  sono gusci.
 
-## La foto profilo (28 agosto 2026)
+## Il profilo: foto e nome (28 agosto 2026)
 
-Mockup approvato: `design/mockups/foto-profilo-flusso.html`. Nato da una
-segnalazione di Manuel: il pallino dell'account era 32px mentre i due
-bottoni accanto sono 44 — e non c'era nessun modo di metterci una faccia.
+Mockup approvati: `design/mockups/foto-profilo-flusso.html` (la foto) e
+`design/mockups/nome-profilo.html` (il nome: pennina in linea sul computer,
+pennina nel menu sul telefono — "strada A"). Nati da due segnalazioni di
+Manuel: il pallino era 32px accanto a due bottoni da 44 e non c'era modo di
+metterci una faccia; e il nome che l'app mostrava — "madh52" — non l'aveva
+scelto nessuno, era la sua email tagliata alla chiocciola.
 
 **Chi la mostra non e chi la cambia.** Il pallino vive nello SCHELETRO
 (`src/components/ui/account-menu.tsx`, intestazione del telefono e rail del
 computer). Il modo di cambiarla vive qui. Il ponte e la porta:
-`index.ts` esporta `useFotoProfilo` e lo scheletro importa
-`@/modules/impostazioni`, come gia fa con il muro premium di abbonamento.
-**`salvaFotoProfilo` NON esce dalla porta**: leggere la foto lo puo fare
-chiunque, cambiarla solo questo modulo.
+`index.ts` esporta `useProfilo`, `useNomeMostrato` e `apriPannelloNome`, e
+lo scheletro importa `@/modules/impostazioni`, come gia fa con il muro
+premium di abbonamento. **I salvataggi NON escono dalla porta**: leggere il
+profilo lo puo fare chiunque, cambiarlo solo questo modulo.
 
 I pezzi:
 
-- `foto-profilo.ts` — lo store: una lettura sola anche con tre pallini
-  montati, e il ritorno indietro se il salvataggio fallisce.
-- `avatar-contract.ts` — **senza nessun import, di proposito**: l'aritmetica
-  del ritaglio e la convalida del formato. Sono le due cose che sbagliano in
-  silenzio (una foto tagliata storta sembra una scelta di disegno), e senza
-  import un banco le puo ESEGUIRE in Node invece di leggerne il testo.
+- `profilo.ts` — lo store: nome e foto da UNA lettura sola (nessuna
+  richiesta in piu per il nome), anche con cinque pallini montati, e il
+  ritorno indietro se il salvataggio fallisce.
+- `profilo-contract.ts` — **senza nessun import, di proposito**: l'aritmetica
+  del ritaglio, la convalida del formato, e le regole del nome
+  (`normalizzaNome`, `nomeMostrato`). Sono le cose che sbagliano in silenzio
+  (una foto tagliata storta sembra una scelta di disegno), e senza import un
+  banco le puo ESEGUIRE in Node invece di leggerne il testo.
 - `components/foto-row.tsx` — la riga, il foglio delle tre scelte
   (`variant="riga"`, telefono) o il ritratto cliccabile della rail
   (`variant="avatar"`, computer), e il ritaglio a schermo pieno.
-- `server/avatar.ts` + `src/app/api/account/avatar/` — la scrittura.
+- `components/nome-riga.tsx` — `NomeRiga` (computer: pennina al passaggio del
+  mouse, campo in linea, Invio salva ed Esc annulla) e `NomePanel` (telefono:
+  la schermata aperta dalla pennina del menu).
+- `server/avatar.ts`, `server/nome.ts` + le rotte in `src/app/api/account/`.
+
+**Il nome ha UNA regola sola.** `nomeMostrato` (nome scelto, altrimenti
+l'email tagliata alla chiocciola) vive in `profilo-contract.ts` e la chiamano
+tutti. Prima viveva in due punti — `account-menu.tsx` e `settings-client.tsx`
+— e un nome scelto che ne raggiungesse uno solo avrebbe mostrato **due nomi
+diversi nella stessa schermata**. Il banco lo controlla: se qualcuno rimette
+uno `split("@")` in uno di quei due file, esce rosso.
+
+**La pennina del telefono non modifica dove sta.** Vive nella testata del
+menu (scheletro) e chiama `apriPannelloNome()` piu `router.push("/settings")`:
+un menu apre le cose, non le contiene. Il passaggio non usa i parametri
+dell'indirizzo perche in Next 16 vorrebbero un Suspense attorno a mezza
+pagina per una cosa che dura un istante.
 
 **Perche la scrittura passa dal server e non da una policy.** `profiles`
 contiene anche `plan`, e le policy di Postgres valgono per RIGA, non per
@@ -60,13 +84,14 @@ base64: un deposito file per quella taglia sarebbe piu superficie di quanta
 ne risparmi, e cosi la foto sparisce da sola con l'account (cascade della
 006), senza che `delete-account.ts` debba sapere che esistono immagini.
 
-**Serve la migration 016** (`supabase/migrations/016_profile_avatar.sql`):
-finche Manuel non la incolla nel SQL Editor di Supabase, la lettura risponde
-"nessuna foto" e il salvataggio da errore. Non e un guasto silenzioso —
-`foto-profilo.ts` tratta la colonna mancante come "nessuna foto", non come
-schermata rotta.
+**Servono le migration 016 e 017** (`016_profile_avatar.sql`,
+`017_profile_name.sql`): finche non sono incollate nel SQL Editor di
+Supabase, la lettura risponde "niente di scelto" e il salvataggio da errore.
+Non e un guasto silenzioso — `profilo.ts` tratta le colonne mancanti come
+"niente di scelto", non come schermata rotta.
 
-**Cosa il banco NON copre.** `verify-foto-profilo.mjs` non apre un browser:
-prova aritmetica, convalida, misure e innesti. Il foglio che sale, il
-trascinamento e il pallino che cambia vanno guardati con gli occhi, sul
-deploy o con gli altri banchi Playwright.
+**Cosa i banchi NON coprono.** Non aprono un browser: provano aritmetica,
+regole, convalide, misure e innesti. Il foglio che sale, il trascinamento del
+ritaglio, la pennina che compare al passaggio del mouse e il campo che prende
+il posto del nome vanno guardati con gli occhi, sul deploy o con gli altri
+banchi Playwright.

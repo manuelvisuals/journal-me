@@ -1717,3 +1717,38 @@ summary:active {
   opacity: 0.8;
 }
 .jm-acct-sheet-sep { height: 1px; background: var(--color-line); margin: 6px 10px; }
+
+/* La pennina nella testata del menu dell'account (strada A del mockup
+   nome-profilo.html): non modifica qui, porta alla schermata del nome
+   dentro le Impostazioni. Un menu apre le cose, non le contiene. */
+.jm-acct-sheet-head .n,
+.jm-acct-head .n {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jm-acct-penna {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: var(--jm-radius-circle);
+  border: none;
+  background: var(--color-surface-2);
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-acct-penna svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

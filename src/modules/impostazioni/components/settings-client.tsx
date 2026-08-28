@@ -40,6 +40,8 @@ import {
 } from "@/modules/impostazioni/components/panels";
 import { BackupBanner } from "@/modules/impostazioni/components/data-section";
 import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
+import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
+import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
 import {
   ConsumiPanel,
@@ -84,7 +86,7 @@ type Props = {
 
 type Panel =
   | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi"
-  | "moduli";
+  | "moduli" | "nome";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -94,6 +96,7 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   textsize: "Dimensione del testo",
   consumi: "Consumi AI",
   moduli: "Moduli",
+  nome: "Il tuo nome",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -266,10 +269,30 @@ export function SettingsClient({
 
   const moduliAttivi = useActiveModules();
 
+  // La pennina sta nella testata del menu dell'account, che e scheletro:
+  // chiede di aprire questa schermata passando dallo store del modulo,
+  // invece che da un parametro nell'indirizzo (che in Next 16 vorrebbe un
+  // Suspense attorno a mezza pagina per una cosa che dura un istante).
+  const richiestaNome = useRichiestaNome();
+  const [nomeVisto, setNomeVisto] = useState(richiestaNome);
+  if (richiestaNome !== nomeVisto) {
+    // Aggiustare lo stato DURANTE il render e il pattern che React
+    // documenta per reagire a un valore esterno che cambia: React rifa
+    // subito il render senza mostrare nulla in mezzo. Dentro un useEffect
+    // invece si vedrebbe un fotogramma della schermata sbagliata, ed e
+    // anche cio che il lint vieta (react-hooks/set-state-in-effect).
+    setNomeVisto(richiestaNome);
+    setPanel("nome");
+  }
+
   const themeName = THEMES.find((t) => t.id === themeId)?.name ?? "";
-  const accountName = isLocal
-    ? "Questo dispositivo"
-    : (email?.split("@")[0] ?? t("Ospite"));
+  // Il nome mostrato ha UNA sola regola, e vive in profilo-contract.ts:
+  // nome scelto, altrimenti l'email tagliata alla chiocciola. Prima quella
+  // regola era scritta qui E in account-menu.tsx, e un nome scelto che
+  // raggiungesse un solo dei due avrebbe mostrato due nomi diversi nella
+  // stessa schermata.
+  const nomeCloud = useNomeMostrato(email, t("Ospite"));
+  const accountName = isLocal ? "Questo dispositivo" : nomeCloud;
 
   return (
     <main
@@ -296,6 +319,14 @@ export function SettingsClient({
         {panel === "where" && <WherePanel />}
         {panel === "consumi" && <ConsumiPanel />}
         {panel === "moduli" && <ModuliPanel />}
+        {panel === "nome" && (
+          <NomePanel
+            email={email}
+            mostrato={accountName}
+            onNota={say}
+            onFatto={() => setPanel("root")}
+          />
+        )}
 
         {panel === "root" && (
           <>
@@ -591,7 +622,11 @@ export function SettingsClient({
               onNota={say}
             />
           )}
-          <div className="jm-st-nm">{isLocal ? t(accountName) : accountName}</div>
+          {isLocal ? (
+            <div className="jm-st-nm">{t(accountName)}</div>
+          ) : (
+            <NomeRiga mostrato={accountName} onNota={say} />
+          )}
           {!isLocal && email && <div className="jm-st-em">{email}</div>}
           {isLocal ? (
             <span className="jm-st-pill">{t("Locale")}</span>

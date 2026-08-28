@@ -1,6 +1,6 @@
 /**
- * Il contratto della foto profilo: le due funzioni che possono sbagliare in
- * silenzio, senza import.
+ * Il contratto del profilo (nome e foto): le funzioni che possono sbagliare
+ * in silenzio, senza import.
  *
  * PERCHE UN FILE A PARTE E SENZA IMPORT. Il resto della foto profilo si
  * verifica solo aprendo un browser (il foglio, il trascinamento, il pallino
@@ -115,4 +115,56 @@ export function limitaSpostamento(p: {
     x: Math.max(-maxX, Math.min(maxX, x)),
     y: Math.max(-maxY, Math.min(maxY, y)),
   };
+}
+
+/* =====================================================================
+   IL NOME MOSTRATO
+   ===================================================================== */
+
+/**
+ * Trenta caratteri. Non e un numero tondo scelto a caso: la rail destra e
+ * larga 296px meno 40 di padding, e a 15px in semigrassetto oltre i trenta
+ * il nome viene tagliato con i puntini. Meglio non farlo scrivere che
+ * mostrarlo mozzato.
+ */
+export const NOME_MAX = 30;
+
+/**
+ * Ripulisce cio che l'utente ha scritto: via gli spazi ai bordi, gli a capo
+ * incollati per sbaglio e i doppi spazi in mezzo, poi il taglio a NOME_MAX.
+ * Restituisce `null` quando non resta niente — e quello che il chiamante
+ * salva per dire "torna al nome derivato dall'email".
+ */
+export function normalizzaNome(v: unknown): string | null {
+  if (typeof v !== "string") return null;
+  const pulito = v.replace(/\s+/g, " ").trim().slice(0, NOME_MAX);
+  return pulito === "" ? null : pulito;
+}
+
+/** `null` = togliere il nome scelto, ed e valido. */
+export function nomeValido(v: unknown): v is string | null {
+  if (v === null) return true;
+  if (typeof v !== "string") return false;
+  return normalizzaNome(v) !== null && v.length <= NOME_MAX;
+}
+
+/**
+ * Il nome da mostrare, in UN posto solo.
+ *
+ * E la funzione piu importante di questo file, e non per la sua difficolta:
+ * prima del nome scelto la regola "email tagliata alla chiocciola" viveva in
+ * DUE punti (account-menu.tsx per il pallino e il menu, settings-client.tsx
+ * per la colonna destra). Con un nome scelto che ne raggiunge uno solo, la
+ * stessa schermata mostrerebbe due nomi diversi. Da qui in poi la regola e
+ * questa, e la chiamano tutti.
+ */
+export function nomeMostrato(
+  scelto: string | null | undefined,
+  email: string | null | undefined,
+  ospite = "ospite",
+): string {
+  const pulito = normalizzaNome(scelto);
+  if (pulito) return pulito;
+  if (email && email.includes("@")) return email.split("@")[0];
+  return ospite;
 }

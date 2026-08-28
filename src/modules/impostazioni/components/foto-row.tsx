@@ -9,7 +9,7 @@
  * settings-client: il foglio, i due campi file, il ritaglio a schermo pieno,
  * il ridimensionamento e il salvataggio. Chi guarda la foto — il pallino
  * nell'intestazione e quello della rail — non sa niente di tutto questo: legge
- * `useFotoProfilo()` dalla porta del modulo.
+ * `useProfilo()` dalla porta del modulo.
  *
  * PERCHE IL RITAGLIO ESISTE. Non e un vezzo: senza, una foto da 4 MB
  * partirebbe intera per essere mostrata dentro un cerchio da 44 pixel. Qui
@@ -29,8 +29,8 @@ import { useT } from "@/lib/i18n";
 import { SetRow } from "@/modules/impostazioni/components/rows";
 import {
   salvaFotoProfilo,
-  useFotoProfilo,
-} from "@/modules/impostazioni/foto-profilo";
+  useProfilo,
+} from "@/modules/impostazioni/profilo";
 import {
   calcolaRitaglio,
   LATO_AVATAR,
@@ -38,7 +38,7 @@ import {
   QUALITA_AVATAR,
   scalaBase as scalaCheRiempie,
   ZOOM_MAX_AVATAR,
-} from "@/modules/impostazioni/avatar-contract";
+} from "@/modules/impostazioni/profilo-contract";
 
 type Props = {
   /** L'iniziale da mostrare quando la foto non c'e. */
@@ -56,7 +56,7 @@ type Props = {
 
 export function FotoProfiloRow({ iniziale, onNota, variant = "riga" }: Props) {
   const t = useT();
-  const foto = useFotoProfilo();
+  const foto = useProfilo()?.foto ?? null;
   const [foglio, setFoglio] = useState(false);
   const [sorgente, setSorgente] = useState<string | null>(null);
   const [salvo, setSalvo] = useState(false);
@@ -316,7 +316,7 @@ function RitaglioSchermo({
 
   const pronta = im !== null && lato > 0;
 
-  // Scala, limiti e ritaglio vengono da avatar-contract.ts: e aritmetica,
+  // Scala, limiti e ritaglio vengono da profilo-contract.ts: e aritmetica,
   // e l'aritmetica si prova in Node invece di guardarla a occhio.
   const base = im ? scalaCheRiempie(im.w, im.h, lato) : 1;
   const k = base * zoom;
