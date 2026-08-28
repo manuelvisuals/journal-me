@@ -97,8 +97,8 @@ mai attiva per il pubblico. Le credenziali si scrivono nelle Review Notes.
   (`modules/oggi/HANDOVER-recording-bug.md`): il retry di getUserMedia va
   verificato SU DEVICE prima di sottomettere — e il cuore dell'app.
 - **Privacy — FATTA il 23 agosto**: pagina statica bilingue su /privacy (l'URL per
-  App Store Connect e https://journal-me-weld.vercel.app/privacy, o il dominio che
-  Manuel scegliera). Diceva e dice: serviva una pagina privacy policy pubblica che
+  App Store Connect e https://dayalogue.com/privacy: il dominio e stato
+  comprato e collegato al progetto Vercel il 27 agosto). Diceva e dice: serviva una pagina privacy policy pubblica che
   dica: email per l'accesso, testo del diario cifrato nel cloud, il testo passa
   a OpenAI per titolo/sintesi/trascrizione, niente pubblicita, cancellazione
   possibile. Le etichette App Privacy in App Store Connect devono dire lo
