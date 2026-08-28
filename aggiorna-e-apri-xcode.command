@@ -115,6 +115,15 @@ grep -rql "jm-benv-ling" "$BUNDLE" 2>/dev/null \
 grep -rql "jm-mese-mini" "$BUNDLE" 2>/dev/null \
   && ok "C'e il Mese a griglia" \
   || wr "Manca il Mese a griglia: dillo a Claude"
+# 28 agosto: la porta dell'account. Sono classi CSS, quindi finiscono nel
+# pacchetto solo se il foglio di stile e stato ricostruito davvero: e il
+# modo piu economico di accorgersi che il build ha usato roba vecchia.
+grep -rql "jm-foto-mini" "$BUNDLE" 2>/dev/null \
+  && ok "C'e la foto profilo" \
+  || wr "Manca la foto profilo: dillo a Claude"
+grep -rql "jm-nome-penna" "$BUNDLE" 2>/dev/null \
+  && ok "C'e la pennina per cambiare il nome" \
+  || wr "Manca la pennina del nome: dillo a Claude"
 
 # ---------- 7. Xcode ----------
 if [ -d "ios/App/App.xcodeproj" ]; then
