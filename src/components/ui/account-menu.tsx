@@ -36,19 +36,26 @@ import { usePlan } from "@/lib/plan";
 import { isNative } from "@/lib/native/platform";
 import { eseguiLogout } from "@/lib/auth/logout";
 import { openPremiumWall } from "@/modules/abbonamento";
-// La foto la SA il modulo impostazioni (e li che si cambia), la MOSTRA lo
-// scheletro: esce dalla porta come il muro premium di abbonamento.
-import { useFotoProfilo } from "@/modules/impostazioni";
+// Nome e foto li SA il modulo impostazioni (e li che si cambiano), li
+// MOSTRA lo scheletro: escono dalla porta come il muro premium di
+// abbonamento.
+import {
+  apriPannelloNome,
+  useNomeMostrato,
+  useProfilo,
+} from "@/modules/impostazioni";
 import { Sheet } from "@/components/ui/sheet";
 import { useT } from "@/lib/i18n";
 
-type Account = { name: string; email: string | null; badge: string };
+type Account = { email: string | null; badge: string };
 
 /**
- * Chi sei, per il pallino e per la testata del menu. E la stessa lettura
- * che faceva la rail (email prima della chiocciola, o "ospite"; il badge
- * legge il piano da profiles) — spostata qui perche adesso il pallino
- * vive in due superfici e la verita deve essere una.
+ * Chi sei, per il pallino e per la testata del menu: l'email e il badge del
+ * piano. Il NOME non si calcola piu qui — la regola "nome scelto, altrimenti
+ * l'email tagliata alla chiocciola" vive in un posto solo
+ * (nomeMostrato, modulo impostazioni), perche viveva in due e un nome scelto
+ * che ne raggiungesse uno solo avrebbe mostrato due nomi diversi nella
+ * stessa schermata.
  */
 function useAccount(): Account | null {
   const mode = useStorageMode();
@@ -59,8 +66,7 @@ function useAccount(): Account | null {
     void (async () => {
       const m = await resolveStorageMode();
       if (m === "local") {
-        if (alive)
-          setAccount({ name: "questo dispositivo", email: null, badge: "Locale" });
+        if (alive) setAccount({ email: null, badge: "Locale" });
         return;
       }
       try {
@@ -71,7 +77,6 @@ function useAccount(): Account | null {
         } = await supabase.auth.getUser();
         if (!alive) return;
         const email = user?.email ?? null;
-        const name = email ? email.split("@")[0] : "ospite";
         let badge = "Cloud";
         if (user) {
           const { data: profile } = await supabase
@@ -81,7 +86,7 @@ function useAccount(): Account | null {
             .maybeSingle();
           if (profile?.plan === "premium") badge = "Premium";
         }
-        if (alive) setAccount({ name, email, badge });
+        if (alive) setAccount({ email, badge });
       } catch {
         if (alive) setAccount(null);
       }
@@ -108,7 +113,12 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const locale = mode === "local";
   const native = isNative();
   const suSettings = pathname.startsWith("/settings");
-  const iniziale = account ? account.name.slice(0, 1).toUpperCase() : "•";
+  const nome = useNomeMostrato(account?.email, t("ospite"));
+  const mostrato = locale ? t("Questo dispositivo") : nome;
+  // L'iniziale segue il NOME mostrato, non l'email: chi si chiama Manuel
+  // vede una M perche si chiama Manuel, non per come e fatto il suo
+  // indirizzo.
+  const iniziale = account ? mostrato.slice(0, 1).toUpperCase() : "•";
 
   /**
    * Cosa si vede nel cerchio: la foto se c'e, altrimenti l'iniziale. Un
@@ -117,7 +127,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
    * `alt=""`: il nome e scritto accanto in chiaro, e uno screen reader che
    * lo legge due volte non aiuta nessuno.
    */
-  const foto = useFotoProfilo();
+  const foto = useProfilo()?.foto ?? null;
   const ritratto = foto ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={foto} alt="" />
@@ -173,7 +183,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
 
   const testata = (
     <div className="jm-acct-head">
-      <div className="n">{locale ? t("Questo dispositivo") : t(account?.name ?? "ospite")}</div>
+      <div className="n">{mostrato}</div>
       <div className="e">
         {locale
           ? t("Le giornate non escono di qui")
@@ -235,7 +245,29 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
               <span className="av">{ritratto}</span>
               <span style={{ minWidth: 0 }}>
                 <span className="n">
-                  {locale ? t("Questo dispositivo") : t(account?.name ?? "ospite")}
+                  {mostrato}
+                  {/* La pennina: strada A del mockup nome-profilo.html. Non
+                      modifica qui — porta alla schermata del nome, che vive
+                      nelle Impostazioni. Un menu apre le cose, non le
+                      contiene. */}
+                  {!locale && (
+                    <button
+                      type="button"
+                      className="jm-acct-penna"
+                      aria-label={t("Cambia il tuo nome")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        chiudi(false);
+                        apriPannelloNome();
+                        router.push("/settings");
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                      </svg>
+                    </button>
+                  )}
                 </span>
                 <span className="e">
                   {locale ? t("Le giornate non escono di qui") : (account?.email ?? "")}
@@ -267,7 +299,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
       >
         <div className="jm-rail-avatar">{ritratto}</div>
         <div className="jm-rail-acct-txt">
-          <div className="jm-rail-acct-nm">{account ? t(account.name) : "…"}</div>
+          <div className="jm-rail-acct-nm">{account ? mostrato : "…"}</div>
           {account && (
             <span
               className={`jm-rail-pill${account.badge === "Premium" ? " prem" : ""}`}

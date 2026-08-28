@@ -3,7 +3,7 @@ import { getAdminClient, requireUser } from "@/lib/server/entitlement";
 import {
   avatarValido,
   MAX_AVATAR_LEN,
-} from "@/modules/impostazioni/avatar-contract";
+} from "@/modules/impostazioni/profilo-contract";
 
 /**
  * La foto profilo: scriverla e toglierla (migration 016).
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Corpo non leggibile" }, { status: 400 });
   }
 
-  // La regola vive in avatar-contract.ts, un file senza import, cosi un
+  // La regola vive in profilo-contract.ts, un file senza import, cosi un
   // banco la puo eseguire in Node: e la STESSA funzione che gira qui, non
   // una copia che domani diverge (scripts/verify-foto-profilo.mjs).
   // "Troppo grande" prima di "formato sbagliato": a chi manda un'immagine

@@ -7,7 +7,7 @@
 // sbagliare IN SILENZIO non sono visive: sono l'aritmetica del ritaglio —
 // una foto tagliata storta sembra una scelta di disegno — e la convalida di
 // cio che si puo scrivere nel profilo. Per questo vivono in
-// src/modules/impostazioni/avatar-contract.ts, un file senza nessun import,
+// src/modules/impostazioni/profilo-contract.ts, un file senza nessun import,
 // e questo banco le ESEGUE davvero invece di leggerne il testo. Il resto
 // sono controlli statici sulle cose che si possono affermare guardando i
 // file: le misure, i punti di innesto, la sicurezza della migration.
@@ -22,7 +22,7 @@ import {
   limitaSpostamento,
   MAX_AVATAR_LEN,
   scalaBase,
-} from "../src/modules/impostazioni/avatar-contract.ts";
+} from "../src/modules/impostazioni/profilo-contract.ts";
 
 const results = [];
 function check(name, ok, extra = "") {
@@ -168,7 +168,7 @@ const vicino = (a, b, eps = 0.0001) => Math.abs(a - b) < eps;
    ===================================================================== */
 {
   const porta = leggi("src/modules/impostazioni/index.ts");
-  check("la porta del modulo esporta useFotoProfilo", /export \{ useFotoProfilo \}/.test(porta));
+  check("la porta del modulo esporta la lettura del profilo", /useProfilo/.test(porta));
   check("la porta NON esporta il salvataggio (cambia solo il modulo)",
     !/salvaFotoProfilo/.test(porta));
 
@@ -190,13 +190,13 @@ const vicino = (a, b, eps = 0.0001) => Math.abs(a - b) < eps;
   check("in locale il ritratto NON e cliccabile (non c'e nessun account)",
     /isLocal \? \([\s\S]{0,200}className="jm-st-av"/.test(client));
 
-  const store = leggi("src/modules/impostazioni/foto-profilo.ts");
-  check("la foto si legge una volta sola anche con tre pallini montati",
+  const store = leggi("src/modules/impostazioni/profilo.ts");
+  check("il profilo si legge una volta sola anche con tre pallini montati",
     /if \(lettura\) return lettura;/.test(store));
   check("in modalita locale non si interroga nessun server",
-    /=== "local"[\s\S]{0,80}foto = null/.test(store));
+    /=== "local"\)[\s\S]{0,80}profilo = VUOTO/.test(store));
   check("se il salvataggio fallisce, il pallino torna com'era",
-    /catch \(err\) \{[\s\S]{0,120}foto = prima;/.test(store));
+    /catch \(err\) \{[\s\S]{0,80}profilo = prima;/.test(store));
 }
 
 /* =====================================================================
@@ -221,7 +221,7 @@ const vicino = (a, b, eps = 0.0001) => Math.abs(a - b) < eps;
   check("il corpo della richiesta non contiene nessun id da fidarsi",
     !/body[\s\S]{0,200}user_id/.test(server));
   check("il server usa la convalida del contratto, non una copia",
-    /avatarValido/.test(server) && /avatar-contract/.test(server));
+    /avatarValido/.test(server) && /profilo-contract/.test(server));
 
   const guscio = leggi("src/app/api/account/avatar/route.ts");
   check("la rotta e un guscio di poche righe", guscio.split("\n").length <= 5);

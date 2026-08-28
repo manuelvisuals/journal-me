@@ -1107,3 +1107,154 @@
 }
 
 .jm-foto-avbtn:disabled { opacity: 0.55; cursor: default; }
+
+/* =============================================================
+   IMPOSTAZIONI > IL TUO NOME
+   (mockup design/mockups/nome-profilo.html, 28 agosto 2026)
+   Prefisso jm-nome.
+   ============================================================= */
+
+/* La riga del computer: nome e pennina. La pennina compare al passaggio
+   del mouse — fissa, su una colonna che si guarda dieci volte al giorno,
+   sarebbe rumore — ma resta raggiungibile da tastiera. */
+.jm-nome-riga {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+}
+
+.jm-nome-penna {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  margin: -4px 0;
+  border-radius: var(--jm-radius-circle);
+  border: none;
+  background: transparent;
+  color: var(--color-ink-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms, background-color 120ms, color 120ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-st-acct:hover .jm-nome-penna,
+.jm-nome-penna:focus-visible {
+  opacity: 1;
+}
+
+.jm-nome-penna:hover {
+  background: var(--color-surface-2);
+  color: var(--color-ink);
+}
+
+.jm-nome-penna:disabled { opacity: 0.4; cursor: default; }
+
+.jm-nome-penna svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Il campo in linea: prende il posto del nome, non apre una schermata. */
+.jm-nome-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jm-nome-edit input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-bg);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--jm-radius-sm);
+  padding: 6px 9px;
+  outline: none;
+}
+
+.jm-nome-mini {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: var(--jm-radius-sm);
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-nome-mini.on {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.jm-nome-mini svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* La schermata del telefono: qui lo spazio c'e, e un campo grande col
+   contatore e piu onesto di un input minuscolo dentro un foglio. */
+.jm-nome-campo {
+  width: 100%;
+  min-height: 52px;
+  font-family: var(--font-sans);
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: calc(14px * var(--jm-space)) 16px;
+  outline: none;
+}
+
+.jm-nome-campo:focus { border-color: var(--color-accent); }
+
+.jm-nome-conta {
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  text-align: right;
+  margin-top: calc(8px * var(--jm-space));
+  font-variant-numeric: tabular-nums;
+}
+
+/* Svuotare il campo e una scelta legittima: si dice cosa succede, invece
+   di lasciarlo indovinare dopo aver salvato. */
+.jm-nome-avviso {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+  margin-top: calc(10px * var(--jm-space));
+}
+
+.jm-nome-salva {
+  width: 100%;
+  min-height: 50px;
+  margin-top: calc(18px * var(--jm-space));
+}
+
+.jm-nome-salva:disabled { opacity: 0.4; cursor: default; }
