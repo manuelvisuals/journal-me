@@ -51,9 +51,20 @@ git checkout main >/dev/null 2>&1
 # bloccato per sempre.
 git rebase --abort >/dev/null 2>&1
 git merge --abort >/dev/null 2>&1
-git checkout -- ios >/dev/null 2>&1
-git clean -fdq ios >/dev/null 2>&1
-if git -c rebase.autoStash=true pull --rebase origin main >/tmp/jm-pull.log 2>&1; then
+# Si toglie il conflitto dall'indice PRIMA: su file non uniti git checkout si
+# rifiuta di lavorare, e senza questo passo si resta bloccati per sempre.
+git reset -q >/dev/null 2>&1
+# Si butta SOLO la parte generata. project.pbxproj sta anche lui dentro ios/
+# ma lo scrive Xcode quando cambi le impostazioni: quello non si tocca.
+git checkout -- ios/App/App/public >/dev/null 2>&1
+git clean -fdq ios/App/App/public >/dev/null 2>&1
+SPORCO=$(git status --porcelain | grep -v "^?? " | head -10)
+if [ -n "$SPORCO" ]; then
+  wr "Ci sono modifiche non salvate fuori dal pacchetto generato:"
+  printf "%s\n" "$SPORCO"
+  info "le lascio stare e provo lo stesso a tirare"
+fi
+if git pull --rebase origin main >/tmp/jm-pull.log 2>&1; then
   DOPO=$(git rev-parse --short HEAD)
   if [ "$PRIMA" = "$DOPO" ]; then ok "Codice gia aggiornato ($DOPO)"; else ok "Codice aggiornato: $PRIMA -> $DOPO"; fi
   info "$(git log -1 --pretty='%s')"
