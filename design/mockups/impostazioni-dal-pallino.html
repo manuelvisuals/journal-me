@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Le impostazioni si aprono dal pallino dell'account</title>
+<style>
+/* I font arrivano da src/fonts, non da Google: il sandbox non raggiunge
+   fonts.googleapis.com e renderebbe Georgia al posto di ogni serif senza
+   dirlo (HANDOVER, trappola di verifica dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* ================================================================
+   Token del tema MINIMAL, set CHIARO (src/themes/minimal.ts).
+   Minimal e il tema di default (src/themes/contract.ts:127) e
+   l'aspetto di default e "system" (:128): questo e cio che vede
+   chi apre l'app su un Mac in chiaro senza aver toccato niente.
+   La scala del testo e 1.15 (DEFAULT_UI_SCALE, ui-scale-contract.ts:57),
+   quindi ogni misura qui e calc(Npx * var(--s)) come nel codice.
+   ================================================================ */
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --accent-pressed:#000000; --accent-hi:#000000; --on-accent:#FFFFFF;
+  --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
+  --s:1.15;              /* --jm-ui-scale */
+  --sp:1;                /* --jm-space, minimal: 1 */
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+
+  /* la pagina del mockup (non e l'app) */
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+
+.wrap{max-width:1320px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:800px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:860px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.caption code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+  background:var(--pg-2);padding:1px 6px;border-radius:5px;color:var(--pg-mut)}
+.row{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin-top:14px;
+  line-height:1.65;max-width:390px;margin-left:auto;margin-right:auto}
+.cap b{color:var(--pg-mut);font-weight:600}
+
+/* riquadro dei fatti misurati */
+.facts{max-width:900px;margin:0 auto;background:var(--pg-2);border:1px solid var(--pg-line);
+  border-radius:14px;padding:24px 26px}
+.facts h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:16px}
+.facts ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.facts li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.facts li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.facts code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+  color:var(--hot);background:rgba(251,191,36,.08);padding:1px 6px;border-radius:5px}
+.facts b{color:var(--pg-ink);font-weight:600}
+
+.badge{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;padding:4px 10px;border-radius:var(--r-pill);
+  border:1px solid var(--pg-line);color:var(--pg-faint);margin-bottom:14px}
+.badge.now{color:var(--no);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.07)}
+.badge.next{color:var(--ok);border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.07)}
+.hint{font-size:11.5px;color:var(--hot);text-align:center;margin-top:10px;letter-spacing:.02em}
+
+/* ================================================================
+   IL GUSCIO DESKTOP — misure vere di src/styles/base.css:882-920
+   rail sinistra 222px, rail destra 296px, colonna in mezzo.
+   ================================================================ */
+.deskwrap{width:1152px;max-width:100%;margin:0 auto}
+.scaler{transform-origin:top left}
+.desk{width:1152px;height:706px;display:flex;background:var(--bg);color:var(--ink);
+  border-radius:14px;overflow:hidden;font-family:var(--font);
+  box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.10)}
+
+/* --- rail sinistra --- */
+.rl{width:222px;flex:0 0 222px;border-right:1px solid var(--line);
+  padding:calc(24px * var(--sp)) 14px calc(18px * var(--sp));display:flex;flex-direction:column}
+.rl-brand{font-family:var(--serif);font-size:calc(21px * var(--s));font-weight:400;
+  letter-spacing:-.01em;color:var(--ink);padding:0 10px calc(24px * var(--sp));
+  display:flex;align-items:center;gap:8px}
+.rl-brand span{color:var(--accent)}
+.rl-mark{width:16px;height:16px;border-radius:50%;border:1.6px solid var(--accent);flex:0 0 16px}
+.rl-nav{display:flex;flex-direction:column;gap:2px}
+.rl-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);
+  border:1px solid transparent;font-size:calc(13.5px * var(--s));font-weight:600;
+  letter-spacing:-.005em;color:var(--ink-faint);text-decoration:none;background:none;
+  font-family:var(--font);cursor:pointer;text-align:left;width:100%;
+  transition:color 120ms,background-color 120ms,border-color 120ms}
+.rl-i svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.rl-i svg.solid{fill:currentColor;stroke:none}
+.rl-i:hover{color:var(--ink-muted);background:var(--surface)}
+.rl-i.on{background:color-mix(in oklab,var(--accent) 10%,transparent);
+  border-color:color-mix(in oklab,var(--accent) 35%,transparent);color:var(--accent)}
+.rl-i.rec{color:var(--accent)}
+.rl-kbd{margin-left:auto;font-size:calc(10px * var(--s));font-weight:600;
+  color:var(--ink-faint);opacity:.75;letter-spacing:0}
+.rl-sep{height:1px;background:var(--line);margin:calc(16px * var(--sp)) 12px}
+.rl-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--line);position:relative}
+.rl-acct{display:flex;align-items:center;gap:10px}
+.rl-av{width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted)}
+.rl-nm{font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-pill{display:inline-block;margin-top:4px;font-size:calc(9px * var(--s));font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);
+  background:color-mix(in oklab,var(--ink) 5%,transparent);color:var(--ink-muted);
+  border:1px solid var(--line)}
+
+/* il blocco account COME BOTTONE (proposta) */
+.rl-acct-btn{display:flex;align-items:center;gap:10px;width:100%;padding:8px;margin:-8px;
+  border:1px solid transparent;border-radius:var(--r-md);background:transparent;
+  font-family:var(--font);text-align:left;cursor:pointer;
+  transition:background-color 120ms,border-color 120ms}
+.rl-acct-btn:hover{background:var(--surface);border-color:var(--line)}
+.rl-acct-btn.on{background:color-mix(in oklab,var(--accent) 8%,transparent);
+  border-color:color-mix(in oklab,var(--accent) 30%,transparent)}
+.rl-acct-btn .chev{margin-left:auto;width:14px;height:14px;flex:0 0 14px;stroke:var(--ink-faint);
+  fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+
+/* popover della variante B */
+.pop{position:absolute;left:8px;bottom:calc(100% + 6px);width:206px;background:var(--bg);
+  border:1px solid var(--line);border-radius:var(--r-md);padding:6px;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);display:none;z-index:5}
+.pop.open{display:block}
+.pop-i{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:none;
+  background:transparent;border-radius:var(--r-sm);font-family:var(--font);
+  font-size:calc(13px * var(--s));font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
+.pop-i:hover{background:var(--surface)}
+.pop-i.danger{color:var(--danger)}
+.pop-i svg{width:16px;height:16px;flex:0 0 16px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.pop-sep{height:1px;background:var(--line);margin:5px 6px}
+.pop-head{padding:9px 10px 8px;border-bottom:1px solid var(--line);margin-bottom:5px}
+.pop-head .n{font-size:calc(13px * var(--s));font-weight:600;color:var(--ink)}
+.pop-head .e{font-size:calc(11.5px * var(--s));color:var(--ink-faint);margin-top:2px}
+
+/* --- colonna centrale --- */
+.dc{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.colhead{padding:26px 28px 6px}
+.st-h1{font-size:calc(26px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+.st-sub{font-size:calc(13px * var(--s));color:var(--ink-faint);margin-top:calc(6px * var(--sp))}
+.st-scroll{flex:1;min-height:0;overflow-y:auto;
+  padding:calc(20px * var(--sp)) 28px calc(26px * var(--sp));max-width:668px}
+.st-group{margin-bottom:calc(28px * var(--sp))}
+.st-gl{font-size:calc(11px * var(--s));font-weight:650;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 calc(10px * var(--sp)) 2px}
+.st-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.st-row{display:flex;align-items:center;gap:16px;width:100%;min-height:56px;
+  padding:calc(12px * var(--sp)) 16px;border:none;border-bottom:1px solid var(--line);
+  background:transparent;font-family:var(--font);text-align:left;color:inherit;cursor:pointer}
+.st-row:last-child{border-bottom:none}
+.st-row:hover{background:var(--surface-2)}
+.st-row.static{cursor:default}
+.st-row.static:hover{background:transparent}
+.st-grow{flex:1;min-width:0}
+.st-t{display:block;font-size:calc(15px * var(--s));font-weight:500;color:var(--ink)}
+.st-d{display:block;font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:3px;line-height:1.45}
+.st-val{font-size:calc(14px * var(--s));color:var(--ink-faint);flex:0 0 auto;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:52%}
+.st-chev{width:16px;height:16px;flex:0 0 16px;stroke:var(--ink-faint);stroke-width:2;fill:none;opacity:.6}
+.st-row.danger .st-t{color:var(--danger)}
+.st-seg{display:flex;flex:0 0 auto;background:var(--bg-app);border:1px solid var(--line);
+  border-radius:var(--r-pill);padding:3px}
+.st-seg button{font-family:var(--font);font-size:calc(12px * var(--s));font-weight:600;
+  color:var(--ink-faint);background:transparent;border:1px solid transparent;
+  border-radius:var(--r-pill);padding:7px 13px;cursor:pointer}
+.st-seg button.on{background:var(--surface);border-color:var(--line);color:var(--ink)}
+
+/* schermata Oggi, ridotta all'osso: NON e il soggetto di questo mockup */
+.oggi-head{padding:26px 28px 6px;display:flex;align-items:baseline;justify-content:space-between}
+.oggi-date{font-size:calc(11px * var(--s));font-weight:600;color:var(--ink-faint);
+  letter-spacing:.20em;text-transform:uppercase}
+.oggi-body{padding:20px 28px;flex:1;min-height:0}
+.ghost{border:1px dashed var(--line);border-radius:var(--r-lg);height:100%;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;
+  font-size:calc(12.5px * var(--s));color:var(--ink-faint);line-height:1.6}
+
+/* --- rail destra --- */
+.rr{width:296px;flex:0 0 296px;border-left:1px solid var(--line);
+  padding:calc(22px * var(--sp)) 20px;overflow-y:auto}
+.st-acct{margin-bottom:30px}
+.st-av{width:48px;height:48px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(18px * var(--s));font-weight:600;color:var(--ink-muted);margin-bottom:14px}
+.st-nm{font-size:calc(15px * var(--s));font-weight:600;color:var(--ink)}
+.st-em{font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:3px;word-break:break-all}
+.st-pill{display:inline-block;margin-top:10px;font-size:calc(9px * var(--s));font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:3px 9px;border-radius:var(--r-pill);
+  background:var(--surface-2);color:var(--ink-muted);border:1px solid var(--line)}
+.railr-l{font-size:calc(11px * var(--s));font-weight:650;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px}
+.st-rrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--line);font-size:calc(12.5px * var(--s));width:100%;
+  background:none;border-left:none;border-right:none;border-top:none;font-family:var(--font);text-align:left}
+.st-rrow .k{color:var(--ink-faint);flex:0 0 auto}
+.st-rrow .v{color:var(--ink-muted);text-align:right;min-width:0}
+.st-out{display:block;width:100%;margin-top:14px;padding:13px;min-height:44px;
+  border-radius:var(--r-md);border:1px solid var(--line);background:transparent;
+  color:var(--ink-muted);font-family:var(--font);font-size:calc(13.5px * var(--s));
+  font-weight:600;cursor:pointer}
+.st-out:hover{background:var(--surface-2)}
+.st-out.danger{color:var(--danger);border-color:color-mix(in oklab,var(--danger) 35%,transparent)}
+
+/* ================================================================
+   IL TELEFONO — 390px, il guscio iOS (Capacitor) e la stessa app
+   ================================================================ */
+.phone{width:390px;height:760px;border-radius:38px;overflow:hidden;background:var(--bg-app);
+  color:var(--ink);position:relative;display:flex;flex-direction:column;
+  box-shadow:0 26px 62px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.10)}
+.notch{height:34px;flex:0 0 34px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px}
+.notch i{width:104px;height:5px;border-radius:3px;background:var(--surface-2);display:block}
+.ph-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ph-scroll{flex:1;min-height:0;overflow-y:auto;padding:calc(20px * var(--sp)) 24px calc(26px * var(--sp))}
+.ph-head{padding:20px 24px 6px}
+.ph-head.split{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.ph-back{width:36px;height:36px;flex:0 0 36px;margin-left:-8px;border-radius:50%;border:none;
+  background:transparent;color:var(--ink-muted);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ph-back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.phead{display:flex;align-items:center;gap:10px}
+
+/* l'avatar in testata (proposta iOS) — 44px di bersaglio, brandbook cap.05 */
+.hd-av{width:44px;height:44px;flex:0 0 44px;margin:-6px -8px -6px 0;border-radius:50%;
+  border:none;background:transparent;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hd-av i{width:32px;height:32px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(13px * var(--s));font-weight:600;color:var(--ink-muted);font-style:normal}
+.hd-av.prem i{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in oklab,var(--accent) 18%,transparent)}
+
+/* tab bar — src/components/ui/tab-bar.tsx:132-192 */
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);align-items:center;
+  border-top:1px solid var(--line);background:color-mix(in oklab,var(--bg) 50%,transparent);
+  padding-top:12px;padding-bottom:20px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;
+  font-family:var(--font);cursor:pointer;color:var(--ink-faint);-webkit-tap-highlight-color:transparent}
+.tab.on{color:var(--accent)}
+.tab svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.tab span{font-size:calc(9px * var(--s));font-weight:600;letter-spacing:.10em;text-transform:uppercase}
+.mic{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid color-mix(in oklab,var(--ink) 34%,transparent);
+  box-shadow:0 8px 18px rgba(0,0,0,.5),inset 0 1px 1px rgba(255,255,255,.40)}
+.mic svg{width:22px;height:22px;stroke:currentColor}
+.tab-av{width:22px;height:22px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:calc(9.5px * var(--s));
+  font-weight:700;color:var(--ink-muted)}
+.tab.on .tab-av{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* card Recap solo telefono — settings-client.tsx:320-337 */
+.recap-card{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:18px;margin-bottom:calc(28px * var(--sp))}
+.recap-card .meta{display:block;font-size:calc(10px * var(--s));font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-faint)}
+.recap-card .title{display:block;font-family:var(--serif);font-size:calc(20px * var(--s));
+  color:var(--ink);margin-top:8px;line-height:1.25}
+.recap-card .sub{display:block;font-size:calc(12.5px * var(--s));color:var(--ink-faint);
+  margin-top:8px;line-height:1.5}
+.recap-card .last{display:block;font-size:calc(11.5px * var(--s));color:var(--ink-faint);
+  margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+
+/* callout dell'annotazione rossa "non fa niente" */
+.deadnote{position:absolute;left:14px;bottom:96px;width:194px;background:rgba(192,57,43,.95);
+  color:#fff;font-size:11.5px;line-height:1.5;padding:10px 12px;border-radius:10px;
+  display:none;z-index:6;box-shadow:0 12px 26px rgba(0,0,0,.35)}
+.deadnote.open{display:block}
+.deadnote code{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;background:rgba(0,0,0,.22);
+  padding:1px 4px;border-radius:4px}
+
+/* domanda finale */
+.ask{max-width:900px;margin:0 auto;background:var(--pg-2);border:1px solid var(--pg-line);
+  border-radius:14px;padding:28px 30px}
+.ask h3{font-family:var(--serif);font-size:23px;font-weight:400;color:var(--pg-ink);margin-bottom:8px}
+.ask p{font-size:13.5px;color:var(--pg-faint);line-height:1.7;margin-bottom:20px}
+.ask ol{list-style:none;counter-reset:o;display:flex;flex-direction:column;gap:14px}
+.ask li{counter-increment:o;position:relative;padding-left:38px;font-size:13.5px;
+  color:var(--pg-mut);line-height:1.65}
+.ask li::before{content:counter(o);position:absolute;left:0;top:0;width:24px;height:24px;
+  border-radius:50%;border:1px solid var(--pg-line);display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;color:var(--pg-ink)}
+.ask b{color:var(--pg-ink);font-weight:600}
+.warn{max-width:900px;margin:34px auto 0;border:1px solid rgba(251,191,36,.30);
+  background:rgba(251,191,36,.06);border-radius:14px;padding:22px 26px}
+.warn h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hot);margin-bottom:12px}
+.warn p{font-size:13.5px;color:var(--pg-mut);line-height:1.7}
+.warn code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:rgba(0,0,0,.30);
+  padding:1px 6px;border-radius:5px;color:var(--pg-ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1 class="page-title">Le impostazioni si aprono dal pallino dell'account</h1>
+<p class="page-sub">
+  Oggi le impostazioni sono una <b>voce di menu</b> — i tre puntini nella barra di sinistra,
+  la quinta icona nella barra del telefono. Il pallino con la tua iniziale, in basso a
+  sinistra, <b>non e cliccabile</b>: e un riquadro decorativo. In quasi tutte le app e
+  l'esatto contrario: il nome e la faccia sono la porta, e le impostazioni stanno dietro.
+  Qui sotto: com'e adesso, e come diventerebbe. Tutto e cliccabile.
+</p>
+
+<div class="divider"></div>
+
+<p class="label">00 . cosa dice il codice, oggi</p>
+<div class="facts">
+  <h3>Misurato riga per riga, non ricordato</h3>
+  <ul>
+    <li><b>Sul desktop</b> il pallino dell'account e un <code>&lt;div class="jm-rail-acct"&gt;</code>
+      dentro <code>rail-left.tsx:184-201</code>. Non e un bottone, non ha <code>onClick</code>,
+      non ha <code>href</code>: <b>cliccarlo non fa assolutamente niente</b>.</li>
+    <li><b>La porta alle impostazioni</b> e la quinta voce di <code>NAV_ITEMS</code>
+      (<code>rail-left.tsx:67-78</code>): chiave <code>"altro"</code>, etichetta "Impostazioni",
+      icona <b>tre pallini in fila</b> — il vecchio nome del cassetto e ancora nel codice.</li>
+    <li><b>Sul telefono</b> le impostazioni sono il quinto slot della barra
+      (<code>tab-bar.tsx:87-109</code>), etichetta troncata a <b>"Impost."</b> perche
+      la parola intera sfonda i 390px, icona <b>quattro quadretti</b>.</li>
+    <li><b>Sul telefono l'avatar non esiste proprio.</b> L'identita compare solo dentro le
+      impostazioni, come gruppo "Account" fatto di righe di testo
+      (<code>settings-client.tsx:467-518</code>). L'avatar da 48px vive solo nella rail
+      destra del desktop (<code>:576-595</code>), cioe <b>dentro</b> le impostazioni.</li>
+    <li><b>Gli slot sono cinque e il microfono al centro non si tocca.</b> Il commento a
+      <code>tab-bar.tsx:114-118</code> lo dice chiaro: quando accendi un modulo (Palestra),
+      il modulo prende il quarto posto e <b>Ricorda viene sfrattato</b> dalla barra.
+      Questo dettaglio conta piu avanti.</li>
+  </ul>
+</div>
+
+<div class="divider"></div>
+
+<!-- =====================================================================
+     01 . DESKTOP — PRIMA
+     ===================================================================== -->
+<p class="label">01 . desktop . com'e adesso</p>
+<h2 class="h2">La porta e un menu, il pallino e morto</h2>
+<p class="caption">
+  Clicca <b>Impostazioni</b> (i tre puntini) e la colonna centrale cambia: e cosi che
+  ci si arriva oggi. Poi clicca il <b>pallino "M" in basso</b>: non succede niente —
+  ed e esattamente quello che fa il codice.
+</p>
+
+<div class="deskwrap"><div class="scaler" data-scale>
+<div class="desk" id="d1">
+  <nav class="rl">
+    <div class="rl-brand"><span class="rl-mark"></span><span>day</span>alogue</div>
+    <div class="rl-nav">
+      <button class="rl-i" data-go="oggi" data-frame="d1">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Ricorda</button>
+      <button class="rl-i" data-go="set" data-frame="d1" data-navsel>
+        <svg viewBox="0 0 24 24" class="solid"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Impostazioni</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg>Palestra</button>
+      <div class="rl-sep"></div>
+      <button class="rl-i rec">
+        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta<span class="rl-kbd">&#8984;&#8679;R</span></button>
+    </div>
+    <div class="rl-foot">
+      <div class="deadnote" id="dead1">
+        Questo blocco e un <code>&lt;div&gt;</code>, non un bottone.
+        Cliccarlo non fa niente: <code>rail-left.tsx:185</code>
+      </div>
+      <div class="rl-acct" id="acct1" style="cursor:not-allowed">
+        <div class="rl-av">M</div>
+        <div>
+          <div class="rl-nm">manuel</div>
+          <span class="rl-pill">Gratis</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dc">
+    <!-- schermata OGGI -->
+    <div data-view="oggi">
+      <div class="oggi-head"><span class="oggi-date">Venerdi 28 agosto</span></div>
+      <div class="oggi-body" style="height:600px">
+        <div class="ghost">La schermata Oggi.<br>Non e il soggetto di questo mockup:<br>qui conta solo come ci si arriva alle impostazioni.</div>
+      </div>
+    </div>
+    <!-- schermata IMPOSTAZIONI -->
+    <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+      <header class="colhead">
+        <h1 class="st-h1">Impostazioni</h1>
+        <p class="st-sub">Come funziona e come si vede il tuo diario.</p>
+      </header>
+      <div class="st-scroll" data-settings></div>
+    </div>
+  </div>
+
+  <aside class="rr" data-rail hidden></aside>
+</div>
+</div></div>
+<p class="cap"><b>Due porte, una sola funziona.</b> Il pallino con la faccia e il posto dove
+tutti cercano l'account; qui e l'unica cosa inerte della colonna.</p>
+
+<div class="divider"></div>
+
+<!-- =====================================================================
+     02 . DESKTOP — DOPO, variante A
+     ===================================================================== -->
+<p class="label">02 . desktop . proposta A</p>
+<span class="badge next" style="display:block;width:max-content;margin:0 auto 14px">La piu piccola</span>
+<h2 class="h2">Il pallino diventa la porta. I tre puntini spariscono.</h2>
+<p class="caption">
+  La voce "Impostazioni" esce dalla navigazione — <b>quella lista torna a essere solo
+  "posti del diario"</b>: Oggi, Mese, Ricorda, Recap, e i moduli accesi. In fondo, il
+  blocco account diventa un bottone con la sua freccia, e si accende quando sei dentro.
+  <b>Clicca il pallino "M".</b>
+</p>
+
+<div class="deskwrap"><div class="scaler" data-scale>
+<div class="desk" id="d2">
+  <nav class="rl">
+    <div class="rl-brand"><span class="rl-mark"></span><span>day</span>alogue</div>
+    <div class="rl-nav">
+      <button class="rl-i on" data-go="oggi" data-frame="d2" data-navsel>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Recap</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg>Palestra</button>
+      <div class="rl-sep"></div>
+      <button class="rl-i rec">
+        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta<span class="rl-kbd">&#8984;&#8679;R</span></button>
+    </div>
+    <div class="rl-foot">
+      <button class="rl-acct-btn" data-go="set" data-frame="d2" data-acctbtn>
+        <div class="rl-av">M</div>
+        <div style="min-width:0">
+          <div class="rl-nm">manuel</div>
+          <span class="rl-pill">Gratis</span>
+        </div>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="dc">
+    <div data-view="oggi">
+      <div class="oggi-head"><span class="oggi-date">Venerdi 28 agosto</span></div>
+      <div class="oggi-body" style="height:600px">
+        <div class="ghost">La schermata Oggi.<br>Clicca il pallino "M" in basso a sinistra.</div>
+      </div>
+    </div>
+    <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+      <header class="colhead">
+        <h1 class="st-h1">Impostazioni</h1>
+        <p class="st-sub">Come funziona e come si vede il tuo diario.</p>
+      </header>
+      <div class="st-scroll" data-settings></div>
+    </div>
+  </div>
+
+  <aside class="rr" data-rail hidden></aside>
+</div>
+</div></div>
+<p class="cap"><b>Cosa cambia davvero:</b> una riga in meno nella navigazione, e un
+<code style="font-family:ui-monospace;font-size:11px">&lt;div&gt;</code> che diventa
+<code style="font-family:ui-monospace;font-size:11px">&lt;Link href="/settings"&gt;</code>.
+La pagina Impostazioni non cambia di una virgola.</p>
+
+<div class="divider"></div>
+
+<!-- =====================================================================
+     03 . DESKTOP — DOPO, variante B
+     ===================================================================== -->
+<p class="label">03 . desktop . proposta B</p>
+<span class="badge" style="display:block;width:max-content;margin:0 auto 14px;color:var(--hot);border-color:rgba(251,191,36,.35)">La piu "da app"</span>
+<h2 class="h2">Il pallino apre un menu, come su Mac</h2>
+<p class="caption">
+  Stesso pallino, ma il click apre un <b>menu a comparsa</b> con le tre cose che si
+  cercano davvero da li: Impostazioni, Passa a Premium, Esci. E il gesto di Notion,
+  Linear, Slack, del menu Apple. <b>Clicca il pallino, poi "Impostazioni".</b>
+</p>
+
+<div class="deskwrap"><div class="scaler" data-scale>
+<div class="desk" id="d3">
+  <nav class="rl">
+    <div class="rl-brand"><span class="rl-mark"></span><span>day</span>alogue</div>
+    <div class="rl-nav">
+      <button class="rl-i on" data-go="oggi" data-frame="d3" data-navsel>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Recap</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg>Palestra</button>
+      <div class="rl-sep"></div>
+      <button class="rl-i rec">
+        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta<span class="rl-kbd">&#8984;&#8679;R</span></button>
+    </div>
+    <div class="rl-foot">
+      <div class="pop" id="pop3">
+        <div class="pop-head">
+          <div class="n">manuel</div>
+          <div class="e">madh52@gmail.com</div>
+        </div>
+        <button class="pop-i" data-go="set" data-frame="d3" data-closepop="pop3">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Impostazioni</button>
+        <button class="pop-i">
+          <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/></svg>
+          Passa a Premium</button>
+        <div class="pop-sep"></div>
+        <button class="pop-i danger">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Esci dall'account</button>
+      </div>
+      <button class="rl-acct-btn" data-pop="pop3" data-acctbtn>
+        <div class="rl-av">M</div>
+        <div style="min-width:0">
+          <div class="rl-nm">manuel</div>
+          <span class="rl-pill">Gratis</span>
+        </div>
+        <svg class="chev" viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="dc">
+    <div data-view="oggi">
+      <div class="oggi-head"><span class="oggi-date">Venerdi 28 agosto</span></div>
+      <div class="oggi-body" style="height:600px">
+        <div class="ghost">La schermata Oggi.<br>Clicca il pallino "M", poi "Impostazioni".</div>
+      </div>
+    </div>
+    <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+      <header class="colhead">
+        <h1 class="st-h1">Impostazioni</h1>
+        <p class="st-sub">Come funziona e come si vede il tuo diario.</p>
+      </header>
+      <div class="st-scroll" data-settings></div>
+    </div>
+  </div>
+
+  <aside class="rr" data-rail hidden></aside>
+</div>
+</div></div>
+<p class="cap"><b>Il prezzo di B:</b> un componente nuovo (il menu a comparsa) che oggi
+non esiste — va disegnato, va chiuso col tasto Esc, va reso raggiungibile da tastiera.
+<b>Il guadagno:</b> "Esci" e "Passa a Premium" smettono di essere sepolti in fondo alla
+rail destra delle impostazioni.</p>
+
+<div class="divider"></div>
+
+<!-- =====================================================================
+     04 . iOS — PRIMA
+     ===================================================================== -->
+<p class="label">04 . app ios . com'e adesso</p>
+<h2 class="h2">Quinto slot: "Impost.", quattro quadretti</h2>
+<p class="caption">
+  Sul telefono <b>non esiste nessun avatar</b>: l'identita compare solo dentro le
+  impostazioni, come righe di testo. La parola e troncata a "Impost." perche intera non
+  ci sta. E siccome gli slot sono cinque e Palestra e acceso, <b>Ricorda e stato
+  sfrattato dalla barra</b> (tab-bar.tsx:114-118). <b>Tocca "Impost."</b>
+</p>
+
+<div class="row">
+  <div>
+    <span class="badge now" style="display:block;width:max-content;margin:0 auto 14px">Adesso</span>
+    <div class="phone" id="p1">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div data-view="oggi" style="display:flex;flex-direction:column;height:100%">
+          <div class="ph-head"><span class="oggi-date">Venerdi 28 agosto</span></div>
+          <div class="ph-scroll">
+            <div class="ghost" style="height:100%">La schermata Oggi.<br>Nessun avatar, da nessuna parte.</div>
+          </div>
+        </div>
+        <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+          <header class="ph-head">
+            <h1 class="st-h1">Impostazioni</h1>
+            <p class="st-sub">Come funziona e come si vede il tuo diario.</p>
+          </header>
+          <div class="ph-scroll" data-settings-phone></div>
+        </div>
+      </div>
+      <nav class="tabs">
+        <button class="tab" data-go="oggi" data-frame="p1" data-tabsel>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Oggi</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mese</span></button>
+        <button class="tab" style="color:var(--accent)">
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span>Registra</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg><span>Palestra</span></button>
+        <button class="tab" data-go="set" data-frame="p1" data-tabsel>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Impost.</span></button>
+      </nav>
+    </div>
+    <p class="cap"><b>Ricorda non c'e piu.</b> Per raggiungerlo bisogna entrare in
+      Impostazioni e trovare la riga "Ricorda" nel primo gruppo.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- =====================================================================
+     05 . iOS — DOPO, variante A
+     ===================================================================== -->
+<p class="label">05 . app ios . proposta A</p>
+<span class="badge next" style="display:block;width:max-content;margin:0 auto 14px">Libera uno slot</span>
+<h2 class="h2">L'avatar sale in testata. Ricorda torna nella barra.</h2>
+<p class="caption">
+  Il pallino con la tua iniziale compare <b>in alto a destra</b>, su ogni schermata
+  principale (bersaglio 44&times;44, brandbook cap. 05). Toccandolo si apre Impostazioni,
+  con la freccia indietro. Il quinto slot si libera: <b>Ricorda e Palestra ci stanno
+  tutti e due</b>, e lo sfratto descritto in <code>tab-bar.tsx</code> non serve piu.
+  <b>Tocca il pallino in alto a destra.</b>
+</p>
+
+<div class="row">
+  <div>
+    <span class="badge next" style="display:block;width:max-content;margin:0 auto 14px">Proposta A</span>
+    <div class="phone" id="p2">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div data-view="oggi" style="display:flex;flex-direction:column;height:100%">
+          <div class="ph-head split">
+            <span class="oggi-date" style="padding-top:12px">Venerdi 28 agosto</span>
+            <button class="hd-av" data-go="set" data-frame="p2"><i>M</i></button>
+          </div>
+          <div class="ph-scroll">
+            <div class="ghost" style="height:100%">La schermata Oggi.<br>Il pallino "M" e in alto a destra.</div>
+          </div>
+        </div>
+        <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+          <header class="ph-head phead">
+            <button class="ph-back" data-go="oggi" data-frame="p2" aria-label="Torna a Oggi">
+              <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <div>
+              <h1 class="st-h1" style="font-size:calc(22px * var(--s))">Impostazioni</h1>
+            </div>
+          </header>
+          <div class="ph-scroll" data-settings-phone></div>
+        </div>
+      </div>
+      <nav class="tabs">
+        <button class="tab on" data-go="oggi" data-frame="p2" data-tabsel>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Oggi</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mese</span></button>
+        <button class="tab" style="color:var(--accent)">
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span>Registra</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Ricorda</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg><span>Palestra</span></button>
+      </nav>
+    </div>
+    <p class="cap"><b>Il guadagno nascosto.</b> Liberando lo slot, il modulo acceso non
+      caccia piu Ricorda: il compromesso del 21 agosto smette di essere necessario.</p>
+  </div>
+
+<!-- =====================================================================
+     06 . iOS — DOPO, variante B
+     ===================================================================== -->
+  <div>
+    <span class="badge" style="display:block;width:max-content;margin:0 auto 14px;color:var(--hot);border-color:rgba(251,191,36,.35)">Proposta B</span>
+    <div class="phone" id="p3">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div data-view="oggi" style="display:flex;flex-direction:column;height:100%">
+          <div class="ph-head"><span class="oggi-date">Venerdi 28 agosto</span></div>
+          <div class="ph-scroll">
+            <div class="ghost" style="height:100%">La schermata Oggi.<br>Il pallino "M" e l'ultima icona in basso.</div>
+          </div>
+        </div>
+        <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+          <header class="ph-head">
+            <h1 class="st-h1">Impostazioni</h1>
+            <p class="st-sub">Come funziona e come si vede il tuo diario.</p>
+          </header>
+          <div class="ph-scroll" data-settings-phone></div>
+        </div>
+      </div>
+      <nav class="tabs">
+        <button class="tab on" data-go="oggi" data-frame="p3" data-tabsel>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Oggi</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mese</span></button>
+        <button class="tab" style="color:var(--accent)">
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span>Registra</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg><span>Palestra</span></button>
+        <button class="tab" data-go="set" data-frame="p3" data-tabsel>
+          <span class="tab-av">M</span><span>Manuel</span></button>
+      </nav>
+    </div>
+    <p class="cap"><b>La meno invasiva:</b> cambia solo l'ultima icona, da quattro
+      quadretti a pallino con l'iniziale, e l'etichetta da "Impost." al nome.
+      <b>Ma lo slot resta occupato:</b> Ricorda continua a essere sfrattato.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- =====================================================================
+     La domanda
+     ===================================================================== -->
+<p class="label">07 . cosa devi decidere</p>
+<div class="ask">
+  <h3>Una domanda sola, prima di scrivere codice</h3>
+  <p>Le due superfici possono seguire strade diverse, ma conviene decidere insieme
+    l'idea di fondo. Rispondimi con un numero.</p>
+  <ol>
+    <li><b>Semplice (desktop A + iOS A).</b> Il pallino porta dritto a Impostazioni.
+      Sul telefono l'avatar sale in testata e libera il quinto slot per Ricorda.
+      E la strada che tocca meno cose e che risolve anche lo sfratto di Ricorda.</li>
+    <li><b>Da app vera (desktop B + iOS A).</b> Sul desktop il pallino apre un menu
+      (Impostazioni / Premium / Esci); sul telefono resta il tocco diretto sull'avatar
+      in testata. Piu lavoro, ma "Esci" e "Premium" escono allo scoperto.</li>
+    <li><b>Minima (desktop A + iOS B).</b> Nessuno slot si muove: sul telefono cambia
+      solo l'icona dell'ultima tab. Il piu prudente, ma butta via il guadagno su Ricorda.</li>
+  </ol>
+</div>
+
+<div class="warn">
+  <h3>Una cosa che devo dirti prima, non dopo</h3>
+  <p>Questo lavoro <b>esce dal recinto del modulo Impostazioni</b>. I due file da toccare
+    sono <code>src/components/desktop/rail-left.tsx</code> e
+    <code>src/components/ui/tab-bar.tsx</code>: tutti e due stanno nello
+    <b>SCHELETRO</b> (ARCHITETTURA.md &sect;2), che un worker di modulo non ha il permesso
+    di modificare. Il mockup si puo fare — ed e questo. Il codice no, non da questa
+    chat come worker "impostazioni": va fatto in una <b>sessione scheletro</b>, oppure
+    devi darmi tu il permesso esplicito di uscire dal recinto per questi due file.
+    La pagina Impostazioni in se (<code>settings-client.tsx</code>) <b>non cambia</b> in
+    nessuna delle tre strade: cambia solo la porta per arrivarci.</p>
+</div>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------------
+   Il contenuto delle Impostazioni, generato una volta e clonato in
+   ogni frame: sono le righe vere di settings-client.tsx.
+   --------------------------------------------------------------- */
+const CHEV = '<svg class="st-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+
+function row(t, d, v, opts){
+  opts = opts || {};
+  return '<button class="st-row' + (opts.danger ? ' danger' : '') + '">'
+    + '<span class="st-grow"><span class="st-t">' + t + '</span>'
+    + (d ? '<span class="st-d">' + d + '</span>' : '') + '</span>'
+    + (v ? '<span class="st-val">' + v + '</span>' : '')
+    + (opts.control || '')
+    + (opts.nochev ? '' : CHEV) + '</button>';
+}
+function statRow(t, v){
+  return '<div class="st-row static"><span class="st-grow"><span class="st-t">' + t
+    + '</span></span><span class="st-val">' + v + '</span></div>';
+}
+function group(label, inner){
+  return '<section class="st-group"><div class="st-gl">' + label
+    + '</div><div class="st-box">' + inner + '</div></section>';
+}
+
+const SEG = '<span class="st-seg">'
+  + '<button>Chiaro</button><button class="on">Scuro</button><button>Sistema</button></span>';
+
+const SETTINGS_CORE =
+  group('Il diario',
+      row('Obiettivi', 'Le caselle che accendi ogni giorno.', '5 attivi')
+    + row('Moduli', 'Sezioni in piu: palestra, cibo, sonno.', 'Palestra')
+    + row('Ricorda', 'Persone, posti e idee salvate al volo.', ''))
++ group('Lingua e aspetto',
+      row('Lingua', 'Al primo avvio segue la lingua del dispositivo.', 'Italiano . automatica')
+    + row('Tema', '5 temi inclusi, tutti in chiaro e in scuro.', 'Minimal')
+    + row('Dimensione del testo', "Ingrandisce tutta l'app, non solo le scritte.", 'Normale')
+    + row('Chiaro o scuro', 'Vale per qualsiasi tema. Con Sistema segue il dispositivo.',
+          '', {control: SEG, nochev: true}))
++ group('I tuoi dati',
+      row('Esporta un backup', 'Un solo file con tutto: giornate, obiettivi, metriche, Ricorda.', '128 giornate')
+    + row('Importa un backup', 'Aggiunge le giornate che mancano. Quelle che hai gia non le tocca.', '')
+    + row('Dove sono le mie giornate', 'Cosa esce da questo dispositivo, e cosa no.', ''));
+
+/* desktop: niente card Recap, niente gruppo Account (stanno nella rail destra) */
+const SETTINGS_DESK = SETTINGS_CORE
+  + group('Zona pericolosa',
+      row("Elimina l'account", "Cancella l'account e tutte le giornate dal cloud.", '', {danger:true}));
+
+/* telefono: card Recap + gruppo Account, come nel codice */
+const RECAP_CARD =
+  '<a class="recap-card"><span class="meta">Recap</span>'
+  + '<span class="title">Le tue giornate, raccontate.</span>'
+  + '<span class="sub">Mensili, semestrali, annuali. Una prosa narrativa che rilegge i tuoi mesi senza giudizio.</span>'
+  + '<span class="last">Agosto 2026 . Il mese in cui hai smesso di rimandare</span></a>';
+
+const SETTINGS_PHONE = RECAP_CARD + SETTINGS_CORE
+  + group('Account',
+      statRow('Email', 'madh52@gmail.com')
+    + statRow('Piano', 'Gratis')
+    + row('Consumi AI', 'Quanto e costato questo mese', 'circa 1,40 $')
+    + statRow('Versione', '0.6.0')
+    + statRow('Pacchetto', '3023aea')
+    + row("Esci dall'account", '', '', {danger:true, nochev:true}))
+  + group('Zona pericolosa',
+      row("Elimina l'account", "Cancella l'account e tutte le giornate dal cloud.", '', {danger:true}));
+
+const RAIL_RIGHT =
+  '<div class="st-acct"><div class="st-av">M</div>'
+  + '<div class="st-nm">manuel</div><div class="st-em">madh52@gmail.com</div>'
+  + '<span class="st-pill">Gratis</span></div>'
+  + '<div><div class="railr-l">Account</div>'
+  + '<div class="st-rrow"><span class="k">Piano</span><span class="v">Gratis</span></div>'
+  + '<button class="st-rrow"><span class="k">Consumi AI</span><span class="v">circa 1,40 $</span></button>'
+  + '<div class="st-rrow"><span class="k">Versione</span><span class="v">0.6.0</span></div>'
+  + '<div class="st-rrow"><span class="k">Pacchetto</span><span class="v">3023aea</span></div>'
+  + '<button class="st-out">Passa a Premium</button>'
+  + '<button class="st-out danger">Esci dall\'account</button></div>';
+
+document.querySelectorAll('[data-settings]').forEach(function(el){ el.innerHTML = SETTINGS_DESK; });
+document.querySelectorAll('[data-settings-phone]').forEach(function(el){ el.innerHTML = SETTINGS_PHONE; });
+document.querySelectorAll('[data-rail]').forEach(function(el){ el.innerHTML = RAIL_RIGHT; });
+
+/* ---------------------------------------------------------------
+   Navigazione dei mockup
+   --------------------------------------------------------------- */
+function show(frameId, view){
+  const frame = document.getElementById(frameId);
+  if (!frame) return;
+  frame.querySelectorAll('[data-view]').forEach(function(v){
+    v.hidden = (v.getAttribute('data-view') !== view);
+  });
+  const rail = frame.querySelector('[data-rail]');
+  if (rail) rail.hidden = (view !== 'set');
+  /* la voce di navigazione accesa */
+  frame.querySelectorAll('[data-navsel],[data-tabsel]').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-go') === view);
+  });
+  /* il blocco account acceso quando sei nelle impostazioni */
+  frame.querySelectorAll('[data-acctbtn]').forEach(function(b){
+    b.classList.toggle('on', view === 'set' && b.hasAttribute('data-go'));
+  });
+}
+
+document.addEventListener('click', function(e){
+  const go = e.target.closest('[data-go]');
+  if (go && go.getAttribute('data-frame')) {
+    show(go.getAttribute('data-frame'), go.getAttribute('data-go'));
+  }
+  /* menu a comparsa */
+  const pop = e.target.closest('[data-pop]');
+  document.querySelectorAll('.pop').forEach(function(p){
+    if (!pop || p.id !== pop.getAttribute('data-pop')) p.classList.remove('open');
+  });
+  if (pop) {
+    const p = document.getElementById(pop.getAttribute('data-pop'));
+    p.classList.toggle('open');
+    const chev = pop.querySelector('.chev path');
+    if (chev) chev.setAttribute('d', p.classList.contains('open') ? 'M6 9l6 6 6-6' : 'M18 15l-6-6-6 6');
+  }
+  const closepop = e.target.closest('[data-closepop]');
+  if (closepop) document.getElementById(closepop.getAttribute('data-closepop')).classList.remove('open');
+
+  /* il pallino morto della versione attuale */
+  const dead = e.target.closest('#acct1');
+  const note = document.getElementById('dead1');
+  if (dead) { note.classList.add('open'); }
+  else if (!e.target.closest('#dead1')) { note.classList.remove('open'); }
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') document.querySelectorAll('.pop').forEach(function(p){ p.classList.remove('open'); });
+});
+
+/* i telai desktop sono larghi 1152px: si rimpiccioliscono per stare
+   nella finestra, senza cambiare nessuna misura interna */
+function fit(){
+  document.querySelectorAll('[data-scale]').forEach(function(sc){
+    const avail = sc.parentElement.clientWidth;
+    const k = Math.min(1, avail / 1152);
+    sc.style.transform = 'scale(' + k + ')';
+    sc.style.height = (706 * k) + 'px';
+  });
+}
+window.addEventListener('resize', fit);
+fit();
+</script>
+</body>
+</html>
