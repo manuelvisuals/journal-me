@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Il pallino: misura giusta e foto profilo</title>
+<style>
+/* I font arrivano da src/fonts, non da Google: il sandbox non raggiunge
+   fonts.googleapis.com e renderebbe Georgia al posto di ogni serif senza
+   dirlo (HANDOVER, trappola di verifica dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* ================================================================
+   Token del tema MINIMAL, set SCURO (src/themes/minimal.ts) — e il
+   tema e l'aspetto dello screenshot di Manuel del 28 agosto: fondo
+   nero pieno, accent bianco. Scala testo 1.15 (DEFAULT_UI_SCALE).
+   ================================================================ */
+:root{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --accent-hi:#FFFFFF; --on-accent:#1D1D1F;
+  --danger:#FF6B60;
+  --line:rgba(255,255,255,.12);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+  --s:1.15; --sp:1;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24; --blu:#7DA7F5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:840px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 28px;
+  max-width:880px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+.caption code{background:var(--pg-2);padding:1px 6px;border-radius:5px;color:var(--pg-mut)}
+.row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.65;max-width:400px}
+.cap b{color:var(--pg-mut);font-weight:600}
+.badge{display:block;width:max-content;margin:0 auto 14px;font-size:9.5px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:5px 12px;border-radius:var(--r-pill);
+  border:1px solid var(--pg-line);color:var(--pg-faint)}
+.badge.now{color:var(--no);border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.07)}
+.badge.next{color:var(--ok);border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.07)}
+
+/* comandi del mockup */
+.tools{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 auto 26px}
+.tool{font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--pg-mut);
+  background:var(--pg-2);border:1px solid var(--pg-line);border-radius:var(--r-pill);
+  padding:9px 16px;cursor:pointer}
+.tool.on{background:var(--pg-ink);color:#17171A;border-color:var(--pg-ink)}
+
+/* schede di specifica */
+.spec{max-width:980px;margin:0 auto}
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;padding:24px 26px}
+.card + .card{margin-top:20px}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:16px}
+.card h3.go{color:var(--ok)} .card h3.stop{color:var(--no)} .card h3.warn{color:var(--hot)}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.card.go{border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.05)}
+.card.go li::before{background:var(--ok)}
+.card.stop{border-color:rgba(248,113,113,.28);background:rgba(248,113,113,.05)}
+.card.stop li::before{background:var(--no)}
+.card.warn{border-color:rgba(251,191,36,.30);background:rgba(251,191,36,.05)}
+.card.warn li::before{background:var(--hot)}
+.card code{color:var(--hot);background:rgba(0,0,0,.30);padding:1px 6px;border-radius:5px}
+.card b{color:var(--pg-ink);font-weight:600}
+.ask ol{list-style:none;counter-reset:o;display:flex;flex-direction:column;gap:16px}
+.ask li{counter-increment:o;position:relative;padding-left:40px;font-size:13.5px;
+  color:var(--pg-mut);line-height:1.65}
+.ask li::before{content:counter(o);position:absolute;left:0;top:0;width:25px;height:25px;
+  border-radius:50%;border:1px solid var(--pg-line);display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;color:var(--pg-ink);background:none}
+.ask h3{font-family:var(--serif);font-size:23px;font-weight:400;color:var(--pg-ink);
+  text-transform:none;letter-spacing:0;margin-bottom:10px}
+
+/* ================================================================
+   IL TELEFONO
+   ================================================================ */
+.phone{width:390px;border-radius:38px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  position:relative;display:flex;flex-direction:column;height:600px;
+  box-shadow:0 26px 62px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.10)}
+.phone.tall{height:760px}
+.status{height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.status .dots{display:flex;gap:5px;align-items:flex-end}
+.status .dots i{display:block;width:3px;border-radius:1px;background:var(--ink)}
+.ph-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* l'intestazione di Oggi — today-client.tsx:659-758, gap 14px */
+.oggi-head{padding:26px 24px 6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.oggi-date{font-size:calc(11px * var(--s));font-weight:600;color:var(--ink-faint);
+  letter-spacing:.20em;text-transform:uppercase;white-space:nowrap}
+.oggi-actions{display:flex;align-items:center;gap:14px}
+.edit-link{font-size:calc(12px * var(--s));color:var(--accent);font-weight:600;
+  background:transparent;border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap}
+
+/* i due bottoni tondi: 44px, oggi/styles.css:651-667 */
+.rbtn{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:var(--surface);
+  color:var(--accent);border:1px solid color-mix(in oklab,var(--accent) 30%,transparent);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.rbtn svg{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* IL PALLINO — com'e adesso: bersaglio 44, disco visibile 32 */
+.av-btn{width:44px;height:44px;flex:0 0 44px;border-radius:50%;border:none;background:transparent;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;position:relative;
+  -webkit-tap-highlight-color:transparent}
+.av-disc{width:32px;height:32px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(13px * var(--s));font-weight:600;color:var(--ink-muted);overflow:hidden;
+  transition:width 260ms cubic-bezier(.32,.72,0,1),height 260ms cubic-bezier(.32,.72,0,1),
+    font-size 260ms,background-color 260ms,border-color 260ms}
+.av-disc svg,.av-disc img{width:100%;height:100%;display:block;object-fit:cover}
+/* DOPO: il disco riempie il bersaglio e prende il bordo dei fratelli */
+.grande .av-disc{width:44px;height:44px;font-size:calc(16px * var(--s));
+  background:var(--surface);border-color:color-mix(in oklab,var(--accent) 30%,transparent);
+  color:var(--ink)}
+.av-btn[aria-expanded="true"] .av-disc{background:var(--accent);color:var(--on-accent);
+  border-color:var(--accent)}
+.av-btn[aria-expanded="true"] .av-disc.hasfoto{background:transparent}
+
+/* righelli */
+.ruler{position:absolute;left:50%;transform:translateX(-50%);pointer-events:none;
+  display:none;z-index:4}
+.showruler .ruler{display:block}
+.ruler .bar{height:1px;background:var(--hot)}
+.ruler .txt{font-size:9.5px;font-weight:700;color:var(--hot);text-align:center;margin-top:3px;
+  letter-spacing:.06em;font-family:ui-monospace,Menlo,monospace}
+.ruler.r44{bottom:-22px;width:44px}
+.ruler.r32{bottom:-22px;width:32px}
+.showruler .rbtn,.showruler .av-btn{outline:1px dashed rgba(251,191,36,.45);outline-offset:0}
+
+.jm-fv-h{font-size:calc(26px * var(--s));font-weight:650;line-height:1.15;
+  letter-spacing:-.025em;color:var(--ink);margin:4px 0 10px}
+.ph-scroll{flex:1;min-height:0;overflow-y:auto;padding:14px 24px 24px}
+.ghost{border:1px dashed var(--line);border-radius:var(--r-lg);padding:18px;text-align:center;
+  font-size:calc(12.5px * var(--s));color:var(--ink-faint);line-height:1.6;margin-top:16px}
+
+/* ================================================================
+   IL FOGLIO DAL BASSO — la primitiva gia in casa (base.css, .jm-sheet*)
+   ================================================================ */
+.veil{position:absolute;inset:0;background:color-mix(in oklab,var(--bg) 55%,transparent);
+  backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity 180ms;z-index:8}
+.veil.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg-app);z-index:9;
+  border-top:1px solid var(--line);border-radius:20px 20px 0 0;
+  padding:10px 16px calc(30px);transform:translateY(102%);
+  transition:transform 240ms cubic-bezier(.32,.72,0,1);
+  box-shadow:0 -18px 40px rgba(0,0,0,.5);max-width:440px;margin:0 auto}
+.sheet.open{transform:translateY(0)}
+.grip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.sheet-row{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 6px;
+  border:none;border-bottom:1px solid var(--line);background:transparent;font-family:var(--font);
+  text-align:left;cursor:pointer;color:var(--ink);font-size:calc(15px * var(--s));font-weight:500;
+  -webkit-tap-highlight-color:transparent}
+.sheet-row:last-child{border-bottom:none}
+.sheet-row.danger{color:var(--danger)}
+.sheet-row .ic{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--surface);
+  display:flex;align-items:center;justify-content:center}
+.sheet-row .ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.sheet-sep{height:1px;background:var(--line);margin:6px 6px}
+
+/* la testata del foglio account: PRIMA iniziale 40, DOPO foto 56 */
+.sh-head{display:flex;align-items:center;gap:14px;padding:4px 6px 16px;
+  border-bottom:1px solid var(--line);margin-bottom:8px}
+.sh-av{width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(15px * var(--s));font-weight:600;color:var(--ink-muted);overflow:hidden;
+  transition:width 240ms,height 240ms}
+.sh-av img,.sh-av svg{width:100%;height:100%;object-fit:cover;display:block}
+.grande .sh-av{width:56px;height:56px;flex:0 0 56px;font-size:calc(20px * var(--s))}
+.sh-n{font-size:calc(16px * var(--s));font-weight:600;color:var(--ink)}
+.sh-e{font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:2px;word-break:break-all}
+
+/* la riga in Impostazioni */
+.st-gl{font-size:calc(11px * var(--s));font-weight:650;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 10px 2px}
+.st-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.st-row{display:flex;align-items:center;gap:16px;width:100%;min-height:56px;padding:12px 16px;
+  border:none;border-bottom:1px solid var(--line);background:transparent;font-family:var(--font);
+  text-align:left;color:inherit;cursor:pointer}
+.st-row:last-child{border-bottom:none}
+.st-t{display:block;font-size:calc(15px * var(--s));font-weight:500;color:var(--ink)}
+.st-d{display:block;font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:3px;line-height:1.45}
+.st-grow{flex:1;min-width:0}
+.st-val{font-size:calc(14px * var(--s));color:var(--ink-faint);flex:0 0 auto;white-space:nowrap}
+.st-chev{width:16px;height:16px;flex:0 0 16px;stroke:var(--ink-faint);stroke-width:2;fill:none;opacity:.6}
+.st-mini{width:32px;height:32px;flex:0 0 32px;border-radius:50%;overflow:hidden;
+  background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;
+  justify-content:center;font-size:calc(13px * var(--s));font-weight:600;color:var(--ink-muted)}
+.st-mini img,.st-mini svg{width:100%;height:100%;object-fit:cover;display:block}
+
+/* la rail desktop, in piccolo, solo per il confronto del §02 */
+.railbox{width:222px;background:var(--bg);border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px 14px;color:var(--ink)}
+.rail-foot{padding:12px 10px 0;border-top:1px solid var(--line)}
+.acct-btn{display:flex;align-items:center;gap:10px;width:100%;padding:8px;margin:-8px;
+  border:1px solid transparent;border-radius:var(--r-md);background:transparent;
+  font-family:var(--font);text-align:left;cursor:pointer}
+.acct-btn:hover{background:var(--surface);border-color:var(--line)}
+.rail-av{width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted);overflow:hidden}
+.rail-av img,.rail-av svg{width:100%;height:100%;object-fit:cover;display:block}
+.rail-nm{font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted)}
+.rail-pill{display:inline-block;margin-top:4px;font-size:calc(9px * var(--s));font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);
+  background:color-mix(in oklab,var(--ink) 5%,transparent);color:var(--ink-muted);border:1px solid var(--line)}
+.rail-chev{margin-left:auto;width:14px;height:14px;stroke:var(--ink-faint);fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1 class="page-title">Il pallino: misura giusta, e la tua faccia dentro</h1>
+<p class="page-sub">
+  Due cose diverse nello stesso posto. La prima e un difetto di misura che si vede a
+  occhio: il pallino e <b>32px</b> mentre i due bottoni accanto sono <b>44px</b>.
+  La seconda e una funzione nuova: la foto profilo. Sono separate apposta — la prima si
+  puo fare oggi in dieci minuti, la seconda ha bisogno di decisioni che riguardano
+  l'accesso all'app. Tutto qui sotto e cliccabile.
+</p>
+
+<div class="divider"></div>
+
+<!-- ============================================================ -->
+<p class="label">00 . cosa dice il codice, oggi</p>
+<div class="spec">
+  <div class="card stop">
+    <h3 class="stop">Il difetto di misura, misurato</h3>
+    <ul>
+      <li>I due bottoni tondi (matita e microfono) sono <code>.jm-rerecord-btn</code>:
+        <b>44&times;44 visibili</b>, fondo <code>--color-surface</code>, bordo tinto
+        d'accento al 30% (<code>oggi/styles.css:651-667</code>).</li>
+      <li>Il pallino e <code>.jm-hd-av</code>: il <b>bersaglio</b> e 44&times;44, ma il
+        <b>disco che si vede</b> e l'elemento <code>i</code> dentro, e misura
+        <b>32&times;32</b>, con fondo <code>--color-surface-2</code> e bordo neutro
+        (<code>src/styles/base.css:1607-1641</code>).</li>
+      <li>Quindi non e un'impressione: <b>il pallino e piu piccolo del 27%</b> e ha un
+        trattamento di bordo diverso dai suoi due vicini. Il bersaglio da 44 e giusto e
+        resta; e il <b>disegno</b> dentro che va portato a 44.</li>
+      <li>Mano mia, per onesta: quel 32 l'ho scritto io nel mockup
+        <code>porta-account.html</code>, dove il pallino stava accanto a una data e basta.
+        Accanto a due cerchi da 44 non regge.</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <h3 class="warn">La foto da Gmail: la richiesta ha una premessa che non regge</h3>
+    <ul>
+      <li>Nell'app <b>non esiste l'accesso con Google</b>. Ho cercato in tutto
+        <code>src/</code>: nessun <code>signInWithOAuth</code>, nessun provider. Si entra
+        con <b>email e un codice di sei cifre</b> (<code>signInWithOtp</code>,
+        <code>src/app/login/page.tsx:133</code>).</li>
+      <li>Scrivere <code>nome@gmail.com</code> in quella casella <b>non da all'app nessun
+        accesso al tuo profilo Google</b>: e solo una stringa di testo. La foto di Google
+        arriva SOLO se premi "Accedi con Google" e autorizzi — cioe se esiste OAuth.</li>
+      <li>Non c'e nessun posto dove mettere una foto: la tabella <code>profiles</code>
+        (<code>supabase/migrations/006_profiles.sql</code>) ha <b>solo</b> user_id, plan,
+        plan_source, current_period_end, created_at. Nessuna colonna avatar, e
+        <b>nessun permesso di scrittura per l'utente</b> — e scritto nel commento: solo
+        il service role scrive.</li>
+      <li>E non esiste nessun caricamento di file in tutta l'app: zero
+        <code>storage.from(...)</code>, zero <code>.upload(</code>.</li>
+      <li>Traduzione: la foto e <b>fattibile</b>, ma sono tre pezzi nuovi (una colonna,
+        un deposito per i file, un permesso), piu la scelta su Google. Il §05 e la
+        domanda.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     01 . LA MISURA
+     ============================================================ -->
+<p class="label">01 . la misura</p>
+<h2 class="h2">Trentadue contro quarantaquattro</h2>
+<p class="caption">
+  Le due schermate sono identiche tranne il pallino. Accendi <b>i righelli</b> per
+  vedere le misure, e <b>la foto</b> per capire quanto cambia con un'immagine dentro.
+  Le scritte sono in inglese come nel tuo screenshot: nel codice le frasi sono in
+  italiano e passano da <code>t()</code>.
+</p>
+
+<div class="tools">
+  <button class="tool" id="t-ruler">Mostra i righelli</button>
+  <button class="tool" id="t-foto">Metti la foto</button>
+</div>
+
+<div class="row">
+  <div>
+    <span class="badge now">Adesso . disco 32px</span>
+    <div class="phone" id="p-prima">
+      <div class="status"><span>14:46</span>
+        <span class="dots"><i style="height:6px"></i><i style="height:9px"></i><i style="height:12px"></i><i style="height:15px"></i></span></div>
+      <div class="ph-body">
+        <div class="oggi-head">
+          <span class="oggi-date">Fri . 28 Aug</span>
+          <div class="oggi-actions">
+            <button class="edit-link">edit &#8599;</button>
+            <button class="rbtn" aria-label="Scrivi a mano">
+              <svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              <span class="ruler r44"><span class="bar"></span><span class="txt">44</span></span>
+            </button>
+            <button class="rbtn" aria-label="Registra di nuovo">
+              <svg viewBox="0 0 24 24" width="18" height="18"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+              <span class="ruler r44"><span class="bar"></span><span class="txt">44</span></span>
+            </button>
+            <button class="av-btn" aria-label="Il tuo account">
+              <span class="av-disc" data-disc>M</span>
+              <span class="ruler r32"><span class="bar"></span><span class="txt">32</span></span>
+            </button>
+          </div>
+        </div>
+        <div class="ph-scroll">
+          <h1 class="jm-fv-h">morning routine and project</h1>
+          <div class="ghost">La giornata.<br>Non e il soggetto di questo mockup.</div>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Il pallino annega.</b> Piu piccolo, fondo diverso, bordo diverso:
+      sembra un elemento di un'altra schermata capitato li per sbaglio.</p>
+  </div>
+
+  <div>
+    <span class="badge next">Proposta . disco 44px</span>
+    <div class="phone grande" id="p-dopo">
+      <div class="status"><span>14:46</span>
+        <span class="dots"><i style="height:6px"></i><i style="height:9px"></i><i style="height:12px"></i><i style="height:15px"></i></span></div>
+      <div class="ph-body">
+        <div class="oggi-head">
+          <span class="oggi-date">Fri . 28 Aug</span>
+          <div class="oggi-actions">
+            <button class="edit-link">edit &#8599;</button>
+            <button class="rbtn" aria-label="Scrivi a mano">
+              <svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              <span class="ruler r44"><span class="bar"></span><span class="txt">44</span></span>
+            </button>
+            <button class="rbtn" aria-label="Registra di nuovo">
+              <svg viewBox="0 0 24 24" width="18" height="18"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>
+              <span class="ruler r44"><span class="bar"></span><span class="txt">44</span></span>
+            </button>
+            <button class="av-btn" aria-haspopup="menu" aria-expanded="false"
+                    data-sheet="sh-dopo" aria-label="Il tuo account">
+              <span class="av-disc" data-disc>M</span>
+              <span class="ruler r44"><span class="bar"></span><span class="txt">44</span></span>
+            </button>
+          </div>
+        </div>
+        <div class="ph-scroll">
+          <h1 class="jm-fv-h">morning routine and project</h1>
+          <div class="ghost">Tocca il pallino: si apre il tuo account,<br>con la foto e il nome.</div>
+        </div>
+
+        <div class="veil" data-close="sh-dopo"></div>
+        <div class="sheet" id="sh-dopo">
+          <div class="grip"></div>
+          <div class="sh-head">
+            <span class="sh-av" data-disc>M</span>
+            <span style="min-width:0">
+              <span class="sh-n" style="display:block">manuel</span>
+              <span class="sh-e" style="display:block">madh52@gmail.com</span>
+            </span>
+          </div>
+          <button class="sheet-row" data-close="sh-dopo">
+            <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span>
+            Impostazioni</button>
+          <button class="sheet-row" data-close="sh-dopo">
+            <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/></svg></span>
+            Scopri Premium</button>
+          <div class="sheet-sep"></div>
+          <button class="sheet-row danger" data-close="sh-dopo">
+            <span class="ic"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span>
+            Esci dall'account</button>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>Tre cerchi da 44, in fila.</b> Stesso fondo, stesso bordo. Quello
+      che distingue il pallino non e piu la taglia: e cosa c'e dentro — la tua faccia, o
+      la tua iniziale.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     02 . LE TRE FACCE
+     ============================================================ -->
+<p class="label">02 . le tre facce del pallino</p>
+<h2 class="h2">Con la foto, senza foto, e nella rail del computer</h2>
+<p class="caption">
+  Il pallino non ha una faccia sola. Deve funzionare anche quando la foto non c'e —
+  che sara il caso di quasi tutti, il primo giorno.
+</p>
+
+<div class="row" style="align-items:center">
+  <div style="text-align:center">
+    <div style="display:flex;gap:26px;justify-content:center;padding:20px 0">
+      <div>
+        <span class="av-btn grande" style="display:flex;margin:0 auto">
+          <span class="av-disc" style="width:44px;height:44px;font-size:16px;background:var(--surface);border-color:color-mix(in oklab,var(--accent) 30%,transparent);color:var(--ink)">M</span>
+        </span>
+        <p class="cap" style="margin-top:10px;max-width:130px">Nessuna foto:<br><b>l'iniziale</b></p>
+      </div>
+      <div>
+        <span class="av-btn grande" style="display:flex;margin:0 auto">
+          <span class="av-disc" style="width:44px;height:44px;background:var(--surface);border-color:color-mix(in oklab,var(--accent) 30%,transparent);overflow:hidden" data-foto></span>
+        </span>
+        <p class="cap" style="margin-top:10px;max-width:130px">Con foto:<br><b>l'immagine piena</b></p>
+      </div>
+      <div>
+        <span class="av-btn grande" style="display:flex;margin:0 auto">
+          <span class="av-disc" style="width:44px;height:44px;background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-size:16px">M</span>
+        </span>
+        <p class="cap" style="margin-top:10px;max-width:130px">Menu aperto:<br><b>si accende</b></p>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="railbox">
+      <div style="font-family:var(--serif);font-size:21px;color:var(--ink);padding:2px 10px 18px">
+        <span style="color:var(--accent)">day</span>alogue</div>
+      <div style="height:120px;border-radius:10px;border:1px dashed var(--line);
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:11.5px;color:var(--ink-faint)">la navigazione</div>
+      <div class="rail-foot" style="margin-top:14px">
+        <button class="acct-btn">
+          <span class="rail-av" data-disc-mini>M</span>
+          <span style="min-width:0">
+            <span class="rail-nm" style="display:block">manuel</span>
+            <span class="rail-pill">Gratis</span>
+          </span>
+          <svg class="rail-chev" viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <p class="cap"><b>Sul computer il pallino resta 28px</b> e non si tocca: li accanto
+      non c'e nessun bottone da 44, e il blocco account e una riga di elenco, non un
+      pulsante d'azione. La foto pero entra anche li.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     03 . CAMBIARE LA FOTO
+     ============================================================ -->
+<p class="label">03 . cambiare la foto</p>
+<h2 class="h2">Una riga nelle Impostazioni, e un foglio con tre scelte</h2>
+<p class="caption">
+  <b>Tocca la riga "Foto profilo"</b> nel telefono qui sotto. La riga sta nel gruppo
+  Account che gia esiste, in cima, e mostra a destra la foto attuale: la riga dice la
+  cosa <b>e</b> il suo valore, com'e la regola di quell'elenco.
+</p>
+
+<div class="row">
+  <div>
+    <div class="phone tall" id="p-set">
+      <div class="status"><span>14:46</span>
+        <span class="dots"><i style="height:6px"></i><i style="height:9px"></i><i style="height:12px"></i><i style="height:15px"></i></span></div>
+      <div class="ph-body">
+        <div style="padding:22px 24px 6px">
+          <div style="font-size:calc(26px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)">Impostazioni</div>
+        </div>
+        <div class="ph-scroll">
+          <div class="st-gl">Account</div>
+          <div class="st-box">
+            <button class="st-row" data-sheet="sh-foto">
+              <span class="st-grow">
+                <span class="st-t">Foto profilo</span>
+                <span class="st-d">Come ti vedi nel pallino in alto.</span>
+              </span>
+              <span class="st-mini" data-disc-mini>M</span>
+              <svg class="st-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <div class="st-row" style="cursor:default">
+              <span class="st-grow"><span class="st-t">Email</span></span>
+              <span class="st-val">madh52@gmail.com</span>
+            </div>
+            <div class="st-row" style="cursor:default">
+              <span class="st-grow"><span class="st-t">Piano</span></span>
+              <span class="st-val">Gratis</span>
+            </div>
+            <button class="st-row">
+              <span class="st-grow">
+                <span class="st-t">Consumi AI</span>
+                <span class="st-d">Quanto e costato questo mese</span>
+              </span>
+              <span class="st-val">circa 1,40 $</span>
+              <svg class="st-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+          <div class="ghost">Il resto delle Impostazioni non cambia.</div>
+        </div>
+
+        <div class="veil" data-close="sh-foto"></div>
+        <div class="sheet" id="sh-foto">
+          <div class="grip"></div>
+          <div class="sh-head" style="border-bottom:none;padding-bottom:8px">
+            <span class="sh-av" style="width:56px;height:56px;flex:0 0 56px;font-size:20px" data-disc>M</span>
+            <span style="min-width:0">
+              <span class="sh-n" style="display:block">Foto profilo</span>
+              <span class="sh-e" style="display:block">Resta su questo account, non nel diario</span>
+            </span>
+          </div>
+          <button class="sheet-row" data-setfoto="1" data-close="sh-foto">
+            <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 7h3l2-2h8l2 2h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
+            Scatta una foto</button>
+          <button class="sheet-row" data-setfoto="1" data-close="sh-foto">
+            <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="8.5" cy="9" r="1.5"/></svg></span>
+            Scegli dalla libreria</button>
+          <div class="sheet-sep"></div>
+          <button class="sheet-row danger" data-setfoto="0" data-close="sh-foto">
+            <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
+            Togli la foto, torna all'iniziale</button>
+        </div>
+      </div>
+    </div>
+    <p class="cap"><b>"Scatta" e "Scegli" sono la stessa cosa</b> per il browser: un
+      campo file. Dentro il guscio iOS diventano davvero due scelte, ed e per questo che
+      sono due righe e non una.</p>
+  </div>
+
+  <div style="max-width:420px">
+    <div class="card" style="margin-top:38px">
+      <h3>Le regole di questa schermata</h3>
+      <ul>
+        <li>La riga <b>mostra la foto attuale a destra</b>: chi arriva qui sa gia com'e
+          messo senza dover aprire niente.</li>
+        <li>Il foglio e la <b>primitiva che esiste gia</b>
+          (<code>src/components/ui/sheet.tsx</code>), non un componente nuovo.</li>
+        <li>"Togli la foto" e in rosso e <b>non chiede conferma</b>: e un'azione
+          reversibile in due tocchi, una conferma sarebbe rumore.</li>
+        <li>L'immagine va <b>ritagliata quadrata e rimpicciolita nel telefono</b> prima
+          di partire: una foto da 4 MB caricata intera per essere mostrata a 44px e uno
+          spreco che si paga in banda e in soldi.</li>
+        <li>Se il caricamento fallisce, il pallino <b>torna com'era</b> e lo dice. Un
+          pallino che resta vuoto in silenzio e peggio di un errore scritto.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================================
+     04 . LA DOMANDA
+     ============================================================ -->
+<p class="label">04 . cosa devi decidere</p>
+<div class="spec">
+  <div class="card ask">
+    <h3>Da dove arriva la foto?</h3>
+    <p style="font-size:13.5px;color:var(--pg-faint);line-height:1.7;margin-bottom:20px">
+      Le due strade non si escludono, ma costano molto diverso e una tocca la schermata
+      d'ingresso. Rispondimi con un numero.</p>
+    <ol>
+      <li><b>Solo la foto scelta da te.</b> Nessun Google. Si aggiunge una colonna
+        <code>avatar_url</code> a <code>profiles</code>, un deposito per le immagini
+        (Supabase Storage) e il permesso di scriverci. L'accesso resta com'e: email e
+        codice a sei cifre. <b>E tutto quello che vedi in questo mockup</b>, e non tocca
+        il login.</li>
+      <li><b>Anche "Accedi con Google".</b> In piu della 1: un bottone nuovo nella
+        schermata di accesso, la configurazione su Google Cloud e su Supabase, e la foto
+        di Google arriva da sola al primo ingresso (Supabase la mette in
+        <code>user_metadata.avatar_url</code>). <b>Attenzione</b>: le regole App Store
+        chiedono che, se offri l'accesso con un servizio terzo, tu offra <b>anche
+        "Accedi con Apple"</b>. Quindi non e un bottone: sono due, piu la revisione.</li>
+      <li><b>Prima la misura, la foto dopo.</b> Si sistema solo il pallino da 32 a 44
+        (dieci minuti, nessun database, nessun rischio) e la foto la decidiamo con
+        calma.</li>
+    </ol>
+  </div>
+
+  <div class="card warn">
+    <h3 class="warn">Due cose da sapere prima di scegliere, qualunque strada</h3>
+    <ul>
+      <li><b>La foto di Google non e per sempre.</b> E un indirizzo web che punta ai
+        server di Google: se l'utente la cambia o rende privato il profilo, quel
+        collegamento un giorno smette di funzionare e il pallino resta vuoto. La cosa
+        seria e <b>copiarla nel nostro deposito al primo accesso</b>, non conservare il
+        collegamento. Che significa: la strada 2 ha comunque bisogno di tutta la 1.</li>
+      <li><b>Una foto e un dato personale in piu.</b> Oggi il diario in modalita cloud
+        contiene testo; una faccia e un'altra categoria. Va detta nella pagina privacy e
+        deve sparire con "Elimina l'account", che gia esiste
+        (<code>settings-client.tsx</code>) e oggi non sa niente di immagini.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* La "foto": un segnaposto disegnato, non la faccia di nessuno. */
+const FOTO = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">'
+  + '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+  + '<stop offset="0%" stop-color="#5B6B8C"/><stop offset="100%" stop-color="#2A3350"/></linearGradient></defs>'
+  + '<rect width="64" height="64" fill="url(#g)"/>'
+  + '<circle cx="32" cy="25" r="11" fill="#E8DCCB"/>'
+  + '<path d="M10 64c2-13 11-20 22-20s20 7 22 20z" fill="#E8DCCB"/></svg>';
+
+/* i pallini che mostrano SEMPRE la foto (sezione 02) */
+document.querySelectorAll('[data-foto]').forEach(function(e){ e.innerHTML = FOTO; });
+
+let conFoto = false;
+function applicaFoto(){
+  document.querySelectorAll('[data-disc]').forEach(function(e){
+    if (conFoto) { e.innerHTML = FOTO; e.classList.add('hasfoto'); }
+    else { e.textContent = 'M'; e.classList.remove('hasfoto'); }
+  });
+  document.querySelectorAll('[data-disc-mini]').forEach(function(e){
+    if (conFoto) e.innerHTML = FOTO; else e.textContent = 'M';
+  });
+  document.getElementById('t-foto').classList.toggle('on', conFoto);
+  document.getElementById('t-foto').textContent = conFoto ? 'Togli la foto' : 'Metti la foto';
+}
+
+document.getElementById('t-foto').addEventListener('click', function(){
+  conFoto = !conFoto; applicaFoto();
+});
+
+document.getElementById('t-ruler').addEventListener('click', function(){
+  const on = document.body.classList.toggle('showruler');
+  this.classList.toggle('on', on);
+  this.textContent = on ? 'Nascondi i righelli' : 'Mostra i righelli';
+});
+
+/* fogli dal basso */
+function apri(id, trigger){
+  const s = document.getElementById(id);
+  if (!s) return;
+  s.classList.add('open');
+  const v = s.parentElement.querySelector('.veil[data-close="' + id + '"]');
+  if (v) v.classList.add('open');
+  if (trigger) trigger.setAttribute('aria-expanded', 'true');
+}
+function chiudi(id){
+  const s = document.getElementById(id);
+  if (!s) return;
+  s.classList.remove('open');
+  const v = s.parentElement.querySelector('.veil[data-close="' + id + '"]');
+  if (v) v.classList.remove('open');
+  document.querySelectorAll('[data-sheet="' + id + '"]').forEach(function(b){
+    b.setAttribute('aria-expanded', 'false');
+  });
+}
+
+document.addEventListener('click', function(e){
+  const t = e.target.closest('[data-sheet]');
+  if (t) {
+    const id = t.getAttribute('data-sheet');
+    const s = document.getElementById(id);
+    if (s.classList.contains('open')) chiudi(id); else apri(id, t);
+  }
+  const set = e.target.closest('[data-setfoto]');
+  if (set) { conFoto = set.getAttribute('data-setfoto') === '1'; applicaFoto(); }
+  const c = e.target.closest('[data-close]');
+  if (c) chiudi(c.getAttribute('data-close'));
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') document.querySelectorAll('.sheet').forEach(function(s){ chiudi(s.id); });
+});
+
+applicaFoto();
+</script>
+</body>
+</html>
