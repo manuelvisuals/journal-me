@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup approvato . La porta dell'account</title>
+<style>
+/* I font arrivano da src/fonts, non da Google: il sandbox non raggiunge
+   fonts.googleapis.com e renderebbe Georgia al posto di ogni serif senza
+   dirlo (HANDOVER, trappola di verifica dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* ================================================================
+   Token del tema MINIMAL, set CHIARO (src/themes/minimal.ts), che e
+   il tema di default (contract.ts:127) con scala testo 1.15
+   (ui-scale-contract.ts:57). Ogni misura qui e calc(Npx * var(--s))
+   come nel codice: cosi il disegno non mente su nessuna dimensione.
+   ================================================================ */
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --accent-pressed:#000000; --accent-hi:#000000; --on-accent:#FFFFFF;
+  --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+  --s:1.15; --sp:1;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:820px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.stamp{display:block;width:max-content;margin:22px auto 0;font-size:10px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border-radius:var(--r-pill);
+  color:var(--ok);border:1px solid rgba(74,222,128,.35);background:rgba(74,222,128,.07)}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:880px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+.caption code{background:var(--pg-2);padding:1px 6px;border-radius:5px;color:var(--pg-mut)}
+.row{display:flex;gap:34px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.65;max-width:390px}
+.cap b{color:var(--pg-mut);font-weight:600}
+.hint{font-size:11.5px;color:var(--hot);text-align:center;margin-top:12px}
+
+/* blocchi di specifica */
+.spec{max-width:980px;margin:0 auto}
+.spec + .spec{margin-top:22px}
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;padding:24px 26px}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:16px}
+.card h3.go{color:var(--ok)} .card h3.stop{color:var(--no)} .card h3.warn{color:var(--hot)}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.card.go{border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.05)}
+.card.go li::before{background:var(--ok)}
+.card.stop{border-color:rgba(248,113,113,.28);background:rgba(248,113,113,.05)}
+.card.stop li::before{background:var(--no)}
+.card.warn{border-color:rgba(251,191,36,.30);background:rgba(251,191,36,.05)}
+.card.warn li::before{background:var(--hot)}
+.card code{color:var(--hot);background:rgba(0,0,0,.28);padding:1px 6px;border-radius:5px}
+.card b{color:var(--pg-ink);font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--pg-line);vertical-align:top}
+th{font-size:10.5px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--pg-faint)}
+td{color:var(--pg-mut);line-height:1.6}
+td code{color:var(--hot);background:rgba(0,0,0,.28);padding:1px 5px;border-radius:4px}
+tr:last-child td{border-bottom:none}
+
+/* ================================================================
+   GUSCIO DESKTOP — base.css:882-920 (rail 222 / colonna / rail 296)
+   ================================================================ */
+.deskwrap{width:1152px;max-width:100%;margin:0 auto}
+.scaler{transform-origin:top left}
+.desk{width:1152px;height:706px;display:flex;background:var(--bg);color:var(--ink);
+  border-radius:14px;overflow:hidden;font-family:var(--font);
+  box-shadow:0 30px 70px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.10)}
+.rl{width:222px;flex:0 0 222px;border-right:1px solid var(--line);
+  padding:calc(24px * var(--sp)) 14px calc(18px * var(--sp));display:flex;flex-direction:column}
+.rl-brand{font-family:var(--serif);font-size:calc(21px * var(--s));font-weight:400;
+  letter-spacing:-.01em;color:var(--ink);padding:0 10px calc(24px * var(--sp));
+  display:flex;align-items:center;gap:8px}
+.rl-brand em{font-style:normal;color:var(--accent)}
+.rl-mark{width:16px;height:16px;border-radius:50%;border:1.6px solid var(--accent);flex:0 0 16px}
+.rl-nav{display:flex;flex-direction:column;gap:2px}
+.rl-i{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--r-sm);
+  border:1px solid transparent;font-size:calc(13.5px * var(--s));font-weight:600;
+  letter-spacing:-.005em;color:var(--ink-faint);background:none;font-family:var(--font);
+  cursor:pointer;text-align:left;width:100%;transition:color 120ms,background-color 120ms,border-color 120ms}
+.rl-i svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.rl-i:hover{color:var(--ink-muted);background:var(--surface)}
+.rl-i.on{background:color-mix(in oklab,var(--accent) 10%,transparent);
+  border-color:color-mix(in oklab,var(--accent) 35%,transparent);color:var(--accent)}
+.rl-i.rec{color:var(--accent)}
+.rl-kbd{margin-left:auto;font-size:calc(10px * var(--s));font-weight:600;color:var(--ink-faint);opacity:.75}
+.rl-sep{height:1px;background:var(--line);margin:calc(16px * var(--sp)) 12px}
+.rl-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--line);position:relative}
+
+/* IL BOTTONE ACCOUNT — il pezzo nuovo del desktop */
+.acct-btn{display:flex;align-items:center;gap:10px;width:100%;padding:8px;margin:-8px;
+  border:1px solid transparent;border-radius:var(--r-md);background:transparent;
+  font-family:var(--font);text-align:left;cursor:pointer;
+  transition:background-color 120ms,border-color 120ms}
+.acct-btn:hover{background:var(--surface);border-color:var(--line)}
+.acct-btn[aria-expanded="true"],.acct-btn.on{
+  background:color-mix(in oklab,var(--accent) 8%,transparent);
+  border-color:color-mix(in oklab,var(--accent) 30%,transparent)}
+.acct-av{width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted)}
+.acct-av.prem{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.acct-nm{font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acct-pill{display:inline-block;margin-top:4px;font-size:calc(9px * var(--s));font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);
+  background:color-mix(in oklab,var(--ink) 5%,transparent);color:var(--ink-muted);
+  border:1px solid var(--line)}
+.acct-pill.prem{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.acct-chev{margin-left:auto;width:14px;height:14px;flex:0 0 14px;stroke:var(--ink-faint);
+  fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+
+/* IL MENU (desktop): popover ancorato sopra il bottone */
+.menu{position:absolute;left:8px;bottom:calc(100% + 6px);width:206px;background:var(--bg);
+  border:1px solid var(--line);border-radius:var(--r-md);padding:6px;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);display:none;z-index:5}
+.menu.open{display:block}
+.menu-head{padding:9px 10px 8px;border-bottom:1px solid var(--line);margin-bottom:5px}
+.menu-head .n{font-size:calc(13px * var(--s));font-weight:600;color:var(--ink)}
+.menu-head .e{font-size:calc(11.5px * var(--s));color:var(--ink-faint);margin-top:2px;word-break:break-all}
+.menu-i{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:9px 10px;
+  border:none;background:transparent;border-radius:var(--r-sm);font-family:var(--font);
+  font-size:calc(13px * var(--s));font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
+.menu-i:hover{background:var(--surface)}
+.menu-i.danger{color:var(--danger)}
+.menu-i svg{width:16px;height:16px;flex:0 0 16px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.menu-sep{height:1px;background:var(--line);margin:5px 6px}
+
+/* colonna centrale */
+.dc{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.colhead{padding:26px 28px 6px}
+.st-h1{font-size:calc(26px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+.st-sub{font-size:calc(13px * var(--s));color:var(--ink-faint);margin-top:calc(6px * var(--sp))}
+.st-scroll{flex:1;min-height:0;overflow-y:auto;
+  padding:calc(20px * var(--sp)) 28px calc(26px * var(--sp));max-width:668px}
+.st-group{margin-bottom:calc(28px * var(--sp))}
+.st-gl{font-size:calc(11px * var(--s));font-weight:650;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 calc(10px * var(--sp)) 2px}
+.st-box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.st-row{display:flex;align-items:center;gap:16px;width:100%;min-height:56px;
+  padding:calc(12px * var(--sp)) 16px;border:none;border-bottom:1px solid var(--line);
+  background:transparent;font-family:var(--font);text-align:left;color:inherit;cursor:pointer}
+.st-row:last-child{border-bottom:none}
+.st-row:hover{background:var(--surface-2)}
+.st-row.static{cursor:default}.st-row.static:hover{background:transparent}
+.st-grow{flex:1;min-width:0}
+.st-t{display:block;font-size:calc(15px * var(--s));font-weight:500;color:var(--ink)}
+.st-d{display:block;font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:3px;line-height:1.45}
+.st-val{font-size:calc(14px * var(--s));color:var(--ink-faint);flex:0 0 auto;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;max-width:52%}
+.st-chev{width:16px;height:16px;flex:0 0 16px;stroke:var(--ink-faint);stroke-width:2;fill:none;opacity:.6}
+.st-row.danger .st-t{color:var(--danger)}
+.st-seg{display:flex;flex:0 0 auto;background:var(--bg-app);border:1px solid var(--line);
+  border-radius:var(--r-pill);padding:3px}
+.st-seg button{font-family:var(--font);font-size:calc(12px * var(--s));font-weight:600;
+  color:var(--ink-faint);background:transparent;border:1px solid transparent;
+  border-radius:var(--r-pill);padding:7px 13px;cursor:pointer}
+.st-seg button.on{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.oggi-head{padding:26px 28px 6px;display:flex;align-items:baseline;justify-content:space-between}
+.oggi-date{font-size:calc(11px * var(--s));font-weight:600;color:var(--ink-faint);
+  letter-spacing:.20em;text-transform:uppercase}
+.oggi-body{padding:20px 28px;flex:1;min-height:0}
+.ghost{border:1px dashed var(--line);border-radius:var(--r-lg);height:100%;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;
+  font-size:calc(12.5px * var(--s));color:var(--ink-faint);line-height:1.6}
+
+/* rail destra */
+.rr{width:296px;flex:0 0 296px;border-left:1px solid var(--line);
+  padding:calc(22px * var(--sp)) 20px;overflow-y:auto}
+.st-acct{margin-bottom:30px}
+.st-av{width:48px;height:48px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(18px * var(--s));font-weight:600;color:var(--ink-muted);margin-bottom:14px}
+.st-nm{font-size:calc(15px * var(--s));font-weight:600;color:var(--ink)}
+.st-em{font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:3px;word-break:break-all}
+.st-pill{display:inline-block;margin-top:10px;font-size:calc(9px * var(--s));font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:3px 9px;border-radius:var(--r-pill);
+  background:var(--surface-2);color:var(--ink-muted);border:1px solid var(--line)}
+.railr-l{font-size:calc(11px * var(--s));font-weight:650;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px}
+.st-rrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;
+  border-bottom:1px solid var(--line);font-size:calc(12.5px * var(--s));width:100%;
+  background:none;border-left:none;border-right:none;border-top:none;font-family:var(--font);text-align:left}
+.st-rrow .k{color:var(--ink-faint);flex:0 0 auto}
+.st-rrow .v{color:var(--ink-muted);text-align:right;min-width:0}
+.st-out{display:block;width:100%;margin-top:14px;padding:13px;min-height:44px;
+  border-radius:var(--r-md);border:1px solid var(--line);background:transparent;
+  color:var(--ink-muted);font-family:var(--font);font-size:calc(13.5px * var(--s));
+  font-weight:600;cursor:pointer}
+.st-out.danger{color:var(--danger);border-color:color-mix(in oklab,var(--danger) 35%,transparent)}
+
+/* ================================================================
+   TELEFONO / GUSCIO iOS — 390px
+   ================================================================ */
+.phone{width:390px;height:786px;border-radius:38px;overflow:hidden;background:var(--bg-app);
+  color:var(--ink);position:relative;display:flex;flex-direction:column;
+  box-shadow:0 26px 62px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.10)}
+.notch{height:34px;flex:0 0 34px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px}
+.notch i{width:104px;height:5px;border-radius:3px;background:var(--surface-2);display:block}
+.ph-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.ph-scroll{flex:1;min-height:0;overflow-y:auto;padding:calc(20px * var(--sp)) 24px calc(26px * var(--sp))}
+.ph-head{padding:20px 24px 6px}
+.ph-head.split{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.ph-back{width:36px;height:36px;flex:0 0 36px;margin-left:-8px;border-radius:50%;border:none;
+  background:transparent;color:var(--ink-muted);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ph-back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.phead{display:flex;align-items:center;gap:10px}
+
+/* IL BOTTONE ACCOUNT IN TESTATA — 44x44 di bersaglio, brandbook cap.05 */
+.hd-av{width:44px;height:44px;flex:0 0 44px;margin:-6px -8px -6px 0;border-radius:50%;
+  border:none;background:transparent;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hd-av i{width:32px;height:32px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(13px * var(--s));font-weight:600;color:var(--ink-muted);font-style:normal}
+.hd-av[aria-expanded="true"] i{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+
+/* IL MENU (telefono): foglio dal basso, non un popover */
+.sheet-veil{position:absolute;inset:0;background:rgba(0,0,0,.28);opacity:0;pointer-events:none;
+  transition:opacity 180ms;z-index:8}
+.sheet-veil.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);z-index:9;
+  border-top-left-radius:var(--r-xl);border-top-right-radius:var(--r-xl);
+  border-top:1px solid var(--line);padding:10px 12px calc(20px + 14px);
+  transform:translateY(102%);transition:transform 220ms cubic-bezier(.32,.72,0,1);
+  box-shadow:0 -14px 40px rgba(0,0,0,.22)}
+.sheet.open{transform:translateY(0)}
+.sheet-grab{width:38px;height:4px;border-radius:2px;background:var(--surface-2);margin:2px auto 12px}
+.sheet-head{display:flex;align-items:center;gap:12px;padding:4px 10px 14px;
+  border-bottom:1px solid var(--line);margin-bottom:8px}
+.sheet-head .av{width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(15px * var(--s));font-weight:600;color:var(--ink-muted)}
+.sheet-head .n{font-size:calc(15px * var(--s));font-weight:600;color:var(--ink)}
+.sheet-head .e{font-size:calc(12px * var(--s));color:var(--ink-faint);margin-top:2px;word-break:break-all}
+.sheet-i{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 6px;
+  border:none;background:transparent;border-radius:var(--r-md);font-family:var(--font);
+  font-size:calc(15px * var(--s));font-weight:500;color:var(--ink);text-align:left;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.sheet-i.danger{color:var(--danger)}
+.sheet-i svg{width:20px;height:20px;flex:0 0 20px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.sheet-sep{height:1px;background:var(--line);margin:6px 10px}
+
+/* tab bar — tab-bar.tsx:132-192 */
+.tabs{display:grid;align-items:center;border-top:1px solid var(--line);
+  background:color-mix(in oklab,var(--bg) 50%,transparent);padding-top:12px;padding-bottom:20px}
+.tabs.n5{grid-template-columns:repeat(5,1fr)}
+.tabs.n4{grid-template-columns:repeat(4,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;
+  font-family:var(--font);cursor:pointer;color:var(--ink-faint);-webkit-tap-highlight-color:transparent}
+.tab.on{color:var(--accent)}
+.tab svg{width:22px;height:22px;display:block;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.tab span{font-size:calc(9px * var(--s));font-weight:600;letter-spacing:.10em;text-transform:uppercase}
+.mic{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid color-mix(in oklab,var(--ink) 34%,transparent);
+  box-shadow:0 8px 18px rgba(0,0,0,.5),inset 0 1px 1px rgba(255,255,255,.40)}
+.mic svg{width:22px;height:22px;stroke:currentColor}
+.recap-card{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:18px;margin-bottom:calc(28px * var(--sp))}
+.recap-card .meta{display:block;font-size:calc(10px * var(--s));font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-faint)}
+.recap-card .title{display:block;font-family:var(--serif);font-size:calc(20px * var(--s));
+  color:var(--ink);margin-top:8px;line-height:1.25}
+.recap-card .sub{display:block;font-size:calc(12.5px * var(--s));color:var(--ink-faint);
+  margin-top:8px;line-height:1.5}
+.recap-card .last{display:block;font-size:calc(11.5px * var(--s));color:var(--ink-faint);
+  margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1 class="page-title">La porta dell'account</h1>
+<p class="page-sub">
+  Il pallino con l'iniziale diventa <b>la porta</b>: un click (o un tocco) apre un menu
+  con le tre cose che si cercano da li — Impostazioni, Premium, Esci. La voce
+  "Impostazioni" esce dalla navigazione sul desktop e dalla barra sul telefono, che cosi
+  <b>riguadagna il posto per Ricorda</b>. Tutto qui sotto e cliccabile: e il bersaglio,
+  non una proposta.
+</p>
+<span class="stamp">Scelto da Manuel il 28 agosto 2026 . desktop B + iOS A</span>
+
+<div class="divider"></div>
+
+<!-- ================================================================
+     01 . DESKTOP
+     ================================================================ -->
+<p class="label">01 . desktop . il bersaglio</p>
+<h2 class="h2">Il pallino in fondo alla rail apre un menu</h2>
+<p class="caption">
+  <b>Clicca il pallino "M" in basso a sinistra</b>, poi "Impostazioni". Nota cosa non c'e
+  piu nella navigazione: la voce con i tre puntini. Quella lista ora contiene solo posti
+  del diario — Oggi, Mese, Ricorda, Recap, e i moduli accesi.
+</p>
+
+<div class="deskwrap"><div class="scaler" data-scale>
+<div class="desk" id="d1">
+  <nav class="rl">
+    <div class="rl-brand"><span class="rl-mark"></span><em>day</em>alogue</div>
+    <div class="rl-nav">
+      <button class="rl-i on" data-go="oggi" data-frame="d1" data-navsel>
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>Recap</button>
+      <button class="rl-i">
+        <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg>Palestra</button>
+      <div class="rl-sep"></div>
+      <button class="rl-i rec">
+        <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta<span class="rl-kbd">&#8984;&#8679;R</span></button>
+    </div>
+    <div class="rl-foot">
+      <div class="menu" id="menu-d1" role="menu">
+        <div class="menu-head">
+          <div class="n">manuel</div>
+          <div class="e">madh52@gmail.com</div>
+        </div>
+        <button class="menu-i" role="menuitem" data-go="set" data-frame="d1" data-closemenu="menu-d1">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+          Impostazioni</button>
+        <button class="menu-i" role="menuitem" data-closemenu="menu-d1">
+          <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/></svg>
+          Passa a Premium</button>
+        <div class="menu-sep"></div>
+        <button class="menu-i danger" role="menuitem" data-closemenu="menu-d1">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Esci dall'account</button>
+      </div>
+      <button class="acct-btn" aria-haspopup="menu" aria-expanded="false"
+              data-menu="menu-d1" data-frame="d1" data-acctbtn>
+        <span class="acct-av">M</span>
+        <span style="min-width:0">
+          <span class="acct-nm" style="display:block">manuel</span>
+          <span class="acct-pill">Gratis</span>
+        </span>
+        <svg class="acct-chev" viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="dc">
+    <div data-view="oggi">
+      <div class="oggi-head"><span class="oggi-date">Venerdi 28 agosto</span></div>
+      <div class="oggi-body" style="height:600px">
+        <div class="ghost">La schermata Oggi.<br>Clicca il pallino "M" in basso a sinistra.</div>
+      </div>
+    </div>
+    <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+      <header class="colhead">
+        <h1 class="st-h1">Impostazioni</h1>
+        <p class="st-sub">Come funziona e come si vede il tuo diario.</p>
+      </header>
+      <div class="st-scroll" data-settings></div>
+    </div>
+  </div>
+
+  <aside class="rr" data-rail hidden></aside>
+</div>
+</div></div>
+<p class="hint">Esc chiude il menu. Cliccare fuori pure.</p>
+
+<div class="divider"></div>
+
+<!-- ================================================================
+     02 . TELEFONO
+     ================================================================ -->
+<p class="label">02 . app ios . il bersaglio</p>
+<h2 class="h2">Il pallino in testata apre un foglio dal basso</h2>
+<p class="caption">
+  Sul telefono un popover non si usa: il gesto giusto e il <b>foglio dal basso</b>, con
+  righe da 56px che si toccano col pollice. <b>Tocca il pallino "M" in alto a destra</b>,
+  poi "Impostazioni". E guarda la barra: <b>cinque posti, e Ricorda c'e ancora</b> anche
+  con Palestra acceso.
+</p>
+
+<div class="row">
+  <div>
+    <div class="phone" id="p1">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div data-view="oggi" style="display:flex;flex-direction:column;height:100%">
+          <div class="ph-head split">
+            <span class="oggi-date" style="padding-top:12px">Venerdi 28 agosto</span>
+            <button class="hd-av" aria-haspopup="menu" aria-expanded="false"
+                    data-sheet="sheet-p1" aria-label="Il tuo account"><i>M</i></button>
+          </div>
+          <div class="ph-scroll">
+            <div class="ghost" style="height:100%">La schermata Oggi.<br>Il pallino "M" e in alto a destra.</div>
+          </div>
+        </div>
+
+        <div data-view="set" hidden style="display:flex;flex-direction:column;height:100%">
+          <header class="ph-head phead">
+            <button class="ph-back" data-go="oggi" data-frame="p1" aria-label="Indietro">
+              <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <h1 class="st-h1" style="font-size:calc(22px * var(--s))">Impostazioni</h1>
+          </header>
+          <div class="ph-scroll" data-settings-phone></div>
+        </div>
+
+        <!-- il foglio -->
+        <div class="sheet-veil" id="veil-p1" data-closesheet="sheet-p1"></div>
+        <div class="sheet" id="sheet-p1" role="menu">
+          <div class="sheet-grab"></div>
+          <div class="sheet-head">
+            <span class="av">M</span>
+            <span style="min-width:0">
+              <span class="n" style="display:block">manuel</span>
+              <span class="e" style="display:block">madh52@gmail.com</span>
+            </span>
+          </div>
+          <button class="sheet-i" role="menuitem" data-go="set" data-frame="p1" data-closesheet="sheet-p1">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+            Impostazioni</button>
+          <button class="sheet-i" role="menuitem" data-closesheet="sheet-p1">
+            <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/></svg>
+            Scopri Premium</button>
+          <div class="sheet-sep"></div>
+          <button class="sheet-i danger" role="menuitem" data-closesheet="sheet-p1">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            Esci dall'account</button>
+        </div>
+      </div>
+
+      <nav class="tabs n5">
+        <button class="tab on" data-go="oggi" data-frame="p1" data-tabsel>
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Oggi</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mese</span></button>
+        <button class="tab" style="color:var(--accent)">
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span>Registra</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Ricorda</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg><span>Palestra</span></button>
+      </nav>
+    </div>
+    <p class="cap"><b>Cinque slot, nessuno sprecato.</b> Con nessun modulo acceso la barra
+      ne mostra quattro: Oggi, Mese, Registra, Ricorda. Non si inventa una quinta
+      destinazione per riempire il buco.</p>
+  </div>
+
+  <div>
+    <div class="phone" id="p2">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div data-view="oggi" style="display:flex;flex-direction:column;height:100%">
+          <div class="ph-head split">
+            <span class="oggi-date" style="padding-top:12px">Venerdi 28 agosto</span>
+            <button class="hd-av" aria-haspopup="menu" aria-expanded="false"
+                    data-sheet="sheet-p2" aria-label="Il tuo account"><i>M</i></button>
+          </div>
+          <div class="ph-scroll">
+            <div class="ghost" style="height:100%">Stessa schermata, ma in modalita<br><b>solo su questo dispositivo</b>.<br>Tocca il pallino.</div>
+          </div>
+        </div>
+        <div class="sheet-veil" id="veil-p2" data-closesheet="sheet-p2"></div>
+        <div class="sheet" id="sheet-p2" role="menu">
+          <div class="sheet-grab"></div>
+          <div class="sheet-head">
+            <span class="av">Q</span>
+            <span style="min-width:0">
+              <span class="n" style="display:block">Questo dispositivo</span>
+              <span class="e" style="display:block">Le giornate non escono di qui</span>
+            </span>
+          </div>
+          <button class="sheet-i" role="menuitem" data-closesheet="sheet-p2">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+            Impostazioni</button>
+          <div class="sheet-sep"></div>
+          <button class="sheet-i" role="menuitem" data-closesheet="sheet-p2">
+            <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l-5-5 5-5M5 12h12"/></svg>
+            Accedi al tuo account</button>
+        </div>
+      </div>
+      <nav class="tabs n4">
+        <button class="tab on">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Oggi</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mese</span></button>
+        <button class="tab" style="color:var(--accent)">
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span>Scrivi</span></button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Ricorda</span></button>
+      </nav>
+    </div>
+    <p class="cap"><b>Modalita locale, nessun modulo acceso.</b> Il menu cambia contenuto:
+      niente Premium, niente Esci, ma la <b>via del ritorno</b> ("Accedi al tuo account")
+      che oggi e sepolta in fondo alle impostazioni. Barra a quattro posti.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================
+     03 . IL CONTRATTO
+     ================================================================ -->
+<p class="label">03 . il contratto, per chi scrive il codice</p>
+<h2 class="h2">Cosa dev'essere vero quando e finito</h2>
+<p class="caption">Questa sezione e la specifica: se una riga qui non e vera nel browser,
+  il lavoro non e finito.</p>
+
+<div class="spec">
+  <div class="card go">
+    <h3 class="go">Il menu . contenuto, in ordine, e quando compare ogni voce</h3>
+    <ul>
+      <li><b>Testata</b>: nome e email. In locale: "Questo dispositivo" e la riga
+        "Le giornate non escono di qui". Il nome viene dalla stessa fonte di oggi
+        (<code>rail-left.tsx:100-133</code>): email prima della chiocciola, o "ospite".</li>
+      <li><b>Impostazioni</b> &rarr; <code>/settings</code>. Sempre, in ogni modalita.</li>
+      <li><b>Passa a Premium</b> &rarr; <code>openPremiumWall("aiSummary")</code>. Solo se
+        <b>non</b> locale e piano diverso da premium. Dentro il guscio iOS l'etichetta e
+        <b>"Scopri Premium"</b> e non si stampa nessun prezzo (App Store 3.1.1: la regola
+        e gia scritta e motivata in <code>settings-client.tsx:656-675</code>).</li>
+      <li><b>Accedi al tuo account</b> &rarr; <code>/login</code>. Solo in modalita locale,
+        al posto delle due voci qui sopra. E la via del ritorno di
+        <code>settings-client.tsx:485-491</code>.</li>
+      <li><b>Esci dall'account</b>, in rosso, dopo un separatore. Solo se non locale.</li>
+    </ul>
+  </div>
+
+  <div class="card stop">
+    <h3 class="stop">Il tranello da non ripetere: due logout diversi</h3>
+    <ul>
+      <li>Il logout non e <code>signOut()</code>: sono <b>cinque passi</b> in fila
+        (<code>settings-client.tsx:216-238</code>) e ognuno ha una cicatrice dietro —
+        la cache del piano che restava "premium" addosso al browser, la scansione
+        dell'archivio da dimenticare, il cookie della demo.</li>
+      <li><b>Non si copia.</b> Va estratto una volta sola in
+        <code>src/lib/auth/logout.ts</code> (scheletro) e chiamato dai due punti:
+        il menu nuovo e <code>settings-client.tsx</code>, che perde il corpo della
+        funzione e tiene solo la chiamata.</li>
+      <li>Il 23 agosto la stessa funzione e stata costruita due volte da due chat:
+        e la ragione per cui esistono i recinti. Qui il rischio si ripresenta uguale.</li>
+    </ul>
+  </div>
+
+  <div class="card stop">
+    <h3 class="stop">Il secondo tranello: il foglio dal basso ESISTE GIA</h3>
+    <ul>
+      <li>Il disegno qui sopra somiglia a un componente nuovo. <b>Non lo e.</b> Un foglio
+        dal basso identico vive gia nel modulo Oggi: <code>add-to-day.tsx:164-200</code>
+        col suo CSS <code>.jm-sheet-scrim / .jm-sheet / .jm-sheet-grip / .jm-sheet-row</code>
+        in <code>src/modules/oggi/styles.css:1534-1629</code>. Ha gia velo sfocato,
+        maniglia, righe da <b>58px</b>, <code>max-width: 440px</code> e il padding per
+        la safe-area dell'iPhone.</li>
+      <li><b>Non se ne disegna un secondo.</b> Quel foglio va <b>promosso a scheletro</b>:
+        il CSS si sposta in <code>src/styles/base.css</code>, nasce una primitiva
+        <code>src/components/ui/sheet.tsx</code>, e <code>add-to-day.tsx</code> passa a
+        usarla. Il menu dell'account e il suo secondo cliente, non il suo gemello.</li>
+      <li>Lo spostamento del CSS e coperto da un banco che esiste gia:
+        <code>node scripts/verify-css-split.mjs</code> confronta gli stili CALCOLATI
+        prima e dopo. Se il foglio di Oggi cambia di un pixel, esce rosso.</li>
+      <li>Se il tempo non basta per la promozione: <b>riusa le classi esistenti cosi
+        come sono</b> e lascia scritto nel commit che la promozione resta da fare.
+        Duplicare le regole CSS con un prefisso nuovo e l'unica cosa vietata.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Comportamento . le cose che si vedono solo provandole</h3>
+    <table>
+      <tr><th>Cosa</th><th>Desktop (&ge;1024px)</th><th>Telefono (&lt;1024px)</th></tr>
+      <tr><td>Forma</td><td>Popover ancorato sopra il bottone, 206px</td><td>Foglio dal basso a tutta larghezza, angoli superiori arrotondati</td></tr>
+      <tr><td>Altezza righe</td><td>40px</td><td><b>58px</b>, la misura del foglio che gia esiste (<code>.jm-sheet-row</code>)</td></tr>
+      <tr><td>Si chiude con</td><td>Esc, click fuori, scelta di una voce</td><td>Tocco sul velo, scelta di una voce</td></tr>
+      <tr><td>Dopo la chiusura</td><td>Il fuoco torna sul bottone</td><td>&mdash;</td></tr>
+      <tr><td>Stato aperto</td><td colspan="2"><code>aria-expanded="true"</code> sul bottone, e il bottone si accende</td></tr>
+      <tr><td>Su /settings</td><td colspan="2">Il bottone resta acceso: dice dove sei</td></tr>
+    </table>
+  </div>
+
+  <div class="card warn">
+    <h3 class="warn">Il punto che il disegno non puo risolvere da solo</h3>
+    <ul>
+      <li>Il pallino in testata, sul telefono, <b>vive nell'intestazione di ogni schermata</b>,
+        e le intestazioni appartengono ai moduli. Su <b>Oggi</b> lo spazio a destra e vuoto
+        (<code>today-client.tsx:648-660</code>): ci sta subito.</li>
+      <li>Su <b>Mese</b> no: quel bordo destro e gia occupato da frecce, contatore e
+        interruttore lista/griglia (<code>mese-client.tsx:286-345</code>). Un pallino
+        piazzato li si sovrappone.</li>
+      <li>Quindi: la sessione scheletro costruisce il pezzo e lo monta su <b>Oggi</b>
+        (che e la schermata d'ingresso); Mese, Ricorda, Recap e i moduli lo ricevono con
+        <b>una riga ciascuno</b>, nelle loro sessioni. Fino ad allora, sul telefono si
+        passa da Oggi. E una consegna in due tempi, non un buco.</li>
+    </ul>
+  </div>
+
+  <div class="card stop">
+    <h3 class="stop">Cosa NON deve cambiare</h3>
+    <ul>
+      <li>La <b>pagina Impostazioni</b>: gruppi, righe, pannelli, rail destra. Cambia la
+        porta, non la stanza. L'unica modifica ammessa a
+        <code>settings-client.tsx</code> e la chiamata al logout estratto.</li>
+      <li>Il <b>microfono al centro</b> della barra. Non si tocca, mai.</li>
+      <li>La <b>linguetta Feedback</b> sul bordo destro e il meccanismo
+        <code>useDentroApp</code> che la accende (<code>tab-bar.tsx</code>): il foglio
+        dal basso deve stare <b>sotto</b> il velo del saluto e non rubargli il posto.</li>
+      <li>Nessun colore o misura a mano: solo <code>--color-*</code> e <code>--jm-*</code>,
+        ogni font-size in <code>calc(Npx * var(--jm-ui-scale))</code>, ogni testo da
+        <code>t()</code>.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* Le righe di Impostazioni: sono quelle vere di settings-client.tsx, cosi
+   il mockup non promette una schermata che non esiste. */
+const CHEV = '<svg class="st-chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+function row(t,d,v,o){o=o||{};return '<button class="st-row'+(o.danger?' danger':'')+'">'
+  +'<span class="st-grow"><span class="st-t">'+t+'</span>'+(d?'<span class="st-d">'+d+'</span>':'')+'</span>'
+  +(v?'<span class="st-val">'+v+'</span>':'')+(o.control||'')+(o.nochev?'':CHEV)+'</button>';}
+function statRow(t,v){return '<div class="st-row static"><span class="st-grow"><span class="st-t">'+t
+  +'</span></span><span class="st-val">'+v+'</span></div>';}
+function group(l,i){return '<section class="st-group"><div class="st-gl">'+l+'</div><div class="st-box">'+i+'</div></section>';}
+const SEG='<span class="st-seg"><button>Chiaro</button><button class="on">Scuro</button><button>Sistema</button></span>';
+const CORE =
+  group('Il diario',
+      row('Obiettivi','Le caselle che accendi ogni giorno.','5 attivi')
+    + row('Moduli','Sezioni in piu: palestra, cibo, sonno.','Palestra')
+    + row('Ricorda','Persone, posti e idee salvate al volo.',''))
++ group('Lingua e aspetto',
+      row('Lingua','Al primo avvio segue la lingua del dispositivo.','Italiano . automatica')
+    + row('Tema','5 temi inclusi, tutti in chiaro e in scuro.','Minimal')
+    + row('Dimensione del testo',"Ingrandisce tutta l'app, non solo le scritte.",'Normale')
+    + row('Chiaro o scuro','Vale per qualsiasi tema. Con Sistema segue il dispositivo.','',{control:SEG,nochev:true}))
++ group('I tuoi dati',
+      row('Esporta un backup','Un solo file con tutto: giornate, obiettivi, metriche, Ricorda.','128 giornate')
+    + row('Importa un backup','Aggiunge le giornate che mancano. Quelle che hai gia non le tocca.','')
+    + row('Dove sono le mie giornate','Cosa esce da questo dispositivo, e cosa no.',''));
+const DANGER = group('Zona pericolosa',
+  row("Elimina l'account","Cancella l'account e tutte le giornate dal cloud.",'',{danger:true}));
+const RECAP = '<a class="recap-card"><span class="meta">Recap</span>'
+  +'<span class="title">Le tue giornate, raccontate.</span>'
+  +'<span class="sub">Mensili, semestrali, annuali. Una prosa narrativa che rilegge i tuoi mesi senza giudizio.</span>'
+  +'<span class="last">Agosto 2026 . Il mese in cui hai smesso di rimandare</span></a>';
+const PHONE = RECAP + CORE + group('Account',
+      statRow('Email','madh52@gmail.com') + statRow('Piano','Gratis')
+    + row('Consumi AI','Quanto e costato questo mese','circa 1,40 $')
+    + statRow('Versione','0.6.0') + statRow('Pacchetto','3023aea')
+    + row("Esci dall'account",'','',{danger:true,nochev:true})) + DANGER;
+const RAIL = '<div class="st-acct"><div class="st-av">M</div>'
+  +'<div class="st-nm">manuel</div><div class="st-em">madh52@gmail.com</div>'
+  +'<span class="st-pill">Gratis</span></div>'
+  +'<div><div class="railr-l">Account</div>'
+  +'<div class="st-rrow"><span class="k">Piano</span><span class="v">Gratis</span></div>'
+  +'<button class="st-rrow"><span class="k">Consumi AI</span><span class="v">circa 1,40 $</span></button>'
+  +'<div class="st-rrow"><span class="k">Versione</span><span class="v">0.6.0</span></div>'
+  +'<div class="st-rrow"><span class="k">Pacchetto</span><span class="v">3023aea</span></div>'
+  +'<button class="st-out">Passa a Premium</button>'
+  +'<button class="st-out danger">Esci dall\'account</button></div>';
+
+document.querySelectorAll('[data-settings]').forEach(function(e){e.innerHTML=CORE+DANGER;});
+document.querySelectorAll('[data-settings-phone]').forEach(function(e){e.innerHTML=PHONE;});
+document.querySelectorAll('[data-rail]').forEach(function(e){e.innerHTML=RAIL;});
+
+function show(frameId,view){
+  const f=document.getElementById(frameId); if(!f) return;
+  f.querySelectorAll('[data-view]').forEach(function(v){v.hidden=(v.getAttribute('data-view')!==view);});
+  const r=f.querySelector('[data-rail]'); if(r) r.hidden=(view!=='set');
+  f.querySelectorAll('[data-navsel],[data-tabsel]').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-go')===view);});
+  /* il bottone account resta acceso quando sei nelle impostazioni */
+  f.querySelectorAll('[data-acctbtn]').forEach(function(b){b.classList.toggle('on',view==='set');});
+}
+function closeAllMenus(){
+  document.querySelectorAll('.menu.open').forEach(function(m){m.classList.remove('open');});
+  document.querySelectorAll('[aria-expanded="true"]').forEach(function(b){b.setAttribute('aria-expanded','false');});
+  document.querySelectorAll('.acct-btn .acct-chev path').forEach(function(p){p.setAttribute('d','M18 15l-6-6-6 6');});
+}
+function closeSheet(id){
+  const s=document.getElementById(id); if(!s) return;
+  s.classList.remove('open');
+  const v=document.getElementById('veil-'+id.split('-')[1]); if(v) v.classList.remove('open');
+  document.querySelectorAll('[data-sheet="'+id+'"]').forEach(function(b){b.setAttribute('aria-expanded','false');});
+}
+
+document.addEventListener('click',function(e){
+  /* popover desktop */
+  const trig=e.target.closest('[data-menu]');
+  const inside=e.target.closest('.menu');
+  if(!trig&&!inside) closeAllMenus();
+  if(trig){
+    const m=document.getElementById(trig.getAttribute('data-menu'));
+    const willOpen=!m.classList.contains('open');
+    closeAllMenus();
+    if(willOpen){
+      m.classList.add('open');
+      trig.setAttribute('aria-expanded','true');
+      const p=trig.querySelector('.acct-chev path'); if(p) p.setAttribute('d','M6 9l6 6 6-6');
+    }
+  }
+  /* foglio telefono */
+  const st=e.target.closest('[data-sheet]');
+  if(st){
+    const id=st.getAttribute('data-sheet');
+    const s=document.getElementById(id);
+    const v=document.getElementById('veil-'+id.split('-')[1]);
+    const willOpen=!s.classList.contains('open');
+    closeSheet(id);
+    if(willOpen){s.classList.add('open');if(v)v.classList.add('open');st.setAttribute('aria-expanded','true');}
+  }
+  const cs=e.target.closest('[data-closesheet]');
+  if(cs) closeSheet(cs.getAttribute('data-closesheet'));
+  const cm=e.target.closest('[data-closemenu]');
+  if(cm) closeAllMenus();
+  /* navigazione */
+  const go=e.target.closest('[data-go]');
+  if(go&&go.getAttribute('data-frame')) show(go.getAttribute('data-frame'),go.getAttribute('data-go'));
+});
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){closeAllMenus();document.querySelectorAll('.sheet').forEach(function(s){closeSheet(s.id);});}
+});
+
+function fit(){
+  document.querySelectorAll('[data-scale]').forEach(function(sc){
+    const k=Math.min(1, sc.parentElement.clientWidth/1152);
+    sc.style.transform='scale('+k+')';
+    sc.style.height=(706*k)+'px';
+  });
+}
+window.addEventListener('resize',fit);fit();
+</script>
+</body>
+</html>
