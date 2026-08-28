@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
+import { useStorageMode } from "@/lib/data/store";
 import { BrandMark } from "@/components/brand/brand-mark";
+import { AccountMenu } from "@/components/ui/account-menu";
 import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
 import { useActiveModules } from "@/lib/modules";
@@ -18,7 +18,10 @@ import { useActiveModules } from "@/lib/modules";
  * la rail approvata le chiude cosi — cambiarle e editare NAV_ITEMS).
  */
 
-type NavKey = "today" | "mese" | "ricorda" | "recap" | "altro";
+// "altro" non esiste piu (28 agosto 2026, mockup porta-account): le
+// Impostazioni si aprono dal pallino dell'account in fondo, e questa
+// lista contiene solo posti del diario.
+type NavKey = "today" | "mese" | "ricorda" | "recap";
 
 const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNode }[] = [
   {
@@ -64,18 +67,6 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
       </svg>
     ),
   },
-  {
-    key: "altro",
-    href: "/settings",
-    label: "Impostazioni",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
-        <circle cx="5" cy="12" r="2" />
-        <circle cx="12" cy="12" r="2" />
-        <circle cx="19" cy="12" r="2" />
-      </svg>
-    ),
-  },
 ];
 
 function activeKeyFor(pathname: string): NavKey | null {
@@ -83,11 +74,8 @@ function activeKeyFor(pathname: string): NavKey | null {
   if (pathname.startsWith("/mese")) return "mese";
   if (pathname.startsWith("/remember")) return "ricorda";
   if (pathname.startsWith("/recap")) return "recap";
-  if (pathname.startsWith("/settings")) return "altro";
   return null;
 }
-
-type Account = { name: string; badge: string };
 
 export function RailLeft() {
   const t = useT();
@@ -95,42 +83,6 @@ export function RailLeft() {
   const pathname = usePathname();
   const mode = useStorageMode();
   const active = activeKeyFor(pathname);
-  const [account, setAccount] = useState<Account | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    void (async () => {
-      const m = await resolveStorageMode();
-      if (m === "local") {
-        if (alive) setAccount({ name: "questo dispositivo", badge: "Locale" });
-        return;
-      }
-      try {
-        const { createClient } = await import("@/lib/supabase/client");
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!alive) return;
-        const name = user?.email ? user.email.split("@")[0] : "ospite";
-        let badge = "Cloud";
-        if (user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("plan")
-            .eq("user_id", user.id)
-            .maybeSingle();
-          if (profile?.plan === "premium") badge = "Premium";
-        }
-        if (alive) setAccount({ name, badge });
-      } catch {
-        if (alive) setAccount(null);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [mode]);
 
   return (
     <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
@@ -181,24 +133,11 @@ export function RailLeft() {
           <span className="jm-rail-kbd">{"⌘⇧R"}</span>
         </Link>
       </div>
+      {/* Il pallino non e piu un <div> morto: e LA porta dell'account
+          (mockup porta-account §01). Chi sei, il menu e il logout vivono
+          nel componente, perche il pallino ora esiste su due superfici. */}
       <div className="jm-rail-foot">
-        <div className="jm-rail-acct">
-          <div className="jm-rail-avatar">
-            {account ? account.name.slice(0, 1).toUpperCase() : "•"}
-          </div>
-          <div className="jm-rail-acct-txt">
-            <div className="jm-rail-acct-nm">
-              {account ? t(account.name) : "…"}
-            </div>
-            {account && (
-              <span
-                className={`jm-rail-pill${account.badge === "Premium" ? " prem" : ""}`}
-              >
-                {t(account.badge)}
-              </span>
-            )}
-          </div>
-        </div>
+        <AccountMenu variant="rail" />
       </div>
     </nav>
   );

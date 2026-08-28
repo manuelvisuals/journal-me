@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
+import { AccountMenu } from "@/components/ui/account-menu";
 import { EmptyState } from "@/modules/oggi/components/empty-state";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -668,6 +669,10 @@ export function TodayClient({
         >
           {dayHeader}
         </span>
+        {/* Tutto cio che sta a destra vive in UN contenitore: senza, il
+            justify-between del header spargerebbe i pezzi (il pallino
+            dell'account e sempre presente sul telefono). */}
+        <div className="flex items-center" style={{ gap: 14 }}>
         {desktopWriting && (
           <div className="jm-ed-meta">
             <span suppressHydrationWarning>
@@ -742,6 +747,14 @@ export function TodayClient({
             </button>
           </div>
         )}
+        {/* La porta dell'account, solo telefono (mockup porta-account §02):
+            Oggi e la prima intestazione che la monta — le altre schermate
+            la ricevono nelle loro sessioni, una riga ciascuna. Su desktop
+            il pallino sta nella rail, e qui non si duplica. */}
+        <span className="lg:hidden">
+          <AccountMenu variant="testata" />
+        </span>
+        </div>
       </header>
 
       {multiDayNotice && view === "filled" && (

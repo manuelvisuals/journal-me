@@ -1,0 +1,298 @@
+"use client";
+
+/**
+ * La porta dell'account (mockup design/mockups/porta-account.html, scelto
+ * da Manuel il 28 agosto 2026: desktop B + iOS A).
+ *
+ * Il pallino con l'iniziale — che era un <div> morto in fondo alla rail —
+ * diventa IL punto da cui si arriva a Impostazioni, Premium e all'uscita.
+ * Due vesti, un solo contenuto:
+ *
+ *  - variant "rail": il blocco account della rail desktop, ora bottone;
+ *    il menu e un popover ancorato sopra (Esc, click fuori e scelta
+ *    chiudono; il fuoco torna sul bottone; aria-expanded segue lo stato;
+ *    su /settings il bottone resta acceso — dice dove sei).
+ *  - variant "testata": il pallino 44x44 nelle intestazioni del telefono;
+ *    il menu e il foglio dal basso (la primitiva Sheet), chiuso dal velo.
+ *
+ * Le voci, dal contratto §03 — e quando compare ciascuna:
+ *  - testata: nome ed email; in locale "Questo dispositivo" e "Le
+ *    giornate non escono di qui";
+ *  - Impostazioni -> /settings, sempre;
+ *  - Passa a Premium -> openPremiumWall("aiSummary"), solo cloud non
+ *    premium; nel guscio iOS l'etichetta e "Scopri Premium" e non si
+ *    stampa nessun prezzo (App Store 3.1.1, stessa regola della card
+ *    delle Impostazioni);
+ *  - Accedi al tuo account -> /login, solo in locale, al posto delle due
+ *    voci sopra;
+ *  - Esci dall'account, in rosso dopo un separatore, solo cloud. E il
+ *    logout VERO: src/lib/auth/logout.ts, lo stesso delle Impostazioni.
+ */
+
+import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
+import { usePlan } from "@/lib/plan";
+import { isNative } from "@/lib/native/platform";
+import { eseguiLogout } from "@/lib/auth/logout";
+import { openPremiumWall } from "@/modules/abbonamento";
+import { Sheet } from "@/components/ui/sheet";
+import { useT } from "@/lib/i18n";
+
+type Account = { name: string; email: string | null; badge: string };
+
+/**
+ * Chi sei, per il pallino e per la testata del menu. E la stessa lettura
+ * che faceva la rail (email prima della chiocciola, o "ospite"; il badge
+ * legge il piano da profiles) — spostata qui perche adesso il pallino
+ * vive in due superfici e la verita deve essere una.
+ */
+function useAccount(): Account | null {
+  const mode = useStorageMode();
+  const [account, setAccount] = useState<Account | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const m = await resolveStorageMode();
+      if (m === "local") {
+        if (alive)
+          setAccount({ name: "questo dispositivo", email: null, badge: "Locale" });
+        return;
+      }
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!alive) return;
+        const email = user?.email ?? null;
+        const name = email ? email.split("@")[0] : "ospite";
+        let badge = "Cloud";
+        if (user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("plan")
+            .eq("user_id", user.id)
+            .maybeSingle();
+          if (profile?.plan === "premium") badge = "Premium";
+        }
+        if (alive) setAccount({ name, email, badge });
+      } catch {
+        if (alive) setAccount(null);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [mode]);
+
+  return account;
+}
+
+export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
+  const t = useT();
+  const router = useRouter();
+  const pathname = usePathname();
+  const mode = useStorageMode();
+  const plan = usePlan();
+  const account = useAccount();
+  const [open, setOpen] = useState<boolean>(false);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  const locale = mode === "local";
+  const native = isNative();
+  const suSettings = pathname.startsWith("/settings");
+  const iniziale = account ? account.name.slice(0, 1).toUpperCase() : "•";
+
+  /** Chiusura con ritorno del fuoco: e il contratto, non una cortesia. */
+  const chiudi = (rifocalizza = true) => {
+    setOpen(false);
+    if (rifocalizza) btnRef.current?.focus();
+  };
+
+  // Esc e click fuori (solo popover: il foglio ha il velo, e su un
+  // telefono la tastiera non e la via).
+  useEffect(() => {
+    if (!open || variant !== "rail") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !e.isComposing) chiudi();
+    };
+    const onClick = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        chiudi(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [open, variant]);
+
+  const vaiImpostazioni = () => {
+    chiudi(false);
+    router.push("/settings");
+  };
+  const vaiPremium = () => {
+    chiudi(false);
+    openPremiumWall("aiSummary");
+  };
+  const vaiLogin = () => {
+    chiudi(false);
+    router.push("/login");
+  };
+  const esci = () => {
+    chiudi(false);
+    void (async () => {
+      await eseguiLogout();
+      router.push("/login");
+    })();
+  };
+
+  const testata = (
+    <div className="jm-acct-head">
+      <div className="n">{locale ? t("Questo dispositivo") : t(account?.name ?? "ospite")}</div>
+      <div className="e">
+        {locale
+          ? t("Le giornate non escono di qui")
+          : (account?.email ?? "")}
+      </div>
+    </div>
+  );
+
+  const voci = (classi: { i: string; sep: string }) => (
+    <>
+      <button type="button" className={classi.i} role="menuitem" onClick={vaiImpostazioni}>
+        <IconaIngranaggio />
+        {t("Impostazioni")}
+      </button>
+      {!locale && plan !== "premium" && (
+        <button type="button" className={classi.i} role="menuitem" onClick={vaiPremium}>
+          <IconaStella />
+          {native ? t("Scopri Premium") : t("Passa a Premium")}
+        </button>
+      )}
+      {locale && (
+        <>
+          <div className={classi.sep} />
+          <button type="button" className={classi.i} role="menuitem" onClick={vaiLogin}>
+            <IconaEntra />
+            {t("Accedi al tuo account")}
+          </button>
+        </>
+      )}
+      {!locale && (
+        <>
+          <div className={classi.sep} />
+          <button type="button" className={`${classi.i} danger`} role="menuitem" onClick={esci}>
+            <IconaEsci />
+            {t("Esci dall'account")}
+          </button>
+        </>
+      )}
+    </>
+  );
+
+  if (variant === "testata") {
+    return (
+      <>
+        <button
+          ref={btnRef}
+          type="button"
+          className={`jm-hd-av${suSettings ? " on" : ""}`}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-label={t("Il tuo account")}
+          onClick={() => setOpen((v) => !v)}
+        >
+          <i>{iniziale}</i>
+        </button>
+        {open && (
+          <Sheet label={t("Il tuo account")} onClose={() => chiudi(false)}>
+            <div className="jm-acct-sheet-head">
+              <span className="av">{iniziale}</span>
+              <span style={{ minWidth: 0 }}>
+                <span className="n">
+                  {locale ? t("Questo dispositivo") : t(account?.name ?? "ospite")}
+                </span>
+                <span className="e">
+                  {locale ? t("Le giornate non escono di qui") : (account?.email ?? "")}
+                </span>
+              </span>
+            </div>
+            {voci({ i: "jm-sheet-row jm-acct-row", sep: "jm-acct-sheet-sep" })}
+          </Sheet>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <div className="jm-acct-wrap" ref={wrapRef}>
+      {open && (
+        <div className="jm-acct-menu" role="menu">
+          {testata}
+          {voci({ i: "jm-acct-i", sep: "jm-acct-sep" })}
+        </div>
+      )}
+      <button
+        ref={btnRef}
+        type="button"
+        className={`jm-acct-btn${suSettings ? " on" : ""}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <div className="jm-rail-avatar">{iniziale}</div>
+        <div className="jm-rail-acct-txt">
+          <div className="jm-rail-acct-nm">{account ? t(account.name) : "…"}</div>
+          {account && (
+            <span
+              className={`jm-rail-pill${account.badge === "Premium" ? " prem" : ""}`}
+            >
+              {t(account.badge)}
+            </span>
+          )}
+        </div>
+        <svg className="jm-acct-chev" viewBox="0 0 24 24" aria-hidden="true">
+          <path d={open ? "M6 9l6 6 6-6" : "M18 15l-6-6-6 6"} />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+/* Le icone del menu: tratti coerenti con la rail (stroke 1.7, round). */
+function IconaIngranaggio() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z" />
+    </svg>
+  );
+}
+function IconaStella() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z" />
+    </svg>
+  );
+}
+function IconaEntra() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l-5-5 5-5M5 12h12" />
+    </svg>
+  );
+}
+function IconaEsci() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+    </svg>
+  );
+}

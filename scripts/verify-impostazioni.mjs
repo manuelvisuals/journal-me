@@ -54,10 +54,14 @@ async function newPage(width, height, { local = true } = {}) {
     "desktop: il titolo dice Impostazioni",
     (await page.locator(".jm-st-h1").innerText()).trim() === "Impostazioni",
   );
+  // Dal 28 agosto (porta-account) le Impostazioni NON sono una voce di
+  // navigazione: si aprono dal pallino dell'account. La rail deve
+  // contenere solo posti del diario, e il pallino deve essere un bottone.
   const railLabels = await page.locator(".jm-rail-l").allInnerTexts();
   check(
-    "rail sinistra: la voce si chiama Impostazioni",
-    railLabels.join(" ").includes("Impostazioni") && !railLabels.join(" ").includes("Altro"),
+    "rail sinistra: nessuna voce Impostazioni (si passa dal pallino)",
+    !railLabels.join(" ").includes("Impostazioni") &&
+      (await page.locator(".jm-acct-btn").count()) === 1,
     railLabels.join(" ").replace(/\n/g, " "),
   );
   check("desktop: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
@@ -254,8 +258,10 @@ for (const w of [1280, 1440, 1728, 2600]) {
     box.x >= 20 && box.x + box.width <= 410,
     `x=${Math.round(box.x)} w=${Math.round(box.width)}`,
   );
+  // Stessa data: lo slot Impost. e sparito dalla barra (il posto e di
+  // Ricorda / del modulo acceso). verify-porta-account prova il resto.
   const tab = await page.locator("nav a", { hasText: "Impost." }).count();
-  check("telefono: la tab bar dice Impost.", tab === 1, String(tab));
+  check("telefono: la tab bar NON ha piu lo slot Impost.", tab === 0, String(tab));
   await ctx.close();
 }
 
