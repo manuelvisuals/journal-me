@@ -26,6 +26,7 @@
 import { useState } from "react";
 import { ManualWrite } from "@/modules/oggi/components/manual-write";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
+import { Sheet } from "@/components/ui/sheet";
 import { QuickCapture } from "@/modules/ricorda";
 import { useCan } from "@/lib/capabilities";
 import { addRemember } from "@/lib/data/remembers";
@@ -159,16 +160,14 @@ export function AddToDay({
             : t("Aggiungi a questa giornata")}
       </button>
 
+      {/* Il foglio non e piu disegnato qui: e la primitiva di scheletro
+          (src/components/ui/sheet.tsx), promossa DA questo file il 28
+          agosto 2026. Le righe restano contenuto nostro. */}
       {sheet === "menu" && (
-        <div
-          className="jm-sheet-scrim"
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("Aggiungi a questa giornata")}
-          onClick={() => setSheet("closed")}
+        <Sheet
+          label={t("Aggiungi a questa giornata")}
+          onClose={() => setSheet("closed")}
         >
-          <div className="jm-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="jm-sheet-grip" aria-hidden="true" />
 
             <button
               type="button"
@@ -227,28 +226,18 @@ export function AddToDay({
                 </span>
               </span>
             </button>
-          </div>
-        </div>
+        </Sheet>
       )}
 
       {sheet === "remember" && (
-        <div
-          className="jm-sheet-scrim"
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("Salva in Ricorda")}
-          onClick={() => setSheet("closed")}
-        >
-          <div className="jm-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="jm-sheet-grip" aria-hidden="true" />
-            <div className="jm-sheet-head">{t("Salva in Ricorda")}</div>
-            <QuickCapture
-              mode={mode}
-              defaultKind="nota"
-              onAdd={(text, kind) => handleRemember(text, kind)}
-            />
-          </div>
-        </div>
+        <Sheet label={t("Salva in Ricorda")} onClose={() => setSheet("closed")}>
+          <div className="jm-sheet-head">{t("Salva in Ricorda")}</div>
+          <QuickCapture
+            mode={mode}
+            defaultKind="nota"
+            onAdd={(text, kind) => handleRemember(text, kind)}
+          />
+        </Sheet>
       )}
 
       {sheet === "write" && (

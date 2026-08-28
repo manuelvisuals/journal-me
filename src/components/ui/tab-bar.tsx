@@ -109,6 +109,10 @@ const SIDE_TABS_LEFT: Tab[] = [
   },
 ];
 
+// Lo slot "Impostazioni" NON esiste piu (28 agosto 2026, mockup
+// porta-account): li si arriva dal pallino dell'account in testata.
+// Ricorda torna FISSO — era lui a farsi sfrattare dal modulo acceso —
+// e il quinto posto, quando c'e, e del modulo.
 const SIDE_TABS_RIGHT: Tab[] = [
   {
     key: "remember",
@@ -128,58 +132,36 @@ const SIDE_TABS_RIGHT: Tab[] = [
       </svg>
     ),
   },
-  {
-    key: "settings",
-    // "Impost." e non "Impostazioni": la tab bar ha cinque slot su 390px
-    // e la parola intera li sfonda (mockup impostazioni.html §04).
-    label: "Impost.",
-    href: "/settings",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <rect x="3" y="3" width="7" height="7" rx="1.5" />
-        <rect x="14" y="3" width="7" height="7" rx="1.5" />
-        <rect x="3" y="14" width="7" height="7" rx="1.5" />
-        <rect x="14" y="14" width="7" height="7" rx="1.5" />
-      </svg>
-    ),
-  },
 ];
 
 export function TabBar({ active }: Props) {
   const t = useT();
   // La barra c'e = sei dentro (vedi segnalaDentroApp qui sopra).
   useEffect(segnalaDentroApp, []);
-  // Il modulo acceso piu di recente prende il quarto posto (richiesta di
-  // Manuel del 21 agosto 2026). I posti sono cinque e il microfono al
-  // centro non si tocca, quindi qualcosa deve spostarsi: si sposta
-  // Ricorda, che resta raggiungibile dalla prima riga di Impostazioni.
-  // Sul desktop non si sposta niente: la barra di sinistra li tiene tutti.
+  // Il modulo acceso prende il QUINTO posto (28 agosto 2026, mockup
+  // porta-account): con lo slot Impostazioni sparito, il compromesso che
+  // sfrattava Ricorda non serve piu. Il microfono al centro non si tocca,
+  // mai. Senza moduli la griglia e a quattro colonne: non si inventa una
+  // quinta destinazione per riempire il buco.
   const moduli = useActiveModules();
   const primo = moduli[0];
   const tabsRight: Tab[] = primo
     ? [
+        ...SIDE_TABS_RIGHT,
         {
           key: "module",
           label: primo.label,
           href: primo.href,
           icon: MODULE_ICONS[primo.id],
         },
-        ...SIDE_TABS_RIGHT.filter((tb) => tb.key !== "remember"),
       ]
     : SIDE_TABS_RIGHT;
+  const colonne = SIDE_TABS_LEFT.length + 1 + tabsRight.length;
   return (
     <nav
       className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur lg:hidden"
       style={{
-        gridTemplateColumns: "repeat(5, 1fr)",
+        gridTemplateColumns: `repeat(${colonne}, 1fr)`,
         borderColor: "var(--color-line)",
         background: "color-mix(in oklab, var(--color-bg) 50%, transparent)",
         paddingTop: 12,

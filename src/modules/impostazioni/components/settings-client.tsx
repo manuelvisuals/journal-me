@@ -55,8 +55,8 @@ import { getStore, useStorageMode } from "@/lib/data/store";
 import { APP_VERSION } from "@/lib/data/store/types";
 import { BUILD_INFO } from "@/modules/impostazioni/build-info";
 import { formatNumber } from "@/lib/format";
-import { clearPlanCache, usePlan } from "@/lib/plan";
-import { dimenticaScansione } from "@/lib/actions/scan-archivio";
+import { usePlan } from "@/lib/plan";
+import { eseguiLogout } from "@/lib/auth/logout";
 
 import { openPremiumWall } from "@/modules/abbonamento";
 import {
@@ -218,24 +218,10 @@ export function SettingsClient({
     if (signingOut) return;
     setSigningOut(true);
     // Solo cloud: in locale questo bottone non esiste (niente account).
-    const { createClient } = await import("@/lib/supabase/client");
-    await createClient().auth.signOut();
-    // Il piano e cache in localStorage ("jm.plan") ed e OTTIMISTA: senza
-    // questa riga restava "premium" addosso al browser dopo il logout, e
-    // il prossimo account gratis vedeva la UI premium finche il refresh in
-    // background non lo smentiva (con un 402 a sorpresa alla prima azione,
-    // proprio cio che SPEC-v2 §3.3 vieta).
-    clearPlanCache();
-    // Il prossimo account che entra da questo browser ha un altro diario:
-    // il suo archivio va letto, e questo browser non deve credere di averlo
-    // gia fatto (src/lib/actions/scan-archivio.ts).
-    dimenticaScansione();
-    // Il benvenuto post-accesso NON si dimentica piu al logout: era il bug
-    // del 27 agosto (esci, rientri, e ti richiede gratis-o-premium). La
-    // regola nuova — riproporlo ai gratis ogni dieci accessi, mai ai
-    // premium — vive in src/lib/welcome.ts e sopravvive di proposito.
-    document.cookie =
-      "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    // I passi veri — e le loro cicatrici — vivono in src/lib/auth/logout.ts
+    // (mockup porta-account §03): il menu dell'account chiama la stessa
+    // funzione, cosi i due logout non possono divergere mai piu.
+    await eseguiLogout();
     router.push("/login");
   };
 
@@ -259,15 +245,13 @@ export function SettingsClient({
       const { apiFetch } = await import("@/lib/api");
       const resp = await apiFetch("/api/account/delete", { method: "POST" });
       if (!resp.ok) throw new Error(t("Cancellazione non riuscita."));
-      const { createClient } = await import("@/lib/supabase/client");
-      await createClient().auth.signOut();
-      clearPlanCache();
-      dimenticaScansione();
+      // La coda della cancellazione E un logout (stessi passi, stesse
+      // cicatrici): si usa quello vero, piu il pezzo suo — dimenticare la
+      // modalita, perche l'account non esiste piu.
+      await eseguiLogout();
       try {
         window.localStorage.removeItem("jm.mode");
       } catch {}
-      document.cookie =
-        "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       router.push("/benvenuto");
     } catch (err) {
       setDeleteArmed(false);

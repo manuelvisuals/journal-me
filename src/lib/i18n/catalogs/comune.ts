@@ -22,6 +22,10 @@ export const COMUNE: Record<string, string> = {
   "Mese": "Month",
   "Ricorda": "Remember",
   "Impostazioni": "Settings",
+  // La porta dell'account (mockup porta-account, 28 agosto 2026): frasi
+  // di scheletro, usate da account-menu.tsx su tutte le superfici.
+  "Il tuo account": "Your account",
+  "Le giornate non escono di qui": "Your days never leave this device",
   "Impost.": "Settings",
   "Recap": "Recap",
   "Azioni": "Actions",

@@ -1405,3 +1405,282 @@ summary:active {
   vertical-align: middle;
 }
 
+/* ============================================================
+   IL FOGLIO DAL BASSO (jm-sheet-*) — primitiva di scheletro.
+   Nato nel modulo Oggi (add-to-day) e PROMOSSO qui il 28 agosto
+   2026 per la porta dell'account (mockup porta-account §03,
+   tranello 2): un solo foglio, due clienti, mai un gemello.
+   Le regole sono spostate VERBATIM: verify-css-split confronta
+   gli stili calcolati prima/dopo e deve restare verde.
+   Il componente che lo monta e src/components/ui/sheet.tsx.
+   ============================================================ */
+.jm-sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: color-mix(in oklab, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.jm-sheet {
+  background: var(--color-bg-phone);
+  border-top: 1px solid var(--color-line);
+  border-radius: 20px 20px 0 0;
+  padding: 10px 16px calc(30px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -18px 40px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.jm-sheet-grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-line);
+  margin: 0 auto 14px;
+}
+
+.jm-sheet-head {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  padding: 0 6px 10px;
+}
+
+.jm-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 6px;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-sheet-row:last-child { border-bottom: none; }
+
+.jm-sheet-row:hover { background: var(--color-surface); }
+
+.jm-sheet-ic {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jm-sheet-ic svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--color-ink-muted);
+  fill: none;
+}
+
+.jm-sheet-txt { flex: 1; min-width: 0; }
+
+.jm-sheet-t {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.jm-sheet-d {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   LA PORTA DELL'ACCOUNT (mockup porta-account §01/§02, 28 ago
+   2026). Il pallino-bottone e il popover della rail; il pallino
+   di testata del telefono; la testata e le righe del suo foglio.
+   Componente: src/components/ui/account-menu.tsx.
+   ============================================================ */
+.jm-acct-wrap { position: relative; }
+
+.jm-acct-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  margin: -8px;
+  border: 1px solid transparent;
+  border-radius: var(--jm-radius-md);
+  background: transparent;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-acct-btn:hover { background: var(--color-surface); border-color: var(--color-line); }
+.jm-acct-btn[aria-expanded="true"],
+.jm-acct-btn.on {
+  background: color-mix(in oklab, var(--color-accent) 8%, transparent);
+  border-color: color-mix(in oklab, var(--color-accent) 30%, transparent);
+}
+.jm-acct-chev {
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  stroke: var(--color-ink-faint);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.jm-acct-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  width: 206px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 6px;
+  box-shadow: 0 18px 40px color-mix(in oklab, var(--color-shadow) 30%, transparent);
+  z-index: 40;
+}
+.jm-acct-head { padding: 9px 10px 8px; border-bottom: 1px solid var(--color-line); margin-bottom: 5px; }
+.jm-acct-head .n { font-size: calc(13px * var(--jm-ui-scale)); font-weight: 600; color: var(--color-ink); }
+.jm-acct-head .e {
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.jm-acct-i {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 10px;
+  border: none;
+  background: transparent;
+  border-radius: var(--jm-radius-sm);
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.jm-acct-i:hover { background: var(--color-surface); }
+.jm-acct-i.danger { color: var(--color-danger); }
+.jm-acct-i svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+.jm-acct-sep { height: 1px; background: var(--color-line); margin: 5px 6px; }
+
+/* Il pallino in testata (telefono): bersaglio 44pt, cerchio da 32. */
+.jm-hd-av {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  margin: -6px -8px -6px 0;
+  padding: 0;
+  border-radius: var(--jm-radius-circle);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-hd-av i {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  font-style: normal;
+}
+.jm-hd-av[aria-expanded="true"] i,
+.jm-hd-av.on i {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
+
+/* La testata del foglio account, e le sue righe sopra jm-sheet-row. */
+.jm-acct-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 10px 14px;
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 8px;
+}
+.jm-acct-sheet-head .av {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+.jm-acct-sheet-head .n { display: block; font-size: calc(15px * var(--jm-ui-scale)); font-weight: 600; color: var(--color-ink); }
+.jm-acct-sheet-head .e {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.jm-acct-row.danger { color: var(--color-danger); }
+.jm-acct-row svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+.jm-acct-sheet-sep { height: 1px; background: var(--color-line); margin: 6px 10px; }

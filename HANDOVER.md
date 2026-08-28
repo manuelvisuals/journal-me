@@ -1123,3 +1123,22 @@ confrontala con Georgia. `document.fonts.check()` torna `true` anche col fallbac
 Se piu chat lavorano insieme sullo stesso repo, leggi `WORKERS.md`: branch per worker,
 nessuno tocca `main`, file disgiunti dichiarati prima di partire. Due chat che pushano
 su `main` si sovrascrivono, e il tempo risparmiato lo perdi nel conflitto.
+
+## La porta dell'account: cosa resta da montare (28 agosto 2026)
+
+Il branch `scheletro-porta-account` ha costruito il pezzo (mockup
+`design/mockups/porta-account.html`, banco `verify-porta-account`) e l'ha
+montato su **Oggi**. Sul telefono il pallino vive nelle intestazioni, che
+appartengono ai moduli: **Mese, Ricorda, Recap e i moduli utente non ce
+l'hanno ancora** — fino ad allora, sul telefono, alle Impostazioni si
+arriva da Oggi. E la consegna in due tempi dichiarata nel contratto §03,
+non un buco.
+
+La riga da aggiungere, in ogni intestazione con spazio a destra:
+
+    import { AccountMenu } from "@/components/ui/account-menu";
+    <span className="lg:hidden"><AccountMenu variant="testata" /></span>
+
+Attenzione su Mese: il bordo destro dell'intestazione e gia pieno
+(frecce, contatore, lista/griglia) — li serve una decisione di spazio,
+non solo la riga.
