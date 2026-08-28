@@ -74,9 +74,8 @@ const DINAMICHE = {
   "modules/oggi/components/metric-cards.tsx + rail-metrics.tsx (MOOD_OPTIONS)": [
     "molto bene", "bene", "cosi cosi", "giu", "male",
   ],
-  "modules/oggi/components/filled-view.tsx (etichette delle macro-aree, enum a DB)": [
-    "Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni",
-  ],
+  // Le etichette delle macro-aree NON passano piu da t(): il nome visibile
+  // (nome / nome_en) viene dalla tabella `aree` via src/lib/aree.ts.
   "lib/ui-scale.ts (UI_SCALE_LABELS)": [
     "Molto piccolo", "Piccolo", "Normale", "Grande", "Molto grande",
   ],

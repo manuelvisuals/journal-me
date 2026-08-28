@@ -23,27 +23,54 @@ function check(name, ok, extra = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "  -- " + extra : ""}`);
 }
 
-/* ============ 1. il contratto mandato al modello ============ */
+/* ============ 1. il contratto mandato al modello ============
+   Dal 28 agosto 2026 le aree sono DATI (tabella `aree`, contratto in
+   src/lib/aree.ts): l'elenco non sta piu scritto dentro il prompt. Qui si
+   controlla che la rete di sicurezza (AREE_DI_FABBRICA) sia intatta e che
+   il server la legga davvero dal contratto, non da un elenco suo. */
 {
-  const src = readFileSync("src/modules/oggi/server/process-entry.ts", "utf8") /* passo E: la logica vive nel modulo, la rotta e un guscio */;
+  const contratto = readFileSync("src/lib/aree.ts", "utf8");
   for (const etichetta of ["Lavoro", "Relazioni", "Cibo", "Movimento", "Corpo", "Emozioni"]) {
-    check(`lo schema accetta "${etichetta}"`, src.includes(`"${etichetta}"`));
+    check(
+      `la rete di sicurezza contiene "${etichetta}"`,
+      contratto.includes(`chiave: "${etichetta}"`),
+    );
   }
+  check(
+    "la rete di sicurezza dice cosa va in Cibo",
+    /Cosa ha mangiato e bevuto/.test(contratto),
+  );
+  check(
+    "la rete di sicurezza dice cosa resta in Corpo",
+    /Il resto del corpo che non e ne cibo ne movimento/.test(contratto),
+  );
+
+  const src = readFileSync("src/modules/oggi/server/process-entry.ts", "utf8") /* passo E: la logica vive nel modulo, la rotta e un guscio */;
+  check(
+    "il riassunto legge le aree dal contratto (leggiAree)",
+    /leggiAree/.test(src) && /areeAttive/.test(src),
+  );
+  check(
+    "lo schema JSON usa le chiavi lette, non un elenco scritto qui",
+    /enum: chiavi/.test(src) && !/"Lavoro"/.test(src),
+  );
+  check(
+    "il prompt interpola cosa_ci_va parola per parola",
+    /a\.cosaCiVa/.test(src),
+  );
   check(
     "al modello e detto di NON scegliere fra cibo e movimento",
     /devono comparire ENTRAMBE/.test(src),
   );
   check(
-    "al modello e detto cosa va in Cibo",
-    /Cibo: cosa ha mangiato/.test(src),
-  );
-  check(
-    "al modello e detto cosa resta in Corpo",
-    /Corpo: il resto del corpo/.test(src),
-  );
-  check(
     "ogni area una volta sola",
     /UNA SOLA VOLTA ciascuna/.test(src),
+  );
+
+  const chiar = readFileSync("src/modules/oggi/server/chiarimenti.ts", "utf8");
+  check(
+    "anche i chiarimenti leggono le aree dal contratto",
+    /leggiAree/.test(chiar) && !/const AREE\b/.test(chiar),
   );
 }
 
