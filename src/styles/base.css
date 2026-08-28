@@ -1604,11 +1604,23 @@ summary:active {
 .jm-acct-sep { height: 1px; background: var(--color-line); margin: 5px 6px; }
 
 /* Il pallino in testata (telefono): bersaglio 44pt, cerchio da 32. */
+/**
+ * Il pallino dell'account nell'intestazione del telefono.
+ *
+ * MISURA. Il disco visibile e 44px, non 32: sta in fila con la matita e il
+ * microfono di Oggi (.jm-rerecord-btn, modules/oggi/styles.css), che sono
+ * 44 pieni con lo stesso fondo e lo stesso bordo. Nella prima versione il
+ * bersaglio era 44 ma il disco 32 — il 27% piu piccolo dei suoi due vicini,
+ * con un fondo e un bordo diversi: segnalato da Manuel il 28 agosto 2026
+ * guardando la sua stessa schermata, e si vedeva a occhio nudo.
+ * Niente margini negativi, per la stessa ragione: i tre cerchi devono
+ * stare sulla stessa griglia, non uno tirato verso il bordo.
+ */
 .jm-hd-av {
   width: 44px;
   height: 44px;
   flex: 0 0 44px;
-  margin: -6px -8px -6px 0;
+  margin: 0;
   padding: 0;
   border-radius: var(--jm-radius-circle);
   border: none;
@@ -1620,24 +1632,45 @@ summary:active {
   -webkit-tap-highlight-color: transparent;
 }
 .jm-hd-av i {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--jm-radius-circle);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  border: 1px solid color-mix(in oklab, var(--color-accent) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(13px * var(--jm-ui-scale));
+  font-size: calc(16px * var(--jm-ui-scale));
   font-weight: 600;
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
   font-style: normal;
+  overflow: hidden;
 }
 .jm-hd-av[aria-expanded="true"] i,
 .jm-hd-av.on i {
   background: var(--color-accent);
   color: var(--color-on-accent);
   border-color: var(--color-accent);
+}
+
+/**
+ * La foto profilo dentro il pallino (modulo impostazioni, migration 016).
+ * Tre posti, una regola sola: l'immagine riempie il cerchio e viene
+ * ritagliata al centro. `overflow: hidden` sul contenitore fa il resto.
+ * Quando la foto c'e, il fondo acceso del menu aperto non deve colorarla:
+ * per questo l'immagine sta SOPRA e copre tutto.
+ */
+.jm-hd-av i img,
+.jm-acct-sheet-head .av img,
+.jm-rail-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.jm-acct-sheet-head .av,
+.jm-rail-avatar {
+  overflow: hidden;
 }
 
 /* La testata del foglio account, e le sue righe sopra jm-sheet-row. */

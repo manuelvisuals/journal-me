@@ -837,3 +837,273 @@
   line-height: 1.5;
   color: var(--color-ink-faint);
 }
+
+/* =============================================================
+   IMPOSTAZIONI > FOTO PROFILO
+   (mockup design/mockups/foto-profilo-flusso.html, 28 agosto 2026)
+
+   Prefisso jm-foto. Il foglio delle tre scelte riusa la primitiva di
+   scheletro (jm-sheet-*, src/styles/base.css): qui ci sono solo la
+   testata del foglio, la miniatura nella riga e il ritaglio.
+   ============================================================= */
+
+/* La miniatura nella riga: dice com'e messo senza aprire niente. */
+.jm-foto-mini {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: var(--jm-radius-circle);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.jm-foto-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* La testata del foglio: chi sei, e cosa stai per cambiare. */
+.jm-foto-shhead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 6px 16px;
+}
+
+.jm-foto-shav {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: var(--jm-radius-circle);
+  overflow: hidden;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(20px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+.jm-foto-shav img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jm-foto-shtxt { min-width: 0; }
+
+.jm-foto-shtxt .n {
+  display: block;
+  font-size: calc(16px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.jm-foto-shtxt .e {
+  display: block;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+}
+
+.jm-foto-shsep {
+  height: 1px;
+  background: var(--color-line);
+  margin: 6px;
+}
+
+.jm-foto-danger .jm-sheet-t { color: var(--color-danger); }
+
+.jm-foto-danger .jm-sheet-ic svg { stroke: var(--color-danger); }
+
+/* -------- il ritaglio, a schermo pieno -------- */
+.jm-foto-crop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--color-bg-phone);
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.jm-foto-croptop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(14px * var(--jm-space)) 20px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-foto-cropx {
+  min-height: 44px;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-foto-cropt {
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Lo spazio a destra tiene il titolo al centro senza calcoli. */
+.jm-foto-cropsp {
+  width: 56px;
+  flex: 0 0 56px;
+}
+
+/* Il palco e QUADRATO: il cerchio inscritto e il ritaglio, e cio che si
+   vede dentro e esattamente cio che parte. */
+.jm-foto-palco {
+  position: relative;
+  width: min(100%, 440px);
+  aspect-ratio: 1;
+  margin: auto;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  background: var(--color-bg);
+  user-select: none;
+}
+
+.jm-foto-palco:active { cursor: grabbing; }
+
+.jm-foto-img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Fuori dal cerchio si scurisce, e il bordo si vede: senza, non si capisce
+   dove finisce il ritaglio. */
+.jm-foto-maschera {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent 0 calc(50% - 1px),
+    color-mix(in oklab, var(--color-bg) 72%, transparent) 50%
+  );
+  box-shadow: inset 0 0 0 1px var(--color-line);
+}
+
+.jm-foto-maschera::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--jm-radius-circle);
+  border: 2px solid color-mix(in oklab, var(--color-ink) 55%, transparent);
+}
+
+.jm-foto-cropfoot {
+  padding: calc(16px * var(--jm-space)) 20px
+    calc(24px * var(--jm-space) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--color-line);
+  display: flex;
+  flex-direction: column;
+  gap: calc(14px * var(--jm-space));
+}
+
+.jm-foto-zoom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-ink-faint);
+}
+
+.jm-foto-zoom svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.jm-foto-zoom input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--color-accent);
+}
+
+.jm-foto-usa {
+  width: 100%;
+  min-height: 50px;
+}
+
+/* Il ritratto della rail destra, ora cliccabile: e la porta al foglio sul
+   computer, dove non esiste il gruppo Account del telefono. La macchina
+   fotografica compare al passaggio del mouse e col fuoco da tastiera —
+   sempre visibile sarebbe rumore su una schermata che e gia piena. */
+.jm-foto-avbtn {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--jm-radius-circle);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-foto-avbtn .jm-st-av { overflow: hidden; }
+
+.jm-foto-avbtn .jm-st-av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.jm-foto-avhov {
+  position: absolute;
+  inset: 0;
+  bottom: 14px; /* la .jm-st-av ha 14px di margine sotto */
+  border-radius: var(--jm-radius-circle);
+  background: color-mix(in oklab, var(--color-bg) 60%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+.jm-foto-avbtn:hover .jm-foto-avhov,
+.jm-foto-avbtn:focus-visible .jm-foto-avhov { opacity: 1; }
+
+.jm-foto-avhov svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm-foto-avbtn:disabled { opacity: 0.55; cursor: default; }

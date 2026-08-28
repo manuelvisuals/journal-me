@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Cosa succede quando clicco il pallino</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* Token del tema MINIMAL scuro (src/themes/minimal.ts), come lo screenshot
+   di Manuel. Scala testo 1.15 (DEFAULT_UI_SCALE). */
+:root{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --accent-hi:#FFFFFF; --on-accent:#1D1D1F;
+  --danger:#FF6B60; --line:rgba(255,255,255,.12);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+  --s:1.15;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --hot:#FBBF24; --no:#F87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:48px 24px 110px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:760px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:48px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:840px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+
+/* ================= il palco: telefono + spiegazione ================= */
+.stage{display:flex;gap:44px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+
+.phone{width:390px;height:800px;border-radius:40px;overflow:hidden;background:var(--bg-app);
+  color:var(--ink);position:relative;flex:0 0 390px;
+  box-shadow:0 30px 70px rgba(0,0,0,.62),0 0 0 1px rgba(255,255,255,.11)}
+.status{height:46px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;font-size:15px;font-weight:600;color:var(--ink);letter-spacing:-.01em;
+  position:relative;z-index:3}
+.status .dots{display:flex;gap:4px;align-items:flex-end}
+.status .dots i{display:block;width:3px;border-radius:1px;background:var(--ink)}
+
+/* le schermate: si spingono da destra come su iOS */
+.screens{position:absolute;inset:46px 0 0 0;overflow:hidden}
+.screen{position:absolute;inset:0;background:var(--bg-app);display:flex;flex-direction:column;
+  transition:transform 300ms cubic-bezier(.32,.72,0,1),opacity 220ms;transform:translateX(100%)}
+.screen.on{transform:translateX(0)}
+.screen.back{transform:translateX(-28%);opacity:.55}
+
+.head{padding:22px 24px 6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.date{font-size:calc(11px * var(--s));font-weight:600;color:var(--ink-faint);
+  letter-spacing:.20em;text-transform:uppercase;white-space:nowrap}
+.actions{display:flex;align-items:center;gap:14px}
+.editlink{font-size:calc(12px * var(--s));color:var(--accent);font-weight:600;background:none;
+  border:none;padding:0;cursor:pointer;font-family:inherit;white-space:nowrap}
+.rbtn{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:var(--surface);
+  color:var(--accent);border:1px solid color-mix(in oklab,var(--accent) 30%,transparent);
+  display:flex;align-items:center;justify-content:center;cursor:pointer}
+.rbtn svg{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* IL PALLINO, alla misura giusta: 44 pieni come i due fratelli */
+.avbtn{width:44px;height:44px;flex:0 0 44px;border-radius:50%;border:1px solid
+  color-mix(in oklab,var(--accent) 30%,transparent);background:var(--surface);padding:0;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;
+  font-family:var(--font);font-size:calc(16px * var(--s));font-weight:600;color:var(--ink);
+  -webkit-tap-highlight-color:transparent;position:relative;
+  transition:transform 90ms cubic-bezier(.4,0,.2,1),box-shadow 200ms}
+.avbtn:active{transform:scale(.94)}
+.avbtn img{width:100%;height:100%;object-fit:cover;display:block}
+.avbtn.pulse{box-shadow:0 0 0 0 rgba(245,245,247,.55);animation:puls 2s ease-out infinite}
+@keyframes puls{0%{box-shadow:0 0 0 0 rgba(245,245,247,.5)}70%{box-shadow:0 0 0 12px rgba(245,245,247,0)}100%{box-shadow:0 0 0 0 rgba(245,245,247,0)}}
+
+.backbtn{width:36px;height:36px;flex:0 0 36px;margin-left:-8px;border-radius:50%;border:none;
+  background:transparent;color:var(--ink-muted);display:flex;align-items:center;
+  justify-content:center;cursor:pointer}
+.backbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.h1{font-size:calc(24px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+.body{flex:1;min-height:0;overflow-y:auto;padding:14px 24px 26px}
+.fvh{font-size:calc(26px * var(--s));font-weight:650;line-height:1.15;letter-spacing:-.025em;
+  color:var(--ink);margin:6px 0 10px}
+.ghost{border:1px dashed var(--line);border-radius:var(--r-lg);padding:20px;text-align:center;
+  font-size:calc(12.5px * var(--s));color:var(--ink-faint);line-height:1.6;margin-top:14px}
+
+/* elenco impostazioni */
+.gl{font-size:calc(11px * var(--s));font-weight:650;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);margin:0 0 10px 2px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;margin-bottom:22px}
+.strow{display:flex;align-items:center;gap:16px;width:100%;min-height:56px;padding:12px 16px;
+  border:none;border-bottom:1px solid var(--line);background:transparent;font-family:var(--font);
+  text-align:left;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.strow:last-child{border-bottom:none}
+.strow.static{cursor:default}
+.grow{flex:1;min-width:0}
+.st{display:block;font-size:calc(15px * var(--s));font-weight:500;color:var(--ink)}
+.sd{display:block;font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:3px;line-height:1.45}
+.sv{font-size:calc(14px * var(--s));color:var(--ink-faint);flex:0 0 auto;white-space:nowrap}
+.chev{width:16px;height:16px;flex:0 0 16px;stroke:var(--ink-faint);stroke-width:2;fill:none;opacity:.6}
+.mini{width:32px;height:32px;flex:0 0 32px;border-radius:50%;overflow:hidden;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(13px * var(--s));font-weight:600;color:var(--ink-muted)}
+.mini img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* fogli dal basso (la primitiva Sheet gia in casa) */
+.veil{position:absolute;inset:0;background:color-mix(in oklab,var(--bg) 55%,transparent);
+  backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity 200ms;z-index:20}
+.veil.open{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;background:var(--bg-app);
+  border-top:1px solid var(--line);border-radius:20px 20px 0 0;padding:10px 16px 30px;
+  transform:translateY(103%);transition:transform 300ms cubic-bezier(.32,.72,0,1);
+  box-shadow:0 -18px 44px rgba(0,0,0,.55)}
+.sheet.open{transform:translateY(0)}
+.grip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.shrow{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 6px;
+  border:none;border-bottom:1px solid var(--line);background:transparent;font-family:var(--font);
+  text-align:left;cursor:pointer;color:var(--ink);font-size:calc(15px * var(--s));font-weight:500;
+  -webkit-tap-highlight-color:transparent}
+.shrow:last-child{border-bottom:none}
+.shrow.danger{color:var(--danger)}
+.shrow .ic{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--surface);
+  display:flex;align-items:center;justify-content:center}
+.shrow .ic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+.shsep{height:1px;background:var(--line);margin:6px 6px}
+.shhead{display:flex;align-items:center;gap:14px;padding:4px 6px 16px;
+  border-bottom:1px solid var(--line);margin-bottom:8px}
+.shav{width:56px;height:56px;flex:0 0 56px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(20px * var(--s));font-weight:600;color:var(--ink-muted);overflow:hidden}
+.shav img{width:100%;height:100%;object-fit:cover;display:block}
+.shn{font-size:calc(16px * var(--s));font-weight:600;color:var(--ink)}
+.she{font-size:calc(12.5px * var(--s));color:var(--ink-faint);margin-top:2px;word-break:break-all}
+
+/* la schermata di ritaglio */
+.crop-wrap{flex:1;min-height:0;display:flex;flex-direction:column;background:#000}
+.crop-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;
+  border-bottom:1px solid var(--line)}
+.crop-t{font-size:calc(15px * var(--s));font-weight:600;color:var(--ink)}
+.crop-x{background:none;border:none;color:var(--ink-faint);font-family:var(--font);
+  font-size:calc(14px * var(--s));cursor:pointer;padding:6px}
+.crop-stage{flex:1;min-height:0;position:relative;overflow:hidden;touch-action:none;cursor:grab}
+.crop-stage:active{cursor:grabbing}
+.crop-img{position:absolute;left:50%;top:50%;transform-origin:center;user-select:none;
+  -webkit-user-drag:none;pointer-events:none;width:300px;height:300px}
+.crop-mask{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%, transparent 0 129px, rgba(0,0,0,.72) 130px)}
+.crop-ring{position:absolute;left:50%;top:50%;width:260px;height:260px;margin:-130px 0 0 -130px;
+  border-radius:50%;border:2px solid rgba(255,255,255,.85);pointer-events:none}
+.crop-hint{position:absolute;left:0;right:0;bottom:14px;text-align:center;
+  font-size:calc(11.5px * var(--s));color:rgba(255,255,255,.55);pointer-events:none}
+.crop-foot{padding:16px 20px 26px;border-top:1px solid var(--line);display:flex;
+  flex-direction:column;gap:14px}
+.zoom{display:flex;align-items:center;gap:12px;color:var(--ink-faint)}
+.zoom input{flex:1;accent-color:var(--accent)}
+.zoom svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.btn-primary{width:100%;min-height:50px;border-radius:var(--r-md);border:none;
+  background:var(--accent);color:var(--on-accent);font-family:var(--font);
+  font-size:calc(15px * var(--s));font-weight:650;cursor:pointer}
+
+/* il brindello di conferma */
+.toast{position:absolute;left:20px;right:20px;bottom:26px;z-index:30;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;
+  font-size:calc(13px * var(--s));color:var(--ink);display:flex;align-items:center;gap:10px;
+  opacity:0;transform:translateY(10px);transition:opacity 220ms,transform 220ms;pointer-events:none;
+  box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.toast.on{opacity:1;transform:translateY(0)}
+.toast .ok{width:20px;height:20px;flex:0 0 20px;border-radius:50%;background:var(--accent);
+  color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+
+/* ================= la colonna che racconta ================= */
+.tell{flex:1;min-width:300px;max-width:420px}
+.tell-now{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;
+  padding:20px 22px;margin-bottom:20px}
+.tell-now .k{font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hot);margin-bottom:10px}
+.tell-now .v{font-size:15px;color:var(--pg-ink);line-height:1.6}
+.tell-now .do{font-size:13px;color:var(--pg-faint);margin-top:12px;padding-top:12px;
+  border-top:1px solid var(--pg-line);line-height:1.6}
+.tell-now .do b{color:var(--ok);font-weight:650}
+.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:2px}
+.steps li{counter-increment:s;position:relative;padding:11px 12px 11px 42px;font-size:13px;
+  color:var(--pg-faint);line-height:1.5;border-radius:10px;transition:background-color 200ms,color 200ms}
+.steps li::before{content:counter(s);position:absolute;left:10px;top:10px;width:22px;height:22px;
+  border-radius:50%;border:1px solid var(--pg-line);display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700;color:var(--pg-faint);
+  transition:background-color 200ms,color 200ms,border-color 200ms}
+.steps li.done{color:var(--pg-mut)}
+.steps li.done::before{content:"\2713";background:rgba(74,222,128,.14);border-color:rgba(74,222,128,.4);color:var(--ok)}
+.steps li.now{background:var(--pg-2);color:var(--pg-ink)}
+.steps li.now::before{background:var(--pg-ink);border-color:var(--pg-ink);color:#17171A}
+.restart{margin-top:18px;width:100%;padding:12px;border-radius:var(--r-pill);
+  background:transparent;border:1px solid var(--pg-line);color:var(--pg-mut);
+  font-family:var(--font);font-size:12.5px;font-weight:600;cursor:pointer}
+.restart:hover{background:var(--pg-2)}
+
+/* ================= desktop ================= */
+.desk{width:640px;max-width:100%;margin:0 auto;background:var(--bg);border-radius:14px;
+  border:1px solid var(--line);display:flex;overflow:hidden;height:400px;
+  box-shadow:0 24px 56px rgba(0,0,0,.5)}
+.rl{width:222px;flex:0 0 222px;border-right:1px solid var(--line);padding:20px 14px 18px;
+  display:flex;flex-direction:column;color:var(--ink)}
+.rl-brand{font-family:var(--serif);font-size:calc(21px * var(--s));padding:0 10px 20px;color:var(--ink)}
+.rl-brand em{font-style:normal;color:var(--accent)}
+.rl-fill{flex:1;border-radius:10px;border:1px dashed var(--line);display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;color:var(--ink-faint)}
+.rl-foot{padding:12px 10px 0;border-top:1px solid var(--line);margin-top:14px;position:relative}
+.acct{display:flex;align-items:center;gap:10px;width:100%;padding:8px;margin:-8px;
+  border:1px solid transparent;border-radius:var(--r-md);background:transparent;
+  font-family:var(--font);text-align:left;cursor:pointer}
+.acct:hover{background:var(--surface);border-color:var(--line)}
+.acct[aria-expanded="true"]{background:color-mix(in oklab,var(--accent) 8%,transparent);
+  border-color:color-mix(in oklab,var(--accent) 30%,transparent)}
+.acct-av{width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted);overflow:hidden}
+.acct-av img{width:100%;height:100%;object-fit:cover;display:block}
+.acct-nm{font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted)}
+.acct-pill{display:inline-block;margin-top:4px;font-size:calc(9px * var(--s));font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-pill);
+  background:color-mix(in oklab,var(--ink) 5%,transparent);color:var(--ink-muted);border:1px solid var(--line)}
+.acct-chev{margin-left:auto;width:14px;height:14px;stroke:var(--ink-faint);fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+.pop{position:absolute;left:8px;bottom:calc(100% + 6px);width:206px;background:var(--bg-app);
+  border:1px solid var(--line);border-radius:var(--r-md);padding:6px;display:none;z-index:5;
+  box-shadow:0 18px 40px rgba(0,0,0,.6)}
+.pop.open{display:block}
+.pop-head{display:flex;align-items:center;gap:10px;padding:8px 10px 10px;
+  border-bottom:1px solid var(--line);margin-bottom:5px}
+.pop-av{width:34px;height:34px;flex:0 0 34px;border-radius:50%;overflow:hidden;
+  background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:600;color:var(--ink-muted)}
+.pop-av img{width:100%;height:100%;object-fit:cover;display:block}
+.pop-n{font-size:calc(13px * var(--s));font-weight:600;color:var(--ink)}
+.pop-e{font-size:calc(11px * var(--s));color:var(--ink-faint);margin-top:1px;word-break:break-all}
+.pop-i{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:9px 10px;
+  border:none;background:transparent;border-radius:var(--r-sm);font-family:var(--font);
+  font-size:calc(13px * var(--s));font-weight:500;color:var(--ink);text-align:left;cursor:pointer}
+.pop-i:hover{background:var(--surface)}
+.pop-i.danger{color:var(--danger)}
+.pop-i svg{width:16px;height:16px;flex:0 0 16px;stroke:currentColor;fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.pop-sep{height:1px;background:var(--line);margin:5px 6px}
+.dc{flex:1;padding:24px;color:var(--ink-faint);font-size:12.5px}
+
+/* schede */
+.spec{max-width:940px;margin:0 auto}
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;padding:24px 26px}
+.card + .card{margin-top:18px}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:16px}
+.card h3.warn{color:var(--hot)}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;
+  background:var(--pg-faint)}
+.card.warn{border-color:rgba(251,191,36,.30);background:rgba(251,191,36,.05)}
+.card.warn li::before{background:var(--hot)}
+.card code{color:var(--hot);background:rgba(0,0,0,.30);padding:1px 6px;border-radius:5px}
+.card b{color:var(--pg-ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1 class="page-title">Cosa succede quando clicco il pallino</h1>
+<p class="page-sub">
+  Il telefono qui sotto <b>funziona</b>: tocca dove ti dice la colonna a destra e segui
+  il percorso fino in fondo. E la tua foto, ritagliata come la ritaglierebbe l'app.
+  Il pallino e gia alla misura giusta — <b>44px pieni</b>, come i due bottoni accanto.
+</p>
+
+<div class="divider"></div>
+
+<div class="stage">
+
+  <!-- ============ IL TELEFONO ============ -->
+  <div class="phone" id="phone">
+    <div class="status"><span>14:46</span>
+      <span class="dots"><i style="height:6px"></i><i style="height:9px"></i><i style="height:12px"></i><i style="height:15px"></i></span>
+    </div>
+
+    <div class="screens">
+
+      <!-- 1. OGGI -->
+      <section class="screen on" data-screen="oggi">
+        <div class="head">
+          <span class="date">Fri . 28 Aug</span>
+          <div class="actions">
+            <button class="editlink">edit &#8599;</button>
+            <button class="rbtn" aria-label="Scrivi a mano">
+              <svg viewBox="0 0 24 24" width="17" height="17"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            <button class="rbtn" aria-label="Registra di nuovo">
+              <svg viewBox="0 0 24 24" width="18" height="18"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>
+            <button class="avbtn pulse" id="av-oggi" aria-haspopup="menu" aria-expanded="false"
+                    aria-label="Il tuo account" data-act="apri-account"></button>
+          </div>
+        </div>
+        <div class="body">
+          <h1 class="fvh">morning routine and project</h1>
+          <div class="ghost">La giornata.<br>Non e il soggetto di questo mockup.</div>
+        </div>
+      </section>
+
+      <!-- 2. IMPOSTAZIONI -->
+      <section class="screen" data-screen="settings">
+        <div class="head" style="justify-content:flex-start;gap:10px">
+          <button class="backbtn" data-act="indietro" aria-label="Indietro">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="h1">Impostazioni</span>
+        </div>
+        <div class="body">
+          <div class="gl">Account</div>
+          <div class="box">
+            <button class="strow" data-act="apri-foto">
+              <span class="grow">
+                <span class="st">Foto profilo</span>
+                <span class="sd">Come ti vedi nel pallino in alto.</span>
+              </span>
+              <span class="mini" data-av></span>
+              <svg class="chev" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+            <div class="strow static"><span class="grow"><span class="st">Email</span></span>
+              <span class="sv">madh52@gmail.com</span></div>
+            <div class="strow static"><span class="grow"><span class="st">Piano</span></span>
+              <span class="sv">Gratis</span></div>
+          </div>
+          <div class="gl">Il diario</div>
+          <div class="box">
+            <div class="strow static"><span class="grow"><span class="st">Obiettivi</span></span>
+              <span class="sv">5 attivi</span></div>
+            <div class="strow static"><span class="grow"><span class="st">Tema</span></span>
+              <span class="sv">Minimal</span></div>
+          </div>
+          <div class="ghost">Il resto delle Impostazioni non cambia.</div>
+        </div>
+      </section>
+
+      <!-- 3. RITAGLIO -->
+      <section class="screen" data-screen="crop">
+        <div class="crop-wrap">
+          <div class="crop-top">
+            <button class="crop-x" data-act="annulla-crop">Annulla</button>
+            <span class="crop-t">Sposta e ingrandisci</span>
+            <span style="width:56px"></span>
+          </div>
+          <div class="crop-stage" id="cropStage">
+            <img class="crop-img" id="cropImg" alt="">
+            <div class="crop-mask"></div>
+            <div class="crop-ring"></div>
+            <div class="crop-hint">trascina la foto . usa il cursore per ingrandire</div>
+          </div>
+          <div class="crop-foot">
+            <div class="zoom">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6"/></svg>
+              <input type="range" id="zoom" min="100" max="260" value="118">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5M8 11h6M11 8v6"/></svg>
+            </div>
+            <button class="btn-primary" data-act="conferma-crop">Usa questa foto</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- foglio: il tuo account -->
+    <div class="veil" data-act="chiudi-fogli"></div>
+    <div class="sheet" id="sh-account">
+      <div class="grip"></div>
+      <div class="shhead">
+        <span class="shav" data-av></span>
+        <span style="min-width:0">
+          <span class="shn" style="display:block">manuel</span>
+          <span class="she" style="display:block">madh52@gmail.com</span>
+        </span>
+      </div>
+      <button class="shrow" data-act="vai-settings">
+        <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span>
+        Impostazioni</button>
+      <button class="shrow" data-act="chiudi-fogli">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/></svg></span>
+        Scopri Premium</button>
+      <div class="shsep"></div>
+      <button class="shrow danger" data-act="chiudi-fogli">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></span>
+        Esci dall'account</button>
+    </div>
+
+    <!-- foglio: la foto -->
+    <div class="sheet" id="sh-foto">
+      <div class="grip"></div>
+      <div class="shhead" style="border-bottom:none;padding-bottom:8px">
+        <span class="shav" data-av></span>
+        <span style="min-width:0">
+          <span class="shn" style="display:block">Foto profilo</span>
+          <span class="she" style="display:block">Resta su questo account, non nel diario</span>
+        </span>
+      </div>
+      <button class="shrow" data-act="scegli-foto">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 7h3l2-2h8l2 2h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg></span>
+        Scatta una foto</button>
+      <button class="shrow" data-act="scegli-foto">
+        <span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="8.5" cy="9" r="1.5"/></svg></span>
+        Scegli dalla libreria</button>
+      <div class="shsep"></div>
+      <button class="shrow danger" data-act="togli-foto">
+        <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></span>
+        Togli la foto, torna all'iniziale</button>
+    </div>
+
+    <div class="toast" id="toast"><span class="ok">&#10003;</span><span id="toastTxt"></span></div>
+  </div>
+
+  <!-- ============ LA COLONNA CHE RACCONTA ============ -->
+  <div class="tell">
+    <div class="tell-now">
+      <div class="k">Dove sei</div>
+      <div class="v" id="tellV"></div>
+      <div class="do" id="tellDo"></div>
+    </div>
+    <ol class="steps" id="steps">
+      <li>Sei su Oggi. Il pallino in alto a destra sei tu.</li>
+      <li>Il tuo account si apre dal basso: foto, nome, email, tre voci.</li>
+      <li>Le Impostazioni, con la freccia per tornare indietro.</li>
+      <li>Le tre scelte per la foto: scatta, scegli, togli.</li>
+      <li>Il ritaglio: la foto si sposta e si ingrandisce dentro il cerchio.</li>
+      <li>Fatto. La foto e nella riga, nel pallino e nel menu.</li>
+    </ol>
+    <button class="restart" id="restart">Ricomincia da capo</button>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ============ DESKTOP ============ -->
+<p class="label">e sul computer</p>
+<h2 class="h2">Stesso pallino, stessa foto, forma diversa</h2>
+<p class="caption">
+  Nella rail il pallino resta <b>28px</b> e non cambia misura: li accanto non c'e nessun
+  bottone da 44, ed e una riga di elenco, non un pulsante d'azione. Ma la foto entra
+  anche li, e nella testata del menu. <b>Clicca il blocco in basso a sinistra.</b>
+</p>
+
+<div class="desk">
+  <nav class="rl">
+    <div class="rl-brand"><em>day</em>alogue</div>
+    <div class="rl-fill">la navigazione</div>
+    <div class="rl-foot">
+      <div class="pop" id="pop">
+        <div class="pop-head">
+          <span class="pop-av" data-av></span>
+          <span style="min-width:0">
+            <span class="pop-n" style="display:block">manuel</span>
+            <span class="pop-e" style="display:block">madh52@gmail.com</span>
+          </span>
+        </div>
+        <button class="pop-i">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.1 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+          Impostazioni</button>
+        <button class="pop-i">
+          <svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/></svg>
+          Passa a Premium</button>
+        <div class="pop-sep"></div>
+        <button class="pop-i danger">
+          <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Esci dall'account</button>
+      </div>
+      <button class="acct" id="acctBtn" aria-haspopup="menu" aria-expanded="false">
+        <span class="acct-av" data-av></span>
+        <span style="min-width:0">
+          <span class="acct-nm" style="display:block">manuel</span>
+          <span class="acct-pill">Gratis</span>
+        </span>
+        <svg class="acct-chev" viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+    </div>
+  </nav>
+  <div class="dc">La colonna centrale.<br>Non e il soggetto di questo mockup.</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="spec">
+  <div class="card warn">
+    <h3 class="warn">Cosa serve perche questo funzioni davvero (non e disegno, e impianto)</h3>
+    <ul>
+      <li><b>Un posto dove tenerla.</b> La tabella <code>profiles</code>
+        (<code>supabase/migrations/006_profiles.sql</code>) non ha nessuna colonna per la
+        foto, e l'utente non ha nemmeno il permesso di scriverci: e scritto nel commento,
+        solo il sistema scrive. Servono una colonna e un permesso nuovi.</li>
+      <li><b>Un deposito per i file.</b> In tutta l'app non esiste un solo caricamento di
+        immagini: zero <code>storage.from(...)</code>, zero <code>.upload(</code>.</li>
+      <li><b>Il ritaglio si fa nel telefono, prima di partire.</b> Quello che vedi nella
+        schermata 5 non e un vezzo: manda su un quadrato piccolo invece di una foto da
+        4 MB per mostrarla a 44 pixel.</li>
+      <li><b>Se il caricamento fallisce</b>, il pallino torna com'era e lo dice. Un
+        pallino che resta vuoto in silenzio e peggio di un errore scritto.</li>
+      <li><b>La foto sparisce con l'account.</b> "Elimina l'account" esiste gia in
+        <code>settings-client.tsx</code> e oggi non sa niente di immagini.</li>
+      <li><b>Da Google non arriva niente</b>, finche non esiste "Accedi con Google": oggi
+        si entra con email e codice a sei cifre (<code>src/app/login/page.tsx:133</code>).
+        Questo mockup e la strada 1 — la foto la scegli tu — e non tocca l'accesso.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<script>
+const FOTO = "data:image/jpeg;base64,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";
+
+/* --------- stato --------- */
+let haFoto = false;
+let passo = 1;
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.prototype.slice.call(document.querySelectorAll(s));
+
+const TESTI = [
+  { v: "Sei sulla schermata Oggi. In alto a destra ci sono tre cerchi della stessa misura: matita, microfono e <b>tu</b>. Senza foto, il pallino mostra la tua iniziale.",
+    do: "Ora: <b>tocca il pallino</b> in alto a destra." },
+  { v: "Il pallino non porta da nessuna parte: <b>apre il tuo account dal basso</b>. In cima ci sono la tua foto, il tuo nome e la tua email; sotto, le tre cose che si cercano da qui.",
+    do: "Ora: <b>tocca Impostazioni</b>." },
+  { v: "Le Impostazioni si aprono. La prima riga del gruppo Account e <b>Foto profilo</b>, e mostra gia a destra come sei messo: non devi aprirla per saperlo.",
+    do: "Ora: <b>tocca Foto profilo</b>." },
+  { v: "Tre scelte, non una. <b>Scatta</b> e <b>Scegli</b> sono due cose diverse dentro l'app iOS; <b>Togli la foto</b> e in rosso e riporta all'iniziale.",
+    do: "Ora: <b>tocca Scegli dalla libreria</b>." },
+  { v: "Hai scelto un'immagine e l'app te la fa <b>ritagliare dentro il cerchio</b>: qui la trascini e la ingrandisci col cursore. E il passo che manda su un quadrato piccolo invece della foto intera.",
+    do: "Ora: <b>trascina e usa il cursore</b>, poi tocca <b>Usa questa foto</b>." },
+  { v: "Fatto. La foto e comparsa <b>in tre posti insieme</b>: nella riga delle Impostazioni, nel pallino in alto, e nella testata del menu. E la stessa immagine, letta da un posto solo.",
+    do: "Torna indietro con la freccia e ritocca il pallino per rivedere il menu con la foto. Oppure <b>ricomincia</b>." }
+];
+
+function disegna(){
+  $$("[data-av]").forEach(function(e){
+    e.innerHTML = haFoto ? '<img src="' + FOTO + '" alt="">' : "";
+    if (!haFoto) e.textContent = "M";
+  });
+  const av = $("#av-oggi");
+  av.innerHTML = haFoto ? '<img src="' + FOTO + '" alt="">' : "M";
+
+  $("#tellV").innerHTML = TESTI[passo-1].v;
+  $("#tellDo").innerHTML = TESTI[passo-1].do;
+  $$("#steps li").forEach(function(li, i){
+    li.classList.toggle("now", i === passo-1);
+    li.classList.toggle("done", i < passo-1);
+  });
+  av.classList.toggle("pulse", passo === 1);
+}
+
+function vai(nome){
+  $$(".screen").forEach(function(s){
+    const suo = s.getAttribute("data-screen");
+    s.classList.toggle("on", suo === nome);
+  });
+}
+function apriFoglio(id){
+  $(".veil").classList.add("open");
+  $("#" + id).classList.add("open");
+}
+function chiudiFogli(){
+  $(".veil").classList.remove("open");
+  $$(".sheet").forEach(function(s){ s.classList.remove("open"); });
+  $("#av-oggi").setAttribute("aria-expanded", "false");
+}
+function brindello(txt){
+  $("#toastTxt").textContent = txt;
+  $("#toast").classList.add("on");
+  clearTimeout(window.__t);
+  window.__t = setTimeout(function(){ $("#toast").classList.remove("on"); }, 2600);
+}
+
+/* --------- il ritaglio: trascina + ingrandisci --------- */
+let cx = 0, cy = 0, scala = 1.18, trascino = false, px = 0, py = 0;
+function applicaCrop(){
+  $("#cropImg").style.transform =
+    "translate(calc(-50% + " + cx + "px), calc(-50% + " + cy + "px)) scale(" + scala + ")";
+}
+$("#zoom").addEventListener("input", function(){
+  scala = Number(this.value) / 100; applicaCrop();
+});
+const stage = $("#cropStage");
+stage.addEventListener("pointerdown", function(e){
+  trascino = true; px = e.clientX; py = e.clientY; stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener("pointermove", function(e){
+  if (!trascino) return;
+  cx += e.clientX - px; cy += e.clientY - py; px = e.clientX; py = e.clientY;
+  const lim = 150 * scala;
+  cx = Math.max(-lim, Math.min(lim, cx));
+  cy = Math.max(-lim, Math.min(lim, cy));
+  applicaCrop();
+});
+["pointerup","pointercancel","pointerleave"].forEach(function(ev){
+  stage.addEventListener(ev, function(){ trascino = false; });
+});
+
+/* --------- i gesti --------- */
+document.addEventListener("click", function(e){
+  const b = e.target.closest("[data-act]");
+  if (!b) {
+    if (!e.target.closest("#acctBtn") && !e.target.closest("#pop")) chiudiPop();
+    return;
+  }
+  const act = b.getAttribute("data-act");
+
+  if (act === "apri-account") {
+    const gia = $("#sh-account").classList.contains("open");
+    chiudiFogli();
+    if (!gia) { apriFoglio("sh-account"); $("#av-oggi").setAttribute("aria-expanded", "true");
+      if (passo === 1) passo = 2; }
+  }
+  else if (act === "vai-settings") { chiudiFogli(); vai("settings"); if (passo === 2) passo = 3; }
+  else if (act === "apri-foto") { apriFoglio("sh-foto"); if (passo === 3) passo = 4; }
+  else if (act === "scegli-foto") {
+    chiudiFogli();
+    $("#cropImg").src = FOTO;
+    cx = 0; cy = 0; scala = 1.18; $("#zoom").value = 118; applicaCrop();
+    vai("crop"); if (passo === 4) passo = 5;
+  }
+  else if (act === "annulla-crop") { vai("settings"); passo = 4; }
+  else if (act === "conferma-crop") {
+    haFoto = true; vai("settings"); passo = 6;
+    brindello("Foto profilo aggiornata.");
+  }
+  else if (act === "togli-foto") {
+    haFoto = false; chiudiFogli();
+    brindello("Foto tolta. Resta la tua iniziale.");
+  }
+  else if (act === "indietro") { vai("oggi"); }
+  else if (act === "chiudi-fogli") { chiudiFogli(); }
+
+  disegna();
+});
+
+/* --------- il popover del desktop --------- */
+function chiudiPop(){
+  $("#pop").classList.remove("open");
+  $("#acctBtn").setAttribute("aria-expanded", "false");
+  $("#acctBtn").querySelector(".acct-chev path").setAttribute("d", "M18 15l-6-6-6 6");
+}
+$("#acctBtn").addEventListener("click", function(e){
+  e.stopPropagation();
+  const apri = !$("#pop").classList.contains("open");
+  chiudiPop();
+  if (apri) {
+    $("#pop").classList.add("open");
+    this.setAttribute("aria-expanded", "true");
+    this.querySelector(".acct-chev path").setAttribute("d", "M6 9l6 6 6-6");
+  }
+});
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape") { chiudiPop(); chiudiFogli(); disegna(); }
+});
+
+$("#restart").addEventListener("click", function(){
+  haFoto = false; passo = 1; chiudiFogli(); chiudiPop(); vai("oggi"); disegna();
+});
+
+disegna();
+</script>
+</body>
+</html>
