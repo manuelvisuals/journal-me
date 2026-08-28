@@ -58,13 +58,30 @@ git reset -q >/dev/null 2>&1
 # ma lo scrive Xcode quando cambi le impostazioni: quello non si tocca.
 git checkout -- ios/App/App/public >/dev/null 2>&1
 git clean -fdq ios/App/App/public >/dev/null 2>&1
+# package-lock.json e versionato, ma su questo Mac lo riscrive npm install
+# (versioni di npm diverse riordinano il file). Nessuno lo modifica a mano,
+# quindi la copia buona e sempre quella di GitHub. Senza questa riga il pull
+# si rifiuta di partire con "You have unstaged changes" — successo il 28
+# agosto 2026 al primo tentativo di ricostruire il pacchetto.
+git checkout -- package-lock.json >/dev/null 2>&1
 SPORCO=$(git status --porcelain | grep -v "^?? " | head -10)
 if [ -n "$SPORCO" ]; then
   wr "Ci sono modifiche non salvate fuori dal pacchetto generato:"
   printf "%s\n" "$SPORCO"
   info "le lascio stare e provo lo stesso a tirare"
 fi
+IO_PRIMA=$(shasum "$0" 2>/dev/null | cut -d" " -f1)
 if git pull --rebase origin main >/tmp/jm-pull.log 2>&1; then
+  # Questo script sta DENTRO il repo che ha appena tirato: se il pull lo ha
+  # cambiato, bash starebbe leggendo le righe successive da un file diverso
+  # da quello con cui e partito, e il comportamento diventa imprevedibile.
+  # Si riparte da capo con la versione nuova; al secondo giro l'impronta
+  # coincide e non si ricomincia all'infinito.
+  IO_DOPO=$(shasum "$0" 2>/dev/null | cut -d" " -f1)
+  if [ -n "$IO_PRIMA" ] && [ "$IO_PRIMA" != "$IO_DOPO" ]; then
+    ok "Lo script si e aggiornato: riparto con la versione nuova"
+    exec bash "$0"
+  fi
   DOPO=$(git rev-parse --short HEAD)
   if [ "$PRIMA" = "$DOPO" ]; then ok "Codice gia aggiornato ($DOPO)"; else ok "Codice aggiornato: $PRIMA -> $DOPO"; fi
   info "$(git log -1 --pretty='%s')"
