@@ -36,6 +36,9 @@ import { usePlan } from "@/lib/plan";
 import { isNative } from "@/lib/native/platform";
 import { eseguiLogout } from "@/lib/auth/logout";
 import { openPremiumWall } from "@/modules/abbonamento";
+// La foto la SA il modulo impostazioni (e li che si cambia), la MOSTRA lo
+// scheletro: esce dalla porta come il muro premium di abbonamento.
+import { useFotoProfilo } from "@/modules/impostazioni";
 import { Sheet } from "@/components/ui/sheet";
 import { useT } from "@/lib/i18n";
 
@@ -106,6 +109,21 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const native = isNative();
   const suSettings = pathname.startsWith("/settings");
   const iniziale = account ? account.name.slice(0, 1).toUpperCase() : "•";
+
+  /**
+   * Cosa si vede nel cerchio: la foto se c'e, altrimenti l'iniziale. Un
+   * pezzo solo, usato in tutti e tre i posti (pallino del telefono, testata
+   * del foglio, blocco della rail), cosi non possono divergere.
+   * `alt=""`: il nome e scritto accanto in chiaro, e uno screen reader che
+   * lo legge due volte non aiuta nessuno.
+   */
+  const foto = useFotoProfilo();
+  const ritratto = foto ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={foto} alt="" />
+  ) : (
+    iniziale
+  );
 
   /** Chiusura con ritorno del fuoco: e il contratto, non una cortesia. */
   const chiudi = (rifocalizza = true) => {
@@ -209,12 +227,12 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
           aria-label={t("Il tuo account")}
           onClick={() => setOpen((v) => !v)}
         >
-          <i>{iniziale}</i>
+          <i>{ritratto}</i>
         </button>
         {open && (
           <Sheet label={t("Il tuo account")} onClose={() => chiudi(false)}>
             <div className="jm-acct-sheet-head">
-              <span className="av">{iniziale}</span>
+              <span className="av">{ritratto}</span>
               <span style={{ minWidth: 0 }}>
                 <span className="n">
                   {locale ? t("Questo dispositivo") : t(account?.name ?? "ospite")}
@@ -247,7 +265,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <div className="jm-rail-avatar">{iniziale}</div>
+        <div className="jm-rail-avatar">{ritratto}</div>
         <div className="jm-rail-acct-txt">
           <div className="jm-rail-acct-nm">{account ? t(account.name) : "…"}</div>
           {account && (

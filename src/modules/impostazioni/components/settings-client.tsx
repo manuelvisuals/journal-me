@@ -39,6 +39,7 @@ import {
   WherePanel,
 } from "@/modules/impostazioni/components/panels";
 import { BackupBanner } from "@/modules/impostazioni/components/data-section";
+import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { useActiveModules } from "@/lib/modules";
 import {
   ConsumiPanel,
@@ -478,6 +479,14 @@ export function SettingsClient({
                   </>
                 ) : (
                   <>
+                    {/* Prima riga del gruppo: e la sola che si CAMBIA, le
+                        altre si leggono e basta. Mostra a destra la foto
+                        attuale, come tutte le righe di questo elenco
+                        mostrano il proprio valore. */}
+                    <FotoProfiloRow
+                      iniziale={accountName.slice(0, 1).toUpperCase()}
+                      onNota={say}
+                    />
                     {email && <SetRow title={t("Email")} value={email} />}
                     {isAnonymous && (
                       <SetRow title={t("Account")} value={t("Ospite (cloud)")} />
@@ -566,10 +575,22 @@ export function SettingsClient({
         <div className="jm-st-acct">
           {/* L'iniziale viene dal NOME mostrato, non dall'email: in locale
               l'email non esiste e l'avatar diventava un punto interrogativo
-              accanto a "Questo dispositivo". */}
-          <div className="jm-st-av" aria-hidden="true">
-            {accountName.slice(0, 1).toUpperCase()}
-          </div>
+              accanto a "Questo dispositivo".
+              In cloud il ritratto e la PORTA alla foto profilo: sul computer
+              non esiste il gruppo Account del telefono, e senza questo non
+              ci sarebbe nessun modo di cambiarla. In locale resta un
+              disegno: senza account non c'e nessuna foto da tenere. */}
+          {isLocal ? (
+            <div className="jm-st-av" aria-hidden="true">
+              {accountName.slice(0, 1).toUpperCase()}
+            </div>
+          ) : (
+            <FotoProfiloRow
+              variant="avatar"
+              iniziale={accountName.slice(0, 1).toUpperCase()}
+              onNota={say}
+            />
+          )}
           <div className="jm-st-nm">{isLocal ? t(accountName) : accountName}</div>
           {!isLocal && email && <div className="jm-st-em">{email}</div>}
           {isLocal ? (
