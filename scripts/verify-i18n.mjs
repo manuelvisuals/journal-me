@@ -164,7 +164,7 @@ check(
 // Alcune SONO uguali di proposito (Premium, Email, Account, Idea, Recap...).
 const UGUALI_OK = new Set([
   "Premium", "premium", "Email", "Account", "Idea", "Recap", "Todo",
-  "mood", "Mood", "ok", "Cloud", "Snippet", "Feedback",
+  "mood", "Mood", "ok", "Cloud", "Snippet", "Feedback", "Admin",
   // Nome del prodotto: si scrive uguale nelle due lingue.
   "dayalogue\nPremium",
 ]);

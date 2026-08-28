@@ -113,8 +113,10 @@ Dal passo D questa struttura E la realta: `src/modules/{oggi, mese, ricorda,
 recap, impostazioni, accesso, abbonamento, palestra}`. I prefissi CSS veri di
 ogni modulo sono nel suo CLAUDE.md (misurati, non a memoria). Le pagine di
 `src/app/` restano dove Next le vuole e sono gusci; ognuna appartiene a un
-modulo (elencato nel CLAUDE.md del modulo). Il modulo `admin` (allowance per
-tier, solo master) e futuro e nascera gia in questa forma.
+modulo (elencato nel CLAUDE.md del modulo). Il modulo `admin` (le impostazioni
+globali, solo master: prima schermata le Aree) e nato il 28 agosto 2026 gia in
+questa forma; le voci future del pannello (allowance per tier, modelli AI,
+messaggio di benvenuto) nasceranno li dentro.
 
 ### Le guardie (cio che rende la struttura vera invece che decorativa)
 
