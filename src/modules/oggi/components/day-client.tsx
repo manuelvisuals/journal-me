@@ -1,11 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/modules/oggi/components/filled-view";
 import { TranscriptEditor } from "@/modules/oggi/components/transcript-editor";
 import { AddToDay } from "@/modules/oggi/components/add-to-day";
+import {
+  DayNav,
+  eFuturo,
+  giornoDopo,
+  giornoPrima,
+} from "@/modules/oggi/components/day-nav";
+import { DaySwipe } from "@/modules/oggi/components/day-swipe";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
 import { useDayLists } from "@/lib/use-day-lists";
 import { ChiarimentiScreen } from "@/modules/oggi/components/chiarimenti-screen";
@@ -16,12 +23,7 @@ import {
   type Domanda,
   type Risposta,
 } from "@/lib/chiarimenti";
-import {
-  compactDayDate,
-  parseISODate,
-  relativeDayLabel,
-  todayISO,
-} from "@/lib/format";
+import { todayISO } from "@/lib/format";
 import {
   deleteEntry,
   toggleGoal,
@@ -51,10 +53,23 @@ type Props = {
  * diceva solo "vai su Oggi" — un vicolo cieco, per giunta su una schermata
  * che ti sei aperto apposta per quel giorno.
  */
-export function DayClient({ mode, date, initialEntry }: Props) {
+export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
   const t = useT();
   const router = useRouter();
+  /* La data e di STATO, non piu solo una prop: da qui si sfoglia senza
+     cambiare pagina (mockup navigazione-giorno.html, 29 agosto 2026).
+     Si chiama ancora `date` perche tutto il resto della schermata la usa
+     con quel nome: il cambio doveva restare piccolo. */
+  const [date, setDate] = useState<string>(dataIniziale);
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
+  /* Quante volte il dito ha sbattuto contro il muro del futuro: la
+     testata guarda questo numero per far comparire la riga che lo spiega. */
+  const [muro, setMuro] = useState<number>(0);
+  const [caricando, setCaricando] = useState<boolean>(false);
+  /* Le pastiglie tolte a mano durante questa visita: si azzerano a ogni
+     cambio di giorno, e per questo la dichiarazione sta qui sopra a chi
+     cambia giorno. */
+  const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
   const optimisticGoals = useOptimisticGoals();
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -71,9 +86,96 @@ export function DayClient({ mode, date, initialEntry }: Props) {
   const [aliasRev, setAliasRev] = useState(0);
   const canAI = useCan("aiSummary");
 
-  const targetDateObj = parseISODate(date);
-  const todayObj = parseISODate(todayISO());
-  const headerLabel = `${relativeDayLabel(targetDateObj, todayObj)} . ${compactDayDate(targetDateObj)}`;
+  /* =====================================================================
+     Sfogliare i giorni senza cambiare pagina.
+
+     Le giornate viste restano in una mappa e i due VICINI si leggono in
+     anticipo: senza, ogni scatto del dito mostrerebbe mezzo secondo di
+     niente prima del racconto, e sfogliare diventerebbe aspettare.
+     ===================================================================== */
+  const cache = useRef<Map<string, Entry | null>>(new Map());
+  const richiesta = useRef<number>(0);
+
+  useEffect(() => {
+    cache.current.set(date, entry);
+  }, [date, entry]);
+
+  useEffect(() => {
+    let vivo = true;
+    const vicini = [giornoPrima(date), giornoDopo(date)].filter(
+      (d) => !eFuturo(d) && !cache.current.has(d),
+    );
+    void (async () => {
+      for (const d of vicini) {
+        try {
+          const e = await loadEntryForDate(mode, d);
+          if (!vivo) return;
+          cache.current.set(d, e);
+        } catch {
+          /* Il vicino non e urgente: se non arriva, si legge al momento. */
+        }
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [date, mode]);
+
+  /**
+   * Il cambio giorno. Tre strade e una regola sola: oltre oggi non si va.
+   *   - domani o piu in la -> il muro (la riga che si dissolve)
+   *   - oggi               -> "/", che e la casa di oggi (col microfono)
+   *   - qualunque altro    -> si resta qui, cambia il contenuto
+   */
+  const vaiA = useCallback(
+    (iso: string) => {
+      if (eFuturo(iso)) {
+        setMuro((n) => n + 1);
+        return;
+      }
+      if (iso === todayISO()) {
+        router.push("/");
+        return;
+      }
+      const mio = ++richiesta.current;
+      setDate(iso);
+      setTolte([]);
+      setSaveError(null);
+      setDomande(null);
+      setEditorOpen(false);
+      /* L'indirizzo segue il giorno mostrato: se ricarichi sei ancora li.
+         replaceState e non push: il tasto indietro deve riportarti da dove
+         sei arrivato (Mese, o Oggi), non farti risalire un giorno per volta. */
+      if (typeof window !== "undefined") {
+        window.history.replaceState(null, "", `/giorno?d=${iso}`);
+      }
+      if (cache.current.has(iso)) {
+        setEntry(cache.current.get(iso) ?? null);
+        setCaricando(false);
+        return;
+      }
+      setEntry(null);
+      setCaricando(true);
+      void (async () => {
+        try {
+          const e = await loadEntryForDate(mode, iso);
+          if (richiesta.current !== mio) return;
+          cache.current.set(iso, e);
+          setEntry(e);
+        } catch (err) {
+          if (richiesta.current !== mio) return;
+          setSaveError(err instanceof Error ? err.message : t("Errore"));
+        } finally {
+          if (richiesta.current === mio) setCaricando(false);
+        }
+      })();
+    },
+    [mode, router, t],
+  );
+
+  /* Il giorno dopo questo e gia domani? Allora il dito, da questa parte,
+     trova il muro. */
+  const muroDopo = eFuturo(giornoDopo(date));
 
   const handleMetricChange = async (patch: Partial<EntryMetrics>) => {
     try {
@@ -98,7 +200,6 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     entry?.people ?? [],
     `${entry?.transcript ?? ""}|${aliasRev}`,
   );
-  const [tolte, setTolte] = useState<{ kind: FactKind; nome: string }[]>([]);
 
   const handleGoalToggle = async (label: string) => {
     await optimisticGoals.toggle(goalsForView, label, async () => {
@@ -200,7 +301,11 @@ export function DayClient({ mode, date, initialEntry }: Props) {
     <main
       className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
-      <header className="jm-day-head">
+      {/* Due righe, e non una: back + frecce + data + "modifica" + cestino
+          in fila fanno 392px su uno schermo da 390. Sopra da dove vieni e
+          cosa puoi fare, sotto DOVE sei. */}
+      <header className="jm-day-head jm-day-head-col">
+        <div className="jm-day-head-riga">
         <button
           type="button"
           onClick={() => router.push("/mese")}
@@ -220,9 +325,6 @@ export function DayClient({ mode, date, initialEntry }: Props) {
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-        <div className="jm-day-head-label" suppressHydrationWarning>
-          {headerLabel}
-        </div>
         {entry && (
           <div className="jm-day-head-actions">
             <button
@@ -257,6 +359,8 @@ export function DayClient({ mode, date, initialEntry }: Props) {
             </button>
           </div>
         )}
+        </div>
+        <DayNav date={date} onVai={vaiA} muro={muro} />
       </header>
 
       {saveError && (
@@ -276,7 +380,27 @@ export function DayClient({ mode, date, initialEntry }: Props) {
         </div>
       )}
 
-      {entry ? (
+      {/* Da qui in giu si sfoglia col dito: trascini verso destra e arriva
+          ieri, che entra da sinistra — dov'e la freccia "<". La testata
+          resta ferma e si aggiorna: e lei a dire dove sei finito. */}
+      <DaySwipe
+        onPrima={() => vaiA(giornoPrima(date))}
+        onDopo={() => vaiA(giornoDopo(date))}
+        muroDopo={muroDopo}
+        onMuro={() => setMuro((n) => n + 1)}
+      >
+      {caricando ? (
+        /* Un attimo di attesa, non una giornata vuota: dire "non hai
+           raccontato questo giorno" mentre lo stiamo ancora leggendo
+           sarebbe una bugia, e per giunta quella che fa male. */
+        <div className="jm-day-attesa">
+          <span className="jm-dot-pulse" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
+      ) : entry ? (
         <FilledView
           headline={entry.headline}
           snippet={entry.snippet}
@@ -335,6 +459,7 @@ export function DayClient({ mode, date, initialEntry }: Props) {
           />
         </div>
       )}
+      </DaySwipe>
 
       {editorOpen && entry && (
         <TranscriptEditor
