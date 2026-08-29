@@ -795,12 +795,22 @@ export function TodayClient({
         </div>
       )}
 
+      {/* Anche la giornata NON raccontata si sfoglia: se il dito funzionasse
+          solo a giornata scritta, il gesto sembrerebbe rotto proprio nei
+          giorni in cui non hai ancora detto niente. */}
       {view === "empty" && !desktopWriting && (
-        <EmptyState
-          writeFirst={!canVoice}
-          onStartRecording={handleStartRecording}
-          onWriteManually={handleWriteManually}
-        />
+        <DaySwipe
+          onPrima={() => router.push(`/giorno?d=${giornoPrima(todayISO())}`)}
+          onDopo={() => setMuro((n) => n + 1)}
+          muroDopo
+          onMuro={() => setMuro((n) => n + 1)}
+        >
+          <EmptyState
+            writeFirst={!canVoice}
+            onStartRecording={handleStartRecording}
+            onWriteManually={handleWriteManually}
+          />
+        </DaySwipe>
       )}
 
       {/* La pagina Record (microfono del dock): la STESSA schermata dei
