@@ -71,6 +71,9 @@ export function DaySwipe({
 
     let giu = false;
     let deciso = false;
+    /* Quando il gesto e diventato orizzontale, la pagina si ferma dov'e:
+       qui dentro c'e l'altezza a cui e stata bloccata (null = libera). */
+    let bloccoY: number | null = null;
     let x0 = 0;
     let y0 = 0;
     let dx = 0;
@@ -107,6 +110,47 @@ export function DaySwipe({
       }, 260);
     };
 
+    /**
+     * FERMARE LA PAGINA MENTRE IL DITO VA DI LATO.
+     *
+     * Il dito non e mai perfettamente orizzontale: senza questo, mentre
+     * sfogli la giornata scivola anche su e giu di venti o trenta pixel,
+     * e il gesto sembra scivoloso invece che solido (Manuel, 29 agosto
+     * 2026: "la pagina si muove anche in alto o basso seguendo il dito
+     * ed e fastidioso").
+     *
+     * Due chiusure, non una, perche una sola non basta:
+     *   - `preventDefault` sul touchmove ferma lo scorrimento alla
+     *     radice, ma solo finche il browser non l'ha gia dato al
+     *     compositore;
+     *   - riportare la pagina alla sua altezza a ogni scroll e la rete
+     *     di sicurezza per quando quel treno e gia partito.
+     * Fuori dal gesto orizzontale nessuna delle due e attiva: lo
+     * scorrimento verticale resta quello nativo, con la sua inerzia.
+     */
+    const tieniFermaLaPagina = () => {
+      if (bloccoY !== null && window.scrollY !== bloccoY) {
+        window.scrollTo(0, bloccoY);
+      }
+    };
+
+    const blocca = () => {
+      if (bloccoY !== null) return;
+      bloccoY = window.scrollY;
+      window.addEventListener("scroll", tieniFermaLaPagina);
+    };
+
+    const sblocca = () => {
+      if (bloccoY === null) return;
+      bloccoY = null;
+      window.removeEventListener("scroll", tieniFermaLaPagina);
+    };
+
+    /* Non passivo apposta: e l'unico modo per poter dire di no. */
+    const toccoHandler = (e: TouchEvent) => {
+      if (deciso && e.cancelable) e.preventDefault();
+    };
+
     const giuHandler = (e: PointerEvent) => {
       const bersaglio = e.target as HTMLElement | null;
       if (
@@ -141,6 +185,7 @@ export function DaySwipe({
         }
         deciso = true;
         area.setPointerCapture?.(e.pointerId);
+        blocca();
       }
       dx = mx;
       if (dx < 0 && azioni.current.muroDopo) {
@@ -150,6 +195,7 @@ export function DaySwipe({
     };
 
     const suHandler = () => {
+      sblocca();
       if (!giu) return;
       giu = false;
       if (!deciso) return;
@@ -171,7 +217,12 @@ export function DaySwipe({
     area.addEventListener("pointermove", muoviHandler);
     area.addEventListener("pointerup", suHandler);
     area.addEventListener("pointercancel", suHandler);
+    area.addEventListener("touchmove", toccoHandler, { passive: false });
     return () => {
+      /* Se la schermata muore col dito ancora giu, la pagina non deve
+         restare bloccata per sempre. */
+      sblocca();
+      area.removeEventListener("touchmove", toccoHandler);
       area.removeEventListener("pointerdown", giuHandler);
       area.removeEventListener("pointermove", muoviHandler);
       area.removeEventListener("pointerup", suHandler);
