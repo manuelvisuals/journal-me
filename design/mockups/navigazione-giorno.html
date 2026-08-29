@@ -200,6 +200,26 @@ tr:last-child td{border-bottom:none}
   color:var(--ink-faint);opacity:.55;pointer-events:none}
 .hand svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
   stroke-linecap:round;stroke-linejoin:round}
+
+/* ================================================================
+   SUL TELEFONO — questo foglio si guarda anche dall'iPhone, e un
+   mockup che si legge male sul telefono giudica male un disegno
+   fatto per il telefono.
+   ================================================================ */
+@media (max-width:520px){
+  body{padding:30px 12px 90px}
+  .page-title{font-size:27px}
+  .page-sub{font-size:13px}
+  .h2{font-size:21px}
+  .caption{font-size:12.5px}
+  .row{gap:28px}
+  .two{grid-template-columns:1fr}
+  .spec{max-width:100%}
+  .card{padding:18px 16px;overflow-x:auto}
+  .phone{width:100%;max-width:358px;height:640px}
+  .lay{width:100%}
+  .try{width:auto;max-width:100%;line-height:1.7}
+}
 </style>
 </head>
 <body>
@@ -618,7 +638,9 @@ document.querySelectorAll('.nav[data-nav="A"],.nav[data-nav="B"]').forEach(funct
   var track = ph.querySelector("[data-track]");
   var edge = ph.querySelector("[data-edge]");
   var slides = track.querySelectorAll(".slide");
-  var W = 390;
+  /* La larghezza si MISURA a ogni gesto: scritta a mano, il mockup
+     mentirebbe su uno schermo che non e largo 390. */
+  function W(){ return stage.getBoundingClientRect().width; }
 
   var api = montaTestata(nav, function(d){ riempi(d); });
   function riempi(d){
@@ -626,7 +648,7 @@ document.querySelectorAll('.nav[data-nav="A"],.nav[data-nav="B"]').forEach(funct
     slides[1].innerHTML = corpo(d);
     slides[2].innerHTML = corpo(piu(d, 1));
   }
-  function posa(){ track.style.transition = "none"; track.style.transform = "translateX(" + (-W) + "px)"; }
+  function posa(){ track.style.transition = "none"; track.style.transform = "translateX(" + (-W()) + "px)"; }
   riempi(api.stato.d); posa();
 
   var giu = false, x0 = 0, y0 = 0, dx = 0, t0 = 0, deciso = false;
@@ -655,7 +677,7 @@ document.querySelectorAll('.nav[data-nav="A"],.nav[data-nav="B"]').forEach(funct
     } else {
       edge.classList.remove("on");
     }
-    track.style.transform = "translateX(" + (-W + dx) + "px)";
+    track.style.transform = "translateX(" + (-W() + dx) + "px)";
   });
 
   function chiudi(){
@@ -663,15 +685,15 @@ document.querySelectorAll('.nav[data-nav="A"],.nav[data-nav="B"]').forEach(funct
     giu = false;
     edge.classList.remove("on");
     var v = Math.abs(dx) / Math.max(Date.now() - t0, 1);
-    var passa = Math.abs(dx) > W * 0.25 || v > 0.45;
+    var passa = Math.abs(dx) > W() * 0.25 || v > 0.45;
     var verso = dx > 0 ? -1 : 1; /* trascini a destra -> arriva ieri */
     if (passa && !(verso === 1 && giorniDaOggi(api.stato.d) <= 0)) {
       track.style.transition = "transform 260ms cubic-bezier(.32,.72,0,1)";
-      track.style.transform = "translateX(" + (verso === -1 ? 0 : -2 * W) + "px)";
+      track.style.transform = "translateX(" + (verso === -1 ? 0 : -2 * W()) + "px)";
       setTimeout(function(){ api.vai(verso); posa(); }, 270);
     } else {
       track.style.transition = "transform 260ms cubic-bezier(.32,.72,0,1)";
-      track.style.transform = "translateX(" + (-W) + "px)";
+      track.style.transform = "translateX(" + (-W()) + "px)";
       if (Math.abs(dx) > 24 && dx < 0) api.bussa();
     }
     dx = 0;
