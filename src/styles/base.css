@@ -620,6 +620,10 @@ summary:active {
   z-index: 20;
   display: flex;
   justify-content: center;
+  /* Gli stessi 24px di respiro laterale che ha il contenuto di ogni
+     schermata (.jm-st-scroll, .jm-col-head): e cosi che la pillola si
+     allinea ai riquadri invece di galleggiare stretta in mezzo. */
+  padding: 0 24px;
   /* Il vuoto ai lati della pillola non intercetta niente: sotto c'e la
      giornata, e si deve poter toccare. */
   pointer-events: none;
@@ -631,6 +635,14 @@ summary:active {
   display: flex;
   align-items: center;
   gap: 2px;
+  /* LARGA COME I RIQUADRI (29 agosto 2026, Manuel: "fallo largo
+     esattamente come i riquadri sullo sfondo"). La colonna di ogni
+     schermata e max-w-[440px] centrata con 24px di padding: il
+     contenuto e quindi largo min(schermo, 440px) - 48px, e la pillola
+     adesso e larga uguale. Non e una misura a occhio: e la STESSA
+     misura, scritta una volta. */
+  width: 100%;
+  max-width: calc(440px - 48px);
   padding: 7px;
   border-radius: var(--jm-radius-pill);
   background: var(--color-glass-veil);
@@ -671,7 +683,11 @@ summary:active {
 .jm-dock-t {
   position: relative;
   z-index: 2;
-  width: 62px;
+  /* I tasti si dividono lo spazio della pillola invece di avere una
+     larghezza scritta a mano: con quattro voci o con tre, il dock resta
+     pieno e la bolla (che si misura sul tasto) resta giusta. */
+  flex: 1 1 0;
+  min-width: 0;
   min-height: 52px;
   border-radius: var(--jm-radius-pill);
   display: flex;
