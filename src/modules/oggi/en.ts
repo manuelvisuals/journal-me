@@ -152,4 +152,8 @@ export const OGGI: Record<string, string> = {
     "The microphone was open but no audio came through. Try again, and if it keeps happening send me this line.",
   "La registrazione c'e, ma non sono riuscito a trascriverla.":
     "The recording is there, but I could not turn it into words.",
+  "Giorno prima": "Previous day",
+  "Giorno dopo": "Next day",
+  "Scegli il giorno": "Choose the day",
+  "Domani non e ancora successo": "Tomorrow has not happened yet",
 };

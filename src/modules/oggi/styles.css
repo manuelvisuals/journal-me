@@ -1540,3 +1540,188 @@
 .jm-person-pill.link:hover {
   background: var(--color-surface-2);
 }
+
+/* =============================================================
+   CAMBIARE GIORNO — la testata con le frecce e lo scorrimento
+   col dito (mockup design/mockups/navigazione-giorno.html,
+   variante A, scelta da Manuel il 29 agosto 2026).
+
+   Prefissi: jm-day-nav-* e jm-day-sw-*, dentro jm-day che e gia
+   del modulo. Bersagli 44x44 (brandbook cap.05), ogni misura
+   calcolata sui token: niente colori e niente pixel a mano.
+   ============================================================= */
+
+.jm-day-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: calc(2px * var(--jm-space)) 0;
+}
+
+.jm-day-nav-arw {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border: none;
+  background: transparent;
+  border-radius: var(--jm-radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 160ms ease,
+    background-color 120ms ease;
+}
+
+.jm-day-nav-arw:active:not(:disabled) {
+  transform: scale(var(--jm-press));
+  background: var(--color-surface);
+}
+
+/* Spenta, non sparita: se sparisse, la testata ballerebbe ogni volta
+   che arrivi a oggi. */
+.jm-day-nav-arw:disabled {
+  opacity: 0.22;
+  cursor: default;
+  pointer-events: none;
+}
+
+.jm-day-nav-ctr {
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  padding: calc(4px * var(--jm-space)) calc(10px * var(--jm-space));
+  border-radius: var(--jm-radius-md);
+  min-width: 148px;
+  max-width: 210px;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.jm-day-nav-ctr:active {
+  background: var(--color-surface);
+}
+
+.jm-day-nav-rel {
+  display: block;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-day-nav-abs {
+  display: block;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+/* Il muro del futuro non e un errore: e un bordo. Una riga che compare
+   per un secondo e mezzo e si dissolve. Niente rosso, niente vibrazione. */
+.jm-day-nav-muro {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 2px);
+  transform: translate(-50%, -6px);
+  z-index: 3;
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-faint);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: calc(6px * var(--jm-space)) calc(14px * var(--jm-space));
+  white-space: nowrap;
+  /* Galleggia sopra il racconto per un secondo e mezzo: senza l'ombra
+     sembrerebbe una parola caduta dentro il titolo. */
+  box-shadow: 0 10px 24px color-mix(in oklab, var(--color-shadow) 18%, transparent),
+    0 2px 6px color-mix(in oklab, var(--color-shadow) 12%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.jm-day-nav-muro.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* La testata di /giorno diventa due righe: sopra indietro e le azioni,
+   sotto il giorno. In una riga sola non ci stanno: back, due frecce, la
+   data, "modifica" e il cestino fanno 392px su uno schermo da 390. */
+.jm-day-head-col {
+  flex-direction: column;
+  align-items: stretch;
+  gap: calc(6px * var(--jm-space));
+}
+
+.jm-day-head-riga {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--jm-space));
+  min-height: 32px;
+}
+
+.jm-day-head-riga .jm-day-head-actions {
+  margin-left: auto;
+}
+
+/* Lo scorrimento col dito: il piano si muove, il riquadro sta fermo e
+   taglia. touch-action pan-y lascia alla pagina il suo scorrimento. */
+.jm-day-sw {
+  position: relative;
+  /* clip e non hidden: hidden creerebbe un riquadro che scorre da solo e
+     si porterebbe via lo scorrimento della pagina. */
+  overflow-x: clip;
+  touch-action: pan-y;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.jm-day-sw-piano {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-day-nav-arw,
+  .jm-day-nav-muro {
+    transition: none;
+  }
+  .jm-day-sw-piano {
+    transition: none !important;
+  }
+}
+
+/* L'attimo fra un giorno e l'altro, quando il vicino non era ancora
+   stato letto. Non e la giornata vuota: quella e una risposta, questo
+   e un'attesa. */
+.jm-day-attesa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: calc(180px * var(--jm-space));
+}

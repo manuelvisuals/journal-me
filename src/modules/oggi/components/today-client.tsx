@@ -13,12 +13,14 @@ import { ManualWrite } from "@/modules/oggi/components/manual-write";
 import { PeopleReview } from "@/modules/oggi/components/people-review";
 import { DesktopEditor } from "@/modules/oggi/components/desktop-editor";
 import { RailToday } from "@/modules/oggi/components/rail-today";
+import { DayNav, giornoPrima } from "@/modules/oggi/components/day-nav";
+import { DaySwipe } from "@/modules/oggi/components/day-swipe";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { openPremiumWall } from "@/modules/abbonamento";
 import { useCan } from "@/lib/capabilities";
 import { clearDraft, loadDraft } from "@/lib/data/drafts";
-import { formatDayHeader, formatNumber, todayISO } from "@/lib/format";
+import { formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import {
@@ -249,7 +251,9 @@ export function TodayClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const dayHeader = formatDayHeader();
+  /* Il dito che sbatte contro domani: la testata guarda questo numero.
+     Su Oggi il muro c'e SEMPRE, perche oggi e l'ultimo giorno che esiste. */
+  const [muro, setMuro] = useState<number>(0);
 
   // Goals to render: the entry's own goal state if present, otherwise the
   // live definitions rendered all-off. No hardcoded list anywhere.
@@ -657,18 +661,10 @@ export function TodayClient({
           style inline non si puo scavalcare con una media query, e su
           desktop questo margine deve coincidere con quello dell'editor. */}
       <header className="jm-col-head flex items-baseline justify-between">
-        <span
-          suppressHydrationWarning
-          style={{
-            fontSize: "calc(11px * var(--jm-ui-scale))",
-            fontWeight: 600,
-            color: "var(--color-ink-faint)",
-            letterSpacing: "0.20em",
-            textTransform: "uppercase",
-          }}
-        >
-          {dayHeader}
-        </span>
+        {/* La data se n'e andata da questa riga: adesso e la testata che
+            cambia giorno, sulla riga sua qui sotto. Qui restava schiacciata
+            fra il titolo e quattro bersagli. */}
+        <span />
         {/* Tutto cio che sta a destra vive in UN contenitore: senza, il
             justify-between del header spargerebbe i pezzi (il pallino
             dell'account e sempre presente sul telefono). */}
@@ -757,6 +753,13 @@ export function TodayClient({
         </div>
       </header>
 
+      {/* La testata che cambia giorno. Solo quando stai GUARDANDO una
+          giornata: mentre registri o scrivi, cambiare giorno con un tocco
+          sarebbe il modo piu veloce per perdere quello che stai dicendo. */}
+      {(view === "filled" || view === "empty") && !desktopWriting && (
+        <DayNav date={todayISO()} muro={muro} />
+      )}
+
       {multiDayNotice && view === "filled" && (
         <div
           style={{
@@ -792,12 +795,22 @@ export function TodayClient({
         </div>
       )}
 
+      {/* Anche la giornata NON raccontata si sfoglia: se il dito funzionasse
+          solo a giornata scritta, il gesto sembrerebbe rotto proprio nei
+          giorni in cui non hai ancora detto niente. */}
       {view === "empty" && !desktopWriting && (
-        <EmptyState
-          writeFirst={!canVoice}
-          onStartRecording={handleStartRecording}
-          onWriteManually={handleWriteManually}
-        />
+        <DaySwipe
+          onPrima={() => router.push(`/giorno?d=${giornoPrima(todayISO())}`)}
+          onDopo={() => setMuro((n) => n + 1)}
+          muroDopo
+          onMuro={() => setMuro((n) => n + 1)}
+        >
+          <EmptyState
+            writeFirst={!canVoice}
+            onStartRecording={handleStartRecording}
+            onWriteManually={handleWriteManually}
+          />
+        </DaySwipe>
       )}
 
       {/* La pagina Record (microfono del dock): la STESSA schermata dei
@@ -841,6 +854,12 @@ export function TodayClient({
       )}
 
       {view === "filled" && (
+        <DaySwipe
+          onPrima={() => router.push(`/giorno?d=${giornoPrima(todayISO())}`)}
+          onDopo={() => setMuro((n) => n + 1)}
+          muroDopo
+          onMuro={() => setMuro((n) => n + 1)}
+        >
         <FilledView
           headline={entry?.headline ?? null}
           snippet={entry?.snippet ?? null}
@@ -885,6 +904,7 @@ export function TodayClient({
           }
           onSeePremium={() => openPremiumWall("aiSummary")}
         />
+        </DaySwipe>
       )}
 
       {view === "filled" && <div className="flex-1" />}
