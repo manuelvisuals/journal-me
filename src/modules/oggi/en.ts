@@ -19,7 +19,6 @@ export const OGGI: Record<string, string> = {
   "Eliminare questa giornata? Non puoi annullare.": "Delete this day? You cannot undo this.",
   "modifica": "edit",
   "Elimina giornata": "Delete day",
-  "Movimento": "Movement",
   "Bozza salvata in automatico": "Draft saved automatically",
   "comandi": "commands",
   "salva e basta": "just save",
@@ -53,9 +52,10 @@ export const OGGI: Record<string, string> = {
   "male": "bad",
   "La giornata": "The day",
   "{fatti} su {totali}": "{fatti} of {totali}",
+  // Non e l'area macro (quella ha nome e traduzione nella tabella `aree`):
+  // e il TIPO di una cosa nei chiarimenti ("una persona", "un posto",
+  // "lavoro"), vedi chiarimenti-screen.tsx.
   "Lavoro": "Work",
-  "Relazioni": "Relationships",
-  "Emozioni": "Emotions",
   "persone di oggi": "people from today",
   "Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver sbagliato lo spelling), poi salvali in Ricorda.": "I picked up who you mentioned. Check the names (I may have got the spelling wrong), then save them to Remember.",
   "gia in ricorda": "already in remember",

@@ -11,7 +11,7 @@ import nextTs from "eslint-config-next/typescript";
  */
 const MODULES = [
   "oggi", "mese", "ricorda", "recap", "impostazioni",
-  "accesso", "abbonamento", "palestra",
+  "accesso", "abbonamento", "palestra", "admin",
 ];
 
 const boundaryOverrides = MODULES.map((name) => {

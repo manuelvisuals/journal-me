@@ -26,6 +26,7 @@ import { IMPOSTAZIONI } from "@/modules/impostazioni/en";
 import { ACCESSO } from "@/modules/accesso/en";
 import { ABBONAMENTO } from "@/modules/abbonamento/en";
 import { PALESTRA } from "@/modules/palestra/en";
+import { ADMIN } from "@/modules/admin/en";
 
 export const EN: Record<string, string> = {
   ...COMUNE,
@@ -37,4 +38,5 @@ export const EN: Record<string, string> = {
   ...ACCESSO,
   ...ABBONAMENTO,
   ...PALESTRA,
+  ...ADMIN,
 };

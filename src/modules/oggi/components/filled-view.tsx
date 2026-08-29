@@ -14,7 +14,9 @@ import type {
   GoalDot,
 } from "@/lib/types";
 import type { DataMode } from "@/lib/data/entries";
-import { useT } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/i18n";
+import { nomeDaChiave, type Area } from "@/lib/aree";
+import { useAree } from "@/lib/aree-client";
 
 type Props = {
   headline?: string | null;
@@ -79,9 +81,13 @@ export function FilledView({
   footer = null,
 }: Props) {
   const t = useT();
+  const lang = useLang();
+  // Le aree dal contratto: nomi, ordine e icone. In modalita locale e
+  // l'elenco di fabbrica; col cloud, cio che dice la tabella.
+  const aree = useAree();
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
-  const realAreas = orderAreas(areas ?? []);
+  const realAreas = orderAreas(areas ?? [], aree);
   const peopleList = (people ?? []).filter((p) => p.trim().length > 0);
   const placeList = (places ?? []).filter((p) => p.trim().length > 0);
 
@@ -154,8 +160,12 @@ export function FilledView({
               {realAreas.map((area) => (
                 <div key={area.label} className="jm-fv-area">
                   <div className="l">
-                    <AreaIcon label={area.label} />
-                    {t(area.label)}
+                    <AreaIcon
+                      icona={
+                        aree.find((x) => x.chiave === area.label)?.icona ?? null
+                      }
+                    />
+                    {nomeDaChiave(aree, area.label, lang)}
                   </div>
                   <div className="x">{area.text}</div>
                 </div>
@@ -235,23 +245,23 @@ export function FilledView({
  * ORDINE FISSO. Il modello restituisce le aree nell'ordine in cui gli
  * vengono, quindi ieri "Cibo" stava in cima e oggi in fondo: una pagina che
  * si riordina da sola costringe a rileggerla tutta ogni volta. L'ordine
- * qui sotto segue la giornata come la si racconta: fuori (lavoro,
- * relazioni), poi il corpo (cibo, movimento, il resto), poi dentro.
+ * viene dal campo `ordine` della tabella e segue la giornata come la si
+ * racconta: fuori (lavoro, relazioni), poi il corpo (cibo, movimento, il
+ * resto), poi dentro.
  *
  * NIENTE DOPPIONI. Se il modello restituisse due volte la stessa etichetta,
  * la lista le userebbe come identificativo e le due righe si
  * sovrascriverebbero a vicenda. Qui i testi si uniscono invece di sparire.
  */
-const AREA_ORDER: string[] = [
-  "Lavoro",
-  "Relazioni",
-  "Cibo",
-  "Movimento",
-  "Corpo",
-  "Emozioni",
-];
-
-function orderAreas(areas: AreaSummary[]): AreaSummary[] {
+function orderAreas(areas: AreaSummary[], aree: Area[]): AreaSummary[] {
+  // L'ordine e una proprieta dell'area (campo `ordine` della tabella), non
+  // di questa schermata: prima c'era qui un secondo elenco solo per
+  // l'ordine, e due liste che devono restare d'accordo prima o poi
+  // litigano. Le aree spente restano nell'ordine: una giornata vecchia che
+  // le contiene si legge ancora al suo posto.
+  const ordine = [...aree]
+    .sort((a, b) => a.ordine - b.ordine)
+    .map((a) => a.chiave);
   const merged = new Map<string, string>();
   for (const a of areas) {
     const text = a.text.trim();
@@ -262,11 +272,11 @@ function orderAreas(areas: AreaSummary[]): AreaSummary[] {
   return [...merged.entries()]
     .map(([label, text]) => ({ label, text }))
     .sort((x, y) => {
-      const ix = AREA_ORDER.indexOf(x.label);
-      const iy = AREA_ORDER.indexOf(y.label);
+      const ix = ordine.indexOf(x.label);
+      const iy = ordine.indexOf(y.label);
       // Un'etichetta sconosciuta (una giornata vecchia, un'area futura) va
       // in fondo invece di sparire.
-      return (ix === -1 ? 99 : ix) - (iy === -1 ? 99 : iy);
+      return (ix === -1 ? 999 : ix) - (iy === -1 ? 999 : iy);
     });
 }
 

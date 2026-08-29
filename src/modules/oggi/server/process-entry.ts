@@ -2,82 +2,83 @@ import { NextRequest, NextResponse } from "next/server";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 import { langName, langOf } from "@/lib/server/lang";
+import { areeAttive, type Area } from "@/lib/aree";
+import { leggiAree } from "@/lib/server/aree";
 
 /**
  * Post-processes a daily journal transcript: produces headline, snippet,
- * and macro-area summaries (Lavoro, Relazioni, Cibo, Movimento, Corpo,
- * Emozioni).
+ * and macro-area summaries.
+ *
+ * Le aree NON sono piu un elenco scritto qui dentro: arrivano dalla tabella
+ * `aree` via leggiAree() (con l'elenco di fabbrica come rete se il database
+ * non risponde). E il motivo per cui lo schema si costruisce con una
+ * funzione: l'enum delle etichette dipende da cosa e attivo ADESSO.
  *
  * Uses OpenAI's Chat Completions API in JSON mode for a strict schema.
  * The OPENAI_API_KEY stays on the server.
  */
-const RESPONSE_FORMAT = {
-  type: "json_schema",
-  json_schema: {
-    name: "journal_summary",
-    strict: true,
-    schema: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        headline: { type: "string" },
-        snippet: { type: "string" },
-        areas: {
-          type: "array",
-          items: {
+function responseFormat(chiavi: string[]) {
+  return {
+    type: "json_schema",
+    json_schema: {
+      name: "journal_summary",
+      strict: true,
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          headline: { type: "string" },
+          snippet: { type: "string" },
+          areas: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                label: {
+                  type: "string",
+                  // 'Cibo' e 'Movimento' sono nati il 21 agosto 2026,
+                  // staccandoli da 'Corpo'. Prima cibo e palestra si
+                  // contendevano la stessa casella da 25 parole e il modello
+                  // ne buttava via uno: un giorno spariva la pizza, il giorno
+                  // dopo gli esercizi. Non era il modello a essere debole,
+                  // era la casella a essere una sola. 'Corpo' resta, per
+                  // sonno e salute.
+                  enum: chiavi,
+                },
+                text: { type: "string" },
+              },
+              required: ["label", "text"],
+            },
+          },
+          // Le misure del risveglio (Manuel, 27 agosto 2026): se il racconto
+          // le dice ESPLICITAMENTE, i campi dell'app si compilano da soli.
+          // null = "non l'ha detto", ed e la risposta normale: qui non si
+          // indovina mai (stessa regola dei chiarimenti).
+          metrics: {
             type: "object",
             additionalProperties: false,
             properties: {
-              label: {
-                type: "string",
-                // 'Cibo' e 'Movimento' sono nati il 21 agosto 2026,
-                // staccandoli da 'Corpo'. Prima cibo e palestra si
-                // contendevano la stessa casella da 25 parole e il modello ne
-                // buttava via uno: un giorno spariva la pizza, il giorno dopo
-                // gli esercizi. Non era il modello a essere debole, era la
-                // casella a essere una sola. 'Corpo' resta, per sonno e
-                // salute.
-                enum: [
-                  "Lavoro",
-                  "Relazioni",
-                  "Cibo",
-                  "Movimento",
-                  "Corpo",
-                  "Emozioni",
+              weightKg: { type: ["number", "null"] },
+              sleepHours: { type: ["number", "null"] },
+              mood: {
+                anyOf: [
+                  {
+                    type: "string",
+                    enum: ["great", "good", "neutral", "low", "bad"],
+                  },
+                  { type: "null" },
                 ],
               },
-              text: { type: "string" },
             },
-            required: ["label", "text"],
+            required: ["weightKg", "sleepHours", "mood"],
           },
         },
-        // Le misure del risveglio (Manuel, 27 agosto 2026): se il racconto
-        // le dice ESPLICITAMENTE, i campi dell'app si compilano da soli.
-        // null = "non l'ha detto", ed e la risposta normale: qui non si
-        // indovina mai (stessa regola dei chiarimenti).
-        metrics: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            weightKg: { type: ["number", "null"] },
-            sleepHours: { type: ["number", "null"] },
-            mood: {
-              anyOf: [
-                {
-                  type: "string",
-                  enum: ["great", "good", "neutral", "low", "bad"],
-                },
-                { type: "null" },
-              ],
-            },
-          },
-          required: ["weightKg", "sleepHours", "mood"],
-        },
+        required: ["headline", "snippet", "areas", "metrics"],
       },
-      required: ["headline", "snippet", "areas", "metrics"],
     },
-  },
-} as const;
+  } as const;
+}
 
 export async function POST(req: NextRequest) {
   const gate = await requirePremium(req);
@@ -128,6 +129,13 @@ export async function POST(req: NextRequest) {
   // un enum salvato a database (vedi src/lib/server/lang.ts).
   const lingua = langName(langOf(req));
 
+  // Le aree attive, lette dalla tabella (o dall'elenco di fabbrica se il
+  // database non risponde). Un'area spenta dal pannello sparisce da qui e
+  // quindi dallo schema e dal prompt: il modello non puo piu assegnarla.
+  const aree: Area[] = areeAttive(await leggiAree());
+  const chiavi = aree.map((a) => a.chiave);
+  const elencoChiavi = chiavi.map((c) => `'${c}'`).join(", ");
+
   // Il riassunto cresce con la giornata. Prima era una riga fissa ("max 30
   // parole") e il 22 agosto Manuel se ne e accorto: aveva raccontato una
   // giornata intera e si ritrovava una frase sola. Ora la lunghezza e
@@ -151,12 +159,15 @@ export async function POST(req: NextRequest) {
     `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
     regolaSnippet,
     "  - metrics: le misure del risveglio, SOLO se dette esplicitamente nel testo. weightKg: il peso corporeo in kg (numero, es. 83.3), se l'utente dice quanto pesava. sleepHours: le ore di sonno in ore frazionarie (8, 7.5), SOLO se dice un numero esatto di ore dormite: 'ho dormito poco' NON e un numero e resta null. mood: l'umore al risveglio o dell'inizio giornata, mappato su uno di 'great' (fantastico, euforico, alla grande), 'good' (bene, sereno, tranquillo), 'neutral' (normale, cosi cosi), 'low' (giu, stanco, triste), 'bad' (malissimo, pessimo). Esempio: 'mi sono svegliato alle 10, dopo 8 ore di sonno, pesavo 83.3kg e di mood sereno' -> weightKg 83.3, sleepHours 8, mood 'good'. Ogni campo che il testo non dice esplicitamente e null: qui NON SI INDOVINA MAI, un dato inventato in un diario e un danno.",
-    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e restano in italiano ANCHE se scrivi in ${lingua}, perche sono valori salvati a database: 'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
+    `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e NON si traducono MAI, nemmeno se scrivi in ${lingua}, perche sono valori salvati a database: ${elencoChiavi}. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
     "",
     "Cosa va in quale area, quando c'e il dubbio:",
-    "  - Cibo: cosa ha mangiato e bevuto. Pasti, piatti, locali, alcol, caffe. Elenca i piatti come li ha detti lui (pizza, insalata, sushi), senza aggiungerne di non menzionati.",
-    "  - Movimento: attivita fisica. Palestra ed esercizi svolti, corsa, camminate, sport, bicicletta, minuti o serie se li ha detti.",
-    "  - Corpo: il resto del corpo che non e ne cibo ne movimento: sonno, stanchezza, dolori, malattie, peso.",
+    // Le frasi vengono dal campo cosa_ci_va della tabella, parola per
+    // parola: e il pezzo che il pannello admin puo correggere la sera
+    // stessa in cui il modello sbaglia.
+    ...aree
+      .filter((a) => a.cosaCiVa.trim() !== "")
+      .map((a) => `  - ${a.chiave}: ${a.cosaCiVa}`),
     "  - Se la giornata contiene sia cibo sia attivita fisica devono comparire ENTRAMBE le aree. Non scegliere: erano due aree separate proprio per questo.",
     "",
     "Regole assolute:",
@@ -179,7 +190,7 @@ export async function POST(req: NextRequest) {
     "Se il testo nomina un pasto, un allenamento, del lavoro, una persona o",
     "uno stato d'animo, l'area corrispondente DEVE comparire. Un array di",
     "aree vuoto e ammesso solo se davvero non c'e niente di nessuna delle",
-    "sei categorie.",
+    "categorie elencate.",
   ].join("\n");
 
   type Riassunto = {
@@ -218,7 +229,7 @@ export async function POST(req: NextRequest) {
         // seguite. A 0,4 lo stesso testo, chiamato tre volte, due volte
         // rinunciava e una volta rispondeva bene (visto il 22 agosto 2026).
         temperature: 0.2,
-        response_format: RESPONSE_FORMAT,
+        response_format: responseFormat(chiavi),
         messages,
       }),
     });
@@ -285,7 +296,7 @@ export async function POST(req: NextRequest) {
     const secondo = await chiedi(
       "La risposta precedente non conteneva nessuna area, ma questo testo " +
         "contiene fatti. Rileggilo e elenca TUTTE le aree presenti fra " +
-        "'Lavoro', 'Relazioni', 'Cibo', 'Movimento', 'Corpo', 'Emozioni'. " +
+        `${elencoChiavi}. ` +
         "Un pasto e 'Cibo'. Una persona nominata e 'Relazioni'. Un " +
         "allenamento e 'Movimento'. Il titolo deve descrivere questa " +
         "giornata, non essere generico.",

@@ -3,6 +3,8 @@ import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 import { langName, langOf } from "@/lib/server/lang";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
+import { areeAttive } from "@/lib/aree";
+import { leggiAree } from "@/lib/server/aree";
 
 /**
  * I DUBBI dell'AI, dichiarati invece che risolti a caso.
@@ -38,15 +40,6 @@ import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
  */
 
 const MODELLO_DEFAULT = "gpt-5.6-luna";
-
-const AREE = [
-  "Lavoro",
-  "Relazioni",
-  "Cibo",
-  "Movimento",
-  "Corpo",
-  "Emozioni",
-] as const;
 
 const RESPONSE_FORMAT = {
   type: "json_schema",
@@ -191,6 +184,10 @@ export async function POST(req: NextRequest) {
   const people = (body.people ?? []).filter((p) => typeof p === "string");
   const areas = (body.areas ?? []).map((a) => a?.label).filter(Boolean);
 
+  // Le aree attive, dalla tabella (o dall'elenco di fabbrica se il database
+  // non risponde): sono le uniche opzioni offerte da una domanda azione='area'.
+  const chiaviAree = areeAttive(await leggiAree()).map((a) => a.chiave);
+
   const systemPrompt = [
     `Ricevi il racconto di una giornata in ${lingua}, e cio che ne e stato capito.`,
     "Il tuo compito NON e riassumere: e dire cosa NON si puo sapere dal testo.",
@@ -222,7 +219,7 @@ export async function POST(req: NextRequest) {
     "    legge deve capire dal bottone quale delle due strade sta prendendo.",
     "    libero=false.",
     `  azione='area' — in che area macro va messa una cosa fatta oggi. Le`,
-    `    opzioni sono fra: ${AREE.join(", ")}. Per dire che vale per due aree,`,
+    `    opzioni sono fra: ${chiaviAree.join(", ")}. Per dire che vale per due aree,`,
     "    uniscile con '+': 'Relazioni+Movimento'. libero=false.",
     "",
     "QUANDO NON CHIEDERE. Questa e la regola che tiene la sera corta, e vale",
