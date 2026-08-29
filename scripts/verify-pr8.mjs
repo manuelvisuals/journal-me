@@ -109,7 +109,7 @@ async function newPage(width, height) {
   await page.keyboard.press("Control+k");
   await page.waitForTimeout(300);
   check("phone: Cmd+K non fa nulla", !(await page.locator(".jm-pal").isVisible().catch(() => false)));
-  check("phone: tab bar presente", await page.locator("nav.sticky").isVisible());
+  check("phone: tab bar presente", await page.locator("nav.jm-dock-wrap").isVisible());
   check("phone: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
   await ctx.close();
 }

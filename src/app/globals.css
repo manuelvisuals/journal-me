@@ -37,6 +37,13 @@
   --color-danger: var(--jm-danger);
   --color-shadow: var(--jm-shadow);
   --color-glow: var(--jm-glow);
+  /* Il vetro del dock (base.css, jm-dock-*): cinque token che ogni tema
+     si ricava da solo in contract.ts. */
+  --color-glass-veil: var(--jm-glass-veil);
+  --color-glass-edge: var(--jm-glass-edge);
+  --color-glass-ring: var(--jm-glass-ring);
+  --color-glass-drop: var(--jm-glass-drop);
+  --color-glass-lens: var(--jm-glass-lens);
   --font-sans: var(--jm-font-sans);
   --font-serif: var(--jm-font-serif);
   --radius-t-sm: var(--jm-radius-sm);

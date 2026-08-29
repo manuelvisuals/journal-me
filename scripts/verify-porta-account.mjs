@@ -224,11 +224,11 @@ async function open({
   );
 
   /* ---- la barra: quattro posti senza moduli, niente Impost. ---- */
-  const tabs = await page.locator("nav.sticky").innerText();
+  const tabs = await page.locator("nav.jm-dock-wrap").innerText();
   check("barra: lo slot Impostazioni non esiste piu", !tabs.includes("IMPOST"));
   check("barra: Ricorda c'e", tabs.toUpperCase().includes("RICORDA"));
   const colonne = await page
-    .locator("nav.sticky")
+    .locator("nav.jm-dock-wrap")
     .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
   check("barra senza moduli: quattro colonne", colonne === 4, String(colonne));
   await ctx.close();
@@ -243,14 +243,14 @@ async function open({
     moduli: ["palestra"],
   });
   await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector("nav.sticky", { timeout: 25000 });
+  await page.waitForSelector("nav.jm-dock-wrap", { timeout: 25000 });
   await page.waitForTimeout(600);
-  const tabs = (await page.locator("nav.sticky").innerText()).toUpperCase();
+  const tabs = (await page.locator("nav.jm-dock-wrap").innerText()).toUpperCase();
   check("barra con modulo: Ricorda c'e ancora", tabs.includes("RICORDA"));
   check("barra con modulo: il modulo ha il quinto posto", tabs.includes("PALESTRA"));
   check("barra con modulo: niente Impost.", !tabs.includes("IMPOST"));
   const colonne = await page
-    .locator("nav.sticky")
+    .locator("nav.jm-dock-wrap")
     .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
   check("barra con modulo: cinque colonne", colonne === 5, String(colonne));
   await ctx.close();

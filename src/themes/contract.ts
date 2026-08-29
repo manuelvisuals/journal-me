@@ -165,6 +165,32 @@ export function cssVarsFor(theme: Theme, mode: Mode): Record<string, string> {
     "--jm-glow": c.glow,
     "--jm-warmth": c.warmth,
     "--jm-grain": String(c.grain),
+    /* IL VETRO (29 agosto 2026, dock sospeso).
+       Non sono cinque colori nuovi da scrivere sei volte: si RICAVANO dal
+       tema, cosi ogni tema — anche uno importato domani — ha il suo vetro
+       giusto in chiaro e in scuro senza dichiarare niente. Il velo e il
+       fondo dell'app reso translucido; il filo di luce e bianco in chiaro
+       e inchiostro (che al buio e chiaro) in scuro; il bordo e la stessa
+       riga che divide tutto il resto; l'ombra e l'ombra del tema, piu
+       lunga al buio; la lente e inchiostro al 7% in chiaro e al 14% al
+       buio — sempre leggibile, mai un colore che litiga con l'accento. */
+    "--jm-glass-veil":
+      mode === "light"
+        ? `color-mix(in srgb, ${c.bgApp} 62%, transparent)`
+        : `color-mix(in srgb, ${c.surface} 58%, transparent)`,
+    "--jm-glass-edge":
+      mode === "light"
+        ? "rgba(255, 255, 255, 0.85)"
+        : `color-mix(in srgb, ${c.ink} 22%, transparent)`,
+    "--jm-glass-ring": c.line,
+    "--jm-glass-drop":
+      mode === "light"
+        ? `color-mix(in srgb, ${c.shadow} 16%, transparent)`
+        : `color-mix(in srgb, ${c.shadow} 55%, transparent)`,
+    "--jm-glass-lens":
+      mode === "light"
+        ? `color-mix(in srgb, ${c.ink} 7%, transparent)`
+        : `color-mix(in srgb, ${c.ink} 14%, transparent)`,
     /* font: il tema sceglie QUALE variable di next/font/local usare */
     "--jm-font-sans": FONTS[t.fontUi].stack,
     "--jm-font-serif": FONTS[t.fontProse].stack,
