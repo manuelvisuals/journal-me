@@ -28,6 +28,30 @@ function check(name, ok, extra = "") {
 
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
 
+/**
+ * Aspetta che la bolla si fermi, invece di contare fino a un secondo e
+ * mezzo e sperare. Serve perche il viaggio passa di mano: cambiando
+ * schermata il dock viene costruito due volte (scheletro di caricamento
+ * e schermata vera), quindi la fine del movimento non arriva a un tempo
+ * fisso dal tocco ma dipende da quanto ci mette a montare la pagina.
+ */
+async function bollaFerma(page, maxMs = 6000) {
+  const inizio = Date.now();
+  let ultimo = null;
+  let uguali = 0;
+  while (Date.now() - inizio < maxMs) {
+    const x = await page.evaluate(() => {
+      const b = document.querySelector(".jm-dock-bolla");
+      return b ? Math.round(b.getBoundingClientRect().left) : null;
+    });
+    uguali = x !== null && x === ultimo ? uguali + 1 : 0;
+    ultimo = x;
+    if (uguali >= 3) return true;
+    await page.waitForTimeout(70);
+  }
+  return false;
+}
+
 async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -142,7 +166,8 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
     () => document.querySelector(".jm-dock-bolla").getBoundingClientRect().left,
   );
   await page.locator(".jm-dock-t").nth(1).click();
-  await page.waitForTimeout(1200);
+  const arrivata = await bollaFerma(page);
+  check("la bolla si ferma (non resta a mezz'aria)", arrivata);
   const dopo = await page.evaluate(
     () => document.querySelector(".jm-dock-bolla").getBoundingClientRect().left,
   );
@@ -170,6 +195,26 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
   await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-dock", { timeout: 20000 });
   await page.waitForTimeout(600);
+
+  /* LARGA COME I RIQUADRI (29 agosto 2026). Non "abbastanza larga": la
+     STESSA misura del contenuto della schermata, bordo per bordo. Se un
+     giorno la colonna cambia larghezza e il dock no, e qui che si vede. */
+  const allineata = await page.evaluate(() => {
+    const dock = document.querySelector(".jm-dock").getBoundingClientRect();
+    const box = document.querySelector(".jm-st-box").getBoundingClientRect();
+    return {
+      dsx: Math.round(dock.left),
+      dw: Math.round(dock.width),
+      rsx: Math.round(box.left),
+      rw: Math.round(box.width),
+    };
+  });
+  check(
+    "la pillola e larga come i riquadri della pagina, e allineata a loro",
+    Math.abs(allineata.dsx - allineata.rsx) <= 1 &&
+      Math.abs(allineata.dw - allineata.rw) <= 1,
+    `dock ${allineata.dw}px da ${allineata.dsx}, riquadro ${allineata.rw}px da ${allineata.rsx}`,
+  );
 
   const spazio = await page.evaluate(() => {
     const s = document.querySelector(".jm-dock-spazio");
