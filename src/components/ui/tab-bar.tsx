@@ -6,7 +6,6 @@ import {
   useEffect,
   useLayoutEffect,
   useRef,
-  useState,
   useSyncExternalStore,
 } from "react";
 import { useT } from "@/lib/i18n";
@@ -57,15 +56,20 @@ export function useDentroApp(): boolean {
 }
 
 /**
- * Dove stava la bolla l'ultima volta.
+ * Dove stava la bolla, in pixel, l'ultima volta che un dock e morto.
  *
- * Ogni schermata monta la SUA TabBar: cambiando pagina questo componente
- * non si sposta, muore e rinasce. Senza memoria, la bolla comparirebbe
- * gia arrivata e il viaggio — cioe la cosa per cui esiste — non si
- * vedrebbe mai. Vive fuori da React per lo stesso motivo del contatore
- * qui sopra: e uno stato del DOCK, non di una schermata.
+ * Cambiando schermata questo componente non si sposta: muore e rinasce
+ * (anche DUE volte, perche prima monta lo scheletro di caricamento e poi
+ * la schermata vera). Senza memoria la bolla comparirebbe gia arrivata e
+ * il viaggio — cioe la cosa per cui esiste — non si vedrebbe mai.
+ *
+ * Si ricorda la POSIZIONE e non il tasto, e si legge dal vivo al momento
+ * di morire: cosi un dock che nasce mentre il viaggio e a meta riparte
+ * esattamente da li invece di ricominciare da capo o saltare alla fine.
+ * Vive fuori da React per lo stesso motivo del contatore qui sopra: e uno
+ * stato del DOCK, non di una schermata.
  */
-let ultimoAttivo: TabKey | null = null;
+let ultimaPosa: { left: number; width: number } | null = null;
 
 export type TabKey =
   | "today"
@@ -196,33 +200,46 @@ export function TabBar({ active }: Props) {
       ]
     : SIDE_TABS_RIGHT;
 
-  /* La bolla parte da dove era, non da dove deve arrivare. */
-  const [mostrato, setMostrato] = useState<TabKey>(
-    ultimoAttivo && ultimoAttivo !== active ? ultimoAttivo : active,
-  );
   const bolla = useRef<HTMLSpanElement | null>(null);
   const pillola = useRef<HTMLDivElement | null>(null);
   const tasti = useRef<Map<TabKey, HTMLAnchorElement>>(new Map());
-  const primoGiro = useRef(true);
 
   const registra = useCallback((key: TabKey, el: HTMLAnchorElement | null) => {
     if (el) tasti.current.set(key, el);
     else tasti.current.delete(key);
   }, []);
 
-  /* Arrivati: da qui in poi la bolla insegue la schermata vera. */
-  useEffect(() => {
-    ultimoAttivo = active;
-    if (mostrato === active) return;
-    const id = requestAnimationFrame(() => setMostrato(active));
-    return () => cancelAnimationFrame(id);
-  }, [active, mostrato]);
+  /* Morendo, il dock dice al prossimo dove si trovava la bolla IN QUEL
+     MOMENTO — non dove stava andando. E cio che rende il viaggio unico
+     anche se i dock che se lo passano sono due o tre. */
+  /* useLayoutEffect e non useEffect, ed e tutta qui la differenza fra un
+     viaggio e un salto: la pulizia di un effetto NORMALE arriva dopo il
+     disegno, cioe DOPO che il dock nuovo si e gia posato, e gli
+     consegnerebbe una posizione buona per niente. Misurato: la bolla
+     partiva, faceva quattro pixel e poi saltava alla meta. */
+  useLayoutEffect(() => {
+    /* I due nodi si prendono ADESSO, non nella pulizia: quando React
+       smonta, i ref sono gia stati azzerati. */
+    const b = bolla.current;
+    const p = pillola.current;
+    return () => {
+      if (!b || !p) return;
+      const r = b.getBoundingClientRect();
+      const q = p.getBoundingClientRect();
+      if (r.width === 0) return;
+      ultimaPosa = { left: r.left - q.left, width: r.width };
+    };
+  }, []);
 
-  /* La misura. Il primo disegno e senza viaggio: la bolla e gia dov'e. */
+  /* La misura: la bolla si posa sul tasto acceso. Se il dock di prima l'ha
+     lasciata altrove, ci arriva viaggiando; se era gia li, si posa e
+     basta (senza questo controllo il secondo montaggio — quello della
+     schermata vera dopo lo scheletro — faceva uno stiramento fermo sul
+     posto: un tremolio, non un viaggio). */
   useLayoutEffect(() => {
     const b = bolla.current;
     const p = pillola.current;
-    const acceso = tasti.current.get(mostrato);
+    const acceso = tasti.current.get(active);
     if (!b || !p) return;
     if (!acceso) {
       // Nessun tasto corrisponde (Impostazioni, Recap): niente bolla.
@@ -231,24 +248,29 @@ export function TabBar({ active }: Props) {
     }
     const a = acceso.getBoundingClientRect();
     const q = p.getBoundingClientRect();
-    const primo = primoGiro.current;
-    if (primo) b.style.transition = "none";
+    const meta = { left: a.left - q.left, width: a.width };
+    const partenza = ultimaPosa;
+    ultimaPosa = meta;
     b.style.opacity = "1";
-    b.style.left = `${a.left - q.left}px`;
-    b.style.width = `${a.width}px`;
-    if (primo) {
-      primoGiro.current = false;
-      requestAnimationFrame(() => {
-        b.style.transition = "";
-      });
-      return;
-    }
+
+    const viaggia = partenza !== null && Math.abs(partenza.left - meta.left) > 4;
+    /* Si parte da dove si era, senza transizione, e si forza il calcolo:
+       il salto e gia avvenuto quando la transizione si riaccende, e il
+       viaggio parte davvero invece di essere gia finito. */
+    b.style.transition = "none";
+    b.style.left = `${viaggia ? partenza.left : meta.left}px`;
+    b.style.width = `${viaggia ? partenza.width : meta.width}px`;
+    void b.offsetWidth;
+    b.style.transition = "";
+    if (!viaggia) return;
+    b.style.left = `${meta.left}px`;
+    b.style.width = `${meta.width}px`;
     /* Lo stiramento dura quanto il viaggio, non un millisecondo di piu:
        e questo, e non la sfocatura, a far dire "liquido". */
     b.classList.add("viaggio");
     const id = window.setTimeout(() => b.classList.remove("viaggio"), 240);
     return () => window.clearTimeout(id);
-  }, [mostrato, tabsRight.length]);
+  }, [active, tabsRight.length]);
 
   /* Se lo schermo cambia misura (rotazione, tastiera che si apre) la
      bolla si rimisura senza viaggiare: non e successo niente. */
@@ -256,16 +278,16 @@ export function TabBar({ active }: Props) {
     const rimisura = () => {
       const b = bolla.current;
       const p = pillola.current;
-      const acceso = tasti.current.get(mostrato);
+      const acceso = tasti.current.get(active);
       if (!b || !p || !acceso) return;
       const a = acceso.getBoundingClientRect();
       const q = p.getBoundingClientRect();
+      ultimaPosa = { left: a.left - q.left, width: a.width };
       b.style.transition = "none";
-      b.style.left = `${a.left - q.left}px`;
-      b.style.width = `${a.width}px`;
-      requestAnimationFrame(() => {
-        b.style.transition = "";
-      });
+      b.style.left = `${ultimaPosa.left}px`;
+      b.style.width = `${ultimaPosa.width}px`;
+      void b.offsetWidth;
+      b.style.transition = "";
     };
     window.addEventListener("resize", rimisura);
     window.addEventListener("orientationchange", rimisura);
@@ -273,7 +295,7 @@ export function TabBar({ active }: Props) {
       window.removeEventListener("resize", rimisura);
       window.removeEventListener("orientationchange", rimisura);
     };
-  }, [mostrato]);
+  }, [active]);
 
   return (
     <>
@@ -290,9 +312,8 @@ export function TabBar({ active }: Props) {
             <SideTab
               key={tab.key}
               tab={tab}
-              active={mostrato === tab.key}
+              active={active === tab.key}
               onMount={registra}
-              onScelto={() => setMostrato(tab.key)}
             />
           ))}
 
@@ -323,9 +344,8 @@ export function TabBar({ active }: Props) {
             <SideTab
               key={tab.key}
               tab={tab}
-              active={mostrato === tab.key}
+              active={active === tab.key}
               onMount={registra}
-              onScelto={() => setMostrato(tab.key)}
             />
           ))}
         </div>
@@ -338,12 +358,10 @@ function SideTab({
   tab,
   active,
   onMount,
-  onScelto,
 }: {
   tab: Tab;
   active: boolean;
   onMount: (key: TabKey, el: HTMLAnchorElement | null) => void;
-  onScelto: () => void;
 }) {
   const t = useT();
   return (
@@ -352,10 +370,6 @@ function SideTab({
       ref={(el) => onMount(tab.key, el)}
       className={`jm-dock-t${active ? " on" : ""}`}
       aria-current={active ? "page" : undefined}
-      /* La bolla parte col dito, non quando la pagina nuova e pronta:
-         fra il tocco e il disegno passano decine di millisecondi, e in
-         quelli il dock sembrerebbe non aver sentito. */
-      onPointerDown={onScelto}
     >
       <span className="jm-dock-i">{tab.icon}</span>
       <span className="jm-dock-l">{t(tab.label)}</span>

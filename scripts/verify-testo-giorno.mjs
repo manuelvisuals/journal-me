@@ -185,10 +185,17 @@ for (const [w, h, etichetta] of [[430, 932, "telefono"], [1440, 900, "desktop"]]
   );
   // La tab bar esiste solo sotto lg: su desktop c'e la rail sinistra.
   if (w < 1024) {
+    /* Dal 29 agosto 2026 il dock non e piu incollato al fondo: e una
+       pillola SOSPESA (mockup dock-liquid-glass.html). Quello che deve
+       restare vero e che non scappa mai via col contenuto — sta in
+       fondo allo schermo, a una distanza sua, con poco testo e con
+       tanto. */
+    const stacco = max.tab.viewport - max.tab.bottom;
+    const staccoPoco = uno.tab.viewport - uno.tab.bottom;
     check(
-      `${etichetta}: la tab bar resta incollata in fondo`,
-      Math.abs(max.tab.bottom - max.tab.viewport) <= 2,
-      `${max.tab.bottom}/${max.tab.viewport}`,
+      `${etichetta}: il dock resta sospeso in fondo, sempre alla stessa altezza`,
+      stacco >= 8 && stacco <= 48 && Math.abs(stacco - staccoPoco) <= 1,
+      `${stacco}px dal fondo con tanto testo, ${staccoPoco}px con poco`,
     );
   }
 }
