@@ -589,30 +589,207 @@ summary:active {
 }
 
 /* Tab bar central mic (premium iOS-like, always reachable) */
-.jm-mic-circle {
-  width: 44px;
-  height: 44px;
+/* =============================================================
+   IL DOCK DI VETRO (29 agosto 2026, mockup
+   design/mockups/dock-liquid-glass.html, variante A con la bolla
+   "lente"). Sostituisce la barra incollata al fondo.
+
+   Tre strati, uno sopra l'altro:
+     1. il VELO      .jm-dock          sfoca e satura cio che passa sotto
+     2. la BOLLA     .jm-dock-bolla    la lente che scivola sul tasto acceso
+     3. i TASTI      .jm-dock-t        icone e parole, sempre sopra la bolla
+
+   I cinque colori del vetro non sono scritti qui: ogni tema se li ricava
+   da solo (src/themes/contract.ts), percio il dock e giusto in chiaro e
+   in scuro in tutti e sei i temi, e anche in un tema importato domani.
+   ============================================================= */
+
+/* Lo spazio che la pillola occuperebbe se non fosse sospesa: sta nel
+   flusso di ogni schermata, cosi l'ultima riga non finisce sotto il
+   vetro. Il dock se lo porta dietro da solo. */
+.jm-dock-spazio {
+  height: calc(94px + env(safe-area-inset-bottom, 0px));
+  flex: none;
+}
+
+.jm-dock-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  /* Il vuoto ai lati della pillola non intercetta niente: sotto c'e la
+     giornata, e si deve poter toccare. */
+  pointer-events: none;
+}
+
+.jm-dock {
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 7px;
+  border-radius: var(--jm-radius-pill);
+  background: var(--color-glass-veil);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  backdrop-filter: blur(26px) saturate(190%);
+  border: 1px solid var(--color-glass-ring);
+  box-shadow: 0 18px 38px var(--color-glass-drop),
+    0 3px 10px color-mix(in oklab, var(--color-glass-drop) 60%, transparent),
+    inset 0 1px 0 var(--color-glass-edge),
+    inset 0 -1px 0 color-mix(in oklab, var(--color-glass-edge) 30%, transparent);
+  isolation: isolate;
+}
+
+/* Il filo di luce sul bordo alto: e questo a far leggere il vetro come
+   un oggetto invece che come una macchia sfocata. */
+.jm-dock::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-glass-edge) 55%, transparent),
+    transparent 42%
+  );
+  opacity: 0.7;
+}
+
+/* Chi non ha il vetro (WebView vecchie): la pillola diventa opaca. Brutta
+   ma leggibile. Mai testo su un vetro trasparente e non sfocato. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .jm-dock {
+    background: var(--color-bg);
+  }
+}
+
+.jm-dock-t {
+  position: relative;
+  z-index: 2;
+  width: 62px;
+  min-height: 52px;
+  border-radius: var(--jm-radius-pill);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--color-ink-faint);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  transition: color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jm-dock-t.on {
+  color: var(--color-ink);
+}
+
+.jm-dock-t:active {
+  transform: scale(var(--jm-press));
+}
+
+.jm-dock-i {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.jm-dock-i svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.jm-dock-l {
+  font-size: calc(9px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Il microfono non e una destinazione, e un'azione: resta pieno, resta al
+   centro, e la bolla non ci va mai sopra — ci passa sotto. */
+.jm-dock-mic {
+  position: relative;
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  margin: 0 2px;
   border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
   color: var(--color-on-accent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 40%, transparent),
-    0 8px 18px color-mix(in oklab, var(--color-shadow) 50%, transparent),
-    inset 0 1px 1px rgba(255, 255, 255, 0.40);
-  transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
-    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 80ms cubic-bezier(0.4, 0, 0.2, 1);
+    0 6px 16px color-mix(in oklab, var(--color-glass-drop) 80%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.42);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 80ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.jm-mic-circle:active {
+.jm-dock-mic:active {
   transform: scale(0.94);
   background: var(--color-accent-pressed);
 }
+
+/* LA BOLLA. Non e un rettangolo colorato: e una lente. Ha un suo vetro
+   (piu limpido di quello della pillola), un filo di luce in alto e
+   un'ombra corta sotto. Si allunga mentre viaggia e torna tonda quando
+   arriva: e quello a farla sembrare liquida. */
+.jm-dock-bolla {
+  position: absolute;
+  top: 7px;
+  height: 52px;
+  border-radius: var(--jm-radius-pill);
+  z-index: 1;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-glass-lens) 55%, transparent),
+    var(--color-glass-lens)
+  );
+  -webkit-backdrop-filter: blur(2px) saturate(150%) brightness(1.06);
+  backdrop-filter: blur(2px) saturate(150%) brightness(1.06);
+  border: 1px solid color-mix(in oklab, var(--color-glass-ring) 80%, transparent);
+  box-shadow: inset 0 1px 0 var(--color-glass-edge),
+    inset 0 -1px 0 color-mix(in oklab, var(--color-glass-ring) 60%, transparent),
+    0 2px 8px color-mix(in oklab, var(--color-glass-drop) 45%, transparent);
+  transform-origin: center;
+  transition: left 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease;
+}
+
+.jm-dock-bolla.viaggio {
+  transform: scaleX(1.14) scaleY(0.94);
+}
+
+/* Chi ha chiesto meno movimento non lo vede viaggiare: la bolla c'e ed e
+   dove serve, e basta. */
+@media (prefers-reduced-motion: reduce) {
+  .jm-dock-bolla {
+    transition: opacity 200ms ease;
+  }
+  .jm-dock-bolla.viaggio {
+    transform: none;
+  }
+}
+
 
 /* Larger tap target for the settings icon too */
 .jm-settings-btn {

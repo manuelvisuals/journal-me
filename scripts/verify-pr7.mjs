@@ -143,9 +143,11 @@ const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "
   await page.waitForTimeout(1200);
 
   check("phone: editor desktop NON visibile", !(await page.locator(".jm-ed-wrap").isVisible().catch(() => false)));
-  // Il primo <nav> del DOM e la rail sinistra (nascosta sotto lg): la tab
-  // bar e il nav sticky in fondo.
-  check("phone: tab bar presente", await page.locator("nav.sticky").isVisible());
+  // Il primo <nav> del DOM e la rail sinistra (nascosta sotto lg): il dock
+  // e il nav in fondo. Dal 29 agosto 2026 non e piu "sticky": e una
+  // pillola sospesa (jm-dock-wrap), e il selettore vecchio non trovava
+  // piu niente.
+  check("phone: tab bar presente", await page.locator("nav.jm-dock-wrap").isVisible());
   check(
     "phone: rail desktop nascosta",
     await page.locator(".jm-rail-l").evaluate((el) => getComputedStyle(el).display === "none"),

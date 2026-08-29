@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
 import { useActiveModules } from "@/lib/modules";
@@ -48,6 +55,17 @@ export function useDentroApp(): boolean {
     () => false,
   );
 }
+
+/**
+ * Dove stava la bolla l'ultima volta.
+ *
+ * Ogni schermata monta la SUA TabBar: cambiando pagina questo componente
+ * non si sposta, muore e rinasce. Senza memoria, la bolla comparirebbe
+ * gia arrivata e il viaggio — cioe la cosa per cui esiste — non si
+ * vedrebbe mai. Vive fuori da React per lo stesso motivo del contatore
+ * qui sopra: e uno stato del DOCK, non di una schermata.
+ */
+let ultimoAttivo: TabKey | null = null;
 
 export type TabKey =
   | "today"
@@ -134,6 +152,27 @@ const SIDE_TABS_RIGHT: Tab[] = [
   },
 ];
 
+/**
+ * IL DOCK DI VETRO (mockup design/mockups/dock-liquid-glass.html,
+ * variante A + bolla "lente", scelte da Manuel il 29 agosto 2026).
+ *
+ * La barra non e piu un bordo incollato al fondo: e una pillola sospesa,
+ * staccata dal bordo, e la giornata le passa SOTTO sfocata. Sul tasto
+ * acceso si posa una bolla di vetro che scivola da un tasto all'altro e
+ * si allunga mentre viaggia.
+ *
+ * Due dettagli che sembrano capricci e non lo sono:
+ *   - la bolla si MISURA sul tasto (non si calcola a percentuali): con
+ *     quattro voci invece di cinque la pillola cambia larghezza, e una
+ *     percentuale mentirebbe;
+ *   - il microfono al centro non e una destinazione ma un'azione: la
+ *     bolla non ci va mai sopra, e resta pieno anche a dock spento.
+ *
+ * Lo spazio sotto: la pillola e fissa, quindi il contenuto ci finisce
+ * dietro. Invece di chiedere a ogni schermata di aggiungersi un margine
+ * (dodici file, e la tredicesima se ne dimentica), il dock si porta
+ * dietro il PROPRIO spazio: un elemento vuoto che resta nel flusso.
+ */
 export function TabBar({ active }: Props) {
   const t = useT();
   // La barra c'e = sei dentro (vedi segnalaDentroApp qui sopra).
@@ -156,95 +195,170 @@ export function TabBar({ active }: Props) {
         },
       ]
     : SIDE_TABS_RIGHT;
-  const colonne = SIDE_TABS_LEFT.length + 1 + tabsRight.length;
+
+  /* La bolla parte da dove era, non da dove deve arrivare. */
+  const [mostrato, setMostrato] = useState<TabKey>(
+    ultimoAttivo && ultimoAttivo !== active ? ultimoAttivo : active,
+  );
+  const bolla = useRef<HTMLSpanElement | null>(null);
+  const pillola = useRef<HTMLDivElement | null>(null);
+  const tasti = useRef<Map<TabKey, HTMLAnchorElement>>(new Map());
+  const primoGiro = useRef(true);
+
+  const registra = useCallback((key: TabKey, el: HTMLAnchorElement | null) => {
+    if (el) tasti.current.set(key, el);
+    else tasti.current.delete(key);
+  }, []);
+
+  /* Arrivati: da qui in poi la bolla insegue la schermata vera. */
+  useEffect(() => {
+    ultimoAttivo = active;
+    if (mostrato === active) return;
+    const id = requestAnimationFrame(() => setMostrato(active));
+    return () => cancelAnimationFrame(id);
+  }, [active, mostrato]);
+
+  /* La misura. Il primo disegno e senza viaggio: la bolla e gia dov'e. */
+  useLayoutEffect(() => {
+    const b = bolla.current;
+    const p = pillola.current;
+    const acceso = tasti.current.get(mostrato);
+    if (!b || !p) return;
+    if (!acceso) {
+      // Nessun tasto corrisponde (Impostazioni, Recap): niente bolla.
+      b.style.opacity = "0";
+      return;
+    }
+    const a = acceso.getBoundingClientRect();
+    const q = p.getBoundingClientRect();
+    const primo = primoGiro.current;
+    if (primo) b.style.transition = "none";
+    b.style.opacity = "1";
+    b.style.left = `${a.left - q.left}px`;
+    b.style.width = `${a.width}px`;
+    if (primo) {
+      primoGiro.current = false;
+      requestAnimationFrame(() => {
+        b.style.transition = "";
+      });
+      return;
+    }
+    /* Lo stiramento dura quanto il viaggio, non un millisecondo di piu:
+       e questo, e non la sfocatura, a far dire "liquido". */
+    b.classList.add("viaggio");
+    const id = window.setTimeout(() => b.classList.remove("viaggio"), 240);
+    return () => window.clearTimeout(id);
+  }, [mostrato, tabsRight.length]);
+
+  /* Se lo schermo cambia misura (rotazione, tastiera che si apre) la
+     bolla si rimisura senza viaggiare: non e successo niente. */
+  useEffect(() => {
+    const rimisura = () => {
+      const b = bolla.current;
+      const p = pillola.current;
+      const acceso = tasti.current.get(mostrato);
+      if (!b || !p || !acceso) return;
+      const a = acceso.getBoundingClientRect();
+      const q = p.getBoundingClientRect();
+      b.style.transition = "none";
+      b.style.left = `${a.left - q.left}px`;
+      b.style.width = `${a.width}px`;
+      requestAnimationFrame(() => {
+        b.style.transition = "";
+      });
+    };
+    window.addEventListener("resize", rimisura);
+    window.addEventListener("orientationchange", rimisura);
+    return () => {
+      window.removeEventListener("resize", rimisura);
+      window.removeEventListener("orientationchange", rimisura);
+    };
+  }, [mostrato]);
+
   return (
-    <nav
-      className="sticky bottom-0 left-0 right-0 z-10 grid items-center border-t backdrop-blur lg:hidden"
-      style={{
-        gridTemplateColumns: `repeat(${colonne}, 1fr)`,
-        borderColor: "var(--color-line)",
-        background: "color-mix(in oklab, var(--color-bg) 50%, transparent)",
-        paddingTop: 12,
-        paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 14px)",
-      }}
-    >
-      {SIDE_TABS_LEFT.map((tab) => (
-        <SideTab key={tab.key} tab={tab} active={active === tab.key} />
-      ))}
+    <>
+      {/* Lo spazio che la pillola occuperebbe se non fosse sospesa. Sta
+          nel flusso, cosi l'ultima riga di ogni schermata non finisce
+          dietro il vetro. */}
+      <div className="jm-dock-spazio lg:hidden" aria-hidden="true" />
 
-      {/* Mic centrale — premium iOS-like, sempre disponibile */}
-      <Link
-        href="/?record=1"
-        aria-label={t("Registra")}
-        className="flex flex-col items-center select-none"
-        style={{
-          gap: 4,
-          WebkitTapHighlightColor: "transparent",
-          touchAction: "manipulation",
-          color: "var(--color-accent)",
-        }}
-      >
-        <span className="jm-mic-circle">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            width="22"
-            height="22"
-            aria-hidden="true"
+      <nav className="jm-dock-wrap lg:hidden">
+        <div className="jm-dock" ref={pillola}>
+          <span className="jm-dock-bolla" ref={bolla} aria-hidden="true" />
+
+          {SIDE_TABS_LEFT.map((tab) => (
+            <SideTab
+              key={tab.key}
+              tab={tab}
+              active={mostrato === tab.key}
+              onMount={registra}
+              onScelto={() => setMostrato(tab.key)}
+            />
+          ))}
+
+          {/* Mic centrale — premium iOS-like, sempre disponibile */}
+          <Link
+            href="/?record=1"
+            aria-label={t("Registra")}
+            className="jm-dock-mic"
           >
-            <rect x="9" y="3" width="6" height="12" rx="3" />
-            <path d="M5 11a7 7 0 0 0 14 0" />
-            <path d="M12 18v3" />
-          </svg>
-        </span>
-        <span
-          style={{
-            fontSize: "calc(9px * var(--jm-ui-scale))",
-            fontWeight: 600,
-            letterSpacing: "0.10em",
-            textTransform: "uppercase",
-          }}
-        >
-          {t("Registra")}
-        </span>
-      </Link>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              width="23"
+              height="23"
+              aria-hidden="true"
+            >
+              <rect x="9" y="3" width="6" height="12" rx="3" />
+              <path d="M5 11a7 7 0 0 0 14 0" />
+              <path d="M12 18v3" />
+            </svg>
+          </Link>
 
-      {tabsRight.map((tab) => (
-        <SideTab key={tab.key} tab={tab} active={active === tab.key} />
-      ))}
-    </nav>
+          {tabsRight.map((tab) => (
+            <SideTab
+              key={tab.key}
+              tab={tab}
+              active={mostrato === tab.key}
+              onMount={registra}
+              onScelto={() => setMostrato(tab.key)}
+            />
+          ))}
+        </div>
+      </nav>
+    </>
   );
 }
 
-function SideTab({ tab, active }: { tab: Tab; active: boolean }) {
+function SideTab({
+  tab,
+  active,
+  onMount,
+  onScelto,
+}: {
+  tab: Tab;
+  active: boolean;
+  onMount: (key: TabKey, el: HTMLAnchorElement | null) => void;
+  onScelto: () => void;
+}) {
   const t = useT();
   return (
     <Link
       href={tab.href}
-      className="flex flex-col items-center gap-1 select-none"
-      style={{
-        color: active ? "var(--color-accent)" : "var(--color-ink-faint)",
-        WebkitTapHighlightColor: "transparent",
-        touchAction: "manipulation",
-      }}
+      ref={(el) => onMount(tab.key, el)}
+      className={`jm-dock-t${active ? " on" : ""}`}
+      aria-current={active ? "page" : undefined}
+      /* La bolla parte col dito, non quando la pagina nuova e pronta:
+         fra il tocco e il disegno passano decine di millisecondi, e in
+         quelli il dock sembrerebbe non aver sentito. */
+      onPointerDown={onScelto}
     >
-      <span style={{ width: 22, height: 22, display: "block" }}>
-        {tab.icon}
-      </span>
-      <span
-        style={{
-          fontSize: "calc(9px * var(--jm-ui-scale))",
-          fontWeight: 600,
-          letterSpacing: "0.10em",
-          textTransform: "uppercase",
-        }}
-      >
-        {t(tab.label)}
-      </span>
+      <span className="jm-dock-i">{tab.icon}</span>
+      <span className="jm-dock-l">{t(tab.label)}</span>
     </Link>
   );
 }

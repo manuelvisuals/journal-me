@@ -90,6 +90,16 @@ src/app/layout.tsx  e le pagine-wrapper (sono gia sottili: 35-88 righe)
 src/styles/base.css tokens, reset, primitive condivise (oggi: la prima parte di globals)
 ```
 
+Il dock (29 agosto 2026, sessione scheletro dedicata): `components/ui/tab-bar.tsx`
+non e piu una barra incollata al fondo ma una PILLOLA DI VETRO sospesa, con una
+bolla che scivola sul tasto acceso (mockup `design/mockups/dock-liquid-glass.html`,
+variante A). Il CSS sta in `styles/base.css` col prefisso `jm-dock-*`; i cinque
+colori del vetro (`--jm-glass-veil|edge|ring|drop|lens`) NON sono scritti a mano
+tema per tema: `themes/contract.ts` se li ricava dai colori del tema, cosi ogni
+tema — anche uno importato domani — ha il suo vetro giusto in chiaro e in scuro.
+Il dock si porta dietro il proprio spazio (`.jm-dock-spazio`), percio nessuna
+schermata ha dovuto aggiungersi un margine. Banco: `scripts/verify-dock.mjs`.
+
 Regola: un modulo USA lo scheletro, non lo modifica. Se un modulo ha bisogno di una
 primitiva nuova, la chiede (una sessione scheletro la aggiunge) o la tiene nel proprio
 folder finche non e matura.
