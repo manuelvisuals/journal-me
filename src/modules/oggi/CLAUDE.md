@@ -17,7 +17,10 @@ variante A): `day-nav.tsx` e la testata con le frecce (due piani: "Oggi",
 "Ieri", "Mercoledi" sopra, la data sotto; il centro apre
 `date-picker-popover.tsx`), `day-swipe.tsx` e lo stesso cambio col dito.
 LA REGOLA: il passato si sfoglia senza fondo, il futuro no — su oggi la
-freccia avanti e spenta, il dito rimbalza e una riga lo spiega. Su /giorno
+freccia avanti e spenta, il dito rimbalza e una riga lo spiega. Mentre il
+dito va di lato la pagina si FERMA (no allo scorrimento sul touchmove piu
+una rete di sicurezza che la riporta alla sua altezza): senza, la giornata
+scivolava anche su e giu e il gesto sembrava scivoloso. Su /giorno
 si sfoglia SENZA cambiare pagina (i due vicini si leggono in anticipo e
 l'indirizzo si aggiorna con replaceState); arrivare a oggi porta a "/",
 che e la casa di oggi. Da Oggi si va a ieri con un cambio di schermata:

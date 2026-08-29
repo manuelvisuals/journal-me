@@ -61,7 +61,14 @@ const SEED = `
       transcript: "Giornata di prova: " + titolo + ".",
       headline: titolo,
       snippet: "Una riga di sintesi per " + data + ".",
-      areas: [{ label: "Relazioni", text: "Qualcuno, da qualche parte." }],
+      areas: [
+        { label: "Relazioni", text: "Qualcuno, da qualche parte, e una telefonata lunga." },
+        { label: "Corpo", text: "Camminata al mattino, poi palestra nel pomeriggio." },
+        { label: "Lavoro", text: "Riunione, revisione, e una mail che aspettava da giorni." },
+        { label: "Casa", text: "Spesa grossa, cucina sistemata, lavatrice." },
+        { label: "Testa", text: "Letto mezz'ora prima di dormire, senza telefono." },
+        { label: "Soldi", text: "Pagata la bolletta e messo da parte il resto." },
+      ],
       metrics: { mood: null, weightKg: null, sleepHours: null },
       goalsOn: [], people: [], durationSeconds: 0,
       createdAt: new Date(data + "T20:00:00Z").toISOString(),
@@ -71,8 +78,13 @@ const SEED = `
   db.close();
 `;
 
-async function contesto(width = 430) {
-  const ctx = await browser.newContext({ viewport: { width, height: 932 }, locale: "it-IT" });
+async function contesto(width = 430, conDito = false) {
+  const ctx = await browser.newContext({
+    viewport: { width, height: 932 },
+    locale: "it-IT",
+    hasTouch: conDito,
+    isMobile: conDito,
+  });
   await ctx.addInitScript(() => {
     try {
       window.localStorage.setItem("jm.mode", "local");
@@ -227,6 +239,154 @@ async function trascina(page, dx) {
     "e la freccia avanti resta spenta anche dopo il gesto",
     await page.locator(".jm-day-nav-arw").last().isDisabled(),
   );
+  check("nessun errore in console", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 4. il dito di lato ferma la pagina ============ */
+{
+  const { ctx, page, errors } = await contesto();
+  await page.goto(`${BASE}/giorno?d=${IERI}`, { waitUntil: "networkidle" });
+  await page.waitForSelector(".jm-day-sw", { timeout: 20000 });
+  await page.waitForTimeout(600);
+
+  const alta = await page.evaluate(
+    () => document.documentElement.scrollHeight - window.innerHeight,
+  );
+  check("la giornata di prova e abbastanza alta da scorrere", alta > 260, `${Math.round(alta)}px`);
+
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await page.waitForTimeout(250);
+
+  const box = await page.locator(".jm-day-sw").first().boundingBox();
+  const x = box.x + box.width / 2;
+  const y = box.y + Math.min(box.height / 2, 220);
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  /* Quaranta pixel di lato: il gesto e dichiarato orizzontale. */
+  for (let i = 1; i <= 6; i++) await page.mouse.move(x + (40 * i) / 6, y + 1);
+
+  /* Adesso la pagina PROVA a scorrere: non deve riuscirci. E' lo stesso
+     tentativo che fa il browser quando il dito non e perfettamente
+     dritto — che poi e sempre. */
+  const durante = await page.evaluate(async () => {
+    window.scrollTo(0, 520);
+    await new Promise((r) => setTimeout(r, 150));
+    return Math.round(window.scrollY);
+  });
+  check(
+    "mentre il dito va di lato, la pagina resta ferma dov'era",
+    durante === 200,
+    `pagina a ${durante}, attesa a 200`,
+  );
+
+  await page.mouse.up();
+  await page.waitForTimeout(700);
+
+  const dopo = await page.evaluate(async () => {
+    window.scrollTo(0, 520);
+    await new Promise((r) => setTimeout(r, 150));
+    return Math.round(window.scrollY);
+  });
+  check(
+    "alzato il dito, la pagina torna a scorrere come sempre",
+    dopo > 400,
+    `${dopo}`,
+  );
+
+  check("nessun errore in console", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 5. lo stesso, ma col DITO vero ============ */
+{
+  /* Il mouse non scorre la pagina: il blocco col mouse si prova solo
+     "chiedendo" alla pagina di scorrere. Col dito invece e il browser a
+     volerlo fare, ed e esattamente il fastidio che Manuel ha sentito sul
+     telefono. Qui i tocchi sono veri (touchStart/touchMove del motore),
+     non simulati col puntatore. */
+  const { ctx, page, errors } = await contesto(430, true);
+  await page.goto(`${BASE}/giorno?d=${IERI}`, { waitUntil: "networkidle" });
+  await page.waitForSelector(".jm-day-sw", { timeout: 20000 });
+  await page.waitForTimeout(600);
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await page.waitForTimeout(250);
+
+  const cdp = await ctx.newCDPSession(page);
+  const box = await page.locator(".jm-day-sw").first().boundingBox();
+  const x = box.x + box.width / 2;
+  const y = box.y + Math.min(box.height / 2, 220);
+
+  /* Si ascolta il gesto da FUORI, dopo il componente: cosi si vede se
+     ha detto di no allo scorrimento. E' il controllo che conta davvero,
+     perche il browser di questa macchina e Chromium e con un gesto cosi
+     obliquo non scorre comunque — Safari su iPhone si, ed e li che il
+     fastidio si vedeva. Guardare solo "la pagina non si e mossa" qui
+     sarebbe un verde regalato. */
+  await page.evaluate(() => {
+    window.__mosse = [];
+    window.addEventListener(
+      "touchmove",
+      (e) => window.__mosse.push(e.defaultPrevented),
+      { passive: true },
+    );
+  });
+
+  await cdp.send("Input.dispatchTouchEvent", {
+    type: "touchStart",
+    touchPoints: [{ x, y }],
+  });
+  /* Un dito umano non e mai dritto: 120px di lato e 40 in giu. E' quel
+     "40 in giu" che prima si portava via la pagina. */
+  for (let i = 1; i <= 8; i++) {
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x: x + (120 * i) / 8, y: y + (40 * i) / 8 }],
+    });
+    await page.waitForTimeout(16);
+  }
+  const mosse = await page.evaluate(() => window.__mosse || []);
+  const dopoLaSoglia = mosse.slice(2);
+  check(
+    "col dito: il gesto laterale dice di no allo scorrimento della pagina",
+    dopoLaSoglia.length > 0 && dopoLaSoglia.every(Boolean),
+    `${dopoLaSoglia.filter(Boolean).length} mosse fermate su ${dopoLaSoglia.length}`,
+  );
+  const durante = await page.evaluate(() => Math.round(window.scrollY));
+  check(
+    "col dito: e la pagina infatti resta dov'era",
+    durante === 200,
+    `pagina a ${durante}, attesa a 200`,
+  );
+
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await page.waitForTimeout(900);
+
+  /* E il gesto ha comunque fatto il suo mestiere: siamo al giorno prima. */
+  check(
+    "col dito: e il giorno e cambiato lo stesso",
+    page.url().includes(ALTROIERI),
+    page.url(),
+  );
+
+  /* Dopo, il dito deve poter scorrere la pagina come sempre. */
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y: y + 120 }] });
+  for (let i = 1; i <= 8; i++) {
+    await cdp.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [{ x, y: y + 120 - (140 * i) / 8 }],
+    });
+    await page.waitForTimeout(16);
+  }
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await page.waitForTimeout(500);
+  const scorso = await page.evaluate(() => Math.round(window.scrollY));
+  check(
+    "col dito: lo scorrimento verticale normale funziona ancora",
+    scorso > 0,
+    `pagina a ${scorso}`,
+  );
+
   check("nessun errore in console", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 }
