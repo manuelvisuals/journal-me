@@ -28,6 +28,8 @@
  */
 
 import { usePathname } from "next/navigation";
+import { createPortal } from "react-dom";
+import { useSyncExternalStore } from "react";
 import { AccountMenu } from "@/components/ui/account-menu";
 import { useT } from "@/lib/i18n";
 
@@ -58,6 +60,49 @@ export function titoloSchermata(pathname: string): string | null {
   return null;
 }
 
+/**
+ * IL POSTO PER UNA AZIONE DELLA SCHERMATA (30 agosto 2026, mockup
+ * mese-testata.html, strada A scelta da Manuel).
+ *
+ * Nasce per il tasto che scambia scacchiera e lista nel Mese. Il ragionamento
+ * non e "avanzava spazio": quel tasto non cambia COSA guardi ma COME lo
+ * guardi, quindi non appartiene alla riga del mese (che e navigazione, usata
+ * ogni volta) ma alla barra della schermata, usata una volta ogni tanto. E
+ * dove Calendario di Apple mette lo stesso identico comando.
+ *
+ * UNA sola azione, e per iscritto. Se questo posto diventa generico, fra sei
+ * mesi ci sono cinque icone di cinque moduli e la barra e una barretta di
+ * strumenti: il contrario di cio per cui e nata (il pallino sempre nello
+ * stesso pixel). Chi vuole aggiungerne una seconda non allarga questo slot:
+ * porta il problema a Manuel, perche a quel punto la domanda non e piu dove
+ * mettere un bottone ma se quella schermata ha bisogno di un menu.
+ *
+ * Il pallino resta l'ULTIMO elemento a destra, sempre: e cio che
+ * verify-barra-alto misura su ogni schermata, ed e il motivo per cui
+ * l'azione entra PRIMA di lui e non dopo.
+ *
+ * Meccanica: lo stesso portal di RailRight. La schermata rende
+ * <AppBarAzione>...</AppBarAzione> e il contenuto finisce qui.
+ */
+const SLOT_AZIONE = "jm-appbar-azione";
+
+function subscribeNoop(): () => void {
+  return () => {};
+}
+
+export function AppBarAzione({ children }: { children: React.ReactNode }) {
+  /* Mount flag senza setState-in-effect: stesso pattern di RailRight. */
+  const mounted = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+  if (!mounted) return null;
+  const target = document.getElementById(SLOT_AZIONE);
+  if (!target) return null;
+  return createPortal(children, target);
+}
+
 export function AppBar() {
   const t = useT();
   const pathname = usePathname();
@@ -73,7 +118,12 @@ export function AppBar() {
           proprio sulla cosa per cui esiste. */}
       <div className="jm-appbar-in">
         <span className="jm-appbar-t">{t(titolo)}</span>
-        <AccountMenu variant="testata" />
+        <span className="jm-appbar-r">
+          {/* Vuoto su quasi tutte le schermate: la regola :empty lo fa
+              sparire, cosi il pallino non guadagna un margine dal nulla. */}
+          <span id={SLOT_AZIONE} className="jm-appbar-az" />
+          <AccountMenu variant="testata" />
+        </span>
       </div>
     </header>
   );

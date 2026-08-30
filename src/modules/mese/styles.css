@@ -19,6 +19,75 @@
   z-index: 3;
 }
 
+/* LA RIGA DEL MESE IN GRIGLIA: un navigatore, e basta (mockup
+   mese-testata.html, 30 agosto 2026).
+
+   Tre colonne: 38 punti fissi, tutto il resto, 38 punti fissi. Le frecce
+   non si spostano di un pixel quando il nome passa da "Maggio" a
+   "Settembre" — ed e esattamente la cosa chiesta. Con flex e
+   space-between il centro non sarebbe il centro: sarebbe "cio che
+   avanza", e ballerebbe col titolo.
+
+   Sta dentro una media query max-width e NON in una classe con display
+   proprio: `.jm-month-header.nav` avrebbe specificita 0,2,0 e batterebbe
+   il `display: none` da lg piu sotto (0,1,0) a prescindere dall'ordine,
+   rimettendo la testata del telefono sul computer. E la stessa trappola
+   di sempre, presa dal verso opposto. */
+@media (max-width: 1023px) {
+  .jm-month-header.nav {
+    display: grid;
+    grid-template-columns: calc(38px * var(--jm-space)) 1fr
+      calc(38px * var(--jm-space));
+    align-items: center;
+    gap: calc(8px * var(--jm-space));
+    padding-left: calc(16px * var(--jm-space));
+    padding-right: calc(16px * var(--jm-space));
+  }
+  .jm-month-header.nav .jm-month-title {
+    justify-self: center;
+    justify-content: center;
+    min-width: 0;
+    max-width: 100%;
+  }
+  /* Il nome si accorcia col trattino invece di spingere le frecce: le
+     colonne sono fisse, quindi senza questo un mese lunghissimo in una
+     lingua futura sfonderebbe la riga. */
+  .jm-month-header.nav .jm-month-nome {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Le frecce sul telefono: stesso disegno del computer, misura pari
+     alle due colonne fisse. Spente restano visibili e al loro posto --
+     sparire rimetterebbe in movimento la riga che stiamo inchiodando. */
+  .jm-month-header.nav .jm-mese-nav {
+    width: calc(38px * var(--jm-space));
+    height: calc(38px * var(--jm-space));
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--color-line);
+    border-radius: var(--jm-radius-circle);
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .jm-month-header.nav .jm-mese-nav svg {
+    width: calc(17px * var(--jm-ui-scale));
+    height: calc(17px * var(--jm-ui-scale));
+    fill: none;
+    stroke: var(--color-ink-muted);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .jm-month-header.nav .jm-mese-nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
 .jm-month-title {
   display: inline-flex;
   align-items: center;
@@ -574,18 +643,20 @@
   color: var(--color-ink-faint);
 }
 
-/* L'icona nell'intestazione che scambia lista e griglia. Disegno 20,
-   area toccabile 44: i margini negativi la fanno crescere senza spostare
-   il contatore accanto. */
+/* Il tasto che scambia lista e scacchiera. Dal 30 agosto 2026 non sta
+   piu nella riga del mese ma nella barra in alto (slot azione, mockup
+   mese-testata.html strada A). Misura 44 come il pallino che gli sta
+   accanto: e la misura minima di un bersaglio (brandbook cap. 05) e due
+   tasti vicini di misura diversa si vedono, anche senza saper dire
+   perche. */
 .jm-mese-vista {
-  width: calc(44px * var(--jm-space));
-  height: calc(44px * var(--jm-space));
-  margin: calc(-12px * var(--jm-space)) calc(-10px * var(--jm-space))
-    calc(-12px * var(--jm-space)) 0;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   display: grid;
   place-items: center;
-  border: none;
-  border-radius: var(--jm-radius-sm);
+  border: 1px solid transparent;
+  border-radius: var(--jm-radius-circle);
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -600,20 +671,14 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+/* Acceso = stai guardando la scacchiera. La lente del dock, come ogni
+   altro "sei qui" dell'app: non una tinta di accento. */
 .jm-mese-vista[aria-pressed="true"] {
-  background: color-mix(in oklab, var(--color-accent) 14%, transparent);
+  background: var(--color-glass-lens);
+  border-color: color-mix(in oklab, var(--color-glass-ring) 80%, transparent);
 }
 .jm-mese-vista[aria-pressed="true"] svg {
-  stroke: var(--color-accent);
-}
-
-/* Il gruppo a destra nell'intestazione del telefono: contatore piu icona.
-   L'header allinea alla linea di base; qui serve il centro, o il bottone
-   da 44 punti spingerebbe il contatore fuori asse. */
-.jm-month-right {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(14px * var(--jm-space));
+  stroke: var(--color-ink);
 }
 
 /* Un mese e basta: in griglia la schermata contiene intestazione, mese e
@@ -670,7 +735,4 @@
    2026" spezzato in due farebbe ballare tutta l'intestazione. */
 .jm-month-header .jm-month-title {
   white-space: nowrap;
-}
-.jm-month-right {
-  flex: 0 0 auto;
 }

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . La testata del Mese, e dove va il tasto della vista</title>
+<style>
+/* I font arrivano da src/fonts, non da Google: il sandbox non raggiunge
+   fonts.googleapis.com e renderebbe Georgia al posto di ogni serif senza
+   dirlo (HANDOVER, trappola di verifica dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* ================================================================
+   Tema MINIMAL, set SCURO (src/themes/minimal.ts) — e quello degli
+   scatti di Manuel. Scala testo 1.15, come nel suo telefono.
+   Ogni misura e calc(Npx * var(--s)) come nel codice vero.
+   ================================================================ */
+.fr{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F;
+  --line:rgba(255,255,255,.12);
+  --glass-veil:rgba(22,22,24,.58); --glass-edge:rgba(245,245,247,.22);
+  --glass-ring:rgba(255,255,255,.12); --glass-drop:rgba(0,0,0,.55);
+  --glass-lens:rgba(245,245,247,.14);
+}
+:root{
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+  --s:1.15; --sp:1;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 140px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:820px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.stamp{display:block;width:max-content;max-width:100%;margin:22px auto 0;font-size:10px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border-radius:var(--r-pill);
+  color:var(--hot);border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.07);text-align:center}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:860px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+.caption code{background:var(--pg-2);padding:1px 6px;border-radius:5px;color:var(--pg-mut)}
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.65;max-width:340px}
+.cap b{color:var(--pg-mut);font-weight:600}
+.row{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+
+.spec{max-width:960px;margin:0 auto}
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;padding:24px 26px}
+.card + .card{margin-top:20px}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:16px}
+.card h3.go{color:var(--ok)} .card h3.stop{color:var(--no)} .card h3.warn{color:var(--hot)}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.card.go{border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.05)}
+.card.go li::before{background:var(--ok)}
+.card.stop{border-color:rgba(248,113,113,.28);background:rgba(248,113,113,.05)}
+.card.stop li::before{background:var(--no)}
+.card.warn{border-color:rgba(251,191,36,.30);background:rgba(251,191,36,.05)}
+.card.warn li::before{background:var(--hot)}
+.card code{color:var(--hot);background:rgba(0,0,0,.28);padding:1px 6px;border-radius:5px}
+.card b{color:var(--pg-ink);font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:960px;margin:0 auto}
+@media (max-width:880px){.two{grid-template-columns:1fr}}
+
+/* ================================================================
+   IL TELEFONO — 390 di larghezza, come un iPhone recente
+   ================================================================ */
+.tel{width:390px;border-radius:34px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  font-family:var(--font);box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.10)}
+
+/* la barra in alto dell'app (src/components/ui/app-bar.tsx) */
+.ab{height:56px;display:flex;align-items:center;background:var(--bg-app)}
+.ab-in{height:100%;width:100%;max-width:440px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ab-t{font-size:calc(17px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+.ab-r{display:flex;align-items:center;gap:calc(6px * var(--sp))}
+.ab-dot{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--surface-2);
+  border:1px solid var(--line);display:grid;place-items:center;
+  font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-muted)}
+/* il tasto azione della schermata, quando sta qui (strada A) */
+.ab-act{width:34px;height:34px;flex:0 0 34px;border-radius:50%;border:1px solid transparent;
+  background:transparent;display:grid;place-items:center;cursor:pointer}
+.ab-act svg{width:calc(19px * var(--s));height:calc(19px * var(--s));fill:none;
+  stroke:var(--ink-faint);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- LA TESTATA DEL MESE, COM'E OGGI (mese/styles.css:12) --- */
+.mh{padding:calc(16px * var(--sp)) calc(24px * var(--sp)) calc(12px * var(--sp));
+  display:flex;align-items:baseline;justify-content:space-between;
+  background:var(--bg-app);border-bottom:1px solid var(--line);position:relative}
+.mh-t{display:inline-flex;align-items:center;gap:calc(7px * var(--sp));background:transparent;
+  border:none;padding:0;cursor:pointer;font-family:var(--font);
+  font-size:calc(22px * var(--s));font-weight:650;letter-spacing:-.025em;color:var(--ink)}
+.mh-chev{font-size:calc(11px * var(--s));color:var(--accent);opacity:.85;transform:translateY(2px)}
+.mh-r{display:inline-flex;align-items:center;gap:calc(14px * var(--sp))}
+.nav{width:calc(38px * var(--sp));height:calc(38px * var(--sp));border-radius:50%;
+  border:1px solid var(--line);background:transparent;display:grid;place-items:center;cursor:pointer}
+.nav svg{width:calc(17px * var(--s));height:calc(17px * var(--s));fill:none;stroke:var(--ink-muted);
+  stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav[disabled]{opacity:.35}
+.navpair{display:inline-flex;gap:calc(8px * var(--sp))}
+.vista{width:calc(38px * var(--sp));height:calc(38px * var(--sp));display:grid;place-items:center;
+  border:none;border-radius:var(--r-sm);background:var(--surface-2);cursor:pointer}
+.vista svg{width:calc(20px * var(--s));height:calc(20px * var(--s));fill:none;stroke:var(--ink-faint);
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- LA TESTATA NUOVA: tre colonne, le due estremita FISSE --- */
+.mh2{padding:calc(10px * var(--sp)) calc(16px * var(--sp)) calc(12px * var(--sp));
+  display:grid;grid-template-columns:calc(38px * var(--sp)) 1fr calc(38px * var(--sp));
+  align-items:center;gap:calc(8px * var(--sp));
+  background:var(--bg-app);border-bottom:1px solid var(--line);position:relative}
+.mh2 .mh-t{justify-self:center;justify-content:center;min-width:0}
+.mh2 .mh-t span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* la riga verticale che dimostra che le frecce non si spostano */
+.guide{position:absolute;top:0;bottom:0;width:1px;background:rgba(248,113,113,.55);z-index:5;pointer-events:none}
+.guide.l{left:calc(16px * var(--sp) + 19px * var(--sp))}
+.guide.r{right:calc(16px * var(--sp) + 19px * var(--sp))}
+.pila{display:flex;flex-direction:column}
+.pila .mh2:not(:last-child){border-bottom:1px solid rgba(255,255,255,.05)}
+
+/* la griglia, quel tanto che basta a dare contesto */
+.gr{padding:calc(10px * var(--sp)) calc(16px * var(--sp)) calc(6px * var(--sp))}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:calc(6px * var(--sp));
+  font-size:calc(9px * var(--s));font-weight:650;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;padding-bottom:calc(8px * var(--sp))}
+.cells{display:grid;grid-template-columns:repeat(7,1fr);gap:calc(6px * var(--sp))}
+.c{aspect-ratio:1;border-radius:calc(9px * var(--sp));display:grid;place-items:center;
+  font-size:calc(14px * var(--s));color:var(--ink-faint);border:1px dashed rgba(255,255,255,.14)}
+.c.f{border:none;background:var(--surface-2);color:var(--ink-muted)}
+.c.t{border:1px solid var(--ink);color:var(--ink)}
+.c.o{border:none;color:transparent}
+.hint{margin:calc(14px * var(--sp)) calc(16px * var(--sp)) 0;padding-top:calc(14px * var(--sp));
+  border-top:1px solid var(--line);font-size:calc(12px * var(--s));color:var(--ink-faint)}
+
+/* il segmented della strada B */
+.seg{margin:calc(10px * var(--sp)) calc(16px * var(--sp)) 0;padding:3px;display:grid;
+  grid-template-columns:1fr 1fr;gap:2px;border-radius:var(--r-pill);
+  background:color-mix(in oklab,var(--ink) 6%,transparent);border:1px solid var(--line)}
+.seg button{border:none;background:transparent;border-radius:var(--r-pill);
+  padding:calc(7px * var(--sp)) 0;font-family:var(--font);font-size:calc(12px * var(--s));
+  font-weight:600;color:var(--ink-faint);cursor:pointer}
+.seg button.on{background:var(--glass-lens);color:var(--ink)}
+
+/* il foglio della strada C */
+.sheet{margin:calc(12px * var(--sp)) calc(16px * var(--sp));border-radius:var(--r-lg);
+  border:1px solid var(--line);background:var(--surface);overflow:hidden}
+.sheet .r{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:calc(13px * var(--sp)) calc(16px * var(--sp));
+  font-size:calc(14px * var(--s));color:var(--ink)}
+.sheet .r + .r{border-top:1px solid var(--line)}
+.sheet .r .v{font-size:calc(13px * var(--s));color:var(--ink-faint)}
+.sheet .h{padding:calc(12px * var(--sp)) calc(16px * var(--sp));font-size:calc(10px * var(--s));
+  font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+  border-bottom:1px solid var(--line)}
+
+.bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 auto 26px}
+.bar button{font-family:var(--font);font-size:12px;font-weight:600;padding:9px 15px;
+  border-radius:var(--r-pill);border:1px solid var(--pg-line);background:var(--pg-2);
+  color:var(--pg-mut);cursor:pointer;transition:all 140ms}
+.bar button:hover{color:var(--pg-ink)}
+.bar button.on{background:var(--pg-ink);color:var(--pg);border-color:var(--pg-ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1 class="page-title">La testata del Mese, e dove va il tasto della vista</h1>
+  <p class="page-sub">
+    Due richieste che si tengono per mano: <b>il mese al centro con le frecce fisse alle due
+    estremita</b>, e <b>dove mettere il tasto che scambia scacchiera e lista</b>. La seconda
+    decide la prima, perche' un terzo comando dentro quella riga le toglie proprio la simmetria
+    che le stiamo dando.
+  </p>
+  <span class="stamp">Da approvare . nessun codice scritto</span>
+
+  <div class="divider"></div>
+
+  <!-- ================================================== -->
+  <p class="label">&sect;00 . com'e adesso</p>
+  <h2 class="h2">Le frecce ballano da un mese all'altro</h2>
+  <p class="caption">
+    Titolo a sinistra, tutto il resto ammucchiato a destra. Il titolo cambia larghezza a ogni
+    mese — <b>Maggio</b> e' corto, <b>Settembre</b> e' lungo — e siccome la riga e'
+    <code>space-between</code>, le frecce non si spostano per il titolo... ma il contatore
+    sparisce e compare, e il gruppo di destra cambia comunque forma. Soprattutto: la freccia
+    <b>&lsaquo;</b> e la freccia <b>&rsaquo;</b> non sono agli estremi, sono appiccicate al
+    tasto della vista. Il pollice le cerca dove non stanno.
+  </p>
+  <div class="row">
+    <div>
+      <div class="fr tel">
+        <div class="ab"><div class="ab-in"><span class="ab-t">Mese</span><span class="ab-dot">M</span></div></div>
+        <div class="mh">
+          <button class="mh-t">Aprile 2026<span class="mh-chev">&#9662;</span></button>
+          <span class="mh-r">
+            <span class="navpair">
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+            </span>
+            <button class="vista"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+          </span>
+        </div>
+        <div class="gr" data-griglia></div>
+      </div>
+      <p class="cap">Oggi. Tre cose diverse — nome, navigazione, vista — in un blocco solo,
+        tutte a destra.</p>
+    </div>
+    <div>
+      <div class="fr tel" style="width:390px">
+        <div class="ab"><div class="ab-in"><span class="ab-t">Mese</span><span class="ab-dot">M</span></div></div>
+        <div class="pila">
+          <div class="mh"><button class="mh-t">Maggio 2026<span class="mh-chev">&#9662;</span></button>
+            <span class="mh-r"><span class="navpair">
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></span>
+              <button class="vista"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></span></div>
+          <div class="mh"><button class="mh-t">Settembre 2026<span class="mh-chev">&#9662;</span></button>
+            <span class="mh-r"><span class="navpair">
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></span>
+              <button class="vista"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></span></div>
+          <div class="mh"><button class="mh-t">Dicembre 2026<span class="mh-chev">&#9662;</span></button>
+            <span class="mh-r"><span class="navpair">
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <button class="nav"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></span>
+              <button class="vista"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></span></div>
+        </div>
+      </div>
+      <p class="cap">Tre mesi impilati: il titolo cresce e si accorcia, e il pollice non ha
+        mai un punto fermo dove tornare.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ================================================== -->
+  <p class="label">&sect;01 . la riga nuova</p>
+  <h2 class="h2">Mese al centro, frecce inchiodate ai bordi</h2>
+  <p class="caption">
+    Tre colonne: <b>38 punti fissi</b> a sinistra, tutto lo spazio che avanza al centro,
+    <b>38 punti fissi</b> a destra. Il titolo puo' essere lungo quanto vuole: le due frecce
+    stanno dove stanno. La riga rossa e' li' per dimostrarlo — attraversa quattro mesi di
+    lunghezza diversa e passa sempre esattamente al centro della freccia.
+  </p>
+  <div class="row">
+    <div>
+      <div class="fr tel">
+        <div class="ab"><div class="ab-in"><span class="ab-t">Mese</span><span class="ab-dot">M</span></div></div>
+        <div class="pila" style="position:relative">
+          <span class="guide l"></span><span class="guide r"></span>
+          <div class="mh2" data-mese="Maggio 2026"></div>
+          <div class="mh2" data-mese="Settembre 2026"></div>
+          <div class="mh2" data-mese="Dicembre 2026"></div>
+          <div class="mh2" data-mese="Aprile 2026" data-muro="1"></div>
+        </div>
+      </div>
+      <p class="cap">Quattro mesi, un solo asse. In fondo il mese corrente: la freccia in
+        avanti e' <b>spenta</b>, non sparita — sparire sposterebbe di nuovo tutto.</p>
+    </div>
+    <div>
+      <div class="fr tel">
+        <div class="ab"><div class="ab-in"><span class="ab-t">Mese</span><span class="ab-dot">M</span></div></div>
+        <div class="mh2" data-mese="Aprile 2026"></div>
+        <div class="gr" data-griglia></div>
+        <div class="hint">Tocca un giorno per vederne il titolo.</div>
+      </div>
+      <p class="cap">La schermata intera. Il titolo resta un tasto: apre il salto rapido,
+        come adesso.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ================================================== -->
+  <p class="label">&sect;02 . la domanda a Jony Ive</p>
+  <h2 class="h2">Dove va il tasto che scambia scacchiera e lista</h2>
+  <p class="caption">
+    La risposta comincia da una distinzione che Ive fa sempre: <b>quel tasto non cambia cosa
+    stai guardando, cambia come lo guardi</b>. Le frecce e il titolo sono navigazione — li usi
+    ogni volta che apri la schermata. La vista la scegli una volta e ci resti per settimane.
+    Due cose con frequenze cosi' diverse non stanno nella stessa riga: la piu' rara ruba il
+    posto alla piu' usata e le toglie la simmetria.
+  </p>
+  <div class="bar">
+    <button data-v="a" class="on">A . nella barra in alto <b style="color:var(--ok)">&nbsp;consigliata</b></button>
+    <button data-v="b">B . sotto, come Foto</button>
+    <button data-v="c">C . dentro il foglio del mese</button>
+  </div>
+  <div class="row" id="strade"></div>
+  <p class="cap" id="strada-cap" style="max-width:800px"></p>
+
+  <div class="divider"></div>
+
+  <!-- ================================================== -->
+  <p class="label">&sect;03 . perche' la A</p>
+  <h2 class="h2">Il precedente esiste, ed e' di Apple</h2>
+  <div class="two">
+    <div class="card go">
+      <h3 class="go">Cosa la rende giusta</h3>
+      <ul>
+        <li><b>Calendario di Apple fa esattamente questo</b>: il tasto che scambia mese e lista sta nella barra in alto, a destra. Non e' un'invenzione nostra, e' la convenzione che il tuo pollice conosce gia da altre app.</li>
+        <li>La riga del mese resta <b>pura</b>: freccia, nome, freccia. Tre elementi, un asse, nessuna eccezione.</li>
+        <li>La barra in alto e' <b>gia' li' su ogni schermata</b> e ha spazio vuoto in mezzo: non costa un pixel di altezza in piu.</li>
+        <li>Il tasto sta accanto al pallino dell'account, cioe' fra le cose che riguardano <b>la schermata</b> e non il contenuto. E' il posto concettualmente giusto, non solo quello che avanza.</li>
+      </ul>
+    </div>
+    <div class="card warn">
+      <h3 class="warn">Cosa costa, e va detto prima</h3>
+      <ul>
+        <li>La barra in alto e' <b>scheletro</b>: la usano tutte le schermate. Oggi non accetta comandi, solo titolo e pallino. Aggiungerle un posto per <b>UNA</b> azione della schermata e' un cambio di struttura, non di stile.</li>
+        <li>Il rischio vero e' il precedente: se il posto e' generico, fra sei mesi cinque moduli ci avranno infilato qualcosa e la barra sara' una barretta di icone. <b>Un posto solo, una azione sola</b>, e la guardia che controlla che il pallino resti l'ultimo a destra.</li>
+        <li>Se preferisci non toccare lo scheletro adesso, la <b>C</b> non lo tocca per niente: costa zero struttura, ma il tasto diventa piu' difficile da trovare.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="spec" style="margin-top:20px">
+    <div class="card stop">
+      <h3 class="stop">Una cosa che cambierei comunque, in tutte e tre le strade</h3>
+      <ul>
+        <li>L'icona di adesso per "torna alla lista" e' un <b>hamburger</b> (tre righe uguali). In iOS quel disegno vuol dire "menu", non "lista": e' il glifo che apre un cassetto di comandi. Una lista si disegna con <b>righe corte precedute da un puntino</b>. Oggi il tasto promette un menu e da' una lista.</li>
+        <li>Nel mockup qui sopra l'ho gia' sostituita: guarda la differenza fra il &sect;00 e le tre strade.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ICO = {
+  prev:'<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
+  next:'<svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>',
+  /* Una LISTA: righe corte col puntino. Non l'hamburger, che in iOS
+     vuol dire "menu". */
+  lista:'<svg viewBox="0 0 24 24"><circle cx="4.5" cy="7" r="1.3"/><circle cx="4.5" cy="12" r="1.3"/><circle cx="4.5" cy="17" r="1.3"/><path d="M9 7h11M9 12h11M9 17h11"/></svg>',
+  griglia:'<svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg>'
+};
+
+/* la testata a tre colonne */
+document.querySelectorAll('[data-mese]').forEach(el=>{
+  const muro = el.hasAttribute('data-muro');
+  el.innerHTML =
+     '<button class="nav">'+ICO.prev+'</button>'
+    +'<button class="mh-t"><span class="n">'+el.dataset.mese+'</span><span class="mh-chev">&#9662;</span></button>'
+    +'<button class="nav"'+(muro?' disabled':'')+'>'+ICO.next+'</button>';
+});
+
+/* una griglia di aprile, quel tanto che basta */
+document.querySelectorAll('[data-griglia]').forEach(el=>{
+  const wk = ['lun','mar','mer','gio','ven','sab','dom'];
+  let h = '<div class="wk">'+wk.map(w=>'<div>'+w+'</div>').join('')+'</div><div class="cells">';
+  for(let i=0;i<2;i++) h += '<div class="c o"></div>';
+  for(let d=1;d<=30;d++){
+    const cls = d===30 ? 'c t' : (d%3===0 || d%7===2 ? 'c f' : 'c');
+    h += '<div class="'+cls+'">'+d+'</div>';
+  }
+  el.innerHTML = h+'</div>';
+});
+
+/* le tre strade */
+const STRADE = {
+  a:{
+    testo:'<b>A . nella barra in alto.</b> Il tasto sale nella barra dove gia stanno il nome della schermata e il pallino dell account, a sinistra del pallino. E dove Calendario di Apple mette lo stesso identico comando. La riga del mese resta freccia-nome-freccia, e non si guadagna ne si perde un pixel di altezza.',
+    html:(mostra)=>tel({azione:true, testata:true, griglia:true, hint:true})
+  },
+  b:{
+    testo:'<b>B . sotto, come Foto.</b> Un interruttore a due caselle sotto la testata, come quello di Foto per Anni/Mesi/Giorni. Si vede subito e non si sbaglia. Ma occupa 44 punti di altezza per sempre, per una scelta che fai due volte al mese: sono 44 punti tolti alla scacchiera, che e il contenuto.',
+    html:()=>tel({testata:true, seg:true, griglia:true})
+  },
+  c:{
+    testo:'<b>C . dentro il foglio del mese.</b> Il titolo apre gia il salto rapido: li dentro, in cima, una riga "Come si vede". Zero comandi in piu sullo schermo, zero struttura da cambiare. Il difetto e onesto: chi non tocca mai il titolo non sapra mai che quella scelta esiste.',
+    html:()=>tel({testata:true, sheet:true})
+  }
+};
+
+function tel(o){
+  let h = '<div class="fr tel">';
+  h += '<div class="ab"><div class="ab-in"><span class="ab-t">Mese</span><span class="ab-r">';
+  if(o.azione) h += '<button class="ab-act">'+ICO.lista+'</button>';
+  h += '<span class="ab-dot">M</span></span></div></div>';
+  if(o.testata) h += '<div class="mh2" data-mese="Aprile 2026"></div>';
+  if(o.seg) h += '<div class="seg"><button>Lista</button><button class="on">Scacchiera</button></div>';
+  if(o.sheet) h += '<div class="sheet"><div class="h">Aprile 2026</div>'
+    +'<div class="r"><span>Come si vede</span><span class="v">Scacchiera &rsaquo;</span></div>'
+    +'<div class="r"><span>Vai a un altro mese</span><span class="v">&rsaquo;</span></div></div>';
+  if(o.griglia) h += '<div class="gr" data-griglia></div>';
+  if(o.hint) h += '<div class="hint">Tocca un giorno per vederne il titolo.</div>';
+  return h+'</div>';
+}
+
+const box = document.getElementById('strade');
+const cap = document.getElementById('strada-cap');
+function mostra(k){
+  box.innerHTML = '<div>'+STRADE[k].html()+'</div>';
+  cap.innerHTML = STRADE[k].testo;
+  /* i pezzi generati vanno riempiti come gli altri */
+  box.querySelectorAll('[data-mese]').forEach(el=>{
+    el.innerHTML =
+       '<button class="nav">'+ICO.prev+'</button>'
+      +'<button class="mh-t"><span class="n">'+el.dataset.mese+'</span><span class="mh-chev">&#9662;</span></button>'
+      +'<button class="nav">'+ICO.next+'</button>';
+  });
+  box.querySelectorAll('[data-griglia]').forEach(el=>{
+    const wk = ['lun','mar','mer','gio','ven','sab','dom'];
+    let h = '<div class="wk">'+wk.map(w=>'<div>'+w+'</div>').join('')+'</div><div class="cells">';
+    for(let i=0;i<2;i++) h += '<div class="c o"></div>';
+    for(let d=1;d<=30;d++){
+      const cls = d===30 ? 'c t' : (d%3===0 || d%7===2 ? 'c f' : 'c');
+      h += '<div class="'+cls+'">'+d+'</div>';
+    }
+    el.innerHTML = h+'</div>';
+  });
+}
+document.querySelectorAll('.bar [data-v]').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.bar [data-v]').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    mostra(b.dataset.v);
+  };
+});
+mostra('a');
+
+/* Le due guide rosse si posano sul centro VERO delle frecce, misurato dal
+   browser: una riga disegnata a occhio che cade due pixel fuori asse
+   demolirebbe proprio la cosa che deve dimostrare. */
+function posaLeGuide(){
+  const pila = document.querySelectorAll('.pila')[1];
+  if(!pila) return;
+  const rif = pila.querySelector('.mh2');
+  const nav = rif.querySelectorAll('.nav');
+  const base = pila.getBoundingClientRect();
+  const c = (el)=>{const r=el.getBoundingClientRect(); return r.left - base.left + r.width/2;};
+  pila.querySelector('.guide.l').style.left  = c(nav[0]) + 'px';
+  pila.querySelector('.guide.r').style.right = (base.width - c(nav[1])) + 'px';
+}
+addEventListener('load', posaLeGuide); addEventListener('resize', posaLeGuide); posaLeGuide();
+</script>
+</body>
+</html>
