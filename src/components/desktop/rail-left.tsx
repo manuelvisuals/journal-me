@@ -105,7 +105,7 @@ export function RailLeft() {
 
         {/* I moduli accesi: sul desktop ci stanno TUTTI, incolonnati, perche
             qui lo spazio c'e (sul telefono la barra ne mostra uno solo).
-            Sono sotto le voci fisse e sopra il separatore: sono sezioni,
+            Sono sotto le voci fisse, dentro il vassoio: sono sezioni,
             non azioni. */}
         {moduli.map((m) => (
           <Link
@@ -118,21 +118,26 @@ export function RailLeft() {
             {t(m.label)}
           </Link>
         ))}
-
-        <div className="jm-rail-sep" />
-        <Link href="/?record=1" className="jm-rail-i rec">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="9" y="3" width="6" height="11" rx="3" />
-            <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
-          </svg>
-          {/* Una parola sola: "Racconta a voce" andava a capo dentro i 222px
-              della rail, e una voce di navigazione su due righe rompe la
-              colonna che tutte le altre tengono. Il verbo resta quello del
-              progetto — si racconta la giornata — solo senza il complemento. */}
-          {mode === "local" ? t("Scrivi") : t("Racconta")}
-          <span className="jm-rail-kbd">{"⌘⇧R"}</span>
-        </Link>
       </div>
+
+      {/* Fuori dal vassoio di proposito (mockup dock-desktop.html §02):
+          nel dock il microfono non e una destinazione fra le altre, e
+          l'azione, e sta separato. Qui vale lo stesso, e per questo la
+          riga divisoria che c'era prima non serve piu: a dividere sono il
+          bordo del vassoio e il pieno del tasto. */}
+      <Link href="/?record=1" className="jm-rail-i rec">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="9" y="3" width="6" height="11" rx="3" />
+          <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
+        </svg>
+        {/* Una parola sola: "Racconta a voce" andava a capo dentro i 222px
+            della rail, e una voce di navigazione su due righe rompe la
+            colonna che tutte le altre tengono. Il verbo resta quello del
+            progetto — si racconta la giornata — solo senza il complemento. */}
+        {mode === "local" ? t("Scrivi") : t("Racconta")}
+        <span className="jm-rail-kbd">{"⌘⇧R"}</span>
+      </Link>
+
       {/* Il pallino non e piu un <div> morto: e LA porta dell'account
           (mockup porta-account §01). Chi sei, il menu e il logout vivono
           nel componente, perche il pallino ora esiste su due superfici. */}
