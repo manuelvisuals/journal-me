@@ -8,6 +8,7 @@ import { MonthSection } from "@/modules/mese/components/month-section";
 import { MeseGrid } from "@/modules/mese/components/mese-grid";
 import { MeseMini } from "@/modules/mese/components/mese-mini";
 import { setVistaGriglia, useVistaGriglia } from "@/modules/mese/vista";
+import { DaySwipe } from "@/modules/oggi";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { formatMonthTitle, daysInMonth, nowAppParts } from "@/lib/format";
 import { useT } from "@/lib/i18n";
@@ -79,23 +80,52 @@ export function MeseClient({ mode, initialMonth }: Props) {
   const [deskCache, setDeskCache] = useState<Record<string, Entry[]>>({
     [`${initialMonth.year}-${initialMonth.month}`]: initialMonth.entries,
   });
+  /* I mesi gia chiesti (non ancora per forza arrivati): vedi leggi(). */
+  const chiesti = useRef<Set<string>>(
+    new Set([`${initialMonth.year}-${initialMonth.month}`]),
+  );
   const deskKey = `${deskMonth.year}-${deskMonth.month}`;
   const deskEntries = deskCache[deskKey];
 
   useEffect(() => {
     // La stessa cache serve alla griglia grande (desktop) e a quella
     // compatta del telefono: e sempre "un mese per volta".
-    if ((!isDesktop && !griglia) || deskCache[deskKey] !== undefined) return;
+    if (!isDesktop && !griglia) return;
     let cancelled = false;
-    void (async () => {
-      const entries = await loadMonthEntries(
-        mode,
-        deskMonth.year,
-        deskMonth.month,
-      );
+
+    /* Il mese che serve ADESSO, e subito dopo i due vicini.
+       Il precaricamento non e una rifinitura: il dito che sfoglia arriva
+       sul mese vicino in 260ms, e senza questo ogni sfogliata mostrerebbe
+       l'attesa anche quando la risposta e a un passo. Il mese davanti si
+       legge solo se esiste davvero (oltre oggi non c'e niente da leggere:
+       sarebbe una chiamata di rete per tornare sempre vuota). */
+    const leggi = async (m: { year: number; month: number }) => {
+      const k = `${m.year}-${m.month}`;
+      /* Il registro dei mesi gia chiesti sta in un ref e non nello stato:
+         serve a non chiedere due volte lo stesso mese, e leggerlo dallo
+         stato qui dentro vorrebbe dire rimettere deskCache fra le
+         dipendenze, cioe rifare il giro a ogni mese che arriva. */
+      if (chiesti.current.has(k)) return;
+      chiesti.current.add(k);
+      const entries = await loadMonthEntries(mode, m.year, m.month);
       if (cancelled) return;
-      setDeskCache((prev) => ({ ...prev, [deskKey]: entries }));
+      setDeskCache((prev) =>
+        prev[k] !== undefined ? prev : { ...prev, [k]: entries },
+      );
+    };
+
+    void (async () => {
+      await leggi(deskMonth);
+      if (cancelled) return;
+      await leggi(stepMonth(deskMonth, -1));
+      if (cancelled) return;
+      const dopo = stepMonth(deskMonth, 1);
+      const nelFuturo =
+        dopo.year > today.year ||
+        (dopo.year === today.year && dopo.month > today.month);
+      if (!nelFuturo) await leggi(dopo);
     })();
+
     return () => {
       cancelled = true;
     };
@@ -351,20 +381,52 @@ export function MeseClient({ mode, initialMonth }: Props) {
       {/* Griglia compatta: UN mese, quanto sta nello schermo, senza il
           mese dopo che sbava da sotto. Il feed non c'e proprio: non e
           nascosto, non e montato. */}
-      {griglia && deskEntries !== undefined && (
+      {griglia && (
         <div className="jm-mese-solo lg:hidden">
-          <MeseMini
-            year={deskMonth.year}
-            month={deskMonth.month}
-            entries={deskEntries}
-            today={today}
-            onDayClick={(iso) => {
-              setPendingDate(iso);
-              startNav(() => {
-                router.push(`/giorno?d=${iso}`);
-              });
-            }}
-          />
+          {/* Si sfoglia col dito, con lo STESSO gesto della giornata
+              (@/modules/oggi, day-swipe): trascini verso destra e arriva
+              il mese prima, che entra da sinistra — dov'e la freccia "<".
+              Le due strade, le frecce e il dito, non si contraddicono mai.
+              Il gesto tiene ferma la pagina mentre il dito va di lato, ed
+              e il motivo per cui si riusa questo invece di riscriverne uno:
+              quella parte era gia costata un giro di correzioni.
+              L'intestazione resta FUORI dal piano che scorre: e lei a dire
+              dove sei finito, e deve stare ferma per poterlo dire. */}
+          <DaySwipe
+            onPrima={() => setDeskMonth((m) => stepMonth(m, -1))}
+            onDopo={() => setDeskMonth((m) => stepMonth(m, 1))}
+            muroDopo={meseCorrente}
+          >
+            {deskEntries === undefined ? (
+              /* Un attimo di attesa, non un mese vuoto: disegnare trentun
+                 quadratini spenti mentre li stiamo ancora leggendo direbbe
+                 "non hai raccontato niente", che e falso. */
+              <div className="jm-mese-attesa">
+                <span className="jm-dot-pulse" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </div>
+            ) : (
+              <MeseMini
+                /* Cambiando mese il quadratino scelto non ha piu senso:
+                   la chiave lo fa ripartire pulito invece di lasciare
+                   selezionato il 26 di un mese che non stai piu guardando. */
+                key={deskKey}
+                year={deskMonth.year}
+                month={deskMonth.month}
+                entries={deskEntries}
+                today={today}
+                onDayClick={(iso) => {
+                  setPendingDate(iso);
+                  startNav(() => {
+                    router.push(`/giorno?d=${iso}`);
+                  });
+                }}
+              />
+            )}
+          </DaySwipe>
         </div>
       )}
 

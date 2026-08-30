@@ -627,6 +627,31 @@
   overflow: hidden;
 }
 
+/* Da lg questa griglia non esiste: sul computer comanda mese-grid, quella
+   grande. Il `lg:hidden` scritto sull'elemento c'era gia e PERDEVA, perche
+   le utility Tailwind stanno in @layer e il display qui sopra vince
+   (la trappola gia pagata con .jm-month-header nella PR 9, con .jm-appbar
+   e col dock). Il difetto non si vedeva perche stava SOTTO la griglia
+   grande: 838px di pagina in piu, con un secondo mese identico in fondo,
+   che si scoprivano solo scorrendo. Trovato dal banco verify-mese-swipe il
+   30 agosto 2026, misurato anche su main pulito prima di attribuirselo. */
+@media (min-width: 1024px) {
+  .jm-mese-solo {
+    display: none;
+  }
+}
+
+/* L'attimo fra un mese e l'altro, quando il vicino non era ancora stato
+   letto. Tiene l'altezza del riquadro cosi il dito non vede la schermata
+   accorciarsi mentre sfoglia. */
+.jm-mese-attesa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: calc(220px * var(--jm-space));
+}
+
 .jm-mese-solo .jm-mese-mini {
   flex: 1;
   min-height: 0;
