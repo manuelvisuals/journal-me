@@ -70,7 +70,12 @@ React 19.2.4
 Font: Inter (UI) + Spectral (prosa) via next/font
 
 GitHub:   github.com/manuelvisuals/journal-me
-Vercel:   journal-me-weld.vercel.app         (team Hodl Inc, auto-deploy on push to main)
+Sito:     www.dayalogue.com                  (il dominio vero, quello che si guarda)
+Vercel:   journal-me-weld.vercel.app         (stesso progetto, team Hodl Inc,
+          auto-deploy on push to main. Resta l'indirizzo tecnico: e quello
+          compilato dentro il pacchetto iOS come NEXT_PUBLIC_API_BASE e
+          quello che il checkout Stripe usa come base. Non cambiarlo senza
+          parlarne con Manuel: l'app sul telefono manda li i suoi dati.)
           il vecchio journal-me-chi.vercel.app (team spammingmadh52-3011s) e
           abbandonato: il suo webhook GitHub era morto dal 14 giugno
 Supabase: fljshsmpmpzapcczsbwc.supabase.co   (nuovo, 12 ago 2026, eu-north-1)

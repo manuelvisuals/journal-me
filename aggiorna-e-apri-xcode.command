@@ -4,11 +4,23 @@
 
 clear
 V="\033[0m"; G="\033[1;32m"; R="\033[1;31m"; Y="\033[1;33m"; B="\033[1m"; D="\033[2m"
+# Il conto dei guai. Un [NO] ferma tutto e si vede; un [!!] no — e proprio
+# per quello alla fine serve un verdetto solo, invece di dover rileggere
+# venti righe per capire se e andata bene.
+PROBLEMI=0
 ok(){ printf "${G}[OK] %s${V}\n" "$1"; }
-ko(){ printf "${R}[NO] %s${V}\n" "$1"; }
-wr(){ printf "${Y}[!!] %s${V}\n" "$1"; }
+ko(){ PROBLEMI=$((PROBLEMI+1)); printf "${R}[NO] %s${V}\n" "$1"; }
+wr(){ PROBLEMI=$((PROBLEMI+1)); printf "${Y}[!!] %s${V}\n" "$1"; }
+# Giallo ma NON un guaio: cose che vale la pena dirti e che non rompono
+# niente (tipo "hai delle modifiche tue non salvate").
+nota(){ printf "${Y}[..] %s${V}\n" "$1"; }
 info(){ printf "${D}     %s${V}\n" "$1"; }
-stop(){ echo; read -n 1 -s -r -p "Premi un tasto per chiudere."; echo; exit 1; }
+stop(){
+  echo
+  printf "${R}${B}  ESITO: NON E ANDATA. Copia le righe rosse qui sopra a Claude.${V}\n"
+  echo
+  read -n 1 -s -r -p "Premi un tasto per chiudere."; echo; exit 1
+}
 
 printf "${B}dayalogue - aggiorna, ricostruisci, apri Xcode${V}\n\n"
 
@@ -66,7 +78,7 @@ git clean -fdq ios/App/App/public >/dev/null 2>&1
 git checkout -- package-lock.json >/dev/null 2>&1
 SPORCO=$(git status --porcelain | grep -v "^?? " | head -10)
 if [ -n "$SPORCO" ]; then
-  wr "Ci sono modifiche non salvate fuori dal pacchetto generato:"
+  nota "Ci sono modifiche non salvate fuori dal pacchetto generato:"
   printf "%s\n" "$SPORCO"
   info "le lascio stare e provo lo stesso a tirare"
 fi
@@ -141,12 +153,25 @@ grep -rql "jm-foto-mini" "$BUNDLE" 2>/dev/null \
 grep -rql "jm-nome-penna" "$BUNDLE" 2>/dev/null \
   && ok "C'e la pennina per cambiare il nome" \
   || wr "Manca la pennina del nome: dillo a Claude"
+# 30 agosto: la barra in alto col pallino su ogni schermata.
+grep -rql "jm-appbar" "$BUNDLE" 2>/dev/null \
+  && ok "C'e la barra in alto (il pallino su ogni schermata)" \
+  || wr "Manca la barra in alto: dillo a Claude"
 
 # ---------- 7. Xcode ----------
 if [ -d "ios/App/App.xcodeproj" ]; then
   open "ios/App/App.xcodeproj" && ok "Xcode si sta aprendo" || ko "Non riesco ad aprire Xcode"
 else
   ko "Non trovo ios/App/App.xcodeproj"
+fi
+
+echo
+# ---------- 8. il verdetto ----------
+# Una riga sola, in fondo, per non dover rileggere tutto: o e andata, o no.
+if [ "$PROBLEMI" -eq 0 ]; then
+  printf "${G}${B}  ESITO: TUTTO OK. Il pacchetto e pronto, Xcode e aperto.${V}\n"
+else
+  printf "${R}${B}  ESITO: %s PROBLEMA/I. Cerca le righe [NO] e [!!] qui sopra e copiale a Claude.${V}\n" "$PROBLEMI"
 fi
 
 echo
