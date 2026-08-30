@@ -22,6 +22,38 @@ stop(){
   read -n 1 -s -r -p "Premi un tasto per chiudere."; echo; exit 1
 }
 
+# NIENTE ATTESE MUTE (30 agosto 2026). Lo script si e piantato dopo
+# "[OK] Node" senza dire niente: era `git fetch` che chiedeva utente e
+# password su un output buttato nel cestino. Due regole, da qui in poi:
+#
+#  1. git non chiede MAI niente a voce. Con GIT_TERMINAL_PROMPT=0
+#     fallisce subito e dice perche, invece di aspettare per sempre una
+#     risposta che nessuno puo vedere.
+#  2. ogni comando che tocca la rete o che puo essere lento gira con un
+#     TETTO DI TEMPO. Se lo sfonda, si ferma e lo dice.
+#
+# Il tetto e scritto a mano perche `timeout` su macOS non esiste (e in
+# coreutils, che non c'e di serie).
+export GIT_TERMINAL_PROMPT=0
+
+con_tetto(){
+  secondi="$1"; shift
+  "$@" &
+  pid=$!
+  passati=0
+  while kill -0 "$pid" 2>/dev/null; do
+    if [ "$passati" -ge "$secondi" ]; then
+      kill -9 "$pid" 2>/dev/null
+      wait "$pid" 2>/dev/null
+      return 124
+    fi
+    sleep 1
+    passati=$((passati+1))
+  done
+  wait "$pid"
+  return $?
+}
+
 printf "${B}dayalogue - aggiorna, ricostruisci, apri Xcode${V}\n\n"
 
 # ---------- 1. la cartella giusta ----------
@@ -50,8 +82,25 @@ command -v npx  >/dev/null 2>&1 || { ko "Manca npx. Installa Node.js e riprova."
 ok "Node $(node -v)"
 
 # ---------- 3. aggiorno il codice (rebase) ----------
-git fetch origin >/dev/null 2>&1 || { ko "GitHub non raggiungibile. Controlla la rete (e che la VPN non sia di mezzo)."; stop; }
-ok "GitHub raggiunto"
+# L'errore NON si butta piu nel cestino: se git ha qualcosa da dire, la
+# cosa piu utile che questo script possa fare e ripetertela.
+info "leggo GitHub..."
+con_tetto 90 git fetch origin >/tmp/jm-fetch.log 2>&1
+ESITO=$?
+if [ "$ESITO" -eq 0 ]; then
+  ok "GitHub raggiunto"
+elif [ "$ESITO" -eq 124 ]; then
+  ko "GitHub non risponde da 90 secondi: mi fermo invece di restare appeso."
+  info "di solito e la rete, o una VPN di mezzo. Ultime righe di git:"
+  tail -6 /tmp/jm-fetch.log
+  stop
+else
+  ko "Non riesco a leggere GitHub. Git dice:"
+  tail -8 /tmp/jm-fetch.log
+  info "se parla di Username, Password, credentials o Authentication,"
+  info "allora e il permesso di GitHub scaduto: dillo a Claude."
+  stop
+fi
 
 PRIMA=$(git rev-parse --short HEAD)
 git checkout main >/dev/null 2>&1
@@ -83,7 +132,15 @@ if [ -n "$SPORCO" ]; then
   info "le lascio stare e provo lo stesso a tirare"
 fi
 IO_PRIMA=$(shasum "$0" 2>/dev/null | cut -d" " -f1)
-if git pull --rebase origin main >/tmp/jm-pull.log 2>&1; then
+info "tiro le novita..."
+con_tetto 120 git pull --rebase origin main >/tmp/jm-pull.log 2>&1
+ESITO=$?
+if [ "$ESITO" -eq 124 ]; then
+  ko "Il pull non e tornato entro due minuti: mi fermo invece di restare appeso."
+  tail -8 /tmp/jm-pull.log
+  stop
+fi
+if [ "$ESITO" -eq 0 ]; then
   # Questo script sta DENTRO il repo che ha appena tirato: se il pull lo ha
   # cambiato, bash starebbe leggendo le righe successive da un file diverso
   # da quello con cui e partito, e il comportamento diventa imprevedibile.
@@ -109,10 +166,18 @@ fi
 # node_modules era vecchio, e npx chiedeva "Ok to proceed? (y)" dentro un
 # log dove nessuno puo rispondere. Con il lockfile gia allineato npm install
 # ci mette secondi; quando c'e roba nuova, la mette.
-info "controllo le dipendenze (secondi se sono gia aggiornate)..."
-npm install --no-audit --no-fund >/tmp/jm-npm.log 2>&1 \
-  && ok "Dipendenze aggiornate" \
-  || { ko "npm install fallito. Ultime righe:"; tail -12 /tmp/jm-npm.log; stop; }
+info "controllo le dipendenze (secondi se sono gia aggiornate, qualche minuto se c'e roba nuova)..."
+con_tetto 900 npm install --no-audit --no-fund >/tmp/jm-npm.log 2>&1
+ESITO=$?
+if [ "$ESITO" -eq 0 ]; then
+  ok "Dipendenze aggiornate"
+elif [ "$ESITO" -eq 124 ]; then
+  ko "npm install non e finito in quindici minuti: mi fermo. Ultime righe:"
+  tail -12 /tmp/jm-npm.log
+  stop
+else
+  ko "npm install fallito. Ultime righe:"; tail -12 /tmp/jm-npm.log; stop
+fi
 
 # ---------- 5. ricostruisco il pacchetto dell'app ----------
 SHA=$(git rev-parse --short HEAD)
@@ -121,13 +186,21 @@ export NEXT_PUBLIC_BUILD="$SHA $DATA"
 export NEXT_PUBLIC_SUPABASE_URL="https://fljshsmpmpzapcczsbwc.supabase.co"
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="sb_publishable_PG0EigYjq38S0DY97VOKRA_i2u3Pqnm"
 export NEXT_PUBLIC_API_BASE="https://journal-me-weld.vercel.app"
-printf "     ricostruisco il pacchetto (%s)...\n" "$NEXT_PUBLIC_BUILD"
-if JM_MOBILE=1 npx --no-install next build >/tmp/jm-build.log 2>&1; then
+printf "     ricostruisco il pacchetto (%s), un paio di minuti...\n" "$NEXT_PUBLIC_BUILD"
+export JM_MOBILE=1
+con_tetto 900 npx --no-install next build >/tmp/jm-build.log 2>&1
+ESITO=$?
+unset JM_MOBILE
+if [ "$ESITO" -eq 0 ]; then
   ok "Pacchetto costruito"
+elif [ "$ESITO" -eq 124 ]; then
+  ko "La costruzione non e finita in quindici minuti: mi fermo. Ultime righe:"
+  tail -20 /tmp/jm-build.log
+  stop
 else
   ko "La costruzione e fallita. Ultime righe:"; tail -20 /tmp/jm-build.log; stop
 fi
-if npx --no-install cap sync ios >/tmp/jm-sync.log 2>&1; then
+if con_tetto 300 npx --no-install cap sync ios >/tmp/jm-sync.log 2>&1; then
   ok "Pacchetto copiato dentro l'app"
 else
   ko "La copia dentro l'app e fallita. Ultime righe:"; tail -12 /tmp/jm-sync.log; stop
