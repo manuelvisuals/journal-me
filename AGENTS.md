@@ -31,4 +31,11 @@ Le regole comuni, valide in ogni cartella:
    tuo modulo (elencato nel suo CLAUDE.md) e `node scripts/verify-i18n.mjs`.
    Un errore ESLint "confine fra moduli" significa che sei fuori recinto: rientra
    (o passa dalla porta `@/modules/<nome>`), non chiedere eccezioni al lint.
+6. **Un comando da Terminale per Manuel si scrive come dice `REGOLE-TERMINALE.md`.**
+   In sintesi: una riga sola che chiama uno script versionato; mai
+   `>/dev/null 2>&1` su cio che puo chiedere input; `GIT_TERMINAL_PROMPT=0`;
+   un tetto di tempo su ogni passo di rete (`timeout` su macOS non esiste);
+   target bash 3.2; verdetto unico in fondo. E mentre lui esegue, la sessione
+   NON tocca la cartella collegata: due git sullo stesso `.git` si appendono,
+   e lo script accusa la rete che invece funziona.
 <!-- END:nextjs-agent-rules -->
