@@ -1116,6 +1116,19 @@ summary:active {
   gap: calc(12px * var(--jm-space));
 }
 
+/* Il gruppo a destra: l'azione della schermata (quasi sempre vuota) e il
+   pallino, che resta l'ultimo elemento. Vuoto sparisce del tutto, cosi il
+   pallino non prende un margine per un elemento che non c'e. */
+.jm-appbar-r {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(4px * var(--jm-space));
+}
+
+.jm-appbar-az:empty {
+  display: none;
+}
+
 .jm-appbar-t {
   font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 650;

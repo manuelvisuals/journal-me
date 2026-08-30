@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
+import { AppBarAzione } from "@/components/ui/app-bar";
 import { JumpPicker } from "@/modules/mese/components/jump-picker";
 import { MonthSection } from "@/modules/mese/components/month-section";
 import { MeseGrid } from "@/modules/mese/components/mese-grid";
@@ -295,13 +296,71 @@ export function MeseClient({ mode, initialMonth }: Props) {
         />
       )}
 
-      {/* Sticky month header (solo telefono: da lg comanda la griglia).
+      {/* IL TASTO DELLA VISTA E SALITO NELLA BARRA IN ALTO (mockup
+          mese-testata.html, strada A, 30 agosto 2026): non cambia COSA
+          guardi ma COME lo guardi, quindi non stava nella riga del mese,
+          che e navigazione. E dove Calendario di Apple mette lo stesso
+          comando. Da lg la barra non si disegna e il tasto sparisce con
+          lei: giusto, perche sul computer comanda sempre la griglia
+          grande. */}
+      <AppBarAzione>
+        <button
+          type="button"
+          className="jm-mese-vista"
+          aria-pressed={griglia}
+          aria-label={
+            griglia ? t("Torna alla lista") : t("Vedi il mese a griglia")
+          }
+          onClick={() => setVistaGriglia(!griglia)}
+        >
+          {griglia ? (
+            /* Una LISTA: righe corte col puntino davanti. NON tre righe
+               uguali: quel disegno in iOS vuol dire "menu", cioe apre un
+               cassetto di comandi, e il tasto prometteva una cosa e ne
+               dava un'altra. */
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="4.5" cy="7" r="1.3" />
+              <circle cx="4.5" cy="12" r="1.3" />
+              <circle cx="4.5" cy="17" r="1.3" />
+              <path d="M9 7h11M9 12h11M9 17h11" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3.5" y="3.5" width="7" height="7" rx="1.6" />
+              <rect x="13.5" y="3.5" width="7" height="7" rx="1.6" />
+              <rect x="3.5" y="13.5" width="7" height="7" rx="1.6" />
+              <rect x="13.5" y="13.5" width="7" height="7" rx="1.6" />
+            </svg>
+          )}
+        </button>
+      </AppBarAzione>
+
+      {/* La riga del mese (solo telefono: da lg comanda la griglia).
           Il top NON e piu zero: sopra c'e la barra dell'app (sticky anche
           lei), e un mese incollato a zero le finirebbe sotto. */}
       <header
-        className="jm-month-header lg:hidden"
+        className={`jm-month-header${griglia ? " nav" : ""} lg:hidden`}
         style={{ position: "sticky", top: "var(--jm-appbar-h)" }}
       >
+        {/* In griglia la riga e un navigatore e basta: freccia, nome,
+            freccia. Le due frecce stanno in due colonne di larghezza
+            FISSA agli estremi, cosi non si spostano di un pixel quando
+            il nome passa da "Maggio" a "Settembre" (richiesta di Manuel,
+            30 agosto 2026). Il titolo vive nella colonna elastica in
+            mezzo e resta il tasto che apre il salto lungo. */}
+        {griglia && (
+          <button
+            type="button"
+            className="jm-mese-nav"
+            onClick={() => setDeskMonth((m) => stepMonth(m, -1))}
+            aria-label={t("Mese precedente")}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        )}
+
         <button
           type="button"
           className="jm-month-title"
@@ -309,73 +368,36 @@ export function MeseClient({ mode, initialMonth }: Props) {
           aria-haspopup="dialog"
           aria-expanded={pickerOpen}
         >
-          <span suppressHydrationWarning>
+          <span className="jm-month-nome" suppressHydrationWarning>
             {formatMonthTitle(mesePieno.year, mesePieno.month)}
           </span>
           <span className="jm-month-chevron">&#9662;</span>
         </button>
-        <span className="jm-month-right">
-          {/* In griglia il mese non si scorre piu: si cambia con le frecce,
-              come sul computer. Il salto lungo resta sul titolo. */}
-          {griglia && (
-            <span className="jm-mese-navpair">
-              <button
-                type="button"
-                className="jm-mese-nav"
-                onClick={() => setDeskMonth((m) => stepMonth(m, -1))}
-                aria-label={t("Mese precedente")}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className="jm-mese-nav"
-                onClick={() => setDeskMonth((m) => stepMonth(m, 1))}
-                disabled={meseCorrente}
-                aria-label={t("Mese successivo")}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            </span>
-          )}
-          {/* Il contatore sta nella lista. In griglia sparisce: le due
-              frecce hanno bisogno di quello spazio, e il conto dei giorni
-              raccontati la griglia lo dice gia coi quadratini pieni. */}
-          {!griglia && contatore && (
+
+        {griglia ? (
+          /* Sul mese corrente la freccia si SPEGNE e non sparisce:
+             sparire rimetterebbe in movimento la riga che stiamo
+             inchiodando. */
+          <button
+            type="button"
+            className="jm-mese-nav"
+            onClick={() => setDeskMonth((m) => stepMonth(m, 1))}
+            disabled={meseCorrente}
+            aria-label={t("Mese successivo")}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        ) : (
+          /* Nella lista non ci sono frecce (il mese lo si scorre) e il
+             contatore torna al suo posto a destra. */
+          contatore && (
             <span className="jm-month-count">
               {contatore.done} / {contatore.total}
             </span>
-          )}
-          {/* Lista <-> griglia. Un solo bottone, nello stesso punto:
-              acceso mostra la lista (la via del ritorno), spento mostra
-              i quadratini (la via dell'andata). */}
-          <button
-            type="button"
-            className="jm-mese-vista"
-            aria-pressed={griglia}
-            aria-label={
-              griglia ? t("Torna alla lista") : t("Vedi il mese a griglia")
-            }
-            onClick={() => setVistaGriglia(!griglia)}
-          >
-            {griglia ? (
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="3" width="7.5" height="7.5" rx="1.6" />
-                <rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6" />
-                <rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6" />
-                <rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6" />
-              </svg>
-            )}
-          </button>
-        </span>
+          )
+        )}
       </header>
 
       {/* Griglia compatta: UN mese, quanto sta nello schermo, senza il
