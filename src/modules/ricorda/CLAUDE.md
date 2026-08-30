@@ -12,7 +12,12 @@ persona. Pagine: `src/app/remember/` e `src/app/persona/`.
 
 - Prefissi CSS (misurati): `jm-rem`, `jm-pers`, `jm-qc`.
 - La porta esporta QuickCapture (la usa Oggi in /giorno per aggiungere).
-- Banchi prima del push: `verify-pr8`, `verify-persona-moduli` (piu tsc,
-  eslint, verify-i18n).
+- Banchi prima del push: `verify-pr8`, `verify-persona-moduli`,
+  `verify-barra-alto` (piu tsc, eslint, verify-i18n).
 - Le API del modulo (passo E): `src/modules/ricorda/server/classify.ts`; la route
   in `src/app/api/remember/classify/` e un guscio.
+
+La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
+pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
+in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
+rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.

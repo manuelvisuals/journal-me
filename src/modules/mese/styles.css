@@ -205,7 +205,7 @@
    difetto piu facile da reintrodurre.
 --------------------------------------------------------------------------- */
 .jm-month-header {
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-top: calc(16px + var(--jm-safe-top));
 }
 
 /* Il jump picker di Mese cadeva a 110px dal bordo assoluto dello schermo. */

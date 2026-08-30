@@ -1464,7 +1464,7 @@
    non in uno style inline perche l'inline non si puo scavalcare
    con una media query. */
 .jm-col-head {
-  padding: calc(26px + env(safe-area-inset-top, 0px)) 24px 6px;
+  padding: calc(26px + var(--jm-safe-top)) 24px 6px;
 }
 
 .jm-fv-wrap {

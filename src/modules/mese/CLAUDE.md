@@ -17,5 +17,10 @@ Le scambia l'icona nell'intestazione; la scelta vive in `vista.ts`
 (localStorage `jm.mese.vista`). Da lg comanda `mese-grid`, la griglia grande.
 
 - Prefissi CSS (misurati): `jm-mese`, `jm-month`, `jm-dots`, `jm-picker`.
-- Banchi prima del push: `verify-pr9`, `verify-mese-nav` (piu tsc, eslint,
-  verify-i18n).
+- Banchi prima del push: `verify-pr9`, `verify-mese-nav`,
+  `verify-barra-alto` (piu tsc, eslint, verify-i18n).
+
+La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
+pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
+in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
+rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.

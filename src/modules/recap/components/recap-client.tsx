@@ -98,7 +98,10 @@ export function RecapClient({ mode, initialRecaps }: Props) {
       className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
       <header className="jm-rec-head">
-        <h1 className="jm-rec-h">Recap</h1>
+        {/* Sul telefono il titolo e nella barra in alto (30 agosto 2026,
+            mockup pallino-ovunque, strada B). Da lg la barra non c'e e il
+            titolo resta dov'era. */}
+        <h1 className="jm-rec-h jm-solo-desktop">Recap</h1>
         <div className="jm-period-seg" role="tablist">
           {PERIODS.map((p) => (
             <button

@@ -13,7 +13,7 @@ export default function Loading() {
     <>
       <div
         className="flex flex-1 flex-col"
-        style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
+        style={{ padding: "0 24px", paddingTop: "calc(24px + var(--jm-safe-top))", minHeight: 0 }}
         aria-busy="true"
         aria-label={t("Caricamento")}
       >

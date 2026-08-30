@@ -39,7 +39,8 @@ export default function PalestraPage() {
     <>
       <main className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col">
         <header className="jm-col-head">
-          <h1 className="jm-st-h1">{t("Palestra")}</h1>
+          {/* Sul telefono il nome e nella barra in alto; da lg resta qui. */}
+          <h1 className="jm-st-h1 jm-solo-desktop">{t("Palestra")}</h1>
           <p className="jm-st-sub">
             {t("Allenamenti, serie e progressi.")}
           </p>

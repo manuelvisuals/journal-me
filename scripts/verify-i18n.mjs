@@ -21,6 +21,10 @@ import { collectKeys } from "./i18n-keys.mjs";
 /** Chiavi passate a t() tramite variabile, con la loro provenienza. */
 const DINAMICHE = {
   "components/ui/tab-bar.tsx (SIDE_TABS)": ["Oggi", "Mese", "Ricorda", "Impost."],
+  "components/ui/app-bar.tsx (TITOLI: il nome della schermata nella barra)": [
+    "Oggi", "Mese", "Ricorda", "Recap", "Impostazioni",
+    "Giornata", "Persona", "Palestra",
+  ],
   "components/desktop/rail-left.tsx (NAV_ITEMS, account)": [
     "Oggi", "Mese", "Ricorda", "Recap", "Impostazioni",
     "questo dispositivo", "Locale", "Cloud", "Premium",

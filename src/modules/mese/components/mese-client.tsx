@@ -265,10 +265,12 @@ export function MeseClient({ mode, initialMonth }: Props) {
         />
       )}
 
-      {/* Sticky month header (solo telefono: da lg comanda la griglia) */}
+      {/* Sticky month header (solo telefono: da lg comanda la griglia).
+          Il top NON e piu zero: sopra c'e la barra dell'app (sticky anche
+          lei), e un mese incollato a zero le finirebbe sotto. */}
       <header
         className="jm-month-header lg:hidden"
-        style={{ position: "sticky", top: 0 }}
+        style={{ position: "sticky", top: "var(--jm-appbar-h)" }}
       >
         <button
           type="button"
