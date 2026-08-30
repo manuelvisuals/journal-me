@@ -1075,8 +1075,11 @@ summary:active {
   z-index: 6;
   height: var(--jm-appbar-h);
   padding-top: env(safe-area-inset-top, 0px);
+  /* Niente riga di separazione sotto (scelta di Manuel, 30 agosto): la
+     barra si stacca gia dal contenuto perche e opaca e sta ferma mentre
+     sotto scorre. Il fondo pieno pero serve, e non e decorativo: senza,
+     il testo che scorre si leggerebbe attraverso la barra. */
   background: var(--color-bg-phone);
-  border-bottom: 1px solid var(--color-line);
 }
 
 .jm-appbar-in {
