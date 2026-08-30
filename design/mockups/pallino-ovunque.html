@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Il pallino sempre nello stesso posto</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* Token del tema MINIMAL chiaro (src/themes/minimal.ts), scala 1.15. */
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px; --s:1.15;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --hot:#FBBF24; --no:#F87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:46px 24px 110px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:35px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:800px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:44px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:25px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 26px;
+  max-width:840px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+.hint{font-size:11.5px;color:var(--hot);text-align:center;margin-top:14px}
+
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;
+  padding:22px 24px;max-width:940px;margin:0 auto}
+.card + .card{margin-top:16px}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:14px}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.card b{color:var(--pg-ink);font-weight:600}
+.card code{color:var(--hot);background:rgba(0,0,0,.3);padding:1px 6px;border-radius:5px}
+.card.no{border-color:rgba(248,113,113,.28);background:rgba(248,113,113,.05)}
+.card.no li::before{background:var(--no)}
+.card.si{border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.05)}
+.card.si li::before{background:var(--ok)}
+
+/* comandi */
+.tools{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin:0 auto 26px;
+  align-items:flex-start}
+.grp{display:flex;flex-direction:column;gap:8px;align-items:center}
+.grp .t{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--pg-faint)}
+.grp .row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.tool{font-family:var(--font);font-size:12.5px;font-weight:600;color:var(--pg-mut);
+  background:var(--pg-2);border:1px solid var(--pg-line);border-radius:var(--r-pill);
+  padding:8px 14px;cursor:pointer;white-space:nowrap}
+.tool.on{background:var(--pg-ink);color:#17171A;border-color:var(--pg-ink)}
+
+/* ============ TELEFONO ============ */
+.stage{display:flex;gap:40px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.phone{width:390px;height:720px;border-radius:38px;overflow:hidden;background:var(--bg-app);
+  color:var(--ink);position:relative;display:flex;flex-direction:column;flex:0 0 390px;
+  box-shadow:0 26px 62px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.4)}
+.status{height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 26px;font-size:14.5px;font-weight:600;color:var(--ink)}
+.ph{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;overflow:hidden}
+
+/* la barra in alto della proposta B */
+.appbar{display:none;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 20px 10px;border-bottom:1px solid var(--line)}
+body[data-via="B"] .appbar{display:flex}
+.appbar .tit{font-size:calc(17px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+
+.scroll{flex:1;min-height:0;overflow-y:auto}
+
+/* intestazioni vere delle schermate */
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 24px 8px}
+.head.sticky{position:sticky;top:0;background:var(--bg-app);border-bottom:1px solid var(--line);
+  padding:14px 24px 12px;z-index:2}
+.data{font-size:calc(11px * var(--s));font-weight:600;color:var(--ink-faint);
+  letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+.h1s{font-size:calc(24px * var(--s));font-weight:650;letter-spacing:-.02em;color:var(--ink)}
+.mtitle{display:inline-flex;align-items:center;gap:7px;font-size:calc(20px * var(--s));
+  font-weight:650;letter-spacing:-.025em;color:var(--ink)}
+.mtitle .chev{font-size:11px;color:var(--accent);opacity:.85}
+.destra{display:flex;align-items:center;gap:12px}
+.rbtn{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:var(--surface);
+  color:var(--accent);border:1px solid color-mix(in oklab,var(--accent) 30%,transparent);
+  display:flex;align-items:center;justify-content:center}
+.rbtn svg{stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;width:17px;height:17px}
+.edit{font-size:calc(12px * var(--s));color:var(--accent);font-weight:600;white-space:nowrap}
+.mnav{display:flex;gap:2px}
+.mico{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;
+  justify-content:center;color:var(--ink-faint)}
+.mico svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.mcount{font-size:10px;font-weight:600;color:var(--ink-faint);letter-spacing:.16em;
+  text-transform:uppercase;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chips{display:flex;gap:7px;padding:10px 24px 4px;flex-wrap:wrap}
+.chip{font-size:calc(12px * var(--s));font-weight:600;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 12px;white-space:nowrap}
+.chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.corpo{padding:14px 24px 20px}
+.ghost{border:1px dashed var(--line);border-radius:var(--r-lg);padding:26px 18px;text-align:center;
+  font-size:calc(12.5px * var(--s));color:var(--ink-faint);line-height:1.6}
+.fvh{font-size:calc(25px * var(--s));font-weight:650;line-height:1.15;letter-spacing:-.025em;
+  color:var(--ink);margin:6px 0 12px}
+
+/* IL PALLINO — tre modi di stare in pagina */
+.av{width:44px;height:44px;flex:0 0 44px;border-radius:50%;overflow:hidden;
+  border:1px solid color-mix(in oklab,var(--accent) 30%,transparent);background:var(--surface);
+  display:flex;align-items:center;justify-content:center}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av.mini{width:34px;height:34px;flex:0 0 34px}
+.av.tab{width:24px;height:24px;flex:0 0 24px;border-width:1px}
+
+/* fisso: sempre nello stesso pixel, sopra tutto */
+.av-fisso{position:absolute;top:52px;right:22px;z-index:8;display:none;
+  box-shadow:0 2px 10px rgba(0,0,0,.14)}
+body[data-via="A"] .av-fisso{display:flex}
+
+/* in testata, solo su Oggi: com'e adesso */
+.av-oggi{display:none}
+body[data-via="ORA"] .av-oggi{display:flex}
+
+/* nella barra in alto: proposta B */
+.av-bar{display:none}
+body[data-via="B"] .av-bar{display:flex}
+
+/* nella tab bar: proposta C */
+.tabs{display:grid;align-items:center;border-top:1px solid var(--line);
+  padding:10px 0 18px;background:var(--bg-app)}
+body[data-via="C"] .tabs{grid-template-columns:repeat(5,1fr)}
+.tabs{grid-template-columns:repeat(5,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-faint)}
+.tab.on{color:var(--accent)}
+.tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round}
+.tab span{font-size:calc(9px * var(--s));font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.mic{width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+  display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.34)}
+.mic svg{width:22px;height:22px}
+.tab-ric{display:flex}
+body[data-via="C"] .tab-ric{display:none}
+.tab-av{display:none}
+body[data-via="C"] .tab-av{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-faint)}
+
+/* la collisione, evidenziata */
+.collisione{position:absolute;top:44px;right:14px;width:150px;height:56px;
+  border:2px dashed var(--danger);border-radius:10px;display:none;z-index:9;pointer-events:none}
+.collisione::after{content:"si sovrappongono";position:absolute;top:100%;right:0;margin-top:4px;
+  font-size:10px;font-weight:700;color:#fff;background:var(--danger);padding:3px 7px;
+  border-radius:5px;white-space:nowrap}
+body[data-via="A"][data-scr="mese"][data-coll="1"] .collisione{display:block}
+
+/* su A il cluster di Mese fa spazio (la modifica che costa) */
+body[data-via="A"][data-scr="mese"]:not([data-coll="1"]) .mcount{display:none}
+body[data-via="A"][data-scr="mese"]:not([data-coll="1"]) .destra-mese{margin-right:52px}
+
+.schermo{display:none}
+.schermo.on{display:block}
+
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin:16px auto 0;
+  line-height:1.65;max-width:390px}
+.cap b{color:var(--pg-mut);font-weight:600}
+
+/* colonna di spiegazione */
+.tell{flex:1;min-width:300px;max-width:400px}
+.tell-box{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;padding:20px 22px}
+.tell-box .k{font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--hot);margin-bottom:10px}
+.tell-box .v{font-size:14.5px;color:var(--pg-ink);line-height:1.6}
+.tell-box .costo{font-size:13px;color:var(--pg-faint);margin-top:14px;padding-top:14px;
+  border-top:1px solid var(--pg-line);line-height:1.6}
+.tell-box .costo b{color:var(--pg-mut);font-weight:650}
+</style>
+</head>
+<body data-via="ORA" data-scr="oggi" data-coll="0">
+<div class="wrap">
+
+<h1 class="page-title">Il pallino sempre nello stesso posto</h1>
+<p class="page-sub">
+  Adesso la tua faccia c'e solo su Oggi: navigando sparisce. Hai ragione, ed e colpa di
+  come l'ho consegnata — montata su una schermata sola. Ma la strada che avevo in mente
+  (una riga per ogni modulo) avrebbe <b>peggiorato</b> il problema: cinque intestazioni
+  diverse, cinque posizioni leggermente diverse. Qui sotto le tre strade vere.
+  <b>Cambia schermata e guarda se il pallino resta fermo.</b>
+</p>
+
+<div class="divider"></div>
+
+<div class="tools">
+  <div class="grp">
+    <span class="t">Strada</span>
+    <div class="row">
+      <button class="tool on" data-via="ORA">Adesso</button>
+      <button class="tool" data-via="A">A . fisso</button>
+      <button class="tool" data-via="B">B . barra in alto</button>
+      <button class="tool" data-via="C">C . nella barra sotto</button>
+    </div>
+  </div>
+  <div class="grp">
+    <span class="t">Schermata</span>
+    <div class="row">
+      <button class="tool on" data-scr="oggi">Oggi</button>
+      <button class="tool" data-scr="mese">Mese</button>
+      <button class="tool" data-scr="ricorda">Ricorda</button>
+      <button class="tool" data-scr="recap">Recap</button>
+    </div>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="phone" id="tel">
+    <div class="status"><span>14:46</span><span>&#9679;&#9679;&#9679;</span></div>
+
+    <!-- il pallino FISSO (strada A): sta fuori dalle schermate, non dentro -->
+    <span class="av av-fisso" data-av></span>
+    <span class="collisione"></span>
+
+    <div class="ph">
+      <!-- la barra in alto (strada B): uguale su ogni schermata -->
+      <div class="appbar">
+        <span class="tit" data-titolo>Oggi</span>
+        <span class="av mini av-bar" data-av></span>
+      </div>
+
+      <div class="scroll">
+        <!-- OGGI -->
+        <section class="schermo on" data-s="oggi">
+          <div class="head">
+            <span class="data">Ven . 28 Ago</span>
+            <span class="destra">
+              <span class="edit">modifica &#8599;</span>
+              <span class="rbtn"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+              <span class="rbtn"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+              <span class="av av-oggi" data-av></span>
+            </span>
+          </div>
+          <div class="corpo">
+            <h1 class="fvh">la mattina e il progetto</h1>
+            <div class="ghost">La giornata.</div>
+          </div>
+        </section>
+
+        <!-- MESE: il bordo destro e gia occupato -->
+        <section class="schermo" data-s="mese">
+          <div class="head sticky">
+            <span class="mtitle">Agosto <span class="chev">&#9662;</span></span>
+            <span class="destra destra-mese">
+              <span class="mcount">12 / 31</span>
+              <span class="mnav">
+                <span class="mico"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+                <span class="mico"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></span>
+              </span>
+              <span class="mico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></svg></span>
+            </span>
+          </div>
+          <div class="corpo"><div class="ghost">La griglia del mese.</div></div>
+        </section>
+
+        <!-- RICORDA -->
+        <section class="schermo" data-s="ricorda">
+          <div class="head"><span class="h1s">Ricorda</span></div>
+          <div class="chips">
+            <span class="chip on">Tutto</span><span class="chip">Persone</span>
+            <span class="chip">Posti</span><span class="chip">Idee</span>
+          </div>
+          <div class="corpo"><div class="ghost">Le cose salvate al volo.</div></div>
+        </section>
+
+        <!-- RECAP -->
+        <section class="schermo" data-s="recap">
+          <div class="head"><span class="h1s">Recap</span></div>
+          <div class="chips">
+            <span class="chip on">Mese</span><span class="chip">Semestre</span><span class="chip">Anno</span>
+          </div>
+          <div class="corpo"><div class="ghost">Le tue giornate, raccontate.</div></div>
+        </section>
+      </div>
+    </div>
+
+    <nav class="tabs">
+      <span class="tab on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Oggi</span></span>
+      <span class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mese</span></span>
+      <span class="tab" style="color:var(--accent)"><span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span>Registra</span></span>
+      <span class="tab tab-ric"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Ricorda</span></span>
+      <span class="tab-av"><span class="av tab" data-av></span><span style="font-size:calc(9px*var(--s));font-weight:600;letter-spacing:.1em;text-transform:uppercase">Manuel</span></span>
+      <span class="tab"><svg viewBox="0 0 24 24"><path d="M6 7v10M18 7v10M4 9h4M16 9h4M8 12h8"/></svg><span>Palestra</span></span>
+    </nav>
+  </div>
+
+  <div class="tell">
+    <div class="tell-box">
+      <div class="k" id="kVia">Adesso</div>
+      <div class="v" id="vVia"></div>
+      <div class="costo" id="cVia"></div>
+    </div>
+    <p class="cap" id="capColl" style="display:none">
+      <button class="tool" id="btnColl" style="margin-top:14px">Mostra la sovrapposizione su Mese</button>
+    </p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="label">quello che penso</p>
+<div class="card si">
+  <h3>La mia raccomandazione: A adesso, B quando c'e tempo</h3>
+  <ul>
+    <li><b>A si fa oggi</b> e risolve subito quello che ti da fastidio: il pallino sta
+      montato una volta sola, a livello di pagina, quindi e nello stesso pixel per
+      costruzione — nessun modulo puo metterlo altrove. E lo schema che l'app usa gia
+      per la linguetta Feedback, che infatti non si sposta mai.</li>
+    <li><b>Il suo unico prezzo e Mese</b>: quel bordo destro e gia pieno. Il contatore
+      "12 / 31" si toglie (in griglia sparisce gia oggi) e le frecce si stringono. E una
+      modifica al modulo Mese, non un blocco.</li>
+    <li><b>B e la risposta giusta a lungo termine</b> — una barra in alto vera, uguale
+      dappertutto, come ogni app fatta bene. Ma vuol dire ridisegnare le intestazioni di
+      cinque schermate: e un lavoro suo, non una rifinitura.</li>
+    <li><b>C la sconsiglio</b>: e la strada che avevi gia scartato. Ti riprende il quinto
+      posto della barra e Ricorda torna sfrattato, che era proprio il guadagno per cui
+      avevi scelto il pallino in alto.</li>
+  </ul>
+</div>
+
+<div class="card no">
+  <h3>Cosa NON faccio, e perche te lo dico</h3>
+  <ul>
+    <li>Il piano che avevo dichiarato — <b>una riga in ogni modulo</b> — lo abbandono.
+      Sembrava piccolo, ma il pallino sarebbe finito dentro cinque intestazioni con
+      contenuti diversi: su Oggi accanto a due bottoni, su Mese accanto a tre controlli,
+      su Ricorda accanto a un titolo. Cinque allineamenti diversi, e nessuna guardia che
+      impedisca al sesto modulo di sbagliare. <b>E il difetto che mi hai segnalato, in
+      grande.</b></li>
+    <li>Su <b>desktop non cambia niente</b>: li il pallino sta in fondo alla rail, che e
+      gia sempre presente su ogni schermata. Il problema e solo del telefono.</li>
+  </ul>
+</div>
+
+</div>
+
+<script>
+const FOTO = "data:image/jpeg;base64,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";
+document.querySelectorAll("[data-av]").forEach((e) => {
+  e.innerHTML = '<img src="' + FOTO + '" alt="">';
+});
+
+const TITOLI = { oggi: "Oggi", mese: "Agosto", ricorda: "Ricorda", recap: "Recap" };
+
+const TESTI = {
+  ORA: {
+    k: "Adesso",
+    v: "La tua faccia c'e <b>solo su Oggi</b>. Cambia schermata e sparisce: l'app sembra di due persone diverse.",
+    c: "<b>Come mai:</b> l'ho montata nell'intestazione di Oggi, e le altre schermate hanno intestazioni tutte loro. Te l'avevo scritto come consegna in due tempi — avevo sottovalutato quanto si vede."
+  },
+  A: {
+    k: "Strada A . il pallino fisso",
+    v: "Montato <b>una volta sola</b>, a livello di pagina, sopra le schermate. Cambia pagina quanto vuoi: resta nello stesso pixel, per costruzione.",
+    c: "<b>Costa:</b> poco, e non tocca nessuna intestazione. <b>Ma su Mese</b> il bordo destro e gia occupato da contatore, frecce e interruttore: vanno stretti. Premi il tasto qui sotto per vedere la sovrapposizione."
+  },
+  B: {
+    k: "Strada B . la barra in alto",
+    v: "Una <b>barra vera</b> in cima, uguale su ogni schermata: il nome della schermata a sinistra, tu a destra. Le intestazioni di oggi scendono sotto.",
+    c: "<b>Costa:</b> molto. Vuol dire ridisegnare l'intestazione di cinque schermate e ripensare cosa ci sta dentro. E la risposta piu \"premium\", ma non e una rifinitura: e un lavoro suo."
+  },
+  C: {
+    k: "Strada C . nella barra sotto",
+    v: "Il pallino diventa la <b>quinta icona</b> in basso. Sempre visibile, sempre nello stesso posto, nessuna collisione possibile.",
+    c: "<b>Costa:</b> il quinto posto. Ricorda torna sfrattato dalla barra — ed era esattamente il guadagno per cui, il 28 agosto, avevi scelto il pallino in alto invece di questo."
+  }
+};
+
+function aggiorna() {
+  const via = document.body.getAttribute("data-via");
+  document.getElementById("kVia").textContent = TESTI[via].k;
+  document.getElementById("vVia").innerHTML = TESTI[via].v;
+  document.getElementById("cVia").innerHTML = TESTI[via].c;
+  document.getElementById("capColl").style.display = via === "A" ? "block" : "none";
+  if (via !== "A") document.body.setAttribute("data-coll", "0");
+  const scr = document.body.getAttribute("data-scr");
+  document.querySelector("[data-titolo]").textContent = TITOLI[scr];
+  document.querySelectorAll(".schermo").forEach((s) => {
+    s.classList.toggle("on", s.getAttribute("data-s") === scr);
+  });
+}
+
+document.addEventListener("click", (e) => {
+  const via = e.target.closest("[data-via]");
+  if (via && via.classList.contains("tool")) {
+    document.body.setAttribute("data-via", via.getAttribute("data-via"));
+    document.querySelectorAll(".tool[data-via]").forEach((b) => b.classList.toggle("on", b === via));
+  }
+  const scr = e.target.closest("[data-scr]");
+  if (scr && scr.classList.contains("tool")) {
+    document.body.setAttribute("data-scr", scr.getAttribute("data-scr"));
+    document.querySelectorAll(".tool[data-scr]").forEach((b) => b.classList.toggle("on", b === scr));
+  }
+  if (e.target.id === "btnColl") {
+    const on = document.body.getAttribute("data-coll") === "1";
+    document.body.setAttribute("data-coll", on ? "0" : "1");
+    document.body.setAttribute("data-scr", "mese");
+    document.querySelectorAll(".tool[data-scr]").forEach((b) =>
+      b.classList.toggle("on", b.getAttribute("data-scr") === "mese"));
+    e.target.textContent = on ? "Mostra la sovrapposizione su Mese" : "Nascondi la sovrapposizione";
+  }
+  aggiorna();
+});
+
+aggiorna();
+</script>
+</body>
+</html>
