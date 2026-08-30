@@ -1122,7 +1122,11 @@ summary:active {
 .jm-appbar-r {
   display: inline-flex;
   align-items: center;
-  gap: calc(4px * var(--jm-space));
+  /* 10 e non 4 (Manuel, 30 agosto 2026: "distanzialo un pelino di piu").
+     I due bersagli sono 44 tondi e attaccati sembravano un pezzo solo:
+     l'aria in mezzo e cio che dice che sono due cose diverse — una e
+     un comando della schermata, l'altra sei tu. */
+  gap: calc(10px * var(--jm-space));
 }
 
 .jm-appbar-az:empty {
