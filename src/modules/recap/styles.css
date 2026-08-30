@@ -214,5 +214,5 @@
 }
 
 .jm-det-head {
-  padding-top: calc(18px + env(safe-area-inset-top, 0px));
+  padding-top: calc(18px + var(--jm-safe-top));
 }

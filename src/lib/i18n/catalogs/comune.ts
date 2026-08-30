@@ -22,6 +22,8 @@ export const COMUNE: Record<string, string> = {
   "Mese": "Month",
   "Ricorda": "Remember",
   "Impostazioni": "Settings",
+  // Il nome di /giorno nella barra in alto (app-bar.tsx, strada B).
+  "Giornata": "The day",
   // La porta dell'account (mockup porta-account, 28 agosto 2026): frasi
   // di scheletro, usate da account-menu.tsx su tutte le superfici.
   "Il tuo account": "Your account",

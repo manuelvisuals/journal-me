@@ -48,7 +48,11 @@ export function PersonaClient({ card, nome }: Props) {
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <span className="jm-day-head-label">{t("Persona")}</span>
+          {/* Sul telefono il nome della schermata sta nella barra in alto
+              (30 agosto 2026, strada B): qui sarebbe scritto due volte. */}
+          <span className="jm-day-head-label jm-solo-desktop">
+            {t("Persona")}
+          </span>
         </header>
 
         {!card ? (

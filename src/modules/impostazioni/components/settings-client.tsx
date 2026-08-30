@@ -300,7 +300,11 @@ export function SettingsClient({
     >
       {panel === "root" ? (
         <header className="jm-col-head">
-          <h1 className="jm-st-h1">{t("Impostazioni")}</h1>
+          {/* Il titolo e nella barra in alto (30 agosto 2026, mockup
+              pallino-ovunque, strada B). Da lg la barra non c'e: li il
+              titolo resta, perche la rail dice dove sei ma non ha una
+              testata di pagina. */}
+          <h1 className="jm-st-h1 jm-solo-desktop">{t("Impostazioni")}</h1>
           <p className="jm-st-sub">
             {t("Come funziona e come si vede il tuo diario.")}
           </p>

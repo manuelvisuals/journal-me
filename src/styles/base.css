@@ -1000,13 +1000,13 @@ summary:active {
 .jm-day-head,
 .jm-rem-head,
 .jm-rec-head {
-  padding-top: calc(22px + env(safe-area-inset-top, 0px));
+  padding-top: calc(22px + var(--jm-safe-top));
 }
 
 /* Schermate senza intestazione dedicata (Oggi, scheletri di caricamento,
    overlay di registrazione): il contenitore si prende l'inset da solo. */
 .jm-safe-top {
-  padding-top: calc(24px + env(safe-area-inset-top, 0px)) !important;
+  padding-top: calc(24px + var(--jm-safe-top)) !important;
 }
 
 /* Gli anelli attorno al microfono premuto. Prima la sola differenza fra "mic
@@ -1048,6 +1048,94 @@ summary:active {
 [data-theme="macchina"] *::before,
 [data-theme="macchina"] *::after {
   border-radius: 0 !important;
+}
+
+/* =============================================================
+   LA BARRA IN ALTO (mockup pallino-ovunque.html, strada B,
+   scelta da Manuel il 28 agosto 2026)
+   Componente: src/components/ui/app-bar.tsx, montato UNA volta
+   dal guscio. Solo sotto lg: da lg il pallino sta nella rail.
+   ============================================================= */
+
+/* L'altezza e un NUMERO, non "quanto viene": la usa il top della
+   sticky di Mese e la sottrazione di .jm-screen qui sotto, e con
+   un'altezza che cambia da sola quelle due bugie non si vedrebbero
+   subito. 56 = il pallino da 44 (la misura dei suoi vicini, fissata
+   da verify-foto-profilo) piu 6 sopra e 6 sotto. Non scala col
+   testo: si scala solo il testo, non le altezze (overrides.css). */
+:root {
+  --jm-appbar-h: calc(56px + env(safe-area-inset-top, 0px));
+}
+
+.jm-appbar {
+  position: sticky;
+  top: 0;
+  /* Sopra le intestazioni sticky dei moduli (Mese sta a 3) e sotto il
+     dock di vetro (20), i fogli e gli overlay (40 in su). */
+  z-index: 6;
+  height: var(--jm-appbar-h);
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--color-bg-phone);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.jm-appbar-in {
+  height: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 calc(24px * var(--jm-space));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(12px * var(--jm-space));
+}
+
+.jm-appbar-t {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Con la barra sopra, la safe-area e SUA: le intestazioni sotto non
+   devono aggiungerla una seconda volta o sotto il notch resta un
+   buco. Un interruttore solo, ereditato, invece di sei regole da
+   tenere allineate: le intestazioni usano var(--jm-safe-top), gli
+   overlay a schermo pieno (registrazione, ritaglio foto, picker)
+   continuano a usare env() perche stanno SOPRA la barra. */
+:root {
+  --jm-safe-top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 1023px) {
+  .jm-conbarra {
+    --jm-safe-top: 0px;
+  }
+  /* Nota: .jm-solo-desktop ("questo sul telefono non c'e") NON sta qui ma
+     in styles/overrides.css, che e l'ultimo import: base.css viene prima
+     dei moduli, e un .jm-day-nav-rel { display: block } scritto in un
+     modulo vincerebbe a parita di specificita. Vedi li. */
+  /* La barra sta nel flusso: senza questa sottrazione ogni schermata
+     sarebbe alta un viewport PIU la barra, cioe 56px di scorrimento
+     su una pagina che non ha niente da scorrere. Specificita 0,2,0:
+     batte .jm-screen di overrides.css anche se arriva prima. */
+  .jm-conbarra .jm-screen {
+    min-height: calc(100dvh - var(--jm-appbar-h));
+  }
+}
+
+/* Da lg la barra non esiste: il pallino e in fondo alla rail sinistra.
+   Spenta QUI e non con lg:hidden perche le utility Tailwind stanno in
+   @layer e perdono contro il display di una classe nostra (la trappola
+   gia pagata con .jm-month-header nella PR 9). */
+@media (min-width: 1024px) {
+  .jm-appbar {
+    display: none;
+  }
 }
 
 /* =============================================================

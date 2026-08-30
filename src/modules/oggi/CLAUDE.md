@@ -37,9 +37,15 @@ dire riscrivere l'editor e la registrazione.
 - Banchi prima del push: `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,
-  `verify-nav-giorno` (piu tsc, eslint, verify-i18n).
+  `verify-nav-giorno`, `verify-barra-alto` (piu tsc, eslint,
+  verify-i18n).
   Attenzione: `verify-icone-aree` e `verify-giornata-larghezze` hanno la
   porta 3200 scritta dentro, gli altri usano la 3100 (JM_BASE).
 - Le API del modulo (passo E): `src/modules/oggi/server/` — chiarimenti,
   process-entry, extract-facts, split-by-date, transcribe-fallback. Le route in
   `src/app/api/` sono gusci e non si toccano.
+
+La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
+pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
+in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
+rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.

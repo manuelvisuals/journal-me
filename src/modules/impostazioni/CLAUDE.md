@@ -95,3 +95,8 @@ regole, convalide, misure e innesti. Il foglio che sale, il trascinamento del
 ritaglio, la pennina che compare al passaggio del mouse e il campo che prende
 il posto del nome vanno guardati con gli occhi, sul deploy o con gli altri
 banchi Playwright.
+
+La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
+pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
+in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
+rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.

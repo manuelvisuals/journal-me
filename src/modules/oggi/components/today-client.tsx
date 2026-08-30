@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
-import { AccountMenu } from "@/components/ui/account-menu";
 import { EmptyState } from "@/modules/oggi/components/empty-state";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -659,15 +658,23 @@ export function TodayClient({
     >
       {/* Il padding sta in .jm-col-head (globals.css), non qui: da uno
           style inline non si puo scavalcare con una media query, e su
-          desktop questo margine deve coincidere con quello dell'editor. */}
-      <header className="jm-col-head flex items-baseline justify-between">
+          desktop questo margine deve coincidere con quello dell'editor.
+          Sul TELEFONO l'intestazione si spegne quando non ha piu niente
+          dentro: da quando il pallino dell'account e salito nella barra
+          in alto, sulla giornata non raccontata qui restava solo un
+          rettangolo di padding. Su desktop si disegna sempre come prima
+          (la classe si spegne da sola sotto lg, base.css). */}
+      <header
+        className={`jm-col-head flex items-baseline justify-between${
+          view === "filled" ? "" : " jm-solo-desktop"
+        }`}
+      >
         {/* La data se n'e andata da questa riga: adesso e la testata che
             cambia giorno, sulla riga sua qui sotto. Qui restava schiacciata
             fra il titolo e quattro bersagli. */}
         <span />
         {/* Tutto cio che sta a destra vive in UN contenitore: senza, il
-            justify-between del header spargerebbe i pezzi (il pallino
-            dell'account e sempre presente sul telefono). */}
+            justify-between del header spargerebbe i pezzi. */}
         <div className="flex items-center" style={{ gap: 14 }}>
         {desktopWriting && (
           <div className="jm-ed-meta">
@@ -743,13 +750,11 @@ export function TodayClient({
             </button>
           </div>
         )}
-        {/* La porta dell'account, solo telefono (mockup porta-account §02):
-            Oggi e la prima intestazione che la monta — le altre schermate
-            la ricevono nelle loro sessioni, una riga ciascuna. Su desktop
-            il pallino sta nella rail, e qui non si duplica. */}
-        <span className="lg:hidden">
-          <AccountMenu variant="testata" />
-        </span>
+        {/* Il pallino dell'account NON sta piu qui (30 agosto 2026, mockup
+            pallino-ovunque, strada B): montato in una intestazione sola
+            spariva appena cambiavi schermata. Adesso vive nella barra in
+            alto del guscio (src/components/ui/app-bar.tsx), che c'e su
+            ogni schermata. Non rimetterlo qui. */}
         </div>
       </header>
 
@@ -757,7 +762,7 @@ export function TodayClient({
           giornata: mentre registri o scrivi, cambiare giorno con un tocco
           sarebbe il modo piu veloce per perdere quello che stai dicendo. */}
       {(view === "filled" || view === "empty") && !desktopWriting && (
-        <DayNav date={todayISO()} muro={muro} />
+        <DayNav date={todayISO()} muro={muro} senzaNomeSulTelefono />
       )}
 
       {multiDayNotice && view === "filled" && (

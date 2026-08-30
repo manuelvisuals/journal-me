@@ -1124,21 +1124,56 @@ Se piu chat lavorano insieme sullo stesso repo, leggi `WORKERS.md`: branch per w
 nessuno tocca `main`, file disgiunti dichiarati prima di partire. Due chat che pushano
 su `main` si sovrascrivono, e il tempo risparmiato lo perdi nel conflitto.
 
-## La porta dell'account: cosa resta da montare (28 agosto 2026)
+## La porta dell'account: CHIUSA con la barra in alto (30 agosto 2026)
 
-Il branch `scheletro-porta-account` ha costruito il pezzo (mockup
-`design/mockups/porta-account.html`, banco `verify-porta-account`) e l'ha
-montato su **Oggi**. Sul telefono il pallino vive nelle intestazioni, che
-appartengono ai moduli: **Mese, Ricorda, Recap e i moduli utente non ce
-l'hanno ancora** — fino ad allora, sul telefono, alle Impostazioni si
-arriva da Oggi. E la consegna in due tempi dichiarata nel contratto §03,
-non un buco.
+Il branch `scheletro-porta-account` (28 agosto) aveva montato il pallino
+dentro l'intestazione di **Oggi**, e il piano dichiarato era di aggiungere
+una riga di `<AccountMenu variant="testata" />` in ogni modulo. **Quel
+piano e stato abbandonato di proposito** — se lo leggi ancora da qualche
+parte, il documento e vecchio: le intestazioni del telefono hanno
+contenuti diversi (su Oggi due bottoni, su Mese tre controlli, su Ricorda
+un titolo), quindi lo stesso pallino sarebbe finito in cinque
+allineamenti leggermente diversi, e nessuna guardia avrebbe impedito al
+sesto modulo di sbagliare. Lo stesso difetto, piu grande.
 
-La riga da aggiungere, in ogni intestazione con spazio a destra:
+Al suo posto, scelta di Manuel il 28 agosto (mockup
+`design/mockups/pallino-ovunque.html`, "strada B"): **una barra in alto
+vera, uguale su ogni schermata del telefono** — nome della schermata a
+sinistra, pallino dell'account a destra.
 
-    import { AccountMenu } from "@/components/ui/account-menu";
-    <span className="lg:hidden"><AccountMenu variant="testata" /></span>
+- Il pezzo e `src/components/ui/app-bar.tsx` (scheletro), montato UNA
+  volta dal guscio (`desktop-shell.tsx`). Nessun modulo monta il pallino:
+  il banco `verify-barra-alto` lo controlla sulla sorgente E misura le
+  coordinate del pallino su sette schermate pretendendo che siano le
+  stesse.
+- **Il titolo e una mappa indirizzo -> nome dentro app-bar.tsx.** Una
+  schermata nuova si aggiunge scrivendo una riga li. La mappa e anche
+  l'interruttore: un indirizzo che non c'e (login, /benvenuto, /auth,
+  /privacy, checkout, admin) non ha barra.
+- **Solo sotto lg.** Da lg in su la barra e `display:none` e il pallino
+  resta in fondo alla rail sinistra: su desktop non cambia niente, ed e
+  stato misurato confrontando TUTTI gli stili calcolati di TUTTI gli
+  elementi prima e dopo (identici su Ricorda, Recap e Impostazioni; su
+  Oggi mancano solo i tre nodi del pallino, che li erano gia invisibili;
+  su Mese cambia solo il `top` di un elemento che su desktop non si
+  disegna).
+- **Due misure che si tengono per mano**: `--jm-appbar-h` (base.css) e
+  l'altezza della barra, e la usano sia il `top` della sticky di Mese sia
+  la sottrazione di `.jm-screen` (senza, ogni schermata sarebbe alta un
+  viewport PIU la barra, cioe 56px di scorrimento su una pagina che non
+  ha niente da scorrere). `--jm-safe-top` e l'altro interruttore: con la
+  barra sopra, la safe-area dell'iPhone e SUA, e le intestazioni sotto
+  non la aggiungono una seconda volta. Gli overlay a schermo pieno
+  (registrazione, ritaglio foto, jump picker) continuano a usare `env()`
+  direttamente: stanno sopra la barra.
+- I titoli di pagina che sul telefono sono saliti nella barra restano su
+  desktop con la classe `.jm-solo-desktop`, che si spegne SOLO dentro
+  `@media (max-width: 1023px)` — cosi da lg l'elemento tiene il display
+  che aveva.
 
-Attenzione su Mese: il bordo destro dell'intestazione e gia pieno
-(frecce, contatore, lista/griglia) — li serve una decisione di spazio,
-non solo la riga.
+Due cose viste durante il lavoro e **NON toccate**, perche erano gia cosi
+su `main` (misurate prima/dopo, identiche): il dock di vetro si vede
+anche su desktop (`.jm-dock-wrap` ha un `display:flex` in CSS nudo e la
+utility `lg:hidden`, che sta in `@layer`, perde), e `/persona` sul
+telefono ha 94px di scorrimento in piu perche monta la TabBar fuori da
+`main`, cioe fuori dall'altezza della schermata.

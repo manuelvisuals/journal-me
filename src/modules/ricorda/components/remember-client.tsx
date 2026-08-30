@@ -103,9 +103,12 @@ export function RememberClient({ mode, initial }: Props) {
       className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col relative"
     >
       <header className="jm-rem-head">
-        {/* "Ricorda", come la tab bar, la rail desktop e la palette. Era
-            l'ultimo punto in inglese di una UI tutta italiana. */}
-        <h1 className="jm-rem-h">{t("Ricorda")}</h1>
+        {/* Sul telefono il titolo e salito nella barra in alto (30 agosto
+            2026, mockup pallino-ovunque, strada B): scritto due volte a
+            pochi pixel di distanza non e una gerarchia, e un errore. Da lg
+            la barra non esiste e il titolo resta dov'era: su desktop non
+            cambia niente. */}
+        <h1 className="jm-rem-h jm-solo-desktop">{t("Ricorda")}</h1>
         <div className="jm-rem-filter">
           {FILTERS.map((f) => (
             <button

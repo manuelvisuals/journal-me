@@ -162,8 +162,20 @@ async function trascina(page, dx) {
     await page.waitForTimeout(700);
   }
   check("da ieri, avanti ancora, si arriva su Oggi", page.url().endsWith("/"), page.url());
-  await page.waitForSelector(".jm-day-nav-rel", { timeout: 20000 });
-  check("e Oggi si chiama Oggi", (await rel(page)).trim().toLowerCase() === "oggi", await rel(page));
+  /* Dal 30 agosto 2026 (la barra in alto, scelta di Manuel) su Oggi il
+     NOME del giorno lo dice la barra e non la testata: scritto in tutti e
+     due era la stessa parola due volte a pochi pixel. La testata tiene la
+     data esatta, che la barra non dice. Su /giorno il nome resta nella
+     testata, ed e gia provato qui sopra. */
+  await page.waitForSelector(".jm-appbar-t", { timeout: 20000 });
+  const nellaBarra = (await page.locator(".jm-appbar-t").innerText()).trim();
+  check("e Oggi si chiama Oggi: lo dice la barra in alto", nellaBarra.toLowerCase() === "oggi", nellaBarra);
+  check(
+    "sul telefono la testata non ripete la parola",
+    !(await page.locator(".jm-day-nav-rel").first().isVisible()),
+  );
+  const dataEsatta = await page.locator(".jm-day-nav-abs").first().innerText();
+  check("ma la testata dice ancora la data esatta", /\d/.test(dataEsatta), dataEsatta);
 
   /* IL MURO. Se qualcuno toglie il controllo sul futuro, e questa riga a
      diventare rossa per prima. */
@@ -217,7 +229,9 @@ async function trascina(page, dx) {
 {
   const { ctx, page, errors } = await contesto();
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
-  await page.waitForSelector(".jm-day-nav-rel", { timeout: 20000 });
+  // Si aspetta la DATA e non il nome: su Oggi, dal 30 agosto 2026, il nome
+  // sul telefono e nella barra in alto (vedi il blocco 1).
+  await page.waitForSelector(".jm-day-nav-abs", { timeout: 20000 });
   const dove = page.url();
 
   // Su Oggi il riquadro dello scorrimento c'e solo a giornata raccontata:

@@ -8,6 +8,28 @@
    ============================================================= */
 
 /* =============================================================
+   "Questo sul telefono non c'e" (30 agosto 2026, la barra in alto).
+
+   I titoli di pagina saliti nella barra, l'intestazione di Oggi
+   rimasta senza contenuto, il nome del giorno che la barra dice gia.
+   Sta QUI e non in base.css perche deve vincere sul display che un
+   modulo scrive per lo stesso elemento: base.css viene PRIMA dei
+   moduli, e un `.jm-day-nav-rel { display: block }` avrebbe vinto a
+   parita di specificita.
+
+   Si spegne SOLO dentro la media query e non si riaccende con un
+   display a mano da lg: cosi da lg l'elemento tiene esattamente il
+   display che aveva prima (block per un h1, la utility flex per un
+   header), e "su desktop non cambia niente" non dipende da cosa mi
+   ricordo di aver riacceso.
+   ============================================================= */
+@media (max-width: 1023px) {
+  .jm-solo-desktop {
+    display: none;
+  }
+}
+
+/* =============================================================
    Gli editor a schermo intero (Modifica transcript, Rileggi prima
    di processare, Modifica recap) da lg in su.
 

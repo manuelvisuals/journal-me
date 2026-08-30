@@ -28,7 +28,7 @@ export default function Loading() {
         className="flex flex-1 flex-col"
         style={{
           padding: "0 24px",
-          paddingTop: "calc(26px + env(safe-area-inset-top, 0px))",
+          paddingTop: "calc(26px + var(--jm-safe-top))",
           minHeight: 0,
         }}
         aria-busy="true"

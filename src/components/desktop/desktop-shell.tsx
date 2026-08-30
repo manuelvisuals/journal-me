@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { AppBar, titoloSchermata } from "@/components/ui/app-bar";
 import { RailLeft } from "@/components/desktop/rail-left";
 import { RailRightTarget } from "@/components/desktop/rail-right";
 import { CommandPalette } from "@/components/desktop/command-palette";
@@ -39,8 +40,17 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  // La barra in alto del telefono (mockup pallino-ovunque, strada B): la
+  // monta il guscio, UNA volta, e non un modulo — e tutto il punto. La
+  // classe accanto dice al CSS "sopra c'e la barra", e serve a due cose
+  // sole: togliere alle intestazioni la safe-area (che adesso e della
+  // barra) e togliere alla schermata l'altezza della barra, cosi il
+  // telefono non guadagna una striscia di scorrimento.
+  const conBarra = titoloSchermata(pathname) !== null;
+
   return (
-    <div className="jm-shell">
+    <div className={`jm-shell${conBarra ? " jm-conbarra" : ""}`}>
+      <AppBar />
       <RailLeft />
       <div className="jm-shell-c">{children}</div>
       <RailRightTarget />
