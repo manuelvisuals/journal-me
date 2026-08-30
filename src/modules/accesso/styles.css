@@ -248,7 +248,19 @@
 .jm-benv-ling {
   position: fixed;
   right: 0;
-  top: 50%;
+  /* Non piu a meta esatta (Manuel, 30 agosto 2026: a meta "sta in mezzo
+     alle palle" — sul Mese cadeva sopra i quadratini di sabato e
+     domenica). Scende di 96 punti: 64 non bastavano, la coda restava sopra
+     l'ultima riga dei quadratini (misurato). Cosi la griglia resta
+     libera e il dock resta lontano.
+
+     Si sposta il TOP e NON il transform: `translateY(-50%)` e scritto a
+     mano dentro i fotogrammi dell'animazione di chiusura del saluto
+     (saluto-avvio.tsx), e cambiarlo qui la farebbe saltare di posto al
+     primo fotogramma. Il bersaglio dell'animazione si misura comunque dal
+     vivo con getBoundingClientRect, quindi la nuova quota la segue da
+     sola. */
+  top: calc(50% + 96px);
   transform: translateY(-50%);
   z-index: 1500;
   border: 1px solid var(--color-line);

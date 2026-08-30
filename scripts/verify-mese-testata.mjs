@@ -54,7 +54,17 @@
 //      nata per non avere).
 //   4. rimessa l'icona a tre righe uguali -> rosso il conto dei puntini.
 //   5. infilata una seconda azione nello slot -> rosso "una azione sola".
-// Ripristinato ogni volta: 28/28.
+// Ripristinato ogni volta.
+//
+// Aggiunti il 30 agosto 2026 (Manuel: piu aria fra i due pallini, e la
+// linguetta Feedback abbassata), e morsi anche loro:
+//   6. aria di nuovo a 4 punti -> 1 rosso.
+//   7. linguetta di nuovo a meta esatta -> 2 rossi.
+//   8. linguetta abbassata col TRANSFORM invece che col top -> rosso il
+//      controllo del transform, che e proprio il difetto silenzioso: a
+//      schermo sarebbe sembrato identico, ma l'animazione di chiusura del
+//      saluto sarebbe saltata di posto al primo fotogramma.
+// Ripristinato ogni volta: 36/36.
 
 import { chromium } from "playwright-core";
 
@@ -244,6 +254,9 @@ async function apri({ vista = "griglia", width = LARGO, height = 800 } = {}) {
       dotMis: [Math.round(b(dot).width), Math.round(b(dot).height)],
       // I puntini della lista: cerchi nell'icona. Un hamburger non ne ha.
       puntini: vista.querySelectorAll("svg circle").length,
+      /* Attaccati sembravano un pezzo solo: l'aria in mezzo e cio che
+         dice che uno e un comando e l'altra sei tu. */
+      aria: Math.round(b(dot).left - b(vista).right),
       premuto: vista.getAttribute("aria-pressed"),
     };
   });
@@ -262,6 +275,11 @@ async function apri({ vista = "griglia", width = LARGO, height = 800 } = {}) {
     "e resta attaccato al bordo del contenuto, come prima",
     Math.abs(barra.pallinoDestra - barra.barraDestra) <= 1,
     `${barra.pallinoDestra} contro ${barra.barraDestra}`,
+  );
+  check(
+    "fra il tasto e il pallino c'e aria: sono due cose diverse",
+    barra.aria >= 8,
+    `${barra.aria}px`,
   );
   check(
     "il tasto nuovo e grande come il pallino (44, brandbook cap. 05)",
@@ -309,6 +327,62 @@ async function apri({ vista = "griglia", width = LARGO, height = 800 } = {}) {
   );
 
   check("zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 3-bis. LA LINGUETTA FEEDBACK ============
+   Vive nel modulo accesso ed e su OGNI schermata, ma si prova qui perche
+   e qui che dava fastidio: a meta esatta cadeva sopra i quadratini di
+   sabato e domenica (Manuel, 30 agosto 2026: "sta in mezzo alle palle").
+
+   Il secondo controllo e il piu importante e non si vede a occhio: il suo
+   `transform` deve restare una traslazione verticale di meta altezza e
+   nient'altro, perche `translateY(-50%)` e scritto A MANO dentro i
+   fotogrammi dell'animazione di chiusura del saluto (saluto-avvio.tsx).
+   Chi un giorno abbassasse la linguetta toccando il transform invece del
+   top la farebbe saltare di posto al primo fotogramma di quell'animazione,
+   e non se ne accorgerebbe guardando questa schermata. */
+{
+  const { ctx, page, errors } = await apri({ vista: "griglia", height: 844 });
+  const l = await page.evaluate(() => {
+    const el = document.querySelector(".jm-benv-ling");
+    if (!el) return null;
+    const b = el.getBoundingClientRect();
+    const g = document.querySelector(".jm-mese-mini-grid").getBoundingClientRect();
+    const d = document.querySelector(".jm-dock").getBoundingClientRect();
+    const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+    return {
+      sottoLaGriglia: b.top >= g.bottom,
+      sopraIlDock: b.bottom <= d.top,
+      dentroLoSchermo: b.top >= 0 && b.bottom <= window.innerHeight,
+      piuInBassoDelCentro: b.top + b.height / 2 > window.innerHeight / 2 + 40,
+      // traslazione verticale pura, di meta altezza
+      soloVerticale:
+        Math.round(m.m41) === 0 &&
+        m.a === 1 &&
+        m.d === 1 &&
+        Math.abs(m.m42 + b.height / 2) <= 1,
+      ty: Math.round(m.m42),
+      meta: Math.round(-b.height / 2),
+    };
+  });
+  check("la linguetta c'e", l !== null);
+  check(
+    "e sta piu in basso del centro dello schermo",
+    l?.piuInBassoDelCentro === true,
+  );
+  check(
+    "non copre piu i quadratini del mese",
+    l?.sottoLaGriglia === true,
+  );
+  check("e resta lontana dal dock", l?.sopraIlDock === true);
+  check("e dentro lo schermo", l?.dentroLoSchermo === true);
+  check(
+    "il suo transform e ancora translateY(-50%) e nient'altro (lo ripete il saluto)",
+    l?.soloVerticale === true,
+    `ty ${l?.ty}, meta altezza ${l?.meta}`,
+  );
+  check("linguetta: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 }
 
