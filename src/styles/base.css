@@ -1115,15 +1115,10 @@ summary:active {
   .jm-conbarra {
     --jm-safe-top: 0px;
   }
-  /* "Questo sul telefono non c'e": i titoli di pagina che sono saliti
-     nella barra, e le intestazioni che senza il pallino restavano vuote.
-     Si spegne SOLO qui dentro e non si riaccende con un display a mano
-     da lg: cosi da lg l'elemento tiene esattamente il display che aveva
-     prima (block per un h1, la utility flex per un header) e la regola
-     "su desktop non cambia niente" non dipende dalla mia memoria. */
-  .jm-solo-desktop {
-    display: none;
-  }
+  /* Nota: .jm-solo-desktop ("questo sul telefono non c'e") NON sta qui ma
+     in styles/overrides.css, che e l'ultimo import: base.css viene prima
+     dei moduli, e un .jm-day-nav-rel { display: block } scritto in un
+     modulo vincerebbe a parita di specificita. Vedi li. */
   /* La barra sta nel flusso: senza questa sottrazione ogni schermata
      sarebbe alta un viewport PIU la barra, cioe 56px di scorrimento
      su una pagina che non ha niente da scorrere. Specificita 0,2,0:

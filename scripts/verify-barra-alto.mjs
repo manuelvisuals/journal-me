@@ -130,6 +130,17 @@ const SCHERMATE = [
     check(`${rotta}: nessuna striscia di scorrimento inventata`, m.scroll === 0, `scroll ${m.scroll}`);
   }
 
+  // Cio che e salito nella barra non deve restare scritto anche sotto.
+  await page.goto(BASE + "/remember", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".jm-appbar-t", { timeout: 25000 });
+  await page.waitForTimeout(500);
+  const doppioni = await page.evaluate(() => {
+    const soli = [...document.querySelectorAll(".jm-solo-desktop")];
+    return { quanti: soli.length, visibili: soli.filter((e) => e.getBoundingClientRect().height > 0).length };
+  });
+  check("telefono: quello che e salito nella barra e marcato", doppioni.quanti > 0, `${doppioni.quanti}`);
+  check("telefono: e non si vede due volte", doppioni.visibili === 0, `visibili ${doppioni.visibili}`);
+
   check("telefono: zero errori console", errori.length === 0, errori.slice(0, 2).join(" | "));
   await ctx.close();
 }
@@ -182,6 +193,23 @@ const SCHERMATE = [
     check(`desktop ${rotta}: nessun pallino di testata`, d.pallinoTestata === false);
     check(`desktop ${rotta}: il pallino della rail c'e, uno solo`, d.pallinoRail === 1, String(d.pallinoRail));
   }
+  // Il rovescio della medaglia: su desktop quei titoli DEVONO tornare,
+  // perche li la barra non c'e e su desktop non cambia niente.
+  await page.goto(BASE + "/remember", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".jm-rem-h", { timeout: 25000 });
+  await page.waitForTimeout(400);
+  const tornati = await page.evaluate(() => {
+    const soli = [...document.querySelectorAll(".jm-solo-desktop")];
+    return {
+      quanti: soli.length,
+      nascosti: soli.filter((e) => e.getBoundingClientRect().height === 0).length,
+      titolo: document.querySelector(".jm-rem-h")?.textContent ?? null,
+    };
+  });
+  check("desktop: i titoli saliti nella barra tornano al loro posto",
+    tornati.quanti > 0 && tornati.nascosti === 0, `${tornati.quanti} marcati, ${tornati.nascosti} nascosti`);
+  check("desktop: Ricorda ha ancora il suo titolo di pagina", tornati.titolo === "Ricorda", String(tornati.titolo));
+
   check("desktop: zero errori console", errori.length === 0, errori.slice(0, 2).join(" | "));
   await ctx.close();
 }

@@ -762,7 +762,7 @@ export function TodayClient({
           giornata: mentre registri o scrivi, cambiare giorno con un tocco
           sarebbe il modo piu veloce per perdere quello che stai dicendo. */}
       {(view === "filled" || view === "empty") && !desktopWriting && (
-        <DayNav date={todayISO()} muro={muro} />
+        <DayNav date={todayISO()} muro={muro} senzaNomeSulTelefono />
       )}
 
       {multiDayNotice && view === "filled" && (
