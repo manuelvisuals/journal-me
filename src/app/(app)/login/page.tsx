@@ -69,7 +69,7 @@ export default function LoginPage() {
     // e /benvenuto crederebbe di stare PRIMA del login. Rileggerla e
     // l'unico modo di dirle che adesso c'e un account.
     clearLocalMode();
-    return registraAccesso() ? "/benvenuto" : "/";
+    return registraAccesso() ? "/app/benvenuto" : "/app";
   }
 
   /**
@@ -89,7 +89,7 @@ export default function LoginPage() {
       await store.requestPersistence().catch(() => false);
       await store.setMeta("onboardingDone", true).catch(() => undefined);
     }
-    router.replace("/");
+    router.replace("/app");
   };
   const [error, setError] = useState<string | null>(null);
   // Accesso del revisore Apple (PIANO-APPSTORE §1c): se il server dice che

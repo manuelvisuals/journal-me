@@ -27,6 +27,42 @@ const mobileConfig: NextConfig = {
 };
 
 const webConfig: NextConfig = {
+  pageExtensions: ["tsx", "ts", "jsx", "js", "web.tsx"],
+
+  /**
+   * Le vecchie rotte dell'app portano dove sono andate (31 agosto 2026).
+   *
+   * Fino a ieri l'app stava alla radice: /mese, /recap, /remember. Chi ha un
+   * segnalibro, un link in una chat o una scheda aperta da tre settimane
+   * troverebbe una pagina che non esiste. Un rimando permanente costa una
+   * riga e dice anche a Google che quell'indirizzo si e trasferito, invece
+   * di lasciargli in mano un 404 e la sensazione che il sito sia rotto.
+   *
+   * `permanent: true` = 308: il browser se lo ricorda, e il motore di
+   * ricerca sposta il punteggio sul nuovo indirizzo. Sono rotte che NON
+   * torneranno indietro, quindi permanente e la verita.
+   *
+   * La radice non e qui dentro di proposito: "/" adesso e il sito, non un
+   * indirizzo da cui scappare.
+   */
+  async redirects() {
+    const spostate = [
+      "mese",
+      "recap",
+      "remember",
+      "settings",
+      "giorno",
+      "persona",
+      "palestra",
+      "benvenuto",
+      "checkout-finto",
+    ];
+    return spostate.flatMap((r) => [
+      { source: `/${r}`, destination: `/app/${r}`, permanent: true },
+      { source: `/${r}/:resto*`, destination: `/app/${r}/:resto*`, permanent: true },
+    ]);
+  },
+
   // The iOS bundle is a different origin from these routes, so the browser
   // preflights every POST to them. Without this the app would only ever work
   // in a tab. Every call now carries an Authorization bearer token (injected

@@ -13,7 +13,7 @@ const ISO_RE = /^\d{4}-\d{2}-\d{2}$/;
 type Boot = { date: string; entry: Entry | null };
 
 /**
- * Day detail. Was `/giorno/[date]`; a dynamic segment cannot be prerendered in
+ * Day detail. Was `/app/giorno/[date]`; a dynamic segment cannot be prerendered in
  * a static export without listing every possible day up front, so the date
  * travels as `?d=YYYY-MM-DD` and the page reads it in the app.
  */
@@ -24,7 +24,7 @@ export default function DayPage() {
   useEffect(() => {
     const date = new URLSearchParams(window.location.search).get("d") ?? "";
     if (!ISO_RE.test(date)) {
-      router.replace("/mese");
+      router.replace("/app/mese");
       return;
     }
 

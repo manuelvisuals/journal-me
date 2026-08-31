@@ -10,7 +10,7 @@ altri moduli possono importare (il lint dei confini e a ERRORE).
 La giornata: racconto a voce/scritto, editor, overlay di registrazione,
 giornata raccontata (FilledView), metriche, obiettivi, chiarimenti, e la
 schermata /giorno di una data scelta. Pagine che lo montano:
-`src/app/page.tsx` e `src/app/giorno/`.
+`src/app/(app)/app/page.tsx` e `src/app/(app)/app/giorno/`.
 
 Cambiare giorno (29 agosto 2026, mockup `design/mockups/navigazione-giorno.html`,
 variante A): `day-nav.tsx` e la testata con le frecce (due piani: "Oggi",

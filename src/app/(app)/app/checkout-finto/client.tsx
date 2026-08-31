@@ -58,7 +58,7 @@ export function CheckoutFintoClient() {
       toast.hide();
       if (next === "premium") {
         openPremiumWelcome();
-        router.replace("/");
+        router.replace("/app");
       } else {
         toast.ok(t("Sei tornato al piano gratis"));
         setBusy(false);
@@ -133,7 +133,7 @@ export function CheckoutFintoClient() {
         <button
           type="button"
           className="jm-ck-quiet"
-          onClick={() => router.replace("/")}
+          onClick={() => router.replace("/app")}
           disabled={busy}
         >
           {t("Annulla e torna al diario")}

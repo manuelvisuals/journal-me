@@ -49,7 +49,7 @@ export default function BenvenutoPage() {
 
   const enter = () => {
     markWelcomeSeen();
-    router.replace("/");
+    router.replace("/app");
   };
 
   // Ai premium questa domanda non si fa MAI (Manuel, 27 agosto 2026): un
@@ -61,7 +61,7 @@ export default function BenvenutoPage() {
   useEffect(() => {
     if (postLogin && pianoNoto === "premium") {
       markWelcomeSeen();
-      router.replace("/");
+      router.replace("/app");
     }
     // router e stabile; enter() inline per non dipendere da una closure.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,7 +84,7 @@ export default function BenvenutoPage() {
     const ok = await startPremiumV1();
     if (ok) {
       markWelcomeSeen();
-      router.replace("/");
+      router.replace("/app");
       return;
     }
     toast.error(t("Non sono riuscito ad attivare il premium. Riprova."));
@@ -102,7 +102,7 @@ export default function BenvenutoPage() {
       await store.requestPersistence().catch(() => false);
       await store.setMeta("onboardingDone", true).catch(() => undefined);
     }
-    router.replace("/");
+    router.replace("/app");
   };
 
   // La splash aspetta il primo segnale di schermata pronta.

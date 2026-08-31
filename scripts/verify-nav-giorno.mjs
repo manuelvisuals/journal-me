@@ -96,7 +96,7 @@ async function contesto(width = 430, conDito = false) {
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(`(async () => { ${SEED} })()`);
   return { ctx, page, errors };
 }
@@ -119,7 +119,7 @@ async function trascina(page, dx) {
 /* ============ 1. le frecce, e il muro del futuro ============ */
 {
   const { ctx, page, errors } = await contesto();
-  await page.goto(`${BASE}/giorno?d=${ALTROIERI}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${ALTROIERI}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-day-nav-rel", { timeout: 20000 });
 
   check(
@@ -161,7 +161,7 @@ async function trascina(page, dx) {
     await page.locator(".jm-day-nav-arw").last().click();
     await page.waitForTimeout(700);
   }
-  check("da ieri, avanti ancora, si arriva su Oggi", page.url().endsWith("/"), page.url());
+  check("da ieri, avanti ancora, si arriva su Oggi", page.url().endsWith("/app"), page.url());
   /* Dal 30 agosto 2026 (la barra in alto, scelta di Manuel) su Oggi il
      NOME del giorno lo dice la barra e non la testata: scritto in tutti e
      due era la stessa parola due volte a pochi pixel. La testata tiene la
@@ -195,7 +195,7 @@ async function trascina(page, dx) {
 /* ============ 2. il dito ============ */
 {
   const { ctx, page, errors } = await contesto();
-  await page.goto(`${BASE}/giorno?d=${IERI}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${IERI}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-h", { timeout: 20000 });
 
   const partenza = (await titolo(page)).trim();
@@ -228,7 +228,7 @@ async function trascina(page, dx) {
 /* ============ 3. il dito contro il muro ============ */
 {
   const { ctx, page, errors } = await contesto();
-  await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app`, { waitUntil: "networkidle" });
   // Si aspetta la DATA e non il nome: su Oggi, dal 30 agosto 2026, il nome
   // sul telefono e nella barra in alto (vedi il blocco 1).
   await page.waitForSelector(".jm-day-nav-abs", { timeout: 20000 });
@@ -260,7 +260,7 @@ async function trascina(page, dx) {
 /* ============ 4. il dito di lato ferma la pagina ============ */
 {
   const { ctx, page, errors } = await contesto();
-  await page.goto(`${BASE}/giorno?d=${IERI}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${IERI}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-day-sw", { timeout: 20000 });
   await page.waitForTimeout(600);
 
@@ -320,7 +320,7 @@ async function trascina(page, dx) {
      telefono. Qui i tocchi sono veri (touchStart/touchMove del motore),
      non simulati col puntatore. */
   const { ctx, page, errors } = await contesto(430, true);
-  await page.goto(`${BASE}/giorno?d=${IERI}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${IERI}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-day-sw", { timeout: 20000 });
   await page.waitForTimeout(600);
   await page.evaluate(() => window.scrollTo(0, 200));

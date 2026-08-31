@@ -31,7 +31,7 @@ async function newPage(width, height) {
 /* ============ DESKTOP 1440, modalita locale ============ */
 {
   const { ctx, page, errors, external } = await newPage(1440, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
 
   // Larghezze: editor a riga leggibile in colonna larga
@@ -92,7 +92,7 @@ async function newPage(width, height) {
   check("muro: 'prova premium' porta al login", page.url().includes("/login"));
 
   // Recap: Genera -> muro recap
-  await page.goto(BASE + "/recap", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/recap", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
   const gen = page.locator(".jm-gen-btn");
   if ((await gen.count()) > 0) {
@@ -105,14 +105,14 @@ async function newPage(width, height) {
   }
 
   // Mese: pill premium su Pattern + larghezza griglia
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
   check("mese: pill premium su Pattern", await page.locator(".jm-railr-pill").isVisible());
   const meseW = (await page.locator("main").first().boundingBox())?.width;
   check("mese: contenitore largo (>=900)", (meseW ?? 0) >= 900, String(meseW));
 
   // Ricorda: classificazione NON parte in locale (zero richieste esterne piu sotto)
-  await page.goto(BASE + "/remember", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/remember", { waitUntil: "networkidle" });
   await page.waitForTimeout(700);
   const remW = (await page.locator("main").first().boundingBox())?.width;
   check("ricorda: contenitore fluido (>=1200, niente rail destra)", (remW ?? 0) >= 1200, String(remW));
@@ -125,7 +125,7 @@ async function newPage(width, height) {
 /* ============ TELEFONO 430, modalita locale ============ */
 {
   const { ctx, page, errors, external } = await newPage(430, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
 
   const mainW = (await page.locator("main").first().boundingBox())?.width;

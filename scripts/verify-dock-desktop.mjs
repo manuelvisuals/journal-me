@@ -92,7 +92,7 @@ const COLORE_DEL_TOKEN = (token) => `(() => {
 /* ================= DESKTOP 1440 ================= */
 {
   const { ctx, page, errors } = await apri(1440, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(2200);
 
   /* --- 1. il dock non esiste --- */
@@ -229,7 +229,7 @@ const COLORE_DEL_TOKEN = (token) => `(() => {
 /* --- 3. su Impostazioni il pallino usa la stessa lente --- */
 {
   const { ctx, page, errors } = await apri(1440, 900);
-  await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForTimeout(2200);
   const r = await page.evaluate(
     ([lensJs]) => {
@@ -257,7 +257,7 @@ const COLORE_DEL_TOKEN = (token) => `(() => {
 for (const tema of ["minimal", "wine", "carta", "malva", "macchina"]) {
   for (const aspetto of ["light", "dark"]) {
     const { ctx, page } = await apri(1440, 900, { tema, aspetto });
-    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/app", { waitUntil: "networkidle" });
     await page.waitForTimeout(1500);
     const r = await page.evaluate(
       ([lensJs]) => {
@@ -283,7 +283,7 @@ for (const tema of ["minimal", "wine", "carta", "malva", "macchina"]) {
 /* ================= TELEFONO 430 ================= */
 {
   const { ctx, page, errors } = await apri(430, 860);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(2200);
   const tel = await page.evaluate(() => {
     const w = document.querySelector(".jm-dock-wrap");

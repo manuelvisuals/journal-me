@@ -235,7 +235,7 @@ export function TodayClient({
         } else {
           openPremiumWall("voice", () => setView("manual"));
         }
-        router.replace("/", { scroll: false });
+        router.replace("/app", { scroll: false });
         return;
       }
       warmRealtime();
@@ -245,7 +245,7 @@ export function TodayClient({
       setView((current) =>
         current === "recording" || current === "scelta" ? current : "scelta",
       );
-      router.replace("/", { scroll: false });
+      router.replace("/app", { scroll: false });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
@@ -805,7 +805,7 @@ export function TodayClient({
           giorni in cui non hai ancora detto niente. */}
       {view === "empty" && !desktopWriting && (
         <DaySwipe
-          onPrima={() => router.push(`/giorno?d=${giornoPrima(todayISO())}`)}
+          onPrima={() => router.push(`/app/giorno?d=${giornoPrima(todayISO())}`)}
           onDopo={() => setMuro((n) => n + 1)}
           muroDopo
           onMuro={() => setMuro((n) => n + 1)}
@@ -860,7 +860,7 @@ export function TodayClient({
 
       {view === "filled" && (
         <DaySwipe
-          onPrima={() => router.push(`/giorno?d=${giornoPrima(todayISO())}`)}
+          onPrima={() => router.push(`/app/giorno?d=${giornoPrima(todayISO())}`)}
           onDopo={() => setMuro((n) => n + 1)}
           muroDopo
           onMuro={() => setMuro((n) => n + 1)}

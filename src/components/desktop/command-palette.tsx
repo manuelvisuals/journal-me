@@ -92,20 +92,20 @@ export function CommandPalette() {
   if (!open || !isDesktop) return null;
 
   const navCommands: Command[] = [
-    { id: "oggi", group: t("Vai a"), label: t("Oggi"), run: () => router.push("/") },
-    { id: "mese", group: t("Vai a"), label: t("Mese"), run: () => router.push("/mese") },
-    { id: "ricorda", group: t("Vai a"), label: t("Ricorda"), run: () => router.push("/remember") },
-    { id: "recap", group: t("Vai a"), label: "Recap", run: () => router.push("/recap") },
-    { id: "altro", group: t("Vai a"), label: t("Impostazioni"), run: () => router.push("/settings") },
+    { id: "oggi", group: t("Vai a"), label: t("Oggi"), run: () => router.push("/app") },
+    { id: "mese", group: t("Vai a"), label: t("Mese"), run: () => router.push("/app/mese") },
+    { id: "ricorda", group: t("Vai a"), label: t("Ricorda"), run: () => router.push("/app/remember") },
+    { id: "recap", group: t("Vai a"), label: "Recap", run: () => router.push("/app/recap") },
+    { id: "altro", group: t("Vai a"), label: t("Impostazioni"), run: () => router.push("/app/settings") },
     {
       id: "record",
       group: t("Azioni"),
       label:
         storageMode === "local" ? t("Scrivi la giornata") : t("Racconta a voce"),
-      run: () => router.push("/?record=1"),
+      run: () => router.push("/app?record=1"),
     },
     // Il focus esiste solo dove esiste l'editor (Oggi).
-    ...(pathname === "/"
+    ...(pathname === "/app"
       ? [
           {
             id: "focus",

@@ -63,7 +63,7 @@ async function open(url, { width = 1440, height = 950, mode = "local", scale = n
 
 /* ---- la rail: una parola, e alta come le altre voci ---- */
 for (const [mode, parola, vietata] of [["local", "Scrivi", "Scrivi la giornata"], ["cloud", "Racconta", "Racconta a voce"]]) {
-  const { ctx, page, errors } = await open("/mese", { mode });
+  const { ctx, page, errors } = await open("/app/mese", { mode });
   const rec = page.locator(".jm-rail-i.rec");
   const txt = (await rec.innerText()).replace(/\s+/g, " ").trim();
   check(`rail ${mode}: dice "${parola}" e non la frase lunga`,
@@ -79,7 +79,7 @@ for (const [mode, parola, vietata] of [["local", "Scrivi", "Scrivi la giornata"]
 
 /* ---- le cinque misure ---- */
 {
-  const { ctx, page, errors } = await open("/settings");
+  const { ctx, page, errors } = await open("/app/settings");
   await page.locator(".jm-st-row:visible").filter({ hasText: "Dimensione del testo" }).first().click();
   await page.waitForTimeout(700);
 
@@ -115,7 +115,7 @@ for (const [mode, parola, vietata] of [["local", "Scrivi", "Scrivi la giornata"]
 
 /* ---- chi aveva gia scelto non si muove ---- */
 for (const [scale, nome] of [["0.9", "Molto piccolo"], ["1", "Piccolo"], ["1.5", "Molto grande"]]) {
-  const { ctx, page } = await open("/settings", { scale });
+  const { ctx, page } = await open("/app/settings", { scale });
   await page.locator(".jm-st-row:visible").filter({ hasText: "Dimensione del testo" }).first().click();
   await page.waitForTimeout(600);
   const on = await page.locator(".jm-st-szrow.on .jm-st-szname").innerText();

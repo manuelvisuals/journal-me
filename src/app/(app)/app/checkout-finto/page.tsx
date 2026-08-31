@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
-import { CheckoutFintoClient } from "@/app/checkout-finto/client";
+import { CheckoutFintoClient } from "./client";
 
 /**
  * /checkout-finto — il pagamento simulato (richiesta di Manuel del 21

@@ -83,13 +83,13 @@ async function pallino(page) {
 }
 
 const SCHERMATE = [
-  ["/", "Oggi"],
-  ["/mese", "Mese"],
-  ["/remember", "Ricorda"],
-  ["/recap", "Recap"],
-  ["/settings", "Impostazioni"],
-  ["/giorno?d=2026-08-29", "Giornata"],
-  ["/persona?nome=Marco", "Persona"],
+  ["/app", "Oggi"],
+  ["/app/mese", "Mese"],
+  ["/app/remember", "Ricorda"],
+  ["/app/recap", "Recap"],
+  ["/app/settings", "Impostazioni"],
+  ["/app/giorno?d=2026-08-29", "Giornata"],
+  ["/app/persona?nome=Marco", "Persona"],
 ];
 
 /* ---------- 1. telefono: lo stesso punto, ovunque ---------- */
@@ -125,13 +125,13 @@ const SCHERMATE = [
 
   // Una schermata corta non deve guadagnare una striscia di scorrimento:
   // e il modo in cui una barra messa nel flusso si tradisce.
-  const corte = misure.filter(([r]) => r === "/" || r === "/remember" || r === "/recap");
+  const corte = misure.filter(([r]) => r === "/app" || r === "/app/remember" || r === "/app/recap");
   for (const [rotta, , m] of corte) {
     check(`${rotta}: nessuna striscia di scorrimento inventata`, m.scroll === 0, `scroll ${m.scroll}`);
   }
 
   // Cio che e salito nella barra non deve restare scritto anche sotto.
-  await page.goto(BASE + "/remember", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/remember", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-appbar-t", { timeout: 25000 });
   await page.waitForTimeout(500);
   const doppioni = await page.evaluate(() => {
@@ -148,7 +148,7 @@ const SCHERMATE = [
 /* ---------- 2. Mese: si scorre SOTTO la barra ---------- */
 {
   const { ctx, page } = await open({});
-  await page.goto(BASE + "/mese", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-month-header", { timeout: 25000 });
   await page.waitForTimeout(900);
   await page.mouse.wheel(0, 700);
@@ -176,7 +176,7 @@ const SCHERMATE = [
 /* ---------- 3. desktop: la barra non c'e, la rail si ---------- */
 {
   const { ctx, page, errori } = await open({ width: 1440, height: 950 });
-  for (const rotta of ["/", "/mese", "/remember", "/recap", "/settings"]) {
+  for (const rotta of ["/app", "/app/mese", "/app/remember", "/app/recap", "/app/settings"]) {
     await page.goto(BASE + rotta, { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".jm-acct-btn", { timeout: 25000 });
     await page.waitForTimeout(500);
@@ -195,7 +195,7 @@ const SCHERMATE = [
   }
   // Il rovescio della medaglia: su desktop quei titoli DEVONO tornare,
   // perche li la barra non c'e e su desktop non cambia niente.
-  await page.goto(BASE + "/remember", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/remember", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-rem-h", { timeout: 25000 });
   await page.waitForTimeout(400);
   const tornati = await page.evaluate(() => {
@@ -217,7 +217,7 @@ const SCHERMATE = [
 /* ---------- 4. le pagine pubbliche restano nude ---------- */
 {
   const { ctx, page } = await open({ mode: "none" });
-  for (const rotta of ["/login", "/benvenuto", "/privacy"]) {
+  for (const rotta of ["/login", "/app/benvenuto", "/privacy"]) {
     await page.goto(BASE + rotta, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
     const n = await page.evaluate(() => document.querySelectorAll(".jm-appbar").length);
@@ -229,7 +229,7 @@ const SCHERMATE = [
 /* ---------- 5. testo grande: la barra tiene ---------- */
 {
   const { ctx, page } = await open({ scale: 1.5 });
-  await page.goto(BASE + "/settings", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-appbar .jm-hd-av", { timeout: 25000 });
   await page.waitForTimeout(700);
   const g = await page.evaluate(() => {

@@ -9,8 +9,8 @@ altri moduli possono importare (il lint dei confini e a ERRORE).
 
 Login con codice via email e la scelta iniziale delle due modalita in
 /benvenuto. Qui non ci sono componenti: le pagine vive stanno in
-`src/app/login/` e `src/app/benvenuto/` (con un CLAUDE.md di rimando), e il
-flusso auth server-side (`src/app/auth/`, `src/lib/supabase/`) e scheletro.
+`src/app/(app)/login/` e `src/app/(app)/app/benvenuto/` (con un CLAUDE.md di rimando), e il
+flusso auth server-side (`src/app/(app)/auth/`, `src/lib/supabase/`) e scheletro.
 
 Da qui esce anche il **saluto all'avvio** (`components/saluto-avvio.tsx`
 piu `saluto-stato.ts`), montato dallo scheletro dentro AuthGate via la porta

@@ -51,7 +51,7 @@ export const MODULES: ModuleDef[] = [
     id: "palestra",
     label: "Palestra",
     description: "Allenamenti, serie e progressi",
-    href: "/palestra",
+    href: "/app/palestra",
     status: "pronto",
   },
   {

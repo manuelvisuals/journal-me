@@ -128,6 +128,19 @@ globali, solo master: prima schermata le Aree) e nato il 28 agosto 2026 gia in
 questa forma; le voci future del pannello (allowance per tier, modelli AI,
 messaggio di benvenuto) nasceranno li dentro.
 
+Il modulo **`sito`** e nato il 31 agosto 2026 ed e diverso da tutti gli altri: non e
+una schermata dell'app ma il sito pubblico su `dayalogue.com` (la home che spiega il
+prodotto, `/support`, e il pannello SEO che il modulo admin monta dalla sua porta).
+Da quel giorno **l'app sta sotto `/app`** e la radice del dominio e il sito: le
+pagine dell'app vivono nel gruppo di rotte `src/app/(app)/` — le parentesi non
+entrano nell'indirizzo — e il guscio (splash, lucchetto, cancello, rail) e sceso dal
+layout di radice al layout di quel gruppo, perche addosso a una pagina di vendita
+quel pacchetto sarebbe un velo nero davanti al testo, una richiesta di Face ID a uno
+sconosciuto e un rimbalzo al login di chi arriva da Google. Due regole comuni hanno
+una deroga scritta nel CLAUDE.md di quel modulo: le sue pagine sono componenti
+SERVER, e le loro parole non passano da `t()` (su `/en` un motore di ricerca
+leggerebbe l'italiano).
+
 ### Le guardie (cio che rende la struttura vera invece che decorativa)
 
 1. **CSS senza piu imbuto.** `globals.css` si riduce a tokens + `@import` dei file

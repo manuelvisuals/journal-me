@@ -75,7 +75,7 @@ const geometry = (page) =>
 
 /* ============ A1. la riga in Impostazioni ============ */
 {
-  const { ctx, page, errors } = await open("/settings");
+  const { ctx, page, errors } = await open("/app/settings");
   const row = page.locator(".jm-st-row", { hasText: "Dimensione del testo" }).first();
   check("la riga esiste in Lingua e aspetto", (await row.count()) === 1);
   check(
@@ -90,7 +90,7 @@ const geometry = (page) =>
 
 /* ============ A2. il pannello, e il cambio dal vivo ============ */
 {
-  const { ctx, page, errors } = await open("/settings");
+  const { ctx, page, errors } = await open("/app/settings");
   await page.locator(".jm-st-row", { hasText: "Dimensione del testo" }).first().click();
   await page.waitForTimeout(300);
 
@@ -138,7 +138,7 @@ const geometry = (page) =>
 
 /* ============ A3. sopravvive al reload, e senza lampeggiare ============ */
 for (const [scala, atteso] of [["1.5", "1.5"], ["0.9", "0.9"]]) {
-  const { ctx, page, errors } = await open("/settings", { scale: scala });
+  const { ctx, page, errors } = await open("/app/settings", { scale: scala });
   const g = await geometry(page);
   check(
     `scala ${scala}: applicata gia al primo disegno`,
@@ -154,7 +154,7 @@ for (const [scala, atteso] of [["1.5", "1.5"], ["0.9", "0.9"]]) {
 // Questo blocco e la richiesta di Manuel messa in un test.
 for (const [w, h, etichetta] of [[430, 932, "telefono"], [1440, 900, "desktop"]]) {
   const misura = async (scale) => {
-    const { ctx, page } = await open("/settings", { w, h, scale });
+    const { ctx, page } = await open("/app/settings", { w, h, scale });
     const g = await geometry(page);
     const tab = await page.locator("nav").last().evaluate((e) => {
       const r = e.getBoundingClientRect();
@@ -202,11 +202,11 @@ for (const [w, h, etichetta] of [[430, 932, "telefono"], [1440, 900, "desktop"]]
 
 /* ============ A5. anche le altre schermate reggono ============ */
 for (const [path, w, h] of [
-  ["/", 430, 932],
-  ["/", 1440, 900],
-  ["/mese", 430, 932],
-  ["/remember", 430, 932],
-  ["/settings", 1440, 900],
+  ["/app", 430, 932],
+  ["/app", 1440, 900],
+  ["/app/mese", 430, 932],
+  ["/app/remember", 430, 932],
+  ["/app/settings", 1440, 900],
 ]) {
   const { ctx, page, errors } = await open(path, { w, h, scale: "1.3", wait: "main" });
   await page.waitForTimeout(900);
@@ -227,7 +227,7 @@ for (const [path, w, h] of [
 
 /* ============ B1. il tasto nella giornata vuota ============ */
 {
-  const { ctx, page, errors } = await open("/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
+  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
   check(
     "giornata vuota: non dice piu 'vai su Oggi'",
     !(await page.locator("body").innerText()).includes("Vai su Oggi"),
@@ -272,7 +272,7 @@ for (const [path, w, h] of [
 
 /* ============ B2. e sulla giornata gia raccontata ============ */
 {
-  const { ctx, page, errors } = await open("/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
+  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
   await page.locator(".jm-day-add").click();
   await page.waitForTimeout(300);
   await page.locator(".jm-sheet-row", { hasText: "Scrivi altro" }).click();

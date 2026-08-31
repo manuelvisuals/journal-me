@@ -41,7 +41,7 @@ async function newPage(width, height, { local = true } = {}) {
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-st-group", { timeout: 15000 });
   await page.waitForTimeout(400);
   return { ctx, page, errors };

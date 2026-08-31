@@ -35,23 +35,23 @@ import { useT } from "@/lib/i18n";
 
 /**
  * Indirizzo -> nome della schermata. Un prefisso vale anche per i suoi
- * sotto-indirizzi (/persona/x), l'esatto "/" no: sarebbe tutto.
+ * sotto-indirizzi (/app/persona/x), l'esatto "/app" no: sarebbe tutto.
  * Le frasi sono gia nel catalogo comune tranne "Giornata": vedi
  * scripts/verify-i18n.mjs, elenco DINAMICHE (qui t() riceve una variabile).
  */
 const TITOLI: ReadonlyArray<readonly [string, string]> = [
-  ["/mese", "Mese"],
-  ["/remember", "Ricorda"],
-  ["/recap", "Recap"],
-  ["/settings", "Impostazioni"],
-  ["/giorno", "Giornata"],
-  ["/persona", "Persona"],
-  ["/palestra", "Palestra"],
+  ["/app/mese", "Mese"],
+  ["/app/remember", "Ricorda"],
+  ["/app/recap", "Recap"],
+  ["/app/settings", "Impostazioni"],
+  ["/app/giorno", "Giornata"],
+  ["/app/persona", "Persona"],
+  ["/app/palestra", "Palestra"],
 ];
 
 /** Il nome della schermata, o null se li la barra non ci va. */
 export function titoloSchermata(pathname: string): string | null {
-  if (pathname === "/") return "Oggi";
+  if (pathname === "/app") return "Oggi";
   for (const [prefisso, titolo] of TITOLI) {
     if (pathname === prefisso || pathname.startsWith(`${prefisso}/`)) {
       return titolo;

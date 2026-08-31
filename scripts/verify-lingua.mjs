@@ -30,7 +30,7 @@ function check(name, ok, extra = "") {
 
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
 
-async function open(locale, { path = "/settings", pref = null } = {}) {
+async function open(locale, { path = "/app/settings", pref = null } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     locale,
@@ -49,7 +49,7 @@ async function open(locale, { path = "/settings", pref = null } = {}) {
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
   await page.goto(BASE + path, { waitUntil: "networkidle" });
-  if (path === "/settings") await page.waitForSelector(".jm-st-group", { timeout: 15000 });
+  if (path === "/app/settings") await page.waitForSelector(".jm-st-group", { timeout: 15000 });
   await page.waitForTimeout(600);
   return { ctx, page, errors };
 }
@@ -163,7 +163,7 @@ for (const [locale, atteso, sep] of [
   ["it-IT", "81,4", "virgola"],
   ["en-GB", "81.4", "punto"],
 ]) {
-  const { ctx, page, errors } = await open(locale, { path: "/" });
+  const { ctx, page, errors } = await open(locale, { path: "/app" });
   await page.waitForTimeout(1200);
   await page.locator(".jm-rm-row").nth(0).click(); // peso
   await page.waitForTimeout(350);
@@ -178,7 +178,7 @@ for (const [locale, atteso, sep] of [
 
 /* ============ 6. le altre schermate, non solo Impostazioni ============ */
 {
-  const { ctx, page, errors } = await open("en-GB", { path: "/mese" });
+  const { ctx, page, errors } = await open("en-GB", { path: "/app/mese" });
   await page.waitForTimeout(1200);
   const testo = await page.locator("body").innerText();
   check(
@@ -196,7 +196,7 @@ for (const [locale, atteso, sep] of [
   await ctx.close();
 }
 {
-  const { ctx, page, errors } = await open("en-GB", { path: "/remember" });
+  const { ctx, page, errors } = await open("en-GB", { path: "/app/remember" });
   await page.waitForTimeout(900);
   check(
     "Ricorda in inglese: titolo e filtri tradotti",

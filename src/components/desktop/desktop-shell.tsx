@@ -23,7 +23,7 @@ function isBareLayout(pathname: string): boolean {
   return (
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/benvenuto")
+    pathname.startsWith("/app/benvenuto")
   );
 }
 

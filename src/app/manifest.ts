@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "dayalogue",
     short_name: "dayalogue",
     description: "Diario personale: voce, memoria, recap.",
-    start_url: "/",
+    start_url: "/app",
     display: "standalone",
     background_color: "#0E0709",
     theme_color: "#0E0709",

@@ -105,7 +105,7 @@ async function apri({ vista = "griglia", width = LARGO, height = 800 } = {}) {
     if (m.type() === "error") errors.push(m.text());
   });
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(2200);
   return { ctx, page, errors };
 }
@@ -389,7 +389,7 @@ async function apri({ vista = "griglia", width = LARGO, height = 800 } = {}) {
 /* ============ 4. LE ALTRE SCHERMATE NON GUADAGNANO NIENTE ============ */
 {
   const { ctx, page, errors } = await apri({ vista: "griglia" });
-  for (const rotta of ["/", "/remember", "/recap"]) {
+  for (const rotta of ["/app", "/app/remember", "/app/recap"]) {
     await page.goto(BASE + rotta, { waitUntil: "networkidle" });
     await page.waitForTimeout(1500);
     const m = await page.evaluate(() => {

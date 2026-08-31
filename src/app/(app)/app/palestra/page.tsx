@@ -29,7 +29,7 @@ export default function PalestraPage() {
 
   useEffect(() => {
     if (!isModuleActive("palestra")) {
-      router.replace("/");
+      router.replace("/app");
       return;
     }
     signalReady();
@@ -61,7 +61,7 @@ export default function PalestraPage() {
           <button
             type="button"
             className="btn-ghost"
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/app")}
           >
             {t("Torna a Oggi")}
           </button>

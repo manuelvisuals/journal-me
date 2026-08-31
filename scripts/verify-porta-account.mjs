@@ -89,7 +89,7 @@ async function open({
 /* ---------- 1. desktop cloud gratis: apertura, voci, chiusure ---------- */
 {
   const { ctx, page } = await open({ mode: "cloud", plan: "free" });
-  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-acct-btn", { timeout: 25000 });
   await page.waitForTimeout(600);
 
@@ -161,7 +161,7 @@ async function open({
 /* ---------- 2. desktop cloud PREMIUM: la voce Premium sparisce ---------- */
 {
   const { ctx, page } = await open({ mode: "cloud", plan: "premium" });
-  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-acct-btn", { timeout: 25000 });
   await page.waitForTimeout(400);
   await page.locator(".jm-acct-btn").click();
@@ -181,7 +181,7 @@ async function open({
     plan: "free",
     native: true,
   });
-  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-hd-av", { timeout: 25000 });
   await page.waitForTimeout(600);
   await page.locator(".jm-hd-av").click();
@@ -199,7 +199,7 @@ async function open({
 /* ---------- 4. telefono locale: la via del ritorno, niente Esci ---------- */
 {
   const { ctx, page } = await open({ width: 390, height: 844, mode: "local" });
-  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-hd-av", { timeout: 25000 });
   await page.waitForTimeout(600);
 
@@ -242,7 +242,7 @@ async function open({
     mode: "local",
     moduli: ["palestra"],
   });
-  await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   await page.waitForSelector("nav.jm-dock-wrap", { timeout: 25000 });
   await page.waitForTimeout(600);
   const tabs = (await page.locator("nav.jm-dock-wrap").innerText()).toUpperCase();

@@ -8,7 +8,7 @@ CSS, `en.ts` le traduzioni, `index.ts` la PORTA — l'unica cosa che gli
 altri moduli possono importare (il lint dei confini e a ERRORE).
 
 Ricorda: persone, luoghi, todo, note e idee, la quick capture e la scheda
-persona. Pagine: `src/app/remember/` e `src/app/persona/`.
+persona. Pagine: `src/app/(app)/app/remember/` e `src/app/(app)/app/persona/`.
 
 - Prefissi CSS (misurati): `jm-rem`, `jm-pers`, `jm-qc`.
 - La porta esporta QuickCapture (la usa Oggi in /giorno per aggiungere).

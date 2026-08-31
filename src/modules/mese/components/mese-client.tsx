@@ -289,10 +289,10 @@ export function MeseClient({ mode, initialMonth }: Props) {
           onDayClick={(iso) => {
             setPendingDate(iso);
             startNav(() => {
-              router.push(`/giorno?d=${iso}`);
+              router.push(`/app/giorno?d=${iso}`);
             });
           }}
-          onWriteToday={() => router.push("/")}
+          onWriteToday={() => router.push("/app")}
         />
       )}
 
@@ -443,7 +443,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
                 onDayClick={(iso) => {
                   setPendingDate(iso);
                   startNav(() => {
-                    router.push(`/giorno?d=${iso}`);
+                    router.push(`/app/giorno?d=${iso}`);
                   });
                 }}
               />
@@ -469,7 +469,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
               const iso = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
               setPendingDate(iso);
               startNav(() => {
-                router.push(`/giorno?d=${iso}`);
+                router.push(`/app/giorno?d=${iso}`);
               });
             }}
           />

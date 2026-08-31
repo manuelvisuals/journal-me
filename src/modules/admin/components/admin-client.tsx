@@ -22,6 +22,7 @@ import { apiFetch } from "@/lib/api";
 import { signalReady } from "@/lib/app-ready";
 import { useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
+import { PannelloSeo } from "@/modules/sito";
 
 type Riga = {
   chiave: string;
@@ -46,6 +47,14 @@ export function AdminClient() {
   const [sporco, setSporco] = useState(false);
   const [salvataggio, setSalvataggio] = useState<"" | "in-corso" | "fatto" | "errore">("");
   const [erroreTesto, setErroreTesto] = useState("");
+  /**
+   * Quale voce del pannello si sta guardando. Le voci sono due dal 31
+   * agosto 2026: le Aree (di questo modulo) e il Sito, cioe il pannello
+   * SEO, che vive nel modulo `sito` e arriva qui dalla sua porta. Il
+   * pannello admin e il posto delle impostazioni globali, non di un
+   * modulo solo: e giusto che le voci vengano da moduli diversi.
+   */
+  const [voce, setVoce] = useState<"aree" | "sito">("aree");
 
   // Il pannello esiste solo per un account cloud: in modalita locale non si
   // fa NEMMENO UNA richiesta di rete (SPEC-v2 §1), e senza sessione non c'e
@@ -215,9 +224,20 @@ export function AdminClient() {
         </div>
         <div className="jm-adm-brand-sub">{t("Admin")}</div>
         <nav className="jm-adm-nav">
-          <span className="jm-adm-nav-on">
+          <button
+            type="button"
+            className={voce === "aree" ? "jm-adm-nav-on" : "jm-adm-nav-off vivo"}
+            onClick={() => setVoce("aree")}
+          >
             {t("Aree")} <em>{righe.length}</em>
-          </span>
+          </button>
+          <button
+            type="button"
+            className={voce === "sito" ? "jm-adm-nav-on" : "jm-adm-nav-off vivo"}
+            onClick={() => setVoce("sito")}
+          >
+            {t("Sito")}
+          </button>
           <span className="jm-adm-nav-off">{t("Obiettivi di default")}</span>
           <span className="jm-adm-nav-off">{t("Messaggio di benvenuto")}</span>
           <span className="jm-adm-nav-off">{t("Modelli AI")}</span>
@@ -230,6 +250,22 @@ export function AdminClient() {
       </aside>
 
       <main className="jm-adm-main">
+        {voce === "sito" ? (
+          <>
+            <div className="jm-adm-bar">
+              <div>
+                <h1 className="jm-adm-h1">{t("Sito")}</h1>
+                <p className="jm-adm-sub">
+                  {t(
+                    "Il titolo e la descrizione con cui dayalogue.com esce su Google. Le frasi dentro la pagina restano nel codice.",
+                  )}
+                </p>
+              </div>
+            </div>
+            <PannelloSeo />
+          </>
+        ) : (
+          <>
         <div className="jm-adm-bar">
           <div>
             <h1 className="jm-adm-h1">{t("Aree")}</h1>
@@ -412,6 +448,8 @@ export function AdminClient() {
             "Chi tiene il diario sul telefono in modalita locale vede le aree cotte dentro il pacchetto: le aree nuove arrivano li solo con una build nuova dell'app.",
           )}
         </p>
+          </>
+        )}
       </main>
     </div>
   );

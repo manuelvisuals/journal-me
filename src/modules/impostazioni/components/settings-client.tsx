@@ -256,7 +256,7 @@ export function SettingsClient({
       try {
         window.localStorage.removeItem("jm.mode");
       } catch {}
-      router.push("/benvenuto");
+      router.push("/app/benvenuto");
     } catch (err) {
       setDeleteArmed(false);
       say(
@@ -340,7 +340,7 @@ export function SettingsClient({
 
             {/* Recap solo sul telefono: su desktop e gia nella rail sinistra. */}
             <Link
-              href="/recap"
+              href="/app/recap"
               className="jm-st-recap jm-st-phoneonly"
               aria-label={t("Apri Recap")}
             >
@@ -381,7 +381,7 @@ export function SettingsClient({
               <SetRow
                 title={t("Ricorda")}
                 desc={t("Persone, posti e idee salvate al volo.")}
-                onClick={() => router.push("/remember")}
+                onClick={() => router.push("/app/remember")}
                 chevron
               />
             </SetGroup>

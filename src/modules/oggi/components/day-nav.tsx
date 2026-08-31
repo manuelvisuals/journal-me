@@ -106,14 +106,14 @@ export function DayNav({
     (iso: string) => {
       if (eFuturo(iso)) return;
       if (iso === todayISO()) {
-        router.push("/");
+        router.push("/app");
         return;
       }
       if (onVai) {
         onVai(iso);
         return;
       }
-      router.push(`/giorno?d=${iso}`);
+      router.push(`/app/giorno?d=${iso}`);
     },
     [onVai, router],
   );
