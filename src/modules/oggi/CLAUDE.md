@@ -34,7 +34,24 @@ dire riscrivere l'editor e la registrazione.
 - La porta esporta RecordingOverlay (lo usa Ricorda per la cattura a voce).
 - Orchestrazione del salvataggio: `src/lib/actions/save-recording.ts`
   (scheletro: si cambia solo d'accordo con Manuel).
-- Banchi prima del push: `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
+I chiarimenti (31 agosto 2026, mockup `design/mockups/chiarimenti-multi.html`):
+una domanda sulle PERSONE accetta piu risposte — "i miei amici" possono
+essere Hoda e Liana, e sceglierne una sola era far scrivere al diario una
+cosa falsa. La casella davanti alla risposta e quadrata quando se ne puo
+prendere piu di una e tonda quando no: e l'unico segnale che arriva prima
+del tocco. Le risposte che dicono il contrario ("non e una persona", "non
+c'entra con nessuna sfera") spengono le altre. Sotto ci sta lo scheletro:
+`Alias.labelKeys` e un ELENCO, e i due nomi stanno nella stessa casella
+`label_key` separati da U+001F — nessuna migrazione, le righe vecchie si
+leggono come un elenco di uno.
+L'estratto del racconto c'e SEMPRE: `citazione.ts` lo ritaglia dal testo
+quando il modello lo lascia vuoto (o quando scrive una frase che nel
+racconto non c'e, cioe se l'e inventata), e la schermata va a riprendere il
+racconto della giornata per le domande vecchie in coda. Il codice non
+inventa mai: copia.
+
+- Banchi prima del push: `verify-chiarimenti`, `verify-chiarimenti-vivo`,
+  `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,
   `verify-nav-giorno`, `verify-barra-alto` (piu tsc, eslint,

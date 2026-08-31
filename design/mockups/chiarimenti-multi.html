@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Da chiarire: piu di una persona, e il testo sempre sotto gli occhi</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+:root{
+  --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --line:rgba(0,0,0,.10);
+  --font:"Inter",system-ui,-apple-system,sans-serif; --serif:"Newsreader",Georgia,serif;
+  --r-md:12px; --r-lg:16px;
+}
+.dark{
+  --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --on-accent:#1D1D1F; --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0E0E10;color:#EDEDED;font-family:var(--font);padding:40px 24px 90px;-webkit-font-smoothing:antialiased}
+.page-title{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:#fff}
+.page-sub{font-size:13px;color:#9A9AA0;text-align:center;margin:10px auto 0;line-height:1.65;max-width:820px}
+.divider{height:1px;background:rgba(255,255,255,.10);max-width:1280px;margin:40px auto}
+.label{font-size:11px;font-weight:600;color:#9A9AA0;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 8px}
+.caption{font-size:12.5px;color:#9A9AA0;text-align:center;margin:0 auto 22px;max-width:900px;line-height:1.7}
+.caption b{color:#D8D8DE;font-weight:600}
+.row2{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:11px;color:#8A8A90;text-align:center;margin-top:12px;letter-spacing:.04em;max-width:390px;line-height:1.6}
+.cap b{color:#C8C8CE}
+.phone{width:390px;border-radius:34px;overflow:hidden;background:var(--bg-app);color:var(--ink);
+  box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);padding:28px 22px 24px;position:relative;min-height:660px;
+  display:flex;flex-direction:column}
+
+/* --- intestazione --- */
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.q-kicker{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.q-count{font-size:11px;color:var(--ink-faint);letter-spacing:.04em}
+.q-quando{font-size:11px;color:var(--ink-faint);letter-spacing:.04em;margin-bottom:14px}
+.bars{display:flex;gap:4px;margin-bottom:24px}
+.bar{height:3px;flex:1;border-radius:2px;background:var(--line)}
+.bar.on{background:var(--ink)}
+
+/* --- l'estratto del racconto --- */
+.quote{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.6;color:var(--ink-muted);
+  border-left:2px solid var(--line);padding-left:14px;margin-bottom:20px}
+.quote mark{background:none;color:var(--ink);font-style:normal;font-weight:600}
+
+.q-text{font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.3;margin-bottom:6px}
+.q-why{font-size:12.5px;color:var(--ink-faint);line-height:1.55;margin-bottom:10px}
+.q-multi{font-size:12px;color:var(--ink-faint);line-height:1.5;margin-bottom:16px;
+  display:flex;align-items:center;gap:7px}
+.q-multi svg{width:14px;height:14px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* --- risposte --- */
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:15px 16px;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--line);color:var(--ink);font-size:15px;font-weight:500;font-family:inherit;cursor:pointer}
+.opt .sub{display:block;font-size:12px;font-weight:400;color:var(--ink-faint);margin-top:2px}
+.opt.sel{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.opt.sel .sub{color:var(--on-accent);opacity:.72}
+.opt.ghost{background:transparent}
+
+/* La casella: quadrata quando si puo sceglierne piu di una, tonda quando no.
+   E l'unica cosa che dice in anticipo cosa succede se tocchi due volte. */
+.box{width:20px;height:20px;flex:0 0 auto;border:1.6px solid var(--ink-faint);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;opacity:.55}
+.box.tondo{border-radius:50%}
+.opt.sel .box{border-color:var(--on-accent);background:var(--on-accent);opacity:1}
+.box svg{width:12px;height:12px;fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.opt.sel .box svg{opacity:1}
+.box.tondo svg{stroke-width:0;fill:var(--accent);stroke:none}
+.opt.sel .box.tondo{background:var(--on-accent)}
+.pallino{width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0}
+.opt.sel .pallino{opacity:1}
+
+.q-foot{margin-top:auto;padding-top:22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.skip{font-size:13px;color:var(--ink-faint);background:none;border:none;font-family:inherit;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.btn{padding:12px 22px;border-radius:999px;background:var(--accent);color:var(--on-accent);border:none;font-family:inherit;
+  font-size:14px;font-weight:600;cursor:pointer;min-width:112px;white-space:nowrap}
+.btn[disabled]{opacity:.3;cursor:default}
+.basta-riga{margin-top:14px;text-align:center}
+.basta{font-size:12px;color:var(--ink-faint);background:none;border:none;font-family:inherit;cursor:pointer;
+  opacity:.75;text-decoration:underline;text-underline-offset:3px}
+
+/* --- come si legge dopo, nella giornata --- */
+.esito{max-width:900px;margin:0 auto;background:#161618;border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:22px 24px}
+.esito h4{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#9A9AA0;margin-bottom:14px}
+.esito .riga{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.esito .riga:last-child{margin-bottom:0}
+.esito .k{font-size:12px;color:#8A8A90;width:150px;flex:0 0 auto}
+.pill{display:inline-block;padding:7px 13px;border-radius:999px;background:#232326;border:1px solid rgba(255,255,255,.10);
+  font-size:13px;color:#EDEDED}
+.pill.old{color:#8A8A90;font-style:italic}
+.freccia{color:#6E6E73;font-size:15px}
+.nota{font-size:12px;color:#8A8A90;line-height:1.7;margin-top:18px;border-top:1px solid rgba(255,255,255,.08);padding-top:16px}
+.nota b{color:#D8D8DE}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Da chiarire: piu di una persona, e il testo sempre sotto gli occhi</h1>
+<p class="page-sub">
+  Due modifiche alla stessa schermata. La prima: quando la domanda e su delle persone, se ne possono
+  scegliere anche due o tre, perche "i miei amici" non e mai una persona sola. La seconda: l'estratto
+  del racconto c'e SEMPRE, anche quando il modello non lo scrive, perche a una domanda su una giornata
+  di tre settimane fa non si puo rispondere senza rileggere cosa avevi detto.
+</p>
+
+<div class="divider"></div>
+
+<p class="label">1 . Il problema di oggi</p>
+<p class="caption">
+  I bottoni sono <b>tondi e si escludono</b>: tocchi Hoda, poi tocchi Liana, e Hoda si spegne.
+  "I miei amici" erano due, e l'app ti costringe a sceglierne uno e a mentire sull'altro.
+</p>
+
+<div class="row2">
+  <div>
+    <div class="phone">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">1 di 2</span></div>
+      <div class="q-quando">Sabato . Sab 29 Ago</div>
+      <div class="bars"><span class="bar on"></span><span class="bar"></span></div>
+      <div class="quote">ieri <mark>i miei amici</mark> mi hanno aiutato tanto ad accettare la separazione</div>
+      <div class="q-text">Chi sono "i miei amici"?</div>
+      <div class="q-why">Non hai detto chi erano, e questa risposta vale anche per le prossime giornate.</div>
+      <div class="opts">
+        <div class="opt"><span class="box tondo"><span class="pallino"></span></span><span>Hoda</span></div>
+        <div class="opt sel"><span class="box tondo"><span class="pallino"></span></span><span>Liana</span></div>
+        <div class="opt"><span class="box tondo"><span class="pallino"></span></span><span>Semih</span></div>
+        <div class="opt ghost"><span class="box tondo"><span class="pallino"></span></span><span>Un altro nome<span class="sub">lo scrivo io</span></span></div>
+      </div>
+      <div class="q-foot"><button class="skip">Non adesso</button><button class="btn">Avanti</button></div>
+    </div>
+    <p class="cap">Oggi: una risposta sola. Hoda e sparita nel momento in cui hai toccato Liana.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="label">2 . La proposta . prova a toccare i nomi</p>
+<p class="caption">
+  Le caselle diventano <b>quadrate</b> e restano accese insieme. Il quadrato non e una decorazione:
+  e l'unica cosa che ti dice, PRIMA di toccare, che qui puoi sceglierne piu di una. Sotto la domanda
+  c'e una riga che lo dice a parole. Il bottone si accende appena ne hai scelta almeno una.
+</p>
+
+<div class="row2">
+  <div>
+    <div class="phone" id="fase-a">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">1 di 2</span></div>
+      <div class="q-quando">Sabato . Sab 29 Ago</div>
+      <div class="bars"><span class="bar on"></span><span class="bar"></span></div>
+      <div class="quote">ieri <mark>i miei amici</mark> mi hanno aiutato tanto ad accettare la separazione</div>
+      <div class="q-text">Chi sono "i miei amici"?</div>
+      <div class="q-why">Non hai detto chi erano, e questa risposta vale anche per le prossime giornate.</div>
+      <div class="q-multi">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="M7.5 12.2l3 3 6-6.4"/></svg>
+        <span>Puoi sceglierne piu di una.</span>
+      </div>
+      <div class="opts" data-multi>
+        <div class="opt" data-v="ban"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>ban</span></div>
+        <div class="opt sel" data-v="Hoda"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Hoda</span></div>
+        <div class="opt" data-v="Mo"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Mo</span></div>
+        <div class="opt sel" data-v="Liana"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Liana</span></div>
+        <div class="opt" data-v="Semih"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Semih</span></div>
+        <div class="opt" data-v="Keiko"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Keiko</span></div>
+        <div class="opt" data-solo data-v="__nessuno__"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Non e una persona<span class="sub">non chiedermelo piu</span></span></div>
+        <div class="opt ghost" data-solo data-v="__libero__"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Un altro nome<span class="sub">lo scrivo io</span></span></div>
+      </div>
+      <div class="q-foot"><button class="skip">Non adesso</button><button class="btn">Avanti</button></div>
+      <div class="basta-riga"><button class="basta">basta per adesso</button></div>
+    </div>
+    <p class="cap"><b>Scelta multipla.</b> Due nomi accesi insieme. "Non e una persona" e "Un altro nome" restano da soli: toccarli spegne gli altri, perche sono risposte che dicono il contrario.</p>
+  </div>
+
+  <div>
+    <div class="phone dark">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">2 di 2</span></div>
+      <div class="q-quando">Sabato . Sab 29 Ago</div>
+      <div class="bars"><span class="bar on"></span><span class="bar on"></span></div>
+      <div class="quote">poi sono andato in <mark>piscina</mark> fino a tardi</div>
+      <div class="q-text">La piscina di oggi, cos'era?</div>
+      <div class="q-why">Vale solo per questa giornata: un altro giorno puo essere l'opposto.</div>
+      <div class="opts">
+        <div class="opt sel"><span class="box tondo"><span class="pallino"></span></span><span>Movimento</span></div>
+        <div class="opt"><span class="box tondo"><span class="pallino"></span></span><span>Relazioni</span></div>
+        <div class="opt"><span class="box tondo"><span class="pallino"></span></span><span>Tutte e due</span></div>
+        <div class="opt"><span class="box tondo"><span class="pallino"></span></span><span>Non c'entra con nessuna sfera<span class="sub">era solo una cosa da fare</span></span></div>
+      </div>
+      <div class="q-foot"><button class="skip">Non adesso</button><button class="btn">Fine</button></div>
+      <div class="basta-riga"><button class="basta">basta per adesso</button></div>
+    </div>
+    <p class="cap"><b>Le altre domande non cambiano.</b> Qui la risposta e una sola per definizione, quindi le caselle restano tonde. La scelta multipla arriva solo dove ha senso: le persone.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="label">3 . L'estratto c'e sempre</p>
+<p class="caption">
+  Il riquadro in corsivo esiste gia, ma lo scrive il modello AI e a volte lo lascia vuoto: allora la
+  domanda appare nuda. La proposta e che <b>quando manca se lo prenda il codice</b>, ritagliando dal
+  tuo racconto la frase che contiene la parola in dubbio. Il codice non inventa niente: copia.
+</p>
+
+<div class="row2">
+  <div>
+    <div class="phone" style="min-height:auto">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">1 di 4</span></div>
+      <div class="q-quando">tre settimane fa . Mar 12 Ago</div>
+      <div class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+      <div class="q-text">Chi e "il capo"?</div>
+      <div class="q-why">Non hai detto chi era.</div>
+      <div class="opts">
+        <div class="opt"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Mo</span></div>
+        <div class="opt"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Keiko</span></div>
+      </div>
+      <div class="q-foot"><button class="skip">Non adesso</button><button class="btn" disabled>Avanti</button></div>
+    </div>
+    <p class="cap"><b>Oggi, quando il modello non scrive la citazione.</b> "Il capo" di tre settimane fa: nessun appiglio, e non ti ricordi di cosa stavi parlando.</p>
+  </div>
+
+  <div>
+    <div class="phone" style="min-height:auto">
+      <div class="q-top"><span class="q-kicker">Da chiarire</span><span class="q-count">1 di 4</span></div>
+      <div class="q-quando">tre settimane fa . Mar 12 Ago</div>
+      <div class="bars"><span class="bar on"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+      <div class="quote">la riunione e andata male e <mark>il capo</mark> mi ha ripreso davanti a tutti</div>
+      <div class="q-text">Chi e "il capo"?</div>
+      <div class="q-why">Non hai detto chi era.</div>
+      <div class="opts">
+        <div class="opt"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Mo</span></div>
+        <div class="opt"><span class="box"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span><span>Keiko</span></div>
+      </div>
+      <div class="q-foot"><button class="skip">Non adesso</button><button class="btn" disabled>Avanti</button></div>
+    </div>
+    <p class="cap"><b>La proposta.</b> La frase la ritaglia il codice dal racconto di quel giorno, e la parola in dubbio e in grassetto: si trova con l'occhio senza rileggere tutto.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="label">4 . Cosa succede dopo che hai risposto</p>
+<div class="esito">
+  <h4>Nella giornata del 29 agosto</h4>
+  <div class="riga">
+    <span class="k">Persone, prima</span>
+    <span class="pill old">i miei amici</span>
+  </div>
+  <div class="riga">
+    <span class="k">Persone, dopo</span>
+    <span class="pill">Hoda</span><span class="pill">Liana</span>
+  </div>
+  <div class="riga">
+    <span class="k">Il tuo racconto</span>
+    <span class="pill old">"ieri i miei amici mi hanno aiutato tanto..."</span>
+    <span class="freccia">non si tocca mai</span>
+  </div>
+  <p class="nota">
+    Le tue parole restano le tue: nel testo continuera a esserci "i miei amici". Cambia solo come
+    l'app lo <b>legge</b>. E siccome legge cosi anche all'indietro, dal momento in cui rispondi
+    valgono anche le giornate di marzo dove avevi detto la stessa cosa, senza che tu debba rifare
+    niente. Se un domani cambi idea, si cambia la risposta e cambia di nuovo tutto lo storico.
+    <br><br>
+    <b>Il conto delle persone.</b> Oggi "i miei amici" contava come una persona sola, con quel nome
+    buffo. Da adesso conta come due incontri veri, uno per Hoda e uno per Liana: e la ragione per cui
+    questa modifica non e solo comodita, ma un numero che smette di essere sbagliato.
+  </p>
+</div>
+
+<script>
+// Solo per la prova: la scelta multipla si tocca davvero.
+document.querySelectorAll("[data-multi] .opt").forEach(function (o) {
+  o.addEventListener("click", function () {
+    var gruppo = o.parentElement;
+    var solo = o.hasAttribute("data-solo");
+    if (solo) {
+      var eraAcceso = o.classList.contains("sel");
+      gruppo.querySelectorAll(".opt").forEach(function (x) { x.classList.remove("sel"); });
+      if (!eraAcceso) o.classList.add("sel");
+    } else {
+      gruppo.querySelectorAll("[data-solo]").forEach(function (x) { x.classList.remove("sel"); });
+      o.classList.toggle("sel");
+    }
+    var n = gruppo.querySelectorAll(".opt.sel").length;
+    var btn = gruppo.parentElement.querySelector(".btn");
+    btn.disabled = n === 0;
+  });
+});
+</script>
+
+</body>
+</html>

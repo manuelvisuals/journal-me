@@ -61,7 +61,19 @@ export type { Domanda, Opzione };
  * l'unica uscita onesta per una cosa che non e una persona e il bottone che
  * lo dice.
  */
-export type Risposta = { domanda: Domanda; valore: string | null; nomeVero?: string };
+/**
+ * `valori` esiste dal 31 agosto 2026, per le domande sulle persone: "i miei
+ * amici" possono essere due, e sceglierne uno solo sarebbe rispondere il
+ * falso. Quando c'e, e lui che comanda; `valore` resta la stessa risposta
+ * scritta in una riga, ed e cio che si registra nella coda per dire che la
+ * domanda e chiusa.
+ */
+export type Risposta = {
+  domanda: Domanda;
+  valore: string | null;
+  valori?: string[];
+  nomeVero?: string;
+};
 
 /**
  * Il valore dell'opzione "non e una persona".
@@ -226,6 +238,29 @@ async function chiudi(mode: DataMode, domanda: Domanda, valore: string) {
   }
 }
 
+/**
+ * I nomi scelti, uno o piu.
+ *
+ * `valori` e la strada normale da quando la domanda sulle persone accetta
+ * piu risposte; `valore` resta per le risposte scritte a mano nel campo
+ * libero, che sono un nome solo per costruzione. Doppioni tolti: toccare due
+ * volte lo stesso bottone non deve scrivere due volte lo stesso nome.
+ */
+function nomiScelti(r: Risposta): string[] {
+  const grezzi = r.valori && r.valori.length > 0 ? r.valori : [r.valore ?? ""];
+  const visti = new Set<string>();
+  const fuori: string[] = [];
+  for (const g of grezzi) {
+    const n = g.trim();
+    if (!n) continue;
+    const k = chiaveAlias(n);
+    if (visti.has(k)) continue;
+    visti.add(k);
+    fuori.push(n);
+  }
+  return fuori;
+}
+
 function formeDelSoggetto(soggetto: string, personeDelGiorno: string[]): string[] {
   const base = chiaveAlias(soggetto);
   const forme = new Set<string>();
@@ -261,19 +296,23 @@ export async function applicaRisposte(
       if (!valore) continue;
       if (valore === NON_E_UNA_PERSONA) {
         for (const forma of formeDelSoggetto(domanda.soggetto, entry?.people ?? [])) {
-          await saveAlias(mode, { kind: "persona", alias: forma, labelKey: "" });
+          await saveAlias(mode, { kind: "persona", alias: forma, labelKeys: [] });
         }
         await chiudi(mode, domanda, valore);
         continue;
       }
-      const nome = valore.trim();
+      // Uno o piu nomi: "i miei amici" possono essere Hoda e Liana. Il
+      // soprannome resta uno — la parola che hai detto tu — e sono le
+      // persone dietro a essere due.
+      const nomi = nomiScelti(r);
+      if (nomi.length === 0) continue;
       // TUTTE le grafie che quel giorno indicavano quella persona, non solo
       // quella della domanda. Visto in produzione il 23 agosto: la domanda
       // diceva "mio fratello" mentre la giornata aveva salvato "fratello", e
       // il soprannome finiva su una chiave che non compariva da nessuna
       // parte. La persona restava "fratello" anche dopo aver risposto.
       for (const forma of formeDelSoggetto(domanda.soggetto, entry?.people ?? [])) {
-        await saveAlias(mode, { kind: "persona", alias: forma, labelKey: nome });
+        await saveAlias(mode, { kind: "persona", alias: forma, labelKeys: nomi });
       }
       await chiudi(mode, domanda, valore);
       continue;
@@ -289,7 +328,7 @@ export async function applicaRisposte(
       await saveAlias(mode, {
         kind,
         alias: chiaveAlias(domanda.soggetto),
-        labelKey: nome,
+        labelKeys: [nome],
       });
       await chiudi(mode, domanda, valore);
       continue;

@@ -120,8 +120,19 @@ export type Alias = {
   kind: FactKind;
   /** Come lo dici tu, gia normalizzato in minuscolo senza accenti. */
   alias: string;
-  /** Chi o cosa e davvero, nella grafia da mostrare: "Daniele". */
-  labelKey: string;
+  /**
+   * Chi o cosa e davvero, nella grafia da mostrare: `["Daniele"]`.
+   *
+   * E un ELENCO e non un nome solo dal 31 agosto 2026 (richiesta di Manuel).
+   * Un modo di dire puo indicare piu persone insieme — "i miei amici" sono
+   * Hoda e Liana — e costringere a sceglierne una sarebbe far scrivere al
+   * diario una cosa falsa. Quasi sempre l'elenco ha un elemento solo.
+   *
+   * VUOTO vuol dire "questa cosa NON e di questa specie, e non lo sara mai":
+   * e la risposta a "nuovi amici", che sono persone al plurale, cioe nessuna
+   * persona in particolare. Vedi risolvi() in src/lib/aliases.ts.
+   */
+  labelKeys: string[];
 };
 
 /**

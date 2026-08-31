@@ -32,8 +32,10 @@ const senzaCommenti = (src) =>
   src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 
 const { spostaFraAree } = await import(join(ROOT, "src/lib/chiarimenti-aree.ts"));
-const { chiaveAlias, indicizza, risolvi, risolviLista } = await import(
-  join(ROOT, "src/lib/aliases.ts")
+const { chiaveAlias, dividiNomi, indicizza, risolvi, risolviLista, uniscoNomi } =
+  await import(join(ROOT, "src/lib/aliases.ts"));
+const { ritagliaCitazione, spezzaAttorno } = await import(
+  join(ROOT, "src/modules/oggi/citazione.ts")
 );
 
 const results = [];
@@ -133,8 +135,12 @@ const AREE = [
 /* ================= 2. i soprannomi, quando si mostra ================= */
 
 const INDICE = indicizza([
-  { kind: "persona", alias: "mio fratello", labelKey: "Daniele" },
-  { kind: "luogo", alias: "da charlie", labelKey: "da Charlie" },
+  { kind: "persona", alias: "mio fratello", labelKeys: ["Daniele"] },
+  { kind: "luogo", alias: "da charlie", labelKeys: ["da Charlie"] },
+  // Dal 31 agosto 2026: un modo di dire puo valere per PIU persone.
+  { kind: "persona", alias: "i miei amici", labelKeys: ["Hoda", "Liana"] },
+  // Risposto "non e una persona": la casella resta vuota.
+  { kind: "persona", alias: "nuovi amici", labelKeys: [] },
 ]);
 
 check(
@@ -143,24 +149,76 @@ check(
 );
 check(
   '"mio fratello" si mostra come Daniele',
-  risolvi("mio fratello", "persona", INDICE).mostra === "Daniele",
+  uguali(risolvi("mio fratello", "persona", INDICE).mostra, ["Daniele"]),
 );
 check(
   "e anche scritto in un altro modo",
-  risolvi("Mio Fratello", "persona", INDICE).mostra === "Daniele",
+  uguali(risolvi("Mio Fratello", "persona", INDICE).mostra, ["Daniele"]),
 );
 check(
   '"da Charlie" NON compare fra le persone: e un posto',
-  risolvi("da Charlie", "persona", INDICE).mostra === null,
+  uguali(risolvi("da Charlie", "persona", INDICE).mostra, []),
 );
 check(
   "ma compare fra i luoghi",
-  risolvi("da Charlie", "luogo", INDICE).mostra === "da Charlie",
+  uguali(risolvi("da Charlie", "luogo", INDICE).mostra, ["da Charlie"]),
 );
 check(
   "un nome mai chiarito passa com'e",
-  risolvi("Keyko", "persona", INDICE).mostra === "Keyko",
+  uguali(risolvi("Keyko", "persona", INDICE).mostra, ["Keyko"]),
 );
+
+/* --- piu persone dietro un modo di dire solo (31 agosto 2026) --- */
+
+check(
+  '"i miei amici" diventa DUE persone, non una con quel nome',
+  uguali(risolvi("i miei amici", "persona", INDICE).mostra, ["Hoda", "Liana"]),
+  JSON.stringify(risolvi("i miei amici", "persona", INDICE).mostra),
+);
+{
+  // IL CASO CHE CONTA. Prima della modifica la giornata mostrava una sola
+  // pastiglia con scritto "i miei amici", e il conteggio degli incontri era
+  // sbagliato di uno ogni volta.
+  const fuori = risolviLista(["i miei amici"], "persona", INDICE);
+  check(
+    "una giornata con 'i miei amici' conta due incontri, non uno",
+    fuori.length === 2,
+    JSON.stringify(fuori),
+  );
+}
+{
+  // Nella stessa giornata puoi aver detto sia "i miei amici" sia "Liana":
+  // Liana resta una sola, non due.
+  const fuori = risolviLista(["i miei amici", "Liana"], "persona", INDICE);
+  check(
+    "un nome gia dentro il gruppo non si sdoppia",
+    uguali(fuori, ["Hoda", "Liana"]),
+    JSON.stringify(fuori),
+  );
+}
+check(
+  '"non e una persona" resta una risposta: non mostra niente',
+  uguali(risolvi("nuovi amici", "persona", INDICE).mostra, []),
+);
+{
+  // Il separatore fra i nomi: andata e ritorno, e le righe vecchie.
+  check(
+    "due nomi entrano e riescono in una casella sola",
+    uguali(dividiNomi(uniscoNomi(["Hoda", "Liana"])), ["Hoda", "Liana"]),
+  );
+  check(
+    "una riga scritta prima (un nome solo) si legge uguale",
+    uguali(dividiNomi("Daniele"), ["Daniele"]),
+  );
+  check(
+    "una casella vuota resta un elenco vuoto, cioe 'non e di questa specie'",
+    uguali(dividiNomi(""), []) && uniscoNomi([]) === "",
+  );
+  check(
+    "il separatore non e una virgola: un nome puo contenerla",
+    !uniscoNomi(["Hoda", "Liana"]).includes(","),
+  );
+}
 {
   // Nella stessa giornata puoi aver detto sia "mio fratello" sia "Daniele":
   // dopo la risoluzione sono la stessa persona, e la pastiglia e una sola.
@@ -372,11 +430,11 @@ check(
 );
 check(
   '"non e una persona" e una risposta vera, e vale per sempre',
-  /NON_E_UNA_PERSONA/.test(chiar) && /labelKey: ""/.test(chiar),
+  /NON_E_UNA_PERSONA/.test(chiar) && /labelKeys: \[\]/.test(chiar),
 );
 check(
-  "un soprannome senza nome vero nasconde la voce",
-  /suo\.labelKey\.trim\(\) \? suo\.labelKey : null/.test(leggi("src/lib/aliases.ts")),
+  "un soprannome senza nessun nome vero nasconde la voce",
+  /suo\.labelKeys\.map/.test(leggi("src/lib/aliases.ts")),
 );
 {
   const sch = leggi("src/modules/oggi/components/chiarimenti-screen.tsx");
@@ -420,11 +478,111 @@ check(
     /loadQuestionDates/.test(scan) && /giaViste/.test(scan),
   );
   check(
+    // Il logout e uscito da settings-client il 28 agosto: la porta
+    // dell'account lo chiama da piu punti, e la logica vive in un posto solo.
     "la scansione parte una volta sola, e il logout la dimentica",
     /scansioneGiaFatta/.test(leggi("src/modules/oggi/components/today-client.tsx")) &&
-      /dimenticaScansione/.test(leggi("src/modules/impostazioni/components/settings-client.tsx")),
+      /dimenticaScansione/.test(leggi("src/lib/auth/logout.ts")),
   );
 }
+
+/* ===== 6. piu di una persona, e l'estratto sempre (31 agosto 2026) ===== */
+
+{
+  const sch = leggi("src/modules/oggi/components/chiarimenti-screen.tsx");
+  check(
+    "la risposta e un ELENCO, non un valore solo",
+    /useState<string\[\]>\(\[\]\)/.test(sch) && !/setScelta\(/.test(senzaCommenti(sch)),
+  );
+  check(
+    "si puo scegliere piu di una persona, e SOLO fra le persone",
+    /const multi = d\.azione === "persona"/.test(sch),
+  );
+  check(
+    "la casella dice prima del tocco se se ne puo scegliere piu di una",
+    /function Casella/.test(sch) && /jm-ch-box\$\{multi \? "" : " tondo"\}/.test(sch),
+  );
+  check(
+    "e lo dice anche a parole, non solo con la forma",
+    /Puoi sceglierne piu di una\./.test(sch),
+  );
+  check(
+    '"non e una persona" spegne i nomi: non si risponde una cosa e il contrario',
+    /const ESCLUSIVE = new Set<string>/.test(sch) &&
+      /tocca\(NON_E_UNA_PERSONA, "", true\)/.test(sch),
+  );
+  check(
+    "l'estratto non e piu condizionato al capriccio del modello",
+    !/\{d\.citazione && </.test(sch) && /ritagliaCitazione\(racconti/.test(sch),
+  );
+  check(
+    "un estratto che manca si va a riprendere dal racconto di quel giorno",
+    /loadEntryForDate\(mode, dataSenzaEstratto\)/.test(sch),
+  );
+}
+{
+  const cat = leggi("src/modules/oggi/citazione.ts");
+  const TESTO =
+    "Stamattina ho corso quaranta minuti. Ieri i miei amici mi hanno aiutato tanto ad accettare la separazione. Poi sono andato a dormire presto.";
+  const c = ritagliaCitazione(TESTO, "i miei amici");
+  check(
+    "l'estratto e la frase che contiene la cosa in dubbio",
+    c.includes("i miei amici") && !c.includes("quaranta minuti"),
+    c,
+  );
+  check(
+    "e l'estratto e COPIATO dal racconto, non riscritto",
+    TESTO.includes(c),
+    c,
+  );
+  {
+    // Una domanda di area ha un soggetto parafrasato: si aggancia comunque
+    // sulla parola che porta il significato.
+    const a = ritagliaCitazione(TESTO, "la corsa di stamattina");
+    check(
+      "un soggetto parafrasato si aggancia alla sua parola piu lunga",
+      a.includes("corso"),
+      a,
+    );
+  }
+  {
+    // Il caso che rendeva la domanda un indovinello: nessun aggancio. Si
+    // mostra l'inizio del racconto, che e sempre meglio del vuoto.
+    const b = ritagliaCitazione(TESTO, "il capo");
+    check("senza aggancio si mostra comunque un pezzo di racconto", b.length > 0, b);
+    check("e anche quel pezzo e copiato", TESTO.includes(b.replace(/^\.\.\. |\ \.\.\.$/g, "")), b);
+  }
+  check(
+    "un racconto vuoto non produce un estratto inventato",
+    ritagliaCitazione("", "i miei amici") === "",
+  );
+  {
+    const s = spezzaAttorno("ieri i miei amici mi hanno aiutato", "i miei amici");
+    check(
+      "la cosa in dubbio si puo mettere in evidenza",
+      s.prima === "ieri " && s.dentro === "i miei amici",
+      JSON.stringify(s),
+    );
+    const n = spezzaAttorno("una frase qualunque", "il capo");
+    check(
+      "e se non si trova, niente grassetto sulla parola sbagliata",
+      n.dentro === "" && n.prima === "una frase qualunque",
+    );
+  }
+  check(
+    "l'estratto non taglia a meta le parole",
+    /Non tagliare a meta di una parola/.test(cat),
+  );
+}
+check(
+  "la rotta non si fida di una citazione che nel racconto non c'e",
+  /function citazioneVera/.test(rotta) &&
+    /normalizza\(transcript\)\.includes\(normalizza\(c\)\)/.test(rotta),
+);
+check(
+  "un modo di dire al plurale resta una domanda sulle persone",
+  /Un modo di dire al PLURALE/.test(rotta),
+);
 
 const falliti = results.filter((r) => !r.ok);
 console.log(

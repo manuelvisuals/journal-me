@@ -141,6 +141,7 @@ export const OGGI: Record<string, string> = {
   "basta per adesso": "enough for now",
   "Non e una persona": "Not a person",
   "non chiedermelo piu": "stop asking me this",
+  "Puoi sceglierne piu di una.": "You can pick more than one.",
   "Non c'entra con nessuna sfera": "It does not belong to any area",
   "era solo una cosa da fare": "it was just something I did",
   "indietro": "back",

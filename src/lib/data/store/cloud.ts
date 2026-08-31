@@ -15,7 +15,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
-import { chiaveAlias } from "@/lib/aliases";
+import { chiaveAlias, dividiNomi, uniscoNomi } from "@/lib/aliases";
 import type {
   Alias,
   DayExclusion,
@@ -506,10 +506,12 @@ export class CloudStore implements JournalStore {
     // Un soprannome mancante fa tornare il soprannome al posto del nome: e
     // brutto, ma e molto meglio di una giornata che non si apre.
     if (error || !data) return [];
+    // Una casella sola puo contenere piu nomi (vedi dividiNomi): le righe
+    // scritte prima del 31 agosto 2026 ne hanno uno e si leggono uguale.
     return (data as Record<string, unknown>[]).map((r) => ({
       kind: String(r.kind) as Alias["kind"],
       alias: String(r.alias),
-      labelKey: String(r.label_key),
+      labelKeys: dividiNomi(String(r.label_key)),
     }));
   }
 
@@ -522,7 +524,7 @@ export class CloudStore implements JournalStore {
           user_id: userId,
           kind: alias.kind,
           alias: alias.alias,
-          label_key: alias.labelKey,
+          label_key: uniscoNomi(alias.labelKeys),
         },
         { onConflict: "user_id,kind,alias" },
       );

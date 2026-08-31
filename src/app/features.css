@@ -538,6 +538,15 @@
   padding-left: 14px;
   margin-bottom: 20px;
 }
+/* La cosa in dubbio, dentro l'estratto. Non e un'evidenziazione gialla da
+   pennarello: e il TUO testo che smette di essere in corsivo e prende peso,
+   cosi si trova con l'occhio senza rileggere la frase intera. */
+.jm-ch-mark {
+  background: none;
+  color: var(--color-ink);
+  font-style: normal;
+  font-weight: 600;
+}
 .jm-ch-q {
   font-size: calc(21px * var(--jm-ui-scale));
   font-weight: 650;
@@ -552,6 +561,15 @@
   line-height: 1.55;
   margin-bottom: 20px;
 }
+/* "Puoi sceglierne piu di una": la forma quadrata lo dice a chi la conosce,
+   questa riga lo dice a tutti. Sta fra la domanda e i bottoni perche e li
+   che si guarda prima di toccare. */
+.jm-ch-multi {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
 .jm-ch-opts {
   display: flex;
   flex-direction: column;
@@ -560,6 +578,7 @@
 .jm-ch-opt {
   display: flex;
   align-items: center;
+  gap: 13px;
   width: 100%;
   text-align: left;
   padding: 15px 16px;
@@ -578,6 +597,48 @@
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-on-accent);
+}
+/* La casella davanti alla risposta. Quadrata = se ne possono accendere piu
+   di una; tonda = una sola. E l'unico segnale che arriva PRIMA del tocco. */
+.jm-ch-box {
+  width: calc(20px * var(--jm-ui-scale));
+  height: calc(20px * var(--jm-ui-scale));
+  flex: 0 0 auto;
+  border: 1.6px solid var(--color-ink-faint);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.55;
+}
+.jm-ch-box.tondo {
+  border-radius: 50%;
+}
+.jm-ch-opt.sel .jm-ch-box {
+  border-color: var(--color-on-accent);
+  background: var(--color-on-accent);
+  opacity: 1;
+}
+.jm-ch-spunta {
+  width: calc(12px * var(--jm-ui-scale));
+  height: calc(12px * var(--jm-ui-scale));
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+.jm-ch-pallino {
+  width: calc(8px * var(--jm-ui-scale));
+  height: calc(8px * var(--jm-ui-scale));
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0;
+}
+.jm-ch-opt.sel .jm-ch-spunta,
+.jm-ch-opt.sel .jm-ch-pallino {
+  opacity: 1;
 }
 .jm-ch-lab .sub {
   display: block;

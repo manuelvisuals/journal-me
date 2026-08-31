@@ -39,7 +39,7 @@ const SEED = `
       { label: "Cibo", text: "Pizza margherita." }
     ],
     metrics: { mood: null, weightKg: null, sleepHours: null },
-    goalsOn: [], people: ["mio fratello", "da Charlie", "Keyko"], durationSeconds: 0,
+    goalsOn: [], people: ["mio fratello", "da Charlie", "Keyko", "i miei amici"], durationSeconds: 0,
     createdAt: new Date("${OGGI}T20:00:00Z").toISOString(),
   });
   tx.objectStore("entries").put({
@@ -154,8 +154,13 @@ async function apri({ conDomande = true, conta = null } = {}) {
     const req = indexedDB.open("journalme");
     const db = await new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
     const tx = db.transaction("aliases", "readwrite");
+    // Le due righe qui sotto sono scritte nel formato VECCHIO (labelKey, un
+    // nome solo): e il diario che uno ha gia sul telefono. Devono continuare
+    // a funzionare senza nessuna migrazione.
     tx.objectStore("aliases").put({ id: "persona|mio fratello", kind: "persona", alias: "mio fratello", labelKey: "Daniele" });
     tx.objectStore("aliases").put({ id: "luogo|da charlie", kind: "luogo", alias: "da charlie", labelKey: "da Charlie" });
+    // Questa e nel formato nuovo: un modo di dire, due persone dietro.
+    tx.objectStore("aliases").put({ id: "persona|i miei amici", kind: "persona", alias: "i miei amici", labelKeys: ["Hoda", "Liana"] });
     await new Promise((res) => { tx.oncomplete = res; });
     db.close();
   })()`);
@@ -192,6 +197,23 @@ async function apri({ conDomande = true, conta = null } = {}) {
   check(
     '"da Charlie" non compare piu fra le persone: e un posto',
     !social.toLowerCase().includes("charlie"),
+    social.replace(/\n/g, " "),
+  );
+  // Il caso del 31 agosto 2026. Prima della modifica questa giornata
+  // mostrava una pastiglia sola con scritto "i miei amici": una persona
+  // finta, e due incontri veri persi. In un browser vero, non in una
+  // funzione pura.
+  {
+    const b = social.toLowerCase();
+    check(
+      '"i miei amici" si apre in DUE persone, in un browser vero',
+      b.includes("hoda") && b.includes("liana") && !b.includes("i miei amici"),
+      social.replace(/\n/g, " "),
+    );
+  }
+  check(
+    "e il vecchio formato a un nome solo continua a funzionare",
+    social.toLowerCase().includes("daniele"),
     social.replace(/\n/g, " "),
   );
   await ctx.close();

@@ -949,6 +949,7 @@ export function TodayClient({
 
       {view === "chiarimenti" && chiarimenti && (
         <ChiarimentiScreen
+          mode={mode}
           domande={chiarimenti.domande}
           onRisposta={(r) => {
             void applicaUnaRisposta(r);

@@ -5,6 +5,7 @@ import { langName, langOf } from "@/lib/server/lang";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
 import { areeAttive } from "@/lib/aree";
 import { leggiAree } from "@/lib/server/aree";
+import { ritagliaCitazione } from "@/modules/oggi/citazione";
 
 /**
  * I DUBBI dell'AI, dichiarati invece che risolti a caso.
@@ -155,7 +156,7 @@ export async function POST(req: NextRequest) {
     /** Le persone gia in Ricorda: diventano i bottoni di una domanda sui nomi. */
     roster?: string[];
     /** I soprannomi gia chiariti: "alias -> chi e". Non si richiedono. */
-    aliases?: { kind: string; alias: string; labelKey: string }[];
+    aliases?: { kind: string; alias: string; labelKeys?: string[] }[];
     /** Cosa ha capito l'analisi: serve per sapere su cosa c'e da dubitare. */
     people?: string[];
     areas?: { label: string; text: string }[];
@@ -178,9 +179,15 @@ export async function POST(req: NextRequest) {
 
   const lingua = langName(langOf(req));
   const roster = (body.roster ?? []).filter((r) => typeof r === "string").slice(0, 60);
-  const aliases = (body.aliases ?? []).filter(
-    (a) => a && typeof a.alias === "string" && typeof a.labelKey === "string",
-  );
+  const aliases = (body.aliases ?? [])
+    .filter((a) => a && typeof a.alias === "string")
+    .map((a) => ({
+      kind: a.kind,
+      alias: a.alias,
+      // Un soprannome puo valere per piu persone: "i miei amici" sono Hoda e
+      // Liana. Al modello si dice tutto, cosi non le richiede una per una.
+      nomi: (a.labelKeys ?? []).filter((n) => typeof n === "string" && n.trim()),
+    }));
   const people = (body.people ?? []).filter((p) => typeof p === "string");
   const areas = (body.areas ?? []).map((a) => a?.label).filter(Boolean);
 
@@ -210,6 +217,10 @@ export async function POST(req: NextRequest) {
     "AZIONI possibili, e non ce ne sono altre:",
     "  azione='persona' — il soggetto e una persona e va dato il suo nome.",
     "    Le opzioni sono i nomi che l'utente ha gia. libero=true.",
+    "    Un modo di dire al PLURALE ('i miei amici', 'i ragazzi', 'i miei')",
+    "    va bene qui: l'utente puo indicare piu di una persona con un tocco",
+    "    per ognuna. Non trasformarlo in una domanda di specie e non",
+    "    lasciarlo perdere perche sono in tanti.",
     "  azione='specie' — il soggetto e stato preso per una cosa che non e.",
     "    'valore' e il TIPO: cibo, attivita, persona, lavoro, luogo. Non e un",
     "    nome, e un codice, e non si traduce.",
@@ -241,6 +252,10 @@ export async function POST(req: NextRequest) {
     "senza cerimonie e senza scusarti di stare chiedendo.",
     "",
     "COME SI SCRIVE UNA DOMANDA:",
+    "  - 'citazione' e obbligatoria e si COPIA dal racconto: la frase che",
+    "    contiene il soggetto, parola per parola. Non riassumerla, non",
+    "    tradurla, non abbellirla. E cio che l'utente rilegge per ricordarsi",
+    "    di cosa stava parlando, e una frase riscritta non lo aiuta.",
     "  - Non elencare le risposte dentro la domanda. 'La piscina di oggi,",
     "    cos'era?' e giusto; 'la piscina va letta come Movimento, Relazioni o",
     "    Movimento+Relazioni?' e la stessa cosa detta due volte, e i bottoni",
@@ -256,7 +271,7 @@ export async function POST(req: NextRequest) {
       : "L'utente non ha ancora nessuna persona in rubrica.",
     aliases.length > 0
       ? `Gia chiarito una volta per sempre, NON richiedere: ${aliases
-          .map((a) => `"${a.alias}" = ${a.labelKey} (${a.kind})`)
+          .map((a) => `"${a.alias}" = ${a.nomi.join(" e ") || "niente"} (${a.kind})`)
           .join("; ")}.`
       : "",
     people.length > 0 ? `Persone lette in questa giornata: ${people.join(", ")}.` : "",
@@ -348,7 +363,11 @@ export async function POST(req: NextRequest) {
       specie: d.specie === "identita" ? "identita" : "episodio",
       azione: d.azione,
       soggetto: d.soggetto.trim(),
-      citazione: (d.citazione ?? "").trim(),
+      // L'estratto non puo mancare (regola di Manuel, 31 agosto 2026). Il
+      // modello lo scrive quasi sempre, ma quando lo lascia vuoto — o scrive
+      // una frase che nel racconto non esiste, cioe se l'e inventata — lo
+      // ritaglia il codice dal testo vero. Vedi src/modules/oggi/citazione.ts.
+      citazione: citazioneVera(transcript, d.soggetto, d.citazione),
       testo: (d.testo ?? "").trim(),
       perche: (d.perche ?? "").trim(),
       libero: d.azione === "persona" ? true : false,
@@ -363,6 +382,25 @@ export async function POST(req: NextRequest) {
     }));
 
   return NextResponse.json({ domande, model });
+}
+
+/**
+ * L'estratto da mostrare: quello del modello se e davvero nel racconto,
+ * altrimenti quello ritagliato dal codice.
+ *
+ * Il controllo "e davvero nel racconto" non e pignoleria. Un modello che
+ * riassume invece di copiare produce una frase plausibile che l'utente non
+ * ha mai detto, e riletta fra tre settimane sembra un ricordo suo. Meglio
+ * una frase vera e goffa che una falsa e ben scritta.
+ */
+function citazioneVera(
+  transcript: string,
+  soggetto: string,
+  proposta: string | undefined,
+): string {
+  const c = (proposta ?? "").trim();
+  if (c && normalizza(transcript).includes(normalizza(c))) return c;
+  return ritagliaCitazione(transcript, soggetto ?? "");
 }
 
 function normalizza(testo: string): string {

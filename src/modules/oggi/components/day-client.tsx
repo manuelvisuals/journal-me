@@ -285,6 +285,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
   if (domande) {
     return (
       <ChiarimentiScreen
+        mode={mode}
         domande={domande}
         onRisposta={(r) => {
           void applicaUnaRisposta(r);

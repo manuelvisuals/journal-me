@@ -20,7 +20,7 @@
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 import { todayISO } from "@/lib/format";
-import { chiaveAlias } from "@/lib/aliases";
+import { chiaveAlias, dividiNomi } from "@/lib/aliases";
 import type {
   Alias,
   DayExclusion,
@@ -394,7 +394,16 @@ export class LocalStore implements JournalStore {
   async loadAliases(): Promise<Alias[]> {
     const db = await this.db();
     const righe = await db.getAll("aliases");
-    return righe.map(({ kind, alias, labelKey }) => ({ kind, alias, labelKey }));
+    // Le righe scritte prima del 31 agosto 2026 hanno `labelKey`, un nome
+    // solo. Si leggono come un elenco di uno invece di far saltare la
+    // versione del database: sono soprannomi, non vale una migrazione.
+    return righe.map((r) => ({
+      kind: r.kind,
+      alias: r.alias,
+      labelKeys: Array.isArray(r.labelKeys)
+        ? r.labelKeys
+        : dividiNomi(String((r as { labelKey?: unknown }).labelKey ?? "")),
+    }));
   }
 
   async saveAlias(alias: Alias): Promise<Alias[]> {

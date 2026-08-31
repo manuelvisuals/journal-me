@@ -25,8 +25,12 @@ import {
   type Domanda,
   type Risposta,
 } from "@/lib/chiarimenti";
+import { loadEntryForDate, type DataMode } from "@/lib/data/entries";
+import { ritagliaCitazione, spezzaAttorno } from "@/modules/oggi/citazione";
 
 type Props = {
+  /** Serve solo per andare a riprendere il racconto quando l'estratto manca. */
+  mode: DataMode;
   domande: Domanda[];
   /**
    * Chiamata a OGNI risposta, non alla fine.
@@ -55,6 +59,7 @@ type Props = {
  */
 
 export function ChiarimentiScreen({
+  mode,
   domande,
   onRisposta,
   onDone,
@@ -62,11 +67,21 @@ export function ChiarimentiScreen({
 }: Props) {
   const t = useT();
   const [i, setI] = useState(0);
-  const [scelta, setScelta] = useState<string | null>(null);
+  /**
+   * Le risposte scelte, sempre un elenco.
+   *
+   * Era un valore solo fino al 31 agosto 2026. Su una domanda di persone si
+   * possono accendere piu nomi ("i miei amici" sono Hoda e Liana); su tutte
+   * le altre l'elenco ha al massimo un elemento, perche toccare sostituisce.
+   * Tenerne uno solo era la ragione per cui non si poteva rispondere il vero.
+   */
+  const [scelte, setScelte] = useState<string[]>([]);
   const [nomeVero, setNomeVero] = useState<string>("");
   const [liberoScelto, setLiberoScelto] = useState(false);
   const [testoLibero, setTestoLibero] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  /** I racconti gia andati a riprendere, per data: uno per giornata, non uno per domanda. */
+  const [racconti, setRacconti] = useState<Record<string, string>>({});
 
   const d = domande[i];
 
@@ -83,22 +98,93 @@ export function ChiarimentiScreen({
     if (libero) inputRef.current?.focus();
   }, [libero]);
 
+  /**
+   * L'estratto che manca si va a riprendere dal racconto di quella giornata.
+   *
+   * Le domande nuove arrivano gia con la citazione (la rotta la ritaglia).
+   * Questo serve per la CODA: le domande scritte prima del 31 agosto 2026
+   * hanno la casella vuota, e sono proprio quelle vecchie — cioe quelle a cui
+   * senza il testo davanti non si sa rispondere. Una lettura per giornata,
+   * tenuta da parte: la coda di un mese e fatta di poche giornate.
+   */
+  const dataSenzaEstratto = d && !d.citazione && racconti[d.entryDate] === undefined
+    ? d.entryDate
+    : null;
+  useEffect(() => {
+    if (!dataSenzaEstratto) return;
+    let vivo = true;
+    void (async () => {
+      let testo = "";
+      try {
+        testo = (await loadEntryForDate(mode, dataSenzaEstratto))?.transcript ?? "";
+      } catch {
+        // Il racconto non si e lasciato leggere: si mostra la domanda senza
+        // estratto invece di bloccarla. Meglio nuda che assente.
+        testo = "";
+      }
+      if (vivo) setRacconti((p) => ({ ...p, [dataSenzaEstratto]: testo }));
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [dataSenzaEstratto, mode]);
+
   if (!d) return null;
 
   const ultima = i === domande.length - 1;
-  const valoreScelto = libero ? testoLibero.trim() : scelta;
-  const puoAvanzare = !!valoreScelto && valoreScelto.length > 0;
+  /**
+   * Piu risposte insieme SOLO sulle persone, e solo quando ci sono nomi da
+   * toccare. Su un'area la risposta e una per definizione ("tutte e due" e
+   * gia un bottone suo), e su una specie una cosa non puo essere insieme un
+   * posto e un cibo: li la scelta multipla sarebbe solo un modo per
+   * rispondere una cosa senza senso.
+   */
+  const multi = d.azione === "persona" && !libero;
+  const citazione =
+    d.citazione || ritagliaCitazione(racconti[d.entryDate] ?? "", d.soggetto);
+  const pezzi = spezzaAttorno(citazione, d.soggetto);
+  const valoriScelti = libero
+    ? [testoLibero.trim()].filter(Boolean)
+    : scelte.filter(Boolean);
+  const puoAvanzare = valoriScelti.length > 0;
 
   function pulisci() {
-    setScelta(null);
+    setScelte([]);
     setNomeVero("");
     setLiberoScelto(false);
     setTestoLibero("");
   }
 
-  function avanti(valore: string | null) {
+  /**
+   * Un tocco su un bottone.
+   *
+   * `esclusiva` sono le risposte che dicono il contrario delle altre — "non
+   * e una persona", "non c'entra con nessuna sfera": accenderle spegne tutto
+   * il resto, e sceglierne un'altra le spegne. Tenerle accese insieme a due
+   * nomi vorrebbe dire rispondere "sono Hoda e Liana, e comunque non sono
+   * persone".
+   */
+  function tocca(valore: string, suoNomeVero: string, esclusiva: boolean) {
+    setNomeVero(suoNomeVero);
+    setScelte((prima) => {
+      if (!multi || esclusiva) return prima.includes(valore) ? [] : [valore];
+      const senzaEsclusive = prima.filter((v) => !ESCLUSIVE.has(v));
+      return senzaEsclusive.includes(valore)
+        ? senzaEsclusive.filter((v) => v !== valore)
+        : [...senzaEsclusive, valore];
+    });
+  }
+
+  function avanti(valori: string[]) {
     // Subito, non alla fine: vedi onRisposta nei Props.
-    onRisposta({ domanda: d, valore, nomeVero });
+    // `valore` resta la risposta in una riga: e cio che chiude la domanda
+    // nella coda, e con due nomi e "Hoda, Liana".
+    onRisposta({
+      domanda: d,
+      valore: valori.length > 0 ? valori.join(", ") : null,
+      valori,
+      nomeVero,
+    });
     if (ultima) {
       onDone();
       return;
@@ -144,9 +230,22 @@ export function ChiarimentiScreen({
         </div>
 
         <div className="jm-ch-scroll">
-          {d.citazione && <div className="jm-ch-quote">{d.citazione}</div>}
+          {/* L'estratto del racconto, SEMPRE (regola di Manuel, 31 agosto
+              2026): a una domanda su una giornata di tre settimane fa non si
+              risponde a memoria. La cosa in dubbio e in evidenza, cosi la si
+              trova con l'occhio senza rileggere la frase intera. */}
+          {citazione && (
+            <div className="jm-ch-quote">
+              {pezzi.prima}
+              {pezzi.dentro && <mark className="jm-ch-mark">{pezzi.dentro}</mark>}
+              {pezzi.dopo}
+            </div>
+          )}
           <h2 className="jm-ch-q">{d.testo}</h2>
           {d.perche && <p className="jm-ch-why">{d.perche}</p>}
+          {/* Detto a parole oltre che con la forma della casella: il quadrato
+              lo capisce chi lo conosce, la riga la legge chiunque. */}
+          {multi && <p className="jm-ch-multi">{t("Puoi sceglierne piu di una.")}</p>}
 
           {libero ? (
             <div>
@@ -160,7 +259,7 @@ export function ChiarimentiScreen({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && puoAvanzare) {
                     e.preventDefault();
-                    avanti(testoLibero.trim());
+                    avanti([testoLibero.trim()]);
                   }
                 }}
               />
@@ -181,17 +280,16 @@ export function ChiarimentiScreen({
                 const tipo = d.azione === "specie" ? nomeDelTipo(o.valore, t) : null;
                 const titolo = tipo ?? o.etichetta;
                 const sotto = tipo ? o.nomeVero || o.etichetta : o.sotto;
+                const acceso = scelte.includes(o.valore);
                 return (
                   <button
                     key={o.valore + o.etichetta}
                     type="button"
-                    className={`jm-ch-opt${scelta === o.valore ? " sel" : ""}`}
-                    onClick={() => {
-                      setScelta(o.valore);
-                      setNomeVero(o.nomeVero);
-                    }}
-                    aria-pressed={scelta === o.valore}
+                    className={`jm-ch-opt${acceso ? " sel" : ""}`}
+                    onClick={() => tocca(o.valore, o.nomeVero, false)}
+                    aria-pressed={acceso}
                   >
+                    <Casella multi={multi} />
                     <span className="jm-ch-lab">
                       {titolo}
                       {sotto && <span className="sub">{sotto}</span>}
@@ -206,13 +304,11 @@ export function ChiarimentiScreen({
               {d.azione === "persona" && (
                 <button
                   type="button"
-                  className={`jm-ch-opt${scelta === NON_E_UNA_PERSONA ? " sel" : ""}`}
-                  onClick={() => {
-                    setScelta(NON_E_UNA_PERSONA);
-                    setNomeVero("");
-                  }}
-                  aria-pressed={scelta === NON_E_UNA_PERSONA}
+                  className={`jm-ch-opt${scelte.includes(NON_E_UNA_PERSONA) ? " sel" : ""}`}
+                  onClick={() => tocca(NON_E_UNA_PERSONA, "", true)}
+                  aria-pressed={scelte.includes(NON_E_UNA_PERSONA)}
                 >
+                  <Casella multi={multi} />
                   <span className="jm-ch-lab">
                     {t("Non e una persona")}
                     <span className="sub">{t("non chiedermelo piu")}</span>
@@ -227,13 +323,11 @@ export function ChiarimentiScreen({
               {d.azione === "area" && (
                 <button
                   type="button"
-                  className={`jm-ch-opt${scelta === NON_APPARTIENE ? " sel" : ""}`}
-                  onClick={() => {
-                    setScelta(NON_APPARTIENE);
-                    setNomeVero("");
-                  }}
-                  aria-pressed={scelta === NON_APPARTIENE}
+                  className={`jm-ch-opt${scelte.includes(NON_APPARTIENE) ? " sel" : ""}`}
+                  onClick={() => tocca(NON_APPARTIENE, "", true)}
+                  aria-pressed={scelte.includes(NON_APPARTIENE)}
                 >
+                  <Casella multi={multi} />
                   <span className="jm-ch-lab">
                     {t("Non c'entra con nessuna sfera")}
                     <span className="sub">{t("era solo una cosa da fare")}</span>
@@ -250,9 +344,10 @@ export function ChiarimentiScreen({
                   className="jm-ch-opt ghost"
                   onClick={() => {
                     setLiberoScelto(true);
-                    setScelta(null);
+                    setScelte([]);
                   }}
                 >
+                  <Casella multi={multi} />
                   <span className="jm-ch-lab">
                     {t("Un altro nome")}
                     <span className="sub">{t("lo scrivo io")}</span>
@@ -279,7 +374,7 @@ export function ChiarimentiScreen({
             type="button"
             className="jm-ch-skip"
             disabled={saving}
-            onClick={() => avanti(null)}
+            onClick={() => avanti([])}
           >
             {t("Non adesso")}
           </button>
@@ -287,7 +382,7 @@ export function ChiarimentiScreen({
             type="button"
             className="btn-primary jm-ch-next"
             disabled={!puoAvanzare || saving}
-            onClick={() => avanti(valoreScelto)}
+            onClick={() => avanti(valoriScelti)}
           >
             {ultima ? t("Fine") : t("Avanti")}
           </button>
@@ -311,6 +406,36 @@ export function ChiarimentiScreen({
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * Le risposte che non stanno insieme a nessun'altra: dicono il contrario.
+ * Sono valori di macchina, non nomi, quindi non possono coincidere con una
+ * persona vera.
+ */
+const ESCLUSIVE = new Set<string>([NON_E_UNA_PERSONA, NON_APPARTIENE]);
+
+/**
+ * La casella davanti alla risposta: QUADRATA quando se ne puo scegliere piu
+ * di una, tonda quando no.
+ *
+ * Non e decorazione. E l'unica cosa che dice PRIMA del tocco cosa succedera
+ * al secondo tocco, e senza di lei il bottone che si spegne da solo sembra
+ * un difetto dell'app. La spunta si vede solo quando la risposta e accesa:
+ * il colore lo mette il CSS, qui c'e solo la forma.
+ */
+function Casella({ multi }: { multi: boolean }) {
+  return (
+    <span className={`jm-ch-box${multi ? "" : " tondo"}`} aria-hidden="true">
+      {multi ? (
+        <svg viewBox="0 0 24 24" className="jm-ch-spunta">
+          <path d="M4 12.5l5.5 5.5L20 7" />
+        </svg>
+      ) : (
+        <span className="jm-ch-pallino" />
+      )}
+    </span>
   );
 }
 
