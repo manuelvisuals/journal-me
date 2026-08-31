@@ -11,6 +11,7 @@ import {
 import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
 import { useActiveModules } from "@/lib/modules";
+import { useVetroNativo } from "@/components/ui/dock-vetro";
 
 /**
  * "Sono DENTRO l'app?" — il segnale, per chi deve saperlo da fuori.
@@ -204,6 +205,12 @@ export function TabBar({ active }: Props) {
   const pillola = useRef<HTMLDivElement | null>(null);
   const tasti = useRef<Map<TabKey, HTMLAnchorElement>>(new Map());
 
+  /* Dentro il guscio iOS 26 il vetro della pillola e VERO (una lastra
+     nativa sopra la WebView, vedi dock-vetro.ts): finche e accesa, il
+     velo finto qui sotto si spegne (.jm-dock-nativo). Sul web, o se la
+     lastra non c'e, questo e sempre false e non cambia niente. */
+  const vetroNativo = useVetroNativo(pillola);
+
   const registra = useCallback((key: TabKey, el: HTMLAnchorElement | null) => {
     if (el) tasti.current.set(key, el);
     else tasti.current.delete(key);
@@ -305,7 +312,10 @@ export function TabBar({ active }: Props) {
       <div className="jm-dock-spazio lg:hidden" aria-hidden="true" />
 
       <nav className="jm-dock-wrap lg:hidden">
-        <div className="jm-dock" ref={pillola}>
+        <div
+          className={`jm-dock${vetroNativo ? " jm-dock-nativo" : ""}`}
+          ref={pillola}
+        >
           <span className="jm-dock-bolla" ref={bolla} aria-hidden="true" />
 
           {SIDE_TABS_LEFT.map((tab) => (
