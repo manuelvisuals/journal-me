@@ -89,7 +89,7 @@ async function contesto(width = 430, conDito = false) {
     try {
       window.localStorage.setItem("jm.mode", "local");
       window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
-      window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+      window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
     } catch {}
   });
   const page = await ctx.newPage();

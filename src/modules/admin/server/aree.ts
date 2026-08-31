@@ -3,7 +3,7 @@ import { getAdminClient, requireAdmin } from "@/lib/server/entitlement";
 import { dimenticaAree } from "@/lib/server/aree";
 
 /**
- * La rotta del pannello admin: legge e scrive la tabella `aree`.
+ * La rotta del pannello admin per le Aree: legge e scrive la tabella.
  *
  * CHI ENTRA. Un account solo, per email, controllato QUI sul server: il
  * client puo nascondere la pagina, ma la porta vera e questa. A chiunque

@@ -63,7 +63,7 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
       try {
         window.localStorage.setItem("jm.mode", "local");
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
-        window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+        window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
         window.localStorage.setItem("jm:theme", t);
         window.localStorage.setItem("jm:appearance", a);
       } catch {}

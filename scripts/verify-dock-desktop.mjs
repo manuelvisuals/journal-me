@@ -61,7 +61,7 @@ async function apri(width, height, { tema, aspetto } = {}) {
         window.localStorage.setItem("jm.mode", "local");
         // niente velo del saluto sui banchi
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
-        window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+        window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
         if (t) window.localStorage.setItem("jm:theme", t);
         if (a) window.localStorage.setItem("jm:appearance", a);
       } catch {}
