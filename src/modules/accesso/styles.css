@@ -200,37 +200,137 @@
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-lg);
   background: var(--color-surface);
-  padding: calc(24px * var(--jm-space));
+  padding: 0 calc(22px * var(--jm-space)) calc(22px * var(--jm-space));
   font-family: var(--font-sans);
+  /* La foto sborda in alto di mezzo diametro: il riquadro parte piu in
+     basso e non puo essere alto quanto lo schermo. */
+  margin-top: calc(44px * var(--jm-space));
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 44px * var(--jm-space));
+  min-height: 0;
 }
 
-.jm-benv-sal-h {
-  font-size: calc(22px * var(--jm-ui-scale));
-  font-weight: 650;
-  letter-spacing: -0.02em;
+/* Testa e piede stanno fermi, il corpo scorre: con il testo ingrandito al
+   150 per cento la lettera diventa piu alta dello schermo, e il tasto per
+   chiudere non deve mai finire sotto il bordo. */
+.jm-benv-sal-testa { flex: 0 0 auto; }
+.jm-benv-sal-corpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.jm-benv-sal-piede { flex: 0 0 auto; }
+
+.jm-benv-sal-foto {
+  display: block;
+  width: calc(84px * var(--jm-space));
+  height: calc(84px * var(--jm-space));
+  margin: calc(-42px * var(--jm-space)) auto 0;
+  border-radius: 50%;
+  object-fit: cover;
+  /* L'anello e del colore della card, non una riga in piu: e la card che
+     continua dietro la foto. */
+  border: 3px solid var(--color-surface);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.jm-benv-sal-occhiello {
+  margin-top: calc(14px * var(--jm-space));
+  text-align: center;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-benv-sal-marchio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: calc(4px * var(--jm-space));
+  font-size: calc(27px * var(--jm-ui-scale));
+  font-weight: 680;
+  letter-spacing: -0.03em;
   color: var(--color-ink);
 }
 
-.jm-benv-sal-p {
-  margin-top: calc(10px * var(--jm-space));
+.jm-benv-sal-promessa {
+  margin-top: calc(14px * var(--jm-space));
   font-size: calc(14px * var(--jm-ui-scale));
-  line-height: 1.55;
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+
+/* La riga in evidenza: il verde e solo la spunta. Il testo resta
+   inchiostro, cosi il contrasto e garantito in tutti i temi e la prima
+   cosa che si legge non e una negazione colorata. */
+.jm-benv-sal-evidenza {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(9px * var(--jm-space));
+  margin-top: calc(16px * var(--jm-space));
+  padding: calc(11px * var(--jm-space)) calc(12px * var(--jm-space));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  background: var(--color-surface-2);
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+
+.jm-benv-sal-evidenza svg {
+  flex: 0 0 auto;
+  margin-top: calc(2px * var(--jm-space));
+  color: var(--color-success);
+}
+
+.jm-benv-sal-p {
+  margin-top: calc(14px * var(--jm-space));
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.65;
   color: var(--color-ink-muted);
 }
 
+/* Il grassetto della lettera: *fra asterischi* nel pannello admin. */
+.jm-benv-sal-p b {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.jm-benv-sal-firma {
+  margin-top: calc(16px * var(--jm-space));
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Riga alta 44px: la casella era un bersaglio da 16, incollato sopra un
+   bottone a tutta larghezza. Si spunta toccando ovunque sulla riga. */
 .jm-benv-sal-c {
   display: flex;
   align-items: center;
-  gap: calc(9px * var(--jm-space));
-  margin-top: calc(18px * var(--jm-space));
+  gap: calc(11px * var(--jm-space));
+  min-height: calc(44px * var(--jm-space));
+  margin-top: calc(10px * var(--jm-space));
   font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.4;
   color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.jm-benv-sal-c input {
+  flex: 0 0 auto;
+  width: calc(20px * var(--jm-space));
+  height: calc(20px * var(--jm-space));
+  accent-color: var(--color-accent);
 }
 
 .jm-benv-sal-b {
   width: 100%;
   min-height: calc(48px * var(--jm-space));
-  margin-top: calc(18px * var(--jm-space));
+  margin-top: calc(8px * var(--jm-space));
   border: none;
   border-radius: var(--jm-radius-md);
   background: var(--color-accent);
@@ -239,6 +339,20 @@
   font-size: calc(15px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
+}
+
+/* Compare solo con una frase E un indirizzo (saluto-avvio.tsx). */
+.jm-benv-sal-sotto {
+  margin-top: calc(12px * var(--jm-space));
+  text-align: center;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-benv-sal-sotto a {
+  color: var(--color-ink);
+  font-weight: 600;
+  text-decoration: none;
 }
 
 /* La linguetta sul bordo destro: bersaglio dell'animazione di chiusura.

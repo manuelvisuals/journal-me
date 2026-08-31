@@ -3,16 +3,24 @@
 /**
  * Il messaggio di benvenuto all'avvio.
  *
- * ATTENZIONE: qui c'e SOLO l'impianto. Il disegno (colori, animazioni,
- * immagine, posizione) si fa dopo, con Manuel: quello che si vede adesso e
- * un riquadro qualsiasi, apposta.
+ * Il disegno e quello del mockup approvato da Manuel il 31 agosto 2026
+ * (design/mockups/messaggio-benvenuto.html, strada 1): foto tonda a cavallo
+ * del bordo, marchio, promessa, riga in evidenza, la lettera, la firma.
+ *
+ * IL TESTO NON STA QUI. Arriva dal pannello admin (src/lib/benvenuto.ts, il
+ * contratto; migration 018 la tabella), con un testo di riserva cotto nel
+ * pacchetto per la modalita locale e per il guscio iOS in aereo. Cambiare
+ * una virgola della lettera non deve costare un deploy.
  *
  * Regole (dalla specifica del 24 agosto 2026):
  *  - una volta per APERTURA dell'app, non per montaggio e non per
  *    navigazione;
  *  - le prime due volte sono obbligatorie, la casella "non mostrare piu"
  *    compare dalla terza (APRI_CASELLA_DALLA);
- *  - il silenzio vale fino al logout, non per sempre;
+ *  - il silenzio vale fino al logout, non per sempre, e cade anche quando
+ *    dal pannello si preme "mostralo di nuovo" (la versione del messaggio
+ *    fa parte del silenzio scritto);
+ *  - spento dal pannello, il messaggio non si apre proprio;
  *  - logout e reinstallazione riportano alla prima visualizzazione;
  *  - chi non e dentro non lo vede.
  *
@@ -35,9 +43,17 @@ import {
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
+import { BrandMark } from "@/components/brand/brand-mark";
+import {
+  benvenutoInLingua,
+  FOTO_DI_FABBRICA,
+  paragrafi,
+  pezzi,
+} from "@/lib/benvenuto";
+import { useBenvenuto } from "@/lib/benvenuto-client";
 import { useStorageMode } from "@/lib/data/store";
 import { SELETTORE_LINGUETTA } from "@/modules/accesso/components/linguetta";
-import { useT } from "@/lib/i18n";
+import { useT, useLang } from "@/lib/i18n";
 import {
   azzeraApertura,
   chiediSilenzio,
@@ -80,9 +96,15 @@ function accendiVedetta(): void {
 
 export function SalutoAvvio() {
   const t = useT();
+  const lang = useLang();
   const mode = useStorageMode();
+  const benvenuto = useBenvenuto();
+  const testi = benvenutoInLingua(benvenuto, lang);
   const pathname = usePathname();
-  const pubblica = paginaPubblica(pathname);
+  // Spento dal pannello: si comporta come una pagina pubblica, cioe non si
+  // apre e non conta niente. Cosi la stessa riga spegne tutte e due le
+  // strade, quella veloce e quella lenta.
+  const pubblica = paginaPubblica(pathname) || !benvenuto.attivo;
 
   const [aperto, setAperto] = useState<boolean>(false);
   const [casella, setCasella] = useState<boolean>(false);
@@ -133,7 +155,7 @@ export function SalutoAvvio() {
         setAperto(false);
         return;
       }
-      if (silenzioVale(id)) {
+      if (silenzioVale(id, benvenuto.versione)) {
         setAperto(false);
         return;
       }
@@ -150,7 +172,7 @@ export function SalutoAvvio() {
     return () => {
       vivo = false;
     };
-  }, [pubblica, mode]);
+  }, [pubblica, mode, benvenuto.versione]);
 
   /**
    * La chiusura: il messaggio si risucchia dentro la linguetta.
@@ -174,7 +196,7 @@ export function SalutoAvvio() {
     if (spuntato) {
       void (async () => {
         const id = await identita(mode);
-        if (id) chiediSilenzio(id);
+        if (id) chiediSilenzio(id, benvenuto.versione);
       })();
     }
 
@@ -263,30 +285,97 @@ export function SalutoAvvio() {
 
     // Cintura: onfinish non arriva se la scheda finisce in secondo piano.
     reteDiSicurezza.current = window.setTimeout(() => setAperto(false), 900);
-  }, [mode, spuntato]);
+  }, [mode, spuntato, benvenuto.versione]);
 
   if (!aperto) return null;
+
+  const paragrafiTesto = paragrafi(testi.testo);
+  // La riga in fondo compare solo se ha una frase E un indirizzo: un invito
+  // che non porta da nessuna parte e una promessa rotta al primo tocco.
+  const contatto =
+    testi.contattoRiga.trim() !== "" && testi.contattoUrl.trim() !== ""
+      ? { riga: testi.contattoRiga, url: testi.contattoUrl }
+      : null;
 
   return (
     <div className="jm-benv-sal" role="dialog" aria-modal="true" ref={veloRef}>
       <div className="jm-benv-sal-box" ref={boxRef}>
-        <div className="jm-benv-sal-h">{t("Bentornato")}</div>
-        <div className="jm-benv-sal-p">
-          {t("Questo e il posto del messaggio di benvenuto.")}
+        <div className="jm-benv-sal-testa">
+          {/* La foto e decorativa: chi la firma ha il nome scritto sotto.
+              eslint-disable-next-line perche e un data URL o un file di
+              public/, non una cosa che next/image possa ottimizzare. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="jm-benv-sal-foto"
+            src={benvenuto.fotoData ?? FOTO_DI_FABBRICA}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+          />
+          {testi.occhiello.trim() !== "" && (
+            <div className="jm-benv-sal-occhiello">{testi.occhiello}</div>
+          )}
+          <div className="jm-benv-sal-marchio">
+            <BrandMark />
+            dayalogue
+          </div>
         </div>
-        {casella && (
-          <label className="jm-benv-sal-c">
-            <input
-              type="checkbox"
-              checked={spuntato}
-              onChange={(e) => setSpuntato(e.target.checked)}
-            />
-            {t("Non mostrare piu (fino al prossimo accesso)")}
-          </label>
-        )}
-        <button type="button" className="jm-benv-sal-b" onClick={chiudi}>
-          {t("Inizia")}
-        </button>
+
+        <div className="jm-benv-sal-corpo">
+          {testi.promessa.trim() !== "" && (
+            <p className="jm-benv-sal-promessa">{testi.promessa}</p>
+          )}
+
+          {testi.evidenza.trim() !== "" && (
+            <p className="jm-benv-sal-evidenza">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path
+                  d="M3 8.4l3.2 3.2L13 4.8"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              {testi.evidenza}
+            </p>
+          )}
+
+          {paragrafiTesto.map((par, i) => (
+            <p className="jm-benv-sal-p" key={i}>
+              {pezzi(par).map((pz, j) =>
+                pz.forte ? <b key={j}>{pz.testo}</b> : <span key={j}>{pz.testo}</span>,
+              )}
+            </p>
+          ))}
+
+          {testi.firma.trim() !== "" && (
+            <p className="jm-benv-sal-firma">{testi.firma}</p>
+          )}
+        </div>
+
+        <div className="jm-benv-sal-piede">
+          {casella && (
+            <label className="jm-benv-sal-c">
+              <input
+                type="checkbox"
+                checked={spuntato}
+                onChange={(e) => setSpuntato(e.target.checked)}
+              />
+              {t("Non mostrare piu questo messaggio")}
+            </label>
+          )}
+          <button type="button" className="jm-benv-sal-b" onClick={chiudi}>
+            {testi.bottone.trim() !== "" ? testi.bottone : t("Inizia")}
+          </button>
+          {contatto && (
+            <p className="jm-benv-sal-sotto">
+              <a href={contatto.url} target="_blank" rel="noopener noreferrer">
+                {contatto.riga}
+              </a>
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

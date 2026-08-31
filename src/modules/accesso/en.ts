@@ -7,8 +7,6 @@
  * "chiave": "valore", — verify-i18n legge questo formato.
  */
 export const ACCESSO: Record<string, string> = {
-  "Questo e il posto del messaggio di benvenuto.": "This is where the welcome message goes.",
-  "Non mostrare piu (fino al prossimo accesso)": "Do not show again (until next sign-in)",
   "Feedback": "Feedback",
   "Non sono riuscito ad attivare il premium. Riprova.": "I could not turn premium on. Try again.",
   "Inizia": "Start",
@@ -58,4 +56,5 @@ export const ACCESSO: Record<string, string> = {
   "Tienilo solo su questo dispositivo": "Keep it on this device only",
   "Il codice vale un'ora.": "The code is valid for one hour.",
   "La versione gratis non ha bisogno di email: resta tutto qui.": "The free version needs no email: everything stays here.",
+  "Non mostrare piu questo messaggio": "Do not show this message again",
 };

@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminClient, requireUser } from "@/lib/server/entitlement";
+import { getAdminClient } from "@/lib/server/entitlement";
 import { dimenticaAree } from "@/lib/server/aree";
+import { requireAdmin } from "@/modules/admin/server/guardia";
 
 /**
  * La rotta del pannello admin: legge e scrive la tabella `aree`.
  *
- * CHI ENTRA. Un account solo, per email, controllato QUI sul server: il
- * client puo nascondere la pagina, ma la porta vera e questa. A chiunque
- * altro si risponde 404, non 403: la rotta non deve nemmeno confermare di
- * esistere.
+ * CHI ENTRA: lo decide `requireAdmin` in server/guardia.ts, la stessa
+ * guardia di tutte le rotte del pannello.
  *
  * COME SI SCRIVE. La tabella non ha nessuna policy di scrittura (migration
  * 015): si scrive SOLO da qui, col service role (getAdminClient), che non
@@ -21,20 +20,6 @@ import { dimenticaAree } from "@/lib/server/aree";
  *   - cancellare: un'area si spegne (attiva=false), non si cancella. Questa
  *     rotta non ha DELETE di proposito.
  */
-
-const ADMIN_EMAIL = "madh52@gmail.com";
-
-async function requireAdmin(
-  req: NextRequest,
-): Promise<{ userId: string; email: string } | NextResponse> {
-  const user = await requireUser(req);
-  if (user instanceof NextResponse) return user;
-  const email = (user.email ?? "").trim().toLowerCase();
-  if (email !== ADMIN_EMAIL) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  return { userId: user.userId, email };
-}
 
 /** Una riga come viaggia fra pannello e database: i nomi della tabella. */
 type RigaArea = {

@@ -14,9 +14,15 @@
  *    azzera se reinstalli l'app" e una proprieta del DISPOSITIVO, non
  *    dell'account, e l'account del revisore Apple e condiviso (un contatore
  *    sul server gli farebbe trovare la casella gia alla prima apertura).
- * 3. il SILENZIO ("non mostrare piu") -> localStorage, e dentro ci sta
- *    l'identita della sessione: cosi un login nuovo lo invalida da se,
+ * 3. il SILENZIO ("non mostrare piu") -> localStorage, e dentro ci stanno
+ *    l'identita della sessione E la versione del messaggio: cosi un login
+ *    nuovo lo invalida da se, e lo invalida anche un messaggio riscritto,
  *    senza bisogno di ricordarsi di cancellarlo.
+ *
+ *    La versione arriva dal pannello admin (tasto "mostralo di nuovo",
+ *    migration 018). Senza, il giorno che Manuel riscrive la lettera non la
+ *    leggerebbe proprio chi apre l'app tutte le sere — e in modalita locale
+ *    quel silenzio non scadrebbe mai, perche li non esiste nessun logout.
  *
  * L'identita e il `session_id` dentro il JWT di Supabase: nasce col login,
  * SOPRAVVIVE ai rinnovi del token, muore col logout. E' esattamente la
@@ -164,19 +170,25 @@ export function contaApertura(id: string): { n: number; casella: boolean } {
   return { n, casella: n >= APRI_CASELLA_DALLA };
 }
 
+/** Il silenzio e di UNA identita e di UNA versione del messaggio. */
+function marchio(id: string, versione: number): string {
+  return `${id}#v${versione}`;
+}
+
 /**
- * Il silenzio vale solo per l'identita che l'ha chiesto. Se ne trova uno di
- * un login ormai morto lo butta: e la riga che fa ripartire il messaggio
- * dopo un logout.
+ * Il silenzio vale solo per l'identita che l'ha chiesto e per la versione
+ * del messaggio che quell'identita aveva letto. Se ne trova uno di un login
+ * ormai morto, o di un messaggio poi riscritto, lo butta: e la riga che fa
+ * ripartire il saluto dopo un logout e dopo un "mostralo di nuovo".
  */
-export function silenzioVale(id: string): boolean {
+export function silenzioVale(id: string, versione: number): boolean {
   const scritto = leggi(K_SILENZIO);
   if (scritto === null) return false;
-  if (scritto === id) return true;
+  if (scritto === marchio(id, versione)) return true;
   cancella(K_SILENZIO);
   return false;
 }
 
-export function chiediSilenzio(id: string): void {
-  scrivi(K_SILENZIO, id);
+export function chiediSilenzio(id: string, versione: number): void {
+  scrivi(K_SILENZIO, marchio(id, versione));
 }

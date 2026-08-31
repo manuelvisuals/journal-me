@@ -21,6 +21,7 @@
  */
 
 import { useT } from "@/lib/i18n";
+import { contattoUrlNoto } from "@/lib/benvenuto-client";
 import { useDentroApp } from "@/components/ui/tab-bar";
 
 export const SELETTORE_LINGUETTA = ".jm-benv-ling";
@@ -36,14 +37,34 @@ export function Linguetta() {
   // ripiego (saluto-avvio.tsx), e comunque compare solo da dentro.
   const dentro = useDentroApp();
   if (!dentro) return null;
-  // Bottone e non <a> finche la destinazione non e decisa: un href finto
-  // sarebbe una promessa rotta al primo tocco. Al meccanismo serve solo un
-  // elemento fisso e misurabile con un selettore stabile.
-  // Si chiama "Feedback" (deciso da Manuel il 27 agosto 2026) e per ora,
-  // sempre per sua scelta, NON apre nulla.
+  // LA DESTINAZIONE ARRIVA DAL PANNELLO ADMIN, non dal codice: e il campo
+  // "Indirizzo della riga in fondo" del Messaggio di benvenuto. Finche e
+  // vuoto la linguetta resta un bottone che non apre nulla, esattamente
+  // com'era; appena Manuel incolla un indirizzo (il giorno che il sito ha
+  // la pagina dei contatti) diventa un link, senza toccare una riga di
+  // codice. Un href finto sarebbe una promessa rotta al primo tocco, e il
+  // messaggio di benvenuto dice proprio "scrivimi": l'animazione di
+  // chiusura vola dentro questa linguetta, quindi e qui che uno ci prova.
+  //
+  // La lettura e sincrona e senza rete (legge la copia gia in cache): la
+  // linguetta non deve MAI accendere una richiesta per conto suo, o in
+  // modalita locale la promessa "nemmeno una richiesta" cadrebbe.
+  // Si monta solo dentro l'app e dopo l'idratazione (useDentroApp torna
+  // false sul server), quindi qui localStorage c'e sempre.
+  //
+  // Al meccanismo del saluto serve solo un elemento fisso e misurabile con
+  // un selettore stabile: la classe resta la stessa in tutti e due i casi.
+  const url = contattoUrlNoto();
+  if (url === "") {
+    return (
+      <button type="button" className="jm-benv-ling">
+        {t("Feedback")}
+      </button>
+    );
+  }
   return (
-    <button type="button" className="jm-benv-ling">
+    <a href={url} target="_blank" rel="noopener noreferrer" className="jm-benv-ling">
       {t("Feedback")}
-    </button>
+    </a>
   );
 }
