@@ -195,6 +195,23 @@ check(
 const priv = await scarica("/privacy");
 check("/privacy risponde 200", priv.stato === 200, String(priv.stato));
 
+// I segnalibri vecchi non devono trovare il vuoto: /mese porta a /app/mese
+// con un rimando permanente, e la query si porta dietro.
+for (const [da, a] of [
+  ["/mese", "/app/mese"],
+  ["/remember", "/app/remember"],
+  ["/settings", "/app/settings"],
+  ["/giorno?d=2026-08-27", "/app/giorno?d=2026-08-27"],
+]) {
+  const resp = await fetch(BASE + da, { redirect: "manual" });
+  const dove = resp.headers.get("location") ?? "";
+  check(
+    `il vecchio indirizzo ${da} porta a ${a}`,
+    (resp.status === 308 || resp.status === 301) && dove.endsWith(a),
+    `${resp.status} -> ${dove}`,
+  );
+}
+
 /* ================= 6. il sito non entra nel telefono =================== */
 
 check(
