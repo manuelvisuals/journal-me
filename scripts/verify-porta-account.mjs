@@ -44,11 +44,11 @@ async function open({
         // Il saluto e un velo aria-modal: si pianta il suo silenzio.
         if (mode === "local") {
           window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
-          window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+          window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
         } else {
           window.localStorage.setItem(
             "jm.saluto.silenzio",
-            "usr:00000000-0000-4000-8000-000000000001",
+            "usr:00000000-0000-4000-8000-000000000001#v1",
           );
         }
         // Il piano NON ottimista: la cache scritta qui e cio che usePlan

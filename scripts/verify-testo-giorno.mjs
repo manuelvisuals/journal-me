@@ -36,7 +36,7 @@ async function open(path, { w = 430, h = 932, scale = null, wait = ".jm-st-group
   await ctx.addInitScript(
     ([s]) => {
       try {
-        window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+        window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
         if (s) window.localStorage.setItem("jm:scale", String(s));
       } catch {}
     },

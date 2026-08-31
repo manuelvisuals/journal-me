@@ -223,6 +223,14 @@
 }
 .jm-benv-sal-piede { flex: 0 0 auto; }
 
+/* "Sotto c'e altro": l'attributo lo mette saluto-avvio.tsx solo quando c'e
+   davvero da scorrere, e lo toglie arrivati in fondo. Senza, l'ultima riga
+   visibile sembra tagliata per errore. */
+.jm-benv-sal-corpo[data-altro] {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+}
+
 .jm-benv-sal-foto {
   display: block;
   width: calc(84px * var(--jm-space));

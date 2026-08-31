@@ -118,6 +118,7 @@ export function SalutoAvvio() {
   // Due tocchi rapidi farebbero partire due animazioni sovrapposte.
   const inChiusura = useRef<boolean>(false);
   const veloRef = useRef<HTMLDivElement | null>(null);
+  const corpoRef = useRef<HTMLDivElement | null>(null);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const reteDiSicurezza = useRef<number | null>(null);
 
@@ -128,6 +129,39 @@ export function SalutoAvvio() {
       }
     };
   }, []);
+
+  /**
+   * "Sotto c'e altro": la sfumatura in fondo alla lettera.
+   *
+   * Col testo ingrandito al 150 per cento la lettera non ci sta piu e il
+   * corpo scorre. Senza un segnale, l'ultima riga visibile e tagliata a
+   * meta parola e sembra un difetto: uno legge, non capisce, e preme il
+   * tasto senza sapere che si era perso il finale.
+   *
+   * La sfumatura si accende SOLO quando c'e davvero da scorrere e si spegne
+   * arrivati in fondo: una sfumatura permanente sbiadirebbe la firma anche
+   * quando non c'e niente sotto. Si misura dal vivo, perche dipende dalla
+   * lunghezza del testo (che scrive Manuel dal pannello), dalla lingua e
+   * dalla misura del carattere: nessuna di queste si sa scrivendo il CSS.
+   */
+  useEffect(() => {
+    const el = corpoRef.current;
+    if (!el || !aperto) return;
+    const guarda = () => {
+      const altro = el.scrollHeight - el.clientHeight - el.scrollTop > 4;
+      el.toggleAttribute("data-altro", altro);
+    };
+    guarda();
+    el.addEventListener("scroll", guarda, { passive: true });
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(guarda) : null;
+    ro?.observe(el);
+    window.addEventListener("resize", guarda);
+    return () => {
+      el.removeEventListener("scroll", guarda);
+      ro?.disconnect();
+      window.removeEventListener("resize", guarda);
+    };
+  }, [aperto, testi.testo]);
 
   /* ---------- strada veloce: prima del paint, zero rete ---------- */
   useEffettoPrimaDelPaint(() => {
@@ -321,7 +355,7 @@ export function SalutoAvvio() {
           </div>
         </div>
 
-        <div className="jm-benv-sal-corpo">
+        <div className="jm-benv-sal-corpo" ref={corpoRef}>
           {testi.promessa.trim() !== "" && (
             <p className="jm-benv-sal-promessa">{testi.promessa}</p>
           )}
