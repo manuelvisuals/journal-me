@@ -256,6 +256,7 @@ Il parametro `mode` sopravvive nelle firme solo per stabilita dei call-site ed e
 008_profiles_stripe.sql   profiles.stripe_customer_id + unique index
 009_ai_usage.sql          ai_usage (token ufficiali per chiamata) + RLS + indice
 010_default_goals.sql     riscrive seed_default_goals() con i sei micro-goal nuovi
+019_sito.sql              sito_seo (i testi SEO) e supporto (le richieste di aiuto)
 ```
 
 **Tutte e dieci applicate su `fljshsmpmpzapcczsbwc`, verificato il 20 agosto
@@ -1242,11 +1243,18 @@ Un difetto vero trovato per strada e chiuso: `/privacy` non era nell'elenco dell
 pagine pubbliche del cancello, quindi la pagina piu pubblica dell'app era l'unica
 che chiedeva le chiavi.
 
+La **migration 019 e stata applicata in produzione il 31 agosto 2026** e
+verificata interrogando il database, non gli appunti: due tabelle, dieci colonne
+in `sito_seo`, due righe (home e support), una policy di lettura pubblica su
+`sito_seo` e **zero** policy su `supporto` (voluto: si scrive solo dal service
+role). Provato anche il percorso completo, database -> pagina viva: scritto un
+valore di prova nel titolo social di /support, letto sul sito vero, rimesso
+com'era.
+
 ### Cosa manca ancora su questo fronte
 
 | Cosa | Stato |
 |---|---|
-| Migration 019 (`sito_seo`, `supporto`) | scritta, **da applicare in produzione** |
 | Schermata delle richieste di assistenza in /admin | la rotta GET c'e, **la schermata no** |
 | Immagine di anteprima social (1200x630) | il campo c'e, **il file non esiste** |
 | Termini di servizio | non esistono: per questo il piede non li linka |
