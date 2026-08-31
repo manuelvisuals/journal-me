@@ -46,7 +46,7 @@ async function open({ width = 390, height = 844, mode = "local", scale = null } 
         // Il saluto e un velo aria-modal: si pianta il suo silenzio.
         if (mode === "local") {
           window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
-          window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
+          window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
         }
         if (scale) window.localStorage.setItem("jm:scale", String(scale));
       } catch {}

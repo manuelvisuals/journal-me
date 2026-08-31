@@ -416,6 +416,134 @@
   max-width: 720px;
 }
 
+/* =============================================================
+   Messaggio di benvenuto (schermata del pannello).
+   Mockup: design/mockups/messaggio-benvenuto.html (par. 04).
+   ============================================================= */
+
+/* Una sezione del pannello: un riquadro con titolo, spiegazione e dentro
+   cio che serve. Le sezioni sono la stessa forma della card "warn" che
+   c'era gia, senza il colore dell'avviso. */
+.jm-adm-sez {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-t-md);
+  padding: calc(20px * var(--jm-space)) calc(22px * var(--jm-space));
+  margin-bottom: calc(16px * var(--jm-space));
+}
+
+/* Titolo a sinistra, comando a destra: l'interruttore e il tasto
+   "mostralo di nuovo". Sotto 860px vanno uno sopra l'altro. */
+.jm-adm-sez-riga {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(18px * var(--jm-space));
+}
+
+.jm-adm-sez-t {
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-bottom: calc(6px * var(--jm-space));
+}
+
+.jm-adm-sez-d {
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.6;
+  max-width: 640px;
+  margin-bottom: calc(16px * var(--jm-space));
+}
+
+.jm-adm-sez-riga .jm-adm-sez-d { margin-bottom: 0; }
+
+/* Le due lingue, affiancate. */
+.jm-adm-due {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(20px * var(--jm-space));
+}
+
+.jm-adm-due .jm-adm-f { margin-bottom: calc(14px * var(--jm-space)); }
+
+.jm-adm-lin {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  margin-bottom: calc(12px * var(--jm-space));
+}
+
+.jm-adm-f-largo { margin-top: calc(6px * var(--jm-space)); }
+
+/* La scelta di un'immagine: anteprima, due tasti, una riga di aiuto. */
+.jm-adm-img {
+  display: flex;
+  align-items: center;
+  gap: calc(18px * var(--jm-space));
+  flex-wrap: wrap;
+}
+
+.jm-adm-img + .jm-adm-img {
+  margin-top: calc(18px * var(--jm-space));
+  padding-top: calc(18px * var(--jm-space));
+  border-top: 1px solid var(--color-line);
+}
+
+.jm-adm-img-prov {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--jm-space));
+}
+
+.jm-adm-img img.tonda {
+  width: calc(64px * var(--jm-space));
+  height: calc(64px * var(--jm-space));
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-line);
+}
+
+/* Il logo non si taglia: ha il fondo trasparente e una forma sua. */
+.jm-adm-img img.quadra {
+  width: calc(56px * var(--jm-space));
+  height: calc(56px * var(--jm-space));
+  border-radius: var(--radius-t-sm);
+  object-fit: contain;
+  padding: calc(9px * var(--jm-space));
+  border: 1px solid var(--color-line);
+}
+
+.jm-adm-img-txt {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.55;
+}
+
+.jm-adm-img-txt b {
+  display: block;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.jm-adm-img-azioni {
+  display: flex;
+  gap: calc(10px * var(--jm-space));
+  flex-wrap: wrap;
+}
+
+.jm-adm-img-aiuto {
+  flex: 1 1 240px;
+  min-width: calc(200px * var(--jm-space));
+  font-size: calc(11.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
 /* ---- telefono: una colonna ---- */
 
 @media (max-width: 860px) {
@@ -427,4 +555,6 @@
   .jm-adm-tr.head div:nth-child(3),
   .jm-adm-tr.head div:nth-child(4) { display: none; }
   .jm-adm-grid { grid-template-columns: 1fr; }
+  .jm-adm-due { grid-template-columns: 1fr; }
+  .jm-adm-sez-riga { flex-direction: column; align-items: flex-start; }
 }
