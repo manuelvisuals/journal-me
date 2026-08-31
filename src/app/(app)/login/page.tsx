@@ -69,7 +69,7 @@ export default function LoginPage() {
     // e /benvenuto crederebbe di stare PRIMA del login. Rileggerla e
     // l'unico modo di dirle che adesso c'e un account.
     clearLocalMode();
-    return registraAccesso() ? "/app/benvenuto" : "/";
+    return registraAccesso() ? "/app/benvenuto" : "/app";
   }
 
   /**

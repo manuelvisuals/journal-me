@@ -1195,3 +1195,59 @@ anche su desktop (`.jm-dock-wrap` ha un `display:flex` in CSS nudo e la
 utility `lg:hidden`, che sta in `@layer`, perde), e `/persona` sul
 telefono ha 94px di scorrimento in piu perche monta la TabBar fuori da
 `main`, cioe fuori dall'altezza della schermata.
+
+---
+
+## 14. Il sito pubblico (31 agosto 2026)
+
+Richiesta di Manuel: "come stoqfolio.com" — una pagina sola che spiega l'app, il
+tasto per entrare, `/support`, e il SEO modificabile da `/admin`. Scelta sua sulle
+rotte, presa prima di scrivere una riga: **`/` e la home SEO, `/app` e tutta l'app.**
+
+Mockup approvato: `design/mockups/sito-seo.html`. Modulo: `src/modules/sito/`, e il
+suo CLAUDE.md e il posto dove sta scritto il perche di ogni scelta.
+
+### Le rotte, dopo
+
+```
+/                    la home, in italiano          (server, dinamica)
+/en                  la stessa home in inglese     (server, dinamica)
+/support             assistenza, col modulo        (server, un solo pezzo client)
+/en/support          la stessa in inglese
+/robots.txt          chiude ai motori /app, /login, /auth, /admin, /api
+/sitemap.xml         le quattro pagine pubbliche, con gli hreflang
+/app...              tutta l'app, com'era (vedi §6)
+```
+
+### Le tre cose da ricordare
+
+1. **Il sito non entra nel pacchetto iOS.** Le sue pagine si chiamano
+   `page.web.tsx`: la build mobile accetta solo `.tsx` (pageExtensions) e le
+   ignora. Provato, non dedotto: la build mobile elenca 15 rotte e nessuna e del
+   sito. Conseguenza gia risolta: senza pagina di radice l'export non ha piu un
+   `index.html`, e WKWebView apre esattamente quello, quindi `npm run build:ios`
+   passa da `scripts/ios-radice.mjs`, che ne scrive uno di tre righe verso `./app/`.
+2. **Le parole del sito non passano da `t()`.** Unica deroga ad AGENTS.md §4 in
+   tutto il progetto: `t()` risponde italiano finche React non si e idratato, e su
+   `/en` un motore di ricerca leggerebbe l'italiano. Stanno in
+   `src/modules/sito/testi.ts`, nelle due lingue, e la lingua la decide
+   l'indirizzo.
+3. **Il SEO e a database, il resto no.** Titolo, descrizione, titolo e immagine per
+   i social e l'interruttore "fatti trovare" stanno in `sito_seo` (migration 019) e
+   si cambiano da `/admin > Sito` senza nessun deploy. Le frasi dentro la pagina
+   restano nel codice: sono prodotto, e si cambiano con un mockup. Se il database
+   tace, la pagina esce coi testi di fabbrica scritti in `seo.ts`.
+
+Un difetto vero trovato per strada e chiuso: `/privacy` non era nell'elenco delle
+pagine pubbliche del cancello, quindi la pagina piu pubblica dell'app era l'unica
+che chiedeva le chiavi.
+
+### Cosa manca ancora su questo fronte
+
+| Cosa | Stato |
+|---|---|
+| Migration 019 (`sito_seo`, `supporto`) | scritta, **da applicare in produzione** |
+| Schermata delle richieste di assistenza in /admin | la rotta GET c'e, **la schermata no** |
+| Immagine di anteprima social (1200x630) | il campo c'e, **il file non esiste** |
+| Termini di servizio | non esistono: per questo il piede non li linka |
+| Bundle iOS | da rifare (`npm run build:ios`) prima di rimettere le mani sul telefono |

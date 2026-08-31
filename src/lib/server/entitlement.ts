@@ -131,3 +131,34 @@ export async function requirePremium(
 
   return { userId: user.userId };
 }
+
+/**
+ * L'email dell'unico account che entra nei pannelli globali.
+ *
+ * Stava dentro src/modules/admin/server.ts, cioe dentro un modulo. Dal 31
+ * agosto 2026 il pannello ha una seconda voce (il SEO del sito, che vive
+ * nel modulo `sito`), e due moduli non possono avere ciascuno la propria
+ * idea di chi sia l'amministratore: il giorno in cui quell'email cambia,
+ * cambiarla in un posto solo e la differenza fra un cambio e un buco.
+ */
+const ADMIN_EMAIL = "madh52@gmail.com";
+
+/**
+ * Gate dei pannelli globali. A chiunque non sia l'amministratore risponde
+ * **404, non 403**: la rotta non deve nemmeno confermare di esistere.
+ *
+ * Usage:
+ *   const gate = await requireAdmin(req);
+ *   if (gate instanceof NextResponse) return gate;
+ */
+export async function requireAdmin(
+  req: NextRequest,
+): Promise<{ userId: string; email: string } | NextResponse> {
+  const user = await requireUser(req);
+  if (user instanceof NextResponse) return user;
+  const email = (user.email ?? "").trim().toLowerCase();
+  if (email !== ADMIN_EMAIL) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  return { userId: user.userId, email };
+}

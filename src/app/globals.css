@@ -18,6 +18,7 @@
 @import "../modules/abbonamento/styles.css";
 @import "../modules/palestra/styles.css";
 @import "../modules/admin/styles.css";
+@import "../modules/sito/styles.css";
 @import "../styles/overrides.css";
 
 @theme inline {

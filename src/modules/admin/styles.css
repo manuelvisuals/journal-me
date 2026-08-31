@@ -78,6 +78,29 @@
   color: var(--color-ink-faint);
 }
 
+/* Le voci della nav sono <button> da quando ce n'e piu di una viva: il
+   bottone deve sembrare esattamente il testo di prima, non un bottone. */
+.jm-adm-nav button {
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+/* `vivo` = spenta ma cliccabile: e una voce che esiste e non e quella
+   scelta, non una voce che non c'e ancora (quelle restano <span>). */
+.jm-adm-nav button.vivo {
+  cursor: pointer;
+  color: var(--color-ink-muted);
+}
+
+.jm-adm-nav button.vivo:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
 .jm-adm-who {
   margin-top: calc(26px * var(--jm-space));
   padding: calc(12px * var(--jm-space)) calc(10px * var(--jm-space));
