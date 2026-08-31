@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Il sito di dayalogue</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* Token del tema MINIMAL chiaro (src/themes/minimal.ts). Il sito usa il
+   tema di default dell'app: chi arriva da Google e chi apre l'app devono
+   vedere lo stesso prodotto, non due marchi diversi. */
+:root{
+  --bg:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --on-accent:#FFFFFF; --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  /* chrome della pagina di mockup */
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --hot:#FBBF24; --no:#F87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:46px 24px 110px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:35px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:860px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:46px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:25px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 26px;
+  max-width:880px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;
+  padding:22px 24px;max-width:980px;margin:26px auto 0}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:14px}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.card b{color:var(--pg-ink);font-weight:600}
+.card code{font-family:ui-monospace,Menlo,monospace;font-size:.88em;color:var(--hot);
+  background:rgba(0,0,0,.3);padding:1px 6px;border-radius:5px}
+.card.chiedo{border-color:rgba(251,191,36,.30);background:rgba(251,191,36,.05)}
+.card.chiedo li::before{background:var(--hot)}
+
+/* ---------- la cornice del browser ---------- */
+.browser{max-width:1180px;margin:0 auto;border-radius:14px;overflow:hidden;
+  box-shadow:0 26px 62px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.4)}
+.chrome{height:38px;background:#2A2A30;display:flex;align-items:center;gap:8px;padding:0 14px}
+.dot{width:11px;height:11px;border-radius:50%;background:#4A4A52}
+.url{margin-left:12px;flex:1;height:22px;border-radius:var(--r-pill);background:#1D1D22;
+  display:flex;align-items:center;padding:0 12px;font-size:11.5px;color:var(--pg-faint)}
+.viewport{background:var(--bg);color:var(--ink);max-height:760px;overflow-y:auto}
+.phone{width:390px;margin:0 auto;border-radius:38px;overflow:hidden;background:var(--bg);
+  color:var(--ink);box-shadow:0 26px 62px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.4);
+  max-height:740px;overflow-y:auto}
+
+/* ================= IL SITO ================= */
+.sito{font-family:var(--font);color:var(--ink)}
+.sito a{color:inherit;text-decoration:none}
+.sito a.btn-p{color:var(--on-accent)}
+.sito a.btn-g{color:var(--ink)}
+.cont{max-width:1080px;margin:0 auto;padding:0 32px}
+
+/* barra in alto */
+.nav{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.86);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1080px;margin:0 auto;padding:0 32px;height:62px;display:flex;
+  align-items:center;gap:28px}
+.marchio{font-family:var(--serif);font-size:20px;font-weight:500;letter-spacing:-.02em}
+.nav-l{display:flex;gap:24px;margin-left:12px}
+.nav-l a{font-size:13.5px;color:var(--ink-muted);font-weight:500}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:14px}
+.lang{font-size:11px;font-weight:650;letter-spacing:.1em;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:4px 9px}
+.lang b{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--font);
+  font-size:13.5px;font-weight:600;border-radius:var(--r-pill);padding:9px 18px;
+  border:1px solid transparent;white-space:nowrap}
+.btn-p{background:var(--accent);color:var(--on-accent)}
+.btn-g{border-color:var(--line);color:var(--ink)}
+.btn-lg{font-size:15px;padding:13px 26px}
+
+/* eroe */
+.hero{padding:82px 0 10px;text-align:center}
+.h1{font-family:var(--serif);font-size:56px;line-height:1.06;font-weight:400;
+  letter-spacing:-.03em;max-width:760px;margin:0 auto}
+.h1 em{font-style:normal;color:var(--ink-faint)}
+.sub{font-size:17px;line-height:1.65;color:var(--ink-muted);max-width:600px;
+  margin:24px auto 0}
+.cta{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.sotto-cta{font-size:12.5px;color:var(--ink-faint);margin-top:16px}
+
+/* la finestra col prodotto dentro l'eroe */
+.shot{margin:52px auto 0;max-width:880px;border-radius:var(--r-xl);border:1px solid var(--line);
+  background:var(--surface);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.13)}
+.shot-bar{height:34px;background:var(--surface-2);display:flex;align-items:center;gap:6px;padding:0 12px}
+.shot-bar i{width:9px;height:9px;border-radius:50%;background:rgba(0,0,0,.14);display:block}
+.shot-in{background:var(--bg);padding:26px 30px;display:grid;grid-template-columns:1fr 250px;gap:26px}
+.sh-lab{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:10px}
+.sh-tit{font-size:23px;font-weight:600;letter-spacing:-.022em;line-height:1.25}
+.sh-pro{font-family:var(--serif);font-size:15.5px;line-height:1.6;color:var(--ink-muted);margin-top:12px}
+.sh-aree{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+.sh-area{border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px}
+.sh-area .n{font-size:10.5px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+.sh-area .t{font-size:12.5px;color:var(--ink-muted);margin-top:5px;line-height:1.45}
+.sh-side{border-left:1px solid var(--line);padding-left:22px}
+.metrica{border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:space-between}
+.metrica .n{font-size:10.5px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+.metrica .v{font-size:19px;font-weight:300}
+.pallini{display:flex;gap:6px;margin-top:12px}
+.pallini i{width:13px;height:13px;border-radius:50%;border:1px solid var(--line);display:block}
+.pallini i.on{background:var(--accent);border-color:var(--accent)}
+
+/* quattro promesse */
+.quattro{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:78px}
+.quattro>div{background:var(--bg);padding:26px 22px}
+.quattro .t{font-size:14px;font-weight:600;letter-spacing:-.01em}
+.quattro .d{font-size:12.5px;color:var(--ink-faint);margin-top:6px;line-height:1.55}
+
+/* sezioni */
+.sez{padding:88px 0}
+.sez-lab{font-size:11px;font-weight:650;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center}
+.sez-h{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.025em;
+  text-align:center;margin-top:12px;line-height:1.15}
+.sez-p{font-size:15.5px;line-height:1.7;color:var(--ink-muted);text-align:center;
+  max-width:620px;margin:18px auto 0}
+
+/* blocchi funzione, a righe alternate */
+.fun{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:64px}
+.fun:nth-child(even) .fun-t{order:2}
+.fun-t h3{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.02em;line-height:1.2}
+.fun-t p{font-size:15px;line-height:1.7;color:var(--ink-muted);margin-top:14px}
+.fun-t a{display:inline-block;margin-top:16px;font-size:13.5px;font-weight:600;
+  border-bottom:1px solid var(--line);padding-bottom:2px}
+.riq{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);
+  padding:20px;min-height:212px}
+.riga-g{display:flex;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);align-items:baseline}
+.riga-g:last-child{border-bottom:0}
+.riga-g .d{font-size:11px;font-weight:650;color:var(--ink-faint);width:26px;flex:0 0 26px}
+.riga-g .h{font-size:13px;font-weight:600;letter-spacing:-.01em;line-height:1.35}
+.griglia{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.griglia i{aspect-ratio:1;border:1px solid var(--line);border-radius:6px;display:block;background:var(--bg)}
+.griglia i.pieno{background:var(--surface-2)}
+.griglia i.oggi{border-color:var(--accent);border-width:2px}
+.rec{font-family:var(--serif);font-size:15px;line-height:1.65;color:var(--ink-muted)}
+.rec::first-letter{font-size:44px;float:left;line-height:.86;margin:2px 8px 0 0;color:var(--ink)}
+.chip{display:inline-flex;font-size:12px;font-weight:600;border:1px solid var(--line);
+  border-radius:var(--r-pill);padding:5px 12px;margin:0 6px 6px 0;color:var(--ink-muted)}
+.chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.due{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.due>div{border:1px solid var(--line);border-radius:var(--r-md);padding:14px;background:var(--bg)}
+.due .t{font-size:13px;font-weight:600}
+.due .d{font-size:12px;color:var(--ink-faint);margin-top:6px;line-height:1.5}
+
+/* tre passi */
+.passi{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px}
+.passo .n{font-family:var(--serif);font-size:34px;color:var(--ink-faint);line-height:1}
+.passo .t{font-size:16px;font-weight:600;margin-top:12px;letter-spacing:-.01em}
+.passo .d{font-size:14px;color:var(--ink-muted);margin-top:8px;line-height:1.65}
+
+/* domande */
+.faq{max-width:720px;margin:48px auto 0}
+.qa{border-top:1px solid var(--line);padding:22px 0}
+.qa:last-child{border-bottom:1px solid var(--line)}
+.qa .q{font-size:16px;font-weight:600;letter-spacing:-.012em}
+.qa .a{font-size:14.5px;color:var(--ink-muted);line-height:1.7;margin-top:9px}
+
+/* chiusura */
+.fine{text-align:center;padding:96px 0;border-top:1px solid var(--line);background:var(--surface)}
+.fine h2{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.025em}
+.fine p{font-size:15.5px;color:var(--ink-muted);margin-top:14px}
+
+/* piede */
+.piede{border-top:1px solid var(--line);padding:44px 0 52px;font-size:13px}
+.piede-in{max-width:1080px;margin:0 auto;padding:0 32px;display:grid;
+  grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+.piede h4{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:12px}
+.piede a{display:block;color:var(--ink-muted);padding:4px 0}
+.piede .nota{font-size:12px;color:var(--ink-faint);line-height:1.7;margin-top:12px}
+
+/* ---------- assistenza ---------- */
+.sup{max-width:640px;margin:0 auto;padding:70px 32px 90px}
+.sup h1{font-family:var(--serif);font-size:40px;font-weight:400;letter-spacing:-.025em}
+.sup .intro{font-size:15.5px;color:var(--ink-muted);line-height:1.7;margin-top:14px}
+.campo{margin-top:26px}
+.campo label{font-size:11px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);display:block;margin-bottom:8px}
+.campo .in{border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;
+  font-size:14.5px;color:var(--ink-faint);background:var(--bg)}
+.campo .in.alto{min-height:110px}
+.campo .aiuto{font-size:12px;color:var(--ink-faint);margin-top:7px;line-height:1.55}
+.foto{display:flex;gap:10px}
+.foto i{width:76px;height:76px;border:1px dashed var(--line);border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:20px;font-style:normal}
+.azioni{display:flex;gap:10px;justify-content:flex-end;margin-top:30px}
+.sup-piede{border-top:1px solid var(--line);margin-top:44px;padding-top:22px;
+  font-size:12.5px;color:var(--ink-faint);display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- pannello SEO ---------- */
+.adm{max-width:820px;margin:0 auto;padding:52px 32px 80px}
+.adm-h{display:flex;align-items:baseline;gap:14px}
+.adm-h h1{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.adm-h .tab{margin-left:auto;display:flex;gap:6px}
+.adm-h .tab span{font-size:12.5px;font-weight:600;border:1px solid var(--line);
+  border-radius:var(--r-pill);padding:6px 13px;color:var(--ink-muted)}
+.adm-h .tab span.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.gruppo{border:1px solid var(--line);border-radius:var(--r-lg);margin-top:22px;overflow:hidden}
+.gruppo>.tit{font-size:11px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-faint);padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+.riga{padding:16px 18px;border-bottom:1px solid var(--line)}
+.riga:last-child{border-bottom:0}
+.riga .k{font-size:12.5px;font-weight:650;color:var(--ink-muted)}
+.riga .v{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;
+  font-size:14px;margin-top:8px;background:var(--bg)}
+.riga .conta{font-size:11.5px;color:var(--ink-faint);margin-top:6px;display:flex;justify-content:space-between}
+.riga .conta .no{color:var(--danger)}
+.anteprima{border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;
+  margin-top:10px;background:var(--surface)}
+.anteprima .u{font-size:12px;color:var(--ink-faint)}
+.anteprima .t{font-size:17px;color:#1a0dab;margin-top:3px;line-height:1.3}
+.anteprima .d{font-size:13px;color:var(--ink-muted);margin-top:4px;line-height:1.5}
+.salva{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+.interr{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.sw{width:44px;height:26px;border-radius:var(--r-pill);background:var(--accent);position:relative;flex:0 0 44px}
+.sw::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="page-title">Il sito di dayalogue</p>
+<p class="page-sub">Stessa forma di <b>stoqfolio.com</b>: una pagina sola che spiega il prodotto, il tasto per entrare, e
+  <b>/support</b> per chi ha bisogno. Il vestito pero e di dayalogue — tema <b>minimal</b> chiaro, Inter per l'interfaccia e
+  <b>Newsreader</b> per i titoli, cioe esattamente i caratteri con cui l'app scrive i recap. Chi arriva da Google e chi apre
+  l'app devono vedere lo stesso prodotto, non due marchi diversi.</p>
+
+<div class="divider"></div>
+<p class="label">&sect;01</p>
+<p class="h2">La home, su computer</p>
+<p class="caption">Le sezioni sono quelle di stoqfolio, nello stesso ordine: barra, eroe con due tasti, quattro promesse,
+  le funzioni una per una, tre passi, domande, chiusura, piede. <b>Si scorre dentro la finestra qui sotto.</b></p>
+
+<div class="browser">
+  <div class="chrome"><i class="dot"></i><i class="dot"></i><i class="dot"></i>
+    <div class="url">dayalogue.com</div></div>
+  <div class="viewport">
+    <div class="sito">
+
+      <div class="nav"><div class="nav-in">
+        <span class="marchio">dayalogue</span>
+        <span class="nav-l"><a href="#">Prodotto</a><a href="#">Funzioni</a><a href="#">Domande</a></span>
+        <span class="nav-r">
+          <span class="lang"><b>IT</b> / EN</span>
+          <a class="btn btn-g" href="#">Accedi</a>
+          <a class="btn btn-p" href="#">Inizia ora</a>
+        </span>
+      </div></div>
+
+      <div class="hero cont">
+        <h1 class="h1">Racconta la giornata.<br><em>Il resto lo scrive lui.</em></h1>
+        <p class="sub">Parli due minuti prima di dormire. dayalogue trascrive parola per parola, ne ricava un titolo e una
+          sintesi per aree, e tiene in ordine persone, impegni e ricordi. Mese dopo mese, ne esce un libro.</p>
+        <div class="cta">
+          <a class="btn btn-p btn-lg" href="#">Inizia ora</a>
+          <a class="btn btn-g btn-lg" href="#">Tienilo solo sul mio dispositivo</a>
+        </div>
+        <p class="sotto-cta">Gratis per scrivere e rileggere. Nessuna carta, nessuna pubblicita.</p>
+
+        <div class="shot">
+          <div class="shot-bar"><i></i><i></i><i></i></div>
+          <div class="shot-in">
+            <div>
+              <p class="sh-lab">Giovedi 27 agosto</p>
+              <p class="sh-tit">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</p>
+              <p class="sh-pro">La giornata e cominciata storta e si e raddrizzata alle sei. Il lavoro e chiuso;
+                quello che resta e quella telefonata.</p>
+              <div class="sh-aree">
+                <div class="sh-area"><p class="n">Lavoro</p><p class="t">Progetto consegnato, riunione spostata a lunedi.</p></div>
+                <div class="sh-area"><p class="n">Relazioni</p><p class="t">Marco, dopo due anni. Richiamare.</p></div>
+                <div class="sh-area"><p class="n">Corpo</p><p class="t">Poco sonno, mal di testa nel pomeriggio.</p></div>
+                <div class="sh-area"><p class="n">Emozioni</p><p class="t">Sollievo, e un po' di nostalgia.</p></div>
+              </div>
+            </div>
+            <div class="sh-side">
+              <div class="metrica"><span class="n">Umore</span><span class="v">4</span></div>
+              <div class="metrica"><span class="n">Energia</span><span class="v">3</span></div>
+              <div class="metrica"><span class="n">Peso</span><span class="v">81,4</span></div>
+              <p class="sh-lab" style="margin-top:18px">Obiettivi</p>
+              <div class="pallini"><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quattro">
+        <div><p class="t">Resta dove vuoi tu</p><p class="d">Tutto sul dispositivo, senza account: nemmeno una richiesta di rete.</p></div>
+        <div><p class="t">Si parla, non si compila</p><p class="d">Tieni premuto e racconti. Il testo e la fonte, l'audio si butta.</p></div>
+        <div><p class="t">Si comincia gratis</p><p class="d">Scrivere e rileggere non costa niente. Nessuna pubblicita, mai.</p></div>
+        <div><p class="t">Italiano e inglese</p><p class="d">Anche quello che scrive l'intelligenza artificiale.</p></div>
+      </div>
+
+      <div class="sez cont" id="prodotto">
+        <p class="sez-lab">Prodotto</p>
+        <h2 class="sez-h">Tenere un diario e facile per tre giorni</h2>
+        <p class="sez-p">Poi arriva la sera in cui sei stanco e la pagina bianca vince. dayalogue toglie la pagina bianca:
+          parli come parleresti a un amico, e la giornata si scrive da sola. Quello che rileggi a fine mese sono parole tue,
+          non un riassunto di qualcun altro.</p>
+
+        <div class="fun">
+          <div class="fun-t">
+            <h3>La giornata, raccontata a voce</h3>
+            <p>Tieni premuto il microfono e parli. Nei silenzi non registra, quindi le voci intorno non entrano.
+              Alla fine correggi i nomi propri se serve, e la giornata e salva: titolo, sintesi, aree.
+              Se preferisci scrivere, si scrive.</p>
+            <a href="#">Guarda com'e fatta &rarr;</a>
+          </div>
+          <div class="riq">
+            <p class="sh-lab">Oggi</p>
+            <p class="sh-tit" style="font-size:19px">Consegnato il progetto, e la sera Marco ha chiamato</p>
+            <p class="sh-pro" style="font-size:14px">Il testo che hai detto, parola per parola, resta sotto: e la fonte, non un riassunto.</p>
+          </div>
+        </div>
+
+        <div class="fun">
+          <div class="fun-t">
+            <h3>Il mese in una schermata</h3>
+            <p>Una riga per giorno sul telefono, una scacchiera sul computer. I giorni pieni si aprono, quelli vuoti
+              restano vuoti senza rimproverarti. In fondo, quante giornate hai scritto e cosa ricorre.</p>
+            <a href="#">Vai al mese &rarr;</a>
+          </div>
+          <div class="riq">
+            <div class="griglia">
+              <i></i><i></i><i class="pieno"></i><i class="pieno"></i><i class="pieno"></i><i></i><i class="pieno"></i>
+              <i class="pieno"></i><i class="pieno"></i><i></i><i class="pieno"></i><i class="pieno"></i><i class="pieno"></i><i class="pieno"></i>
+              <i class="pieno"></i><i></i><i class="pieno"></i><i class="pieno"></i><i class="pieno"></i><i class="pieno"></i><i></i>
+              <i class="pieno"></i><i class="pieno"></i><i class="pieno"></i><i class="oggi"></i><i></i><i></i><i></i>
+            </div>
+            <div class="riga-g" style="margin-top:14px"><span class="d">27</span><span class="h">Consegnato il progetto</span></div>
+            <div class="riga-g"><span class="d">26</span><span class="h">Giornata corta, cena lunga</span></div>
+          </div>
+        </div>
+
+        <div class="fun">
+          <div class="fun-t">
+            <h3>Recap che si leggono come un libro</h3>
+            <p>A fine mese, a fine semestre, a fine anno: un testo scritto per intero, non un elenco di statistiche.
+              Serve a ricordare come stavi, non quante volte sei andato in palestra.</p>
+            <a href="#">Leggi un recap &rarr;</a>
+          </div>
+          <div class="riq">
+            <p class="sh-lab">Agosto 2026</p>
+            <p class="rec" style="margin-top:10px">Agosto e cominciato con una scadenza e finito con una telefonata.
+              In mezzo ci sono ventidue giornate scritte, un paio di litigi ricuciti e la sensazione, verso la fine,
+              di aver ripreso il passo.</p>
+          </div>
+        </div>
+
+        <div class="fun">
+          <div class="fun-t">
+            <h3>Ricorda: persone, impegni, luoghi, idee</h3>
+            <p>Le cose che nomini mentre racconti finiscono qui da sole, e puoi aggiungerne a mano in due secondi.
+              Le persone diventano anche il vocabolario della trascrizione: i nomi dei tuoi amici smettono di uscire storti.</p>
+            <a href="#">Apri Ricorda &rarr;</a>
+          </div>
+          <div class="riq">
+            <p><span class="chip on">Tutto</span><span class="chip">Persone</span><span class="chip">Da fare</span><span class="chip">Luoghi</span><span class="chip">Idee</span></p>
+            <div class="riga-g" style="margin-top:8px"><span class="h">Richiamare Marco</span></div>
+            <div class="riga-g"><span class="h">Osteria in via Mazzini, tornarci</span></div>
+            <div class="riga-g"><span class="h">Chiara &mdash; compleanno il 14</span></div>
+          </div>
+        </div>
+
+        <div class="fun">
+          <div class="fun-t">
+            <h3>Sul tuo dispositivo, oppure nel cloud</h3>
+            <p>Al primo avvio scegli tu. In locale le giornate non escono dal telefono e l'app non fa
+              <b>nemmeno una</b> richiesta di rete: niente account, niente server. Nel cloud le ritrovi ovunque,
+              e si accendono le funzioni con l'intelligenza artificiale. Si esporta e si reimporta tutto, quando vuoi.</p>
+            <a href="#">Come funziona &rarr;</a>
+          </div>
+          <div class="riq">
+            <div class="due">
+              <div><p class="t">Solo qui</p><p class="d">Nessun account. Zero rete. I dati stanno nel telefono.</p></div>
+              <div><p class="t">Nel cloud</p><p class="d">Su tutti i tuoi dispositivi, con titoli e recap scritti dall'AI.</p></div>
+            </div>
+            <p class="campo aiuto" style="margin-top:12px;font-size:12px;color:var(--ink-faint)">Si cambia idea dopo: il passaggio non cancella niente.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sez cont" style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line);max-width:none">
+        <div style="max-width:1080px;margin:0 auto">
+          <p class="sez-lab">Come si usa</p>
+          <h2 class="sez-h">Tre cose, e poi basta</h2>
+          <div class="passi">
+            <div class="passo"><p class="n">1</p><p class="t">Scegli dove tenerle</p><p class="d">Solo su questo dispositivo, oppure nel cloud con un codice via email. Niente password.</p></div>
+            <div class="passo"><p class="n">2</p><p class="t">La sera, parli</p><p class="d">Due minuti tenendo premuto. Oppure scrivi, se e una di quelle sere.</p></div>
+            <div class="passo"><p class="n">3</p><p class="t">Rileggi quando vuoi</p><p class="d">Il mese, la giornata singola, e i recap che arrivano da soli.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sez cont" id="domande">
+        <p class="sez-lab">Domande</p>
+        <h2 class="sez-h">Quello che chiedono tutti</h2>
+        <div class="faq">
+          <div class="qa"><p class="q">dayalogue e gratis?</p>
+            <p class="a">Scrivere le giornate, rileggerle e portarti via tutto e gratis, senza carta di credito e senza pubblicita.
+              Le funzioni che usano l'intelligenza artificiale &mdash; la trascrizione della voce, il titolo, la sintesi per aree,
+              i recap &mdash; sono la parte premium.</p></div>
+          <div class="qa"><p class="q">Dove finiscono le mie giornate?</p>
+            <p class="a">Dove decidi tu al primo avvio. In modalita locale restano dentro il dispositivo e l'app non contatta nessuno.
+              Nel cloud stanno su un database europeo, dietro il tuo account, e le vedi solo tu.</p></div>
+          <div class="qa"><p class="q">Chi legge quello che racconto?</p>
+            <p class="a">Nessuna persona. In modalita cloud il testo passa dai modelli di OpenAI per essere riassunto, e basta:
+              non viene usato per addestrare niente e non viene venduto a nessuno.</p></div>
+          <div class="qa"><p class="q">Posso portarmi via i miei dati?</p>
+            <p class="a">Si, in qualsiasi momento: un file solo con tutte le giornate, gli obiettivi, i ricordi e i recap,
+              che si reimporta dove vuoi. E l'account si cancella dall'app, senza scrivere a nessuno.</p></div>
+          <div class="qa"><p class="q">Serve internet?</p>
+            <p class="a">In modalita locale no, mai. Nel cloud serve per salvare e per le funzioni con l'AI.</p></div>
+          <div class="qa"><p class="q">C'e l'app per iPhone?</p>
+            <p class="a">Sta arrivando. Oggi dayalogue si usa dal browser e si installa sulla schermata Home come un'app.</p></div>
+        </div>
+      </div>
+
+      <div class="fine">
+        <h2>Com'e andata oggi?</h2>
+        <p>Provalo stasera. Ci vogliono due minuti.</p>
+        <div class="cta"><a class="btn btn-p btn-lg" href="#">Inizia ora</a></div>
+      </div>
+
+      <div class="piede"><div class="piede-in">
+        <div>
+          <p class="marchio">dayalogue</p>
+          <p class="nota">Un diario che si racconta a voce.<br>&copy; 2026 dayalogue</p>
+        </div>
+        <div><h4>Prodotto</h4><a href="#">Funzioni</a><a href="#">Assistenza</a></div>
+        <div><h4>Legale</h4><a href="#">Informativa privacy</a><a href="#">Termini di servizio</a></div>
+        <div><h4>Account</h4><a href="#">Accedi</a><a href="#">Apri l'app</a></div>
+      </div></div>
+
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Cosa cambia rispetto a stoqfolio, e perche</h3>
+  <ul>
+    <li><b>Il secondo tasto dell'eroe non e "entra senza account"</b> ma <b>"Tienilo solo sul mio dispositivo"</b>:
+      da noi non e un giro di prova, e una delle due modalita vere, ed e la cosa piu forte che dayalogue ha da dire.</li>
+    <li><b>Niente prezzo scritto sulla pagina.</b> Il checkout Stripe e pronto ma spento per tua scelta (HANDOVER §13):
+      una pagina che dice "4,99 al mese" e un tasto che risponde "non ancora" e la stessa bugia del "primo mese incluso"
+      tolto il 20 agosto. Il prezzo torna qui il giorno in cui si puo pagare.</li>
+    <li><b>Niente sezione "recensioni" e niente numeri inventati</b> (utenti, giornate scritte, stelle): non ce ne sono.</li>
+    <li><b>"C'e l'app per iPhone?" risponde "sta arrivando"</b>, perche l'app non e ancora sull'App Store.</li>
+  </ul>
+</div>
+
+<div class="divider"></div>
+<p class="label">&sect;02</p>
+<p class="h2">La stessa home, sul telefono</p>
+<p class="caption">Una colonna sola, il menu diventa i due tasti, la scacchiera del mese sparisce a favore delle righe.
+  Nessun contenuto nascosto: quello che si legge sul computer si legge anche qui.</p>
+
+<div class="phone">
+  <div class="sito">
+    <div class="nav"><div class="nav-in" style="padding:0 20px;gap:10px">
+      <span class="marchio" style="font-size:18px">dayalogue</span>
+      <span class="nav-r"><span class="lang">IT</span><a class="btn btn-p" href="#" style="font-size:12.5px;padding:8px 14px">Inizia</a></span>
+    </div></div>
+    <div class="hero" style="padding:44px 20px 0;text-align:left">
+      <h1 class="h1" style="font-size:37px">Racconta la giornata.<br><em>Il resto lo scrive lui.</em></h1>
+      <p class="sub" style="font-size:15.5px;margin:18px 0 0">Parli due minuti prima di dormire. dayalogue trascrive,
+        ne ricava un titolo e una sintesi per aree, e tiene in ordine persone e ricordi.</p>
+      <div class="cta" style="justify-content:flex-start;flex-direction:column;align-items:stretch;gap:10px">
+        <a class="btn btn-p btn-lg" href="#">Inizia ora</a>
+        <a class="btn btn-g btn-lg" href="#">Tienilo solo sul mio dispositivo</a>
+      </div>
+      <p class="sotto-cta" style="text-align:left">Gratis per scrivere e rileggere.</p>
+      <div class="shot" style="margin-top:32px">
+        <div class="shot-bar"><i></i><i></i><i></i></div>
+        <div class="shot-in" style="grid-template-columns:1fr;padding:18px 20px">
+          <div>
+            <p class="sh-lab">Giovedi 27 agosto</p>
+            <p class="sh-tit" style="font-size:19px">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</p>
+            <div class="sh-aree" style="grid-template-columns:1fr">
+              <div class="sh-area"><p class="n">Lavoro</p><p class="t">Progetto consegnato.</p></div>
+              <div class="sh-area"><p class="n">Relazioni</p><p class="t">Marco, dopo due anni.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="quattro" style="grid-template-columns:1fr;margin-top:44px">
+      <div><p class="t">Resta dove vuoi tu</p><p class="d">Tutto sul dispositivo, senza account.</p></div>
+      <div><p class="t">Si parla, non si compila</p><p class="d">Tieni premuto e racconti.</p></div>
+    </div>
+    <div class="sez" style="padding:44px 20px">
+      <p class="sez-lab" style="text-align:left">Prodotto</p>
+      <h2 class="sez-h" style="text-align:left;font-size:27px">Tenere un diario e facile per tre giorni</h2>
+      <p class="sez-p" style="text-align:left;font-size:14.5px;margin-left:0">Poi arriva la sera in cui sei stanco e la
+        pagina bianca vince. dayalogue toglie la pagina bianca.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<p class="label">&sect;03</p>
+<p class="h2">dayalogue.com/support</p>
+<p class="caption">Copiata da <b>stoqfolio.com/supporto</b> quasi riga per riga: un modulo corto, il tono in prima persona,
+  e il piede con le tre uscite. La differenza sta sotto il cofano, ed e il punto &sect;05.</p>
+
+<div class="browser" style="max-width:820px">
+  <div class="chrome"><i class="dot"></i><i class="dot"></i><i class="dot"></i>
+    <div class="url">dayalogue.com/support</div></div>
+  <div class="viewport">
+    <div class="sito">
+      <div class="nav"><div class="nav-in">
+        <span class="marchio">dayalogue</span>
+        <span class="nav-r"><span class="lang"><b>IT</b> / EN</span></span>
+      </div></div>
+      <div class="sup">
+        <h1>Assistenza</h1>
+        <p class="intro">Se qualcosa non funziona o hai una domanda, scrivimi. Rispondo a tutti.</p>
+
+        <div class="campo"><label>Qual e il problema</label>
+          <div class="in">La registrazione non parte al primo avvio</div></div>
+
+        <div class="campo"><label>Raccontamelo</label>
+          <div class="in alto">Cosa hai fatto, cosa e successo, cosa ti aspettavi. Anche poche righe vanno bene.</div></div>
+
+        <div class="campo"><label>Schermate</label>
+          <div class="foto"><i>+</i><i>+</i><i>+</i></div>
+          <p class="aiuto">Fino a 3 immagini. Le rimpiccioliamo noi prima di inviarle: non devi fare niente.</p></div>
+
+        <div class="campo"><label>La tua email</label>
+          <div class="in">nome@esempio.it</div>
+          <p class="aiuto">Serve solo per risponderti.</p></div>
+
+        <div class="azioni"><a class="btn btn-g" href="#">Annulla</a><a class="btn btn-p" href="#">Invia</a></div>
+
+        <div class="sup-piede">
+          <a href="#">Informativa privacy</a><span>&middot;</span>
+          <a href="#">Termini di servizio</a><span>&middot;</span>
+          <a href="#">Torna a dayalogue</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<p class="label">&sect;04</p>
+<p class="h2">Il pannello SEO, dentro /admin</p>
+<p class="caption">Una seconda voce accanto alle Aree. Si sceglie la pagina (Home o Assistenza) e la lingua, e si scrivono
+  le due cose che contano: <b>il titolo</b> e <b>la descrizione</b>. Sotto, l'anteprima di come esce su Google, con il
+  contatore dei caratteri che diventa rosso quando la frase e troppo lunga per stare tutta nel risultato.</p>
+
+<div class="browser" style="max-width:900px">
+  <div class="chrome"><i class="dot"></i><i class="dot"></i><i class="dot"></i>
+    <div class="url">dayalogue.com/admin</div></div>
+  <div class="viewport">
+    <div class="sito"><div class="adm">
+      <div class="adm-h">
+        <h1>Impostazioni globali</h1>
+        <span class="tab"><span>Aree</span><span class="on">Sito</span></span>
+      </div>
+
+      <div class="gruppo">
+        <p class="tit">Pagina</p>
+        <div class="riga">
+          <p><span class="chip on">Home</span><span class="chip">Assistenza</span></p>
+          <p style="margin-top:10px"><span class="chip on">Italiano</span><span class="chip">English</span></p>
+        </div>
+      </div>
+
+      <div class="gruppo">
+        <p class="tit">Come esce su Google</p>
+        <div class="riga">
+          <p class="k">Titolo</p>
+          <div class="v">dayalogue &mdash; il diario che si racconta a voce</div>
+          <p class="conta"><span>Quello che si legge nella scheda del browser e in cima al risultato.</span><span>48 / 60</span></p>
+        </div>
+        <div class="riga">
+          <p class="k">Descrizione</p>
+          <div class="v">Parli due minuti a fine giornata: dayalogue trascrive, scrive il titolo e la sintesi, e tiene in ordine persone e ricordi.</div>
+          <p class="conta"><span>Le due righe sotto il titolo, nel risultato di ricerca.</span><span>131 / 155</span></p>
+        </div>
+        <div class="riga">
+          <p class="k">Anteprima</p>
+          <div class="anteprima">
+            <p class="u">dayalogue.com</p>
+            <p class="t">dayalogue &mdash; il diario che si racconta a voce</p>
+            <p class="d">Parli due minuti a fine giornata: dayalogue trascrive, scrive il titolo e la sintesi, e tiene in ordine persone e ricordi.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gruppo">
+        <p class="tit">Quando lo condividi</p>
+        <div class="riga">
+          <p class="k">Titolo per i social</p>
+          <div class="v">Racconta la giornata. Il resto lo scrive lui.</div>
+          <p class="conta"><span>Vuoto = usa il titolo qui sopra.</span><span>44</span></p>
+        </div>
+        <div class="riga">
+          <p class="k">Immagine di anteprima</p>
+          <div class="v" style="color:var(--ink-faint)">/og-home.png</div>
+          <p class="conta"><span>1200x630. La si carica come la foto profilo.</span><span></span></p>
+        </div>
+      </div>
+
+      <div class="gruppo">
+        <p class="tit">Visibilita</p>
+        <div class="riga interr">
+          <div><p class="k">Fatti trovare da Google</p>
+            <p class="conta" style="display:block"><span>Spento, la pagina resta online ma chiede ai motori di non indicizzarla.</span></p></div>
+          <span class="sw"></span>
+        </div>
+      </div>
+
+      <div class="salva"><a class="btn btn-g" href="#">Annulla</a><a class="btn btn-p" href="#">Salva le modifiche</a></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Come funziona sotto (le stesse regole delle Aree)</h3>
+  <ul>
+    <li>Una tabella <code>sito_seo</code>, una riga per pagina: <b>lettura pubblica</b> (la pagina deve saper scrivere il
+      proprio titolo prima di sapere chi sei) e <b>nessuna policy di scrittura</b> &mdash; si scrive solo dalla rotta admin
+      col service role, esattamente come <code>aree</code>.</li>
+    <li>La home legge quei campi <b>sul server a ogni visita</b>: cambi il titolo nel pannello, ricarichi, e il titolo e
+      cambiato. Niente nuovo deploy.</li>
+    <li>Il sito <b>non entra nel pacchetto dell'iPhone</b>: le sue pagine si chiamano <code>page.web.tsx</code> e la build
+      mobile le ignora. Provato ieri, non dedotto.</li>
+    <li>Se il database non risponde, la pagina esce lo stesso con i testi scritti nel codice: un sito che va giu perche il
+      pannello e vuoto sarebbe un pannello che fa danno.</li>
+  </ul>
+</div>
+
+<div class="card chiedo">
+  <h3>Tre cose che decidi tu (le ho gia scelte cosi, dimmi se cambio)</h3>
+  <ul>
+    <li><b>Il modulo di assistenza dove arriva?</b> Ho scelto: <b>in una tabella</b>, e le richieste si leggono dentro
+      /admin accanto alle Aree. Il motivo e che mandare email vere vuol dire un servizio in piu da configurare
+      (Resend), e oggi non c'e. Se preferisci riceverle per email, si fa &mdash; ma serve quella configurazione.</li>
+    <li><b>Il pannello tocca solo il titolo e la descrizione</b>, non le frasi che si vedono nella pagina (l'eroe, le
+      domande). Quelle restano nel codice e in due lingue. Se vuoi cambiare anche quelle senza chiamarmi, si aggiunge,
+      ma il pannello diventa un editor e la cosa cresce.</li>
+    <li><b>Il prezzo non compare</b> finche il pagamento e spento, per il motivo scritto nel primo riquadro.</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>
