@@ -63,3 +63,8 @@ next-env.d.ts
 
 # Artefatto di lavoro del passo B (verify-css-split.mjs): si scatta e si butta.
 scripts/css-baseline.json
+
+# La cartella dove aggiorna-e-apri-xcode.command mette al sicuro i file
+# non versionati che bloccherebbero il pull. E roba tua in attesa di essere
+# guardata, non roba da versionare.
+_prima-del-pull/

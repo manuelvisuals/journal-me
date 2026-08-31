@@ -56,6 +56,40 @@ con_tetto(){
 
 printf "${B}dayalogue - aggiorna, ricostruisci, apri Xcode${V}\n\n"
 
+# ---------- 0. il lucchetto dimenticato ----------
+# Git mette un .git/index.lock mentre lavora e lo toglie quando ha finito.
+# Se qualcosa muore a meta (una chat che si ferma, il Mac che va a dormire,
+# un Terminale chiuso col comando in corso), quel file resta li e da quel
+# momento OGNI comando git di questa cartella fallisce con "Unable to create
+# index.lock: File exists". Successo il 31 agosto 2026: il lock era di due
+# minuti prima e bloccava tutto.
+#
+# Si toglie solo quando e SICURO che sia orfano, e sicuro vuol dire due cose
+# insieme: nessun git in esecuzione su questa macchina, e il file fermo da
+# piu di due minuti. Un lock vivo appartiene a un git che sta lavorando
+# davvero, e toglierglielo di sotto e il modo di corrompere l'indice.
+togli_lucchetto(){
+  [ -f ".git/index.lock" ] || return 0
+  if pgrep -x git >/dev/null 2>&1; then
+    wr "C'e un .git/index.lock e c'e anche un git in esecuzione: non lo tocco."
+    info "aspetta che l'altro comando finisca, poi rilancia questo script."
+    return 1
+  fi
+  # Fermo da piu di 120 secondi? -mmin vuole i minuti, +1 = piu di un minuto.
+  if [ -z "$(find .git/index.lock -maxdepth 0 -mmin +1 2>/dev/null)" ]; then
+    wr "C'e un .git/index.lock nato adesso: potrebbe essere di un git vivo."
+    info "aspetta un minuto e rilancia questo script."
+    return 1
+  fi
+  rm -f .git/index.lock
+  if [ -f ".git/index.lock" ]; then
+    ko "Non riesco a togliere .git/index.lock. Dillo a Claude."
+    return 1
+  fi
+  nota "Tolto un .git/index.lock rimasto orfano da un comando interrotto."
+  return 0
+}
+
 # ---------- 1. la cartella giusta ----------
 REPO=$(git rev-parse --show-toplevel 2>/dev/null)
 if [ -z "$REPO" ]; then
@@ -75,6 +109,7 @@ if [ -z "$REPO" ] || [ ! -d "$REPO/.git" ]; then
 fi
 cd "$REPO" || stop
 ok "Progetto: $REPO"
+togli_lucchetto || stop
 
 # ---------- 2. attrezzi ----------
 command -v node >/dev/null 2>&1 || { ko "Manca node. Installa Node.js e riprova."; stop; }
@@ -125,6 +160,45 @@ git clean -fdq ios/App/App/public >/dev/null 2>&1
 # si rifiuta di partire con "You have unstaged changes" — successo il 28
 # agosto 2026 al primo tentativo di ricostruire il pacchetto.
 git checkout -- package-lock.json >/dev/null 2>&1
+# I FILE NUOVI CHE BLOCCANO IL PULL. Un file non versionato che esiste
+# anche nei commit in arrivo fa fallire il pull con "untracked working tree
+# files would be overwritten", e la cartella resta indietro per sempre senza
+# che nessuno capisca perche. Successo il 31 agosto 2026 con due mockup
+# scritti qui e poi committati da un'altra parte.
+#
+# Non si cancella alla cieca. Per ognuno si guarda se e IDENTICO a quello in
+# arrivo: se lo e, buttarlo non perde niente (la copia buona sta su GitHub);
+# se e diverso e roba tua, e si mette al sicuro invece di sparire. Nessun
+# ramo di questa funzione perde lavoro.
+INTRUSI=0
+SALVATI=0
+sposta_intrusi(){
+  RIPARO="$REPO/_prima-del-pull"
+  git -c core.quotepath=false ls-files --others --exclude-standard > /tmp/jm-nuovi.txt 2>/dev/null
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    git cat-file -e "origin/main:$f" 2>/dev/null || continue
+    MIO=$(shasum -a 256 "$f" 2>/dev/null | cut -d" " -f1)
+    LORO=$(git show "origin/main:$f" 2>/dev/null | shasum -a 256 | cut -d" " -f1)
+    if [ "$MIO" = "$LORO" ]; then
+      rm -f "$f"
+      INTRUSI=$((INTRUSI+1))
+    else
+      mkdir -p "$RIPARO/$(dirname "$f")"
+      mv "$f" "$RIPARO/$f"
+      SALVATI=$((SALVATI+1))
+    fi
+  done < /tmp/jm-nuovi.txt
+  if [ "$INTRUSI" -gt 0 ]; then
+    nota "Tolti $INTRUSI file nuovi identici a quelli su GitHub (non si perde niente)."
+  fi
+  if [ "$SALVATI" -gt 0 ]; then
+    nota "Messi al sicuro $SALVATI file tuoi in _prima-del-pull/ (erano diversi da GitHub)."
+    info "guardali con calma: se non ti servono, buttali tu."
+  fi
+}
+sposta_intrusi
+
 SPORCO=$(git status --porcelain | grep -v "^?? " | head -10)
 if [ -n "$SPORCO" ]; then
   nota "Ci sono modifiche non salvate fuori dal pacchetto generato:"
