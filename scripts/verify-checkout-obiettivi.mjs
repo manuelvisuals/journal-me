@@ -42,7 +42,7 @@ async function open(path, wait) {
 
 /* ================= 1. gli obiettivi: nomi, e si prendono ================= */
 {
-  const { ctx, page, errors } = await open("/settings", ".jm-st-box");
+  const { ctx, page, errors } = await open("/app/settings", ".jm-st-box");
 
   // Tre obiettivi veri, aggiunti dalla schermata vera.
   await page.locator(".jm-st-row", { hasText: "Obiettivi" }).first().click();
@@ -54,7 +54,7 @@ async function open(path, wait) {
   }
 
   // Una giornata raccontata, perche gli obiettivi vivono sotto il racconto.
-  await page.goto(BASE + "/giorno?d=2026-08-17", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/giorno?d=2026-08-17", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-day-empty-wrap, .jm-day-add", { timeout: 20000 });
   await page.locator(".jm-day-add").click();
   await page.waitForTimeout(300);
@@ -112,7 +112,7 @@ async function open(path, wait) {
 
 /* ================= 2. il checkout finto ================= */
 {
-  const { ctx, page, errors } = await open("/checkout-finto", ".jm-ck-btns");
+  const { ctx, page, errors } = await open("/app/checkout-finto", ".jm-ck-btns");
 
   const corpo = await page.locator("body").innerText();
   check("dice in chiaro che e simulato", /simulato|nessun addebito/i.test(corpo));
@@ -155,7 +155,7 @@ async function open(path, wait) {
     } catch {}
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/checkout-finto", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/checkout-finto", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-ck-btns", { timeout: 20000 });
   await page.waitForTimeout(600);
   const en = await page.locator("body").innerText();
@@ -184,7 +184,7 @@ async function open(path, wait) {
   let statoApi = 0;
   let raggiungibile = true;
   try {
-    const p = await fetch(OFF + "/checkout-finto");
+    const p = await fetch(OFF + "/app/checkout-finto");
     corpo = await p.text();
     const a = await fetch(OFF + "/api/dev-checkout", { method: "POST" });
     statoApi = a.status;

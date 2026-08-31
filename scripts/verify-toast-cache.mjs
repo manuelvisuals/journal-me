@@ -44,7 +44,7 @@ async function open(path, { wait = "main" } = {}) {
 
 /* ============ 1. l'avviso c'e, ed e uno solo ============ */
 {
-  const { ctx, page, errors } = await open("/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
+  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
 
   check("all'inizio nessun avviso", (await page.locator(".jm-toast").count()) === 0);
 
@@ -95,7 +95,7 @@ async function open(path, { wait = "main" } = {}) {
 
 /* ============ 2. mai due avvisi insieme ============ */
 {
-  const { ctx, page } = await open("/giorno?d=2026-08-18", { wait: ".jm-day-empty-wrap" });
+  const { ctx, page } = await open("/app/giorno?d=2026-08-18", { wait: ".jm-day-empty-wrap" });
   for (const testo of ["Prima aggiunta.", "Seconda aggiunta."]) {
     await page.locator(".jm-day-add").click();
     await page.waitForTimeout(250);
@@ -141,18 +141,18 @@ async function open(path, { wait = "main" } = {}) {
     };
   });
 
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(2000);
 
   // Andata e ritorno fra i tab: se la cache lavora, la seconda visita a
   // Mese non deve far ricomparire lo scheletro di caricamento.
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-day-row", { timeout: 15000 });
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
 
   const t0 = Date.now();
-  await page.goto(BASE + "/mese", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "domcontentloaded" });
   // Sul telefono Mese e la lista giorno-per-giorno: la griglia
   // (.jm-mese-wrap) esiste nel DOM ma e nascosta sotto lg.
   await page.waitForSelector(".jm-day-row", { timeout: 15000 });
@@ -172,13 +172,13 @@ async function open(path, { wait = "main" } = {}) {
     try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco"); } catch {}
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(2500);
 
   // Dopo il precaricamento, la cache deve avere gia dentro le chiavi degli
   // altri tab: si vede da quanto e immediata Ricorda.
   const t0 = Date.now();
-  await page.goto(BASE + "/remember", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/remember", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-rem-list", { timeout: 15000 });
   const ms = Date.now() - t0;
   check("Ricorda si apre senza attesa percepibile", ms < 4000, `${ms}ms`);

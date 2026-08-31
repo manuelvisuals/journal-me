@@ -96,7 +96,7 @@ async function open({ native = false, mode = "local" } = {}) {
   const { ctx, page } = await open({ native: true, mode: "local" });
   // In locale "genera il recap" apre il muro (SPEC-v2 §3.3: mai un 402
   // a sorpresa): e il modo piu affidabile di vederlo senza account.
-  await page.goto(BASE + "/recap", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/recap", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-gen-btn", { timeout: 15000 });
   await page.waitForTimeout(300);
   await page.locator(".jm-gen-btn").first().click();
@@ -118,7 +118,7 @@ async function open({ native = false, mode = "local" } = {}) {
 /* ---------------- 2b. browser: la vendita web resta ---------------- */
 {
   const { ctx, page } = await open({ native: false, mode: "local" });
-  await page.goto(BASE + "/recap", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/recap", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-gen-btn", { timeout: 15000 });
   await page.waitForTimeout(300);
   await page.locator(".jm-gen-btn").first().click();
@@ -135,7 +135,7 @@ async function open({ native = false, mode = "local" } = {}) {
   page.on("request", (r) => {
     if (r.url().includes("/api/account/delete")) chiamate.push(r.url());
   });
-  await page.goto(BASE + "/settings", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
   // La sessione finta si idrata lato client: le righe arrivano dopo.
   await page.waitForSelector(".jm-st-row", { timeout: 25000 });
   await page.waitForTimeout(900);
@@ -191,7 +191,7 @@ async function open({ native = false, mode = "local" } = {}) {
 // App Store 3.1.1) e attiva il premium gratis della v1 (premium-v1.ts).
 {
   const { ctx, page } = await open({ native: true, mode: "cloud" });
-  await page.goto(BASE + "/benvenuto", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/benvenuto", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
   await page.waitForTimeout(600);
   const main = await page.locator(".jm-benv").innerText();
@@ -210,7 +210,7 @@ async function open({ native = false, mode = "local" } = {}) {
 /* ------ 6. browser, /benvenuto post-login: la vendita web resta ------ */
 {
   const { ctx, page } = await open({ native: false, mode: "cloud" });
-  await page.goto(BASE + "/benvenuto", { waitUntil: "domcontentloaded" });
+  await page.goto(BASE + "/app/benvenuto", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
   await page.waitForTimeout(600);
   const main = await page.locator(".jm-benv").innerText();

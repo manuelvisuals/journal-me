@@ -53,7 +53,7 @@ async function newPage(width, height, { local = true } = {}) {
 /* ============ 1-2. Ricorda: mic dietro il muro, titolo italiano ============ */
 for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
   const { ctx, page, errors, external } = await newPage(w, h);
-  await page.goto(BASE + "/remember", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/remember", { waitUntil: "networkidle" });
   await page.waitForTimeout(600);
 
   check(
@@ -100,7 +100,7 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
 /* ============ 3. /benvenuto: prezzo onesto ============ */
 {
   const { ctx, page, errors } = await newPage(430, 932, { local: false });
-  await page.goto(BASE + "/benvenuto", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/benvenuto", { waitUntil: "networkidle" });
   await page.waitForTimeout(500);
   const price = (await page.locator(".jm-benv-price").innerText()).trim();
   check("benvenuto: prezzo 4,99 EUR al mese", /4,99\s*€\s*al mese/.test(price), price);
@@ -112,7 +112,7 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
 /* ============ 4. editor a schermo intero fluidi da lg ============ */
 {
   const { ctx, page, errors } = await newPage(2600, 1419);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
   await page.locator(".jm-ed-ta").click();
   await page.keyboard.type("Riga uno.\n\nRiga due del racconto di prova.");
@@ -151,7 +151,7 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
 /* ============ 5. rail destra: niente sbordamento, bersagli 44px ============ */
 for (const w of [1280, 1728, 2600]) {
   const { ctx, page, errors } = await newPage(w, 1000);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
   const noOverflow = async () =>
@@ -196,7 +196,7 @@ for (const w of [1280, 1728, 2600]) {
 /* ============ 6. i micro-goal di default sono quelli nuovi ============ */
 {
   const { ctx, page } = await newPage(1728, 1000);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
   const labels = await page.locator(".jm-railr-gname").allInnerTexts();
   check(
@@ -212,7 +212,7 @@ for (const w of [1280, 1728, 2600]) {
 /* ============ 7. sul telefono la modale resta un foglio pieno ============ */
 {
   const { ctx, page } = await newPage(430, 932);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
   const geo = await page.evaluate(() => {
     const el = document.createElement("div");

@@ -65,10 +65,10 @@ async function apri(path, attesa) {
 
 /* ================== 1. la scheda persona ================== */
 {
-  const { ctx, page, errors } = await apri("/", "main");
+  const { ctx, page, errors } = await apri("/app", "main");
   await page.evaluate(`(async () => { ${SEED} })()`);
 
-  await page.goto(BASE + "/persona?nome=Christian", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/persona?nome=Christian", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-pers-scroll", { timeout: 20000 });
   await page.waitForTimeout(400);
 
@@ -103,7 +103,7 @@ async function apri(path, attesa) {
   // Deve portare al giorno: una scheda che non apre niente e un vicolo cieco.
   await righe.first().click();
   await page.waitForTimeout(1500);
-  check("toccando una giornata si apre quel giorno", page.url().includes("/giorno?d=2026-08-20"), page.url());
+  check("toccando una giornata si apre quel giorno", page.url().includes("/app/giorno?d=2026-08-20"), page.url());
 
   check("persona: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
@@ -111,7 +111,7 @@ async function apri(path, attesa) {
 
 /* ============ 2. un nome mai nominato non inventa niente ============ */
 {
-  const { ctx, page } = await apri("/persona?nome=Nessuno", ".jm-pers-empty");
+  const { ctx, page } = await apri("/app/persona?nome=Nessuno", ".jm-pers-empty");
   const t = await page.locator(".jm-pers-empty").innerText();
   check("un nome sconosciuto lo dice", /non compare in nessuna giornata/i.test(t));
   await ctx.close();
@@ -119,7 +119,7 @@ async function apri(path, attesa) {
 
 /* ================== 3. i moduli ================== */
 {
-  const { ctx, page, errors } = await apri("/settings", ".jm-st-box");
+  const { ctx, page, errors } = await apri("/app/settings", ".jm-st-box");
 
   // Di partenza: nessun modulo, e la barra e quella di sempre.
   const tabIniziali = (await page.locator("nav.lg\\:hidden a").allInnerTexts()).map((x) => x.toLowerCase());
@@ -170,7 +170,7 @@ async function apri(path, attesa) {
   );
 
   // La sezione si apre davvero e dice la verita su cosa c'e dentro.
-  await page.goto(BASE + "/palestra", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/palestra", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-mod-soon", { timeout: 20000 });
   check(
     "la sezione dice onestamente a che punto e",
@@ -195,7 +195,7 @@ async function apri(path, attesa) {
     } catch {}
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1500);
   const tabs = (await page.locator("nav.lg\\:hidden a").allInnerTexts()).map((x) => x.toLowerCase());
   check(

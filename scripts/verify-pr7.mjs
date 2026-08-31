@@ -63,7 +63,7 @@ const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "
 /* ============ 1. DESKTOP 1440 ============ */
 {
   const { ctx, page, errors } = await newPage(1440, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
   const ta = page.locator(".jm-ed-ta");
@@ -139,7 +139,7 @@ const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "
 /* ============ 2. TELEFONO 430 (nessuna regressione) ============ */
 {
   const { ctx, page, errors } = await newPage(430, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
   check("phone: editor desktop NON visibile", !(await page.locator(".jm-ed-wrap").isVisible().catch(() => false)));

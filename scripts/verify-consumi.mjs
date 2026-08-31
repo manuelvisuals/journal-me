@@ -141,7 +141,7 @@ async function open(opts) {
     });
   });
 
-  await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
   return { ctx, page, errors, external, apiUsage };
 }

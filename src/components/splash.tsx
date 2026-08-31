@@ -33,7 +33,7 @@ export function Splash() {
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    const routes = ["/", "/mese", "/remember", "/recap", "/settings"];
+    const routes = ["/app", "/app/mese", "/app/remember", "/app/recap", "/app/settings"];
     for (const r of routes) {
       try {
         router.prefetch(r);

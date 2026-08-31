@@ -27,6 +27,7 @@ const mobileConfig: NextConfig = {
 };
 
 const webConfig: NextConfig = {
+  pageExtensions: ["tsx", "ts", "jsx", "js", "web.tsx"],
   // The iOS bundle is a different origin from these routes, so the browser
   // preflights every POST to them. Without this the app would only ever work
   // in a tab. Every call now carries an Authorization bearer token (injected

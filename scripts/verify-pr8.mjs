@@ -26,7 +26,7 @@ async function newPage(width, height) {
 /* ============ DESKTOP 1440 ============ */
 {
   const { ctx, page, errors } = await newPage(1440, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
   // Cmd+K apre la palette
@@ -50,7 +50,7 @@ async function newPage(width, height) {
   await page.waitForTimeout(200);
   await page.keyboard.press("Enter");
   await page.waitForTimeout(800);
-  check("palette: naviga a /mese", page.url().includes("/mese"));
+  check("palette: naviga a /mese", page.url().includes("/app/mese"));
 
   // Cmd+K da /mese: niente 'Modalita focus'
   await page.keyboard.press("Control+k");
@@ -67,14 +67,14 @@ async function newPage(width, height) {
   check("palette: feedback 'salvato in Ricorda'", await page.locator(".jm-pal-done").isVisible());
   await page.waitForTimeout(900);
   check("palette: si chiude da sola dopo la cattura", !(await page.locator(".jm-pal").isVisible().catch(() => false)));
-  await page.goto(BASE + "/remember", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/remember", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
   check("Ricorda: l'appunto catturato esiste", (await page.getByText("comprare il latte domani").count()) >= 1);
 
   // Cmd+Shift+R apre la scrittura (locale: mic -> editor)
   await page.keyboard.press("Control+Shift+r");
   await page.waitForTimeout(1000);
-  check("Cmd+Shift+R: torna su Oggi in scrittura", page.url().endsWith("/") && (await page.locator(".jm-ed-ta").isVisible()));
+  check("Cmd+Shift+R: torna su Oggi in scrittura", page.url().endsWith("/app") && (await page.locator(".jm-ed-ta").isVisible()));
 
   // Cmd+Shift+F focus on/off
   await page.keyboard.press("Control+Shift+f");
@@ -104,7 +104,7 @@ async function newPage(width, height) {
 /* ============ TELEFONO 430 ============ */
 {
   const { ctx, page, errors } = await newPage(430, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
   await page.keyboard.press("Control+k");
   await page.waitForTimeout(300);

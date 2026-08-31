@@ -40,12 +40,12 @@ async function open({ width = 1440, height = 950, appearance = "light", theme = 
   // che e la sola strada che l'app garantisce. Scrivere a mano in IndexedDB
   // funzionava finche lo schema non cambiava, ed e esattamente il genere di
   // prova che si rompe da sola sei mesi dopo.
-  await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForTimeout(1400);
   await page.locator('input[type="file"]').setInputFiles(FIXTURE);
   await page.waitForTimeout(2600);
 
-  await page.goto(BASE + "/giorno?d=" + DATA, { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/giorno?d=" + DATA, { waitUntil: "networkidle" });
   await page.waitForTimeout(1600);
   return { ctx, page, errors };
 }

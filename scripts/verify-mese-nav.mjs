@@ -33,7 +33,7 @@ async function open(width, height) {
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(1500);
   return { ctx, page, errors };
 }

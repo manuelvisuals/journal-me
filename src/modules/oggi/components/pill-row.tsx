@@ -59,7 +59,7 @@ export function PillRow({
             <button
               type="button"
               className="jm-pill-name link"
-              onClick={() => router.push(`/persona?nome=${encodeURIComponent(nome)}`)}
+              onClick={() => router.push(`/app/persona?nome=${encodeURIComponent(nome)}`)}
             >
               {nome}
             </button>

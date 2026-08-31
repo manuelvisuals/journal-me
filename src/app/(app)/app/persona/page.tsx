@@ -25,7 +25,7 @@ export default function PersonaPage() {
   useEffect(() => {
     const nome = new URLSearchParams(window.location.search).get("nome") ?? "";
     if (!nome.trim()) {
-      router.replace("/");
+      router.replace("/app");
       return;
     }
     let vivo = true;

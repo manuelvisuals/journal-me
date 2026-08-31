@@ -25,7 +25,7 @@ Cosa il pannello NON fa, per contratto (le decisioni sono di Manuel):
 - le scritture passano SOLO dal service role (la tabella non ha policy di
   scrittura): mai dal client Supabase.
 
-- Pagine di `src/app/` di questo modulo: `admin/` (guscio),
+- Pagine di `src/app/` di questo modulo: `(app)/admin/` (guscio),
   `api/admin/aree/` (guscio della rotta).
 - Prefisso CSS: `jm-adm`.
 - Banchi prima del push: `verify-aree` e `verify-i18n` (piu tsc, eslint).

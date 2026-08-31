@@ -73,10 +73,10 @@ async function seed(page) {
 /* ============ DESKTOP 1440 ============ */
 {
   const { ctx, page, errors } = await newPage(1440, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
   await seed(page);
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
   check("griglia visibile", await page.locator(".jm-mese-grid").isVisible());
@@ -108,7 +108,7 @@ async function seed(page) {
   // Click su una giornata piena -> /giorno
   await page.locator(".jm-mese-cell.full", { hasText: "Primo del mese" }).click();
   await page.waitForTimeout(1200);
-  check("click cella -> /giorno", page.url().includes("/giorno?d=" + iso(1)));
+  check("click cella -> /giorno", page.url().includes("/app/giorno?d=" + iso(1)));
 
   // Click su una giornata PASSATA E VUOTA -> la sua schermata, dove
   // "Aggiungi a questa giornata" la fa compilare. Fino al 23 agosto 2026 la
@@ -116,7 +116,7 @@ async function seed(page) {
   // non si poteva piu recuperare, mentre dal feed del telefono si poteva da
   // sempre (day-row.tsx: ogni riga e cliccabile, piena o no).
   if (D > 2) {
-    await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
     await page.waitForTimeout(900);
     const vuota = page.locator(".jm-mese-cell.empty").first();
     const num = Number((await vuota.locator(".jm-mese-cn").innerText()).trim());
@@ -136,11 +136,11 @@ async function seed(page) {
     check("giorno vuoto: stesso highlight dei pieni", hoverVuoto === hoverPieno, `${hoverVuoto} vs ${hoverPieno}`);
     await vuota.click();
     await page.waitForTimeout(1200);
-    check("click giorno vuoto -> /giorno di QUEL giorno", page.url().includes("/giorno?d=" + iso(num)), page.url());
+    check("click giorno vuoto -> /giorno di QUEL giorno", page.url().includes("/app/giorno?d=" + iso(num)), page.url());
   }
 
   // Titolo -> JumpPicker
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
   await page.locator(".jm-mese-t").click();
   await page.waitForTimeout(400);
@@ -150,7 +150,7 @@ async function seed(page) {
   // FilledView desktop: aree a due colonne. Dalla PR 10 in locale le aree
   // non si mostrano piu (vista gratis = prosa): si verifica il CSS su DOM
   // iniettato — la vista premium usa queste stesse classi.
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
   const areaCss = await page.evaluate(() => {
     const d = document.createElement("div");
@@ -178,10 +178,10 @@ async function seed(page) {
 /* ============ TELEFONO 430: feed intatto, stili phone invariati ============ */
 {
   const { ctx, page, errors } = await newPage(430, 900);
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
   await seed(page);
-  await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
   check("phone: griglia nascosta", await page.locator(".jm-mese-wrap").evaluate((el) => getComputedStyle(el).display === "none").catch(() => false));
@@ -189,7 +189,7 @@ async function seed(page) {
   check("phone: header sticky visibile", await page.locator(".jm-month-header").isVisible());
 
   // FilledView phone: valori storici esatti
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
   const h = await page.locator(".jm-fv-h").evaluate((el) => {
     const s = getComputedStyle(el);
@@ -244,7 +244,7 @@ async function seed(page) {
     // L'icona vive nell'intestazione di /mese: i controlli della
     // FilledView qui sopra hanno lasciato la pagina su "/", e senza
     // questo ritorno il blocco cercava l'icona nella pagina sbagliata.
-    await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
     await page.waitForTimeout(800);
     const icona = page.locator(".jm-mese-vista");
     check("phone: c'e l'icona lista/griglia", (await icona.count()) === 1);
@@ -302,17 +302,17 @@ async function seed(page) {
     const primo = page.locator(".jm-mese-mini-c.full").first();
     await primo.click();
     await page.waitForTimeout(300);
-    check("phone: il tocco non porta via", page.url().includes("/mese"), page.url());
+    check("phone: il tocco non porta via", page.url().includes("/app/mese"), page.url());
     const anteprima = page.locator(".jm-mese-mini-prev").first();
     check("phone: il tocco mostra il titolo", await anteprima.isVisible());
 
     // La riga di anteprima apre la giornata.
     await anteprima.click();
     await page.waitForTimeout(1200);
-    check("phone: l'anteprima apre la giornata", page.url().includes("/giorno?d="), page.url());
+    check("phone: l'anteprima apre la giornata", page.url().includes("/app/giorno?d="), page.url());
 
     // La scelta si ricorda.
-    await page.goto(BASE + "/mese", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
     await page.waitForTimeout(900);
     check(
       "phone: la griglia si ricorda dopo un giro",

@@ -94,7 +94,7 @@ const SIDE_TABS_LEFT: Tab[] = [
   {
     key: "today",
     label: "Oggi",
-    href: "/",
+    href: "/app",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -113,7 +113,7 @@ const SIDE_TABS_LEFT: Tab[] = [
   {
     key: "month",
     label: "Mese",
-    href: "/mese",
+    href: "/app/mese",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -139,7 +139,7 @@ const SIDE_TABS_RIGHT: Tab[] = [
   {
     key: "remember",
     label: "Ricorda",
-    href: "/remember",
+    href: "/app/remember",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -319,7 +319,7 @@ export function TabBar({ active }: Props) {
 
           {/* Mic centrale — premium iOS-like, sempre disponibile */}
           <Link
-            href="/?record=1"
+            href="/app?record=1"
             aria-label={t("Registra")}
             className="jm-dock-mic"
           >

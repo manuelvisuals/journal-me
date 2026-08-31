@@ -112,7 +112,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
 
   const locale = mode === "local";
   const native = isNative();
-  const suSettings = pathname.startsWith("/settings");
+  const suSettings = pathname.startsWith("/app/settings");
   const nome = useNomeMostrato(account?.email, t("ospite"));
   const mostrato = locale ? t("Questo dispositivo") : nome;
   // L'iniziale segue il NOME mostrato, non l'email: chi si chiama Manuel
@@ -163,7 +163,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
 
   const vaiImpostazioni = () => {
     chiudi(false);
-    router.push("/settings");
+    router.push("/app/settings");
   };
   const vaiPremium = () => {
     chiudi(false);
@@ -259,7 +259,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
                         e.stopPropagation();
                         chiudi(false);
                         apriPannelloNome();
-                        router.push("/settings");
+                        router.push("/app/settings");
                       }}
                     >
                       <svg viewBox="0 0 24 24" aria-hidden="true">

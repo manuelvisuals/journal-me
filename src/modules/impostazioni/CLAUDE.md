@@ -9,7 +9,7 @@ altri moduli possono importare (il lint dei confini e a ERRORE).
 
 Impostazioni a pannelli (obiettivi, lingua, tema, dimensione testo, dati,
 account, moduli utente), la rail destra su desktop e la schermata Consumi AI
-con la barra della quota. Pagina: `src/app/settings/`.
+con la barra della quota. Pagina: `src/app/(app)/app/settings/`.
 
 - Prefissi CSS (misurati): `jm-st`, `jm-usage`, `jm-cs`, `jm-sw`, `jm-theme`,
   `jm-backup`, `jm-lang`, `jm-foto`.

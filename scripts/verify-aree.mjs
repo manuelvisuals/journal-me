@@ -90,7 +90,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
   // browser: e l'unico modo di provare il disegno senza chiamare l'AI.
   // Le aree arrivano in ordine sparso e con Corpo DUE volte, cioe i due
   // casi che prima rompevano la pagina.
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(async () => {
     const req = // senza numero di versione: apre quella che c'e. Fissarla a 1 rompeva
   // il test il giorno in cui il database e passato alla 2 (i fatti).
@@ -123,7 +123,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
     db.close();
   });
 
-  await page.goto(BASE + "/giorno?d=2026-08-16", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/giorno?d=2026-08-16", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-area", { timeout: 20000 });
   await page.waitForTimeout(500);
 
@@ -185,7 +185,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
     } catch {}
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(async () => {
     const req = // senza numero di versione: apre quella che c'e. Fissarla a 1 rompeva
   // il test il giorno in cui il database e passato alla 2 (i fatti).
@@ -214,7 +214,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
     await new Promise((res) => { tx.oncomplete = res; });
     db.close();
   });
-  await page.goto(BASE + "/giorno?d=2026-08-15", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/giorno?d=2026-08-15", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-area", { timeout: 20000 });
   await page.waitForTimeout(500);
   const en = (await page.locator(".jm-fv-area .l").allInnerTexts()).map((e) =>

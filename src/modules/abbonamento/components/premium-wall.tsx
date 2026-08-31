@@ -143,7 +143,7 @@ export function PremiumWall() {
     if (fakeCheckoutEnabled()) {
       closePremiumWall();
       setCloudNote(false);
-      router.push("/checkout-finto");
+      router.push("/app/checkout-finto");
       return;
     }
     // Cloud: si apre Stripe Checkout (PR 11). Se Stripe non e ancora

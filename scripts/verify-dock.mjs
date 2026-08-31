@@ -80,7 +80,7 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
 /* ============ 1. sospesa, e con i bersagli giusti ============ */
 {
   const { ctx, page, errors } = await contesto();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-dock", { timeout: 20000 });
   await page.waitForTimeout(500);
 
@@ -147,7 +147,7 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
 /* ============ 2. la bolla: misurata, non calcolata ============ */
 {
   const { ctx, page, errors } = await contesto();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-dock-bolla", { timeout: 20000 });
   await page.waitForTimeout(700);
 
@@ -192,7 +192,7 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
   const { ctx, page, errors } = await contesto();
   /* Impostazioni e non Mese: il Mese e una lista senza fine (scendendo
      nascono altri mesi), e "arrivare in fondo" li non vuol dire niente. */
-  await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-dock", { timeout: 20000 });
   await page.waitForTimeout(600);
 
@@ -270,7 +270,7 @@ async function contesto({ tema = "minimal", aspetto = "light" } = {}) {
 for (const tema of TEMI) {
   for (const aspetto of ["light", "dark"]) {
     const { ctx, page, errors } = await contesto({ tema, aspetto });
-    await page.goto(BASE + "/", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/app", { waitUntil: "networkidle" });
     await page.waitForSelector(".jm-dock", { timeout: 20000 });
     await page.waitForTimeout(400);
     const stato = await page.evaluate(() => {

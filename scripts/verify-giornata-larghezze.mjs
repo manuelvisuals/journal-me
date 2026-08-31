@@ -21,11 +21,11 @@ for (const w of [1280, 1440, 1728, 1920]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: 1000 }, locale: "it-IT" });
   await ctx.addInitScript(() => { try { localStorage.setItem("jm.mode", "local"); } catch {} });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/settings", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForTimeout(1400);
   await page.locator('input[type="file"]').setInputFiles(FIXTURE);
   await page.waitForTimeout(2400);
-  await page.goto(BASE + "/giorno?d=2026-03-14", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app/giorno?d=2026-03-14", { waitUntil: "networkidle" });
   await page.waitForTimeout(1600);
 
   const sn = await page.locator(".jm-fv-sn").boundingBox();

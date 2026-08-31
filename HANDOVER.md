@@ -188,19 +188,32 @@ sul telefono si raggiunge dalla card editoriale in cima a Impostazioni.
 
 ### Route
 
+DAL 31 AGOSTO 2026 L'APP STA SOTTO `/app`. La radice `/` e il sito
+pubblico (vedi §14). Le pagine dell'app vivono nel gruppo di rotte
+`src/app/(app)/` — le parentesi non entrano nell'indirizzo — e il guscio
+(splash, lucchetto, cancello, rail) e sceso li dentro, in
+`src/app/(app)/layout.tsx`: il layout di radice ora e solo html, body,
+font e tema, cioe cio che serve anche a una pagina di vendita.
+
 ```
-/                    Today (empty / recording / review / processing / people /
+/app                 Today (empty / recording / review / processing / people /
                      filled / manual / no-capture — macchina a stati in today-client)
-/giorno?d=YYYY-MM-DD Dettaglio giorno, riusa FilledView con tutti i controlli
+/app/giorno?d=YYYY-MM-DD  Dettaglio giorno, riusa FilledView con tutti i controlli
                      (era /giorno/[date]: un segmento dinamico non si
                      prerenderizza nell'export statico del guscio iOS)
-/mese                Feed infinito newest-first, sticky month header, jump picker
-/recap               Segmented Mensili/Semestrali/Annuali + detail con dropcap
-/remember            Filtri a chip, raggruppamento per fascia temporale, quick-capture
-/settings            "Impostazioni": elenco a gruppi + pannelli (obiettivi, tema, lingua, dati)
-/benvenuto           La scelta locale/cloud al primo avvio (PR 5)
+/app/mese            Feed infinito newest-first, sticky month header, jump picker
+/app/recap           Segmented Mensili/Semestrali/Annuali + detail con dropcap
+/app/remember        Filtri a chip, raggruppamento per fascia temporale, quick-capture
+/app/settings        "Impostazioni": elenco a gruppi + pannelli (obiettivi, tema, lingua, dati)
+/app/benvenuto       La scelta locale/cloud al primo avvio (PR 5)
+/app/persona         La scheda di una persona citata nelle giornate
+/app/palestra        Il modulo Palestra (acceso da Impostazioni)
+/app/checkout-finto  Il pagamento simulato dell'ambiente di prova
 /login               Codice a 6 cifre via email (niente piu magic link)
 /auth/callback       Scambio code -> sessione (PKCE)
+/privacy             La privacy policy (pubblica: nessuna sessione richiesta)
+/admin               Il pannello delle impostazioni globali (solo master)
+/                    Il sito pubblico, e /support la sua pagina di assistenza (§14)
 ```
 
 ### API (tutte server-side, la chiave OpenAI non tocca mai il browser)

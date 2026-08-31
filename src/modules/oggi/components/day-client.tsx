@@ -134,7 +134,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
         return;
       }
       if (iso === todayISO()) {
-        router.push("/");
+        router.push("/app");
         return;
       }
       const mio = ++richiesta.current;
@@ -147,7 +147,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
          replaceState e non push: il tasto indietro deve riportarti da dove
          sei arrivato (Mese, o Oggi), non farti risalire un giorno per volta. */
       if (typeof window !== "undefined") {
-        window.history.replaceState(null, "", `/giorno?d=${iso}`);
+        window.history.replaceState(null, "", `/app/giorno?d=${iso}`);
       }
       if (cache.current.has(iso)) {
         setEntry(cache.current.get(iso) ?? null);
@@ -273,7 +273,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
     try {
       await deleteEntry(mode, date);
       toast.ok(t("Giornata eliminata"));
-      router.push("/mese");
+      router.push("/app/mese");
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("Errore");
       setSaveError(msg);
@@ -309,7 +309,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
         <div className="jm-day-head-riga">
         <button
           type="button"
-          onClick={() => router.push("/mese")}
+          onClick={() => router.push("/app/mese")}
           aria-label={t("Indietro")}
           className="jm-day-back"
         >

@@ -26,7 +26,7 @@ type NavKey = "today" | "mese" | "ricorda" | "recap";
 const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNode }[] = [
   {
     key: "today",
-    href: "/",
+    href: "/app",
     label: "Oggi",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -37,7 +37,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   },
   {
     key: "mese",
-    href: "/mese",
+    href: "/app/mese",
     label: "Mese",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -48,7 +48,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   },
   {
     key: "ricorda",
-    href: "/remember",
+    href: "/app/remember",
     label: "Ricorda",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -58,7 +58,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   },
   {
     key: "recap",
-    href: "/recap",
+    href: "/app/recap",
     label: "Recap",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -70,10 +70,10 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
 ];
 
 function activeKeyFor(pathname: string): NavKey | null {
-  if (pathname === "/" || pathname.startsWith("/giorno")) return "today";
-  if (pathname.startsWith("/mese")) return "mese";
-  if (pathname.startsWith("/remember")) return "ricorda";
-  if (pathname.startsWith("/recap")) return "recap";
+  if (pathname === "/app" || pathname.startsWith("/app/giorno")) return "today";
+  if (pathname.startsWith("/app/mese")) return "mese";
+  if (pathname.startsWith("/app/remember")) return "ricorda";
+  if (pathname.startsWith("/app/recap")) return "recap";
   return null;
 }
 
@@ -125,7 +125,7 @@ export function RailLeft() {
           l'azione, e sta separato. Qui vale lo stesso, e per questo la
           riga divisoria che c'era prima non serve piu: a dividere sono il
           bordo del vassoio e il pieno del tasto. */}
-      <Link href="/?record=1" className="jm-rail-i rec">
+      <Link href="/app?record=1" className="jm-rail-i rec">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <rect x="9" y="3" width="6" height="11" rx="3" />
           <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />

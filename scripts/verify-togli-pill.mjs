@@ -60,9 +60,9 @@ async function apri(larghezza = 430) {
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(`(async () => { ${SEED} })()`);
-  await page.goto(`${BASE}/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
   // Le pastiglie esistono in DUE posti — la colonna del telefono e la rail
   // del desktop — e quella dell'altra larghezza resta nel DOM, solo spenta.
   // Tutti i controlli guardano SOLO quelle visibili, se no contano il doppio.

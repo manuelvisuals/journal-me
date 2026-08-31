@@ -39,7 +39,7 @@ async function open(url, { width = 1440, height = 900, appearance = "light", the
 
 /* Il file esiste e viene servito. */
 {
-  const { ctx, page } = await open("/mese");
+  const { ctx, page } = await open("/app/mese");
   const resp = await page.request.get(BASE + "/logo.png");
   check("public/logo.png viene servito", resp.status() === 200, `HTTP ${resp.status()}`);
   const len = Number(resp.headers()["content-length"] ?? 0);
@@ -49,7 +49,7 @@ async function open(url, { width = 1440, height = 900, appearance = "light", the
 
 /* C'e in ogni schermata dove compare la scritta, e punta sempre allo stesso file. */
 for (const [dove, url, opts] of [
-  ["rail desktop", "/mese", {}],
+  ["rail desktop", "/app/mese", {}],
   ["login", "/login", { width: 430, height: 800 }],
 ]) {
   const { ctx, page, errors } = await open(url, opts);
@@ -67,7 +67,7 @@ for (const [dove, url, opts] of [
 
 /* Nella rail sta PRIMA della scritta e non la sfonda. */
 {
-  const { ctx, page } = await open("/mese");
+  const { ctx, page } = await open("/app/mese");
   const box = await page.locator(".jm-rail-brand img.jm-logo").boundingBox();
   const brand = await page.locator(".jm-rail-brand").boundingBox();
   check("rail: il segno e dentro il blocco del marchio", box.x >= brand.x - 1 && box.y >= brand.y - 1, JSON.stringify(box));
@@ -84,10 +84,10 @@ for (const [dove, url, opts] of [
 
 /* La misura e in em: cambiando "Dimensione del testo" il segno cresce. */
 {
-  const a = await open("/mese", { scale: 1 });
+  const a = await open("/app/mese", { scale: 1 });
   const h1 = (await a.page.locator(".jm-rail-brand img.jm-logo").boundingBox()).height;
   await a.ctx.close();
-  const b2 = await open("/mese", { scale: 1.5 });
+  const b2 = await open("/app/mese", { scale: 1.5 });
   const h2 = (await b2.page.locator(".jm-rail-brand img.jm-logo").boundingBox()).height;
   await b2.ctx.close();
   check(
@@ -99,7 +99,7 @@ for (const [dove, url, opts] of [
 
 /* Temi scuri: il segno viene schiarito, e resta un file solo. */
 {
-  const { ctx, page } = await open("/mese", { appearance: "dark" });
+  const { ctx, page } = await open("/app/mese", { appearance: "dark" });
   const mode = await page.evaluate(() => document.documentElement.getAttribute("data-mode"));
   const f = await page.locator(".jm-rail-brand img.jm-logo").evaluate((el) => getComputedStyle(el).filter);
   check("scuro: il tema e davvero scuro", mode === "dark", String(mode));
@@ -109,7 +109,7 @@ for (const [dove, url, opts] of [
   await ctx.close();
 }
 {
-  const { ctx, page } = await open("/mese", { appearance: "light" });
+  const { ctx, page } = await open("/app/mese", { appearance: "light" });
   const f = await page.locator(".jm-rail-brand img.jm-logo").evaluate((el) => getComputedStyle(el).filter);
   check("chiaro: nessun filtro, il colore e quello del file", f === "none", f);
   await ctx.close();

@@ -51,15 +51,15 @@ if (MODE !== "base" && MODE !== "check") {
 
 /** Le schermate fotografate. via = path, poi si aspetta rete ferma + 900ms. */
 const PAGES = [
-  "/",
-  "/giorno?d=2026-08-15",
-  "/mese",
-  "/remember",
-  "/recap",
-  "/settings",
-  "/benvenuto",
+  "/app",
+  "/app/giorno?d=2026-08-15",
+  "/app/mese",
+  "/app/remember",
+  "/app/recap",
+  "/app/settings",
+  "/app/benvenuto",
   "/login",
-  "/palestra",
+  "/app/palestra",
 ];
 
 const VIEWPORTS = [

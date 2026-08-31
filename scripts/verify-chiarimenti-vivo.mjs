@@ -105,7 +105,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
       body: JSON.stringify(conDomande ? DOMANDE : { domande: [] }),
     });
   });
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(`(async () => { ${SEED} })()`);
   return { ctx, page, errors };
 }
@@ -118,7 +118,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
   // e un errore rosso in console che non riguardava nessuno.
   let bussate = 0;
   const { ctx, page, errors } = await apri({ conta: () => (bussate += 1) });
-  await page.goto(`${BASE}/giorno?d=${OGGI}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${OGGI}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-h", { timeout: 20000 });
 
   await page.locator(".jm-day-add").click();
@@ -146,7 +146,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
     try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco"); } catch {}
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(`(async () => { ${SEED} })()`);
   // Il soprannome chiarito nel giro 1 e in un altro contesto: qui lo si
   // scrive a mano, perche cio che si prova e la LETTURA, non la scrittura.
@@ -165,7 +165,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
     db.close();
   })()`);
 
-  await page.goto(`${BASE}/giorno?d=${VECCHIA}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${VECCHIA}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-h", { timeout: 20000 });
   await page.waitForTimeout(700);
   await page.waitForSelector(".jm-pill-row", { timeout: 20000 });
@@ -190,7 +190,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
     }),
   );
 
-  await page.goto(`${BASE}/giorno?d=${OGGI}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${OGGI}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-h", { timeout: 20000 });
   await page.waitForTimeout(700);
   const social = await page.locator(".jm-pill-row").first().innerText();
@@ -228,7 +228,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
     try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco"); } catch {}
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(`(async () => { ${SEED} })()`);
 
   const scrivi = async () => page.evaluate(`(async () => {

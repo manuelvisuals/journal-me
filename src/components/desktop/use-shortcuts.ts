@@ -63,7 +63,7 @@ export function useShortcuts(): void {
       if (
         pathname.startsWith("/login") ||
         pathname.startsWith("/auth") ||
-        pathname.startsWith("/benvenuto")
+        pathname.startsWith("/app/benvenuto")
       ) {
         return;
       }
@@ -74,13 +74,13 @@ export function useShortcuts(): void {
 
       if (e.shiftKey && key === "f") {
         e.preventDefault();
-        if (pathname === "/") toggleFocusMode();
+        if (pathname === "/app") toggleFocusMode();
         return;
       }
       if (e.shiftKey && key === "r") {
         e.preventDefault();
         closePalette();
-        router.push("/?record=1");
+        router.push("/app?record=1");
         return;
       }
       if (!e.shiftKey && key === "k") {

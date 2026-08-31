@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
-    const next = params.get("next") ?? "/";
+    const next = params.get("next") ?? "/app";
 
     if (!code) {
       router.replace("/login?error=auth_failed");

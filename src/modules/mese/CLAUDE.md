@@ -8,7 +8,7 @@ CSS, `en.ts` le traduzioni, `index.ts` la PORTA — l'unica cosa che gli
 altri moduli possono importare (il lint dei confini e a ERRORE).
 
 La vista mensile: griglia dei giorni, navigazione fra mesi, rail delle
-statistiche, teaser dei pattern (premium). Pagina: `src/app/mese/`.
+statistiche, teaser dei pattern (premium). Pagina: `src/app/(app)/app/mese/`.
 
 Sul telefono la vista ha DUE forme: la lista (`month-section` +
 `day-row`, quella di sempre) e la griglia compatta (`mese-mini`, un

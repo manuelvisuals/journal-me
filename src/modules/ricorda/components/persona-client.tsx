@@ -104,7 +104,7 @@ export function PersonaClient({ card, nome }: Props) {
                   key={d.date}
                   type="button"
                   className="jm-pers-day"
-                  onClick={() => router.push(`/giorno?d=${d.date}`)}
+                  onClick={() => router.push(`/app/giorno?d=${d.date}`)}
                 >
                   <span className="d">
                     {compactDayDate(parseISODate(d.date))}

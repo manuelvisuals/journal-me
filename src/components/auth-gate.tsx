@@ -11,7 +11,14 @@ function isPublicPath(pathname: string): boolean {
   return (
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/benvenuto")
+    pathname.startsWith("/app/benvenuto") ||
+    // Le pagine legali sono pubbliche per definizione: il sito le linka in
+    // fondo e App Store Connect pretende un indirizzo che si apra senza
+    // account. Prima non erano in questo elenco e chi arrivava su /privacy
+    // senza sessione veniva rimbalzato al login, cioe la pagina piu
+    // pubblica dell'app era l'unica che chiedeva le chiavi.
+    pathname.startsWith("/privacy") ||
+    pathname.startsWith("/termini")
   );
 }
 
@@ -94,7 +101,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       // In modalita locale /login deve restare raggiungibile: e la strada
       // del "prova premium" (muro, PR 10) — rimbalzarlo a / era un vicolo
       // cieco. La migrazione locale->cloud vera e propria arriva con §7.2.
-      router.replace("/");
+      router.replace("/app");
     }
   }, [settledOut, auth, publicPath, pathname, router]);
 

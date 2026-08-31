@@ -10,7 +10,7 @@ altri moduli possono importare (il lint dei confini e a ERRORE).
 Il muro premium, la schermata di benvenuto premium e il checkout finto
 dell'ambiente di prova. Le route Stripe (`src/app/api/stripe/`) e il prezzo
 (`src/lib/pricing.ts`) sono scheletro: si toccano d'accordo con Manuel.
-Pagina: `src/app/checkout-finto/`.
+Pagina: `src/app/(app)/app/checkout-finto/`.
 
 - Prefissi CSS (misurati): `jm-wall`, `jm-ck`, `jm-cong`.
 - La porta esporta openPremiumWall/closePremiumWall/PremiumWall/WallFeature

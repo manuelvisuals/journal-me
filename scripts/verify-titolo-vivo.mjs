@@ -70,7 +70,7 @@ async function contesto(width) {
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
   // Prima visita a vuoto: serve solo ad avere un'origine su cui scrivere.
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.evaluate(`(async () => { ${SEED} })()`);
   return { ctx, page, errors };
 }
@@ -78,7 +78,7 @@ async function contesto(width) {
 /* =============== 1. il titolo si riscrive e resta ================= */
 {
   const { ctx, page, errors } = await contesto(430);
-  await page.goto(`${BASE}/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-h", { timeout: 20000 });
 
   const prima = (await page.locator(".jm-fv-h").first().innerText()).trim();
@@ -151,7 +151,7 @@ async function contesto(width) {
 /* =============== 2. annullare con Esc non blocca niente ============ */
 {
   const { ctx, page } = await contesto(430);
-  await page.goto(`${BASE}/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-htap", { timeout: 20000 });
   await page.locator(".jm-fv-htap").first().click();
   await page.waitForSelector(".jm-fv-hedit", { timeout: 5000 });
@@ -177,7 +177,7 @@ for (const [nome, larghezza] of [
   ["desktop", 1440],
 ]) {
   const { ctx, page } = await contesto(larghezza);
-  await page.goto(`${BASE}/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/app/giorno?d=${GIORNO}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".jm-fv-h", { timeout: 20000 });
   await page.waitForTimeout(900);
 
