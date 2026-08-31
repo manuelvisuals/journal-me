@@ -90,7 +90,7 @@ export function AdminClient() {
   return (
     <div className="jm-adm">
       <aside className="jm-adm-rail">
-        <div className="jm-adm-brand">
+        <div className="jm-adm-brand jm-marchio">
           dayalogue<i>.</i>
         </div>
         <div className="jm-adm-brand-sub">{t("Admin")}</div>

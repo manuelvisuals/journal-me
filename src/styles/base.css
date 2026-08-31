@@ -7,6 +7,20 @@
    e quello che avevano in globals.css: non riordinare.
    ============================================================= */
 
+/* IL CARATTERE DEL MARCHIO (31 agosto 2026).
+   Non e un token del tema: i sette caratteri dei temi cambiano quando
+   cambi tema, questo no — il nome del prodotto si scrive sempre uguale,
+   come un logo, e per questo sta qui e non in themes/contract.ts.
+   Dichiarato in layout.tsx (next/font/local su
+   src/fonts/sacramento-latin-400-normal.woff2; la licenza OFL viaggia
+   accanto al file, come l'OFL richiede).
+   La riserva non e a caso: Snell Roundhand esiste su Mac e iPhone, quindi
+   nell'istante prima che il file arrivi la parola e gia corsiva invece di
+   essere un blocco di grottesco che poi salta. */
+:root {
+  --jm-font-marchio: var(--font-sacramento), "Snell Roundhand", "Segoe Script", cursive;
+}
+
 html,
 body {
   background: var(--color-bg);

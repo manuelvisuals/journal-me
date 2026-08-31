@@ -349,7 +349,7 @@ export function SalutoAvvio() {
           {testi.occhiello.trim() !== "" && (
             <div className="jm-benv-sal-occhiello">{testi.occhiello}</div>
           )}
-          <div className="jm-benv-sal-marchio">
+          <div className="jm-benv-sal-marchio jm-marchio">
             <BrandMark />
             dayalogue
           </div>

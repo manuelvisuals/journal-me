@@ -201,7 +201,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10">
       <div className="w-full max-w-sm">
         <p
-          className="text-center text-[calc(22px*var(--jm-ui-scale))] font-semibold mb-16 tracking-tight"
+          className="jm-marchio text-center text-[calc(22px*var(--jm-ui-scale))] font-semibold mb-16 tracking-tight"
           style={{ letterSpacing: "-0.01em" }}
         >
           <BrandMark />

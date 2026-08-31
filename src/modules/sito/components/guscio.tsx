@@ -29,7 +29,7 @@ export function NavSito({
   return (
     <header className="jm-sito-nav">
       <div className="jm-sito-nav-in">
-        <Link href={`${p}/`} className="jm-sito-marchio">
+        <Link href={`${p}/`} className="jm-sito-marchio jm-marchio">
           dayalogue
         </Link>
         {ancore ? (
@@ -72,7 +72,7 @@ export function PiedeSito({ lingua }: { lingua: LinguaSito }) {
     <footer className="jm-sito-piede">
       <div className="jm-sito-piede-in">
         <div>
-          <p className="jm-sito-marchio">dayalogue</p>
+          <p className="jm-sito-marchio jm-marchio">dayalogue</p>
           <p className="nota">
             {t.piede.riga}
             <br />

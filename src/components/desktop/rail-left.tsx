@@ -86,7 +86,7 @@ export function RailLeft() {
 
   return (
     <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
-      <div className="jm-rail-brand">
+      <div className="jm-rail-brand jm-marchio">
         <BrandMark />
         <span>day</span>alogue
       </div>
