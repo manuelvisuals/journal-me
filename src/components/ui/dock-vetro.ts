@@ -3,42 +3,57 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { registerPlugin } from "@capacitor/core";
 import { isNative } from "@/lib/native/platform";
-import { useResolvedMode } from "@/themes/runtime";
+import { useResolvedMode, useThemeId } from "@/themes/runtime";
 
 /**
- * IL VETRO VERO DEL DOCK — la meta web (31 agosto 2026, giro 1).
+ * IL VETRO VERO DEL DOCK — la meta web (31 agosto 2026; giro 2 il
+ * 1 settembre, dopo la prova sul telefono di Manuel).
  *
  * Dentro il guscio iOS 26 la pillola del dock non si sfoca da sola: una
  * lastra di vetro NATIVO (ios/App/App/DockVetro.swift) si appoggia sopra
  * la WebView esattamente dove sta la pillola, e rifrange davvero cio che
- * le passa dietro. Questo file e la meta web dell'accordo:
+ * le passa dietro.
  *
- *   - misura la pillola e dice alla lastra dove stare (`sincronizza`),
- *     rimisurando a ogni resize e a ogni cambio chiaro/scuro;
- *   - quando qualcosa COPRE il dock (un foglio, la registrazione, un velo
- *     scuro) spegne la lastra: il vetro nativo vive SOPRA la pagina, e
- *     senza questo un foglio aperto se lo troverebbe acceso in faccia;
- *   - risponde con `attivo`: finche e true, tab-bar.tsx mette la classe
- *     `jm-dock-nativo` e il velo finto (blur web) si spegne. Quando la
- *     lastra non c'e — web, iOS vecchio, dock coperto — l'imitazione
- *     torna da sola e il dock e identico a prima di questo file.
+ * LEZIONE DEL GIRO 1, pagata sul telefono: il vetro sta SOPRA la pagina,
+ * quindi rifrange anche le icone del dock, che sulla pagina vivono —
+ * uscivano sdoppiate e specchiate, "dietro il vetro" (parole di Manuel).
+ * Da qui il giro 2: il web FOTOGRAFA il contenuto del dock (icone,
+ * scritte, microfono) in un'immagine trasparente e la manda al nativo,
+ * che la posa SOPRA la lastra; la bolla diventa una LENTE di vetro
+ * nativa che viaggia sul tasto acceso. I tasti web restano dove sono,
+ * invisibili ma toccabili: navigazione, bersagli 44x44 e contratto del
+ * dock non si spostano di un millimetro.
  *
- * Il contratto del dock (voci, ordine, microfono, bersagli, bolla) NON
- * passa di qui: resta tutto in tab-bar.tsx. La lastra non intercetta
- * tocchi; qui si parla solo di geometria e di luce.
+ * Quando la lastra non c'e — web, iOS vecchio, dock coperto da un
+ * foglio, binario senza plugin — la classe `jm-dock-nativo` cade e il
+ * dock ridiventa esattamente quello di sempre, imitazione compresa.
  */
 
 type Modo = "light" | "dark";
 
+type Rettangolo = {
+  x: number;
+  y: number;
+  larghezza: number;
+  altezza: number;
+};
+
 export type VetroDock = {
   disponibile(): Promise<{ vetro: boolean }>;
-  sincronizza(opts: {
-    x: number;
-    y: number;
-    larghezza: number;
-    altezza: number;
-    modo: Modo;
-  }): Promise<void>;
+  sincronizza(
+    opts: Rettangolo & {
+      modo: Modo;
+      /** Dove posare la lente (il tasto acceso), o null: niente lente. */
+      lente?: Rettangolo | null;
+      /** La lente viaggia animata? (false con prefers-reduced-motion) */
+      animato?: boolean;
+      /** PNG trasparente del contenuto del dock, base64 senza prefisso.
+       *  Assente = il nativo tiene l'immagine che ha gia. */
+      immagine?: string;
+      /** devicePixelRatio dell'immagine, per riportarla in punti. */
+      scala?: number;
+    },
+  ): Promise<void>;
   nascondi(): Promise<void>;
 };
 
@@ -65,7 +80,8 @@ function pluginVetro(): VetroDock | null {
 
 /** I tre punti di controllo: dentro il primo tasto, sul microfono, dentro
  *  l'ultimo tasto. Se in uno di questi il primo elemento toccabile NON
- *  appartiene al dock, qualcosa lo sta coprendo. */
+ *  appartiene al dock, qualcosa lo sta coprendo. (I tasti a opacita zero
+ *  restano toccabili, quindi restano visibili a elementFromPoint.) */
 function dockCoperto(pillola: HTMLElement): boolean {
   const r = pillola.getBoundingClientRect();
   const y = r.top + r.height / 2;
@@ -81,22 +97,154 @@ function dockCoperto(pillola: HTMLElement): boolean {
   return false;
 }
 
+function rettangolo(el: Element): Rettangolo {
+  const r = el.getBoundingClientRect();
+  return { x: r.left, y: r.top, larghezza: r.width, altezza: r.height };
+}
+
+/* ============================================================
+   LA FOTOGRAFIA DEL DOCK. Icone, scritte e microfono, ridisegnati su un
+   canvas trasparente alle stesse coordinate che hanno nella pillola, coi
+   colori CALCOLATI (quindi giusti per tema e chiaro/scuro, senza sapere
+   niente dei temi). E cio che il nativo posa sopra il vetro.
+   ============================================================ */
+
+function svgInImmagine(svg: SVGElement, colore: string): Promise<HTMLImageElement> {
+  const clone = svg.cloneNode(true) as SVGElement;
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  /* `currentColor` dentro un blob non eredita niente: il colore calcolato
+     va inchiodato sulla radice. */
+  clone.setAttribute("color", colore);
+  const xml = new XMLSerializer().serializeToString(clone);
+  const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("icona non rasterizzabile"));
+    };
+    img.src = url;
+  });
+}
+
+async function fotografaDock(
+  pillola: HTMLElement,
+): Promise<{ png: string; scala: number } | null> {
+  const rp = pillola.getBoundingClientRect();
+  if (rp.width === 0) return null;
+  /* I font del tema devono esserci, o la prima foto esce col font di
+     sistema e la seconda no: uno sfarfallio da un'app diversa. */
+  await document.fonts.ready;
+  const scala = Math.min(window.devicePixelRatio || 1, 3);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(rp.width * scala));
+  canvas.height = Math.max(1, Math.round(rp.height * scala));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.scale(scala, scala);
+
+  const dentro = (el: Element): Rettangolo => {
+    const r = el.getBoundingClientRect();
+    return {
+      x: r.left - rp.left,
+      y: r.top - rp.top,
+      larghezza: r.width,
+      altezza: r.height,
+    };
+  };
+
+  /* I tasti: icona sopra, parola sotto, ognuno alle SUE coordinate. */
+  for (const tasto of pillola.querySelectorAll<HTMLElement>(".jm-dock-t")) {
+    const stile = getComputedStyle(tasto);
+    const icona = tasto.querySelector<SVGElement>(".jm-dock-i svg");
+    if (icona) {
+      const ri = dentro(icona);
+      try {
+        const img = await svgInImmagine(icona, stile.color);
+        ctx.drawImage(img, ri.x, ri.y, ri.larghezza, ri.altezza);
+      } catch {
+        /* Un'icona in meno e meglio di niente foto. */
+      }
+    }
+    const parola = tasto.querySelector<HTMLElement>(".jm-dock-l");
+    if (parola) {
+      const rl = dentro(parola);
+      const sp = getComputedStyle(parola);
+      ctx.font = `${sp.fontWeight} ${sp.fontSize} ${sp.fontFamily}`;
+      ctx.fillStyle = sp.color;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      if ("letterSpacing" in ctx) {
+        (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing =
+          sp.letterSpacing === "normal" ? "0px" : sp.letterSpacing;
+      }
+      ctx.fillText(
+        (parola.textContent ?? "").toUpperCase(),
+        rl.x + rl.larghezza / 2,
+        rl.y + rl.altezza / 2 + 0.5,
+      );
+    }
+  }
+
+  /* Il microfono: cerchio pieno d'accento, icona sopra. Un elemento a
+     misura zero (uno scheletro a meta montaggio) non si disegna: un arco
+     di raggio negativo e un'eccezione, e un'eccezione qui ammazzava
+     l'intero giro di sincronizzazione (successo al primo banco). */
+  const mic = pillola.querySelector<HTMLElement>(".jm-dock-mic");
+  if (mic && mic.getBoundingClientRect().width > 2) {
+    const rm = dentro(mic);
+    const sm = getComputedStyle(mic);
+    const cx = rm.x + rm.larghezza / 2;
+    const cy = rm.y + rm.altezza / 2;
+    const raggio = Math.min(rm.larghezza, rm.altezza) / 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, raggio - 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = sm.backgroundColor;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = sm.borderTopColor;
+    ctx.stroke();
+    const iconaMic = mic.querySelector<SVGElement>("svg");
+    if (iconaMic) {
+      const ri = dentro(iconaMic);
+      try {
+        const img = await svgInImmagine(iconaMic, sm.color);
+        ctx.drawImage(img, ri.x, ri.y, ri.larghezza, ri.altezza);
+      } catch {
+        /* come sopra */
+      }
+    }
+  }
+
+  const dataUrl = canvas.toDataURL("image/png");
+  return { png: dataUrl.slice("data:image/png;base64,".length), scala };
+}
+
 /**
- * Da montare nel dock, col ref della pillola. Ritorna true finche la
- * lastra nativa e accesa (= il velo web va spento).
+ * Da montare nel dock, col ref della pillola. `firma` e cio che, cambiando,
+ * impone una nuova fotografia: il tasto acceso e il numero di voci
+ * (`${active}:${n}` da tab-bar.tsx); tema e chiaro/scuro li vede da solo.
+ * Ritorna true finche la lastra nativa e accesa (= il velo web va spento).
  */
 export function useVetroNativo(
   pillola: RefObject<HTMLDivElement | null>,
+  firma: string,
 ): boolean {
   const [attivo, setAttivo] = useState(false);
   const modo = useResolvedMode();
-  /* Il modo vive anche in un ref: i listener di resize/mutazione sono
-     montati una volta e non devono inseguire il valore. (Aggiornato in un
-     effetto, non durante il render: regola react-hooks/refs.) */
-  const modoRef = useRef<Modo>(modo);
+  const tema = useThemeId();
+  /* Stato vivo per i listener montati una volta (aggiornato in un
+     effetto, non durante il render: regola react-hooks/refs). */
+  const statoRef = useRef({ modo, tema, firma });
   useEffect(() => {
-    modoRef.current = modo;
-  }, [modo]);
+    statoRef.current = { modo, tema, firma };
+  }, [modo, tema, firma]);
+  /* La leva per chiedere un giro dal secondo effetto: la posa il primo. */
+  const richiediRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     const vetro = pluginVetro();
@@ -106,8 +254,14 @@ export function useVetroNativo(
     let pronto = false;
     let acceso = false;
     let inCoda = false;
+    /* La foto si rifa solo quando la sua chiave cambia; per il resto si
+       rimanda solo la geometria, che costa niente. */
+    let chiaveFoto = "";
+    /* Le sincronizzazioni sono async (la foto): un contatore scarta
+       quelle rimaste indietro. */
+    let giro = 0;
 
-    const sincronizza = () => {
+    const sincronizza = async () => {
       const p = pillola.current;
       if (!vivo || !pronto || !p) return;
       if (dockCoperto(p)) {
@@ -120,14 +274,32 @@ export function useVetroNativo(
       }
       const r = p.getBoundingClientRect();
       if (r.width === 0) return;
+      const questo = ++giro;
+      const { modo: m, tema: t, firma: f } = statoRef.current;
+      const chiave = `${f}|${t}|${m}|${Math.round(r.width)}x${Math.round(r.height)}`;
+      let foto: { png: string; scala: number } | null = null;
+      if (chiave !== chiaveFoto) {
+        /* Una foto fallita non deve fermare la geometria: lastra e lente
+           si aggiornano comunque, e la foto si ritenta al giro dopo. */
+        try {
+          foto = await fotografaDock(p);
+        } catch {
+          foto = null;
+        }
+        if (!vivo || questo !== giro) return;
+        if (foto) chiaveFoto = chiave;
+      }
+      const tastoAcceso = p.querySelector(".jm-dock-t.on");
+      const riduci =
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
       acceso = true;
       setAttivo(true);
       void vetro.sincronizza({
-        x: r.left,
-        y: r.top,
-        larghezza: r.width,
-        altezza: r.height,
-        modo: modoRef.current,
+        ...rettangolo(p),
+        modo: m,
+        lente: tastoAcceso ? rettangolo(tastoAcceso) : null,
+        animato: !riduci,
+        ...(foto ? { immagine: foto.png, scala: foto.scala } : {}),
       });
     };
 
@@ -138,14 +310,15 @@ export function useVetroNativo(
       inCoda = true;
       requestAnimationFrame(() => {
         inCoda = false;
-        sincronizza();
+        void sincronizza();
       });
     };
 
     /* Le mutazioni DENTRO il dock (la bolla che viaggia scrive left/width
        trenta volte al secondo) non dicono niente su chi lo copre: si
        ignorano, o ogni viaggio diventerebbe una raffica di chiamate al
-       ponte nativo per non spostare niente. */
+       ponte nativo per non spostare niente. Il tasto acceso che cambia
+       arriva per la via giusta: la `firma`. */
     const oss = new MutationObserver((mutazioni) => {
       const fuoriDalDock = mutazioni.some((m) => {
         const el = m.target instanceof Element ? m.target : m.target.parentElement;
@@ -159,7 +332,7 @@ export function useVetroNativo(
       .then(({ vetro: c }) => {
         if (!vivo || !c) return;
         pronto = true;
-        sincronizza();
+        void sincronizza();
         oss.observe(document.body, {
           childList: true,
           subtree: true,
@@ -174,34 +347,27 @@ export function useVetroNativo(
            il dock tiene l'imitazione web e non se ne accorge nessuno. */
       });
 
+    richiediRef.current = richiedi;
+
     return () => {
       vivo = false;
+      richiediRef.current = () => {};
       oss.disconnect();
       window.removeEventListener("resize", richiedi);
       window.removeEventListener("orientationchange", richiedi);
       if (pronto) void vetro.nascondi();
       setAttivo(false);
     };
-    /* `modo` come dipendenza rimonterebbe tutto a ogni cambio chiaro/scuro;
-       basta risincronizzare, ed e il ref a portare il valore nuovo. */
   }, [pillola]);
 
-  /* Cambio chiaro/scuro a lastra accesa: la lastra deve cambiare vetro. */
+  /* Tasto acceso, tema o chiaro/scuro cambiati: nuova fotografia e lente
+     sul tasto giusto. Un rAF di attesa, cosi la classe `.on` e i colori
+     nuovi sono GIA nel DOM quando si scatta. Il primo giro non passa di
+     qui: lo fa `disponibile()` qui sopra. */
   useEffect(() => {
-    if (!attivo) return;
-    const vetro = pluginVetro();
-    const p = pillola.current;
-    if (!vetro || !p) return;
-    const r = p.getBoundingClientRect();
-    if (r.width === 0) return;
-    void vetro.sincronizza({
-      x: r.left,
-      y: r.top,
-      larghezza: r.width,
-      altezza: r.height,
-      modo,
-    });
-  }, [modo, attivo, pillola]);
+    const id = requestAnimationFrame(() => richiediRef.current());
+    return () => cancelAnimationFrame(id);
+  }, [firma, tema, modo]);
 
   return attivo;
 }

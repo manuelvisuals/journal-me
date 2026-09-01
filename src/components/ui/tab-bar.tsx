@@ -207,9 +207,11 @@ export function TabBar({ active }: Props) {
 
   /* Dentro il guscio iOS 26 il vetro della pillola e VERO (una lastra
      nativa sopra la WebView, vedi dock-vetro.ts): finche e accesa, il
-     velo finto qui sotto si spegne (.jm-dock-nativo). Sul web, o se la
-     lastra non c'e, questo e sempre false e non cambia niente. */
-  const vetroNativo = useVetroNativo(pillola);
+     velo finto qui sotto si spegne e icone/scritte/microfono vengono
+     ridisegnati SOPRA il vetro (.jm-dock-nativo). La firma dice al vetro
+     quando rifotografare: tasto acceso e numero di voci. Sul web, o se
+     la lastra non c'e, questo e sempre false e non cambia niente. */
+  const vetroNativo = useVetroNativo(pillola, `${active}:${tabsRight.length}`);
 
   const registra = useCallback((key: TabKey, el: HTMLAnchorElement | null) => {
     if (el) tasti.current.set(key, el);

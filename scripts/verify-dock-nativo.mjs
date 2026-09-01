@@ -116,6 +116,80 @@ const ultima = (page, tipo) =>
     `${stato.filtro} / ${stato.fondo}`,
   );
 
+  /* -------- giro 2: il contenuto viaggia in fotografia -------- */
+  const giro2 = await page.evaluate(() => {
+    const sinc = [...window.__vetroChiamate]
+      .reverse()
+      .find((ch) => ch.tipo === "sincronizza" && ch.immagine);
+    const acceso = document.querySelector(".jm-dock-t.on");
+    const ra = acceso ? acceso.getBoundingClientRect() : null;
+    const op = (sel) => {
+      const el = document.querySelector(sel);
+      return el ? getComputedStyle(el).opacity : null;
+    };
+    return {
+      foto: sinc ? sinc.immagine.length : 0,
+      scala: sinc?.scala ?? 0,
+      lente: sinc?.lente ?? null,
+      tastoAcceso: ra ? { x: ra.left, larghezza: ra.width } : null,
+      opTasto: op(".jm-dock-t"),
+      opMic: op(".jm-dock-mic"),
+      opBolla: op(".jm-dock-bolla"),
+    };
+  });
+  check(
+    "la fotografia del contenuto arriva alla lastra (png vero)",
+    giro2.foto > 500 && giro2.scala > 0,
+    `${giro2.foto} byte base64, scala ${giro2.scala}`,
+  );
+  const lenteGiusta =
+    giro2.lente &&
+    giro2.tastoAcceso &&
+    Math.abs(giro2.lente.x - giro2.tastoAcceso.x) <= 2 &&
+    Math.abs(giro2.lente.larghezza - giro2.tastoAcceso.larghezza) <= 2;
+  check(
+    "la lente e sul tasto acceso, misurata",
+    Boolean(lenteGiusta),
+    giro2.lente ? `lente x=${Math.round(giro2.lente.x)}` : "nessuna lente",
+  );
+  check(
+    "icone, microfono e bolla web sono invisibili (li disegna il nativo)",
+    giro2.opTasto === "0" && giro2.opMic === "0" && giro2.opBolla === "0",
+    `${giro2.opTasto}/${giro2.opMic}/${giro2.opBolla}`,
+  );
+
+  /* -------- cambiando schermata, lente e foto seguono -------- */
+  await page.evaluate(() => { window.__vetroChiamate.length = 0; });
+  await page.click('.jm-dock-t[href="/app/mese"]');
+  await page.waitForTimeout(1200);
+  const dopoTab = await page.evaluate(() => {
+    const sinc = [...window.__vetroChiamate]
+      .reverse()
+      .find((ch) => ch.tipo === "sincronizza" && ch.lente);
+    const acceso = document.querySelector(".jm-dock-t.on");
+    const ra = acceso ? acceso.getBoundingClientRect() : null;
+    return {
+      lente: sinc?.lente ?? null,
+      tastoAcceso: ra ? { x: ra.left } : null,
+      rifoto: [...window.__vetroChiamate].some(
+        (ch) => ch.tipo === "sincronizza" && ch.immagine,
+      ),
+    };
+  });
+  check(
+    "cambiando schermata la lente va sul tasto nuovo",
+    Boolean(
+      dopoTab.lente &&
+        dopoTab.tastoAcceso &&
+        Math.abs(dopoTab.lente.x - dopoTab.tastoAcceso.x) <= 2,
+    ),
+    dopoTab.lente ? `lente x=${Math.round(dopoTab.lente.x)}` : "nessuna lente",
+  );
+  check(
+    "e la fotografia si rifa (il tasto acceso ha cambiato colore)",
+    dopoTab.rifoto,
+  );
+
   /* -------- 2. qualcosa copre il dock: la lastra si spegne -------- */
   /* Prima si azzera il registro: il dock muore e rinasce navigando
      (scheletro poi schermata vera) e un `nascondi` di quel giro morto
@@ -191,14 +265,21 @@ const ultima = (page, tipo) =>
   await page.waitForTimeout(400);
   const pulito = await page.evaluate(() => {
     const s = getComputedStyle(document.querySelector(".jm-dock"));
+    const t = document.querySelector(".jm-dock-t");
     return {
       classe: Boolean(document.querySelector(".jm-dock-nativo")),
       blur: /blur/.test(s.backdropFilter || s.webkitBackdropFilter),
+      opTasto: t ? getComputedStyle(t).opacity : null,
     };
   });
   check(
     "sul web il dock e quello di sempre (vetro web acceso, niente classe)",
     !pulito.classe && pulito.blur,
+  );
+  check(
+    "e le icone si vedono, altro che fotografia",
+    pulito.opTasto === "1",
+    String(pulito.opTasto),
   );
   check("nessun errore in console", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
