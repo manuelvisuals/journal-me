@@ -18,7 +18,13 @@
  * senza foto non cambia di un pixel.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
 import {
   EVENTO_FOTO,
@@ -26,6 +32,7 @@ import {
   annunciaFoto,
   elencoFoto,
   eliminaFoto,
+  fotoAttese,
   urlIntera,
   urlMiniatura,
   type FotoGiornata,
@@ -38,6 +45,10 @@ import { toast } from "@/components/ui/toast";
 
 const IN_STRISCIA = 4;
 
+function subscribeNoop(): () => void {
+  return () => {};
+}
+
 export function FotoGiorno({ date }: { date: string }) {
   const t = useT();
   const risolta = useStorageMode();
@@ -45,6 +56,16 @@ export function FotoGiorno({ date }: { date: string }) {
     risolta === "local" || risolta === "cloud" ? risolta : null;
 
   const [foto, setFoto] = useState<FotoGiornata[]>([]);
+  /* L'elenco e arrivato? Finche non arriva, la striscia puo solo
+     PROMETTERE (vedi fotoAttese in foto.ts): tante caselle vuote quante
+     erano le foto l'ultima volta, cosi la giornata sotto non si sposta
+     quando le foto vere compaiono. */
+  const [lette, setLette] = useState<boolean>(false);
+  const attese = useSyncExternalStore(
+    subscribeNoop,
+    () => fotoAttese(date),
+    () => 0,
+  );
   const [miniature, setMiniature] = useState<Record<string, string>>({});
   const [griglia, setGriglia] = useState<boolean>(false);
   const [aperta, setAperta] = useState<number | null>(null);
@@ -59,6 +80,7 @@ export function FotoGiorno({ date }: { date: string }) {
   if (perData !== date) {
     setPerData(date);
     setFoto([]);
+    setLette(false);
     setGriglia(false);
     setAperta(null);
   }
@@ -77,6 +99,7 @@ export function FotoGiorno({ date }: { date: string }) {
       }
       if (!vivo) return;
       setFoto(lista);
+      setLette(true);
       // Le miniature arrivano una a una e si mostrano appena pronte:
       // aspettare l'ultima per disegnare la prima sarebbe la lentezza
       // che questa striscia esiste per non avere.
@@ -102,7 +125,28 @@ export function FotoGiorno({ date }: { date: string }) {
     return () => window.removeEventListener(EVENTO_FOTO, su);
   }, [date]);
 
-  if (!modo || foto.length === 0) return null;
+  if (!modo) return null;
+
+  /* La promessa: lo spazio della striscia, gia riservato, con le caselle
+     che scintillano. Stesse misure della striscia vera (etichetta + 80px),
+     cosi lo scambio non muove un pixel. Se poi le foto non ci sono piu,
+     lo spazio si richiude: un rientro, non un'irruzione. */
+  if (!lette && foto.length === 0) {
+    if (attese === 0) return null;
+    const caselle = Math.min(attese, IN_STRISCIA);
+    return (
+      <div className="jm-foto-wrap" aria-busy="true">
+        <div className="jm-fv-social-l">{t("Foto del giorno")}</div>
+        <div className="jm-foto-strip">
+          {Array.from({ length: caselle }, (_, i) => (
+            <div key={i} className="jm-foto-th jm-foto-attesa jm-skel" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (foto.length === 0) return null;
 
   const oltre = foto.length - (IN_STRISCIA - 1);
   const mostraTile = !griglia && foto.length > IN_STRISCIA;

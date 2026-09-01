@@ -1769,6 +1769,22 @@
   cursor: pointer;
   position: relative;
 }
+/* La casella in attesa (foto-giorno.tsx, la promessa): stessa misura
+   della miniatura, ma scintilla come ogni altro scheletro dell'app.
+   Ripete lo shimmer di .jm-skel (base.css) perche .jm-foto-th qui sopra
+   dichiara un background e, venendo dopo base.css, lo vincerebbe. */
+.jm-foto-th.jm-foto-attesa {
+  cursor: default;
+  border-color: transparent;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-2) 37%,
+    var(--color-surface) 63%
+  );
+  background-size: 400% 100%;
+  animation: jm-skel-shimmer 1.3s ease infinite;
+}
 .jm-foto-griglia .jm-foto-th {
   width: auto;
   height: auto;

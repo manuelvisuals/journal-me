@@ -123,7 +123,67 @@ function percorso(uid: string, foto: Pick<FotoGiornata, "id" | "day">): {
 
 /* ------------------------------ elenco -------------------------------- */
 
+/**
+ * QUANTE FOTO AVEVA IL GIORNO L'ULTIMA VOLTA (2 settembre 2026, richiesta
+ * di Manuel: "significativo layout shift nella zona delle foto").
+ *
+ * L'elenco delle foto arriva dalla rete (o da IndexedDB) DOPO che la
+ * giornata e gia disegnata: la striscia compariva di colpo e spingeva
+ * tutto in basso — aree, persone, luoghi — mentre l'occhio stava gia
+ * leggendo. Il rimedio e riservare lo spazio prima di sapere: ma per
+ * riservarlo bisogna sapere ALMENO se quel giorno ha foto e quante.
+ *
+ * Questa memoria e la risposta: a ogni elenco letto si annota per giorno
+ * il numero di foto, in localStorage, su questo dispositivo. Al prossimo
+ * passaggio la striscia si disegna subito con le caselle vuote
+ * (scintillanti, .jm-skel) e le foto vere prendono il loro posto senza
+ * spostare niente. E una PROMESSA, non una verita: se nel frattempo le
+ * foto sono state tolte da un altro dispositivo, lo spazio si richiude
+ * appena arriva l'elenco — un rientro, che e molto meno brutto di
+ * un'irruzione. La prima visita in assoluto a un giorno con foto resta
+ * senza avviso: nessuno puo sapere prima cio che non ha mai letto.
+ */
+const KEY_CONTEGGI = "jm.foto.conteggi";
+
+function leggiConteggi(): Record<string, number> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(KEY_CONTEGGI);
+    const val = raw ? (JSON.parse(raw) as unknown) : null;
+    return val && typeof val === "object" ? (val as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Quante foto aveva il giorno l'ultima volta che le abbiamo lette (0 = mai viste). */
+export function fotoAttese(day: string): number {
+  const n = leggiConteggi()[day];
+  return typeof n === "number" && n > 0 ? Math.floor(n) : 0;
+}
+
+function annotaConteggio(day: string, n: number): void {
+  if (typeof window === "undefined") return;
+  try {
+    const tutti = leggiConteggi();
+    if (n > 0) tutti[day] = n;
+    else delete tutti[day];
+    window.localStorage.setItem(KEY_CONTEGGI, JSON.stringify(tutti));
+  } catch {
+    // Storage negato: si perde solo la promessa, non le foto.
+  }
+}
+
 export async function elencoFoto(
+  modo: ModoFoto,
+  day: string,
+): Promise<FotoGiornata[]> {
+  const lista = await elencoFotoGrezzo(modo, day);
+  annotaConteggio(day, lista.length);
+  return lista;
+}
+
+async function elencoFotoGrezzo(
   modo: ModoFoto,
   day: string,
 ): Promise<FotoGiornata[]> {
