@@ -542,7 +542,7 @@ messo, che vale quanto la prima.</p>
 ricade sulla data e sotto c'e... la stessa data: <span class="bad">"Sun 23 Aug / SUN 23 AUG"</span>.
 Tre strade a confronto, ognuna mostrata nei quattro casi che esistono davvero
 (oggi, ieri, entro la settimana, lontano).</p>
-<div class="grid3">
+<div class="grid2">
   <div class="card"><h3>A . La tua: sempre il nome del giorno</h3>
     <div class="giorno-prove">
       <div class="gp"><b>Today</b><s>SUN 23 AUG</s></div>
@@ -556,7 +556,7 @@ Tre strade a confronto, ognuna mostrata nei quattro casi che esistono davvero
         informazione due volte, una abbreviata.</li>
     </ul>
   </div>
-  <div class="card go"><h3>B . La mia: nome sopra, e la data si toglie il cappello</h3>
+  <div class="card"><h3>B . Nome sopra, e la data si toglie il cappello</h3>
     <div class="giorno-prove">
       <div class="gp"><b>Today</b><s>1 SEP</s></div>
       <div class="gp"><b>Yesterday</b><s>31 AUG</s></div>
@@ -569,6 +569,23 @@ Tre strade a confronto, ognuna mostrata nei quattro casi che esistono davvero
       <li>Per un giorno di un altro anno, l'anno compare da solo: "23 AUG 2025".</li>
       <li>E la divisione dei compiti di Apple: sopra il QUANDO umano, sotto la
         coordinata esatta.</li>
+    </ul>
+  </div>
+  <div class="card go"><h3>B in serif . Il nome con la voce del diario</h3>
+    <div class="giorno-prove">
+      <div class="gp"><b class="gs">Today</b><s>1 SEP</s></div>
+      <div class="gp"><b class="gs">Yesterday</b><s>31 AUG</s></div>
+      <div class="gp"><b class="gs">Wednesday</b><s>19 AUG</s></div>
+      <div class="gp"><b class="gs">Sunday</b><s>23 AUG</s></div>
+    </div>
+    <ul style="margin-top:14px">
+      <li>La stessa B, ma il nome parla col <b>serif di prosa del tema</b> (peso
+        leggero, corpo un filo piu grande) — la stessa voce che hai scelto per
+        "How was your day?".</li>
+      <li>Cosi le due domande dell'app — com'e andata oggi, e com'era quel
+        giorno — hanno la STESSA voce; la riga sotto resta in maiuscoletto
+        sans: e una coordinata, non una frase.</li>
+      <li>Su richiesta di Manuel (1 settembre, sera).</li>
     </ul>
   </div>
   <div class="card"><h3>C . La minimale: una riga sola quando basta</h3>
@@ -585,14 +602,16 @@ Tre strade a confronto, ognuna mostrata nei quattro casi che esistono davvero
     </ul>
   </div>
 </div>
-<p class="caption" style="margin-top:26px">Il mio consiglio e la <b>B</b>: e la tua idea
-portata fino in fondo — se il nome sta sopra, sotto il nome non serve piu. Vale identica
-in italiano ("Oggi / 1 SET", "Domenica / 23 AGO").</p>
+<p class="caption" style="margin-top:26px">Il mio consiglio e la <b>B in serif</b>: la tua
+idea portata fino in fondo (se il nome sta sopra, sotto il nome non serve piu), con la voce
+del diario sul nome — la stessa della domanda del vuoto. Vale identica in italiano
+("Oggi / 1 SET", "Domenica / 23 AGO").</p>
 <style>
 .giorno-prove{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gp{background:var(--pg);border:1px solid var(--pg-line);border-radius:10px;
   padding:12px 8px;text-align:center}
 .gp b{display:block;font-size:15px;font-weight:650;color:var(--pg-ink);letter-spacing:-.01em}
+.gp b.gs{font-family:var(--prosa);font-weight:400;font-size:17px;letter-spacing:-.015em}
 .gp s{display:block;text-decoration:none;font-size:9px;font-weight:650;letter-spacing:.18em;
   color:var(--pg-faint);margin-top:4px;min-height:12px}
 </style>
