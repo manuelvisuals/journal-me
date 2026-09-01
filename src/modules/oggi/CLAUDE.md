@@ -135,3 +135,14 @@ annota in localStorage quante foto aveva il giorno, e la striscia si
 disegna subito con altrettante caselle `.jm-foto-attesa` (80px come le
 miniature) finche l'elenco non arriva. Niente salto della giornata sotto.
 La prima visita in assoluto a un giorno con foto resta senza promessa.
+
+Il visore delle foto (2 settembre 2026, screenshot di Manuel: visore
+sotto la barra, foto fuori dallo schermo) sta sul BODY via createPortal:
+`.jm-day-sw-piano` ha `will-change: transform`, e un elemento con
+transform diventa il riferimento di ogni `position: fixed` al suo interno
+— "inset: 0" voleva dire il piano, non lo schermo. Regola da tenere: una
+superficie fixed nata dentro il piano dei giorni va portata fuori col
+portal. Il visore ha `touch-action: none` (il dito scorre le FOTO, la
+pagina non si muove), lo swipe segue il dito e scatta oltre 72px; i tocchi
+non risalgono al gesto dei giorni. Banco: `verify-foto` (28 controlli,
+con tocchi sintetici via CDP).

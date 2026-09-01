@@ -1952,10 +1952,15 @@
   margin: 14px 0;
 }
 .jm-foto-v-corpo img {
-  max-width: 100%;
-  max-height: 100%;
+  /* Larghezza e altezza PIENE del corpo, con contain: la foto sta tutta
+     dentro lo schermo, verticale o orizzontale che sia, senza dipendere
+     da come un'altezza in percentuale si risolve dentro un flex. */
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 .jm-foto-v-fondo {
   display: flex;

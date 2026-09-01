@@ -82,6 +82,7 @@ const SEED = `
 async function contesto() {
   const ctx = await browser.newContext({
     viewport: { width: 430, height: 932 },
+    hasTouch: true,
     locale: "it-IT",
   });
   await ctx.addInitScript(() => {
@@ -217,11 +218,86 @@ async function aggiungi(page, nomi) {
     await page.locator(".jm-foto-v-data").innerText(),
   );
 
+  /* IL VISORE COPRE LO SCHERMO INTERO (2 settembre 2026, screenshot di
+     Manuel: visore sotto la barra in alto, foto fuori dallo schermo —
+     colpa del will-change del piano dei giorni, che faceva da riferimento
+     al fixed). Ora sta sul body: il suo riquadro E il viewport. */
+  const box = await page.locator(".jm-foto-visore").boundingBox();
+  const vp = page.viewportSize();
+  check(
+    "il visore copre tutto lo schermo, dal pixel 0",
+    box && Math.round(box.x) === 0 && Math.round(box.y) === 0 &&
+      Math.round(box.width) === vp.width && Math.round(box.height) === vp.height,
+    JSON.stringify(box),
+  );
+  check(
+    "il visore sta direttamente sul body (portal), non dentro il piano dei giorni",
+    await page.locator("body > .jm-foto-visore").count() === 1,
+  );
+  const img = await page.locator(".jm-foto-v-corpo img").boundingBox();
+  check(
+    "la foto sta tutta dentro lo schermo",
+    img && img.y >= 0 && img.x >= 0 && img.y + img.height <= vp.height + 1 && img.x + img.width <= vp.width + 1,
+    JSON.stringify(img),
+  );
+  check(
+    "col visore aperto il dito non scorre la pagina (touch-action: none)",
+    (await page.locator(".jm-foto-visore").evaluate((e) => getComputedStyle(e).touchAction)) === "none",
+  );
+
   await page.keyboard.press("ArrowRight");
   await page.waitForTimeout(200);
   check(
     "la freccia porta alla seconda: 2 di 6",
     (await page.locator(".jm-foto-v-conta").innerText()).trim() === "2 di 6",
+  );
+
+  /* LO SWIPE: da destra a sinistra si va alla foto dopo, e la pagina
+     sotto resta ferma. Tocchi sintetici via CDP, come un dito vero. */
+  const scrollPrima = await page.evaluate(() => window.scrollY);
+  const cdp = await ctx.newCDPSession(page);
+  const cx = vp.width / 2, cy = vp.height / 2;
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: cx + 120, y: cy }] });
+  for (let i = 1; i <= 8; i++) {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: cx + 120 - i * 30, y: cy + i * 2 }] });
+  }
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await page.waitForTimeout(400);
+  check(
+    "lo swipe verso sinistra porta alla foto dopo: 3 di 6",
+    (await page.locator(".jm-foto-v-conta").innerText()).trim() === "3 di 6",
+    await page.locator(".jm-foto-v-conta").innerText(),
+  );
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: cx - 120, y: cy }] });
+  for (let i = 1; i <= 8; i++) {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: cx - 120 + i * 30, y: cy }] });
+  }
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await page.waitForTimeout(400);
+  check(
+    "lo swipe verso destra torna indietro: 2 di 6",
+    (await page.locator(".jm-foto-v-conta").innerText()).trim() === "2 di 6",
+  );
+  /* Un dito che va in verticale non cambia foto e non scorre la pagina. */
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: cx, y: cy - 100 }] });
+  for (let i = 1; i <= 8; i++) {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: cx, y: cy - 100 + i * 30 }] });
+  }
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await page.waitForTimeout(300);
+  check(
+    "un gesto verticale non cambia foto",
+    (await page.locator(".jm-foto-v-conta").innerText()).trim() === "2 di 6",
+  );
+  check(
+    "e la pagina sotto non si e mossa",
+    (await page.evaluate(() => window.scrollY)) === scrollPrima,
+    `scrollY ${scrollPrima} -> ${await page.evaluate(() => window.scrollY)}`,
+  );
+  check(
+    "il giorno in pagina e sempre lo stesso (lo swipe delle foto non sfoglia i giorni)",
+    page.url().includes(`d=${IERI}`),
+    page.url(),
   );
 
   page.once("dialog", (d) => void d.accept());
