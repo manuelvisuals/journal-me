@@ -2,28 +2,30 @@ import UIKit
 import Capacitor
 
 /**
- * IL VETRO VERO DEL DOCK (31 agosto 2026, giro 1).
+ * IL VETRO VERO DEL DOCK (31 agosto 2026; giro 2 il 1 settembre, dopo la
+ * prova sul telefono di Manuel).
  *
  * Il dock dentro l'app iOS deve essere vetro di iOS 26 — quello che
  * rifrange e illumina cio che gli passa dietro — non l'imitazione web
  * (sfocatura + saturazione) che resta giusta per Safari e per il sito.
  *
- * Come funziona: il dock RESTA quello web (stesse voci, stessi tocchi,
- * stessa geometria — il contratto non si sposta di un millimetro). Da qui
- * si aggiunge solo una LASTRA: una UIVisualEffectView col vetro di iOS 26,
- * appoggiata sopra la WebView esattamente dove sta la pillola. Il web,
- * quando la lastra c'e, spegne la sua finta sfocatura (classe
- * `jm-dock-nativo` in tab-bar.tsx) e le dice dove stare via questo plugin.
+ * Com'e fatto, dal basso verso l'alto (tutto dentro uno STRATO che non
+ * intercetta tocchi, appoggiato sopra la WebView):
  *
- * La lastra NON intercetta tocchi (isUserInteractionEnabled = false):
- * ogni tocco attraversa e arriva ai tasti web sotto. Percio navigazione,
- * bersagli 44x44 e accessibilita restano quelli di sempre.
+ *   1. la LASTRA    UIGlassEffect a capsula, dove sta la pillola web;
+ *   2. la LENTE     un secondo vetro, piu piccolo, sul tasto acceso —
+ *                   viaggia da un tasto all'altro con una molla, come la
+ *                   bolla del mockup approvato (variante A);
+ *   3. il CONTENUTO icone, scritte e microfono, FOTOGRAFATI dal web
+ *                   (canvas trasparente, vedi dock-vetro.ts) e posati
+ *                   sopra il vetro.
  *
- * Stile `.clear` e non `.regular`: le icone e le scritte del dock stanno
- * SOTTO la lastra (vivono nella pagina), e il vetro regolare le
- * sfocherebbe. Il clear rifrange ai bordi e lascia leggere il centro.
- * Se sul telefono le icone risultassero impastate, il giro dopo si passa
- * alle icone sopra il vetro — e scritto nel piano, non e un imprevisto.
+ * Perche la fotografia: il vetro sta sopra la pagina, e nel giro 1 le
+ * icone — che sulla pagina vivono — uscivano rifratte, sdoppiate,
+ * "dietro il vetro". I controlli di iOS mettono le scritte SOPRA il
+ * vetro, mai sotto: qui si fa uguale. I tasti web restano al loro posto,
+ * invisibili ma toccabili: il contratto del dock (voci, ordine,
+ * microfono, bersagli 44x44) non si sposta dal web.
  *
  * Fuori da iOS 26 (`disponibile` risponde vetro:false) il web tiene la
  * sua imitazione: mai una pillola trasparente senza niente dietro.
@@ -38,8 +40,13 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "nascondi", returnType: CAPPluginReturnPromise),
     ]
 
-    /// La lastra della pillola. Una sola; si crea al primo `sincronizza`.
+    private var strato: UIView?
     private var lastra: UIVisualEffectView?
+    private var lente: UIVisualEffectView?
+    private var contenuto: UIImageView?
+    /// La lente anima solo un VIAGGIO (da tasto a tasto, a strato gia
+    /// visibile): comparire dal nulla o dopo un foglio non e un viaggio.
+    private var lenteInPosa = false
 
     @objc func disponibile(_ call: CAPPluginCall) {
         if #available(iOS 26.0, *) {
@@ -50,11 +57,11 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     /**
-     * Posa (o sposta) la lastra. Le misure arrivano dal web in pixel CSS,
-     * che dentro WKWebView coincidono coi punti: nessuna conversione.
-     * `modo` ("light"/"dark") segue il tema DELL'APP, non quello del
-     * sistema: chi tiene il tema scuro col telefono chiaro deve avere il
-     * vetro scuro.
+     * Posa (o sposta) lastra, lente e contenuto. Le misure arrivano dal
+     * web in pixel CSS, che dentro WKWebView coincidono coi punti.
+     * `modo` ("light"/"dark") segue il tema DELL'APP, non il sistema.
+     * `immagine` (png base64, con la sua `scala`) arriva solo quando la
+     * foto e cambiata: assente, si tiene quella che c'e.
      */
     @objc func sincronizza(_ call: CAPPluginCall) {
         guard #available(iOS 26.0, *) else {
@@ -66,50 +73,154 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
         let larghezza = call.getDouble("larghezza") ?? 0
         let altezza = call.getDouble("altezza") ?? 0
         let modo = call.getString("modo") ?? "dark"
+        let animato = call.getBool("animato") ?? true
+        let lenteDati = call.getObject("lente")
+        let immagine = call.getString("immagine")
+        let scala = call.getDouble("scala") ?? 3
         guard larghezza > 0, altezza > 0 else {
             call.resolve()
             return
         }
         DispatchQueue.main.async { [weak self] in
             guard let self, let webView = self.bridge?.webView else { return }
-            let cornice = CGRect(x: x, y: y, width: larghezza, height: altezza)
-            let v = self.lastra ?? self.creaLastra()
-            if v.superview !== webView {
-                // Dentro la webview (non nella sua scrollView): resta ferma
-                // sullo schermo come il dock, e sta sopra la pagina.
-                webView.addSubview(v)
+
+            let strato = self.strato ?? self.creaStrato(dentro: webView)
+            if strato.superview !== webView {
+                webView.addSubview(strato)
             }
-            v.frame = cornice
-            v.overrideUserInterfaceStyle = modo == "light" ? .light : .dark
-            v.isHidden = false
+            webView.bringSubviewToFront(strato)
+            strato.overrideUserInterfaceStyle = modo == "light" ? .light : .dark
+            let eraNascosto = strato.isHidden
+            strato.isHidden = false
+
+            let cornice = CGRect(x: x, y: y, width: larghezza, height: altezza)
+            self.posaLastra(cornice, in: strato)
+            self.posaLente(
+                lenteDati,
+                in: strato,
+                viaggia: animato && !eraNascosto
+            )
+            self.posaContenuto(immagine, scala: scala, cornice: cornice, in: strato)
         }
         call.resolve()
     }
 
-    /// Via la lastra (un foglio copre il dock, o il dock e smontato).
+    /// Via tutto (un foglio copre il dock, o il dock e smontato).
     /// Il web, nello stesso momento, riaccende la sua imitazione.
     @objc func nascondi(_ call: CAPPluginCall) {
         DispatchQueue.main.async { [weak self] in
-            self?.lastra?.isHidden = true
+            self?.strato?.isHidden = true
+            self?.lenteInPosa = false
         }
         call.resolve()
     }
 
+    // MARK: - I pezzi
+
     @available(iOS 26.0, *)
-    private func creaLastra() -> UIVisualEffectView {
-        let vetro = UIGlassEffect(style: .clear)
-        let v = UIVisualEffectView(effect: vetro)
+    private func creaStrato(dentro webView: UIView) -> UIView {
+        let v = UIView(frame: webView.bounds)
+        v.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         v.isUserInteractionEnabled = false
-        // La pillola e una capsula (raggio = meta altezza). Se questa riga
-        // non compila sul tuo Xcode, sostituiscila con:
-        //   v.clipsToBounds = true  (e il raggio nel sincronizza)
-        // e dimmelo: vuol dire che l'API dei bordi e diversa dalla mia.
-        v.cornerConfiguration = .capsule()
-        // Si tiene il riferimento: UNA lastra sola, riusata a ogni
-        // sincronizza. Senza questa riga ogni chiamata ne impilerebbe
-        // una nuova sopra la precedente.
-        lastra = v
+        v.backgroundColor = .clear
+        webView.addSubview(v)
+        strato = v
         return v
+    }
+
+    @available(iOS 26.0, *)
+    private func posaLastra(_ cornice: CGRect, in strato: UIView) {
+        let v: UIVisualEffectView
+        if let l = lastra {
+            v = l
+        } else {
+            let vetro = UIGlassEffect(style: .clear)
+            v = UIVisualEffectView(effect: vetro)
+            v.isUserInteractionEnabled = false
+            // La pillola e una capsula (raggio = meta altezza). Se questa
+            // riga non compila sul tuo Xcode, sostituiscila con
+            // clipsToBounds + layer.cornerRadius e dimmelo.
+            v.cornerConfiguration = .capsule()
+            strato.insertSubview(v, at: 0)
+            lastra = v
+        }
+        v.frame = cornice
+    }
+
+    @available(iOS 26.0, *)
+    private func posaLente(_ dati: JSObject?, in strato: UIView, viaggia: Bool) {
+        guard let dati,
+              let x = (dati["x"] as? NSNumber)?.doubleValue,
+              let y = (dati["y"] as? NSNumber)?.doubleValue,
+              let larghezza = (dati["larghezza"] as? NSNumber)?.doubleValue,
+              let altezza = (dati["altezza"] as? NSNumber)?.doubleValue,
+              larghezza > 0, altezza > 0
+        else {
+            // Nessun tasto acceso (Recap, Impostazioni): niente lente.
+            lente?.isHidden = true
+            lenteInPosa = false
+            return
+        }
+        let cornice = CGRect(x: x, y: y, width: larghezza, height: altezza)
+        let v: UIVisualEffectView
+        if let l = lente {
+            v = l
+        } else {
+            let vetro = UIGlassEffect(style: .clear)
+            v = UIVisualEffectView(effect: vetro)
+            v.isUserInteractionEnabled = false
+            v.cornerConfiguration = .capsule()
+            strato.insertSubview(v, aboveSubview: lastra ?? strato.subviews[0])
+            lente = v
+        }
+        let viaggioVero = viaggia && lenteInPosa && !v.isHidden && v.frame != cornice
+        v.isHidden = false
+        if viaggioVero {
+            // La stessa pasta del viaggio web (460ms, coda morbida): e
+            // quello che fa dire "liquido" — mockup variante A.
+            UIView.animate(
+                withDuration: 0.46,
+                delay: 0,
+                usingSpringWithDamping: 0.82,
+                initialSpringVelocity: 0.2,
+                options: [.beginFromCurrentState, .allowUserInteraction]
+            ) {
+                v.frame = cornice
+            }
+        } else {
+            v.frame = cornice
+        }
+        lenteInPosa = true
+    }
+
+    @available(iOS 26.0, *)
+    private func posaContenuto(
+        _ immagine: String?,
+        scala: Double,
+        cornice: CGRect,
+        in strato: UIView
+    ) {
+        if let b64 = immagine,
+           let dati = Data(base64Encoded: b64),
+           let img = UIImage(data: dati, scale: CGFloat(scala)) {
+            let v: UIImageView
+            if let c = contenuto {
+                v = c
+            } else {
+                v = UIImageView()
+                v.isUserInteractionEnabled = false
+                v.contentMode = .scaleToFill
+                strato.addSubview(v)
+                contenuto = v
+            }
+            v.image = img
+        }
+        contenuto?.frame = cornice
+        // Il contenuto sta SEMPRE sopra la lente, in qualunque ordine i
+        // pezzi siano nati.
+        if let c = contenuto {
+            strato.bringSubviewToFront(c)
+        }
     }
 }
 

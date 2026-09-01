@@ -100,11 +100,17 @@ tema — anche uno importato domani — ha il suo vetro giusto in chiaro e in sc
 Il dock si porta dietro il proprio spazio (`.jm-dock-spazio`), percio nessuna
 schermata ha dovuto aggiungersi un margine. Banco: `scripts/verify-dock.mjs`.
 
-Dentro il guscio iOS 26 (31 agosto 2026, sessione scheletro+guscio) il vetro
-della pillola e VERO: una lastra nativa (`ios/App/App/DockVetro.swift`,
-UIGlassEffect) appoggiata sopra la WebView dove sta la pillola; il web la
-pilota da `components/ui/dock-vetro.ts` (misure, chiaro/scuro, spegnimento
-quando un foglio copre il dock) e intanto spegne la propria imitazione
+Dentro il guscio iOS 26 (31 agosto 2026, sessione scheletro+guscio; giro 2 il
+1 settembre dopo la prova sul telefono) il vetro della pillola e VERO: una
+lastra nativa (`ios/App/App/DockVetro.swift`, UIGlassEffect) appoggiata sopra
+la WebView dove sta la pillola. Siccome il vetro sta sopra la pagina — e nel
+giro 1 rifrangeva anche le icone, sdoppiate "dietro il vetro" — il contenuto
+del dock (icone, scritte, microfono) viene FOTOGRAFATO dal web su un canvas
+trasparente e posato dal nativo SOPRA il vetro, e la bolla e una LENTE di
+vetro nativa che viaggia sul tasto acceso; i tasti web restano invisibili ma
+toccabili, quindi il contratto non si sposta. Il web pilota tutto da
+`components/ui/dock-vetro.ts` (misure, foto, chiaro/scuro, spegnimento quando
+un foglio copre il dock) e intanto spegne la propria imitazione
 (`.jm-dock-nativo`). Sul web, su iOS vecchio e su binari senza il plugin non
 cambia NIENTE: il velo CSS resta quello qui sopra. Banco della meta web:
 `scripts/verify-dock-nativo.mjs` (guscio finto via `window.__jmVetroFinto`);

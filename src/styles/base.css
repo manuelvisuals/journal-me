@@ -688,6 +688,24 @@ summary:active {
   display: none;
 }
 
+/* Giro 2 (1 settembre 2026, dopo la prova sul telefono): il vetro nativo
+   sta SOPRA la pagina, quindi rifrangeva anche le icone — sdoppiate,
+   specchiate, "dietro il vetro". Quando la lastra e accesa, il contenuto
+   del dock viene FOTOGRAFATO dal web e ridisegnato dal nativo sopra il
+   vetro (dock-vetro.ts): qui i tasti diventano invisibili ma restano
+   TOCCABILI (opacity, mai display/visibility: i tocchi passano attraverso
+   la lastra e devono trovare i bersagli di sempre). */
+.jm-dock.jm-dock-nativo .jm-dock-t,
+.jm-dock.jm-dock-nativo .jm-dock-mic {
+  opacity: 0;
+}
+
+/* La bolla accende l'opacity inline (tab-bar.tsx): serve il !important,
+   che su inline vince. La lente, in nativo, e di vetro vero. */
+.jm-dock.jm-dock-nativo .jm-dock-bolla {
+  opacity: 0 !important;
+}
+
 /* Il filo di luce sul bordo alto: e questo a far leggere il vetro come
    un oggetto invece che come una macchia sfocata. */
 .jm-dock::after {
