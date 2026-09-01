@@ -618,7 +618,66 @@ del diario sul nome — la stessa della domanda del vuoto. Vale identica in ital
 
 <div class="divider"></div>
 
-<p class="label">08 . Se approvi, in quest'ordine</p>
+<p class="label">08 . Il titolo della schermata in corsivo del marchio (1 settembre, notte)</p>
+<h2 class="h2">La firma puo fare da titolo?</h2>
+<p class="caption">La richiesta: <b>Today, Month, Memo, Gym</b> scritti col corsivo di
+"dayalogue" (Sacramento). Qui sotto la barra in alto vera, nei tre vestiti: tocca gli
+interruttori e giudica a colpo d'occhio. Il corsivo va portato a corpo grande (26px)
+perche a 17px, la misura attuale del titolo, e un filo di ragnatela.</p>
+<div class="switch" data-gruppo="titoli">
+  <button class="on" onclick="attiva('titoli','attuale',this)">Attuale</button>
+  <button onclick="attiva('titoli','corsivo',this)">Corsivo del marchio</button>
+  <button onclick="attiva('titoli','serif',this)">Serif di prosa</button>
+</div>
+<div class="titoli-prove">
+  <div class="tp-riga" data-quale="Today"><span class="tp-t">Today</span><i class="tp-dot"></i></div>
+  <div class="tp-riga" data-quale="Month"><span class="tp-t">Month</span><i class="tp-dot"></i></div>
+  <div class="tp-riga" data-quale="Memo"><span class="tp-t">Memo</span><i class="tp-dot"></i></div>
+  <div class="tp-riga" data-quale="Gym"><span class="tp-t">Gym</span><i class="tp-dot"></i></div>
+</div>
+<style>
+.titoli-prove{max-width:430px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.tp-riga{background:#0B0B0C;border:1px solid rgba(255,255,255,.10);border-radius:14px;
+  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;min-height:64px}
+.tp-t{color:#F5F5F7;font-size:17px;font-weight:650;letter-spacing:-.02em}
+.titoli-prove.corsivo .tp-t{font-family:var(--corsivo);font-size:27px;font-weight:400;letter-spacing:0}
+.titoli-prove.serif .tp-t{font-family:var(--prosa);font-size:20px;font-weight:400;letter-spacing:-.015em}
+.tp-dot{width:32px;height:32px;border-radius:50%;background:#1F1F22;border:1px solid rgba(255,255,255,.12)}
+</style>
+<script>
+/* Il gruppo "titoli" cambia una classe sul contenitore, non i pannelli. */
+document.addEventListener("DOMContentLoaded",()=>{});
+function attivaTitoli(v){
+  const c=document.querySelector(".titoli-prove");
+  c.classList.remove("corsivo","serif");
+  if(v!=="attuale") c.classList.add(v);
+}
+</script>
+<div class="grid2" style="margin-top:30px">
+  <div class="card"><h3>Cosa direbbe l'occhio Apple</h3><ul>
+    <li><b>Il corsivo del marchio e una FIRMA</b>: vive dove l'app si presenta (il
+      saluto, la splash, il sito). Apple non scrive "Mail" o "Photos" nel corsivo
+      del logo: il titolo di navigazione e un'etichetta, e le etichette si leggono
+      in un lampo, ogni giorno, cento volte.</li>
+    <li>A corpo piccolo Sacramento perde le grazie e diventa filo; a corpo grande
+      mangia la barra. E "Gym" in corsivo di tre lettere e quasi un ghirigoro.</li>
+    <li>Il rischio dolce: se OGNI titolo e in corsivo, il corsivo smette di essere
+      speciale — e la firma "dayalogue" non firma piu niente.</li>
+  </ul></div>
+  <div class="card go"><h3>La via di mezzo, se vuoi piu voce</h3><ul>
+    <li><b>Serif di prosa sui titoli</b> (terzo interruttore): la stessa voce della
+      domanda e del nome del giorno, leggibile a qualsiasi corpo — l'app intera
+      parla il diario, e il corsivo resta la firma.</li>
+    <li>Oppure: corsivo SOLO su "dayalogue" dove gia sta, e i titoli restano sans —
+      l'attuale, che e la scelta piu Apple di tutte.</li>
+    <li>Se invece il corsivo dal vivo ti convince, si fa: e un cambio di una riga
+      (jm-appbar-t) piu il corpo portato a 26-27px.</li>
+  </ul></div>
+</div>
+
+<div class="divider"></div>
+
+<p class="label">09 . Se approvi, in quest'ordine</p>
 <h2 class="h2">Piccolo, verificabile, un pezzo per volta</h2>
 <div class="spec"><div class="card"><h3>Le PR proposte (ognuna col suo banco)</h3><ul>
     <li><b>1. La barra Memo di vetro</b> (sezione 01) — modulo ricorda, un giro di prova sul
@@ -637,6 +696,7 @@ del diario sul nome — la stessa della domanda del vuoto. Vale identica in ital
 /* Gli interruttori PRIMA/DOPO: un gruppo = data-gruppo, i pannelli hanno
    data-mostra="<gruppo>:<valore>". */
 function attiva(gruppo, valore, btn){
+  if(gruppo==="titoli"){ attivaTitoli(valore); }
   document.querySelectorAll('[data-gruppo="'+gruppo+'"] button').forEach(b=>b.classList.toggle('on', b===btn));
   document.querySelectorAll('[data-mostra^="'+gruppo+':"]').forEach(p=>{
     p.style.display = p.getAttribute('data-mostra') === gruppo+':'+valore ? '' : 'none';
