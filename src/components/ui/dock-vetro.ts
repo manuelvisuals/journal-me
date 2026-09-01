@@ -45,6 +45,9 @@ export type VetroDock = {
       modo: Modo;
       /** Dove posare la lente (il tasto acceso), o null: niente lente. */
       lente?: Rettangolo | null;
+      /** Il colore della lente (il token --color-glass-lens del tema,
+       *  gia risolto in numeri: il nativo non deve sapere niente di CSS). */
+      lenteColore?: { r: number; g: number; b: number; a: number } | null;
       /** La lente viaggia animata? (false con prefers-reduced-motion) */
       animato?: boolean;
       /** PNG trasparente del contenuto del dock, base64 senza prefisso.
@@ -101,6 +104,44 @@ function rettangolo(el: Element): Rettangolo {
   const r = el.getBoundingClientRect();
   return { x: r.left, y: r.top, larghezza: r.width, altezza: r.height };
 }
+
+/**
+ * Il colore della lente, dal token del tema (`--color-glass-lens`), risolto
+ * in numeri passando da un canvas: il browser sa leggere qualunque forma il
+ * token prenda (rgba, color-mix, oklab), il ponte nativo no. Un pixel solo.
+ */
+function coloreLente(pillola: HTMLElement): { r: number; g: number; b: number; a: number } | null {
+  try {
+    const sonda = document.createElement("span");
+    sonda.style.backgroundColor = "var(--color-glass-lens)";
+    pillola.appendChild(sonda);
+    const risolto = getComputedStyle(sonda).backgroundColor;
+    sonda.remove();
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.fillStyle = risolto;
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    /* getImageData premoltiplica male l'alfa su colori quasi trasparenti in
+       alcuni motori: l'alfa vera si riprende dalla stringa quando c'e. */
+    const daStringa = /(?:rgba?|color)\([^)]*[/,]\s*([0-9.]+)\s*\)/.exec(risolto);
+    const alfa = daStringa ? Number(daStringa[1]) : a / 255;
+    return { r, g, b, a: Number.isFinite(alfa) ? alfa : a / 255 };
+  } catch {
+    return null;
+  }
+}
+
+/* Lo spegnimento di un dock che muore aspetta un attimo: cambiando
+   schermata il dock RINASCE subito dopo (scheletro, poi schermata vera), e
+   se il nativo spegnesse davvero, la lente ripartirebbe da ferma invece di
+   viaggiare — e il vetro farebbe un occhiolino a ogni navigazione. Se un
+   dock nuovo arriva in tempo, l'appuntamento si cancella; se no (si esce
+   dall'app, si va al login) lo spegnimento parte per davvero. */
+let spegnimentoInSospeso: number | null = null;
 
 /* ============================================================
    LA FOTOGRAFIA DEL DOCK. Icone, scritte e microfono, ridisegnati su un
@@ -298,6 +339,7 @@ export function useVetroNativo(
         ...rettangolo(p),
         modo: m,
         lente: tastoAcceso ? rettangolo(tastoAcceso) : null,
+        lenteColore: coloreLente(p),
         animato: !riduci,
         ...(foto ? { immagine: foto.png, scala: foto.scala } : {}),
       });
@@ -332,6 +374,13 @@ export function useVetroNativo(
       .then(({ vetro: c }) => {
         if (!vivo || !c) return;
         pronto = true;
+        /* Un dock nuovo che prende servizio annulla lo spegnimento del
+           dock morto un attimo fa: e cosi che la lente VIAGGIA da una
+           schermata all'altra invece di rinascere ferma. */
+        if (spegnimentoInSospeso !== null) {
+          window.clearTimeout(spegnimentoInSospeso);
+          spegnimentoInSospeso = null;
+        }
         void sincronizza();
         oss.observe(document.body, {
           childList: true,
@@ -355,7 +404,20 @@ export function useVetroNativo(
       oss.disconnect();
       window.removeEventListener("resize", richiedi);
       window.removeEventListener("orientationchange", richiedi);
-      if (pronto) void vetro.nascondi();
+      if (pronto) {
+        /* Non subito: se e una navigazione, il prossimo dock arriva fra
+           pochi millisecondi e cancella l'appuntamento (vedi
+           spegnimentoInSospeso qui sopra). 120ms: piu del cambio pagina,
+           meno di quanto serva a un occhio per notare un vetro rimasto
+           acceso sul login. */
+        if (spegnimentoInSospeso !== null) {
+          window.clearTimeout(spegnimentoInSospeso);
+        }
+        spegnimentoInSospeso = window.setTimeout(() => {
+          spegnimentoInSospeso = null;
+          void vetro.nascondi();
+        }, 120);
+      }
       setAttivo(false);
     };
   }, [pillola]);

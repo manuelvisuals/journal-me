@@ -42,7 +42,7 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private var strato: UIView?
     private var lastra: UIVisualEffectView?
-    private var lente: UIVisualEffectView?
+    private var lente: UIView?
     private var contenuto: UIImageView?
     /// La lente anima solo un VIAGGIO (da tasto a tasto, a strato gia
     /// visibile): comparire dal nulla o dopo un foglio non e un viaggio.
@@ -97,6 +97,7 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
             self.posaLastra(cornice, in: strato)
             self.posaLente(
                 lenteDati,
+                colore: call.getObject("lenteColore"),
                 in: strato,
                 viaggia: animato && !eraNascosto
             )
@@ -147,8 +148,20 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
         v.frame = cornice
     }
 
+    /**
+     * La lente, dal 1 settembre (richiesta di Manuel con lo screenshot di
+     * Instagram): non piu un secondo vetro con bordi — una CAPSULA PIENA e
+     * morbida, il colore che ogni tema gia possiede per la sua lente
+     * (`--color-glass-lens`), risolto dal web in numeri. Il vetro vero
+     * resta alla lastra; la lente evidenzia, come su Instagram.
+     */
     @available(iOS 26.0, *)
-    private func posaLente(_ dati: JSObject?, in strato: UIView, viaggia: Bool) {
+    private func posaLente(
+        _ dati: JSObject?,
+        colore: JSObject?,
+        in strato: UIView,
+        viaggia: Bool
+    ) {
         guard let dati,
               let x = (dati["x"] as? NSNumber)?.doubleValue,
               let y = (dati["y"] as? NSNumber)?.doubleValue,
@@ -162,18 +175,37 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
         let cornice = CGRect(x: x, y: y, width: larghezza, height: altezza)
-        let v: UIVisualEffectView
+        let v: UIView
         if let l = lente {
             v = l
         } else {
-            let vetro = UIGlassEffect(style: .clear)
-            v = UIVisualEffectView(effect: vetro)
+            v = UIView()
             v.isUserInteractionEnabled = false
-            v.cornerConfiguration = .capsule()
             strato.insertSubview(v, aboveSubview: lastra ?? strato.subviews[0])
             lente = v
         }
-        let viaggioVero = viaggia && lenteInPosa && !v.isHidden && v.frame != cornice
+        if let c = colore,
+           let r = (c["r"] as? NSNumber)?.doubleValue,
+           let g = (c["g"] as? NSNumber)?.doubleValue,
+           let b = (c["b"] as? NSNumber)?.doubleValue,
+           let a = (c["a"] as? NSNumber)?.doubleValue {
+            v.backgroundColor = UIColor(
+                red: r / 255.0,
+                green: g / 255.0,
+                blue: b / 255.0,
+                alpha: a
+            )
+        }
+        v.layer.cornerRadius = cornice.height / 2
+        // Confronto con mezzo punto di tolleranza: le misure arrivano dal
+        // web con frazioni che ballano, e scambiare un ballo di 0,1px per
+        // un viaggio (o per un frame nuovo da scrivere) ammazza la molla.
+        let stessa =
+            abs(v.frame.origin.x - cornice.origin.x) < 0.5 &&
+            abs(v.frame.origin.y - cornice.origin.y) < 0.5 &&
+            abs(v.frame.width - cornice.width) < 0.5 &&
+            abs(v.frame.height - cornice.height) < 0.5
+        let viaggioVero = viaggia && lenteInPosa && !v.isHidden && !stessa
         v.isHidden = false
         if viaggioVero {
             // La stessa pasta del viaggio web (460ms, coda morbida): e
@@ -187,7 +219,11 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
             ) {
                 v.frame = cornice
             }
-        } else {
+        } else if !stessa {
+            // A pari misura non si tocca niente: riscrivere lo stesso frame
+            // AMMAZZA l'animazione in corso (UIKit tiene il valore finale
+            // come modello), ed era questo a far scattare la lente a meta
+            // viaggio a ogni sincronizzazione di passaggio.
             v.frame = cornice
         }
         lenteInPosa = true
