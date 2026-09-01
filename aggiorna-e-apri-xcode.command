@@ -321,6 +321,18 @@ elif [ "$ESITO" -eq 124 ]; then
 else
   ko "La costruzione e fallita. Ultime righe:"; tail -20 /tmp/jm-build.log; stop
 fi
+# LA RADICE DEL PACCHETTO (1 settembre 2026). Dal 31 agosto la radice del
+# dominio e il sito, che NON entra nel pacchetto del telefono: l'export
+# statico non ha piu un index.html alla radice, e senza `cap sync` si
+# rifiuta ("must contain an index.html"). `npm run build:ios` questa riga
+# ce l'aveva; questo script se l'era persa — da qui in poi no.
+if node scripts/ios-radice.mjs >/tmp/jm-radice.log 2>&1; then
+  ok "Radice del pacchetto scritta (il sito resta fuori, l'app parte da ./app/)"
+else
+  ko "Non riesco a scrivere la radice del pacchetto. Ultime righe:"
+  tail -8 /tmp/jm-radice.log
+  stop
+fi
 if con_tetto 300 npx --no-install cap sync ios >/tmp/jm-sync.log 2>&1; then
   ok "Pacchetto copiato dentro l'app"
 else
