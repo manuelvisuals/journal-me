@@ -213,9 +213,38 @@ sposta_intrusi(){
 }
 sposta_intrusi
 
+# LE MODIFICHE SU FILE TRACCIATI (1 settembre 2026, sera). Un file
+# TRACCIATO e modificato blocca il rebase ("You have unstaged changes"),
+# e sposta_intrusi guarda solo i file nuovi. Successo col mockup del
+# restyling: Claude lo aveva scritto anche direttamente nella cartella,
+# identico a quello su GitHub, e il pull si e piantato per una copia
+# uguale alla sua. Stessa dottrina degli intrusi, nessun ramo perde
+# lavoro: identico a origin/main -> si rimette la versione di HEAD (il
+# pull riporta comunque quel contenuto); diverso -> la TUA copia va al
+# sicuro in _prima-del-pull/ e il file torna pulito.
+sistema_modifiche(){
+  RIPARO="$REPO/_prima-del-pull"
+  git -c core.quotepath=false diff --name-only > /tmp/jm-modificati.txt 2>/dev/null
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    MIO=$(shasum -a 256 "$f" 2>/dev/null | cut -d" " -f1)
+    LORO=$(git show "origin/main:$f" 2>/dev/null | shasum -a 256 | cut -d" " -f1)
+    if [ "$MIO" = "$LORO" ]; then
+      git checkout -- "$f" 2>/dev/null
+      nota "Rimesso a posto $f: era identico a GitHub, non si perde niente."
+    else
+      mkdir -p "$RIPARO/$(dirname "$f")"
+      cp "$f" "$RIPARO/$f" 2>/dev/null
+      git checkout -- "$f" 2>/dev/null
+      nota "Messa al sicuro la tua copia di $f in _prima-del-pull/ (era diversa da GitHub)."
+    fi
+  done < /tmp/jm-modificati.txt
+}
+sistema_modifiche
+
 SPORCO=$(git status --porcelain | grep -v "^?? " | head -10)
 if [ -n "$SPORCO" ]; then
-  nota "Ci sono modifiche non salvate fuori dal pacchetto generato:"
+  nota "Restano modifiche non salvate (probabilmente gia in stage):"
   printf "%s\n" "$SPORCO"
   info "le lascio stare e provo lo stesso a tirare"
 fi
