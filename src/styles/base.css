@@ -105,13 +105,16 @@ body > * {
   color: var(--color-ink-muted);
   border: 1px solid var(--color-line);
   font-family: var(--font-sans);
-  font-size: calc(13px * var(--jm-ui-scale));
+  /* SENTENCE CASE (1 settembre 2026, regola 00 del mockup restyling,
+     approvata da Manuel): i bottoni fantasma smettono di urlare — "Type
+     it", non "TYPE IT". Il maiuscoletto resta alle micro-etichette di
+     navigazione (dock, sezioni), che sono etichette e non frasi. */
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   padding: calc(14px * var(--jm-space));
   border-radius: var(--jm-radius-md);
   cursor: pointer;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: -0.005em;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
   transition: transform 80ms cubic-bezier(0.4, 0, 0.2, 1),
     background-color 80ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -121,16 +124,6 @@ body > * {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   user-select: none;
-}
-
-/* La variante "a frase" (1 settembre 2026, Manuel: "TYPE IT deve essere
-   Type it"): stesso bottone fantasma, ma la scritta resta come l'ha
-   scritta il catalogo — niente urlato. Da usare dove il testo e una
-   frase d'invito, non un'etichetta. */
-.btn-ghost.jm-frase {
-  text-transform: none;
-  letter-spacing: -0.005em;
-  font-size: calc(14px * var(--jm-ui-scale));
 }
 
 .btn-ghost:active:not(:disabled) {
