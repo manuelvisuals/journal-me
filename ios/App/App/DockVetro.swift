@@ -114,13 +114,54 @@ public class DockVetroPlugin: CAPPlugin, CAPBridgedPlugin {
 }
 
 /**
- * Il ponte che registra il plugin. Capacitor carica da solo i plugin dei
- * pacchetti npm; un plugin che vive DENTRO l'app (questo file) va
- * registrato a mano, e il posto e il viewDidLoad del bridge.
- * SceneDelegate monta questa classe al posto di CAPBridgeViewController.
+ * IL ROUTER DEL GUSCIO (1 settembre 2026, primo collaudo su device della
+ * separazione sito/app del 31 agosto).
+ *
+ * Il router di serie di Capacitor serve OGNI indirizzo senza estensione
+ * col file di radice (`/index.html`): va bene quando la radice E l'app.
+ * Da quando la radice e il sito, `/index.html` nel pacchetto e solo un
+ * salto verso `./app/` (scripts/ios-radice.mjs) — e col router di serie
+ * quel salto riconsegna... la pagina che salta. Risultato visto sul
+ * telefono di Manuel: schermo nero e "WebView loaded" stampato
+ * all'infinito.
+ *
+ * Questo router serve a ogni indirizzo il SUO index.html (l'export
+ * statico ne ha uno per pagina: /app/, /app/mese/, ...). Se il file non
+ * esiste, si torna alla radice come faceva Capacitor: mai un errore dove
+ * prima c'era una pagina.
+ */
+struct AppRouter: Router {
+    var basePath: String = ""
+
+    func route(for path: String) -> String {
+        let pathUrl = URL(fileURLWithPath: path)
+        // Un file vero (js, css, immagini): si serve e basta.
+        guard pathUrl.pathExtension.isEmpty else { return basePath + path }
+        var pulito = path
+        while pulito.hasSuffix("/") { pulito.removeLast() }
+        if !pulito.isEmpty && pulito != "/" {
+            let candidato = basePath + pulito + "/index.html"
+            if FileManager.default.fileExists(atPath: candidato) {
+                return candidato
+            }
+        }
+        return basePath + "/index.html"
+    }
+}
+
+/**
+ * Il ponte che registra il plugin e monta il router qui sopra. Capacitor
+ * carica da solo i plugin dei pacchetti npm; un plugin che vive DENTRO
+ * l'app (questo file) va registrato a mano, e il posto e il viewDidLoad
+ * del bridge. SceneDelegate monta questa classe al posto di
+ * CAPBridgeViewController.
  */
 class AppViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(DockVetroPlugin())
+    }
+
+    override open func router() -> Router {
+        return AppRouter()
     }
 }
