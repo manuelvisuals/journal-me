@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Le testate di Oggi e Giornata, sul metro di Month</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* Token del tema MINIMAL chiaro, scala testo 1.15: ogni misura e
+   calc(Npx * var(--s)) come nel codice. Le misure della riga di
+   navigazione sono LE STESSE di .jm-month-header.nav (mese/styles.css):
+   padding 16/24/12, colonne 38 | 1fr | 38, cerchi 38 col filo. */
+:root{
+  --bg:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-md:12px; --r-pill:999px;
+  --s:1.15;
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1380px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:860px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:48px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:940px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.caption .good{color:var(--ok)}
+.row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.misura{font-size:12px;font-weight:700;color:var(--hot);text-align:center;margin-top:12px;line-height:1.7}
+
+/* ---------------- il telefono ---------------- */
+.phone{width:390px;background:var(--bg);border-radius:34px;overflow:hidden;
+  border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 28px 4px;color:var(--ink);font-size:14px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+
+/* La barra in alto (app-bar.tsx): nome schermata in serif a sinistra,
+   AZIONI della schermata e pallino a destra. Le azioni sono cerchi da 38
+   COL FILO, la stessa famiglia delle frecce di Month: comandi. Il
+   pallino resta 44 e senza filo: non e un comando, sei tu. */
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;gap:12px}
+.appbar .sx{display:flex;align-items:center;gap:12px;min-width:0}
+.appbar .t{font-family:var(--serif);font-size:calc(20px * var(--s));font-weight:420;
+  letter-spacing:-.015em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appbar .dx{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.appbar .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#5a6b7a,#2e3a45);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:600;flex:0 0 44px}
+
+/* Il cerchio-comando: 38 col filo, come .jm-mese-nav. */
+.cmd{width:calc(38px * 1);height:38px;flex:0 0 38px;border:1px solid var(--line);
+  border-radius:50%;background:transparent;display:grid;place-items:center;color:var(--ink-muted)}
+.cmd svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.cmd.del{color:var(--danger)}
+.cmd.vuoto{visibility:hidden}
+
+/* LA RIGA DI NAVIGAZIONE — misure di .jm-month-header.nav, identiche su
+   tutte e tre le schermate: padding 16/24/12, griglia 38 | 1fr | 38.
+   Il centro e inchiodato dalle colonne fisse, non "cio che avanza". */
+.navriga{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;
+  gap:8px;padding:16px 24px 12px;border-bottom:1px solid var(--line);background:var(--bg)}
+.navriga .ctr{justify-self:center;text-align:center;min-width:0;max-width:100%}
+
+/* Month: il titolo com'e oggi (jm-month-title, 22 sans 650). */
+.mese-nome{font-size:calc(22px * var(--s));font-weight:650;letter-spacing:-.025em;
+  color:var(--ink);white-space:nowrap}
+.mese-nome i{font-style:normal;font-size:calc(11px * var(--s));color:#B98A4E;opacity:.85}
+
+/* Il giorno: due piani come su The day OGGI (day-nav), stretti quel
+   tanto che basta a stare nei 38 punti della riga di Month. */
+.giorno .rel{display:block;font-family:var(--serif);font-size:calc(18px * var(--s));
+  font-weight:430;color:var(--ink);letter-spacing:-.01em;line-height:1.02}
+.giorno .data{display:block;font-size:calc(10px * var(--s));font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-top:1px;line-height:1.2}
+
+/* ---------------- il contenuto sotto ---------------- */
+.corpo{padding:18px 24px 0}
+.headline{font-size:calc(30px * var(--s));font-weight:700;letter-spacing:-.022em;
+  line-height:1.12;color:var(--ink)}
+.pill{display:inline-block;vertical-align:middle;margin-left:10px;font-size:calc(10px * var(--s));
+  font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:4px 12px}
+.prosa{margin-top:16px;font-size:calc(15px * var(--s));line-height:1.6;color:var(--ink-muted)}
+.sfuma{height:70px;background:linear-gradient(to bottom,transparent,var(--bg));margin-top:-70px;position:relative}
+.fine{height:26px}
+
+/* La griglia finta del mese, solo per dare contesto al re. */
+.mgriglia{padding:14px 24px 0;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.mgriglia b{aspect-ratio:1;border:1px solid var(--line);border-radius:8px;display:block}
+.mgriglia b.on{background:var(--surface)}
+
+.righello{position:absolute;right:8px;width:0;border-left:2px dashed rgba(251,191,36,.55)}
+.righello i{position:absolute;left:-6px;width:10px;height:0;border-top:2px solid rgba(251,191,36,.75)}
+.righello i.giu{bottom:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-title">Le testate di Oggi e Giornata, sul metro di Month</div>
+  <p class="page-sub">
+    Disposizione scelta da Manuel (1 settembre 2026, sera; supera il mockup
+    giornata-testata-compatta): <b>le azioni salgono nella barra in alto</b>, a sinistra
+    del pallino, e sotto resta SOLO la riga del giorno — due piani, nome in serif e data —
+    disegnata con le misure esatte della riga di Month, che e il re del look:
+    padding 16/24/12, colonne 38 | 1fr | 38, cerchi da 38 col filo. Tre schermate,
+    una sola riga di navigazione, le stesse altezze. Il righello giallo misura dal vivo.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="row">
+
+    <!-- ============ MONTH: il re, com'e oggi ============ -->
+    <div>
+      <p class="label">Month — il metro (invariato)</p>
+      <div class="phone" data-tel>
+        <div class="status"><span>23:16</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+        <div class="appbar" data-bar>
+          <span class="sx"><span class="t">Month</span></span>
+          <span class="dx"><span class="av">M</span></span>
+        </div>
+        <div class="navriga" data-riga>
+          <button class="cmd"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="ctr"><span class="mese-nome">September <i>&#9662;</i></span></span>
+          <button class="cmd" style="opacity:.35"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="mgriglia" aria-hidden="true">
+          <b class="on"></b><b></b><b></b><b class="on"></b><b></b><b></b><b></b>
+          <b></b><b class="on"></b><b></b><b></b><b class="on"></b><b></b><b></b>
+        </div>
+        <div class="fine"></div>
+        <div class="righello" data-righello><i></i><i class="giu"></i></div>
+      </div>
+      <p class="misura" data-misura></p>
+    </div>
+
+    <!-- ============ TODAY: azioni nella barra, giorno alla Month ============ -->
+    <div>
+      <p class="label">Today — proposta</p>
+      <div class="phone" data-tel>
+        <div class="status"><span>23:11</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+        <div class="appbar" data-bar>
+          <span class="sx"><span class="t">Today</span></span>
+          <span class="dx">
+            <button class="cmd" aria-label="Scrivi"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            <button class="cmd" aria-label="Racconta a voce"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></button>
+            <span class="av">M</span>
+          </span>
+        </div>
+        <div class="navriga" data-riga>
+          <button class="cmd"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="ctr giorno">
+            <span class="rel">Today</span>
+            <span class="data">1 Sep</span>
+          </span>
+          <!-- Verso domani non si va: la colonna resta (inchioda il
+               centro), il comando no. -->
+          <button class="cmd vuoto" tabindex="-1"></button>
+        </div>
+        <div class="corpo">
+          <div class="headline" data-titolo>Boss approved my project at the office and a peaceful day<span class="pill">Yours</span></div>
+          <p class="prosa">Woke up after seven hours and forty-five minutes of sleep,
+          feeling good. Ran 5 km before breakfast and enjoyed eggs, toast, and coffee&hellip;</p>
+        </div>
+        <div class="sfuma"></div><div class="fine"></div>
+        <div class="righello" data-righello><i></i><i class="giu"></i></div>
+      </div>
+      <p class="misura" data-misura></p>
+    </div>
+
+    <!-- ============ THE DAY: indietro e azioni nella barra ============ -->
+    <div>
+      <p class="label">The day — proposta</p>
+      <div class="phone" data-tel>
+        <div class="status"><span>23:16</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+        <div class="appbar" data-bar>
+          <span class="sx">
+            <button class="cmd" aria-label="Indietro"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <span class="t">The day</span>
+          </span>
+          <span class="dx">
+            <button class="cmd" aria-label="Modifica"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+            <button class="cmd del" aria-label="Elimina"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m1 0-1 14H8L7 6"/></svg></button>
+            <span class="av">M</span>
+          </span>
+        </div>
+        <div class="navriga" data-riga>
+          <button class="cmd"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <span class="ctr giorno">
+            <span class="rel">Saturday</span>
+            <span class="data">29 Aug</span>
+          </span>
+          <button class="cmd"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="corpo">
+          <div class="headline" data-titolo>buon umore e riflessioni sulla separazione</div>
+          <p class="prosa">Giornata iniziata con buon umore dopo 7.5 ore di sonno.
+          Al 7-11 per un caffe, eccitato per il resto della giornata&hellip;</p>
+        </div>
+        <div class="sfuma"></div><div class="fine"></div>
+        <div class="righello" data-righello><i></i><i class="giu"></i></div>
+      </div>
+      <p class="misura" data-misura></p>
+    </div>
+
+  </div>
+
+  <p class="caption">
+    <b>Le regole della proposta.</b> La barra in alto tiene TUTTO cio che si fa: su
+    Today la matita (scrivi) e il microfono (racconta), su The day l'indietro, la
+    matita e il cestino — cerchi da 38 col filo, la stessa famiglia delle frecce di
+    Month; il rosso resta solo nel glifo del cestino, e il pallino resta 44 e senza
+    filo perche non e un comando, sei tu. Sotto, <b>una riga sola per il quando</b>,
+    identica su Month, Today e The day: stesse colonne (38 | centro | 38), stessi
+    padding (16 sopra, 12 sotto), stesso filo sotto la riga. Il giorno parla come su
+    The day oggi — nome in serif, data in maiuscoletto — su TUTTE le schermate del
+    tempo, Oggi compreso. Su Today la freccia destra non c'e (verso domani non si
+    va) ma la sua colonna resta: e cio che tiene il centro inchiodato, come le
+    frecce spente di Month. <span class="good">La riga del giorno scende da due
+    piani sciolti a un modulo fisso</span>, e il titolo arriva subito dopo.
+  </p>
+
+</div>
+<script>
+/* Le misure oneste: altezza della riga di navigazione (che deve essere
+   LA STESSA su tutte e tre) e strada dal fondo della barra al titolo. */
+for (const tel of document.querySelectorAll("[data-tel]")) {
+  const bar = tel.querySelector("[data-bar]");
+  const riga = tel.querySelector("[data-riga]");
+  const tit = tel.querySelector("[data-titolo]");
+  const rig = tel.querySelector("[data-righello]");
+  const r0 = tel.getBoundingClientRect();
+  const rr = riga.getBoundingClientRect();
+  const testo = ["riga di navigazione: " + Math.round(rr.height) + "px"];
+  if (tit) {
+    const a = bar.getBoundingClientRect().bottom;
+    const b = tit.getBoundingClientRect().top;
+    testo.push("dalla barra al titolo: " + Math.round(b - a) + "px");
+    rig.style.top = (a - r0.top) + "px";
+    rig.style.height = (b - a) + "px";
+  } else {
+    rig.style.top = (rr.top - r0.top) + "px";
+    rig.style.height = rr.height + "px";
+  }
+  tel.parentElement.querySelector("[data-misura]").innerHTML = testo.join("<br>");
+}
+</script>
+</body>
+</html>
