@@ -125,7 +125,7 @@ async function apri(path, attesa) {
   const tabIniziali = (await page.locator("nav.lg\\:hidden a").allInnerTexts()).map((x) => x.toLowerCase());
   check(
     "senza moduli la barra e quella di sempre",
-    tabIniziali.join(" ").includes("ricorda"),
+    tabIniziali.join(" ").includes("memo"),
     tabIniziali.join(" | "),
   );
 
@@ -152,11 +152,11 @@ async function apri(path, attesa) {
   const tabs = (await page.locator("nav.lg\\:hidden a").allInnerTexts()).map((x) => x.toLowerCase());
   check("acceso, Palestra entra nella barra", tabs.join(" ").includes("palestra"), tabs.join(" | "));
   check(
-    "prende il posto di Ricorda, non un sesto posto",
+    "prende il posto di Memo, non un sesto posto",
     (await page.locator("nav.lg\\:hidden a").count()) === 5,
     String(await page.locator("nav.lg\\:hidden a").count()),
   );
-  check("Ricorda resta raggiungibile da Impostazioni", true);
+  check("Memo resta raggiungibile da Impostazioni", true);
 
   // Sopravvive a un ricaricamento: e una preferenza, non uno stato di pagina.
   await page.reload({ waitUntil: "networkidle" });
@@ -218,7 +218,7 @@ async function apri(path, attesa) {
     tabs2.join(" | "),
   );
 
-  // Desktop: i moduli stanno nella colonna, e Ricorda non si sposta.
+  // Desktop: i moduli stanno nella colonna, e Memo non si sposta.
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.reload({ waitUntil: "networkidle" });
   await page.waitForSelector(".jm-rail-l", { timeout: 20000 });
@@ -229,7 +229,7 @@ async function apri(path, attesa) {
     /palestra/i.test(rail),
     rail.replace(/\n/g, " | ").slice(0, 110),
   );
-  check("sul desktop Ricorda resta al suo posto", /ricorda/i.test(rail));
+  check("sul desktop Memo resta al suo posto", /memo/i.test(rail));
   await ctx.close();
 }
 

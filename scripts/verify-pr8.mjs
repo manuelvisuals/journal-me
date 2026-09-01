@@ -57,19 +57,19 @@ async function newPage(width, height) {
   await page.waitForTimeout(300);
   check("palette: focus assente fuori da Oggi", (await page.locator(".jm-pal-item", { hasText: "Modalita focus" }).count()) === 0);
 
-  // Cattura in Ricorda
+  // Cattura in Memo (era Ricorda: rinominata il 1 settembre 2026)
   await page.locator(".jm-pal-input").type("comprare il latte domani");
   await page.waitForTimeout(200);
-  const capture = page.locator(".jm-pal-item", { hasText: "Salva in Ricorda" });
+  const capture = page.locator(".jm-pal-item", { hasText: "Salva in Memo" });
   check("palette: voce cattura presente", (await capture.count()) === 1);
   await capture.click();
   await page.waitForTimeout(400);
-  check("palette: feedback 'salvato in Ricorda'", await page.locator(".jm-pal-done").isVisible());
+  check("palette: feedback 'salvato in Memo'", await page.locator(".jm-pal-done").isVisible());
   await page.waitForTimeout(900);
   check("palette: si chiude da sola dopo la cattura", !(await page.locator(".jm-pal").isVisible().catch(() => false)));
   await page.goto(BASE + "/app/remember", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
-  check("Ricorda: l'appunto catturato esiste", (await page.getByText("comprare il latte domani").count()) >= 1);
+  check("Memo: l'appunto catturato esiste", (await page.getByText("comprare il latte domani").count()) >= 1);
 
   // Cmd+Shift+R apre la scrittura (locale: mic -> editor)
   await page.keyboard.press("Control+Shift+r");
