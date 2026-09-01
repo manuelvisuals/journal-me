@@ -93,3 +93,18 @@ una lastra nativa SOPRA la WebView, nessuno z-index puo coprirla, e i
 tasti in fondo ai chiarimenti finivano dietro il vetro. Una superficie a
 schermo pieno nuova DEVE montare lo stesso hook. Banco:
 `verify-bugfix-20260901` (elenco delle superfici cablate, morso incluso).
+
+## Le testate sul metro di Month (1 settembre 2026, sera)
+
+Mockup approvato: `design/mockups/testate-oggi-giornata.html`. Sul
+telefono i comandi di Oggi (matita = modifica, foglio con la penna =
+scrivi, microfono) e di /giorno (indietro, matita, cestino) vivono nella
+BARRA IN ALTO via `AppBarAzione` / `AppBarPrima` (scheletro, app-bar.tsx),
+come cerchi `.jm-cmd` da 38 col filo. Sotto la barra resta solo
+`day-nav`, ridisegnata sul metro di `.jm-month-header.nav`: colonne
+38 | 1fr | 38, padding 16/24/12, riga 66-67px, nome in serif anche su
+Oggi (il doppione con la barra e il prezzo dichiarato della coerenza,
+scelta di Manuel). La freccia verso domani sparisce ma la sua colonna
+resta. Le vecchie intestazioni (`jm-col-head` di Oggi, `jm-day-head-riga`)
+sono SOLO desktop (`jm-solo-desktop`). Tutto il ridisegno telefono sta in
+un blocco `@media (max-width: 1023px)` in styles.css: da lg niente cambia.
