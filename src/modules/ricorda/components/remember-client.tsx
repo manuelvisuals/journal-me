@@ -108,7 +108,7 @@ export function RememberClient({ mode, initial }: Props) {
             pochi pixel di distanza non e una gerarchia, e un errore. Da lg
             la barra non esiste e il titolo resta dov'era: su desktop non
             cambia niente. */}
-        <h1 className="jm-rem-h jm-solo-desktop">{t("Ricorda")}</h1>
+        <h1 className="jm-rem-h jm-solo-desktop">{t("Memo")}</h1>
         <div className="jm-rem-filter">
           {FILTERS.map((f) => (
             <button

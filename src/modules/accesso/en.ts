@@ -16,7 +16,7 @@ export const ACCESSO: Record<string, string> = {
   "Le tue giornate restano qui. Nessun account, nessun server, nessuno che possa leggerle. Nemmeno io.": "Your days stay here. No account, no server, nobody who can read them. Not even me.",
   "Scrivi la giornata, quando vuoi": "Write your day, whenever you want",
   "Obiettivi, peso, sonno, umore": "Goals, weight, sleep, mood",
-  "Mese e Ricorda": "Month and Remember",
+  "Mese e Memo": "Month and Memo",
   "Backup su file, quando vuoi tu": "Backup to a file, whenever you want",
   "Niente racconto a voce": "No voice journaling",
   "Niente titoli, sintesi e recap AI": "No AI titles, summaries or recaps",

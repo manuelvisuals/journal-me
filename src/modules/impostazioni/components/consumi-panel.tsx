@@ -105,7 +105,7 @@ function activityTitle(
   if (id === "transcribe") return t("Trascrizione della voce");
   if (id === "recap") return t("Recap del mese");
   if (id === "process-entry") return t("Titoli e sintesi delle giornate");
-  return t("Persone, date e note di Ricorda");
+  return t("Persone, date e note di Memo");
 }
 
 /** Il conteggio umano sotto ogni voce: registrazioni e minuti, o chiamate. */

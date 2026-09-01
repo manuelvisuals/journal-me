@@ -82,7 +82,7 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={t("Ricorda...")}
+          placeholder={t("Memo...")}
           aria-label={t("Cosa vuoi ricordare")}
         />
         <button

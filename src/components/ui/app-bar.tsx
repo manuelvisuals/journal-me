@@ -41,7 +41,7 @@ import { useT } from "@/lib/i18n";
  */
 const TITOLI: ReadonlyArray<readonly [string, string]> = [
   ["/app/mese", "Mese"],
-  ["/app/remember", "Ricorda"],
+  ["/app/remember", "Memo"],
   ["/app/recap", "Recap"],
   ["/app/settings", "Impostazioni"],
   ["/app/giorno", "Giornata"],

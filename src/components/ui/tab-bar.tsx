@@ -139,7 +139,7 @@ const SIDE_TABS_LEFT: Tab[] = [
 const SIDE_TABS_RIGHT: Tab[] = [
   {
     key: "remember",
-    label: "Ricorda",
+    label: "Memo",
     href: "/app/remember",
     icon: (
       <svg

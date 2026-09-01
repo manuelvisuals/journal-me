@@ -379,7 +379,7 @@ export function SettingsClient({
                   nella barra in basso: questa riga e la strada che gli
                   resta, e per questo non e nascosta dietro il modulo. */}
               <SetRow
-                title={t("Ricorda")}
+                title={t("Memo")}
                 desc={t("Persone, posti e idee salvate al volo.")}
                 onClick={() => router.push("/app/remember")}
                 chevron
@@ -443,7 +443,7 @@ export function SettingsClient({
               <SetRow
                 title={t("Esporta un backup")}
                 desc={t(
-                  "Un solo file con tutto: giornate, obiettivi, metriche, Ricorda.",
+                  "Un solo file con tutto: giornate, obiettivi, metriche, Memo.",
                 )}
                 value={
                   busy === "export"

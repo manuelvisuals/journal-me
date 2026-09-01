@@ -199,11 +199,12 @@ for (const [locale, atteso, sep] of [
   const { ctx, page, errors } = await open("en-GB", { path: "/app/remember" });
   await page.waitForTimeout(900);
   check(
-    "Ricorda in inglese: titolo e filtri tradotti",
-    (await page.locator(".jm-rem-h").innerText()).trim() === "Remember",
+    // Dal 1 settembre 2026 la sezione si chiama "Memo" in tutte le lingue.
+    "Memo in inglese: titolo giusto",
+    (await page.locator(".jm-rem-h").innerText()).trim() === "Memo",
     await page.locator(".jm-rem-h").innerText(),
   );
-  check("Ricorda in inglese: zero errori console", errors.length === 0, errors.slice(0, 3).join(" | "));
+  check("Memo in inglese: zero errori console", errors.length === 0, errors.slice(0, 3).join(" | "));
   await ctx.close();
 }
 

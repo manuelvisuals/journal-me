@@ -14,7 +14,7 @@ import { useActiveModules } from "@/lib/modules";
  * navigazione, "Racconta" (una parola: vedi sotto), account con badge in fondo.
  *
  * Le voci vengono dal mockup approvato: Recap e di primo livello e
- * l'etichetta e "Ricorda" (SPEC-v2 §10.7 le segnava come decisione aperta;
+ * l'etichetta e "Memo" (SPEC-v2 §10.7 le segnava come decisione aperta;
  * la rail approvata le chiude cosi — cambiarle e editare NAV_ITEMS).
  */
 
@@ -49,7 +49,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   {
     key: "ricorda",
     href: "/app/remember",
-    label: "Ricorda",
+    label: "Memo",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z" />
