@@ -207,7 +207,14 @@
   margin-top: calc(44px * var(--jm-space));
   display: flex;
   flex-direction: column;
-  max-height: calc(100% - 44px * var(--jm-space));
+  /* ALTO COME IL SALUTO DI STOQFOLIO (1 settembre 2026, Manuel, con lo
+     screenshot dei due fianco a fianco): sul telefono il riquadro
+     riempiva quasi tutto lo schermo, bordo a bordo. Il riferimento
+     misura ~il 74 per cento dello schermo, centrato, con aria sopra e
+     sotto; il tetto di prima (schermo meno 44px) resta come seconda
+     rete per gli schermi bassissimi. La lettera lunga scorre nel corpo,
+     che per questo esiste (vedi jm-benv-sal-corpo qui sotto). */
+  max-height: min(74dvh, calc(100% - 44px * var(--jm-space)));
   min-height: 0;
 }
 
