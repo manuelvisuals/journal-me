@@ -245,6 +245,39 @@ con_tetto 900 npm install --no-audit --no-fund >/tmp/jm-npm.log 2>&1
 ESITO=$?
 if [ "$ESITO" -eq 0 ]; then
   ok "Dipendenze aggiornate"
+  # L'ATTREZZO C'E DAVVERO? (1 settembre 2026). npm install puo dire "tutto
+  # aggiornato" fidandosi dei suoi appunti (node_modules/.package-lock.json)
+  # anche quando la cartella e rimasta a meta da un'installazione interrotta:
+  # successo oggi — install verde, ma node_modules/.bin/next mancante, e il
+  # build cancellato da npx con "missing packages: next@16.3.4" (npx, non
+  # trovando next in casa, era andato a chiedere l'ULTIMA versione al
+  # registro — il 16.3.4 non c'entrava niente col progetto, che vuole la
+  # 16.2.6 del package.json). Non ci si fida dell'esito: si guarda se
+  # l'attrezzo esiste, e se manca si butta la cartella e si reinstalla.
+  if [ ! -x "node_modules/.bin/next" ]; then
+    nota "npm dice che va tutto bene, ma manca node_modules/.bin/next: reinstallo da zero."
+    info "node $(node -v), npm $(npm -v 2>/dev/null)"
+    rm -rf node_modules
+    info "reinstallo tutto (qualche minuto)..."
+    con_tetto 900 npm install --no-audit --no-fund >/tmp/jm-npm2.log 2>&1
+    ESITO2=$?
+    if [ "$ESITO2" -eq 124 ]; then
+      ko "La reinstallazione non e finita in quindici minuti: mi fermo. Ultime righe:"
+      tail -12 /tmp/jm-npm2.log
+      stop
+    fi
+    if [ "$ESITO2" -ne 0 ]; then
+      ko "La reinstallazione pulita e fallita. Ultime righe:"
+      tail -12 /tmp/jm-npm2.log
+      stop
+    fi
+    if [ ! -x "node_modules/.bin/next" ]; then
+      ko "Anche dopo la reinstallazione manca next. Copia queste righe a Claude:"
+      npm ls next 2>&1 | head -5
+      stop
+    fi
+    ok "Dipendenze reinstallate da zero: next c'e"
+  fi
 elif [ "$ESITO" -eq 124 ]; then
   ko "npm install non e finito in quindici minuti: mi fermo. Ultime righe:"
   tail -12 /tmp/jm-npm.log
