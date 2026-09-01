@@ -16,6 +16,7 @@
  */
 
 import { useSyncExternalStore } from "react";
+import { applyUiScale, getUiScale } from "@/lib/ui-scale";
 import {
   APPEARANCE_STORAGE_KEY,
   cssVarsFor,
@@ -84,6 +85,43 @@ function apply(themeId: string, mode: Mode): void {
 
 function applyCurrent(): void {
   apply(readTheme(), resolveMode(readAppearance()));
+}
+
+/**
+ * Riafferma il tema se qualcuno ha spogliato <html>.
+ *
+ * Il boot script scrive data-theme, data-mode e le custom property su
+ * <html> PRIMA del primo paint. Ma quegli attributi non stanno nel JSX del
+ * layout: se React ricrea la radice (fallback dopo un errore di
+ * idratazione), li toglie — e l'app ricade sul tema di fabbrica scritto
+ * nella cintura CSS (defaultThemeCss), qualunque cosa dica localStorage.
+ * E successo sul telefono il 1 settembre 2026: tema wine scelto, schermata
+ * dei chiarimenti, e l'app tornata minimal da sola.
+ *
+ * Questa funzione confronta cio che <html> dice con cio che l'utente ha
+ * scelto e, SOLO se divergono, riapplica. Il "solo se" e cio che la rende
+ * sicura dentro un MutationObserver: apply() cambia gli attributi,
+ * l'observer riparte, il confronto trova tutto a posto e si ferma.
+ */
+export function riaffermaTema(): void {
+  if (typeof document === "undefined") return;
+  const el = document.documentElement;
+  const theme = readTheme();
+  const mode = resolveMode(readAppearance());
+  const spogliato =
+    el.getAttribute("data-theme") !== theme ||
+    el.getAttribute("data-mode") !== mode ||
+    el.style.getPropertyValue("--jm-bg-app") === "";
+  if (spogliato) {
+    apply(theme, mode);
+    emit();
+  }
+  /* Lo stesso colpo di spugna porta via anche --jm-ui-scale (la
+     dimensione del testo, scritta dallo stesso boot script): si rimette
+     qui, con lo stesso criterio "solo se manca". */
+  if (el.style.getPropertyValue("--jm-ui-scale") === "") {
+    applyUiScale(getUiScale());
+  }
 }
 
 /* Il listener di sistema: attaccato una volta sola, al primo uso client. */
