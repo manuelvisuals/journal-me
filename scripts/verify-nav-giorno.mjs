@@ -438,7 +438,7 @@ async function trascina(page, dx) {
   );
   check(
     "il nome parla col serif di prosa del tema",
-    /spectral|newsreader|garamond|serif/i.test(testata.font),
+    /spectral|newsreader|garamond|palatino|georgia/i.test(testata.font),
     testata.font,
   );
   await ctx.close();

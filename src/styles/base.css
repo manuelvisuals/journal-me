@@ -1210,9 +1210,14 @@ summary:active {
 }
 
 .jm-appbar-t {
-  font-size: calc(17px * var(--jm-ui-scale));
-  font-weight: 650;
-  letter-spacing: -0.02em;
+  /* IL TITOLO PARLA IL DIARIO (mockup restyling §08, "serif di prosa"
+     scelto da Manuel il 1 settembre 2026): la stessa voce della domanda
+     del vuoto e del nome del giorno. Il corsivo del marchio e stato
+     provato e scartato li: e una firma, non un'etichetta. */
+  font-family: var(--font-serif);
+  font-size: calc(20px * var(--jm-ui-scale));
+  font-weight: 420;
+  letter-spacing: -0.015em;
   color: var(--color-ink);
   min-width: 0;
   overflow: hidden;

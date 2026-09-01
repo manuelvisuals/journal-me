@@ -306,6 +306,18 @@ const SCHERMATE = [
     daFerma.fondo,
   );
 
+  /* Il titolo parla il diario (restyling §08, scelta del 1 settembre):
+     serif di prosa, non piu il sans — e mai il corsivo del marchio, che
+     resta la firma. */
+  const fontTitolo = await page.evaluate(
+    () => getComputedStyle(document.querySelector(".jm-appbar-t")).fontFamily,
+  );
+  check(
+    "il titolo della schermata e in serif di prosa",
+    /spectral|newsreader|garamond|palatino|georgia/i.test(fontTitolo) && !/sacramento/i.test(fontTitolo),
+    fontTitolo,
+  );
+
   /* Si allunga la pagina quanto basta e si scorre: il banco misura il
      MECCANISMO (scroll -> vetro), non quanto e lunga oggi la schermata. */
   await page.evaluate(() => {
