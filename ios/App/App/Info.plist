@@ -28,6 +28,10 @@
 	<string>dayalogue usa il microfono per registrare il racconto della tua giornata. L'audio resta sul telefono: viene trascritto e poi scartato, si salva solo il testo.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>dayalogue usa Face ID per aprire il diario solo a te.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>dayalogue usa la fotocamera solo quando scegli di scattare una foto per il profilo o per la giornata. Nessuna foto viene scattata da sola.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>dayalogue accede al rullino solo quando scegli una foto per il profilo o per la giornata. Vengono lette solo le foto che scegli tu.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
