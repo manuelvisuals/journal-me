@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AppBarAzione, AppBarPrima } from "@/components/ui/app-bar";
+import { AppBarAzione } from "@/components/ui/app-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -310,18 +310,10 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
           pallino. Sotto la barra resta solo la riga del giorno, sul
           metro di Month. La riga qui sotto resta per il DESKTOP, dove
           la barra non esiste. */}
-      <AppBarPrima>
-        <button
-          type="button"
-          className="jm-cmd"
-          aria-label={t("Indietro")}
-          onClick={() => router.push("/app/mese")}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-      </AppBarPrima>
+      {/* L'indietro NON sta nella barra (Manuel, 2 settembre 2026,
+          notte: "eliminami il tasto indietro davanti a The day"): per
+          tornare al Mese c'e il tasto Mese nel dock, sempre visibile. La
+          barra tiene solo matita e cestino. */}
       {entry && (
         <AppBarAzione>
           <button

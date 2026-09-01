@@ -133,6 +133,41 @@ function subscribeNoop(): () => void {
   return () => {};
 }
 
+/**
+ * IL NOME FORZATO (1 settembre 2026, notte, richiesta di Manuel). La
+ * pagina Record — il microfono del dock — vive su /app ma non e "Oggi":
+ * e il momento in cui racconti, e la barra deve dirlo. Una schermata puo
+ * forzare il nome finche il suo stato e vivo; alla chiusura torna quello
+ * della mappa. Il nome e una frase italiana e passa da t(), come tutto.
+ */
+let titoloForzato: string | null = null;
+const titoloListeners = new Set<() => void>();
+
+function titoloEmit(): void {
+  for (const l of titoloListeners) l();
+}
+
+function titoloSubscribe(l: () => void): () => void {
+  titoloListeners.add(l);
+  return () => {
+    titoloListeners.delete(l);
+  };
+}
+
+export function useTitoloBarra(titolo: string, attivo: boolean): void {
+  useEffect(() => {
+    if (!attivo) return;
+    titoloForzato = titolo;
+    titoloEmit();
+    return () => {
+      if (titoloForzato === titolo) {
+        titoloForzato = null;
+        titoloEmit();
+      }
+    };
+  }, [titolo, attivo]);
+}
+
 function SlotPortal({
   slot,
   children,
@@ -166,8 +201,16 @@ export function AppBar() {
   const pathname = usePathname();
   const vetro = useContenutoSottoLaBarra();
   const titolo = titoloSchermata(pathname);
+  const forzato = useSyncExternalStore(
+    titoloSubscribe,
+    () => titoloForzato,
+    () => null,
+  );
 
+  /* La barra ESISTE dove la mappa dice che esiste; il nome forzato cambia
+     solo cosa dice, mai dove sta. */
   if (titolo === null) return null;
+  const mostrato = forzato ?? titolo;
 
   return (
     <header className={`jm-appbar${vetro ? " jm-appbar-vetro" : ""}`}>
@@ -180,7 +223,7 @@ export function AppBar() {
           {/* L'indietro della Giornata, quando c'e: prima del nome, come
               su ogni schermata di dettaglio di iOS. Vuoto sparisce. */}
           <span id={SLOT_PRIMA} className="jm-appbar-px" />
-          <span className="jm-appbar-t">{t(titolo)}</span>
+          <span className="jm-appbar-t">{t(mostrato)}</span>
         </span>
         <span className="jm-appbar-r">
           {/* Vuoto su quasi tutte le schermate: la regola :empty lo fa

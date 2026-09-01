@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Aggiungere a Oggi: un tasto solo, e il box in fondo</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+:root{
+  --bg:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-md:12px; --r-pill:999px;
+  --s:1.15;
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --pg:#17171A; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1380px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:860px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:48px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:940px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.caption .good{color:var(--ok)} .caption .bad{color:var(--no)}
+.row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+
+.phone{width:390px;background:var(--bg);border-radius:34px;overflow:hidden;
+  border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 28px 4px;color:var(--ink);font-size:14px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;gap:12px}
+.appbar .t{font-family:var(--serif);font-size:calc(20px * var(--s));font-weight:420;
+  letter-spacing:-.015em;color:var(--ink)}
+.appbar .dx{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.appbar .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#5a6b7a,#2e3a45);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:600;flex:0 0 44px}
+.cmd{width:38px;height:38px;flex:0 0 38px;border:1px solid var(--line);
+  border-radius:50%;background:transparent;display:grid;place-items:center;color:var(--ink-muted)}
+.cmd svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.corpo{padding:0 24px}
+.goalrow{display:flex;align-items:center;gap:16px;min-height:56px;border-bottom:1px solid var(--line);
+  font-size:calc(16px * var(--s));color:var(--ink-muted)}
+.goalrow .c{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);flex:0 0 26px}
+.goalrow.on{color:var(--ink)}
+.goalrow.on .c{background:#7a3b52;border-color:#7a3b52;position:relative}
+.goalrow.on .c::after{content:"";position:absolute;inset:0;display:block;
+  background:center/12px no-repeat url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>')}
+
+.day-add{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  min-height:calc(64px * var(--s));margin:calc(30px) 0 calc(24px);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+  color:var(--ink-muted);font-size:calc(14.5px * var(--s));font-weight:600}
+.day-add svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+
+.dockspazio{height:8px}
+.dock{margin:0 14px 14px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:space-around;
+  padding:10px 8px;box-shadow:0 10px 30px rgba(0,0,0,.10)}
+.dock .tab{display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-size:10px;letter-spacing:.14em;color:var(--ink-faint);font-weight:600}
+.dock .mic{width:52px;height:52px;border-radius:50%;background:#1D1D1F;display:grid;place-items:center}
+.dock .mic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+/* il foglio (terzo pannello) */
+.sheetwrap{position:relative}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(2px)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg);
+  border-top:1px solid var(--line);border-radius:20px 20px 0 0;padding:10px 16px 30px}
+.grip{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 14px}
+.srow{display:flex;align-items:center;gap:14px;min-height:58px;padding:10px 6px;
+  border-bottom:1px solid var(--line);font-size:calc(15px * var(--s));color:var(--ink);font-weight:500}
+.srow:last-child{border-bottom:none}
+.srow .ic{width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--surface);
+  display:grid;place-items:center}
+.srow .ic svg{width:16px;height:16px;stroke:var(--ink-muted);fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round}
+.srow .sub{display:block;font-weight:400;font-size:calc(12px * var(--s));color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-title">Aggiungere a Oggi: un tasto solo, e il box in fondo</div>
+  <p class="page-sub">
+    Su Oggi manca cio che The day ha gia: il box <b>"Aggiungi a questa giornata"</b> in
+    fondo al racconto (e con lui le foto dal rullino). E in alto ci sono TRE gesti di
+    aggiunta travestiti da tre icone diverse. La proposta: in fondo torna il box,
+    identico a The day; in alto restano DUE comandi — la matita (modifica il racconto)
+    e un <b>+</b> che apre LO STESSO foglio del box. Un solo concetto, "aggiungi",
+    con due maniglie e una sola destinazione.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="row">
+
+    <!-- PRIMA -->
+    <div>
+      <p class="label">Prima — tre icone, niente box</p>
+      <div class="phone">
+        <div class="status"><span>00:40</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+        <div class="appbar">
+          <span class="t">Today</span>
+          <span class="dx">
+            <span class="cmd"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            <span class="cmd"><svg viewBox="0 0 24 24"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.4 2.6a2.12 2.12 0 0 1 3 3L13 14l-4 1 1-4Z"/></svg></span>
+            <span class="cmd"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+            <span class="av">M</span>
+          </span>
+        </div>
+        <div class="corpo">
+          <div class="goalrow"><span class="c"></span>learning</div>
+          <div class="goalrow on"><span class="c"></span>healthy food</div>
+          <div style="height:26px"></div>
+        </div>
+        <div class="dockspazio"></div>
+        <div class="dock">
+          <span class="tab">TODAY</span><span class="tab">MONTH</span>
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="tab">MEMO</span><span class="tab">GYM</span>
+        </div>
+      </div>
+      <p class="caption" style="max-width:390px;margin-top:12px">
+        La lista finisce nel nulla, le foto non hanno una porta, e
+        <span class="bad">tre icone dicono tre volte "aggiungi"</span> in tre modi.
+      </p>
+    </div>
+
+    <!-- DOPO -->
+    <div>
+      <p class="label">Dopo — matita, +, e il box come su The day</p>
+      <div class="phone">
+        <div class="status"><span>00:40</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+        <div class="appbar">
+          <span class="t">Today</span>
+          <span class="dx">
+            <span class="cmd"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            <span class="cmd"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span class="av">M</span>
+          </span>
+        </div>
+        <div class="corpo">
+          <div class="goalrow"><span class="c"></span>learning</div>
+          <div class="goalrow on"><span class="c"></span>healthy food</div>
+          <div class="day-add">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add to this day
+          </div>
+        </div>
+        <div class="dockspazio"></div>
+        <div class="dock">
+          <span class="tab">TODAY</span><span class="tab">MONTH</span>
+          <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="tab">MEMO</span><span class="tab">GYM</span>
+        </div>
+      </div>
+      <p class="caption" style="max-width:390px;margin-top:12px">
+        <span class="good">Il box torna in fondo, identico a The day</span>; in alto
+        la matita modifica, il <b>+</b> aggiunge. Stessa icona nel box e nel
+        tasto: sono la stessa porta.
+      </p>
+    </div>
+
+    <!-- IL FOGLIO -->
+    <div>
+      <p class="label">Cosa aprono il + e il box: lo stesso foglio</p>
+      <div class="phone sheetwrap">
+        <div class="status"><span>00:40</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+        <div class="appbar">
+          <span class="t">Today</span>
+          <span class="dx">
+            <span class="cmd"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            <span class="cmd"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+            <span class="av">M</span>
+          </span>
+        </div>
+        <div class="corpo" style="opacity:.4">
+          <div class="goalrow"><span class="c"></span>learning</div>
+          <div class="goalrow on"><span class="c"></span>healthy food</div>
+          <div style="height:230px"></div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grip"></div>
+          <div class="srow"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            <span>Write more<span class="sub">It joins what you already told</span></span></div>
+          <div class="srow"><span class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+            <span>Tell it out loud<span class="sub">The mic, as always</span></span></div>
+          <div class="srow"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></span>
+            <span>Add from camera roll<span class="sub">Photos live with the day</span></span></div>
+          <div class="srow"><span class="ic"><svg viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+            <span>Save to Memo<span class="sub">People, places, ideas</span></span></div>
+        </div>
+      </div>
+      <p class="caption" style="max-width:390px;margin-top:12px">
+        Il foglio e quello di The day, foto comprese: scrivere, raccontare,
+        <span class="good">aggiungere dal rullino</span>, salvare in Memo.
+        Il microfono resta comunque a un tocco: e il tasto grande del dock.
+      </p>
+    </div>
+
+  </div>
+
+  <p class="caption">
+    <b>Le regole.</b> La matita resta il solo "modifica" (il racconto che c'e gia); il
+    <b>+</b> e il solo "aggiungi" (cose nuove: testo, voce, foto, Memo) — spariscono il
+    quadratino con la penna e il microfono della barra, che erano scorciatoie parziali
+    della stessa idea. Il box in fondo e IDENTICO a quello di The day, stessa classe e
+    stesso foglio: una porta sola, imparata una volta, uguale ovunque. Il + e il box
+    aprono la stessa cosa per costruzione, non per disciplina.
+  </p>
+
+</div>
+</body>
+</html>

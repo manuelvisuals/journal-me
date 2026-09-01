@@ -54,6 +54,13 @@ type Props = {
    * ripeterlo sarebbe rumore.
    */
   variant?: "add" | "empty";
+  /**
+   * Il + della barra in alto apre LO STESSO foglio del box (mockup
+   * oggi-aggiungi, approvato il 2 settembre 2026): il chiamante alza
+   * questo numero e il menu si apre. Stessa porta per costruzione,
+   * non per disciplina.
+   */
+  apriSegnale?: number;
 };
 
 type Sheet = "closed" | "menu" | "write" | "record" | "remember";
@@ -64,6 +71,7 @@ export function AddToDay({
   onSaved,
   onError,
   variant = "add",
+  apriSegnale = 0,
 }: Props) {
   const t = useT();
   const canVoice = useCan("voice");
@@ -73,6 +81,15 @@ export function AddToDay({
      invisibile e solo la maniglia per aprirla (mockup foto-rullino §01). */
   const fileRef = useRef<HTMLInputElement | null>(null);
   const modoFoto = useStorageMode();
+
+  /* Il segnale dal + della barra: quando cresce, il menu si apre. Si
+     confronta durante il disegno e non in un effetto (stesso pattern del
+     muro in day-nav): il foglio compare nello stesso istante del tocco. */
+  const [ultimoSegnale, setUltimoSegnale] = useState<number>(apriSegnale);
+  if (apriSegnale !== ultimoSegnale) {
+    setUltimoSegnale(apriSegnale);
+    if (apriSegnale > 0 && sheet === "closed") setSheet("menu");
+  }
 
   const dayLabel = compactDayDate(parseISODate(date));
   const dayName = longDayName(parseISODate(date));

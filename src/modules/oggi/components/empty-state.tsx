@@ -17,6 +17,14 @@ type Props = {
    * Assente sulla giornata vuota, dove non c'e nessun "indietro".
    */
   onCancel?: () => void;
+  /**
+   * Il calendarietto della pagina Record (2 settembre 2026, richiesta di
+   * Manuel): il giorno a cui va il racconto, visibile e cambiabile PRIMA
+   * di aprire il microfono, non solo dentro l'ascolto. La schermata resta
+   * stupida: riceve l'etichetta pronta e il tocco, il giorno lo tiene chi
+   * la monta.
+   */
+  dataChip?: { label: React.ReactNode; onClick: () => void };
 };
 
 export function EmptyState({
@@ -24,10 +32,37 @@ export function EmptyState({
   onWriteManually,
   writeFirst = false,
   onCancel,
+  dataChip,
 }: Props) {
   const t = useT();
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 pb-10">
+      {dataChip && (
+        <div style={{ marginBottom: 26 }}>
+          <button
+            type="button"
+            className="jm-date-chip"
+            onClick={dataChip.onClick}
+            aria-haspopup="dialog"
+          >
+            <svg
+              className="icn"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+            {dataChip.label}
+            <span className="chev">&#9662;</span>
+          </button>
+        </div>
+      )}
       <h1
         className="text-center"
         style={{
