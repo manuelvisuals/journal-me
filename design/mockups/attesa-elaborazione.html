@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . L'attesa dell'elaborazione: passi e secondi, non una rotella muta</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+:root{
+  --s:1.15;
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1380px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:860px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:48px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;max-width:940px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.misura{font-size:12px;font-weight:700;color:var(--hot);text-align:center;margin-top:12px;line-height:1.7}
+
+/* ---- il telefono: tema MINIMAL chiaro, e WINE scuro ---- */
+.phone{width:390px;height:844px;border-radius:34px;overflow:hidden;border:1px solid var(--pg-line);
+  box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;flex-direction:column;
+  --bg:#FFFFFF;--surface:#F5F5F7;--surface-2:#EBEBEF;--ink:#1D1D1F;--ink-muted:#494950;--ink-faint:#6E6E73;
+  --accent:#1D1D1F;--line:rgba(0,0,0,.10);background:var(--bg);color:var(--ink)}
+.phone.wine{--bg:#0E0709;--surface:#1D1013;--surface-2:#241418;--ink:#F4E7DE;--ink-muted:#CDB7AE;--ink-faint:#8E7770;
+  --accent:#E3A15F;--line:rgba(255,229,214,.075)}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 4px;color:var(--ink);font-size:14px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+
+/* Dietro: la giornata sfocata, come oggi (l'overlay copre con l'85% del fondo + blur 8). */
+.dietro{position:absolute;inset:0;padding:120px 24px 0;filter:blur(8px);opacity:.35;pointer-events:none}
+.dietro .h{font-family:var(--serif);font-size:30px;color:var(--ink);line-height:1.15}
+.dietro p{margin-top:18px;font-size:15px;color:var(--ink-muted);line-height:1.6}
+
+/* ---- OGGI: la rotella muta ---- */
+.oggi{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.spinner{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.oggi .k{margin-top:28px;font-size:calc(11px * var(--s));font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.oggi .sub{margin-top:12px;font-size:calc(14px * var(--s));color:var(--ink-muted);max-width:280px;text-align:center;line-height:1.5}
+
+/* ---- PROPOSTA ---- */
+.att{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+/* L'anello: 96px, filo da 2. La traccia e il filo di sempre (--line), il
+   pieno e l'accento del tema. Si riempie con l'attesa PREVISTA (45 s):
+   e un orologio, non una barra di avanzamento che finge di sapere. */
+.ring{position:relative;width:96px;height:96px}
+.ring svg{width:96px;height:96px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:2}
+.ring .tr{stroke:var(--line)}
+.ring .pr{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:295.3;transition:stroke-dashoffset 1s linear}
+/* Dentro: i secondi che mancano, in serif, la stessa voce dei titoli. */
+.ring .n{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);
+  font-size:calc(30px * var(--s));font-weight:400;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums}
+.ring .n small{font-family:var(--font);font-size:calc(10px * var(--s));font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink-faint);margin-left:1px}
+.att .k{margin-top:26px;font-size:calc(11px * var(--s));font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+
+/* I tre passi: una colonna stretta, allineata a sinistra come una lista di
+   Apple. Ogni riga ha un punto: pieno = fatto, che pulsa = in corso,
+   vuoto = deve ancora venire. Il testo del passo in corso e in --ink, gli
+   altri arretrano. Niente barre, niente percentuali. */
+.passi{margin-top:22px;display:flex;flex-direction:column;gap:14px;width:236px}
+.passo{display:flex;align-items:center;gap:14px;font-size:calc(15px * var(--s));color:var(--ink-faint);line-height:1.3}
+.passo .d{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--ink-faint);flex:0 0 8px;position:relative}
+.passo.fatto{color:var(--ink-muted)}
+.passo.fatto .d{background:var(--ink-muted);border-color:var(--ink-muted)}
+.passo.ora{color:var(--ink)}
+.passo.ora .d{background:var(--accent);border-color:var(--accent);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,var(--accent) 45%,transparent)}50%{box-shadow:0 0 0 6px transparent}}
+
+/* La riga onesta, in fondo al gruppo: dice quanto ci vuole DI SOLITO,
+   e quando i secondi finiscono cambia frase invece di mentire. */
+.att .nota{margin-top:30px;font-size:calc(13px * var(--s));color:var(--ink-faint);text-align:center;max-width:260px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">L'attesa dell'elaborazione</h1>
+  <p class="page-sub">Oggi, dopo "Continua", una rotella muta per 30-60 secondi. Misurato sul sito vero: quattro
+    chiamate all'AI in fila, la piu lenta (i chiarimenti) da sola 16-21 s. Due cose insieme: <b>si accorcia</b>
+    (le chiamate partono in parallelo dove si puo: da ~35 s a ~28 s sul computer) e <b>si spiega</b> — i tre passi
+    che stanno succedendo, e i secondi che di solito mancano.</p>
+
+  <div class="divider"></div>
+  <p class="label">01 . Oggi</p>
+  <p class="caption">La rotella non dice quanto manca ne cosa sta facendo. Dopo venti secondi sembra rotta.</p>
+  <div class="row">
+    <div class="phone">
+      <div class="status"><span>01:44</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+      <div class="dietro"><div class="h">giornata produttiva con palestra e caffe</div><p>Woke up and had breakfast at 7-Eleven with coffee and sugar. Worked from 11 to 13, then went to the gym from 13 to 15.</p></div>
+      <div class="oggi"><div class="spinner"></div><div class="k">elaborazione</div><div class="sub">sto leggendo quello che hai detto e tiro fuori il succo</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">02 . Proposta: un orologio e tre passi</p>
+  <p class="caption">Un anello che si svuota in 45 secondi (il tempo che DI SOLITO basta) con i secondi al centro, e tre righe
+    che si accendono una dopo l'altra mentre succedono davvero: <b>leggo il racconto</b> (titolo, aree, fatti, persone),
+    <b>salvo la giornata</b>, <b>controllo cosa non e chiaro</b> (le domande). Sotto, una riga onesta. Nessuna
+    percentuale inventata: i passi sono eventi veri del codice, l'anello e solo tempo.</p>
+  <div class="row">
+    <div class="phone">
+      <div class="status"><span>01:44</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+      <div class="dietro"><div class="h">giornata produttiva con palestra e caffe</div><p>Woke up and had breakfast at 7-Eleven with coffee and sugar. Worked from 11 to 13, then went to the gym from 13 to 15.</p></div>
+      <div class="att">
+        <div class="ring"><svg viewBox="0 0 96 96"><circle class="tr" cx="48" cy="48" r="47"/><circle class="pr" cx="48" cy="48" r="47" style="stroke-dashoffset:52"/></svg><div class="n"><span>37<small>s</small></span></div></div>
+        <div class="k">elaborazione</div>
+        <div class="passi">
+          <div class="passo ora"><span class="d"></span>Leggo il racconto</div>
+          <div class="passo"><span class="d"></span>Salvo la giornata</div>
+          <div class="passo"><span class="d"></span>Controllo cosa non e chiaro</div>
+        </div>
+        <div class="nota">Di solito ci vuole meno di un minuto.</div>
+      </div>
+    </div>
+    <div class="phone">
+      <div class="status"><span>01:44</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+      <div class="dietro"><div class="h">giornata produttiva con palestra e caffe</div><p>Woke up and had breakfast at 7-Eleven with coffee and sugar. Worked from 11 to 13, then went to the gym from 13 to 15.</p></div>
+      <div class="att">
+        <div class="ring"><svg viewBox="0 0 96 96"><circle class="tr" cx="48" cy="48" r="47"/><circle class="pr" cx="48" cy="48" r="47" style="stroke-dashoffset:216"/></svg><div class="n"><span>12<small>s</small></span></div></div>
+        <div class="k">elaborazione</div>
+        <div class="passi">
+          <div class="passo fatto"><span class="d"></span>Leggo il racconto</div>
+          <div class="passo fatto"><span class="d"></span>Salvo la giornata</div>
+          <div class="passo ora"><span class="d"></span>Controllo cosa non e chiaro</div>
+        </div>
+        <div class="nota">Di solito ci vuole meno di un minuto.</div>
+      </div>
+    </div>
+    <div class="phone wine">
+      <div class="status"><span>01:44</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+      <div class="dietro"><div class="h">giornata produttiva con palestra e caffe</div><p>Woke up and had breakfast at 7-Eleven with coffee and sugar. Worked from 11 to 13, then went to the gym from 13 to 15.</p></div>
+      <div class="att">
+        <div class="ring"><svg viewBox="0 0 96 96"><circle class="tr" cx="48" cy="48" r="47"/><circle class="pr" cx="48" cy="48" r="47" style="stroke-dashoffset:295"/></svg><div class="n"><span>0<small>s</small></span></div></div>
+        <div class="k">elaborazione</div>
+        <div class="passi">
+          <div class="passo fatto"><span class="d"></span>Leggo il racconto</div>
+          <div class="passo fatto"><span class="d"></span>Salvo la giornata</div>
+          <div class="passo ora"><span class="d"></span>Controllo cosa non e chiaro</div>
+        </div>
+        <div class="nota">Ci vuole un po' piu del solito. Ancora un momento.</div>
+      </div>
+    </div>
+  </div>
+  <p class="misura">Anello 96px, filo 2px; secondi in serif 30px; passi 15px con punto da 8px; tutte le misure di testo scalano con la dimensione del testo.<br>
+    Terzo telefono: tema wine scuro, secondi finiti — la frase cambia, l'anello resta pieno vuoto, il punto continua a pulsare. Non si mente mai sul tempo.</p>
+
+  <div class="divider"></div>
+  <p class="label">03 . Cosa cambia sotto</p>
+  <p class="caption">Lo split per data e l'analisi partono INSIEME (prima in fila: -3,6 s nel caso normale, un racconto di un giorno).
+    I chiarimenti partono appena l'analisi e pronta, senza aspettare le scritture sul database (-1-2 s).
+    La chiamata dei chiarimenti resta la piu lenta (16-21 s): accorciarla di piu vuol dire cambiare modello o farla partire
+    prima di sapere chi c'era, ed e una scelta da prendere con una prova, non qui.</p>
+</div>
+</body>
+</html>
