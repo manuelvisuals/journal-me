@@ -152,6 +152,22 @@ const ultima = (page, tipo) =>
     Boolean(lenteGiusta),
     giro2.lente ? `lente x=${Math.round(giro2.lente.x)}` : "nessuna lente",
   );
+  const colore = await page.evaluate(() => {
+    const sinc = [...window.__vetroChiamate]
+      .reverse()
+      .find((ch) => ch.tipo === "sincronizza" && ch.lenteColore);
+    return sinc?.lenteColore ?? null;
+  });
+  check(
+    "la lente ha il colore del tema (token risolto, translucido)",
+    Boolean(
+      colore &&
+        [colore.r, colore.g, colore.b].every((n) => Number.isFinite(n)) &&
+        colore.a > 0 &&
+        colore.a < 1,
+    ),
+    colore ? `rgba(${colore.r},${colore.g},${colore.b},${colore.a})` : "nessun colore",
+  );
   check(
     "icone, microfono e bolla web sono invisibili (li disegna il nativo)",
     giro2.opTasto === "0" && giro2.opMic === "0" && giro2.opBolla === "0",
