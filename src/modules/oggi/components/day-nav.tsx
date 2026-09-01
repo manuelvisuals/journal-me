@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 import {
-  compactDayDate,
+  bareDayDate,
   parseISODate,
   relativeDayLabel,
   todayISO,
@@ -177,7 +177,9 @@ export function DayNav({
         >
           {relativeDayLabel(dataObj, parseISODate(oggi))}
         </span>
-        <span className="jm-day-nav-abs">{compactDayDate(dataObj)}</span>
+        {/* La coordinata, senza cappello: il giorno della settimana sta
+            gia sopra per esteso (mockup restyling §07, B in serif). */}
+        <span className="jm-day-nav-abs">{bareDayDate(dataObj)}</span>
       </button>
 
       <button

@@ -249,8 +249,8 @@ for (const [path, w, h] of [
     voci.join(" . "),
   );
   check(
-    "ci sono 'Scrivi altro' e 'Salva in Ricorda'",
-    voci.includes("Scrivi altro") && voci.includes("Salva in Ricorda"),
+    "ci sono 'Scrivi altro' e 'Salva in Memo'",
+    voci.includes("Scrivi altro") && voci.includes("Salva in Memo"),
     voci.join(" . "),
   );
 

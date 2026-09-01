@@ -192,14 +192,36 @@ export function fullWeekday(d: Date): string {
  * Relative label for a date vs today:
  *   target === today           -> "Oggi"
  *   target === today - 1 day   -> "Ieri"
- *   else within last 6 days    -> full weekday name ("Lunedi")
- *   else                       -> compactDayDate fallback
+ *   any other past day        -> full weekday name ("Lunedi")
+ *   future (non capita)       -> compactDayDate fallback
+ *
+ * Prima il nome del giorno si fermava a sei giorni fa e poi ricadeva
+ * sulla data: dovunque questo nome stia SOPRA una data (testata del
+ * giorno, overlay di registrazione, chiarimenti) usciva la stessa data
+ * scritta due volte. Mockup restyling §07, variante B scelta da Manuel
+ * il 1 settembre 2026: sopra il QUANDO umano, sotto la coordinata.
  */
 export function relativeDayLabel(target: Date, today: Date): string {
   const ms = today.setHours(12, 0, 0, 0) - new Date(target).setHours(12, 0, 0, 0);
   const days = Math.round(ms / (24 * 60 * 60 * 1000));
   if (days === 0) return t("Oggi");
   if (days === 1) return t("Ieri");
-  if (days >= 2 && days <= 6) return fullWeekday(target);
+  if (days >= 2) return fullWeekday(target);
   return compactDayDate(target);
+}
+
+/**
+ * "23 Ago" — la data che si toglie il cappello: NIENTE giorno della
+ * settimana (quello sta sopra, per esteso), e l'anno solo quando non e
+ * quello corrente ("23 Ago 2025"). E la meta bassa della coppia della
+ * testata del giorno (mockup restyling §07 B).
+ */
+export function bareDayDate(d: Date, today: Date = new Date()): string {
+  const day = d.getDate();
+  const month = new Intl.DateTimeFormat(loc(), { month: "short" })
+    .format(d)
+    .replace(/\.$/, "");
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  const anno = d.getFullYear() === today.getFullYear() ? "" : ` ${d.getFullYear()}`;
+  return `${day} ${cap(month)}${anno}`;
 }
