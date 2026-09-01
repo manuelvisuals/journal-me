@@ -17,6 +17,7 @@ import { RailToday } from "@/modules/oggi/components/rail-today";
 import { DayNav, giornoPrima } from "@/modules/oggi/components/day-nav";
 import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 import { DaySwipe } from "@/modules/oggi/components/day-swipe";
+import { AddToDay } from "@/modules/oggi/components/add-to-day";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { openPremiumWall } from "@/modules/abbonamento";
@@ -232,6 +233,10 @@ export function TodayClient({
      a voce sia scritto. Torna a oggi ogni volta che la pagina si apre. */
   const [dataRacconto, setDataRacconto] = useState<string>(() => todayISO());
   const [calendarioRacconto, setCalendarioRacconto] = useState<boolean>(false);
+  /* IL + DELLA BARRA (mockup oggi-aggiungi, approvato il 2 settembre
+     2026): apre lo stesso foglio del box "Aggiungi a questa giornata"
+     in fondo alla vista piena. Il numero cresce, il foglio si apre. */
+  const [aggiungiSegnale, setAggiungiSegnale] = useState<number>(0);
   useTitoloBarra("Racconta", view === "scelta");
 
   // Watch for ?record=1 changes coming from clicking the mic in the tab bar
@@ -343,6 +348,26 @@ export function TodayClient({
     // Volutamente senza `entry`: parte all'apertura, non a ogni salvataggio.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canAI, mode]);
+
+  /* Dopo un'aggiunta dal foglio: la giornata si aggiorna subito, e se
+     l'analisi ha lasciato domande in coda si chiedono adesso — la stessa
+     cortesia che The day fa gia (chiediDopoAnalisi in day-client). */
+  const chiediDopoAggiunta = async (aggiornata: Entry) => {
+    setEntry(aggiornata);
+    try {
+      if (bastaPerOra()) return;
+      const coda = await domandeInSospeso(mode);
+      if (coda.length === 0) return;
+      setChiarimenti({
+        domande: coda,
+        attachDate: aggiornata.entryDate,
+        entryForDate: aggiornata,
+      });
+      setView((v) => (v === "filled" || v === "empty" ? "chiarimenti" : v));
+    } catch {
+      // Niente domande: l'aggiunta e comunque salva.
+    }
+  };
 
   const handleStartRecording = () => {
     setSaveError(null);
@@ -796,27 +821,19 @@ export function TodayClient({
               <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
             </svg>
           </button>
+          {/* IL +: un solo "aggiungi" (mockup oggi-aggiungi, 2 settembre
+              2026). Apre lo stesso foglio del box in fondo — testo, voce,
+              foto dal rullino, Memo. Il quadratino con la penna e il
+              microfono della barra erano scorciatoie parziali della
+              stessa idea; il microfono resta il tasto grande del dock. */}
           <button
             type="button"
             className="jm-cmd"
-            aria-label={t("Scrivi a mano")}
-            onClick={handleWriteManually}
+            aria-label={t("Aggiungi a questa giornata")}
+            onClick={() => setAggiungiSegnale((n) => n + 1)}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-              <path d="M18.4 2.6a2.12 2.12 0 0 1 3 3L13 14l-4 1 1-4Z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="jm-cmd"
-            aria-label={t("Registra di nuovo")}
-            onClick={handleStartRecording}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="9" y="3" width="6" height="12" rx="3" />
-              <path d="M5 11a7 7 0 0 0 14 0" />
-              <path d="M12 18v3" />
+              <path d="M12 5v14M5 12h14" />
             </svg>
           </button>
         </AppBarAzione>
@@ -990,6 +1007,19 @@ export function TodayClient({
               : null
           }
           onSeePremium={() => openPremiumWall("aiSummary")}
+          footer={
+            entry ? (
+              <AddToDay
+                mode={mode}
+                date={entry.entryDate}
+                apriSegnale={aggiungiSegnale}
+                onSaved={(e) => {
+                  void chiediDopoAggiunta(e);
+                }}
+                onError={setSaveError}
+              />
+            ) : null
+          }
         />
         </DaySwipe>
       )}
