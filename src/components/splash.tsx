@@ -73,7 +73,7 @@ export function Splash() {
       aria-hidden="true"
     >
       <div className="jm-splash-halo" />
-      <div className="jm-splash-mark">
+      <div className="jm-splash-mark jm-marchio">
         <BrandMark />
         <span className="jm-splash-dot">day</span>alogue
       </div>

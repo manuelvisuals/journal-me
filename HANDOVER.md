@@ -161,6 +161,22 @@ Tema "wine premium". Token in `src/app/globals.css`:
 --color-danger        #F87171
 ```
 
+**Il marchio si scrive in Sacramento** (31 agosto 2026, scelta di Manuel dopo il
+mockup dei quattro corsivi in stile "hello" di Apple). Non e un carattere dei temi:
+i sette dei temi cambiano quando cambi tema, questo no — il nome del prodotto si
+scrive sempre uguale, come un logo. Token `--jm-font-marchio` in `styles/base.css`,
+classe `.jm-marchio` in `styles/overrides.css` (li e non in base.css perche ognuna
+delle sette schermate ha gia una classe che dichiara il font, e a parita di forza
+vince l'ordine dei file). Sette misure e non un `em` solo: `em` si calcola sul
+GENITORE, e con un `1.55em` il segno accanto alla scritta smetteva di seguire il
+cursore "Dimensione del testo" — l'ha trovato `verify-logo`, non un ragionamento.
+Il file e in `src/fonts/` con la sua licenza accanto (SIL Open Font License 1.1,
+Brian J. Bonislawsky / Astigmatic): si puo usare in un prodotto commerciale, dentro
+un sito e dentro un'app sull'App Store; l'unica cosa vietata e vendere il carattere
+da solo. Banco: `verify-marchio`, che non controlla il CSS ma MISURA la parola e la
+confronta con un carattere inesistente — un marchio che sembra corsivo ed e il
+ripiego di sistema e il difetto che nessuno vede.
+
 Inter per UI e numeri, Spectral per la prosa editoriale (recap, dropcap, titoli
 editoriali). Body con radial-gradient caldo in alto a sinistra + grana SVG ~2.8%
 (`body::before` / `body::after`). Tap feedback globale: `scale(0.97)` a 80ms.
