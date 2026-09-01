@@ -419,11 +419,29 @@ export function TodayClient({
   ) => {
     setView("processing");
     try {
+      // I CHIARIMENTI PARTONO APPENA L'ANALISI E PRONTA, non dopo le
+      // scritture (2 settembre 2026, richiesta di Manuel sulla lentezza).
+      // E la chiamata AI piu lenta di tutte, e dipende dal testo, dalle
+      // persone e dalle aree — che l'analisi ha appena letto — non dal
+      // fatto che la giornata sia gia scritta. Una promessa per data:
+      // sotto si usa quella della giornata a cui ci si attacca.
+      const chiarimentiInCorso = new Map<string, Promise<Domanda[]>>();
       const saved = await saveRecording({
         transcript: text,
         durationSeconds: opts.durationSeconds,
         defaultDate: opts.targetDate,
         skipAI: !opts.withAI,
+        onAnalisi: (a) => {
+          if (!canAI || chiarimentiInCorso.has(a.date)) return;
+          const p = chiediChiarimenti(mode, a.date, a.transcript, {
+            people: a.people,
+            areas: a.areas,
+          });
+          // Se nessuno la aspettera (ci si attacca a un altro giorno), un
+          // suo errore non deve diventare un "unhandled rejection".
+          p.catch(() => undefined);
+          chiarimentiInCorso.set(a.date, p);
+        },
       });
       // Giornata salvata davvero: SOLO ora la bozza si cancella (§6).
       await clearDraft(opts.targetDate);
@@ -461,10 +479,11 @@ export function TodayClient({
       // un'AI che non esiste voleva dire una richiesta buttata a ogni
       // giornata scritta da un utente gratis.
       if (canAI && entryForDate) {
-        const domande = await chiediChiarimenti(mode, attachDate, entryForDate.transcript, {
-          people: entryForDate.people ?? [],
-          areas: entryForDate.areas ?? [],
-        });
+        const domande = await (chiarimentiInCorso.get(attachDate) ??
+          chiediChiarimenti(mode, attachDate, entryForDate.transcript, {
+            people: entryForDate.people ?? [],
+            areas: entryForDate.areas ?? [],
+          }));
         if (domande.length > 0) {
           setChiarimenti({ domande, attachDate, entryForDate });
           setPending(null);

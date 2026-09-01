@@ -177,5 +177,18 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // UN SEGMENTO SOLO = LE PAROLE ORIGINALI. Se il racconto e tutto di un
+  // giorno non c'e niente da tagliare, e il testo del modello — anche
+  // quando "copia" — puo differire per una virgola o un accento: sarebbe
+  // una riscrittura che nessuno ha chiesto, sul testo che e la fonte di
+  // verita. Restituire il transcript com'e lo evita, e permette al client
+  // (save-recording.ts) di riconoscere che l'analisi gia partita in
+  // parallelo vale: stesso testo, stessa data, stessa risposta.
+  if (segments.length === 1) {
+    return NextResponse.json({
+      segments: [{ date: segments[0].date, text: transcript }],
+    });
+  }
+
   return NextResponse.json({ segments });
 }

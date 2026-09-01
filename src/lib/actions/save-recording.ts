@@ -24,7 +24,7 @@ import { can } from "@/lib/capabilities";
 import { getStore } from "@/lib/data/store";
 import { invalidateAll } from "@/lib/data/cache";
 import { analyzeDay, localFields } from "@/lib/actions/analyze-day";
-import type { Entry } from "@/lib/types";
+import type { AreaSummary, Entry } from "@/lib/types";
 
 export type RecordingInput = {
   transcript: string;
@@ -49,6 +49,24 @@ export type RecordingInput = {
    * "ieri sera" mentre registri stamattina e la norma.
    */
   skipSplit?: boolean;
+  /**
+   * Chiamata APPENA l'analisi di un segmento e pronta, PRIMA delle
+   * scritture sul database (2 settembre 2026, richiesta di Manuel: "questa
+   * parte impiega fino a un minuto, scopri se si puo velocizzare").
+   *
+   * Serve a una cosa sola: far partire i chiarimenti (la chiamata AI piu
+   * lenta di tutte, 16-21 s misurati) senza aspettare che la giornata, le
+   * misure e i fatti siano scritti. Le domande dipendono dal testo, dalle
+   * persone e dalle aree — cioe da cio che l'analisi ha appena detto — e
+   * non dal fatto che la riga sia gia nel database. Chi ascolta riceve
+   * esattamente cio che verra salvato.
+   */
+  onAnalisi?: (analisi: {
+    date: string;
+    transcript: string;
+    people: string[];
+    areas: AreaSummary[];
+  }) => void;
 };
 
 const SEGMENT_SEP = "\n---\n";
@@ -76,27 +94,75 @@ async function callSplitByDate(
   }
 }
 
+/** Il testo completo del giorno: cio che c'era piu il pezzo nuovo. */
+function testoCompleto(existing: Entry | null, pezzo: string): string {
+  return existing?.transcript
+    ? existing.transcript + SEGMENT_SEP + pezzo.trim()
+    : pezzo.trim();
+}
+
 export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
   const store = getStore();
   const useAI = can("aiSummary") && !input.skipAI;
+  const conSplit = useAI && !input.skipSplit;
 
-  const segments =
-    useAI && !input.skipSplit
-      ? await callSplitByDate(input.transcript, input.defaultDate)
-      : [{ date: input.defaultDate, text: input.transcript }];
+  /* LO SPLIT E L'ANALISI PARTONO INSIEME (2 settembre 2026). Prima
+     andavano in fila: 3,6 s per sapere se il racconto parla di piu giorni,
+     e SOLO DOPO l'analisi (~10 s). Ma nel caso normale — un racconto, un
+     giorno — lo split risponde "e tutto di oggi" e l'analisi sarebbe
+     partita comunque sullo stesso identico testo. Quindi si scommette:
+     l'analisi del caso "un giorno solo" parte subito, in parallelo; se lo
+     split conferma (un segmento, la data di oggi — e il server, in quel
+     caso, restituisce le parole originali, vedi split-by-date.ts) si usa
+     quella; altrimenti si butta e si rifa per segmento, come prima. La
+     scommessa persa costa un'analisi in piu; vinta, regala 3-4 secondi a
+     chi sta guardando una rotella. */
+  const scommessa = conSplit
+    ? (async () => {
+        const existing = await store.loadEntryForDate(input.defaultDate);
+        const fullTranscript = testoCompleto(existing, input.transcript);
+        const ai = await analyzeDay(fullTranscript);
+        return { existing, fullTranscript, ai };
+      })()
+    : null;
+  // Una scommessa persa non deve far esplodere niente: si ignora e basta.
+  scommessa?.catch(() => undefined);
+
+  const segments = conSplit
+    ? await callSplitByDate(input.transcript, input.defaultDate)
+    : [{ date: input.defaultDate, text: input.transcript }];
 
   const saved: Entry[] = [];
   for (const seg of segments) {
-    const existing = await store.loadEntryForDate(seg.date);
-    const fullTranscript = existing?.transcript
-      ? existing.transcript + SEGMENT_SEP + seg.text.trim()
-      : seg.text.trim();
+    const vinta =
+      scommessa !== null &&
+      segments.length === 1 &&
+      seg.date === input.defaultDate &&
+      seg.text.trim() === input.transcript.trim()
+        ? await scommessa.catch(() => null)
+        : null;
+    const existing = vinta
+      ? vinta.existing
+      : await store.loadEntryForDate(seg.date);
+    const fullTranscript = vinta
+      ? vinta.fullTranscript
+      : testoCompleto(existing, seg.text);
     // Da zero, su TUTTO il testo del giorno: titolo, sintesi, aree e
     // persone escono dalla stessa lettura dello stesso testo. Vedi
     // src/lib/actions/analyze-day.ts.
-    const ai = useAI
-      ? await analyzeDay(fullTranscript)
-      : localFields(fullTranscript);
+    const ai = vinta
+      ? vinta.ai
+      : useAI
+        ? await analyzeDay(fullTranscript)
+        : localFields(fullTranscript);
+    if (useAI && input.onAnalisi) {
+      input.onAnalisi({
+        date: seg.date,
+        transcript: fullTranscript,
+        people: ai.people ?? [],
+        areas: ai.areas ?? [],
+      });
+    }
     const dur = seg.date === input.defaultDate ? input.durationSeconds : 0;
     let entry = await store.saveProcessedEntry(seg.date, fullTranscript, ai, dur);
     // Le misure dette a voce (peso, ore di sonno, umore al risveglio:
