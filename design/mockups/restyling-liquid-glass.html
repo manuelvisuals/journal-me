@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . L'audit liquid glass (Today, Month, Memo, il vuoto)</title>
+<style>
+/* I font arrivano da src/fonts, non da Google: il sandbox non raggiunge
+   fonts.googleapis.com e renderebbe Georgia al posto di ogni serif senza
+   dirlo (stessa trappola del mockup del dock). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Spectral";src:url("../../src/fonts/spectral-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:block}
+@font-face{font-family:"Spectral";src:url("../../src/fonts/spectral-latin-300-normal.woff2") format("woff2");font-weight:300;font-display:block}
+@font-face{font-family:"Sacramento";src:url("../../src/fonts/sacramento-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:block}
+
+/* ================================================================
+   Token del tema MINIMAL (src/themes/minimal.ts), scala testo 1.15 —
+   gli stessi del mockup del dock: valori veri, non tinte inventate.
+   ================================================================ */
+:root{
+  --bg:#FFFFFF; --bg-app:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --accent:#1D1D1F; --accent-pressed:#000000; --on-accent:#FFFFFF;
+  --line:rgba(0,0,0,.10);
+  --glass-veil:rgba(255,255,255,.58);
+  --glass-edge:rgba(255,255,255,.85);
+  --glass-ring:rgba(0,0,0,.12);
+  --glass-drop:rgba(0,0,0,.16);
+  --glass-lens:rgba(0,0,0,.07);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px; --r-pill:999px;
+  --s:1.15; --sp:1;
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --prosa:"Spectral",Georgia,serif;
+  --corsivo:"Sacramento","Snell Roundhand",cursive;
+
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:840px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.stamp{display:block;width:max-content;margin:22px auto 0;font-size:10px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;border-radius:var(--r-pill);
+  color:var(--hot);border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.07)}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:900px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.caption .good{color:var(--ok)} .caption .bad{color:var(--no)}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em}
+.caption code{background:var(--pg-2);padding:1px 6px;border-radius:5px;color:var(--pg-mut)}
+.row{display:flex;gap:34px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.65;max-width:390px}
+.cap b{color:var(--pg-mut);font-weight:600}
+.pick{display:block;width:max-content;margin:10px auto 0;font-size:9.5px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:var(--r-pill);
+  color:var(--ok);border:1px solid rgba(74,222,128,.35);background:rgba(74,222,128,.07)}
+.spec{max-width:980px;margin:0 auto}
+.card{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:14px;padding:24px 26px}
+.card h3{font-size:11px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--pg-faint);margin-bottom:16px}
+.card ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.card li{font-size:13.5px;color:var(--pg-mut);line-height:1.65;padding-left:20px;position:relative}
+.card li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--pg-faint)}
+.card b{color:var(--pg-ink);font-weight:600}
+.card.go{border-color:rgba(74,222,128,.28);background:rgba(74,222,128,.05)}
+.card.go h3{color:var(--ok)} .card.go li::before{background:var(--ok)}
+.card.stop{border-color:rgba(248,113,113,.28);background:rgba(248,113,113,.05)}
+.card.stop h3{color:var(--no)} .card.stop li::before{background:var(--no)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:980px;margin:0 auto}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;max-width:1180px;margin:0 auto}
+@media(max-width:980px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* -------- gli interruttori PRIMA/DOPO e le varianti -------- */
+.switch{display:flex;gap:6px;justify-content:center;margin:0 0 18px}
+.switch button{font-family:var(--font);font-size:11px;font-weight:650;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--pg-faint);background:var(--pg-2);
+  border:1px solid var(--pg-line);border-radius:var(--r-pill);padding:8px 18px;cursor:pointer}
+.switch button.on{color:var(--pg);background:var(--pg-ink);border-color:var(--pg-ink)}
+
+/* ================================================================
+   IL TELEFONO
+   ================================================================ */
+.phone{width:390px;height:722px;border-radius:38px;overflow:hidden;background:var(--bg-app);
+  color:var(--ink);position:relative;display:flex;flex-direction:column;font-family:var(--font);
+  box-shadow:0 26px 62px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.10)}
+.phone.dark{
+  --bg:#000000; --bg-app:#0B0B0C; --surface:#161618; --surface-2:#1F1F22;
+  --ink:#F5F5F7; --ink-muted:#B8B8BE; --ink-faint:#86868B;
+  --accent:#F5F5F7; --accent-pressed:#D8D8DE; --on-accent:#1D1D1F;
+  --line:rgba(255,255,255,.12);
+  --glass-veil:rgba(28,28,32,.55);
+  --glass-edge:rgba(255,255,255,.24);
+  --glass-ring:rgba(255,255,255,.14);
+  --glass-drop:rgba(0,0,0,.55);
+  --glass-lens:rgba(255,255,255,.13);
+}
+.notch{height:34px;flex:0 0 34px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px}
+.notch i{width:104px;height:5px;border-radius:3px;background:var(--surface-2);display:block}
+.ph-body{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.ph-scroll{flex:1;min-height:0;overflow-y:auto;padding:8px 24px 150px}
+.ph-scroll::-webkit-scrollbar{display:none}
+
+/* la barra in alto (pallino account) */
+.hd{padding:14px 24px 6px;display:flex;align-items:center;justify-content:space-between}
+.hd .d{font-size:calc(11px * var(--s));font-weight:600;color:var(--ink-faint);
+  letter-spacing:.20em;text-transform:uppercase}
+.hd i{width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:calc(13px * var(--s));
+  font-weight:600;color:var(--ink-muted);font-style:normal}
+
+/* -------- IL DOCK (replica fedele del vetro vero) -------- */
+.dock-wrap{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;
+  padding:0 24px;pointer-events:none;z-index:20}
+.dock{position:relative;display:flex;align-items:center;gap:2px;width:100%;
+  max-width:calc(440px - 48px);padding:7px;border-radius:var(--r-pill);
+  background:var(--glass-veil);
+  -webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);
+  border:1px solid var(--glass-ring);
+  box-shadow:0 18px 38px var(--glass-drop),inset 0 1px 0 var(--glass-edge)}
+.dock-t{position:relative;z-index:2;flex:1 1 0;min-width:0;min-height:52px;border-radius:var(--r-pill);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:var(--ink-faint)}
+.dock-t.on{color:var(--ink)}
+.dock-t svg{width:22px;height:22px}
+.dock-t s{font-size:calc(9px * var(--s));font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;text-decoration:none}
+.dock-mic{position:relative;z-index:3;width:52px;height:52px;flex:0 0 52px;margin:0 2px;
+  border-radius:50%;background:var(--accent);color:var(--on-accent);
+  border:1px solid rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.42)}
+.dock-mic svg{width:23px;height:23px}
+.dock-lente{position:absolute;top:7px;height:52px;border-radius:var(--r-pill);z-index:1;
+  background:var(--glass-lens)}
+
+/* ================================================================
+   01 . LA BARRA MEMO
+   ================================================================ */
+/* PRIMA: la barra incollata al dock, tre controlli in fila */
+.memobar-prima{position:absolute;left:12px;right:12px;bottom:96px;z-index:15;
+  display:flex;align-items:center;gap:8px;padding:12px 14px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-lg)}
+.memobar-prima .ph{flex:1;font-size:calc(15px * var(--s));color:var(--ink-faint)}
+.memobar-prima .note{font-size:calc(10px * var(--s));font-weight:650;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);background:var(--surface-2);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:9px 13px}
+.memobar-prima .tondo{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;flex:0 0 40px}
+.memobar-prima .tondo.mic{border:1px solid var(--line);color:var(--ink-muted)}
+.memobar-prima .tondo.piu{background:var(--ink-faint);color:var(--bg-app);font-size:22px;font-weight:300}
+
+/* DOPO: la capsula di vetro sospesa, sorella del dock */
+.memobar-dopo{position:absolute;left:24px;right:24px;bottom:96px;z-index:15;
+  display:flex;align-items:center;gap:6px;padding:7px 7px 7px 20px;
+  border-radius:var(--r-pill);
+  background:var(--glass-veil);
+  -webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);
+  border:1px solid var(--glass-ring);
+  box-shadow:0 12px 28px var(--glass-drop),inset 0 1px 0 var(--glass-edge)}
+.memobar-dopo .ph{flex:1;font-size:calc(15px * var(--s));color:var(--ink-faint)}
+.memobar-dopo .tondo{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;flex:0 0 44px;color:var(--ink-muted)}
+.memobar-dopo .tondo.piu{background:var(--accent);color:var(--on-accent);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.4)}
+.memobar-dopo .tondo.piu svg{width:20px;height:20px}
+
+/* le righe della lista Memo, per dare contesto dietro le barre */
+.rem-h{font-family:var(--serif);font-size:calc(26px * var(--s));font-weight:400;color:var(--ink);
+  letter-spacing:-.022em;margin:6px 0 14px}
+.rem-k{font-size:calc(10px * var(--s));font-weight:650;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin:18px 0 4px}
+.rem-r{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:13px 0;border-bottom:1px solid var(--line)}
+.rem-r b{font-size:calc(15px * var(--s));font-weight:600;color:var(--ink)}
+.rem-r span{font-size:calc(12.5px * var(--s));color:var(--ink-faint);font-family:var(--prosa);font-style:italic}
+
+/* ================================================================
+   02 . IL VUOTO (How was your day?)
+   ================================================================ */
+.vuoto{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 30px;text-align:center}
+.vuoto-h{font-size:calc(30px * var(--s));font-weight:650;letter-spacing:-.03em;color:var(--ink);line-height:1.15}
+.vuoto-h.serif{font-family:var(--prosa);font-weight:300;font-size:calc(33px * var(--s));letter-spacing:-.02em}
+.vuoto-h.corsivo{font-family:var(--corsivo);font-weight:400;font-size:calc(44px * var(--s));letter-spacing:0}
+.vuoto-p{font-size:calc(14.5px * var(--s));color:var(--ink-faint);line-height:1.6;margin:14px 0 34px}
+.vuoto .btnp{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
+  background:var(--accent);color:var(--on-accent);border:1px solid rgba(0,0,0,.3);
+  font-size:calc(15px * var(--s));font-weight:650;padding:16px;border-radius:var(--r-md);
+  box-shadow:0 12px 24px rgba(0,0,0,.4),inset 0 1px 1px rgba(255,255,255,.32)}
+.vuoto .btng{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  color:var(--ink-muted);border:1px solid var(--line);margin-top:12px;
+  padding:14px;border-radius:var(--r-md)}
+.vuoto .btng.urlato{font-size:calc(13px * var(--s));font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.vuoto .btng.frase{font-size:calc(14px * var(--s));font-weight:600;letter-spacing:-.005em}
+.vuoto svg{width:18px;height:18px}
+
+/* ================================================================
+   03-05 . TODAY / MONTH / MEMO — gli interventi
+   ================================================================ */
+.day-h{font-family:var(--serif);font-size:calc(26px * var(--s));font-weight:400;color:var(--ink);
+  line-height:1.2;letter-spacing:-.022em;margin-top:6px}
+.day-p{font-family:var(--prosa);font-size:calc(16px * var(--s));color:var(--ink-muted);
+  line-height:1.65;margin-top:12px}
+.day-sep{height:1px;background:var(--line);margin:18px 0}
+.pillola-area{display:inline-flex;align-items:center;gap:6px;font-size:calc(10px * var(--s));
+  font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:6px 12px;margin:0 6px 6px 0}
+.mese-g{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:14px}
+.mese-c{aspect-ratio:1;border-radius:10px;background:var(--surface);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:calc(11px * var(--s));
+  color:var(--ink-faint)}
+.mese-c.pieno{background:var(--surface-2);color:var(--ink);font-weight:600}
+.mese-c.oggi{outline:2px solid var(--ink);outline-offset:-2px;color:var(--ink);font-weight:650}
+/* la testata di Month che diventa vetro quando scorri */
+.mese-testa{position:sticky;top:0;z-index:5;margin:-8px -24px 8px;padding:10px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--glass-veil);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid var(--glass-ring)}
+.mese-testa b{font-family:var(--serif);font-size:calc(19px * var(--s));font-weight:400;color:var(--ink)}
+.mese-testa span{font-size:18px;color:var(--ink-faint);padding:0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1 class="page-title">L'audit dell'occhio Apple</h1>
+<p class="page-sub">Le quattro schermate — <b>Today</b>, <b>Month</b>, <b>Memo</b> e il vuoto
+di <b>How&nbsp;was&nbsp;your&nbsp;day?</b> — rilette con un solo criterio: <b>il vetro appartiene ai
+controlli, il contenuto resta carta</b>. È la regola con cui Apple usa il liquid glass in iOS 26:
+galleggia ciò che si tocca (dock, barre, campi d'azione), respira ciò che si legge. Ogni proposta
+qui sotto è disegnata coi token veri dei temi: niente colori inventati.</p>
+<span class="stamp">Proposta — niente di tutto questo è nel codice</span>
+
+<div class="divider"></div>
+
+<!-- ================================================== 00 . LE REGOLE -->
+<p class="label">00 . Le tre regole dell'audit</p>
+<h2 class="h2">Prima di toccare qualsiasi schermata</h2>
+<p class="caption">Tutto quello che segue discende da tre regole. Se una proposta le rispetta,
+è in questa pagina; se le violava, è stata buttata.</p>
+<div class="grid3">
+  <div class="card"><h3>Il vetro è dei controlli</h3><ul>
+    <li><b>Galleggia ciò che si tocca</b>: il dock (già fatto), le barre, i campi d'azione.
+      Il vetro dice "questo sta sopra la pagina e la comanda".</li>
+    <li><b>Il contenuto resta carta</b>: giornate, griglia del mese, note. Un diario di vetro
+      non si legge; iOS 26 non mette MAI il vetro sotto un paragrafo.</li>
+    <li>Pochi vetri, mai impilati: due lastre una sull'altra fanno una lavagna sporca.</li>
+  </ul></div>
+  <div class="card"><h3>Una gerarchia per schermata</h3><ul>
+    <li>Un solo protagonista per schermata: il titolo del giorno in Today, la griglia in Month,
+      la domanda nel vuoto. Il resto scala di un gradino.</li>
+    <li>L'aria è un materiale: dove i pixel si toccano (la barra Memo sul dock) l'occhio legge
+      un errore, non un risparmio di spazio.</li>
+    <li>Le distanze si ripetono: lo stacco del dock dal fondo (14px) è LO STESSO stacco
+      di qualunque cosa galleggi sopra di lui.</li>
+  </ul></div>
+  <div class="card"><h3>La tipografia parla, non urla</h3><ul>
+    <li><b>Sentence case dappertutto</b>: "Type it", non "TYPE IT". Apple non urla sui bottoni
+      (fatto per il vuoto; il resto dei bottoni fantasma è nell'ordine dei lavori).</li>
+    <li>Il MAIUSCOLETTO resta solo alle micro-etichette di navigazione (il dock, le sezioni
+      di Memo): lì è un'etichetta, non una frase.</li>
+    <li>Il serif è la voce del diario: titoli dei giorni, prosa. Il corsivo del marchio è la
+      FIRMA: una per pagina, mai un paragrafo.</li>
+  </ul></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================== 01 . LA BARRA MEMO -->
+<p class="label">01 . La barra di Memo</p>
+<h2 class="h2">Da attaccata al dock a sorella del dock</h2>
+<p class="caption">Oggi il campo "Memo…" è un rettangolo <span class="bad">incollato al vetro</span>,
+con tre controlli di tre forme diverse (pillola NOTE, cerchio vuoto, cerchio pieno). La proposta:
+una <b>capsula di vetro</b> con la STESSA larghezza, lo stesso raggio e lo stesso stacco del dock —
+una sorella, non un'intrusa — e <span class="good">un controllo solo</span>: il "+" pieno.
+La voce si detta col microfono del dock, che c'è già; NOTE spariva comunque scrivendo.</p>
+<div class="switch" data-gruppo="memobar">
+  <button class="on" onclick="attiva('memobar','prima',this)">Prima</button>
+  <button onclick="attiva('memobar','dopo',this)">Dopo</button>
+</div>
+<div class="row">
+  <div>
+    <div class="phone dark">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div class="hd"><span class="d">Memo</span><i>M</i></div>
+        <div class="ph-scroll">
+          <div class="rem-h">Memo</div>
+          <div class="rem-k">Person</div>
+          <div class="rem-r"><b>Elia</b><span>taken from a day</span></div>
+          <div class="rem-r"><b>Marta</b><span>added by hand</span></div>
+          <div class="rem-k">Date</div>
+          <div class="rem-r"><b>Mum's birthday</b><span>12 Oct</span></div>
+          <div class="rem-r"><b>Flight to Milan</b><span>3 Nov</span></div>
+          <div class="rem-k">Note</div>
+          <div class="rem-r"><b>Buy the pull-up bar</b><span>note</span></div>
+        </div>
+        <div data-mostra="memobar:prima" class="memobar-prima">
+          <span class="ph">Memo…</span>
+          <span class="note">Note</span>
+          <span class="tondo mic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="tondo piu">+</span>
+        </div>
+        <div data-mostra="memobar:dopo" class="memobar-dopo" style="display:none">
+          <span class="ph">Memo…</span>
+          <span class="tondo piu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+        </div>
+        <div class="dock-wrap"><div class="dock">
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><s>Today</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><s>Month</s></span>
+          <span class="dock-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="dock-t on" style="position:relative"><span class="dock-lente" style="left:0;right:0;top:0;height:100%"></span><svg style="position:relative;z-index:2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><s style="position:relative;z-index:2">Memo</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12h3M19 12h3M6.5 9v6M17.5 9v6M9 7.5h6v9H9z"/></svg><s>Gym</s></span>
+        </div></div>
+      </div>
+    </div>
+    <p class="cap"><b>Tocca Prima / Dopo qui sopra.</b> Dopo: la capsula ha la larghezza del dock,
+    il suo stesso vetro, il suo stesso stacco (14px d'aria fra le due). Toccando il campo si apre
+    la tastiera e la capsula le sale sopra; il "+" salva.</p>
+    <span class="pick">La mia proposta</span>
+  </div>
+  <div class="card" style="max-width:420px"><h3>Le misure dell'accordo</h3><ul>
+    <li><b>Larghezza</b>: identica al dock (<code>max-width: 440px - 48px</code>) — sono
+      due oggetti della stessa famiglia, allineati al pixel.</li>
+    <li><b>Stacco</b>: 14px fra capsula e dock — lo stesso 14px che il dock tiene dal fondo.
+      Le distanze si ripetono (regola 00).</li>
+    <li><b>Vetro</b>: gli stessi cinque token del dock (<code>--jm-glass-*</code>) — dentro
+      l'app iOS diventera vetro VERO con la stessa strada già costruita per il dock.</li>
+    <li><b>Un controllo</b>: il "+" pieno d'accento. Il microfono per dettare un memo è
+      quello del dock; NOTE era un terzo stato che nessuno sceglieva prima di scrivere.</li>
+    <li><b>Bersaglio</b>: 44x44 il "+", tutta la capsula apre la tastiera.</li>
+  </ul></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================== 02 . IL VUOTO -->
+<p class="label">02 . How was your day?</p>
+<h2 class="h2">La domanda trova la sua voce</h2>
+<p class="caption">Due prove, indipendenti: <b>il font della domanda</b> (il tuo messaggio si era
+interrotto a metà, quindi le ho messe tutte e due: il serif della prosa e il corsivo del marchio)
+e <b>i bottoni</b> — il primario resta, il fantasma smette di urlare ed è già nel codice
+("Type it", non "TYPE IT").</p>
+<div class="switch" data-gruppo="fontv">
+  <button class="on" onclick="attiva('fontv','attuale',this)">Font attuale</button>
+  <button onclick="attiva('fontv','serif',this)">Serif della prosa</button>
+  <button onclick="attiva('fontv','corsivo',this)">Corsivo del marchio</button>
+</div>
+<div class="row">
+  <div>
+    <div class="phone dark">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div class="hd"><span class="d">Tue 1 Sep</span><i>M</i></div>
+        <div class="vuoto">
+          <div data-mostra="fontv:attuale" class="vuoto-h">How was your day?</div>
+          <div data-mostra="fontv:serif" class="vuoto-h serif" style="display:none">How was your day?</div>
+          <div data-mostra="fontv:corsivo" class="vuoto-h corsivo" style="display:none">How was your day?</div>
+          <div class="vuoto-p">Open the mic and talk.<br>Without overthinking it.</div>
+          <div class="btnp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>Tell it out loud</div>
+          <div class="btng frase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Type it</div>
+        </div>
+        <div class="dock-wrap"><div class="dock">
+          <span class="dock-t on" style="position:relative"><span class="dock-lente" style="left:0;right:0;top:0;height:100%"></span><svg style="position:relative;z-index:2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><s style="position:relative;z-index:2">Today</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><s>Month</s></span>
+          <span class="dock-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><s>Memo</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12h3M19 12h3M6.5 9v6M17.5 9v6M9 7.5h6v9H9z"/></svg><s>Gym</s></span>
+        </div></div>
+      </div>
+    </div>
+    <p class="cap"><b>Prova i tre font qui sopra.</b> Il mio consiglio è il <b>serif della prosa</b>
+    (Spectral leggero): è la voce del diario che ti parla, e la domanda È il diario. Il corsivo
+    Sacramento è bellissimo per la firma "dayalogue", ma una frase intera in corsivo da lettura
+    diventa un biglietto d'auguri.</p>
+    <span class="pick">Consiglio: serif della prosa</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================== 03 . TODAY -->
+<p class="label">03 . Today</p>
+<h2 class="h2">La giornata è il protagonista, la barra diventa vetro quando serve</h2>
+<p class="caption">Today è già giusta nella sostanza: titolo serif, prosa che respira. Gli
+interventi sono di <b>disciplina</b>, non di disegno: la barra in alto (data + pallino) resta
+trasparente da ferma e <b>diventa vetro solo quando scorri</b> — cosi il testo le passa sotto
+rifratto, come sotto il dock — e le aree diventano una riga di pillole silenziose sotto il titolo,
+non riquadri che competono con la prosa.</p>
+<div class="row">
+  <div>
+    <div class="phone dark">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div class="ph-scroll" style="padding-top:0">
+          <div class="mese-testa"><b style="font-family:var(--font);font-size:calc(11px * var(--s));font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)">Tue 1 Sep</b><i style="width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--ink-muted);font-style:normal">M</i></div>
+          <div class="day-h">The gym came before the excuses</div>
+          <div style="margin:12px 0 4px">
+            <span class="pillola-area">Movement</span><span class="pillola-area">Work</span><span class="pillola-area">People</span>
+          </div>
+          <div class="day-p">Woke up before the alarm and got the workout done by eight.
+          The new program feels heavier on the legs, but the numbers say otherwise…</div>
+          <div class="day-sep"></div>
+          <div class="day-p">Lunch with Elia turned into two hours of talking about the
+          app. He said the glass dock looks "expensive", which is exactly the point…</div>
+          <div class="day-sep"></div>
+          <div class="day-p" style="color:var(--ink-faint)">Evening: quiet. Tomorrow the
+          call with the supplier, remember to prepare the numbers.</div>
+        </div>
+        <div class="dock-wrap"><div class="dock">
+          <span class="dock-t on" style="position:relative"><span class="dock-lente" style="left:0;right:0;top:0;height:100%"></span><svg style="position:relative;z-index:2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><s style="position:relative;z-index:2">Today</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><s>Month</s></span>
+          <span class="dock-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><s>Memo</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12h3M19 12h3M6.5 9v6M17.5 9v6M9 7.5h6v9H9z"/></svg><s>Gym</s></span>
+        </div></div>
+      </div>
+    </div>
+    <p class="cap"><b>Scorri il testo nel telefono</b>: la barra della data resta incollata in
+    alto e il diario le passa sotto, sfocato — dentro l'app iOS sarà vetro vero, con la stessa
+    strada del dock.</p>
+  </div>
+  <div class="card" style="max-width:420px"><h3>Gli interventi, in ordine di resa</h3><ul>
+    <li><b>Barra in alto di vetro allo scroll</b> — da ferma è invisibile, scorrendo si
+      accende: la stessa fisica del dock, sopra e sotto.</li>
+    <li><b>Aree come pillole di testo</b> sotto il titolo: etichette, non riquadri. Un
+      tocco filtra la prosa.</li>
+    <li><b>Prosa a Spectral</b> com'è già, ma con un gradino di gerarchia in più: l'ultima
+      sezione (le cose minori) scala a <code>ink-faint</code>.</li>
+    <li><b>Niente vetro sul contenuto</b>: le giornate restano carta (regola 00).</li>
+  </ul></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================== 04 . MONTH -->
+<p class="label">04 . Month</p>
+<h2 class="h2">La griglia respira, la testata galleggia</h2>
+<div class="row">
+  <div>
+    <div class="phone dark">
+      <div class="notch"><i></i></div>
+      <div class="ph-body">
+        <div class="ph-scroll" style="padding-top:0">
+          <div class="mese-testa"><span>‹</span><b>September</b><span>›</span></div>
+          <div class="mese-g">
+            <div class="mese-c oggi">1</div><div class="mese-c">2</div><div class="mese-c">3</div><div class="mese-c">4</div><div class="mese-c">5</div><div class="mese-c">6</div><div class="mese-c">7</div>
+            <div class="mese-c">8</div><div class="mese-c">9</div><div class="mese-c">10</div><div class="mese-c">11</div><div class="mese-c">12</div><div class="mese-c">13</div><div class="mese-c">14</div>
+            <div class="mese-c">15</div><div class="mese-c">16</div><div class="mese-c">17</div><div class="mese-c">18</div><div class="mese-c">19</div><div class="mese-c">20</div><div class="mese-c">21</div>
+          </div>
+          <div class="rem-k" style="margin-top:22px">Recap of August</div>
+          <div class="day-p" style="font-size:calc(14.5px * var(--s))">A month that started slow
+          and ended with the app on your phone. Twelve workouts, three dinners worth
+          remembering…</div>
+        </div>
+        <div class="dock-wrap"><div class="dock">
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><s>Today</s></span>
+          <span class="dock-t on" style="position:relative"><span class="dock-lente" style="left:0;right:0;top:0;height:100%"></span><svg style="position:relative;z-index:2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><s style="position:relative;z-index:2">Month</s></span>
+          <span class="dock-mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><s>Memo</s></span>
+          <span class="dock-t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M2 12h3M19 12h3M6.5 9v6M17.5 9v6M9 7.5h6v9H9z"/></svg><s>Gym</s></span>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="max-width:420px"><h3>Gli interventi</h3><ul>
+    <li><b>Testata di vetro incollata in alto</b> (mese + frecce): scorrendo verso il recap,
+      la griglia le passa sotto. È il gemello della barra di Today.</li>
+    <li><b>Celle più quiete</b>: bordo solo dove serve, il giorno pieno si distingue per
+      peso del numero e fondo, non per cornici.</li>
+    <li><b>Oggi è un anello</b>, non un riempimento: si trova a colpo d'occhio senza
+      gridare.</li>
+    <li><b>Il recap sotto la griglia</b> resta carta e serif: è contenuto.</li>
+  </ul></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================== 05 . MEMO -->
+<p class="label">05 . Memo (la lista)</p>
+<h2 class="h2">Un indice, non un modulo</h2>
+<p class="caption">La lista di Memo (la vedi nel telefono della sezione 01) tiene le
+micro-etichette in maiuscoletto — lì sono giuste, sono navigazione — e le note in
+<b>serif corsivo di Spectral</b>, la voce del diario. Gli interventi: righe più ariose
+(13px verticali), la provenienza ("taken from a day") come sussurro a destra, e lo
+sfoltimento dei bordi — il separatore basta, la cornice no.</p>
+
+<div class="divider"></div>
+
+<!-- ================================================== 06 . LA MAPPA DEL VETRO -->
+<p class="label">06 . La mappa del vetro</p>
+<h2 class="h2">Dove il liquid glass rende, e dove rovinerebbe</h2>
+<p class="caption">Il punto 3 della tua lista. Il vetro vero (la strada nativa costruita per il
+dock) si estende a questi posti, <b>in quest'ordine</b>; e c'è una lista di posti dove NON va
+messo, che vale quanto la prima.</p>
+<div class="grid2">
+  <div class="card go"><h3>Sì, in ordine di resa</h3><ul>
+    <li><b>La barra Memo</b> (sezione 01): è il gemello del dock, stessa capsula, stesso vetro.</li>
+    <li><b>La barra in alto allo scroll</b> (Today, Month, Memo): vetro solo quando il
+      contenuto le passa sotto — da ferma è aria.</li>
+    <li><b>I fogli</b> (Salva in Memo, i pannelli che salgono): il fondo del foglio è già un
+      livello sopra la pagina, ed è il posto più naturale del mondo per il vetro.</li>
+    <li><b>I controlli della registrazione</b>: pausa/stop su vetro, il testo trascritto
+      sotto — i controlli galleggiano sul discorso.</li>
+    <li><b>La linguetta Feedback</b>: da rettangolo scuro a linguetta di vetro — è un
+      controllo che sta sopra tutto, per definizione.</li>
+  </ul></div>
+  <div class="card stop"><h3>No, e il perché</h3><ul>
+    <li><b>Le giornate e i recap</b>: il diario è carta. Vetro sotto la prosa = leggibilità
+      a pezzi in cinque temi per due modi.</li>
+    <li><b>Le card di Memo e del mese</b>: sono contenuto, non controlli. Il vetro lì
+      direbbe "toccami e ti comando", che è una bugia.</li>
+    <li><b>Due vetri impilati</b> (un foglio di vetro sopra il dock di vetro): il dock si
+      SPEGNE quando un foglio lo copre — già costruito così, resta così.</li>
+    <li><b>Il sito</b>: non si tocca, mai. Il vetro finto CSS resta solo dove già sta.</li>
+  </ul></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================== 07 . L'ORDINE DEI LAVORI -->
+<p class="label">07 . Se approvi, in quest'ordine</p>
+<h2 class="h2">Piccolo, verificabile, un pezzo per volta</h2>
+<div class="spec"><div class="card"><h3>Le PR proposte (ognuna col suo banco)</h3><ul>
+    <li><b>1. La barra Memo di vetro</b> (sezione 01) — modulo ricorda, un giro di prova sul
+      telefono per il vetro vero.</li>
+    <li><b>2. Il font della domanda + sentence case sui bottoni fantasma</b> (sezione 02 e
+      regola 00): una PR piccola, tutta verificabile a banco.</li>
+    <li><b>3. La barra in alto di vetro allo scroll</b> (Today, Month, Memo) — scheletro,
+      un giro sul telefono.</li>
+    <li><b>4. Fogli e registrazione</b> — dopo, e solo se 1-3 ti convincono dal vivo.</li>
+    <li>Il tutto NON tocca: il contratto del dock, il sito, i temi (solo token esistenti),
+      e la promessa "niente funzioni nuove" — è pelle, non organi.</li>
+  </ul></div></div>
+
+</div>
+<script>
+/* Gli interruttori PRIMA/DOPO: un gruppo = data-gruppo, i pannelli hanno
+   data-mostra="<gruppo>:<valore>". */
+function attiva(gruppo, valore, btn){
+  document.querySelectorAll('[data-gruppo="'+gruppo+'"] button').forEach(b=>b.classList.toggle('on', b===btn));
+  document.querySelectorAll('[data-mostra^="'+gruppo+':"]').forEach(p=>{
+    p.style.display = p.getAttribute('data-mostra') === gruppo+':'+valore ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
