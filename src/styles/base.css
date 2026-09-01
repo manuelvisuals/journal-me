@@ -670,6 +670,24 @@ summary:active {
   isolation: isolate;
 }
 
+/* IL VETRO VERO (guscio iOS 26, 31 agosto 2026). Quando la lastra nativa
+   e accesa sopra la pillola (tab-bar.tsx + dock-vetro.ts), l'imitazione
+   qui sopra si spegne TUTTA: velo, blur, bordo, ombre, filo di luce. La
+   geometria non cambia di un pixel — e la stessa pillola, solo che il
+   vetro glielo fa iOS. Se la lastra si spegne (web, iOS vecchio, un
+   foglio che copre il dock), togliendo questa classe torna tutto. */
+.jm-dock.jm-dock-nativo {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.jm-dock.jm-dock-nativo::after {
+  display: none;
+}
+
 /* Il filo di luce sul bordo alto: e questo a far leggere il vetro come
    un oggetto invece che come una macchia sfocata. */
 .jm-dock::after {

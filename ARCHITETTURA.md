@@ -100,6 +100,16 @@ tema — anche uno importato domani — ha il suo vetro giusto in chiaro e in sc
 Il dock si porta dietro il proprio spazio (`.jm-dock-spazio`), percio nessuna
 schermata ha dovuto aggiungersi un margine. Banco: `scripts/verify-dock.mjs`.
 
+Dentro il guscio iOS 26 (31 agosto 2026, sessione scheletro+guscio) il vetro
+della pillola e VERO: una lastra nativa (`ios/App/App/DockVetro.swift`,
+UIGlassEffect) appoggiata sopra la WebView dove sta la pillola; il web la
+pilota da `components/ui/dock-vetro.ts` (misure, chiaro/scuro, spegnimento
+quando un foglio copre il dock) e intanto spegne la propria imitazione
+(`.jm-dock-nativo`). Sul web, su iOS vecchio e su binari senza il plugin non
+cambia NIENTE: il velo CSS resta quello qui sopra. Banco della meta web:
+`scripts/verify-dock-nativo.mjs` (guscio finto via `window.__jmVetroFinto`);
+la lastra vera si giudica solo sul telefono.
+
 Regola: un modulo USA lo scheletro, non lo modifica. Se un modulo ha bisogno di una
 primitiva nuova, la chiede (una sessione scheletro la aggiunge) o la tiene nel proprio
 folder finche non e matura.
