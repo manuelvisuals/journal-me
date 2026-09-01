@@ -74,7 +74,8 @@ export function useShortcuts(): void {
 
       if (e.shiftKey && key === "f") {
         e.preventDefault();
-        if (pathname === "/app") toggleFocusMode();
+        // Anche qui senza la barra finale dell'export statico iOS (iPad).
+        if (pathname.replace(/\/+$/, "") === "/app") toggleFocusMode();
         return;
       }
       if (e.shiftKey && key === "r") {

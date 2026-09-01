@@ -70,6 +70,10 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
 ];
 
 function activeKeyFor(pathname: string): NavKey | null {
+  /* Su iPad il guscio iOS mostra la rail, e l'export statico ha la barra
+     in fondo al pathname ("/app/"): stessa normalizzazione della barra in
+     alto (titoloSchermata), o la voce Oggi resta spenta. */
+  if (pathname.length > 1) pathname = pathname.replace(/\/+$/, "");
   if (pathname === "/app" || pathname.startsWith("/app/giorno")) return "today";
   if (pathname.startsWith("/app/mese")) return "mese";
   if (pathname.startsWith("/app/remember")) return "ricorda";

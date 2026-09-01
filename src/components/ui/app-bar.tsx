@@ -83,7 +83,16 @@ const TITOLI: ReadonlyArray<readonly [string, string]> = [
 
 /** Il nome della schermata, o null se li la barra non ci va. */
 export function titoloSchermata(pathname: string): string | null {
-  if (pathname === "/app") return "Oggi";
+  /* Nel guscio iOS l'export statico ha trailingSlash:true e il pathname
+     arriva con la barra in fondo ("/app/", "/app/mese/"). Il confronto
+     esatto qui sotto non la riconosceva, la barra in alto spariva su Oggi
+     e con lei la safe-area: il contenuto finiva sotto l'orologio
+     (screenshot di Manuel, 1 settembre 2026). Si normalizza PRIMA di
+     confrontare, in questo unico punto: da qui passano sia AppBar sia il
+     guscio (jm-conbarra), quindi barra e safe-area restano d'accordo. */
+  const puro = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  if (puro === "/app") return "Oggi";
+  pathname = puro;
   for (const [prefisso, titolo] of TITOLI) {
     if (pathname === prefisso || pathname.startsWith(`${prefisso}/`)) {
       return titolo;
