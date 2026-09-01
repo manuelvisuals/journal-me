@@ -92,6 +92,20 @@ togli_lucchetto(){
 
 # ---------- 1. la cartella giusta ----------
 REPO=$(git rev-parse --show-toplevel 2>/dev/null)
+# LA CARTELLA SBAGLIATA (1 settembre 2026). Lanciato da un Terminale che
+# per caso stava dentro UN ALTRO progetto, rev-parse trovava QUEL repo, e
+# lo script gli faceva pull, npm install e build addosso (successo con
+# manuelponcia-clean: "npx canceled... next@16.3.4" perche la, di next,
+# non ce n'e). Il repo trovato dalla cartella corrente si accetta solo se
+# il suo remoto e davvero journal-me; se no si finge di non averlo visto
+# e si cerca per nome, come sempre.
+if [ -n "$REPO" ]; then
+  URL=$(git -C "$REPO" remote get-url origin 2>/dev/null)
+  case "$URL" in
+    *journal-me*) : ;;
+    *) REPO="" ;;
+  esac
+fi
 if [ -z "$REPO" ]; then
   for P in "$HOME/journal-me" "$HOME/Documents/journal-me" "$HOME/Desktop/journal-me" \
            "$HOME/Developer/journal-me" "$HOME/Projects/journal-me"; do
