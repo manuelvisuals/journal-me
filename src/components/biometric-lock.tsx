@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Marchio } from "@/components/brand/marchio";
 import { isNative } from "@/lib/native/platform";
 import { faceIdAttivo } from "@/lib/native/face-id";
 import { useT } from "@/lib/i18n";
@@ -109,18 +109,8 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-7">
-      <p
-        className="jm-marchio mb-2 text-[calc(22px*var(--jm-ui-scale))] font-semibold tracking-tight"
-        style={{ letterSpacing: "-0.01em" }}
-      >
-        <BrandMark />
-        <span
-          className="text-accent"
-          style={{ textShadow: "0 0 12px color-mix(in oklab, var(--color-glow) 55%, transparent)" }}
-        >
-          day
-        </span>
-        alogue
+      <p className="mb-2">
+        <Marchio className="jm-marchio-22" />
       </p>
       {state === "locked" && (
         <button

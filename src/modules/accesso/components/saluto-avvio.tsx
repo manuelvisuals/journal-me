@@ -43,7 +43,7 @@ import {
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Marchio } from "@/components/brand/marchio";
 import {
   benvenutoInLingua,
   FOTO_DI_FABBRICA,
@@ -355,9 +355,8 @@ export function SalutoAvvio() {
           {testi.occhiello.trim() !== "" && (
             <div className="jm-benv-sal-occhiello">{testi.occhiello}</div>
           )}
-          <div className="jm-benv-sal-marchio jm-marchio">
-            <BrandMark />
-            dayalogue
+          <div className="jm-benv-sal-marchio">
+            <Marchio />
           </div>
         </div>
 

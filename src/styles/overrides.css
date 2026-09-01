@@ -254,50 +254,71 @@
 }
 
 /* =============================================================
-   IL MARCHIO IN CORSIVO (31 agosto 2026)
+   IL MARCHIO: SEGNO SOPRA, PAROLA SOTTO (2 settembre 2026)
 
-   Il nome del prodotto si scrive in Sacramento, dovunque compaia come
-   MARCHIO: la rail del desktop, la splash, il login, lo sblocco, il
-   saluto d'avvio, il pannello admin e la barra del sito. Non tocca il
-   nome quando e una parola dentro una frase (la privacy, il testo di
-   benvenuto, il nome del file di backup): li e una parola, non un logo.
+   Mockup design/mockups/sfondo-lancio.html, "02 . Newsreader", scelta
+   di Manuel. Il componente e src/components/brand/marchio.tsx: il segno
+   (public/logo.png) sopra, la parola sotto in Newsreader, "day" a 600 e
+   "alogue" a 300. Vale dovunque il nome compaia come MARCHIO: la rail
+   del desktop, la splash, il login, lo sblocco, il saluto d'avvio, il
+   pannello admin, la barra e il piede del sito, la privacy. Non tocca il
+   nome quando e una parola dentro una frase.
 
    PERCHE STA IN overrides.css E NON IN base.css. Perche ognuna di quelle
-   sette schermate ha gia una sua classe che dichiara il font, e a parita
-   di forza decide l'ordine dei file: base.css viene PRIMA dei moduli e
+   schermate ha gia una sua classe che dichiara il font, e a parita di
+   forza decide l'ordine dei file: base.css viene PRIMA dei moduli e
    perderebbe in silenzio. overrides.css e l'ultimo import per contratto
-   (ARCHITETTURA.md, passo B), quindi qui vince — ed e esattamente il
-   caso per cui quel file esiste.
+   (ARCHITETTURA.md, passo B), quindi qui vince.
 
-   PERCHE SETTE MISURE E NON UN `1.55em` SOLO. Perche `em` si calcola sul
-   GENITORE, non sulla misura che l'elemento aveva: scrivendo
-   `font-size: 1.55em` sul marchio, la sua misura smetteva di dipendere da
-   `--jm-ui-scale` e il segno accanto alla scritta (`.jm-logo`, alto 1.55em)
-   restava fermo quando si muoveva il cursore "Dimensione del testo".
-   L'ha trovato verify-logo, non un ragionamento: 38px a scala 1 e 38px a
-   scala 1,5. Quindi ogni posto tiene la sua formula e ci moltiplica 1.55.
+   PERCHE OTTO MISURE E NON UN `em` SOLO. Perche `em` si calcola sul
+   GENITORE, non sulla misura che l'elemento aveva: la misura del marchio
+   smetteva di dipendere da `--jm-ui-scale` e il segno restava fermo
+   quando si muoveva il cursore "Dimensione del testo" (l'ha trovato
+   verify-logo il 31 agosto). Quindi ogni posto tiene la sua formula.
+   Il fattore 1.55 del corsivo NON c'e piu: Newsreader ha la larghezza
+   di un testo normale, e le misure tornano quelle delle schermate.
 
-   DA DOVE VIENE 1.55. Misurato, non a occhio: la stessa parola allo stesso
-   corpo e larga 181px in Sacramento contro 314px nel grottesco, cioe il
-   58%. 1.55 e l'inverso di quel numero: riporta il marchio al peso ottico
-   che aveva prima, senza farlo diventare piu grande di quello che era.
-
-   Il tracking torna a zero: le nostre intestazioni hanno tracking negativo
-   (brandbook cap. 03), che su un corsivo attaccato chiude le lettere una
-   sull'altra.
+   Il segno e alto 2.1 volte il corpo della parola: nel mockup il segno
+   e circa due volte la parola, misurato sul tile "02", non a occhio.
    ============================================================= */
 .jm-marchio {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.34em;
   font-family: var(--jm-font-marchio);
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1;
-  letter-spacing: 0;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  text-shadow: none;
 }
 
-.jm-rail-brand.jm-marchio { font-size: calc(21px * 1.55 * var(--jm-ui-scale)); }
-.jm-splash-mark.jm-marchio { font-size: calc(30px * 1.55 * var(--jm-ui-scale)); }
-.jm-benv-sal-marchio.jm-marchio { font-size: calc(25px * 1.55 * var(--jm-ui-scale)); }
-.jm-adm-brand.jm-marchio { font-size: calc(17px * 1.55 * var(--jm-ui-scale)); }
-.jm-sito-marchio.jm-marchio { font-size: calc(20px * 1.55 * var(--jm-ui-scale)); }
-/* Login e sblocco non hanno una classe propria: la misura ce l'hanno
-   addosso, scritta come utility (22px). Qui la si rifa una volta sola. */
-p.jm-marchio { font-size: calc(22px * 1.55 * var(--jm-ui-scale)); }
+.jm-marchio .jm-marchio-parola {
+  white-space: nowrap;
+}
+
+.jm-marchio b {
+  font-weight: 600;
+}
+
+/* Il segno dentro il marchio: sopra la parola, non accanto. Le regole
+   generali di .jm-logo (features.css: altezza 1.55em, allineamento
+   ottico e margine a destra) sono per il segno IN LINEA col testo, che
+   qui non esiste piu. */
+.jm-marchio .jm-logo {
+  display: block;
+  height: 2.1em;
+  margin: 0;
+  vertical-align: baseline;
+}
+
+.jm-rail-brand .jm-marchio { font-size: calc(21px * var(--jm-ui-scale)); }
+.jm-splash-mark .jm-marchio { font-size: calc(34px * var(--jm-ui-scale)); }
+.jm-benv-sal-marchio .jm-marchio { font-size: calc(25px * var(--jm-ui-scale)); }
+.jm-adm-brand .jm-marchio { font-size: calc(17px * var(--jm-ui-scale)); }
+.jm-sito-marchio .jm-marchio { font-size: calc(15px * var(--jm-ui-scale)); }
+.jm-sito-piede-marchio .jm-marchio { font-size: calc(20px * var(--jm-ui-scale)); }
+/* Login, sblocco e privacy non hanno una classe propria: la misura la
+   porta il marchio stesso, con questa classe accanto. */
+.jm-marchio.jm-marchio-22 { font-size: calc(22px * var(--jm-ui-scale)); }

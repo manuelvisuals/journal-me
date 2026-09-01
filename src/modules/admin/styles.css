@@ -29,11 +29,6 @@
   color: var(--color-ink);
 }
 
-.jm-adm-brand i {
-  font-style: normal;
-  color: var(--color-accent);
-}
-
 .jm-adm-brand-sub {
   padding: 0 calc(10px * var(--jm-space));
   font-size: calc(9.5px * var(--jm-ui-scale));

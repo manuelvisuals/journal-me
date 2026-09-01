@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStorageMode } from "@/lib/data/store";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Marchio } from "@/components/brand/marchio";
 import { AccountMenu } from "@/components/ui/account-menu";
 import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
@@ -90,9 +90,8 @@ export function RailLeft() {
 
   return (
     <nav className="jm-rail-l" aria-label={t("Navigazione principale")}>
-      <div className="jm-rail-brand jm-marchio">
-        <BrandMark />
-        <span>day</span>alogue
+      <div className="jm-rail-brand">
+        <Marchio />
       </div>
       <div className="jm-rail-nav">
         {NAV_ITEMS.map((item) => (

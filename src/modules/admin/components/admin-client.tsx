@@ -23,6 +23,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { Marchio } from "@/components/brand/marchio";
 import { apiFetch } from "@/lib/api";
 import { signalReady } from "@/lib/app-ready";
 import { useStorageMode } from "@/lib/data/store";
@@ -90,8 +91,8 @@ export function AdminClient() {
   return (
     <div className="jm-adm">
       <aside className="jm-adm-rail">
-        <div className="jm-adm-brand jm-marchio">
-          dayalogue<i>.</i>
+        <div className="jm-adm-brand">
+          <Marchio />
         </div>
         <div className="jm-adm-brand-sub">{t("Admin")}</div>
         <nav className="jm-adm-nav">

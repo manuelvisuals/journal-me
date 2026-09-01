@@ -91,37 +91,12 @@ const cormorantGaramond = localFont({
   display: "swap",
 });
 
-/**
- * IL CARATTERE DEL MARCHIO (31 agosto 2026, scelta di Manuel dopo il
- * mockup dei quattro corsivi).
- *
- * Sacramento, di Brian J. Bonislawsky (Astigmatic), sotto SIL Open Font
- * License 1.1 — la licenza sta accanto al file, in
- * src/fonts/sacramento-OFL.txt, perche l'OFL vuole che viaggi col
- * carattere. Si puo usare in un prodotto commerciale, dentro un sito e
- * dentro un'app pubblicata sull'App Store; l'unica cosa vietata e vendere
- * il carattere da solo.
- *
- * NON e un carattere dei temi: e del MARCHIO. I sette qui sopra cambiano
- * col tema scelto (SPEC-temi §7); questo no — il nome del prodotto si
- * scrive sempre uguale, in qualunque tema, come un logo. Per questo il
- * token che lo espone si chiama --jm-font-marchio e vive in base.css,
- * non nel contratto dei temi.
- *
- * Preso da @fontsource/sacramento come gli altri, e committato: una build
- * che deve raggiungere Google Fonts e una build che fallisce senza rete.
- */
-const sacramento = localFont({
-  src: [
-    {
-      path: "../fonts/sacramento-latin-400-normal.woff2",
-      weight: "400",
-      style: "normal",
-    },
-  ],
-  variable: "--font-sacramento",
-  display: "swap",
-});
+/* IL CARATTERE DEL MARCHIO e Newsreader dal 2 settembre 2026 (mockup
+   sfondo-lancio.html, "02 . Newsreader", scelta di Manuel): e gia qui
+   sopra, fra i caratteri dei temi. Il token che lo espone al marchio si
+   chiama --jm-font-marchio e vive in base.css, non nel contratto dei
+   temi: il nome del prodotto si scrive sempre uguale, in qualunque tema.
+   Il corsivo Sacramento del 31 agosto e stato tolto col suo file. */
 
 const ibmPlexMono = localFont({
   src: [
@@ -175,7 +150,6 @@ export default function RootLayout({
     dmSans.variable,
     cormorantGaramond.variable,
     ibmPlexMono.variable,
-    sacramento.variable,
   ].join(" ");
 
   return (
