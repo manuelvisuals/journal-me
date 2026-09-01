@@ -295,7 +295,7 @@
 
 .jm-rail-brand.jm-marchio { font-size: calc(21px * 1.55 * var(--jm-ui-scale)); }
 .jm-splash-mark.jm-marchio { font-size: calc(30px * 1.55 * var(--jm-ui-scale)); }
-.jm-benv-sal-marchio.jm-marchio { font-size: calc(27px * 1.55 * var(--jm-ui-scale)); }
+.jm-benv-sal-marchio.jm-marchio { font-size: calc(25px * 1.55 * var(--jm-ui-scale)); }
 .jm-adm-brand.jm-marchio { font-size: calc(17px * 1.55 * var(--jm-ui-scale)); }
 .jm-sito-marchio.jm-marchio { font-size: calc(20px * 1.55 * var(--jm-ui-scale)); }
 /* Login e sblocco non hanno una classe propria: la misura ce l'hanno

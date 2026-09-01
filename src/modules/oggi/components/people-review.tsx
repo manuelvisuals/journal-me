@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 import { useT } from "@/lib/i18n";
 
 type Props = {
@@ -39,6 +40,9 @@ export function PeopleReview({
   saving = false,
 }: Props) {
   const t = useT();
+  /* Superficie a schermo pieno: il dock non esiste finche e aperta
+     (dock-sipario.ts). */
+  useRitiraDock();
   const [newPeople, setNewPeople] = useState<NewPerson[]>(
     suggested.map((s) => ({ id: nextId(), value: s })),
   );

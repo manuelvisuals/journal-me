@@ -2,6 +2,7 @@
 
 import { createPortal } from "react-dom";
 import { useSyncExternalStore } from "react";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 
 /**
  * Il foglio dal basso — la primitiva di scheletro.
@@ -47,6 +48,10 @@ export function Sheet({
   onClose: () => void;
   children: React.ReactNode;
 }) {
+  /* Col foglio aperto il dock non esiste (dock-sipario.ts): il velo lo
+     coprirebbe solo sul web — nel guscio iOS la lastra nativa sta sopra
+     la WebView e resterebbe accesa sopra le righe del menu. */
+  useRitiraDock();
   /* Mount flag senza setState-in-effect: stesso pattern di AppBarAzione.
      Il foglio si apre solo su un gesto, quindi in pratica e sempre gia
      montato; il flag serve solo a non toccare document sul server. */

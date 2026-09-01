@@ -138,21 +138,22 @@ async function apri(url) {
   check("tornano le custom property", dopo.bg !== "", dopo.bg);
   check("torna la dimensione del testo", dopo.scala !== "", dopo.scala);
 
-  /* ---------- 3. il foglio dell'account sopra il dock ---------- */
+  /* ---------- 3. il foglio dell'account e il sipario del dock ----------
+     Dal secondo giro (1 settembre, sera): con una superficie a schermo
+     pieno aperta il dock NON ESISTE (dock-sipario.ts) — non "e coperto".
+     Nel guscio la lastra nativa sta sopra la WebView, quindi coprirla dal
+     web non basta mai: la pillola si smonta e lo smontaggio spegne la
+     lastra per la via del cambio pagina. */
+  const dockPrima = await page.locator(".jm-dock-wrap").count();
+  check("prima del foglio il dock esiste", dockPrima === 1, String(dockPrima));
   await page.locator(".jm-appbar .jm-hd-av").click();
   await page.waitForSelector(".jm-sheet-scrim", { timeout: 8000 });
   const suBody = await page.evaluate(
     () => document.querySelector(".jm-sheet-scrim")?.parentElement === document.body,
   );
   check("il foglio nasce in un portal su body", suBody === true);
-  const dockCoperto = await page.evaluate(() => {
-    const p = document.querySelector(".jm-dock");
-    if (!p) return "manca il dock";
-    const r = p.getBoundingClientRect();
-    const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-    return el && el.closest(".jm-dock-wrap") ? "scoperto" : "coperto";
-  });
-  check("col foglio aperto il dock e coperto (la lastra nativa si spegne)", dockCoperto === "coperto", dockCoperto);
+  const dockDurante = await page.locator(".jm-dock-wrap").count();
+  check("col foglio aperto il dock non esiste (sipario)", dockDurante === 0, String(dockDurante));
   const filoRighe = await page.evaluate(() => {
     const righe = [...document.querySelectorAll(".jm-sheet .jm-acct-row")];
     if (righe.length === 0) return "nessuna riga";
@@ -163,7 +164,41 @@ async function apri(url) {
   check("le righe del foglio non hanno piu il filo doppio", filoRighe === "pulite", filoRighe);
   const separatori = await page.locator(".jm-sheet .jm-acct-sheet-sep").count();
   check("resta il separatore prima dell'azione che scotta", separatori >= 1, String(separatori));
+  /* Chiuso il foglio, il dock torna: il sipario e un conteggio, non un
+     interruttore che resta giu. */
+  await page.locator(".jm-sheet-scrim").click({ position: { x: 10, y: 10 } });
+  await page.waitForTimeout(400);
+  const dockDopo = await page.locator(".jm-dock-wrap").count();
+  check("chiuso il foglio il dock torna", dockDopo === 1, String(dockDopo));
   await ctx.close();
+}
+
+/* ---------- 3-bis. il sipario e cablato in tutte le superfici ---------- */
+{
+  const superfici = [
+    "src/modules/oggi/components/chiarimenti-screen.tsx",
+    "src/modules/oggi/components/people-review.tsx",
+    "src/modules/oggi/components/recording-overlay.tsx",
+    "src/modules/oggi/components/review-screen.tsx",
+    "src/modules/oggi/components/manual-write.tsx",
+    "src/modules/oggi/components/foto-giorno.tsx",
+    "src/modules/accesso/components/saluto-avvio.tsx",
+    "src/components/ui/sheet.tsx",
+  ];
+  for (const f of superfici) {
+    check(
+      `sipario cablato: ${f.split("/").pop()}`,
+      readFileSync(f, "utf8").includes("useRitiraDock"),
+    );
+  }
+  const barra = readFileSync("src/components/ui/tab-bar.tsx", "utf8");
+  check("la tab bar legge il sipario", barra.includes("useDockRitirato"));
+  const posSegnale = barra.indexOf("useEffect(segnalaDentroApp");
+  const posRitiro = barra.indexOf("if (ritirato) return null");
+  check(
+    "il segnale dentro-app sopravvive al sipario",
+    posSegnale > -1 && posRitiro > -1 && posSegnale < posRitiro,
+  );
 }
 
 /* ---------- 4+5. le sorgenti: safe-area chiarimenti e Face ID ---------- */
