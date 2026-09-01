@@ -19,6 +19,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 import {
   EVENTO_FOTO,
   aggiungiFoto as aggiungiFotoDati,
@@ -190,6 +191,9 @@ function VisoreFoto({
   onEliminata: (f: FotoGiornata) => void;
 }) {
   const t = useT();
+  /* Superficie a schermo pieno: il dock non esiste finche e aperta
+     (dock-sipario.ts). */
+  useRitiraDock();
   const corrente = foto[indice];
   const [intere, setIntere] = useState<Record<string, string>>({});
   const [eliminando, setEliminando] = useState<boolean>(false);

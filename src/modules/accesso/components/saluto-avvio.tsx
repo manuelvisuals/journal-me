@@ -54,6 +54,7 @@ import { useBenvenuto } from "@/lib/benvenuto-client";
 import { useStorageMode } from "@/lib/data/store";
 import { SELETTORE_LINGUETTA } from "@/modules/accesso/components/linguetta";
 import { useT, useLang } from "@/lib/i18n";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 import {
   azzeraApertura,
   chiediSilenzio,
@@ -107,6 +108,11 @@ export function SalutoAvvio() {
   const pubblica = paginaPubblica(pathname) || !benvenuto.attivo;
 
   const [aperto, setAperto] = useState<boolean>(false);
+  /* Col messaggio aperto il dock non esiste (dock-sipario.ts, richiesta
+     di Manuel del 1 settembre 2026): sotto una lettera di benvenuto la
+     navigazione non serve, e nel guscio iOS la lastra nativa starebbe
+     comunque sopra il velo. Torna da solo quando il riquadro si chiude. */
+  useRitiraDock(aperto);
   const [casella, setCasella] = useState<boolean>(false);
   const [spuntato, setSpuntato] = useState<boolean>(false);
 

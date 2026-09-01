@@ -12,6 +12,7 @@ import { useT } from "@/lib/i18n";
 import { MODULE_ICONS } from "@/components/ui/module-icons";
 import { useActiveModules } from "@/lib/modules";
 import { useVetroNativo } from "@/components/ui/dock-vetro";
+import { useDockRitirato } from "@/components/ui/dock-sipario";
 
 /**
  * "Sono DENTRO l'app?" — il segnale, per chi deve saperlo da fuori.
@@ -179,9 +180,26 @@ const SIDE_TABS_RIGHT: Tab[] = [
  * dietro il PROPRIO spazio: un elemento vuoto che resta nel flusso.
  */
 export function TabBar({ active }: Props) {
-  const t = useT();
-  // La barra c'e = sei dentro (vedi segnalaDentroApp qui sopra).
+  /**
+   * IL SIPARIO (dock-sipario.ts, 1 settembre 2026): con una superficie a
+   * schermo pieno aperta il dock NON ESISTE — non "e coperto", proprio
+   * non c'e. Il guscio interno si smonta per intero, cosi la cleanup di
+   * useVetroNativo spegne anche la lastra nativa (che sta SOPRA la
+   * WebView e nessun z-index del web puo coprire). Lo split in due
+   * componenti e deliberato: un `return null` a meta dello stesso
+   * componente non smonterebbe niente e la lastra resterebbe accesa.
+   */
+  const ritirato = useDockRitirato();
+  // "Sei dentro" resta vero anche col dock ritirato: il sipario nasconde
+  // la pillola, non ti porta fuori dall'app (la linguetta Feedback e chi
+  // altro ascolta useDentroApp non devono accorgersene).
   useEffect(segnalaDentroApp, []);
+  if (ritirato) return null;
+  return <TabBarViva active={active} />;
+}
+
+function TabBarViva({ active }: Props) {
+  const t = useT();
   // Il modulo acceso prende il QUINTO posto (28 agosto 2026, mockup
   // porta-account): con lo slot Impostazioni sparito, il compromesso che
   // sfrattava Ricorda non serve piu. Il microfono al centro non si tocca,

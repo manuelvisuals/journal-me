@@ -214,7 +214,11 @@
      sotto; il tetto di prima (schermo meno 44px) resta come seconda
      rete per gli schermi bassissimi. La lettera lunga scorre nel corpo,
      che per questo esiste (vedi jm-benv-sal-corpo qui sotto). */
-  max-height: min(74dvh, calc(100% - 44px * var(--jm-space)));
+  /* MENO ALTO (1 settembre 2026, Manuel dallo screenshot del guscio):
+     74dvh arrivava a lambire il dock; 66dvh lascia aria vera sopra e
+     sotto, e con il sipario del dock (dock-sipario.ts) sotto il velo non
+     c'e comunque piu niente da schivare. */
+  max-height: min(66dvh, calc(100% - 44px * var(--jm-space)));
   min-height: 0;
 }
 
@@ -265,7 +269,7 @@
 .jm-benv-sal-occhiello {
   margin-top: calc(14px * var(--jm-space));
   text-align: center;
-  font-size: calc(12.5px * var(--jm-ui-scale));
+  font-size: calc(11.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
 
@@ -274,7 +278,7 @@
   align-items: center;
   justify-content: center;
   margin-top: calc(4px * var(--jm-space));
-  font-size: calc(27px * var(--jm-ui-scale));
+  font-size: calc(25px * var(--jm-ui-scale));
   font-weight: 680;
   letter-spacing: -0.03em;
   color: var(--color-ink);
@@ -282,7 +286,7 @@
 
 .jm-benv-sal-promessa {
   margin-top: calc(14px * var(--jm-space));
-  font-size: calc(14px * var(--jm-ui-scale));
+  font-size: calc(13px * var(--jm-ui-scale));
   line-height: 1.6;
   color: var(--color-ink-muted);
   text-align: center;
@@ -300,7 +304,7 @@
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-md);
   background: var(--color-surface-2);
-  font-size: calc(13px * var(--jm-ui-scale));
+  font-size: calc(12px * var(--jm-ui-scale));
   line-height: 1.45;
   color: var(--color-ink);
 }
@@ -313,7 +317,7 @@
 
 .jm-benv-sal-p {
   margin-top: calc(14px * var(--jm-space));
-  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-size: calc(12.5px * var(--jm-ui-scale));
   line-height: 1.65;
   color: var(--color-ink-muted);
 }
@@ -326,7 +330,7 @@
 
 .jm-benv-sal-firma {
   margin-top: calc(16px * var(--jm-space));
-  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-size: calc(12.5px * var(--jm-ui-scale));
   font-weight: 600;
   color: var(--color-ink);
 }
@@ -339,7 +343,7 @@
   gap: calc(11px * var(--jm-space));
   min-height: calc(44px * var(--jm-space));
   margin-top: calc(10px * var(--jm-space));
-  font-size: calc(13px * var(--jm-ui-scale));
+  font-size: calc(12px * var(--jm-ui-scale));
   line-height: 1.4;
   color: var(--color-ink-muted);
   cursor: pointer;
@@ -361,7 +365,7 @@
   background: var(--color-accent);
   color: var(--color-on-accent);
   font-family: var(--font-sans);
-  font-size: calc(15px * var(--jm-ui-scale));
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
 }
@@ -370,7 +374,7 @@
 .jm-benv-sal-sotto {
   margin-top: calc(12px * var(--jm-space));
   text-align: center;
-  font-size: calc(12.5px * var(--jm-ui-scale));
+  font-size: calc(11.5px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
 

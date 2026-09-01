@@ -82,3 +82,14 @@ La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
 pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
 in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
 rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.
+
+## Il sipario del dock (1 settembre 2026, sera)
+
+Ogni superficie a schermo pieno di questo modulo (chiarimenti, people
+review, registrazione, review, scrittura sul telefono, visore foto) monta
+`useRitiraDock()` (`src/components/ui/dock-sipario.ts`, scheletro): finche
+e aperta IL DOCK NON ESISTE. Non e cosmesi: nel guscio iOS la pillola e
+una lastra nativa SOPRA la WebView, nessuno z-index puo coprirla, e i
+tasti in fondo ai chiarimenti finivano dietro il vetro. Una superficie a
+schermo pieno nuova DEVE montare lo stesso hook. Banco:
+`verify-bugfix-20260901` (elenco delle superfici cablate, morso incluso).

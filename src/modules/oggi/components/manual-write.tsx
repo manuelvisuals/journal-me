@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 import { clearDraft, saveDraft } from "@/lib/data/drafts";
 import { useT } from "@/lib/i18n";
 
@@ -34,6 +35,9 @@ export function ManualWrite({
   onCancel,
 }: Props) {
   const t = useT();
+  /* Superficie a schermo pieno: il dock non esiste finche e aperta
+     (dock-sipario.ts). */
+  useRitiraDock();
   const [value, setValue] = useState<string>(initialValue ?? "");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const timerRef = useRef<number | null>(null);

@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 import { useT } from "@/lib/i18n";
 import { compactDayDate, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
 import {
@@ -66,6 +67,9 @@ export function ChiarimentiScreen({
   saving = false,
 }: Props) {
   const t = useT();
+  /* Superficie a schermo pieno: il dock non esiste finche e aperta
+     (dock-sipario.ts) - i tasti in fondo sono sempre tuoi. */
+  useRitiraDock();
   const [i, setI] = useState(0);
   /**
    * Le risposte scelte, sempre un elenco.

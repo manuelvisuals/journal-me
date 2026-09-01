@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRitiraDock } from "@/components/ui/dock-sipario";
 import { createPortal } from "react-dom";
 import { apiFetch } from "@/lib/api";
 import {
@@ -129,6 +130,9 @@ export function RecordingOverlay({
   onWriteManually,
 }: Props) {
   const t = useT();
+  /* Superficie a schermo pieno: il dock non esiste finche e aperta
+     (dock-sipario.ts). */
+  useRitiraDock();
   const [seconds, setSeconds] = useState<number>(0);
   const [state, setState] = useState<RecState>("connecting");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
