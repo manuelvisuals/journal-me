@@ -1151,11 +1151,34 @@ summary:active {
   z-index: 6;
   height: var(--jm-appbar-h);
   padding-top: env(safe-area-inset-top, 0px);
-  /* Niente riga di separazione sotto (scelta di Manuel, 30 agosto): la
-     barra si stacca gia dal contenuto perche e opaca e sta ferma mentre
-     sotto scorre. Il fondo pieno pero serve, e non e decorativo: senza,
-     il testo che scorre si leggerebbe attraverso la barra. */
-  background: var(--color-bg-phone);
+  /* DA FERMA E ARIA, SCORRENDO E VETRO (mockup restyling-liquid-glass
+     §03-04, approvato da Manuel il 1 settembre 2026). A pagina in cima
+     non c'e niente sotto la barra, quindi niente fondo: solo la pagina.
+     Appena il contenuto le passa sotto, la classe .jm-appbar-vetro
+     (app-bar.tsx) accende il velo: la stessa fisica del dock, sopra e
+     sotto. Il vecchio fondo pieno fisso serviva a non far leggere il
+     testo ATTRAVERSO la barra: ora a quello pensa il vetro. */
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color 200ms ease, border-color 200ms ease,
+    -webkit-backdrop-filter 200ms ease, backdrop-filter 200ms ease;
+}
+
+.jm-appbar.jm-appbar-vetro {
+  background: var(--color-glass-veil);
+  /* -webkit- PRIMA dello standard (trappola del minificatore, come nel
+     saluto e nella barra Memo). */
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom-color: color-mix(in oklab, var(--color-glass-ring) 70%, transparent);
+}
+
+/* Senza backdrop-filter: fondo pieno come prima del vetro. Mai testo
+   che si legge attraverso una barra. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .jm-appbar.jm-appbar-vetro {
+    background: var(--color-bg-phone);
+  }
 }
 
 .jm-appbar-in {

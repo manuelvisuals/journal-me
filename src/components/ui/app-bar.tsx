@@ -29,9 +29,41 @@
 
 import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { AccountMenu } from "@/components/ui/account-menu";
 import { useT } from "@/lib/i18n";
+
+/**
+ * "C'e contenuto sotto la barra?" — il segnale che accende il vetro
+ * (mockup restyling §03: da ferma la barra e aria, scorrendo e vetro).
+ *
+ * Si ascolta lo scroll IN CATTURA: gli eventi di scroll non risalgono,
+ * ma la cattura li vede anche quando a scorrere e un contenitore interno
+ * (la lista di Memo) e non la finestra. I mini-scroller (un popover, una
+ * riga orizzontale del mese) non contano: solo la finestra o un
+ * contenitore alto quanto una schermata puo mandare contenuto sotto la
+ * barra.
+ */
+function useContenutoSottoLaBarra(): boolean {
+  const [sotto, setSotto] = useState(false);
+  useEffect(() => {
+    const misura = (e?: Event) => {
+      let s = window.scrollY > 4;
+      if (!s && e && e.target instanceof Element) {
+        const el = e.target;
+        s =
+          el.scrollTop > 4 &&
+          el.clientHeight > window.innerHeight * 0.5 &&
+          el.scrollHeight > el.clientHeight;
+      }
+      setSotto((prima) => (prima === s ? prima : s));
+    };
+    misura();
+    window.addEventListener("scroll", misura, { capture: true, passive: true });
+    return () => window.removeEventListener("scroll", misura, { capture: true });
+  }, []);
+  return sotto;
+}
 
 /**
  * Indirizzo -> nome della schermata. Un prefisso vale anche per i suoi
@@ -106,12 +138,13 @@ export function AppBarAzione({ children }: { children: React.ReactNode }) {
 export function AppBar() {
   const t = useT();
   const pathname = usePathname();
+  const vetro = useContenutoSottoLaBarra();
   const titolo = titoloSchermata(pathname);
 
   if (titolo === null) return null;
 
   return (
-    <header className="jm-appbar">
+    <header className={`jm-appbar${vetro ? " jm-appbar-vetro" : ""}`}>
       {/* La riga interna ha lo stesso max-width delle schermate (440px,
           centrato): senza, su uno schermo piu largo di 440 il pallino si
           staccherebbe dal bordo del contenuto e la barra mentirebbe
