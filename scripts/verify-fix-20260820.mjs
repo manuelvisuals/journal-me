@@ -2,7 +2,7 @@
 //  1. il mic della cattura rapida in Ricorda e dietro can("voice") — in
 //     modalita locale apriva la registrazione e mandava l'audio a
 //     /api/transcribe-fallback, rompendo la promessa "nemmeno una richiesta";
-//  2. il titolo della pagina dice "Ricorda", non "Remember";
+//  2. il titolo della pagina dice "Memo" (rinominata il 1 settembre 2026);
 //  3. /benvenuto mostra il prezzo da src/lib/pricing.ts e NON promette piu
 //     un primo mese incluso che il checkout Stripe non prevede;
 //  4. da lg gli editor a schermo intero (Modifica transcript, Rileggi,
@@ -57,8 +57,8 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
   await page.waitForTimeout(600);
 
   check(
-    `${label}: titolo "Ricorda"`,
-    (await page.locator(".jm-rem-h").innerText()).trim() === "Ricorda",
+    `${label}: titolo "Memo"`,
+    (await page.locator(".jm-rem-h").innerText()).trim() === "Memo",
   );
 
   // Il mic della quick capture NON deve aprire la registrazione in locale.

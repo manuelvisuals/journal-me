@@ -115,7 +115,7 @@ export function importReportText(r: ImportReport): string {
   }
   const extras = r.goals.added + r.remembers.added + r.recaps.added;
   if (extras > 0) {
-    parts.push(t("Piu {n} fra obiettivi, Ricorda e recap.", { n: extras }));
+    parts.push(t("Piu {n} fra obiettivi, Memo e recap.", { n: extras }));
   }
   parts.push(t("Nessuna e stata sovrascritta."));
   return parts.join(" ");

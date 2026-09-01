@@ -9,7 +9,8 @@
  *    minuscolo, niente maiuscole di stile inglese sui bottoni;
  *  - niente punto finale se l'italiano non ce l'ha;
  *  - i nomi propri dell'app non si traducono: dayalogue, Recap, Premium;
- *  - "Ricorda" e il nome di una schermata: diventa "Remember";
+ *  - "Memo" e il nome di una schermata (dal 1 settembre 2026, era
+ *    "Ricorda"/"Remember"): resta "Memo" in tutte le lingue;
  *  - i micro-goal di default NON sono qui: vivono nel database e sono
  *    scritti dall'utente.
  *

@@ -123,6 +123,16 @@ body > * {
   user-select: none;
 }
 
+/* La variante "a frase" (1 settembre 2026, Manuel: "TYPE IT deve essere
+   Type it"): stesso bottone fantasma, ma la scritta resta come l'ha
+   scritta il catalogo — niente urlato. Da usare dove il testo e una
+   frase d'invito, non un'etichetta. */
+.btn-ghost.jm-frase {
+  text-transform: none;
+  letter-spacing: -0.005em;
+  font-size: calc(14px * var(--jm-ui-scale));
+}
+
 .btn-ghost:active:not(:disabled) {
   transform: scale(var(--jm-press));
   background: var(--color-surface);

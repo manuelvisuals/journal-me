@@ -9,7 +9,7 @@
 export const RICORDA: Record<string, string> = {
   "Elimina": "Delete",
   "Aggiungi": "Add",
-  "Ricorda...": "Remember...",
+  "Memo...": "Memo...",
   "Cosa vuoi ricordare": "What do you want to remember",
   "Aggiungi con voce": "Add with your voice",
   "niente da ricordare in questa categoria.": "nothing to remember in this category.",

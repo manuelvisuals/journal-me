@@ -101,7 +101,7 @@ export function PeopleReview({
             }}
           >
             {t(
-              "Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver sbagliato lo spelling), poi salvali in Ricorda.",
+              "Ho riconosciuto chi hai nominato. Controlla i nomi (potrei aver sbagliato lo spelling), poi salvali in Memo.",
             )}
           </p>
 

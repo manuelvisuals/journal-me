@@ -85,7 +85,7 @@ async function pallino(page) {
 const SCHERMATE = [
   ["/app", "Oggi"],
   ["/app/mese", "Mese"],
-  ["/app/remember", "Ricorda"],
+  ["/app/remember", "Memo"],
   ["/app/recap", "Recap"],
   ["/app/settings", "Impostazioni"],
   ["/app/giorno?d=2026-08-29", "Giornata"],
@@ -208,7 +208,7 @@ const SCHERMATE = [
   });
   check("desktop: i titoli saliti nella barra tornano al loro posto",
     tornati.quanti > 0 && tornati.nascosti === 0, `${tornati.quanti} marcati, ${tornati.nascosti} nascosti`);
-  check("desktop: Ricorda ha ancora il suo titolo di pagina", tornati.titolo === "Ricorda", String(tornati.titolo));
+  check("desktop: Memo ha ancora il suo titolo di pagina", tornati.titolo === "Memo", String(tornati.titolo));
 
   check("desktop: zero errori console", errori.length === 0, errori.slice(0, 2).join(" | "));
   await ctx.close();

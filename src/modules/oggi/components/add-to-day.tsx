@@ -15,7 +15,7 @@
  *    saveRecording con la data forzata: l'aggiunta in coda al transcript
  *    esiste gia (`existing.transcript + SEGMENT_SEP + nuovo`);
  *  - "Racconta a voce" apre lo stesso RecordingOverlay con defaultDate;
- *  - "Salva in Ricorda" monta QuickCapture, lo stesso della schermata
+ *  - "Salva in Memo" monta QuickCapture, lo stesso della schermata
  *    Ricorda.
  *
  * LA VOCE NON C'E IN GRATIS, e non come tasto spento con la targhetta
@@ -124,10 +124,10 @@ export function AddToDay({
 
   const handleRemember = async (text: string, kind: RememberKind) => {
     setSheet("closed");
-    toast.loading(t("Salvo in Ricorda..."));
+    toast.loading(t("Salvo in Memo..."));
     try {
       await addRemember(mode, text, kind);
-      toast.ok(t("Salvato in Ricorda"));
+      toast.ok(t("Salvato in Memo"));
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("Errore nel salvataggio");
       onError(msg);
@@ -220,7 +220,7 @@ export function AddToDay({
                 </svg>
               </span>
               <span className="jm-sheet-txt">
-                <span className="jm-sheet-t">{t("Salva in Ricorda")}</span>
+                <span className="jm-sheet-t">{t("Salva in Memo")}</span>
                 <span className="jm-sheet-d">
                   {t("Una persona, un posto, un'idea di quel giorno")}
                 </span>
@@ -230,8 +230,8 @@ export function AddToDay({
       )}
 
       {sheet === "remember" && (
-        <Sheet label={t("Salva in Ricorda")} onClose={() => setSheet("closed")}>
-          <div className="jm-sheet-head">{t("Salva in Ricorda")}</div>
+        <Sheet label={t("Salva in Memo")} onClose={() => setSheet("closed")}>
+          <div className="jm-sheet-head">{t("Salva in Memo")}</div>
           <QuickCapture
             mode={mode}
             defaultKind="nota"

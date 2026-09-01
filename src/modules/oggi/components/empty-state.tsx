@@ -87,7 +87,7 @@ export function EmptyState({
             <button
               type="button"
               onClick={onWriteManually}
-              className="btn-ghost"
+              className="btn-ghost jm-frase"
             >
               <IconaPenna />
               {t("Scrivi a mano")}

@@ -20,13 +20,13 @@ import { collectKeys } from "./i18n-keys.mjs";
 
 /** Chiavi passate a t() tramite variabile, con la loro provenienza. */
 const DINAMICHE = {
-  "components/ui/tab-bar.tsx (SIDE_TABS)": ["Oggi", "Mese", "Ricorda", "Impost."],
+  "components/ui/tab-bar.tsx (SIDE_TABS)": ["Oggi", "Mese", "Memo", "Impost."],
   "components/ui/app-bar.tsx (TITOLI: il nome della schermata nella barra)": [
-    "Oggi", "Mese", "Ricorda", "Recap", "Impostazioni",
+    "Oggi", "Mese", "Memo", "Recap", "Impostazioni",
     "Giornata", "Persona", "Palestra",
   ],
   "components/desktop/rail-left.tsx (NAV_ITEMS, account)": [
-    "Oggi", "Mese", "Ricorda", "Recap", "Impostazioni",
+    "Oggi", "Mese", "Memo", "Recap", "Impostazioni",
     "questo dispositivo", "Locale", "Cloud", "Premium",
   ],
   "modules/impostazioni/components/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [
@@ -169,6 +169,8 @@ check(
 const UGUALI_OK = new Set([
   "Premium", "premium", "Email", "Account", "Idea", "Recap", "Todo",
   "mood", "Mood", "ok", "Cloud", "Snippet", "Feedback", "Admin",
+  // Il nome della sezione Memo (1 settembre 2026): uguale nelle due lingue.
+  "Memo", "Memo...",
   // Nome del prodotto: si scrive uguale nelle due lingue.
   "dayalogue\nPremium",
 ]);

@@ -94,7 +94,7 @@ export function CommandPalette() {
   const navCommands: Command[] = [
     { id: "oggi", group: t("Vai a"), label: t("Oggi"), run: () => router.push("/app") },
     { id: "mese", group: t("Vai a"), label: t("Mese"), run: () => router.push("/app/mese") },
-    { id: "ricorda", group: t("Vai a"), label: t("Ricorda"), run: () => router.push("/app/remember") },
+    { id: "ricorda", group: t("Vai a"), label: t("Memo"), run: () => router.push("/app/remember") },
     { id: "recap", group: t("Vai a"), label: "Recap", run: () => router.push("/app/recap") },
     { id: "altro", group: t("Vai a"), label: t("Impostazioni"), run: () => router.push("/app/settings") },
     {
@@ -127,8 +127,8 @@ export function CommandPalette() {
   if (query.trim().length > 0) {
     commands.push({
       id: "capture",
-      group: t("Ricorda"),
-      label: t('Salva in Ricorda: "{testo}"', { testo: query.trim() }),
+      group: t("Memo"),
+      label: t('Salva in Memo: "{testo}"', { testo: query.trim() }),
       run: async () => {
         await addRemember("auth", query.trim(), "nota");
       },
@@ -202,7 +202,7 @@ export function CommandPalette() {
         <div className="jm-pal-list" role="listbox">
           {captured && (
             <div className="jm-pal-done">
-              {t("salvato in Ricorda: {testo}", { testo: captured })}
+              {t("salvato in Memo: {testo}", { testo: captured })}
             </div>
           )}
           {commands.length === 0 && !captured && (

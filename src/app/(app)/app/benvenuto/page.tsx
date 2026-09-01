@@ -134,7 +134,7 @@ export default function BenvenutoPage() {
           <ul className="jm-benv-list">
             <li>{t("Scrivi la giornata, quando vuoi")}</li>
             <li>{t("Obiettivi, peso, sonno, umore")}</li>
-            <li>{t("Mese e Ricorda")}</li>
+            <li>{t("Mese e Memo")}</li>
             <li>{t("Backup su file, quando vuoi tu")}</li>
             <li className="no">{t("Niente racconto a voce")}</li>
             <li className="no">{t("Niente titoli, sintesi e recap AI")}</li>
