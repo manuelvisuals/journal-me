@@ -38,7 +38,9 @@ async function contesto({ finto = true, aspetto = "dark" } = {}) {
     colorScheme: aspetto,
   });
   await ctx.addInitScript(
-    ([conFinto, a]) => {
+    // L'aspetto viaggia nell'array ma qui non serve piu: il contesto ha
+    // gia colorScheme. Senza il secondo nome eslint resta a zero warning.
+    ([conFinto]) => {
       try {
         window.localStorage.setItem("jm.mode", "local");
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
