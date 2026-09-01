@@ -1730,3 +1730,132 @@
   flex: 1;
   min-height: calc(180px * var(--jm-space));
 }
+
+/* =============================================================
+   Foto dal rullino (mockup design/mockups/foto-rullino.html,
+   approvato il 1 settembre 2026).
+
+   La striscia sta sotto il racconto e sopra le aree: il diario
+   resta fatto di parole, le foto lo accompagnano. Quattro
+   miniature da 80px entrano esatte nella colonna del telefono;
+   la quarta casella, quando le foto sono di piu, dice quante
+   altre e apre la griglia sul posto. Il visore a schermo pieno
+   ha il grosso degli stili qui e il posizionamento inline nel
+   componente (la regola `body > *` di base.css batte le classi,
+   stessa strada dell'overlay di registrazione).
+   ============================================================= */
+.jm-foto-wrap {
+  padding: 14px 0 4px;
+}
+.jm-foto-strip {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+.jm-foto-griglia {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.jm-foto-th {
+  width: 80px;
+  height: 80px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  background: var(--color-surface);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+.jm-foto-griglia .jm-foto-th {
+  width: auto;
+  height: auto;
+  aspect-ratio: 1;
+}
+.jm-foto-th img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.jm-foto-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-ink-muted);
+}
+
+/* --- il visore --- */
+.jm-foto-v-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 18px 20px 0;
+}
+.jm-foto-v-corpo {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 14px 0;
+}
+.jm-foto-v-corpo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.jm-foto-v-fondo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 20px 22px;
+}
+.jm-foto-v-spazio {
+  width: 38px;
+  flex: 0 0 auto;
+}
+.jm-foto-v-centro {
+  flex: 1;
+  text-align: center;
+}
+.jm-foto-v-conta {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: rgba(245, 245, 247, 0.55);
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+}
+.jm-foto-v-data {
+  font-family: var(--jm-font-serif);
+  font-style: italic;
+  font-size: calc(15px * var(--jm-ui-scale));
+  color: rgba(245, 245, 247, 0.85);
+}
+.jm-foto-v-btn {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border: none;
+  border-radius: var(--jm-radius-circle);
+  background: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.jm-foto-v-btn svg {
+  width: 17px;
+  height: 17px;
+}
+.jm-foto-v-btn:disabled {
+  opacity: 0.4;
+}

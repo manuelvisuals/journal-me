@@ -157,4 +157,19 @@ export const OGGI: Record<string, string> = {
   "Giorno dopo": "Next day",
   "Scegli il giorno": "Choose the day",
   "Domani non e ancora successo": "Tomorrow has not happened yet",
+  "Aggiungi dal rullino": "Add from camera roll",
+  "Foto di quel giorno, dal telefono": "Photos of that day, from your phone",
+  "Foto del giorno": "Photos of the day",
+  "foto {indice} di {totale}": "photo {indice} of {totale}",
+  "{indice} di {totale}": "{indice} of {totale}",
+  "Mostra tutte le {n} foto": "Show all {n} photos",
+  "Togliere questa foto dalla giornata? Il rullino resta com'e.":
+    "Remove this photo from this day? Your camera roll stays untouched.",
+  "Foto eliminata": "Photo removed",
+  "Elimina dalla giornata": "Remove from this day",
+  "Aggiungo le foto...": "Adding the photos...",
+  "Foto aggiunta": "Photo added",
+  "{n} foto aggiunte": "{n} photos added",
+  "Non sono riuscito ad aggiungere le foto. Riprova.":
+    "I could not add the photos. Try again.",
 };

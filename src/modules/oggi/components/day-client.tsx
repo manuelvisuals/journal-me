@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/modules/oggi/components/filled-view";
+import { FotoGiorno } from "@/modules/oggi/components/foto-giorno";
 import { TranscriptEditor } from "@/modules/oggi/components/transcript-editor";
 import { AddToDay } from "@/modules/oggi/components/add-to-day";
 import {
@@ -428,6 +429,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
           }}
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
+          fotoSlot={<FotoGiorno date={date} />}
           footer={
             <AddToDay
               mode={mode}
@@ -451,6 +453,9 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
           <div className="jm-day-empty-p">
             {t("Puoi farlo adesso: la data resta quella, non diventa oggi.")}
           </div>
+          {/* Le foto appartengono al giorno, non al racconto: un giorno
+              senza parole puo comunque avere i suoi ricordi. */}
+          <FotoGiorno date={date} />
           <AddToDay
             mode={mode}
             date={date}
