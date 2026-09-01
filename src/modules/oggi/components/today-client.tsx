@@ -37,6 +37,10 @@ import {
 import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import { useT } from "@/lib/i18n";
+import {
+  AttesaElaborazione,
+  type PassoElaborazione,
+} from "@/modules/oggi/components/attesa-elaborazione";
 import { useOptimisticGoals } from "@/lib/use-optimistic-goals";
 import { ChiarimentiScreen } from "@/modules/oggi/components/chiarimenti-screen";
 import {
@@ -167,6 +171,9 @@ export function TodayClient({
   const [peopleData, setPeopleData] = useState<PeopleData | null>(null);
   const [peopleSaving, setPeopleSaving] = useState<boolean>(false);
   // Le domande dell'AI e la giornata a cui si riferiscono.
+  /* Il passo dell'attesa (attesa-elaborazione.tsx): eventi veri, non
+     tempi. Parte da "lettura" a ogni elaborazione. */
+  const [passoAttesa, setPassoAttesa] = useState<PassoElaborazione>("lettura");
   const [chiarimenti, setChiarimenti] = useState<{
     domande: Domanda[];
     attachDate: string;
@@ -417,6 +424,7 @@ export function TodayClient({
     text: string,
     opts: { withAI: boolean; durationSeconds: number; targetDate: string },
   ) => {
+    setPassoAttesa("lettura");
     setView("processing");
     try {
       // I CHIARIMENTI PARTONO APPENA L'ANALISI E PRONTA, non dopo le
@@ -432,6 +440,7 @@ export function TodayClient({
         defaultDate: opts.targetDate,
         skipAI: !opts.withAI,
         onAnalisi: (a) => {
+          setPassoAttesa("salvataggio");
           if (!canAI || chiarimentiInCorso.has(a.date)) return;
           const p = chiediChiarimenti(mode, a.date, a.transcript, {
             people: a.people,
@@ -479,6 +488,7 @@ export function TodayClient({
       // un'AI che non esiste voleva dire una richiesta buttata a ogni
       // giornata scritta da un utente gratis.
       if (canAI && entryForDate) {
+        setPassoAttesa("dubbi");
         const domande = await (chiarimentiInCorso.get(attachDate) ??
           chiediChiarimenti(mode, attachDate, entryForDate.transcript, {
             people: entryForDate.people ?? [],
@@ -673,6 +683,7 @@ export function TodayClient({
   const handleEditorSave = async (newTranscript: string) => {
     if (!entry) return;
     setEditorOpen(false);
+    setPassoAttesa("lettura");
     setView("processing");
     try {
       const updated = await updateEntryTranscript(
@@ -1185,38 +1196,7 @@ export function TodayClient({
         </div>
       )}
 
-      {view === "processing" && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center"
-          style={{ background: "color-mix(in oklab, var(--color-bg) 85%, transparent)", backdropFilter: "blur(8px)" }}
-        >
-          <div className="jm-spinner" aria-hidden="true" />
-          <div
-            style={{
-              marginTop: 28,
-              fontSize: "calc(11px * var(--jm-ui-scale))",
-              fontWeight: 600,
-              color: "var(--color-ink-faint)",
-              letterSpacing: "0.20em",
-              textTransform: "uppercase",
-            }}
-          >
-            {t("elaborazione")}
-          </div>
-          <div
-            style={{
-              marginTop: 12,
-              fontSize: "calc(14px * var(--jm-ui-scale))",
-              color: "var(--color-ink-muted)",
-              maxWidth: 280,
-              textAlign: "center",
-              lineHeight: 1.5,
-            }}
-          >
-            {t("sto leggendo quello che hai detto e tiro fuori il succo")}
-          </div>
-        </div>
-      )}
+      {view === "processing" && <AttesaElaborazione passo={passoAttesa} />}
 
       {editorOpen && entry && (
         <TranscriptEditor
