@@ -100,3 +100,11 @@ La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
 pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
 in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
 rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.
+
+## L'interruttore Face ID (1 settembre 2026)
+
+Riga "Face ID" nel gruppo "I tuoi dati" di settings-client: compare solo
+nel guscio iOS e solo se la biometria esiste davvero; accenderlo fa una
+prova vera (`provaEAttivaFaceId`) e salva "on" solo se il volto ha aperto.
+Il contratto e in `src/lib/native/face-id.ts` (scheletro): la proposta dopo
+il login vive nel modulo accesso, il lucchetto nello scheletro.

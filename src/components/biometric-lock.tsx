@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { isNative } from "@/lib/native/platform";
+import { faceIdAttivo } from "@/lib/native/face-id";
+import { useT } from "@/lib/i18n";
 
 type LockState = "checking" | "locked" | "open";
 
@@ -14,6 +16,12 @@ type LockState = "checking" | "locked" | "open";
  * back from the background after RELOCK_AFTER_MS — a few seconds in another app
  * should not mean a Face ID prompt, an hour in a pocket should.
  *
+ * DAL 1 SETTEMBRE 2026 il lucchetto e OPT-IN (richiesta di Manuel): si
+ * accende solo se Face ID e stato attivato — dalla proposta che compare dopo
+ * il codice a sei cifre, o dall'interruttore nelle Impostazioni
+ * (src/lib/native/face-id.ts). Prima chiedeva il volto al primo avvio, prima
+ * ancora del login: la richiesta di permesso iOS compariva a uno sconosciuto.
+ *
  * On the web this renders its children untouched: there is no biometry to ask.
  * Device passcode is accepted as a fallback so a failed scan can never lock him
  * out of his own journal.
@@ -21,8 +29,11 @@ type LockState = "checking" | "locked" | "open";
 const RELOCK_AFTER_MS = 3 * 60 * 1000;
 
 export function BiometricLock({ children }: { children: React.ReactNode }) {
-  const native = isNative();
-  const [state, setState] = useState<LockState>(native ? "checking" : "open");
+  const t = useT();
+  // Letta UNA volta al montaggio: accendere l'interruttore non blinda l'app
+  // sotto i piedi di chi la sta gia usando — vale dal prossimo avvio.
+  const [armato] = useState<boolean>(() => isNative() && faceIdAttivo());
+  const [state, setState] = useState<LockState>(armato ? "checking" : "open");
   const backgroundedAt = useRef<number | null>(null);
   const running = useRef(false);
 
@@ -41,10 +52,10 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
         return;
       }
       await BiometricAuth.authenticate({
-        reason: "Apri il tuo diario",
-        cancelTitle: "Annulla",
+        reason: t("Apri il tuo diario"),
+        cancelTitle: t("Annulla"),
         allowDeviceCredential: true,
-        iosFallbackTitle: "Usa il codice",
+        iosFallbackTitle: t("Usa il codice"),
       });
       setState("open");
     } catch {
@@ -52,10 +63,10 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
     } finally {
       running.current = false;
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
-    if (!native) return;
+    if (!armato) return;
 
     // Deferred by a tick on purpose: kicking the Face ID sheet off inside the
     // effect body makes React re-render mid-commit (and the lint rule that
@@ -72,7 +83,13 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
         }
         const since = backgroundedAt.current;
         backgroundedAt.current = null;
-        if (since !== null && Date.now() - since > RELOCK_AFTER_MS) {
+        // Il rientro dal background richiude solo se Face ID e ANCORA
+        // attivo: l'interruttore delle Impostazioni vale subito, qui.
+        if (
+          since !== null &&
+          Date.now() - since > RELOCK_AFTER_MS &&
+          faceIdAttivo()
+        ) {
           setState("checking");
           void unlock();
         }
@@ -86,7 +103,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
       clearTimeout(kickoff);
       remove?.();
     };
-  }, [native, unlock]);
+  }, [armato, unlock]);
 
   if (state === "open") return <>{children}</>;
 
@@ -113,7 +130,7 @@ export function BiometricLock({ children }: { children: React.ReactNode }) {
           }}
           className="mt-6 text-sm font-semibold text-accent"
         >
-          Sblocca
+          {t("Sblocca")}
         </button>
       )}
     </main>

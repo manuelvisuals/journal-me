@@ -171,6 +171,8 @@ const UGUALI_OK = new Set([
   "mood", "Mood", "ok", "Cloud", "Snippet", "Feedback", "Admin",
   // Il nome della sezione Memo (1 settembre 2026): uguale nelle due lingue.
   "Memo", "Memo...",
+  // Nome proprio Apple: si scrive uguale nelle due lingue.
+  "Face ID",
   // Nome del prodotto: si scrive uguale nelle due lingue.
   "dayalogue\nPremium",
 ]);

@@ -57,4 +57,16 @@ export const ACCESSO: Record<string, string> = {
   "Il codice vale un'ora.": "The code is valid for one hour.",
   "La versione gratis non ha bisogno di email: resta tutto qui.": "The free version needs no email: everything stays here.",
   "Non mostrare piu questo messaggio": "Do not show this message again",
+  // La proposta Face ID dopo il codice a sei cifre (1 settembre 2026).
+  "Vuoi usare Face ID?": "Want to use Face ID?",
+  "Il diario si apre col tuo volto, senza codice. Puoi cambiare idea quando vuoi dalle Impostazioni.":
+    "Your diary opens with your face, no code needed. You can change your mind anytime from Settings.",
+  "Non te lo chiederemo piu": "We will not ask you again",
+  "Se vuoi attivare Face ID, basta farlo dalle Impostazioni.":
+    "If you want Face ID, you can turn it on from Settings.",
+  "Attiva Face ID": "Turn on Face ID",
+  "Non ora": "Not now",
+  "Capito": "Got it",
+  "Attivalo ora": "Turn it on now",
+  "Un attimo...": "One moment...",
 };

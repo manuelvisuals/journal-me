@@ -189,4 +189,10 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Nome tolto. Torna quello della tua email.":
     "Name removed. The one from your email is back.",
   "ospite": "guest",
+  // L'interruttore Face ID (1 settembre 2026).
+  "Face ID": "Face ID",
+  "Il volto al posto del codice, quando apri l'app.":
+    "Your face instead of the code, when you open the app.",
+  "Face ID non attivato: la prova non e riuscita.":
+    "Face ID not turned on: the check did not go through.",
 };
