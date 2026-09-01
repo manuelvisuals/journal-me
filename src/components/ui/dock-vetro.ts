@@ -143,6 +143,15 @@ function coloreLente(pillola: HTMLElement): { r: number; g: number; b: number; a
    dall'app, si va al login) lo spegnimento parte per davvero. */
 let spegnimentoInSospeso: number | null = null;
 
+/* Il guscio ha gia detto una volta "il vetro c'e"? Da quel momento ogni
+   dock nuovo NASCE gia spogliato (classe jm-dock-nativo dal primo frame),
+   invece di dipingere le sue icone e spegnerle qualche decimo di secondo
+   dopo. Senza questo, a ogni cambio di schermata il dock appena nato
+   restava un attimo visibile SOTTO la lastra e il vetro lo rifrangeva:
+   fantasmi sdoppiati delle scritte, e la macchia bianca del microfono
+   (screenshot di Manuel del 1 settembre). */
+let vetroConfermato = false;
+
 /* ============================================================
    LA FOTOGRAFIA DEL DOCK. Icone, scritte e microfono, ridisegnati su un
    canvas trasparente alle stesse coordinate che hanno nella pillola, coi
@@ -275,7 +284,16 @@ export function useVetroNativo(
   pillola: RefObject<HTMLDivElement | null>,
   firma: string,
 ): boolean {
-  const [attivo, setAttivo] = useState(false);
+  /* NATO GIA SPOGLIATO: se il guscio ha gia confermato il vetro, lo stato
+     parte da true e le icone web non vengono mai dipinte sotto la lastra
+     (i fantasmi rifratti a ogni cambio di schermata, screenshot di Manuel
+     del 1 settembre). Solo il PRIMO dock della vita dell'app parte da
+     false — ed e l'unico che viene idratato dal server, quindi il DOM
+     combacia sempre. Se poi il giro scopre che il dock e coperto, la
+     classe cade e l'imitazione torna. */
+  const [attivo, setAttivo] = useState<boolean>(
+    () => vetroConfermato && pluginVetro() !== null,
+  );
   const modo = useResolvedMode();
   const tema = useThemeId();
   /* Stato vivo per i listener montati una volta (aggiornato in un
@@ -306,9 +324,12 @@ export function useVetroNativo(
       const p = pillola.current;
       if (!vivo || !pronto || !p) return;
       if (dockCoperto(p)) {
+        /* setAttivo fuori dal ramo `acceso`: un dock nato spogliato
+           (ottimismo del layout effect) che scopre di essere coperto deve
+           rivestirsi anche se non ha mai acceso la lastra lui. */
+        setAttivo(false);
         if (acceso) {
           acceso = false;
-          setAttivo(false);
           void vetro.nascondi();
         }
         return;
@@ -373,6 +394,7 @@ export function useVetroNativo(
       .disponibile()
       .then(({ vetro: c }) => {
         if (!vivo || !c) return;
+        vetroConfermato = true;
         pronto = true;
         /* Un dock nuovo che prende servizio annulla lo spegnimento del
            dock morto un attimo fa: e cosi che la lente VIAGGIA da una
@@ -418,7 +440,10 @@ export function useVetroNativo(
           void vetro.nascondi();
         }, 120);
       }
-      setAttivo(false);
+      /* NIENTE setAttivo(false) qui: a smontaggio vero lo stato muore da
+         solo, mentre nel doppio giro di effetti dello sviluppo (Strict
+         Mode) questa pulizia spogliava un dock ancora VIVO per il tempo
+         di un giro di ponte — ed era il banco dei fantasmi a morderla. */
     };
   }, [pillola]);
 

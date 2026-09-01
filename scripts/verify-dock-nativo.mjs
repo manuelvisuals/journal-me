@@ -176,8 +176,36 @@ const ultima = (page, tipo) =>
 
   /* -------- cambiando schermata, lente e foto seguono -------- */
   await page.evaluate(() => { window.__vetroChiamate.length = 0; });
+  /* La sentinella dei fantasmi: durante il cambio di schermata il dock
+     muore e rinasce, e se il nuovo nasce VESTITO (icone visibili sotto la
+     lastra) il vetro le rifrange — sdoppiate, con la macchia bianca del
+     microfono (screenshot di Manuel). Si guarda OGNI frame per 800ms: un
+     dock senza la classe nativa e un fantasma. */
+  const sentinella = page.evaluate(
+    () =>
+      new Promise((res) => {
+        const esiti = { visti: 0, nudi: 0 };
+        const inizio = performance.now();
+        const tick = () => {
+          const d = document.querySelector(".jm-dock");
+          if (d) {
+            esiti.visti++;
+            if (!d.classList.contains("jm-dock-nativo")) esiti.nudi++;
+          }
+          if (performance.now() - inizio < 800) requestAnimationFrame(tick);
+          else res(esiti);
+        };
+        requestAnimationFrame(tick);
+      }),
+  );
   await page.click('.jm-dock-t[href="/app/mese"]');
-  await page.waitForTimeout(1200);
+  const fantasmi = await sentinella;
+  check(
+    "nel passaggio nessun dock nasce vestito (niente fantasmi sotto il vetro)",
+    fantasmi.visti > 0 && fantasmi.nudi === 0,
+    `${fantasmi.nudi} frame nudi su ${fantasmi.visti}`,
+  );
+  await page.waitForTimeout(500);
   const dopoTab = await page.evaluate(() => {
     const sinc = [...window.__vetroChiamate]
       .reverse()
