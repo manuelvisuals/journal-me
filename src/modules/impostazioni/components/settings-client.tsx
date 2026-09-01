@@ -68,6 +68,12 @@ import {
   PREMIUM_PRICE_PERIOD,
 } from "@/lib/pricing";
 import { isNative } from "@/lib/native/platform";
+import {
+  biometriaDisponibile,
+  disattivaFaceId,
+  provaEAttivaFaceId,
+  useFaceIdAttivo,
+} from "@/lib/native/face-id";
 import { useLang, useLangPref, useT } from "@/lib/i18n";
 import { UI_SCALE_LABELS, useUiScale } from "@/lib/ui-scale";
 import { THEMES } from "@/themes";
@@ -135,6 +141,40 @@ export function SettingsClient({
   const [deleteArmed, setDeleteArmed] = useState<boolean>(false);
   const [signingOut, setSigningOut] = useState<boolean>(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  /**
+   * L'interruttore Face ID (1 settembre 2026): la riga esiste solo nel
+   * guscio iOS e solo se il telefono ha davvero la biometria — un
+   * interruttore che non puo accendere niente e una bugia di interfaccia.
+   * Accenderlo fa una prova VERA (permesso di sistema compreso): si salva
+   * "on" solo se il volto ha aperto davvero. Le regole e la memoria stanno
+   * in src/lib/native/face-id.ts, le stesse della proposta dopo il login.
+   */
+  const faceIdOn = useFaceIdAttivo();
+  const [faceIdRow, setFaceIdRow] = useState<boolean>(false);
+  const [faceIdBusy, setFaceIdBusy] = useState<boolean>(false);
+  useEffect(() => {
+    if (!isNative()) return;
+    let alive = true;
+    void biometriaDisponibile().then((ok) => {
+      if (alive && ok) setFaceIdRow(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const toggleFaceId = () => {
+    if (faceIdBusy) return;
+    if (faceIdOn) {
+      disattivaFaceId();
+      return;
+    }
+    setFaceIdBusy(true);
+    void provaEAttivaFaceId(t("Apri il tuo diario")).then((ok) => {
+      setFaceIdBusy(false);
+      if (!ok) say(t("Face ID non attivato: la prova non e riuscita."), true);
+    });
+  };
 
   // Il numero di giornate serve alla riga "Esporta un backup": un backup di
   // cui non sai la dimensione non lo fa nessuno. Vale in tutte e due le
@@ -469,6 +509,25 @@ export function SettingsClient({
                 desc={t("Cosa esce da questo dispositivo, e cosa no.")}
                 onClick={() => setPanel("where")}
               />
+              {faceIdRow && (
+                <SetRow
+                  title={t("Face ID")}
+                  desc={t("Il volto al posto del codice, quando apri l'app.")}
+                  control={
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={faceIdOn}
+                      aria-label={t("Face ID")}
+                      className={`jm-sw${faceIdOn ? " on" : ""}`}
+                      onClick={toggleFaceId}
+                      disabled={faceIdBusy}
+                    >
+                      <i aria-hidden="true" />
+                    </button>
+                  }
+                />
+              )}
             </SetGroup>
 
             <input

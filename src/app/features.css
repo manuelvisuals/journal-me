@@ -474,7 +474,13 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  padding: 30px 24px 26px;
+  /* Overlay a schermo pieno: sta SOPRA la barra in alto, quindi la
+     safe-area dell'iPhone se la prende da solo con env(), come la
+     registrazione e il ritaglio foto (regola in base.css). Senza,
+     "Da chiarire" finiva sotto l'orologio e la Dynamic Island
+     (screenshot di Manuel, 1 settembre 2026). */
+  padding: calc(30px + env(safe-area-inset-top, 0px)) 24px
+    calc(26px + env(safe-area-inset-bottom, 0px));
 }
 .jm-ch-top {
   display: flex;

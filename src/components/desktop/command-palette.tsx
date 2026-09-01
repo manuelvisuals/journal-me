@@ -104,8 +104,9 @@ export function CommandPalette() {
         storageMode === "local" ? t("Scrivi la giornata") : t("Racconta a voce"),
       run: () => router.push("/app?record=1"),
     },
-    // Il focus esiste solo dove esiste l'editor (Oggi).
-    ...(pathname === "/app"
+    // Il focus esiste solo dove esiste l'editor (Oggi). Il replace toglie
+    // la barra finale dell'export statico iOS ("/app/", iPad).
+    ...(pathname.replace(/\/+$/, "") === "/app"
       ? [
           {
             id: "focus",

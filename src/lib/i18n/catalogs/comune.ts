@@ -28,6 +28,10 @@ export const COMUNE: Record<string, string> = {
   // di scheletro, usate da account-menu.tsx su tutte le superfici.
   "Il tuo account": "Your account",
   "Le giornate non escono di qui": "Your days never leave this device",
+  // Il lucchetto Face ID (biometric-lock.tsx, scheletro).
+  "Apri il tuo diario": "Open your diary",
+  "Usa il codice": "Use the passcode",
+  "Sblocca": "Unlock",
   "Impost.": "Settings",
   "Recap": "Recap",
   "Azioni": "Actions",

@@ -2154,6 +2154,14 @@ summary:active {
   margin-top: 2px;
   word-break: break-all;
 }
+/* Nel foglio account le righe NON hanno il filo sotto: la riga sopra il
+   separatore lo raddoppiava (due hairline a un pixel di distanza sotto
+   "Impostazioni" — segnalazione di Manuel, 1 settembre 2026). Le linee
+   del foglio sono due sole e ognuna dice una cosa: quella sotto la
+   testata separa CHI SEI dalle azioni, quella prima di "Esci" separa le
+   azioni da quella distruttiva. */
+.jm-acct-row.jm-sheet-row { border-bottom: none; }
+
 .jm-acct-row.danger { color: var(--color-danger); }
 .jm-acct-row svg {
   width: 20px;

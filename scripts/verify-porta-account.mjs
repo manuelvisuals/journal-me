@@ -223,14 +223,15 @@ async function open({
     (await page.locator(".jm-sheet").count()) === 0,
   );
 
-  /* ---- la barra: quattro posti senza moduli, niente Impost. ---- */
+  /* ---- la barra: quattro posti senza moduli, niente Impost. ----
+     Aggiornato il 1 settembre 2026: la sezione si chiama Memo (non piu
+     Ricorda) e il dock e una pillola flex, non una griglia — si contano
+     i tasti (.jm-dock-t), non le colonne. */
   const tabs = await page.locator("nav.jm-dock-wrap").innerText();
   check("barra: lo slot Impostazioni non esiste piu", !tabs.includes("IMPOST"));
-  check("barra: Ricorda c'e", tabs.toUpperCase().includes("RICORDA"));
-  const colonne = await page
-    .locator("nav.jm-dock-wrap")
-    .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
-  check("barra senza moduli: quattro colonne", colonne === 4, String(colonne));
+  check("barra: Memo c'e", tabs.toUpperCase().includes("MEMO"));
+  const posti = await page.locator("nav.jm-dock-wrap .jm-dock-t").count();
+  check("barra senza moduli: tre posti (Oggi, Mese, Memo)", posti === 3, String(posti));
   await ctx.close();
 }
 
@@ -246,13 +247,11 @@ async function open({
   await page.waitForSelector("nav.jm-dock-wrap", { timeout: 25000 });
   await page.waitForTimeout(600);
   const tabs = (await page.locator("nav.jm-dock-wrap").innerText()).toUpperCase();
-  check("barra con modulo: Ricorda c'e ancora", tabs.includes("RICORDA"));
-  check("barra con modulo: il modulo ha il quinto posto", tabs.includes("PALESTRA"));
+  check("barra con modulo: Memo resta", tabs.includes("MEMO"));
+  check("barra con modulo: il modulo ha il suo posto", tabs.includes("PALESTRA"));
   check("barra con modulo: niente Impost.", !tabs.includes("IMPOST"));
-  const colonne = await page
-    .locator("nav.jm-dock-wrap")
-    .evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
-  check("barra con modulo: cinque colonne", colonne === 5, String(colonne));
+  const posti = await page.locator("nav.jm-dock-wrap .jm-dock-t").count();
+  check("barra con modulo: quattro posti", posti === 4, String(posti));
   await ctx.close();
 }
 

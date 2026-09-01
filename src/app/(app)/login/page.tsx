@@ -9,6 +9,12 @@ import { useT } from "@/lib/i18n";
 import { registraAccesso } from "@/lib/welcome";
 import { chooseLocalMode, clearLocalMode, getStore } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
+import {
+  deveProporreFaceId,
+  MAX_PROPOSTE_FACE_ID,
+  provaEAttivaFaceId,
+  registraRifiutoFaceId,
+} from "@/lib/native/face-id";
 
 const LAST_EMAIL_KEY = "journalme-last-email";
 const CODE_LENGTH = 6;
@@ -63,6 +69,50 @@ export default function LoginPage() {
    * src/lib/welcome.ts (registraAccesso). Ai premium ci pensa /benvenuto
    * stessa, che quando il piano risulta premium entra da sola.
    */
+  /**
+   * FACE ID, SOLO DOPO IL CODICE (1 settembre 2026, richiesta di Manuel).
+   *
+   * La proposta compare qui — a codice giusto, mai prima — e solo nel
+   * guscio iOS con la biometria vera. Un si vale per sempre; un no la fa
+   * ricomparire al prossimo codice, per tre volte; al terzo no un
+   * messaggio dice che non lo chiederemo piu e indica le Impostazioni
+   * (dove vive l'interruttore). Le regole stanno in
+   * src/lib/native/face-id.ts.
+   */
+  const [faceIdFase, setFaceIdFase] = useState<null | "proposta" | "basta">(
+    null,
+  );
+  const [faceIdBusy, setFaceIdBusy] = useState(false);
+
+  /** Dopo un codice giusto: la proposta Face ID se tocca, altrimenti via. */
+  async function dopoCodice() {
+    if (await deveProporreFaceId()) {
+      setFaceIdFase("proposta");
+      return;
+    }
+    router.replace(afterLogin());
+  }
+
+  const faceIdSi = () => {
+    if (faceIdBusy) return;
+    setFaceIdBusy(true);
+    void (async () => {
+      // Il permesso di sistema e la prima scansione arrivano ADESSO, su un
+      // gesto esplicito: mai piu il dialogo di iOS a freddo all'avvio.
+      await provaEAttivaFaceId(t("Apri il tuo diario"));
+      router.replace(afterLogin());
+    })();
+  };
+
+  const faceIdNo = () => {
+    if (faceIdBusy) return;
+    if (registraRifiutoFaceId() >= MAX_PROPOSTE_FACE_ID) {
+      setFaceIdFase("basta");
+      return;
+    }
+    router.replace(afterLogin());
+  };
+
   function afterLogin(): string {
     // La modalita e in cache in un modulo, non nell'indirizzo: senza questa
     // riga resterebbe "none" (com'era un istante fa, prima della sessione)
@@ -170,7 +220,7 @@ export default function LoginPage() {
         });
         if (authError) throw new Error(authError.message);
         setVerifying(false);
-        router.replace(afterLogin());
+        await dopoCodice();
         return;
       } catch {
         setVerifying(false);
@@ -194,7 +244,7 @@ export default function LoginPage() {
       );
       return;
     }
-    router.replace(afterLogin());
+    await dopoCodice();
   }
 
   return (
@@ -214,7 +264,57 @@ export default function LoginPage() {
           alogue
         </p>
 
-        {sent ? (
+        {faceIdFase !== null ? (
+          <>
+            {/* La proposta e il congedo parlano la lingua del login: titolo
+                grande, una riga di spiegazione, un bottone pieno e uno
+                fantasma. Tutto a token (theme-aware) e tutto via t()
+                (bilingue). */}
+            <h1
+              className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
+              style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
+            >
+              {faceIdFase === "proposta"
+                ? t("Vuoi usare Face ID?")
+                : t("Non te lo chiederemo piu")}
+            </h1>
+            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-9 px-3">
+              {faceIdFase === "proposta"
+                ? t(
+                    "Il diario si apre col tuo volto, senza codice. Puoi cambiare idea quando vuoi dalle Impostazioni.",
+                  )
+                : t(
+                    "Se vuoi attivare Face ID, basta farlo dalle Impostazioni.",
+                  )}
+            </p>
+            {faceIdFase === "proposta" ? (
+              <>
+                <Button onClick={faceIdSi} disabled={faceIdBusy}>
+                  {faceIdBusy ? t("Un attimo...") : t("Attiva Face ID")}
+                </Button>
+                <div className="mt-3">
+                  <Button variant="ghost" onClick={faceIdNo} disabled={faceIdBusy}>
+                    {t("Non ora")}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => router.replace(afterLogin())}
+                  disabled={faceIdBusy}
+                >
+                  {t("Capito")}
+                </Button>
+                <div className="mt-3">
+                  <Button variant="ghost" onClick={faceIdSi} disabled={faceIdBusy}>
+                    {faceIdBusy ? t("Un attimo...") : t("Attivalo ora")}
+                  </Button>
+                </div>
+              </>
+            )}
+          </>
+        ) : sent ? (
           <>
             <h1
               className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"

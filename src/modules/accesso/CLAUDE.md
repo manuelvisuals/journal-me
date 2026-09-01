@@ -22,3 +22,14 @@ localStorage per il contatore e per il silenzio. La soglia della casella e
 - Prefissi CSS: `jm-benv` (il saluto usa `jm-benv-sal`); per classi nuove del login il prefisso e `jm-login`.
 - Banco prima del push: `verify-pr10` — il locale non fa MAI rete, e la
   promessa piu importante dell'app (piu tsc, eslint, verify-i18n).
+
+## Face ID: la proposta vive qui (1 settembre 2026)
+
+Face ID e OPT-IN e si propone SOLO dopo un codice a sei cifre giusto, mai
+all'avvio: le regole (un si per sempre; un no ripropone al prossimo codice,
+per tre volte; al terzo no il congedo che indica le Impostazioni) stanno in
+`src/lib/native/face-id.ts` (scheletro), le due schermate dentro
+`src/app/(app)/login/page.tsx` (fase `faceIdFase`). L'interruttore per
+cambiare idea sta nel modulo impostazioni. Il lucchetto
+(`src/components/biometric-lock.tsx`, scheletro) si arma solo se la scelta
+e "on". Banco: `verify-bugfix-20260901` (serve `JM_MOBILE=1 npx next build`).
