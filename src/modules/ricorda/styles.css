@@ -37,7 +37,9 @@
 .jm-rem-list {
   flex: 1;
   overflow-y: auto;
-  padding: calc(14px * var(--jm-space)) 0 calc(130px * var(--jm-space)); /* leave room for floating quick capture + tab bar */
+  /* Aria in fondo: la capsula finisce a 152px dal bordo (94 + 58) e
+     l'ultima riga non deve dormirci sotto. */
+  padding: calc(14px * var(--jm-space)) 0 calc(170px * var(--jm-space));
 }
 
 .jm-rem-day-header {
@@ -128,33 +130,71 @@
   color: var(--color-danger);
 }
 
-/* Quick capture floating bar */
+/* =============================================================
+   LA BARRA MEMO — sorella del dock (mockup restyling-liquid-glass
+   §01, approvato da Manuel il 1 settembre 2026).
+
+   Era un rettangolo incollato al vetro del dock; ora e una CAPSULA
+   DI VETRO con le stesse misure di famiglia: stessa larghezza
+   (392px come la pillola), stesso raggio, gli stessi cinque token
+   del vetro, e lo stesso stacco di 14px — dal dock, come il dock
+   dal fondo. Le distanze si ripetono, e l'occhio legge due oggetti
+   della stessa specie invece di un modulo appoggiato a una barra.
+   ============================================================= */
 .jm-qc-bar {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  /* Il conto dello stacco: 14px (dock dal fondo) + 68px (la pillola:
+     52 di tasti + 7 di padding sopra e sotto + 1 di bordo per lato)
+     + 14px d'aria = 96px. */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
   padding: 0 calc(24px * var(--jm-space));
   z-index: 4;
   pointer-events: none;
 }
 
+/* Da lg il dock non c'e (la rail lo sostituisce): la capsula scende
+   vicino al fondo invece di galleggiare sull'assenza di un dock. */
+@media (min-width: 1024px) {
+  .jm-qc-bar {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+  }
+}
+
 .jm-qc-card {
   max-width: 392px;
   margin: 0 auto;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: 16px;
-  padding: calc(6px * var(--jm-space)) calc(6px * var(--jm-space)) calc(6px * var(--jm-space)) calc(14px * var(--jm-space));
+  background: var(--color-glass-veil);
+  /* -webkit- PRIMA dello standard: il minificatore di Next tiene solo
+     l'ultima dichiarazione della coppia (trappola gia pagata dal saluto). */
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+  backdrop-filter: blur(26px) saturate(190%);
+  border: 1px solid var(--color-glass-ring);
+  border-radius: var(--jm-radius-pill);
+  padding: 7px 7px 7px calc(20px * var(--jm-space));
   display: flex;
   align-items: center;
-  gap: calc(10px * var(--jm-space));
-  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
+  gap: calc(4px * var(--jm-space));
+  box-shadow: 0 12px 28px var(--color-glass-drop),
+    inset 0 1px 0 var(--color-glass-edge);
   pointer-events: auto;
+}
+
+/* Senza backdrop-filter (WebView vecchie): opaca ma leggibile, come
+   il dock. Mai testo su vetro non sfocato. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .jm-qc-card {
+    background: var(--color-bg);
+  }
 }
 
 .jm-qc-card input {
   flex: 1;
+  /* min-width 0 o il campo non si stringe (i flex item non scendono
+     sotto la larghezza intrinseca): il "+" finiva FUORI dallo schermo
+     di un pixel, e il banco non riusciva nemmeno a toccarlo. */
+  min-width: 0;
   background: transparent;
   border: none;
   outline: none;
@@ -168,28 +208,34 @@
   color: var(--color-ink-faint);
 }
 
+/* La scelta del tipo (Nota/Persona/...): resta — e una funzione, non un
+   ornamento — ma si veste da micro-etichetta quieta invece che da tasto
+   pieno d'accento: dentro il vetro urla solo il "+". */
 .jm-qc-kind {
-  font-size: calc(11px * var(--jm-ui-scale));
-  font-weight: 600;
-  color: var(--color-accent);
-  letter-spacing: 0.10em;
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  color: var(--color-ink-faint);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  padding: calc(6px * var(--jm-space)) calc(10px * var(--jm-space));
-  border-radius: 8px;
-  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
+  padding: calc(12px * var(--jm-space)) calc(8px * var(--jm-space));
+  border-radius: var(--jm-radius-pill);
+  background: transparent;
   border: none;
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Il microfono: fantasma dentro il vetro, e finalmente un bersaglio vero
+   (44x44 — prima era 32 e violava il brandbook cap.05). */
 .jm-qc-mic {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   border-radius: var(--jm-radius-circle);
-  background: var(--color-surface-2);
-  color: var(--color-accent);
-  border: 1px solid color-mix(in oklab, var(--color-accent) 30%, transparent);
+  background: transparent;
+  color: var(--color-ink-muted);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,24 +245,27 @@
 }
 
 .jm-qc-mic:active {
-  background: var(--color-surface);
-  border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
+  color: var(--color-ink);
 }
 
+/* Il "+": l'unico controllo pieno, vestito come il microfono del dock
+   (stesso filo di luce dentro il bordo alto). 44x44. */
 .jm-qc-add {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   border-radius: var(--jm-radius-circle);
   background: var(--color-accent);
   color: var(--color-on-accent);
-  border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(20px * var(--jm-ui-scale));
-  font-weight: 600;
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 500;
   cursor: pointer;
   font-family: inherit;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.42);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -227,7 +276,8 @@
 
 .jm-qc-kind-pop {
   position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 145px);
+  /* Sopra la capsula: 96 (il suo fondo) + 58 (la sua altezza) + 10 d'aria. */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 164px);
   left: 50%;
   transform: translateX(-50%);
   width: min(220px, calc(100vw - 48px));

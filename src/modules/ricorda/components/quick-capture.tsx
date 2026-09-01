@@ -111,8 +111,8 @@ export function QuickCapture({ mode, defaultKind, onAdd }: Props) {
             strokeWidth="1.7"
             strokeLinecap="round"
             strokeLinejoin="round"
-            width="16"
-            height="16"
+            width="18"
+            height="18"
             aria-hidden="true"
           >
             <rect x="9" y="3" width="6" height="12" rx="3" />
