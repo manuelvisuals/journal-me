@@ -102,36 +102,44 @@ export function titoloSchermata(pathname: string): string | null {
 }
 
 /**
- * IL POSTO PER UNA AZIONE DELLA SCHERMATA (30 agosto 2026, mockup
- * mese-testata.html, strada A scelta da Manuel).
+ * I POSTI PER LE AZIONI DELLA SCHERMATA (30 agosto 2026, mockup
+ * mese-testata.html; ALLARGATO il 1 settembre 2026 sera, mockup
+ * testate-oggi-giornata.html approvato da Manuel).
  *
- * Nasce per il tasto che scambia scacchiera e lista nel Mese. Il ragionamento
- * non e "avanzava spazio": quel tasto non cambia COSA guardi ma COME lo
- * guardi, quindi non appartiene alla riga del mese (che e navigazione, usata
- * ogni volta) ma alla barra della schermata, usata una volta ogni tanto. E
- * dove Calendario di Apple mette lo stesso identico comando.
- *
- * UNA sola azione, e per iscritto. Se questo posto diventa generico, fra sei
- * mesi ci sono cinque icone di cinque moduli e la barra e una barretta di
- * strumenti: il contrario di cio per cui e nata (il pallino sempre nello
- * stesso pixel). Chi vuole aggiungerne una seconda non allarga questo slot:
- * porta il problema a Manuel, perche a quel punto la domanda non e piu dove
- * mettere un bottone ma se quella schermata ha bisogno di un menu.
+ * Nato per UN tasto (lo scambio scacchiera/lista del Mese), il posto a
+ * destra e diventato per scelta esplicita di Manuel LA casa dei comandi
+ * della schermata: su Oggi matita, scrittura e microfono; sulla Giornata
+ * matita e cestino. La regola nuova non e "quanti bottoni vuoi": e che i
+ * comandi di una schermata stanno TUTTI qui, come cerchi da 38 col filo
+ * (.jm-cmd, la stessa famiglia delle frecce del Mese) — mai sparsi in
+ * intestazioni sotto la barra. Sotto la barra resta solo la navigazione
+ * del tempo.
  *
  * Il pallino resta l'ULTIMO elemento a destra, sempre: e cio che
  * verify-barra-alto misura su ogni schermata, ed e il motivo per cui
- * l'azione entra PRIMA di lui e non dopo.
+ * le azioni entrano PRIMA di lui e non dopo.
+ *
+ * A sinistra c'e il posto gemello (AppBarPrima), per l'unico comando che
+ * appartiene a quel lato: l'indietro della Giornata, prima del nome.
  *
  * Meccanica: lo stesso portal di RailRight. La schermata rende
- * <AppBarAzione>...</AppBarAzione> e il contenuto finisce qui.
+ * <AppBarAzione>...</AppBarAzione> (o <AppBarPrima>) e il contenuto
+ * finisce qui.
  */
 const SLOT_AZIONE = "jm-appbar-azione";
+const SLOT_PRIMA = "jm-appbar-prima";
 
 function subscribeNoop(): () => void {
   return () => {};
 }
 
-export function AppBarAzione({ children }: { children: React.ReactNode }) {
+function SlotPortal({
+  slot,
+  children,
+}: {
+  slot: string;
+  children: React.ReactNode;
+}) {
   /* Mount flag senza setState-in-effect: stesso pattern di RailRight. */
   const mounted = useSyncExternalStore(
     subscribeNoop,
@@ -139,9 +147,18 @@ export function AppBarAzione({ children }: { children: React.ReactNode }) {
     () => false,
   );
   if (!mounted) return null;
-  const target = document.getElementById(SLOT_AZIONE);
+  const target = document.getElementById(slot);
   if (!target) return null;
   return createPortal(children, target);
+}
+
+export function AppBarAzione({ children }: { children: React.ReactNode }) {
+  return <SlotPortal slot={SLOT_AZIONE}>{children}</SlotPortal>;
+}
+
+/** Il posto a sinistra del nome: l'indietro della Giornata. */
+export function AppBarPrima({ children }: { children: React.ReactNode }) {
+  return <SlotPortal slot={SLOT_PRIMA}>{children}</SlotPortal>;
 }
 
 export function AppBar() {
@@ -159,7 +176,12 @@ export function AppBar() {
           staccherebbe dal bordo del contenuto e la barra mentirebbe
           proprio sulla cosa per cui esiste. */}
       <div className="jm-appbar-in">
-        <span className="jm-appbar-t">{t(titolo)}</span>
+        <span className="jm-appbar-l">
+          {/* L'indietro della Giornata, quando c'e: prima del nome, come
+              su ogni schermata di dettaglio di iOS. Vuoto sparisce. */}
+          <span id={SLOT_PRIMA} className="jm-appbar-px" />
+          <span className="jm-appbar-t">{t(titolo)}</span>
+        </span>
         <span className="jm-appbar-r">
           {/* Vuoto su quasi tutte le schermate: la regola :empty lo fa
               sparire, cosi il pallino non guadagna un margine dal nulla. */}

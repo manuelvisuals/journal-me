@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
+import { AppBarAzione } from "@/components/ui/app-bar";
 import { EmptyState } from "@/modules/oggi/components/empty-state";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -665,11 +666,12 @@ export function TodayClient({
           in alto, sulla giornata non raccontata qui restava solo un
           rettangolo di padding. Su desktop si disegna sempre come prima
           (la classe si spegne da sola sotto lg, base.css). */}
-      <header
-        className={`jm-col-head flex items-baseline justify-between${
-          view === "filled" ? "" : " jm-solo-desktop"
-        }`}
-      >
+      {/* DAL 1 SETTEMBRE 2026 (sera) questa intestazione e SOLO desktop:
+          sul telefono i comandi della giornata vivono nella barra in
+          alto (AppBarAzione qui sotto, mockup testate-oggi-giornata
+          approvato da Manuel) e sotto la barra resta solo la riga del
+          giorno, sul metro di Month. */}
+      <header className="jm-col-head flex items-baseline justify-between jm-solo-desktop">
         {/* La data se n'e andata da questa riga: adesso e la testata che
             cambia giorno, sulla riga sua qui sotto. Qui restava schiacciata
             fra il titolo e quattro bersagli. */}
@@ -759,11 +761,57 @@ export function TodayClient({
         </div>
       </header>
 
+      {/* I comandi della giornata, nella barra in alto (telefono). La
+          barra da lg e display:none, quindi su desktop questi bottoni
+          non si vedono e resta l'intestazione qui sopra: stessi
+          handler, un solo comportamento. Ordine come l'ha detto Manuel:
+          modifica (matita), scrivi (matita nel foglio), racconta
+          (microfono). */}
+      {view === "filled" && (
+        <AppBarAzione>
+          <button
+            type="button"
+            className="jm-cmd"
+            aria-label={t("modifica")}
+            onClick={() => entry && setEditorOpen(true)}
+            disabled={!entry}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="jm-cmd"
+            aria-label={t("Scrivi a mano")}
+            onClick={handleWriteManually}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.4 2.6a2.12 2.12 0 0 1 3 3L13 14l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="jm-cmd"
+            aria-label={t("Registra di nuovo")}
+            onClick={handleStartRecording}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="3" width="6" height="12" rx="3" />
+              <path d="M5 11a7 7 0 0 0 14 0" />
+              <path d="M12 18v3" />
+            </svg>
+          </button>
+        </AppBarAzione>
+      )}
+
       {/* La testata che cambia giorno. Solo quando stai GUARDANDO una
           giornata: mentre registri o scrivi, cambiare giorno con un tocco
           sarebbe il modo piu veloce per perdere quello che stai dicendo. */}
       {(view === "filled" || view === "empty") && !desktopWriting && (
-        <DayNav date={todayISO()} muro={muro} senzaNomeSulTelefono />
+        <DayNav date={todayISO()} muro={muro} />
       )}
 
       {multiDayNotice && view === "filled" && (

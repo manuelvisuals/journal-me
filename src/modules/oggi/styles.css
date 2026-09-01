@@ -1859,3 +1859,69 @@
 .jm-foto-v-btn:disabled {
   opacity: 0.4;
 }
+
+/* =============================================================
+   LA RIGA DEL GIORNO SUL METRO DI MONTH (mockup
+   testate-oggi-giornata.html, approvato da Manuel il 1 settembre
+   2026, sera). Solo sotto lg: da lg testate e rail restano come
+   sono. Misure IDENTICHE a .jm-month-header.nav (mese/styles.css):
+   colonne 38 | 1fr | 38, padding 16/24/12, cerchi col filo (stesso
+   disegno di .jm-cmd, scheletro). Le azioni della schermata non
+   stanno piu quaggiu: sono salite nella barra in alto (app-bar).
+   ============================================================= */
+@media (max-width: 1023px) {
+  .jm-day-nav {
+    display: grid;
+    grid-template-columns: calc(38px * var(--jm-space)) 1fr calc(38px * var(--jm-space));
+    align-items: center;
+    gap: calc(8px * var(--jm-space));
+    padding: calc(16px * var(--jm-space)) calc(24px * var(--jm-space)) calc(12px * var(--jm-space));
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .jm-day-nav-arw {
+    width: calc(38px * var(--jm-space));
+    height: calc(38px * var(--jm-space));
+    flex: none;
+    border: 1px solid var(--color-line);
+  }
+
+  .jm-day-nav-arw svg {
+    width: calc(17px * var(--jm-ui-scale));
+    height: calc(17px * var(--jm-ui-scale));
+  }
+
+  /* Verso domani non si va: il comando sparisce, la sua COLONNA resta
+     e tiene il centro inchiodato — come le frecce spente di Month, ma
+     qui il metro lo fanno le colonne fisse, non il bottone. */
+  .jm-day-nav-arw:disabled {
+    visibility: hidden;
+  }
+
+  .jm-day-nav-ctr {
+    justify-self: center;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .jm-day-nav-rel {
+    font-size: calc(18px * var(--jm-ui-scale));
+    line-height: 1.05;
+  }
+
+  .jm-day-nav-abs {
+    margin-top: 2px;
+    /* Stretta quel tanto che porta la riga a 66px, il numero di Month. */
+    line-height: 1.2;
+  }
+
+  /* La testata di /giorno sul telefono non ha piu niente di suo: la
+     riga dei comandi e salita nella barra (jm-solo-desktop), padding
+     e filo li porta la riga del giorno qui sopra. */
+  .jm-day-head.jm-day-head-col {
+    padding: 0;
+    gap: 0;
+    border-bottom: none;
+  }
+}

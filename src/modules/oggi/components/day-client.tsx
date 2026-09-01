@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { AppBarAzione, AppBarPrima } from "@/components/ui/app-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -303,11 +304,55 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
     <main
       className="jm-screen mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
     >
-      {/* Due righe, e non una: back + frecce + data + "modifica" + cestino
-          in fila fanno 392px su uno schermo da 390. Sopra da dove vieni e
-          cosa puoi fare, sotto DOVE sei. */}
+      {/* SUL TELEFONO i comandi vivono nella barra in alto (mockup
+          testate-oggi-giornata, approvato da Manuel il 1 settembre 2026
+          sera): l'indietro prima del nome, matita e cestino prima del
+          pallino. Sotto la barra resta solo la riga del giorno, sul
+          metro di Month. La riga qui sotto resta per il DESKTOP, dove
+          la barra non esiste. */}
+      <AppBarPrima>
+        <button
+          type="button"
+          className="jm-cmd"
+          aria-label={t("Indietro")}
+          onClick={() => router.push("/app/mese")}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+      </AppBarPrima>
+      {entry && (
+        <AppBarAzione>
+          <button
+            type="button"
+            className="jm-cmd"
+            aria-label={t("modifica")}
+            onClick={() => setEditorOpen(true)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="jm-cmd rosso"
+            aria-label={t("Elimina giornata")}
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 6h18" />
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              <path d="M19 6l-1.5 14a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+            </svg>
+          </button>
+        </AppBarAzione>
+      )}
       <header className="jm-day-head jm-day-head-col">
-        <div className="jm-day-head-riga">
+        <div className="jm-day-head-riga jm-solo-desktop">
         <button
           type="button"
           onClick={() => router.push("/app/mese")}

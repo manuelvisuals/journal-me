@@ -293,7 +293,10 @@ for (const [path, w, h] of [
   await page.locator(".jm-editor-btn.save").click();
   await page.waitForTimeout(1800);
 
-  await page.locator(".jm-day-head-action").click();
+  /* "modifica" dal 1 settembre 2026 sera sta nella barra in alto (primo
+     cerchio-comando; mockup testate-oggi-giornata): la vecchia riga
+     .jm-day-head-action e solo desktop. */
+  await page.locator('.jm-appbar-az .jm-cmd[aria-label="modifica"]').click();
   await page.waitForTimeout(500);
   const testo = await page.locator(".jm-editor-textarea").inputValue();
   check(

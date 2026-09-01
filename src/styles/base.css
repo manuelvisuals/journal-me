@@ -1192,9 +1192,77 @@ summary:active {
   gap: calc(12px * var(--jm-space));
 }
 
-/* Il gruppo a destra: l'azione della schermata (quasi sempre vuota) e il
-   pallino, che resta l'ultimo elemento. Vuoto sparisce del tutto, cosi il
-   pallino non prende un margine per un elemento che non c'e. */
+/* Il gruppo a sinistra: l'eventuale indietro (slot jm-appbar-px) e il
+   nome della schermata. min-width 0 perche e il nome a farsi corto coi
+   puntini, non l'indietro a sparire. */
+.jm-appbar-l {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--jm-space));
+  min-width: 0;
+}
+
+.jm-appbar-px {
+  display: inline-flex;
+  align-items: center;
+}
+
+.jm-appbar-px:empty {
+  display: none;
+}
+
+/* IL CERCHIO-COMANDO (mockup testate-oggi-giornata, approvato da Manuel
+   il 1 settembre 2026): 38 col filo, la stessa famiglia delle frecce
+   del Mese (.jm-mese-nav) — un solo disegno per tutti i comandi delle
+   testate, nella barra e nella riga del giorno. Il rosso, dove serve,
+   sta SOLO nel glifo. Il pallino dell'account resta 44 e senza filo:
+   non e un comando, sei tu. */
+.jm-cmd {
+  width: calc(38px * var(--jm-space));
+  height: calc(38px * var(--jm-space));
+  flex: 0 0 calc(38px * var(--jm-space));
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-circle);
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 120ms ease, opacity 160ms ease;
+}
+
+.jm-cmd svg {
+  width: calc(17px * var(--jm-ui-scale));
+  height: calc(17px * var(--jm-ui-scale));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm-cmd:active:not(:disabled) {
+  transform: scale(var(--jm-press));
+  background: var(--color-surface);
+}
+
+.jm-cmd:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.jm-cmd.rosso {
+  color: var(--color-danger);
+}
+
+/* Il gruppo a destra: le azioni della schermata (dal 1 settembre 2026
+   sono i comandi veri: matita, microfono, cestino — mockup
+   testate-oggi-giornata) e il pallino, che resta l'ultimo elemento.
+   Vuoto sparisce del tutto, cosi il pallino non prende un margine per
+   un elemento che non c'e. */
 .jm-appbar-r {
   display: inline-flex;
   align-items: center;
@@ -1202,6 +1270,12 @@ summary:active {
      I due bersagli sono 44 tondi e attaccati sembravano un pezzo solo:
      l'aria in mezzo e cio che dice che sono due cose diverse — una e
      un comando della schermata, l'altra sei tu. */
+  gap: calc(10px * var(--jm-space));
+}
+
+.jm-appbar-az {
+  display: inline-flex;
+  align-items: center;
   gap: calc(10px * var(--jm-space));
 }
 

@@ -162,17 +162,17 @@ async function trascina(page, dx) {
     await page.waitForTimeout(700);
   }
   check("da ieri, avanti ancora, si arriva su Oggi", page.url().endsWith("/app"), page.url());
-  /* Dal 30 agosto 2026 (la barra in alto, scelta di Manuel) su Oggi il
-     NOME del giorno lo dice la barra e non la testata: scritto in tutti e
-     due era la stessa parola due volte a pochi pixel. La testata tiene la
-     data esatta, che la barra non dice. Su /giorno il nome resta nella
-     testata, ed e gia provato qui sopra. */
+  /* Dal 1 settembre 2026 sera (mockup testate-oggi-giornata, approvato
+     da Manuel) la riga del giorno e IDENTICA su tutte le schermate del
+     tempo, Oggi compreso: nome in serif sopra, data sotto. Il doppione
+     con la barra ("Oggi" due volte) e il prezzo dichiarato della
+     coerenza — supera la regola del 30 agosto che qui si provava. */
   await page.waitForSelector(".jm-appbar-t", { timeout: 20000 });
   const nellaBarra = (await page.locator(".jm-appbar-t").innerText()).trim();
   check("e Oggi si chiama Oggi: lo dice la barra in alto", nellaBarra.toLowerCase() === "oggi", nellaBarra);
   check(
-    "sul telefono la testata non ripete la parola",
-    !(await page.locator(".jm-day-nav-rel").first().isVisible()),
+    "sul telefono la testata dice il nome anche su Oggi (coerenza col resto)",
+    await page.locator(".jm-day-nav-rel").first().isVisible(),
   );
   const dataEsatta = await page.locator(".jm-day-nav-abs").first().innerText();
   check("ma la testata dice ancora la data esatta", /\d/.test(dataEsatta), dataEsatta);

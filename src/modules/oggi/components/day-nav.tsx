@@ -68,23 +68,9 @@ type Props = {
    * (day-swipe): la freccia, da spenta, non puo dirlo da sola.
    */
   muro?: number;
-  /**
-   * Toglie il nome del giorno SUL TELEFONO, lasciando solo la data.
-   * Lo passa Oggi (30 agosto 2026, scelta di Manuel): li sopra c'e gia la
-   * barra dell'app che dice "Oggi", e la parola finiva scritta due volte a
-   * pochi pixel di distanza. Da lg la barra non esiste e il nome resta.
-   * Su /giorno NON si passa: li il nome ("Ieri", "Mercoledi") e l'unica
-   * cosa che ti dice che giorno stai guardando.
-   */
-  senzaNomeSulTelefono?: boolean;
 };
 
-export function DayNav({
-  date,
-  onVai,
-  muro = 0,
-  senzaNomeSulTelefono = false,
-}: Props) {
+export function DayNav({ date, onVai, muro = 0 }: Props) {
   const t = useT();
   const router = useRouter();
   const [calendario, setCalendario] = useState(false);
@@ -176,11 +162,12 @@ export function DayNav({
         onClick={() => setCalendario(true)}
         suppressHydrationWarning
       >
-        <span
-          className={`jm-day-nav-rel${
-            senzaNomeSulTelefono ? " jm-solo-desktop" : ""
-          }`}
-        >
+        {/* Il nome parla anche su Oggi (mockup testate-oggi-giornata,
+            1 settembre 2026 sera): la riga del giorno e IDENTICA su
+            tutte le schermate del tempo, e il doppione con la barra
+            ("Today" due volte) e il prezzo dichiarato della coerenza —
+            scelta di Manuel, superata la regola del 30 agosto. */}
+        <span className="jm-day-nav-rel">
           {relativeDayLabel(dataObj, parseISODate(oggi))}
         </span>
         {/* La coordinata, senza cappello: il giorno della settimana sta
