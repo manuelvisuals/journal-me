@@ -31,10 +31,15 @@ export function EmptyState({
       <h1
         className="text-center"
         style={{
-          fontSize: "calc(28px * var(--jm-ui-scale))",
-          fontWeight: 650,
-          lineHeight: 1.15,
-          letterSpacing: "-0.025em",
+          /* La voce del diario (mockup restyling §02, scelta di Manuel il
+             1 settembre 2026): la domanda parla col SERIF DI PROSA del
+             tema — e il diario a chiederti com'e andata, non un modulo.
+             Peso leggero e corpo piu grande: un'apertura, non un'etichetta. */
+          fontFamily: "var(--font-serif)",
+          fontSize: "calc(31px * var(--jm-ui-scale))",
+          fontWeight: 420,
+          lineHeight: 1.18,
+          letterSpacing: "-0.02em",
           color: "var(--color-ink)",
           marginBottom: 14,
         }}
@@ -87,7 +92,7 @@ export function EmptyState({
             <button
               type="button"
               onClick={onWriteManually}
-              className="btn-ghost jm-frase"
+              className="btn-ghost"
             >
               <IconaPenna />
               {t("Scrivi a mano")}
