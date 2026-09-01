@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . La testata della Giornata, compatta</title>
+<style>
+/* I font arrivano da src/fonts, non da Google: il sandbox non raggiunge
+   fonts.googleapis.com e renderebbe Georgia al posto di ogni serif senza
+   dirlo (HANDOVER, trappola di verifica dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+
+/* ================================================================
+   Token del tema MINIMAL, set CHIARO (src/themes/minimal.ts), scala
+   testo 1.15: ogni misura e calc(Npx * var(--s)) come nel codice.
+   ================================================================ */
+:root{
+  --bg:#FFFFFF; --surface:#F5F5F7; --surface-2:#EBEBEF;
+  --ink:#1D1D1F; --ink-muted:#494950; --ink-faint:#6E6E73;
+  --danger:#C0392B;
+  --line:rgba(0,0,0,.10);
+  --r-md:12px; --r-pill:999px;
+  --s:1.15;
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+
+  --pg:#17171A; --pg-2:#202024; --pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0; --pg-mut:#A9A9B2; --pg-faint:#77777F;
+  --ok:#4ADE80; --no:#F87171; --hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);
+  padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-.02em;
+  text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;
+  line-height:1.7;max-width:840px}
+.page-sub b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;
+  text-transform:uppercase;text-align:center;margin:0 0 10px}
+.h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--pg-ink);
+  text-align:center;letter-spacing:-.015em}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;
+  max-width:900px;line-height:1.75}
+.caption b{color:var(--pg-mut);font-weight:600}
+.caption .good{color:var(--ok)} .caption .bad{color:var(--no)}
+.row{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.cap{font-size:12px;color:var(--pg-faint);text-align:center;margin:14px auto 0;max-width:390px;line-height:1.7}
+.cap b{color:var(--pg-mut)}
+
+/* ---------------- il telefono ---------------- */
+.phone{width:390px;background:var(--bg);border-radius:34px;overflow:hidden;
+  border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;
+  padding:0 28px 4px;color:var(--ink);font-size:14px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+
+/* la barra in alto vera (app-bar.tsx): nome schermata serif + pallino */
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 calc(24px)}
+.appbar .t{font-family:var(--serif);font-size:calc(20px * var(--s));font-weight:420;
+  letter-spacing:-.015em;color:var(--ink)}
+.appbar .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#5a6b7a,#2e3a45);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;font-weight:600}
+
+/* bersagli tondi condivisi */
+.circ{width:44px;height:44px;border-radius:50%;background:var(--surface);
+  display:flex;align-items:center;justify-content:center;color:var(--ink-muted);flex:0 0 44px}
+.circ svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.circ.del{color:var(--danger);background:rgba(192,57,43,.07)}
+
+/* ---------------- PRIMA: due piani separati ---------------- */
+.prima-head{padding:calc(26px) 24px 6px;display:flex;flex-direction:column;gap:calc(6px)}
+.prima-riga{display:flex;align-items:center;min-height:44px}
+.prima-riga .actions{margin-left:auto;display:flex;align-items:center;gap:14px}
+.prima-riga .edit{font-size:calc(13px * var(--s));font-weight:600;color:var(--ink)}
+.prima-nav{display:flex;align-items:center;justify-content:center;gap:2px;padding:calc(2px) 0}
+.arw{width:44px;height:44px;border:none;background:transparent;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--ink-muted)}
+.arw svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+.arw.off{opacity:.22}
+.prima-ctr{min-width:148px;text-align:center;padding:calc(4px) calc(10px)}
+.prima-ctr .rel{font-family:var(--serif);font-size:calc(23px * var(--s));font-weight:430;
+  color:var(--ink);letter-spacing:-.01em;line-height:1.15}
+.prima-ctr .data{font-size:calc(11px * var(--s));font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+
+/* ---------------- DOPO: una riga sola, tre mestieri ---------------- */
+.dopo-riga{position:relative;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(10px) 24px calc(8px);min-height:calc(44px + 18px)}
+.dopo-riga .dx{display:flex;align-items:center;gap:10px}
+.dopo-ctr{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:flex;align-items:center;gap:4px;white-space:nowrap}
+.dopo-ctr .arw{width:36px;height:36px;flex:0 0 36px}
+.dopo-nome{display:flex;align-items:baseline;gap:8px;padding:6px 8px;border-radius:var(--r-md)}
+.dopo-nome .rel{font-family:var(--serif);font-size:calc(20px * var(--s));font-weight:430;
+  color:var(--ink);letter-spacing:-.01em;line-height:1.1}
+.dopo-nome .data{font-size:calc(11px * var(--s));font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-faint)}
+
+/* ---------------- il racconto sotto ---------------- */
+.corpo{padding:0 24px}
+.headline{font-size:calc(30px * var(--s));font-weight:700;letter-spacing:-.022em;
+  line-height:1.12;color:var(--ink)}
+.pill{display:inline-block;vertical-align:middle;margin-left:10px;font-size:calc(10px * var(--s));
+  font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:4px 12px}
+.prosa{margin-top:16px;font-size:calc(15px * var(--s));line-height:1.6;color:var(--ink-muted)}
+.sfuma{height:70px;background:linear-gradient(to bottom,transparent,var(--bg));margin-top:-70px;position:relative}
+.fine{height:26px}
+
+/* il righello della misura vera, scritto dal misuratore in fondo */
+.righello{position:absolute;right:8px;width:0;border-left:2px dashed rgba(251,191,36,.55)}
+.righello i{position:absolute;left:-6px;width:10px;height:0;border-top:2px solid rgba(251,191,36,.75)}
+.righello i.giu{bottom:0}
+.misura{font-size:12px;font-weight:700;color:var(--hot);text-align:center;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-title">La testata della Giornata, compatta</div>
+  <p class="page-sub">
+    Su <b>/giorno</b> fra la barra fissa in alto e il titolo ci sono oggi DUE piani di
+    comandi: la riga indietro / modifica / elimina, e sotto la navigazione del giorno su
+    due righe. Sono tre mestieri (dove sei, quando, cosa puoi fare) spalmati su due piani,
+    e il titolo — la cosa per cui sei venuto — parte sotto la meta dello schermo.
+    La proposta: <b>una riga sola, tre mestieri</b>. Il righello giallo misura dal vivo,
+    non a occhio.
+  </p>
+
+  <div class="divider"></div>
+
+  <p class="label">§01 . A sinistra il prima, a destra la proposta</p>
+  <div class="row">
+    <div><div class="phone" id="prima">
+      <div class="status"><span>19:24</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+      <div class="appbar" data-bar><span class="t">The day</span><span class="av">M</span></div>
+      <div class="prima-head">
+        <div class="prima-riga">
+          <span class="circ"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="actions">
+            <span class="edit">edit &#8599;</span>
+            <span class="circ del"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m1 0-1 14H8L7 6"/></svg></span>
+          </span>
+        </div>
+        <div class="prima-nav">
+          <span class="arw"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="prima-ctr">
+            <span class="rel" style="display:block">Today</span>
+            <span class="data" style="display:block">1 Sep</span>
+          </span>
+          <span class="arw off"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+      <div class="corpo">
+        <div class="headline" data-titolo>Boss approved my project at the office and a peaceful day<span class="pill">Yours</span></div>
+        <p class="prosa">Woke up after seven hours and forty-five minutes of sleep, feeling
+        good. Ran 5 km before breakfast and enjoyed eggs, toast, and coffee. Work was
+        productive, with my boss pleased about the project&hellip;</p>
+      </div>
+      <div class="sfuma"></div><div class="fine"></div>
+      <div class="righello" data-righello><i></i><i class="giu"></i></div>
+      </div>
+      <p class="misura" data-misura></p>
+    </div>
+
+    <div><div class="phone" id="dopo">
+      <div class="status"><span>19:24</span><span class="icons">▮▮ ᯤ ▐▌</span></div>
+      <div class="appbar" data-bar><span class="t">The day</span><span class="av">M</span></div>
+      <div class="dopo-riga">
+        <span class="circ"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+        <span class="dopo-ctr">
+          <span class="arw"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></span>
+          <span class="dopo-nome">
+            <span class="rel">Today</span>
+            <span class="data">&middot;&nbsp; 1 Sep</span>
+          </span>
+          <span class="arw off"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+        </span>
+        <span class="dx">
+          <span class="circ"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+          <span class="circ del"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2m1 0-1 14H8L7 6"/></svg></span>
+        </span>
+      </div>
+      <div class="corpo">
+        <div class="headline" data-titolo>Boss approved my project at the office and a peaceful day<span class="pill">Yours</span></div>
+        <p class="prosa">Woke up after seven hours and forty-five minutes of sleep, feeling
+        good. Ran 5 km before breakfast and enjoyed eggs, toast, and coffee. Work was
+        productive, with my boss pleased about the project&hellip;</p>
+      </div>
+      <div class="sfuma"></div><div class="fine"></div>
+      <div class="righello" data-righello><i></i><i class="giu"></i></div>
+      </div>
+      <p class="misura" data-misura></p>
+    </div>
+  </div>
+  <p class="caption">
+    A sinistra com'e adesso, a destra la proposta. <b>Una riga sola, tre mestieri</b>:
+    indietro a sinistra, il giorno al centro (nome in serif e data sulla STESSA riga,
+    il tocco apre il calendario come oggi, le frecce ai fianchi — quella verso domani
+    resta spenta), le azioni a destra. <b>"edit&nbsp;&#8599;" diventa la matita</b>:
+    due gesti della stessa famiglia, due cerchi della stessa taglia, e il rosso resta
+    solo nel glifo del cestino. Il centro e centrato sull'ASSE dello schermo, non fra i
+    vicini: con un bottone a sinistra e due a destra, centrarlo "fra" i vicini lo farebbe
+    ballare a ogni schermata. Tutti i bersagli restano 44 (le frecce hanno 36 di corpo
+    ma 44 di zona tocco). Il nome scende da 23 a 20: non e piu solo su un piedistallo,
+    e in compagnia, e a quella taglia il serif tiene benissimo.
+  </p>
+  <p class="caption">
+    Cosa NON cambia: lo swipe fra i giorni, il calendario dal tocco sul nome, la barra
+    fissa con "The day" e il pallino (scheletro, non si tocca da qui), il titolo e tutto
+    cio che segue. Cambia solo quanta strada fai per arrivarci:
+    <span class="good">il titolo sale di ~100px</span> — mezzo paragrafo di racconto in
+    piu sopra la piega — e la testata smette di sembrare <span class="bad">tre toolbar
+    impilate</span>.
+  </p>
+
+</div>
+<script>
+/* Il righello onesto: misura dal fondo della barra fissa alla prima riga
+   del titolo, in px veri di questo rendering, e scrive il numero. */
+for (const tel of document.querySelectorAll(".phone")) {
+  const bar = tel.querySelector("[data-bar]");
+  const tit = tel.querySelector("[data-titolo]");
+  const rig = tel.querySelector("[data-righello]");
+  const r0 = tel.getBoundingClientRect();
+  const a = bar.getBoundingClientRect().bottom - r0.top;
+  const b = tit.getBoundingClientRect().top - r0.top;
+  rig.style.top = a + "px";
+  rig.style.height = (b - a) + "px";
+  const colonna = tel.parentElement;
+  colonna.querySelector("[data-misura]").textContent =
+    Math.round(b - a) + "px dal bordo della barra fissa alla prima riga del titolo";
+}
+</script>
+</body>
+</html>
