@@ -131,6 +131,31 @@ async function apri(ctx, url = "/app") {
     check(`sotto il velo non si tocca niente: ${dove}`, coperto === true);
   }
 
+  /* L'ALTEZZA (1 settembre 2026, Manuel con gli screenshot): il riquadro
+     non riempie lo schermo bordo a bordo come faceva sull'iPhone — sta
+     dentro ~il 74 per cento dell'altezza, come il saluto di stoqfolio,
+     e quando la lettera non ci sta e il CORPO a scorrere, col tasto per
+     chiudere sempre in vista. */
+  const misura = await page.evaluate(() => {
+    const box = document.querySelector(".jm-benv-sal-box");
+    const corpo = document.querySelector(".jm-benv-sal-corpo");
+    const piede = document.querySelector(".jm-benv-sal-piede");
+    const rb = box.getBoundingClientRect();
+    const rp = piede.getBoundingClientRect();
+    return {
+      quota: rb.height / window.innerHeight,
+      scorre: corpo.scrollHeight > corpo.clientHeight + 1,
+      piedeInVista: rp.bottom <= window.innerHeight + 1,
+    };
+  });
+  check(
+    "il riquadro non riempie lo schermo (come stoqfolio, ~74%)",
+    misura.quota <= 0.76,
+    `${Math.round(misura.quota * 100)}% dello schermo`,
+  );
+  check("la lettera lunga scorre nel corpo", misura.scorre === true);
+  check("il tasto per chiudere resta in vista", misura.piedeInVista === true);
+
   /* Il contenuto, dal testo di fabbrica. */
   const box = page.locator(".jm-benv-sal-box");
   check("c'e la foto", (await box.locator(".jm-benv-sal-foto").count()) === 1);
