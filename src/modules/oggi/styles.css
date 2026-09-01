@@ -1612,10 +1612,15 @@
 
 .jm-day-nav-rel {
   display: block;
-  font-size: calc(15px * var(--jm-ui-scale));
-  font-weight: 600;
+  /* La voce del diario (mockup restyling §07, "B in serif" scelta da
+     Manuel il 1 settembre 2026): il nome del giorno parla col serif di
+     prosa del tema, come la domanda del vuoto. La coordinata sotto
+     resta in maiuscoletto sans: e una misura, non una frase. */
+  font-family: var(--font-serif);
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 420;
   color: var(--color-ink);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;

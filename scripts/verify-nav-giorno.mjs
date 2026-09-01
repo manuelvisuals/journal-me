@@ -405,6 +405,45 @@ async function trascina(page, dx) {
   await ctx.close();
 }
 
+/* ============ Il nome del giorno, "B in serif" (mockup restyling §07,
+   scelta di Manuel del 1 settembre 2026): sopra il nome umano col serif
+   di prosa, sotto la coordinata SENZA giorno della settimana — mai la
+   stessa data scritta due volte, nemmeno per un giorno di mesi fa. ==== */
+{
+  const { ctx, page } = await contesto();
+  /* Un giorno lontano piu di una settimana: prima qui rel e abs erano
+     la stessa identica data. */
+  const lontano = new Date(Date.now() - 40 * 24 * 3600 * 1000);
+  const iso = lontano.toISOString().slice(0, 10);
+  await page.goto(BASE + "/app/giorno?d=" + iso, { waitUntil: "networkidle" });
+  await page.waitForSelector(".jm-day-nav-rel", { timeout: 20000 });
+  const testata = await page.evaluate(() => {
+    const r = document.querySelector(".jm-day-nav-rel");
+    const a = document.querySelector(".jm-day-nav-abs");
+    return {
+      rel: r.innerText.trim(),
+      abs: a.innerText.trim(),
+      font: getComputedStyle(r).fontFamily,
+    };
+  });
+  check(
+    "giorno lontano: sopra c'e un NOME, non una data",
+    testata.rel.length > 0 && !/\d/.test(testata.rel),
+    testata.rel,
+  );
+  check(
+    "e sotto la data si e tolta il cappello (niente giorno della settimana)",
+    /^\d{1,2}\s\S+/.test(testata.abs) && testata.rel !== testata.abs,
+    testata.abs,
+  );
+  check(
+    "il nome parla col serif di prosa del tema",
+    /spectral|newsreader|garamond|serif/i.test(testata.font),
+    testata.font,
+  );
+  await ctx.close();
+}
+
 await browser.close();
 
 const ok = results.filter((r) => r.ok).length;
