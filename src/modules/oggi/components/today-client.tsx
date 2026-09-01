@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
-import { AppBarAzione } from "@/components/ui/app-bar";
+import { AppBarAzione, useTitoloBarra } from "@/components/ui/app-bar";
 import { EmptyState } from "@/modules/oggi/components/empty-state";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -15,13 +15,14 @@ import { PeopleReview } from "@/modules/oggi/components/people-review";
 import { DesktopEditor } from "@/modules/oggi/components/desktop-editor";
 import { RailToday } from "@/modules/oggi/components/rail-today";
 import { DayNav, giornoPrima } from "@/modules/oggi/components/day-nav";
+import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 import { DaySwipe } from "@/modules/oggi/components/day-swipe";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { openPremiumWall } from "@/modules/abbonamento";
 import { useCan } from "@/lib/capabilities";
 import { clearDraft, loadDraft } from "@/lib/data/drafts";
-import { formatNumber, todayISO } from "@/lib/format";
+import { compactDayDate, formatNumber, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import {
@@ -223,6 +224,16 @@ export function TodayClient({
     if (canVoice) warmRealtime();
   }, [canVoice]);
 
+  /* LA PAGINA RECORD HA UN NOME SUO E UN GIORNO SUO (2 settembre 2026,
+     richiesta di Manuel). Il nome: la barra dice "Racconta", non "Oggi" —
+     qui non stai guardando la giornata, la stai raccontando. Il giorno:
+     il calendarietto sta QUI, prima di aprire il microfono, non solo
+     dentro l'ascolto (dove resta): il racconto va al giorno scelto, sia
+     a voce sia scritto. Torna a oggi ogni volta che la pagina si apre. */
+  const [dataRacconto, setDataRacconto] = useState<string>(() => todayISO());
+  const [calendarioRacconto, setCalendarioRacconto] = useState<boolean>(false);
+  useTitoloBarra("Racconta", view === "scelta");
+
   // Watch for ?record=1 changes coming from clicking the mic in the tab bar
   // while we're already on /. Defer the setState via queueMicrotask so React
   // 19's react-hooks/set-state-in-effect rule is satisfied.
@@ -247,6 +258,9 @@ export function TodayClient({
       setView((current) =>
         current === "recording" || current === "scelta" ? current : "scelta",
       );
+      // La pagina Record riparte sempre da oggi: la data scelta ieri
+      // sera non deve restare appiccicata al racconto di stasera.
+      setDataRacconto(todayISO());
       router.replace("/app", { scroll: false });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -255,6 +269,7 @@ export function TodayClient({
   /* Il dito che sbatte contro domani: la testata guarda questo numero.
      Su Oggi il muro c'e SEMPRE, perche oggi e l'ultimo giorno che esiste. */
   const [muro, setMuro] = useState<number>(0);
+
 
   // Goals to render: the entry's own goal state if present, otherwise the
   // live definitions rendered all-off. No hardcoded list anywhere.
@@ -350,7 +365,7 @@ export function TodayClient({
 
   // Manual text follows the exact same pipeline as a recording.
   const handleManualContinue = (text: string) => {
-    setPending({ transcript: text, durationSeconds: 0, targetDate: todayISO() });
+    setPending({ transcript: text, durationSeconds: 0, targetDate: dataRacconto });
     setView("review");
   };
 
@@ -877,6 +892,23 @@ export function TodayClient({
           writeFirst={!canVoice}
           onStartRecording={handleStartRecording}
           onWriteManually={handleWriteManually}
+          dataChip={{
+            label: (
+              <span suppressHydrationWarning>
+                <span style={{ color: "var(--color-ink)", fontWeight: 600 }}>
+                  {relativeDayLabel(
+                    parseISODate(dataRacconto),
+                    parseISODate(todayISO()),
+                  )}
+                </span>
+                <span style={{ marginLeft: 5, color: "var(--color-ink-faint)" }}>
+                  {" \u00b7 "}
+                  {compactDayDate(parseISODate(dataRacconto))}
+                </span>
+              </span>
+            ),
+            onClick: () => setCalendarioRacconto(true),
+          }}
           onCancel={handleCancel}
         />
       )}
@@ -968,7 +1000,7 @@ export function TodayClient({
 
       {view === "recording" && (
         <RecordingOverlay
-          defaultDate={todayISO()}
+          defaultDate={dataRacconto}
           mode={mode}
           onStop={handleStop}
           onCancel={handleCancel}
@@ -979,7 +1011,7 @@ export function TodayClient({
       {view === "manual" && !isDesktop && (
         <ManualWrite
           key={editorKey}
-          targetDate={todayISO()}
+          targetDate={dataRacconto}
           initialValue={draftInitial}
           notice={draftNotice}
           onContinue={handleManualContinue}
@@ -1025,6 +1057,16 @@ export function TodayClient({
           saving={peopleSaving}
         />
       )}
+
+      <DatePickerPopover
+        open={calendarioRacconto}
+        selected={dataRacconto}
+        onSelect={(iso) => {
+          setCalendarioRacconto(false);
+          setDataRacconto(iso);
+        }}
+        onClose={() => setCalendarioRacconto(false)}
+      />
 
       {view === "no-capture" && (
         <div
