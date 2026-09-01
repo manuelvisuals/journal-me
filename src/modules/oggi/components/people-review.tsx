@@ -81,7 +81,12 @@ export function PeopleReview({
       }}
     >
       <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col" style={{ minHeight: 0 }}>
-        <header style={{ padding: "30px 24px 6px" }}>
+        {/* Overlay a schermo pieno: sta SOPRA la barra in alto, quindi la
+            safe-area dell'iPhone se la prende da solo con env() — la
+            stessa cura dei chiarimenti (.jm-ch-col in features.css).
+            Senza, "persone di oggi" finiva sotto l'orologio e la Dynamic
+            Island (screenshot di Manuel, 1 settembre 2026, sera). */}
+        <header style={{ padding: "calc(30px + env(safe-area-inset-top, 0px)) 24px 6px" }}>
           <div
             style={{
               fontSize: "calc(11px * var(--jm-ui-scale))",
@@ -176,7 +181,8 @@ export function PeopleReview({
           </button>
         </div>
 
-        <div style={{ padding: "14px 24px 26px", display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* E in basso l'indicatore Home: stessa regola, stessa fonte. */}
+        <div style={{ padding: "14px 24px calc(26px + env(safe-area-inset-bottom, 0px))", display: "flex", flexDirection: "column", gap: 10 }}>
           <button
             type="button"
             className="btn-primary"
