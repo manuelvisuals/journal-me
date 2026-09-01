@@ -6,6 +6,7 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { EmptyState } from "@/modules/oggi/components/empty-state";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { FilledView } from "@/modules/oggi/components/filled-view";
+import { FotoGiorno } from "@/modules/oggi/components/foto-giorno";
 import { TranscriptEditor } from "@/modules/oggi/components/transcript-editor";
 import { ReviewScreen } from "@/modules/oggi/components/review-screen";
 import { ManualWrite } from "@/modules/oggi/components/manual-write";
@@ -898,6 +899,7 @@ export function TodayClient({
           }
           onMetricChange={handleMetricChange}
           onGoalToggle={handleGoalToggle}
+          fotoSlot={entry ? <FotoGiorno date={entry.entryDate} /> : null}
           freeProse={
             !canAI && entry
               ? {

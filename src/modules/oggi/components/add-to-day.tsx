@@ -23,12 +23,14 @@
  * vede due voci e nessun buco (SPEC-v2 §3.3, l'uscita gratuita).
  */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ManualWrite } from "@/modules/oggi/components/manual-write";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
+import { aggiungiDalRullino } from "@/modules/oggi/components/foto-giorno";
 import { Sheet } from "@/components/ui/sheet";
 import { QuickCapture } from "@/modules/ricorda";
 import { useCan } from "@/lib/capabilities";
+import { useStorageMode } from "@/lib/data/store";
 import { addRemember } from "@/lib/data/remembers";
 import { saveRecording } from "@/lib/actions/save-recording";
 import { compactDayDate, formatDate, parseISODate } from "@/lib/format";
@@ -67,6 +69,10 @@ export function AddToDay({
   const canVoice = useCan("voice");
   const [sheet, setSheet] = useState<Sheet>("closed");
   const [saving, setSaving] = useState<boolean>(false);
+  /* La scelta dal rullino passa dalla schermata di sistema: questo input
+     invisibile e solo la maniglia per aprirla (mockup foto-rullino §01). */
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const modoFoto = useStorageMode();
 
   const dayLabel = compactDayDate(parseISODate(date));
   const dayName = longDayName(parseISODate(date));
@@ -209,6 +215,28 @@ export function AddToDay({
               </button>
             )}
 
+            {(modoFoto === "local" || modoFoto === "cloud") && (
+              <button
+                type="button"
+                className="jm-sheet-row"
+                onClick={() => fileRef.current?.click()}
+              >
+                <span className="jm-sheet-ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="5" width="18" height="14" rx="3" />
+                    <circle cx="9" cy="10.5" r="1.6" />
+                    <path d="M3 16.5l5-4 4 3.2 3.5-2.7 5.5 4.5" />
+                  </svg>
+                </span>
+                <span className="jm-sheet-txt">
+                  <span className="jm-sheet-t">{t("Aggiungi dal rullino")}</span>
+                  <span className="jm-sheet-d">
+                    {t("Foto di quel giorno, dal telefono")}
+                  </span>
+                </span>
+              </button>
+            )}
+
             <button
               type="button"
               className="jm-sheet-row"
@@ -258,6 +286,27 @@ export function AddToDay({
           onCancel={() => setSheet("closed")}
         />
       )}
+
+      {/* La maniglia del rullino. `hidden` e non smontato: l'input deve
+          esistere PRIMA del tocco, o Safari ignora il click programmatico. */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        onChange={(e) => {
+          const files = e.currentTarget.files;
+          if (!files || files.length === 0) return;
+          setSheet("closed");
+          if (modoFoto === "local" || modoFoto === "cloud") {
+            void aggiungiDalRullino(modoFoto, date, Array.from(files), t);
+          }
+          // Ripulito subito: senza, scegliere due volte la STESSA foto non
+          // farebbe scattare nessun change la seconda volta.
+          e.currentTarget.value = "";
+        }}
+      />
     </>
   );
 }

@@ -30,7 +30,7 @@ dire riscrivere l'editor e la registrazione.
 - Prefissi CSS (misurati): `jm-ed`, `jm-editor`, `jm-fv`, `jm-rec`, `jm-day`
   (compresi i nuovi `jm-day-nav-*` e `jm-day-sw-*`),
   `jm-area`, `jm-metric`, `jm-stepper`, `jm-rm`, `jm-goal*`, `jm-write`,
-  `jm-add`, `jm-ptt`, `jm-ch`. In dubbio: grep nei componenti.
+  `jm-add`, `jm-ptt`, `jm-ch`, `jm-foto`. In dubbio: grep nei componenti.
 - La porta esporta RecordingOverlay (lo usa Ricorda per la cattura a voce).
 - Orchestrazione del salvataggio: `src/lib/actions/save-recording.ts`
   (scheletro: si cambia solo d'accordo con Manuel).
@@ -50,7 +50,23 @@ racconto non c'e, cioe se l'e inventata), e la schermata va a riprendere il
 racconto della giornata per le domande vecchie in coda. Il codice non
 inventa mai: copia.
 
-- Banchi prima del push: `verify-chiarimenti`, `verify-chiarimenti-vivo`,
+Le foto dal rullino (1 settembre 2026, mockup `design/mockups/foto-rullino.html`):
+un giorno puo avere le sue foto, legate alla DATA e non al racconto (un
+giorno senza parole le tiene lo stesso, e cancellare il racconto non le
+tocca). Si entra dalla riga "Aggiungi dal rullino" del foglio di AddToDay
+(schermata di scelta di sistema, mai una nostra). Al momento della scelta
+`foto.ts` prepara DUE copie: miniatura ~480px (quella che la giornata
+mostra, striscia `FotoGiorno` sotto il racconto) e copia da schermo
+~2048px (viaggia solo aprendo il visore; nell'attesa si vede la miniatura
+ingrandita, mai un buco). In locale stanno in IndexedDB in un database
+TUTTO LORO (`journalme-foto`): il database `journalme` e scheletro e un
+modulo non gli alza la versione. In cloud: tabella `entry_photos` +
+bucket privato `foto` (migration 020), client Supabase a import dinamico
+(un build solo-locale non lo costruisce). ATTENZIONE: il backup
+export/import (scheletro) NON include ancora le foto — e scritto anche
+nella nota di consegna, non dimenticarlo quando si tocca il backup.
+
+- Banchi prima del push: `verify-foto`, `verify-chiarimenti`, `verify-chiarimenti-vivo`,
   `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,

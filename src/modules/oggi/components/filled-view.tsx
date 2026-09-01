@@ -60,6 +60,13 @@ type Props = {
    * Oggi quel tasto non serve: stai gia scrivendo.
    */
   footer?: React.ReactNode;
+  /**
+   * La striscia delle foto del giorno (mockup foto-rullino.html §02):
+   * subito sotto il racconto, prima delle aree — il diario resta fatto di
+   * parole, le foto lo accompagnano. Uno slot e non un mount fisso perche
+   * solo il chiamante sa la data del giorno e la modalita.
+   */
+  fotoSlot?: React.ReactNode;
 };
 
 export function FilledView({
@@ -79,6 +86,7 @@ export function FilledView({
   freeProse = null,
   onSeePremium,
   footer = null,
+  fotoSlot = null,
 }: Props) {
   const t = useT();
   const lang = useLang();
@@ -136,6 +144,7 @@ export function FilledView({
               <p key={i}>{p}</p>
             ))}
           </div>
+          {fotoSlot}
           <div className="jm-fv-nudge">
             <div className="t">
               {t(
@@ -152,6 +161,8 @@ export function FilledView({
       ) : (
         <>
           {hasSnippet && <p className="jm-fv-sn">{snippet}</p>}
+
+          {fotoSlot}
 
           <Separator />
 

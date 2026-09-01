@@ -133,6 +133,12 @@ export function DayNav({
       const el = document.activeElement as HTMLElement | null;
       const tag = el?.tagName.toLowerCase();
       if (tag === "input" || tag === "textarea" || el?.isContentEditable) return;
+      /* Con un dialogo aperto (il foglio, il visore delle foto, un
+         picker) le frecce appartengono al dialogo, non alla pagina
+         sotto: cambiare giorno sotto un visore aperto lo faceva
+         sparire di colpo (trovato da verify-foto, non da un
+         ragionamento). */
+      if (document.querySelector('[role="dialog"]')) return;
       if (e.key === "ArrowLeft") vai(giornoPrima(date));
       if (e.key === "ArrowRight" && !suOggi) vai(giornoDopo(date));
     };
