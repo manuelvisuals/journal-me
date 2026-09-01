@@ -283,6 +283,65 @@ const SCHERMATE = [
   );
 }
 
+/* ============ Il vetro allo scroll (restyling §03, 1 settembre 2026):
+   da ferma la barra e aria, appena il contenuto le passa sotto diventa
+   vetro — la stessa fisica del dock, sopra e sotto. ============ */
+{
+  const { ctx, page } = await open({});
+  await page.goto(BASE + "/app", { waitUntil: "networkidle" });
+  await page.waitForSelector(".jm-appbar", { timeout: 20000 });
+  await page.waitForTimeout(400);
+
+  const daFerma = await page.evaluate(() => {
+    const b = document.querySelector(".jm-appbar");
+    const s = getComputedStyle(b);
+    return {
+      classe: b.classList.contains("jm-appbar-vetro"),
+      fondo: s.backgroundColor,
+    };
+  });
+  check(
+    "in cima la barra e aria: niente vetro, niente fondo",
+    !daFerma.classe && (daFerma.fondo === "rgba(0, 0, 0, 0)" || daFerma.fondo === "transparent"),
+    daFerma.fondo,
+  );
+
+  /* Si allunga la pagina quanto basta e si scorre: il banco misura il
+     MECCANISMO (scroll -> vetro), non quanto e lunga oggi la schermata. */
+  await page.evaluate(() => {
+    const alto = document.createElement("div");
+    alto.id = "zavorra-di-prova";
+    alto.style.height = "1600px";
+    document.body.appendChild(alto);
+    window.scrollTo(0, 400);
+  });
+  await page.waitForTimeout(350);
+  const scorrendo = await page.evaluate(() => {
+    const b = document.querySelector(".jm-appbar");
+    const s = getComputedStyle(b);
+    return {
+      classe: b.classList.contains("jm-appbar-vetro"),
+      filtro: s.backdropFilter || s.webkitBackdropFilter,
+    };
+  });
+  check(
+    "scorrendo la barra diventa vetro (velo e sfocatura)",
+    scorrendo.classe && /blur/.test(scorrendo.filtro),
+    scorrendo.filtro,
+  );
+
+  await page.evaluate(() => {
+    window.scrollTo(0, 0);
+    document.getElementById("zavorra-di-prova")?.remove();
+  });
+  await page.waitForTimeout(350);
+  const tornata = await page.evaluate(
+    () => !document.querySelector(".jm-appbar").classList.contains("jm-appbar-vetro"),
+  );
+  check("tornati in cima, il vetro si spegne", tornata);
+  await ctx.close();
+}
+
 await browser.close();
 
 const ok = results.filter((r) => r.ok).length;
