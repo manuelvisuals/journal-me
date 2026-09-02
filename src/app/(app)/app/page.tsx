@@ -67,7 +67,7 @@ function TodaySkeleton() {
   return (
     <>
       <div
-        className="mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
+        className="jm-skel-attesa mx-auto flex w-full max-w-[440px] lg:max-w-none flex-1 flex-col"
         style={{ padding: "0 24px", paddingTop: "calc(24px + var(--jm-safe-top))", minHeight: 0 }}
         aria-busy="true"
         aria-label={t("Caricamento")}

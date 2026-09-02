@@ -1912,7 +1912,10 @@
     var(--color-surface) 63%
   );
   background-size: 400% 100%;
-  animation: jm-skel-shimmer 1.3s ease infinite;
+  /* Stesso ritardo di ogni scheletro (base.css): lo spazio e riservato
+     subito, il luccichio solo se l'attesa dura. */
+  animation: jm-skel-shimmer 1.3s ease infinite,
+    jm-skel-appare 220ms ease 400ms both;
 }
 .jm-foto-griglia .jm-foto-th {
   width: auto;

@@ -7,12 +7,16 @@ import { useT } from "@/lib/i18n";
  * first (uncached) visit. With the router cache, revisits are instant and this
  * never flashes — so the user sees either an instant screen or a clearly
  * animated "loading" placeholder, never a frozen one.
+ *
+ * E comunque INVISIBILE per i primi 400 ms (classe jm-skel-attesa,
+ * base.css): quando la cache risponde in fretta lo scheletro non deve
+ * balenare (2 settembre 2026, richiesta di Manuel).
  */
 export function PageSkeleton() {
   const t = useT();
   return (
     <div
-      className="flex flex-1 flex-col"
+      className="jm-skel-attesa flex flex-1 flex-col"
       style={{ padding: "0 24px", paddingTop: "calc(24px + var(--jm-safe-top))", minHeight: 0 }}
       aria-busy="true"
       aria-label={t("Caricamento")}

@@ -435,7 +435,16 @@ summary:active {
   transform: scale(var(--jm-press));
 }
 
-/* Skeleton shimmer for loading states. */
+/* Skeleton shimmer for loading states.
+   GLI SCHELETRI ASPETTANO PRIMA DI FARSI VEDERE (2 settembre 2026,
+   richiesta di Manuel: "per un microsecondo appare uno scheletro che da
+   fastidio agli occhi"). Cambiando tab la cache risponde in decine di
+   millisecondi e lo scheletro era un lampo: c'era solo il tempo di
+   accorgersi che qualcosa era balenato. Regola: uno scheletro si mostra
+   solo se l'attesa DURA — resta invisibile per i primi 400 ms (lo spazio
+   e gia occupato, niente salti) e poi entra in dissolvenza. Sotto i 400
+   ms nessuno lo vede mai. Le due regole .jm-skel di questo file (questa e
+   quella piu sotto, che vince) portano tutte e due il ritardo. */
 .jm-skel {
   background: linear-gradient(
     90deg,
@@ -445,7 +454,20 @@ summary:active {
   );
   background-size: 400% 100%;
   border-radius: var(--jm-radius-sm);
-  animation: jm-shimmer 1.4s ease-in-out infinite;
+  animation: jm-shimmer 1.4s ease-in-out infinite,
+    jm-skel-appare 220ms ease 400ms both;
+}
+
+@keyframes jm-skel-appare {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Il CONTENITORE di uno scheletro di pagina (page-skeleton.tsx, lo
+   scheletro di Oggi): porta lo stesso ritardo, cosi anche le righe di
+   separazione fra i blocchi, che non sono .jm-skel, aspettano con lui. */
+.jm-skel-attesa {
+  animation: jm-skel-appare 220ms ease 400ms both;
 }
 
 @keyframes jm-shimmer {
@@ -1035,7 +1057,9 @@ summary:active {
     var(--color-surface) 63%
   );
   background-size: 400% 100%;
-  animation: jm-skel-shimmer 1.3s ease infinite;
+  /* Il ritardo di 400 ms: vedi la prima regola .jm-skel. */
+  animation: jm-skel-shimmer 1.3s ease infinite,
+    jm-skel-appare 220ms ease 400ms both;
 }
 
 @keyframes jm-skel-shimmer {
