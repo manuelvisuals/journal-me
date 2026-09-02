@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup interattivo . Una giornata sola: prima / dopo</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+:root{--font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;--serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --pg:#17171A;--pg-line:rgba(255,255,255,.10);--pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;--ok:#4ADE80;--no:#F87171}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:36px 24px 80px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto}
+h1{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.02em;text-align:center;color:var(--pg-ink)}
+.sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:12px auto 26px;max-width:760px;line-height:1.7}
+.sub b{color:var(--pg-mut)}
+.switch{display:flex;justify-content:center;gap:8px;margin-bottom:26px}
+.switch button{font:inherit;font-size:14px;font-weight:600;padding:10px 22px;border-radius:999px;border:1px solid var(--pg-line);background:transparent;color:var(--pg-mut);cursor:pointer}
+.switch button.on{background:var(--pg-ink);color:#111;border-color:var(--pg-ink)}
+.stage{display:flex;gap:40px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.legend{max-width:360px;font-size:13.5px;line-height:1.75;color:var(--pg-faint)}
+.legend h3{font-family:var(--serif);font-size:20px;color:var(--pg-ink);font-weight:400;margin-bottom:8px}
+.legend p{margin-bottom:12px}
+.legend b{color:var(--pg-mut)}
+.legend .no{color:var(--no)} .legend .si{color:var(--ok)}
+.legend .path{font-size:12px;color:var(--pg-mut);background:rgba(255,255,255,.05);border:1px solid var(--pg-line);border-radius:8px;padding:8px 10px;margin-top:6px}
+/* ---------------- telefono ---------------- */
+.phone{width:390px;height:844px;border-radius:38px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;
+  background:var(--bg);color:var(--ink);font-family:var(--font);user-select:none}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 4px;color:var(--ink);font-size:15px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.appbar .t{font-family:var(--serif);font-size:20px;font-weight:420;letter-spacing:-.015em;color:var(--ink)}
+.appbar .dx{display:flex;gap:10px;align-items:center}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6b7b8a,#2c3a48)}
+.cmd{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted);font-size:15px;cursor:pointer;background:transparent;font-family:inherit}
+.cmd.del{color:#B03A2E}
+.nav{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;padding:16px 24px 12px;border-bottom:1px solid var(--line)}
+.nav .c{text-align:center}
+.nav .c .g{font-family:var(--serif);font-size:20px;color:var(--ink);line-height:1.1}
+.nav .c .d{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-top:3px}
+.arw{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted);cursor:pointer;background:transparent;font-family:inherit;font-size:16px}
+.arw.off{visibility:hidden}
+.body{position:absolute;left:0;right:0;top:110px;bottom:0;overflow:auto}
+.body.withnav{top:181px}
+.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 40px 120px;text-align:center}
+.empty h2{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.15}
+.empty h2.sans{font-family:var(--font);font-size:26px;font-weight:600}
+.empty p{margin-top:14px;font-size:16px;color:var(--ink-muted);line-height:1.5}
+.b1,.b2{width:100%;height:60px;border-radius:14px;font-weight:600;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;font-family:inherit;border:0}
+.b1{margin-top:44px;background:var(--accent);color:#fff;box-shadow:0 10px 26px rgba(120,60,30,.22)}
+.b2{margin-top:12px;height:56px;background:transparent;border:1px solid var(--line);color:var(--ink);font-size:17px}
+.cancel{margin-top:38px;color:var(--ink-faint);text-decoration:underline;font-size:16px;cursor:pointer;background:none;border:0;font-family:inherit}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border-radius:999px;padding:10px 18px;font-size:15px;color:var(--ink-faint);margin-bottom:26px;cursor:pointer}
+.pill b{color:var(--ink);font-weight:600}
+.fotos{position:absolute;left:24px;right:24px;bottom:118px}
+.fotos .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin-bottom:8px}
+.fotos .s{display:flex;gap:8px}.fotos .s i{width:80px;height:80px;border-radius:12px;background:linear-gradient(135deg,#c9b8a3,#8f7a63);display:block}
+/* dock */
+.dock{position:absolute;left:22px;right:22px;bottom:34px;height:72px;background:rgba(255,255,255,.92);border-radius:999px;display:flex;align-items:center;justify-content:space-around;padding:0 12px;box-shadow:0 10px 30px rgba(0,0,0,.10);z-index:3}
+.dock button{font:inherit;font-size:10px;letter-spacing:.14em;color:var(--ink-faint);font-weight:650;text-align:center;background:none;border:0;cursor:pointer;padding:12px 12px;border-radius:999px}
+.dock button.on{color:var(--ink);background:#F3E6DE}
+.dock .mic{width:52px;height:52px;border-radius:50%;background:var(--accent);padding:0}
+/* piena */
+.filled{padding:22px 24px 140px}
+.filled h2{font-family:var(--serif);font-size:30px;font-weight:400;line-height:1.15;color:var(--ink);letter-spacing:-.01em}
+.filled p{font-size:15px;color:var(--ink-muted);line-height:1.6;margin-top:14px}
+.filled .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin-top:26px}
+.filled .a{font-size:15px;color:var(--ink);margin-top:6px}
+/* mese */
+.mese{padding:0 0 140px}
+.mese .mh{display:flex;justify-content:space-between;align-items:baseline;padding:18px 24px 10px}
+.mese .mh b{font-size:26px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+.mese .mh span{font-size:12px;color:var(--ink-faint);letter-spacing:.1em}
+.mese .sec{padding:16px 24px 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:650}
+.mese .r{display:flex;gap:16px;padding:16px 24px;border-top:1px solid var(--line);cursor:pointer;align-items:flex-start}
+.mese .r:hover{background:rgba(0,0,0,.03)}
+.mese .r .n{width:44px;flex:0 0 44px;text-align:center}
+.mese .r .n b{font-size:30px;font-weight:300;color:var(--ink);display:block;line-height:1}
+.mese .r .n s{text-decoration:none;font-size:10px;letter-spacing:.14em;color:var(--ink-faint);font-weight:650}
+.mese .r .n.today b{color:var(--accent)}
+.mese .r .h{font-size:17px;color:var(--ink);line-height:1.3;font-weight:500}
+.mese .r .h.e{font-style:italic;color:var(--ink-faint);font-family:var(--serif);font-weight:400}
+.mese .r .m{font-size:13px;color:var(--ink-faint);margin-top:6px}
+/* placeholder memo/gym */
+.plain{padding:22px 24px}
+.plain .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.plain .row{padding:16px 0;border-bottom:1px solid var(--line);font-size:16px;color:var(--ink)}
+/* ascolto */
+.listen{position:absolute;inset:0;background:rgba(31,27,24,.97);color:#F4EDE6;display:flex;flex-direction:column;align-items:center;padding:150px 32px 0;text-align:center;z-index:5}
+.listen .chip{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:9px 16px;font-size:14px;color:rgba(255,255,255,.75);cursor:pointer}
+.listen .chip b{color:#fff;font-weight:600}
+.listen h3{font-family:var(--serif);font-size:28px;font-weight:400;margin-top:70px;letter-spacing:-.01em}
+.listen p{font-size:14px;color:rgba(255,255,255,.6);margin-top:8px}
+.listen .ptt{width:132px;height:132px;border-radius:50%;border:2px solid rgba(255,255,255,.35);margin-top:64px;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(166,81,47,.55),rgba(166,81,47,.15))}
+.listen .ptt i{width:36px;height:36px;border-radius:50%;background:#fff;display:block}
+.listen .hint{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:18px;font-weight:600}
+.listen .x{position:absolute;top:66px;left:24px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font-size:15px;cursor:pointer;background:none;color:#fff;font-family:inherit}
+/* scrittura */
+.write{position:absolute;inset:0;background:var(--bg);z-index:5;padding:66px 24px 0}
+.write .top{display:flex;justify-content:space-between;align-items:center}
+.write textarea{width:100%;height:340px;margin-top:22px;border:0;background:transparent;font:inherit;font-size:17px;line-height:1.6;color:var(--ink);resize:none;outline:none;font-family:var(--serif)}
+.write .save{position:absolute;left:24px;right:24px;bottom:40px;height:56px;border-radius:14px;background:var(--ink);color:#fff;font-weight:600;font-size:17px;display:flex;align-items:center;justify-content:center;border:0;font-family:inherit;cursor:pointer}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:130px;background:#1F1B18;color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;z-index:6;animation:fade 2.4s forwards}
+@keyframes fade{0%,80%{opacity:1}100%{opacity:0}}
+.badge{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(248,113,113,.92);color:#1a0b0b;font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;z-index:4;letter-spacing:.08em}
+.badge.si{background:rgba(74,222,128,.92);color:#062a12}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Una giornata sola — prima / dopo, interattivo</h1>
+  <p class="sub">Usa il telefono come sul tuo: i tab del dock, il microfono, le frecce, i giorni del Mese, i tasti. Il pulsante in alto scambia <b>com'e oggi</b> e <b>come sara</b>,
+    tenendo la stessa posizione: cosi vedi la differenza sullo stesso gesto. Il look (barra in alto, nav sotto, tipografia, dock) e uno solo in tutte le sezioni, prima e dopo: cambia solo quello che deve.</p>
+  <div class="switch"><button id="bPrima" class="on">Prima (com'e oggi)</button><button id="bDopo">Dopo (proposta)</button></div>
+  <div class="stage">
+    <div class="phone" id="phone"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</div>
+<script>
+/* ---------- dati ---------- */
+const TODAY = "2026-09-02";
+const DAYS = {
+  "2026-09-02": null,
+  "2026-09-01": {h:"Boss approved my project at the office and a peaceful day", m:"74.2 kg · 7h 45 · 🙂", w:"Lavoro", a:"Progetto approvato in ufficio, giornata serena."},
+  "2026-08-31": {h:"emotional breakthrough after therapy session", m:"😌", w:"Emozioni", a:"Una sessione che ha sbloccato qualcosa."},
+  "2026-08-30": {h:"app development and social interactions highlight the day", m:"82.7 kg · 8h 00 · 🙂", w:"Lavoro", a:"Sviluppo app e cena con amici."},
+  "2026-08-29": {h:"buon umore e riflessioni sulla separazione", m:"83.3 kg · 7h 30 · 🙂", w:"Emozioni", a:"Riflessioni, ma di buon umore."},
+  "2026-08-28": {h:"digital nomads dinner highlights connections", m:"83.3 kg · 8h 00 · 🙂", w:"Relazioni", a:"Cena con i nomadi digitali."},
+  "2026-08-27": null,
+};
+const FOTO = {"2026-08-27": 2};
+const WD = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const MO = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+function d(iso){ const [y,m,dd]=iso.split("-").map(Number); return new Date(y,m-1,dd); }
+function iso(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
+function shift(isoS,n){ const x=d(isoS); x.setDate(x.getDate()+n); return iso(x); }
+function isToday(s){ return s===TODAY; }
+function isYesterday(s){ return s===shift(TODAY,-1); }
+function navName(s){ return isToday(s)?"Today":isYesterday(s)?"Yesterday":WD[d(s).getDay()]; }
+function navDate(s){ const x=d(s); return x.getDate()+" "+MO[x.getMonth()].slice(0,3).toUpperCase(); }
+function longDate(s){ const x=d(s); return WD[x.getDay()]+" "+x.getDate()+" "+MO[x.getMonth()]; }
+function shortDate(s){ const x=d(s); return WD[x.getDay()].slice(0,3)+" "+x.getDate()+" "+MO[x.getMonth()].slice(0,3); }
+
+/* ---------- stato ---------- */
+let mode = "prima";                  // prima | dopo
+let S = { screen:"today", date:TODAY, overlay:null, recDate:TODAY, toast:null };
+// screen: today | talk(prima) | giorno | mese | memo | gym
+
+const phone = document.getElementById("phone");
+const legend = document.getElementById("legend");
+
+function set(p){ Object.assign(S,p); render(); }
+function toast(t){ S.toast=t; render(); setTimeout(()=>{ if(S.toast===t){S.toast=null; render();} },2400); }
+
+/* ---------- pezzi ---------- */
+const status = `<div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>`;
+function appbar(title, cmds=""){ return `<div class="appbar"><span class="t">${title}</span><span class="dx">${cmds}<span class="av"></span></span></div>`; }
+function dock(active){
+  const tabs = mode==="prima" ? [["today","TODAY"],["mese","MONTH"],["mic",""],["memo","MEMO"],["gym","GYM"]] : [["today","JOURNAL"],["mese","MONTH"],["mic",""],["memo","MEMO"],["gym","GYM"]];
+  return `<div class="dock">${tabs.map(([k,l])=> k==="mic" ? `<button class="mic" data-go="mic" aria-label="mic"></button>` : `<button data-go="${k}" class="${active===k?'on':''}">${l}</button>`).join("")}</div>`;
+}
+function nav(date){
+  const fut = shift(date,1) > TODAY;
+  return `<div class="nav"><button class="arw" data-nav="-1">&#8249;</button><span class="c"><div class="g">${navName(date)}</div><div class="d">${navDate(date)}</div></span><button class="arw ${fut?'off':''}" data-nav="1">&#8250;</button></div>`;
+}
+function fotoStrip(date){ const n=FOTO[date]; if(!n) return ""; return `<div class="fotos"><div class="k">Photos of the day</div><div class="s">${"<i></i>".repeat(n)}</div></div>`; }
+function filled(date){
+  const e=DAYS[date];
+  return `<div class="filled"><h2>${e.h}</h2><p>${e.a} ${e.m ? "("+e.m+")" : ""}</p><div class="k">${e.w}</div><div class="a">${e.a}</div><div class="k">Body</div><div class="a">${e.m||"—"}</div></div>`;
+}
+function emptyDopo(date){
+  const q = isToday(date) ? "How was your day?" : `How was ${WD[d(date).getDay()]} ${d(date).getDate()}?`;
+  const sub = isToday(date) ? "Open the mic and talk.<br>Without overthinking it." : `Tell it now: it stays on the ${d(date).getDate()}${ord(d(date).getDate())},<br>it does not become today.`;
+  return `<div class="empty"><h2>${q}</h2><p>${sub}</p><button class="b1" data-act="voice">&#127908; Tell it out loud</button><button class="b2" data-act="write">&#9998; Type it</button></div>${fotoStrip(date)}`;
+}
+function ord(n){ return [,"st","nd","rd"][n%10>3||Math.floor(n%100/10)==1?0:n%10]||"th"; }
+function listen(date){
+  return `<div class="listen"><button class="x" data-act="close">&#10005;</button><span class="chip" data-act="chip">&#128197; <b>${isToday(date)?"Today":navName(date)}</b> &middot; ${shortDate(date)} &#9662;</span><h3>Listening</h3><p>Hold to talk. Release to pause.</p><div class="ptt" data-act="ptt"><i></i></div><div class="hint">hold to talk</div></div>`;
+}
+function write(date, chip){
+  return `<div class="write"><div class="top"><button class="cmd" data-act="close">&#10005;</button>${chip?`<span class="chip pill" data-act="chip" style="margin:0">&#128197; <b>${isToday(date)?"Today":navName(date)}</b> &middot; ${shortDate(date)} &#9662;</span>`:`<span style="font-size:13px;color:var(--ink-faint)">${longDate(date)}</span>`}<span style="width:38px"></span></div><textarea placeholder="How was your day?"></textarea><button class="save" data-act="save">Save the day</button></div>`;
+}
+function mese(){
+  const rows = Object.keys(DAYS).sort().reverse();
+  let out = `<div class="mese"><div class="mh"><b>September 2026 &#9662;</b><span>1 / 2</span></div>`;
+  let sec = "";
+  for (const k of rows){
+    const x=d(k); const s=MO[x.getMonth()].toUpperCase()+" "+x.getFullYear();
+    if (x.getMonth()!==8 && sec!==s){ out += `<div class="sec">${s}</div>`; sec=s; }
+    const e=DAYS[k];
+    out += `<div class="r" data-day="${k}"><div class="n ${isToday(k)?'today':''}"><b>${x.getDate()}</b><s>${WD[x.getDay()].slice(0,3).toUpperCase()}</s></div><div><div class="h ${e?'':'e'}">${e?e.h:"— empty day —"}</div>${e?`<div class="m">${e.m}</div>`:""}</div></div>`;
+  }
+  return out+"</div>";
+}
+function plain(title, rows){ return `<div class="plain"><div class="k">${title}</div>${rows.map(r=>`<div class="row">${r}</div>`).join("")}</div>`; }
+
+/* ---------- render ---------- */
+function render(){
+  let html = status, leg = "";
+  const date = S.date, e = DAYS[date];
+  if (mode==="prima"){
+    if (S.screen==="today" || S.screen==="talk"){
+      if (S.screen==="talk"){
+        html += appbar("Talk") + `<div class="body"><div class="empty"><span class="pill" data-act="chip">&#128197; <b>${isToday(S.recDate)?"Today":navName(S.recDate)}</b> &middot; ${shortDate(S.recDate)} &#9662;</span><h2>How was your day?</h2><p>Open the mic and talk.<br>Without overthinking it.</p><button class="b1" data-act="voice">&#127908; Tell it out loud</button><button class="b2" data-act="write">&#9998; Type it</button><button class="cancel" data-act="cancel">Cancel</button></div></div>` + dock("today");
+        leg = `<h3>Prima: "Talk"</h3><p>Dal microfono del dock. <span class="no">Un nome che e un'azione, la data in una pillola, un Cancel.</span> E la pagina 1 di 3.</p><div class="path">Prova: tocca <b>Cancel</b>, poi il tab <b>Today</b>: stessa cosa, altra faccia.</div>`;
+      } else if (DAYS[TODAY]){
+        html += appbar("Today", `<button class="cmd">&#9998;</button><button class="cmd">+</button>`) + `<div class="body withnav">${filled(TODAY)}</div>`; html = html.replace(`<div class="body withnav">`, nav(TODAY)+`<div class="body withnav">`) + dock("today");
+        leg = `<h3>Prima: "Today", piena</h3><p>La giornata raccontata. Questa parte non cambia.</p>`;
+      } else {
+        html += appbar("Today") + nav(TODAY) + `<div class="body withnav"><div class="empty"><h2>How was your day?</h2><p>Open the mic and talk.<br>Without overthinking it.</p><button class="b1" data-act="voice">&#127908; Tell it out loud</button><button class="b2" data-act="write">&#9998; Type it</button></div></div>` + dock("today");
+        leg = `<h3>Prima: "Today", vuota</h3><p>Dal tab. Stessi tasti di Talk, <span class="no">ma un'altra intestazione, "Today" scritto due volte, niente Cancel.</span> Pagina 2 di 3.</p><div class="path">Prova: la freccia &#8249; (vai a ieri), poi il tab <b>Month</b> e tocca il <b>2</b>.</div>`;
+      }
+    } else if (S.screen==="giorno"){
+      if (e){
+        html += appbar("The day", `<button class="cmd">&#9998;</button><button class="cmd del">&#128465;</button>`) + nav(date) + `<div class="body withnav">${filled(date)}</div>` + dock("mese");
+        leg = `<h3>Prima: "The day", piena</h3><p>Terzo nome. La vista piena e la stessa di Today (con il cestino in piu).</p>`;
+      } else {
+        html += appbar("The day") + nav(date) + `<div class="body withnav"><div class="empty"><h2 class="sans">You have not told this day</h2><p>You can do it now: the date stays as it is, it does not become today.</p><button class="b1" data-act="write" style="width:80%">+ Tell ${d(date).getDate()} ${MO[d(date).getMonth()]}</button></div>${fotoStrip(date)}</div>` + dock("mese");
+        leg = `<h3>Prima: "The day", vuota</h3><p>Dal Mese. <span class="no">Terzo nome, frase diversa in un altro carattere, un tasto solo: la voce sparisce.</span> Pagina 3 di 3, ${isToday(date)?"per LO STESSO oggi di prima":"per un giorno passato"}.</p>`;
+      }
+    } else if (S.screen==="mese"){ html += appbar("Month", `<button class="cmd">&#9638;</button>`) + `<div class="body">${mese()}</div>` + dock("mese"); leg = `<h3>Month</h3><p>Non cambia. <div class="path">Tocca un giorno: <b>2</b> (oggi, vuoto) o <b>27</b> (passato, vuoto con foto) o <b>1</b> (pieno).</div></p>`; }
+    else if (S.screen==="memo"){ html += appbar("Memo") + `<div class="body">${plain("People, to-dos, notes",["Marco","Call the bank","Gift for Giulia"])}</div>` + dock("memo"); leg=`<h3>Memo</h3><p>Non cambia: stessa barra, stesso dock.</p>`; }
+    else { html += appbar("Gym") + `<div class="body">${plain("Last workouts",["Tue 1 · Push","Sun 30 · Legs"])}</div>` + dock("gym"); leg=`<h3>Gym</h3><p>Non cambia.</p>`; }
+    if (S.overlay==="voice") html += listen(S.recDate);
+    if (S.overlay==="write") html += write(S.screen==="talk"?S.recDate:date, false);
+  } else {
+    /* DOPO */
+    const J = "Journal";
+    if (S.screen==="today" || S.screen==="giorno"){
+      const dd = S.screen==="today" ? TODAY : date; const ee = DAYS[dd];
+      const cmds = ee ? `<button class="cmd">&#9998;</button><button class="cmd">+</button>${isToday(dd)?"":`<button class="cmd del">&#128465;</button>`}` : "";
+      html += appbar(J, cmds) + nav(dd) + `<div class="body withnav">${ee ? filled(dd) : emptyDopo(dd)}</div>` + dock(S.screen==="today"?"today":"mese");
+      leg = ee ? `<h3>Dopo: Journal, piena</h3><p>Come prima: la vista piena non cambia. La barra dice <b>Journal</b> (Diario) ovunque; il nav dice quando.</p>`
+               : `<h3>Dopo: Journal, vuota</h3><p><span class="si">Una schermata sola</span> per oggi e per il 27: stessa barra, stesso nav, stessa domanda con la data, gli stessi due tasti. Le foto del giorno restano anche senza parole.</p><div class="path">Prova: dal tab, dal Mese e dal microfono. Non si capisce da dove sei arrivato: e il metro.</div>`;
+    } else if (S.screen==="mese"){ html += appbar("Month", `<button class="cmd">&#9638;</button>`) + `<div class="body">${mese()}</div>` + dock("mese"); leg = `<h3>Month</h3><p>Non cambia. Tocca <b>2</b>, <b>27</b> o <b>1</b>.</p>`; }
+    else if (S.screen==="memo"){ html += appbar("Memo") + `<div class="body">${plain("People, to-dos, notes",["Marco","Call the bank","Gift for Giulia"])}</div>` + dock("memo"); leg=`<h3>Memo</h3><p>Non cambia.</p>`; }
+    else { html += appbar("Gym") + `<div class="body">${plain("Last workouts",["Tue 1 · Push","Sun 30 · Legs"])}</div>` + dock("gym"); leg=`<h3>Gym</h3><p>Non cambia.</p>`; }
+    if (S.overlay==="voice"){ html += listen(S.recDate); leg = `<h3>Dopo: il microfono del dock</h3><p><span class="si">Nessuna pagina "Talk"</span>: si apre l'ascolto sopra il Journal di oggi. Il giorno si cambia nella chip (tocca la chip: passa a ieri). La X chiude e sotto c'e il Journal.</p>`; }
+    if (S.overlay==="write"){ html += write(S.recDate, true); leg = `<h3>Dopo: scrivere</h3><p>La chip della data sta anche qui (correzione del controaudit): dal dock o dal tasto "Type it" puoi scrivere di ieri senza passare dal Mese. Prefissata con il giorno da cui parti.</p>`; }
+  }
+  if (S.toast) html += `<div class="toast">${S.toast}</div>`;
+  html += `<div class="badge ${mode==='dopo'?'si':''}">${mode==="prima"?"PRIMA":"DOPO"}</div>`;
+  phone.innerHTML = html; legend.innerHTML = leg;
+}
+
+/* ---------- eventi ---------- */
+phone.addEventListener("click", (ev)=>{
+  const b = ev.target.closest("[data-go],[data-nav],[data-day],[data-act]"); if(!b) return;
+  if (b.dataset.go){
+    const g=b.dataset.go;
+    if (g==="mic"){
+      if (mode==="prima"){ set({screen:"talk", recDate:TODAY, overlay:null}); }
+      else { set({screen:"today", date:TODAY, recDate:TODAY, overlay:"voice"}); }
+      return;
+    }
+    set({screen:g, date: g==="today"?TODAY:S.date, overlay:null}); return;
+  }
+  if (b.dataset.nav){
+    const n=Number(b.dataset.nav); const nd=shift(S.screen==="today"?TODAY:S.date,n); if (nd>TODAY) return;
+    set({screen: isToday(nd)?"today":"giorno", date:nd}); return;
+  }
+  if (b.dataset.day){ const k=b.dataset.day; set({screen: (mode==="prima"||!isToday(k)) ? "giorno":"today", date:k}); if(mode==="prima"&&isToday(k)) set({screen:"giorno",date:k}); return; }
+  const a=b.dataset.act;
+  if (a==="voice"){ set({overlay:"voice", recDate: S.screen==="talk"?S.recDate:(S.screen==="today"?TODAY:S.date)}); }
+  else if (a==="write"){ set({overlay:"write", recDate: S.screen==="talk"?S.recDate:(S.screen==="today"?TODAY:S.date)}); }
+  else if (a==="close"){ set({overlay:null}); }
+  else if (a==="cancel"){ set({screen:"today", overlay:null}); }
+  else if (a==="chip"){ const nd = isToday(S.recDate)?shift(TODAY,-1):TODAY; set({recDate:nd}); toast(`Now telling ${isToday(nd)?"today":"yesterday"}`); }
+  else if (a==="ptt"){ toast("Hold to talk (mockup)"); }
+  else if (a==="save"){ set({overlay:null, screen: S.screen==="talk"?"today":S.screen}); toast("Saved (mockup)"); }
+});
+/* Lo scambio prima/dopo tiene il POSTO (stessa schermata, stesso giorno) e
+   chiude gli overlay; l'unica traduzione e Talk <-> ascolto sul Journal. */
+document.getElementById("bPrima").onclick=()=>{ mode="prima"; document.getElementById("bPrima").classList.add("on"); document.getElementById("bDopo").classList.remove("on"); const eraVoce=S.overlay==="voice"&&S.screen==="today"; S.overlay=null; if(eraVoce) S.screen="talk"; render(); };
+document.getElementById("bDopo").onclick=()=>{ mode="dopo"; document.getElementById("bDopo").classList.add("on"); document.getElementById("bPrima").classList.remove("on"); const eraTalk=S.screen==="talk"; S.overlay=null; if(eraTalk){ S.screen="today"; S.overlay="voice"; } render(); };
+render();
+</script>
+</body>
+</html>
