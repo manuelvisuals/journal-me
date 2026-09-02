@@ -31,7 +31,7 @@ export const OGGI: Record<string, string> = {
   "aree macro non ancora estratte": "areas not extracted yet",
   "Scrivi la tua giornata": "Write your day",
   "senza parlare a voce alta": "without saying it out loud",
-  "Oggi ho visto Mario e ho parlato con Luca al telefono. Chiuso il progetto al lavoro...": "Today I saw Mario and talked to Luca on the phone. Wrapped up the project at work...",
+  "Racconta la tua giornata. A che ora ti sei alzato, quanto hai dormito, quanto pesi, di che umore ti sei svegliato, cosa ricordi di aver sognato. Cosa hai mangiato, com'e andata al lavoro, chi hai visto, cosa hai provato. Movimento, hobby, corsi, obiettivi. E i dettagli da non perdere: le cose da ricordare, e quello che hai capito di te.": "Tell your day. What time you got up, how long you slept, your weight, the mood you woke up in, what you remember dreaming. What you ate, how work went, who you saw, what you felt. Exercise, hobbies, courses, goals. And the details worth keeping: things to remember, and what you understood about yourself.",
   "continua . poi rileggi e l'ai elabora la giornata": "continue . then read it back and the ai processes the day",
   "peso": "weight",
   "Peso in kg": "Weight in kg",

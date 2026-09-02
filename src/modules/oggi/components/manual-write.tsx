@@ -166,7 +166,7 @@ export function ManualWrite({
           spellCheck
           autoCorrect="on"
           autoCapitalize="sentences"
-          placeholder={t("Oggi ho visto Mario e ho parlato con Luca al telefono. Chiuso il progetto al lavoro...")}
+          placeholder={t("Racconta la tua giornata. A che ora ti sei alzato, quanto hai dormito, quanto pesi, di che umore ti sei svegliato, cosa ricordi di aver sognato. Cosa hai mangiato, com'e andata al lavoro, chi hai visto, cosa hai provato. Movimento, hobby, corsi, obiettivi. E i dettagli da non perdere: le cose da ricordare, e quello che hai capito di te.")}
         />
 
         <div className="jm-editor-hint">
