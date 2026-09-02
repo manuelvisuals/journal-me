@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
 import { clearDraft, saveDraft } from "@/lib/data/drafts";
 import { useT } from "@/lib/i18n";
+import { compactDayDate, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
+import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 
 type Props = {
   /** Data (YYYY-MM-DD) su cui va la bozza dell'autosave. */
@@ -15,6 +17,14 @@ type Props = {
   /** Hand the typed text to the same review -> AI -> day flow as a recording. */
   onContinue: (text: string) => void;
   onCancel: () => void;
+  /**
+   * IL GIORNO SI SCEGLIE DENTRO L'ATTO (controaudit del mockup
+   * una-giornata-sola, 2 settembre 2026, punto a): la chip della data
+   * sta qui come sta nell'ascolto, cosi dal dock si scrive di ieri senza
+   * passare dal Mese. Chi la passa riceve la data nuova; chi non la passa
+   * (l'aggiunta a una giornata gia scelta) non vede nessuna chip.
+   */
+  onTargetDateChange?: (iso: string) => void;
 };
 
 /**
@@ -33,6 +43,7 @@ export function ManualWrite({
   notice,
   onContinue,
   onCancel,
+  onTargetDateChange,
 }: Props) {
   const t = useT();
   /* Superficie a schermo pieno: il dock non esiste finche e aperta
@@ -44,6 +55,7 @@ export function ManualWrite({
   const latestRef = useRef<string>(initialValue ?? "");
   const dirtyRef = useRef<boolean>(false);
   const isEmpty = value.trim().length === 0;
+  const [calendario, setCalendario] = useState<boolean>(false);
 
   const handleChange = (text: string) => {
     setValue(text);
@@ -78,18 +90,39 @@ export function ManualWrite({
         <div className="jm-editor-header">
           <div>
             <div className="jm-editor-title">{t("Scrivi la tua giornata")}</div>
-            <div
-              style={{
-                fontSize: "calc(11px * var(--jm-ui-scale))",
-                fontWeight: 600,
-                color: "var(--color-ink-faint)",
-                letterSpacing: "0.10em",
-                textTransform: "uppercase",
-                marginTop: 2,
-              }}
-            >
-              {t("senza parlare a voce alta")}
-            </div>
+            {onTargetDateChange ? (
+              <button
+                type="button"
+                className="jm-date-chip"
+                style={{ marginTop: 6, whiteSpace: "nowrap" }}
+                onClick={() => setCalendario(true)}
+                aria-haspopup="dialog"
+              >
+                <span suppressHydrationWarning>
+                  <span style={{ color: "var(--color-ink)", fontWeight: 600 }}>
+                    {relativeDayLabel(parseISODate(targetDate), parseISODate(todayISO()))}
+                  </span>
+                  <span style={{ marginLeft: 5, color: "var(--color-ink-faint)" }}>
+                    {" \u00b7 "}
+                    {compactDayDate(parseISODate(targetDate))}
+                  </span>
+                </span>
+                <span className="chev">&#9662;</span>
+              </button>
+            ) : (
+              <div
+                style={{
+                  fontSize: "calc(11px * var(--jm-ui-scale))",
+                  fontWeight: 600,
+                  color: "var(--color-ink-faint)",
+                  letterSpacing: "0.10em",
+                  textTransform: "uppercase",
+                  marginTop: 2,
+                }}
+              >
+                {t("senza parlare a voce alta")}
+              </div>
+            )}
           </div>
           <div className="jm-editor-actions">
             <button
@@ -140,6 +173,17 @@ export function ManualWrite({
           {t("continua . poi rileggi e l'ai elabora la giornata")}
         </div>
       </div>
+      {onTargetDateChange && (
+        <DatePickerPopover
+          open={calendario}
+          selected={targetDate}
+          onSelect={(iso) => {
+            setCalendario(false);
+            onTargetDateChange(iso);
+          }}
+          onClose={() => setCalendario(false)}
+        />
+      )}
     </div>
   );
 }

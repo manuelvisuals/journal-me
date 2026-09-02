@@ -2,6 +2,8 @@
 
 import { useT } from "@/lib/i18n";
 
+import { formatDate, parseISODate, todayISO } from "@/lib/format";
+
 type Props = {
   onStartRecording: () => void;
   onWriteManually: () => void;
@@ -12,57 +14,36 @@ type Props = {
    */
   writeFirst?: boolean;
   /**
-   * L'uscita quieta, quando questa schermata e la pagina Record aperta dal
-   * dock sopra una giornata gia raccontata: si torna da dove si e venuti.
-   * Assente sulla giornata vuota, dove non c'e nessun "indietro".
+   * UNA GIORNATA SOLA (mockup una-giornata-sola.html, approvato il 2
+   * settembre 2026): questo stato vuoto e LO STESSO per oggi e per
+   * qualsiasi giorno passato. Cambia solo la domanda: "Com'e andata
+   * oggi?" oppure "Com'e andato giovedi 27?", e la riga sotto, che nel
+   * passato dice l'unica cosa che il passato ha da dire in piu — resta
+   * quel giorno, non diventa oggi. Assente = oggi.
    */
-  onCancel?: () => void;
+  date?: string;
   /**
-   * Il calendarietto della pagina Record (2 settembre 2026, richiesta di
-   * Manuel): il giorno a cui va il racconto, visibile e cambiabile PRIMA
-   * di aprire il microfono, non solo dentro l'ascolto. La schermata resta
-   * stupida: riceve l'etichetta pronta e il tocco, il giorno lo tiene chi
-   * la monta.
+   * Le foto del giorno: appartengono alla DATA, non al racconto, quindi
+   * un giorno senza parole le mostra lo stesso (controaudit, punto d).
    */
-  dataChip?: { label: React.ReactNode; onClick: () => void };
+  fotoSlot?: React.ReactNode;
 };
 
 export function EmptyState({
   onStartRecording,
   onWriteManually,
   writeFirst = false,
-  onCancel,
-  dataChip,
+  date,
+  fotoSlot = null,
 }: Props) {
   const t = useT();
+  const oggi = !date || date === todayISO();
+  /* "giovedi 27": il nome del giorno e il numero, nella lingua scelta. */
+  const giorno = oggi
+    ? ""
+    : formatDate(parseISODate(date), { weekday: "long", day: "numeric" });
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 pb-10">
-      {dataChip && (
-        <div style={{ marginBottom: 26 }}>
-          <button
-            type="button"
-            className="jm-date-chip"
-            onClick={dataChip.onClick}
-            aria-haspopup="dialog"
-          >
-            <svg
-              className="icn"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" />
-              <path d="M16 2v4M8 2v4M3 10h18" />
-            </svg>
-            {dataChip.label}
-            <span className="chev">&#9662;</span>
-          </button>
-        </div>
-      )}
       <h1
         className="text-center"
         style={{
@@ -79,7 +60,7 @@ export function EmptyState({
           marginBottom: 14,
         }}
       >
-        {t("Com'e andata oggi?")}
+        {oggi ? t("Com'e andata oggi?") : t("Com'e andato {giorno}?", { giorno })}
       </h1>
       <p
         className="text-center"
@@ -94,9 +75,11 @@ export function EmptyState({
       >
         {/* Due righe con un a capo in mezzo: dove spezzare lo decide la
             traduzione, non un <br/> fisso pensato per l'italiano. */}
-        {writeFirst
-          ? t("Scrivi due righe.\nSenza pensarci troppo.")
-          : t("Apri il microfono e racconta.\nSenza pensarci troppo.")}
+        {!oggi
+          ? t("Raccontalo adesso: resta quel giorno,\nnon diventa oggi.")
+          : writeFirst
+            ? t("Scrivi due righe.\nSenza pensarci troppo.")
+            : t("Apri il microfono e racconta.\nSenza pensarci troppo.")}
       </p>
 
       {/* Due tasti pieni, come le card di /benvenuto (Manuel, 27 agosto
@@ -134,17 +117,10 @@ export function EmptyState({
             </button>
           </>
         )}
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="jm-write-link"
-            style={{ justifySelf: "center" }}
-          >
-            {t("Annulla")}
-          </button>
-        )}
       </div>
+      {fotoSlot && (
+        <div style={{ width: "100%", maxWidth: 320, marginTop: 28 }}>{fotoSlot}</div>
+      )}
     </div>
   );
 }

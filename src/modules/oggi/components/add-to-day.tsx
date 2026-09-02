@@ -53,7 +53,10 @@ type Props = {
    * giornata gia raccontata il giorno e scritto due righe sopra e
    * ripeterlo sarebbe rumore.
    */
-  variant?: "add" | "empty";
+  /* "muto" (una giornata sola, 2 settembre 2026): nessun tasto disegnato
+     qui; i fogli si aprono SOLO dai segnali qui sotto. Lo usa la Giornata
+     vuota, dove i due tasti sono quelli dello stato vuoto condiviso. */
+  variant?: "add" | "empty" | "muto";
   /**
    * Il + della barra in alto apre LO STESSO foglio del box (mockup
    * oggi-aggiungi, approvato il 2 settembre 2026): il chiamante alza
@@ -61,6 +64,10 @@ type Props = {
    * non per disciplina.
    */
   apriSegnale?: number;
+  /** Come apriSegnale, ma apre direttamente la scrittura. */
+  apriScritturaSegnale?: number;
+  /** Come apriSegnale, ma apre direttamente l'ascolto. */
+  apriVoceSegnale?: number;
 };
 
 type Sheet = "closed" | "menu" | "write" | "record" | "remember";
@@ -72,6 +79,8 @@ export function AddToDay({
   onError,
   variant = "add",
   apriSegnale = 0,
+  apriScritturaSegnale = 0,
+  apriVoceSegnale = 0,
 }: Props) {
   const t = useT();
   const canVoice = useCan("voice");
@@ -89,6 +98,16 @@ export function AddToDay({
   if (apriSegnale !== ultimoSegnale) {
     setUltimoSegnale(apriSegnale);
     if (apriSegnale > 0 && sheet === "closed") setSheet("menu");
+  }
+  const [ultimaScrittura, setUltimaScrittura] = useState<number>(apriScritturaSegnale);
+  if (apriScritturaSegnale !== ultimaScrittura) {
+    setUltimaScrittura(apriScritturaSegnale);
+    if (apriScritturaSegnale > 0 && sheet === "closed") setSheet("write");
+  }
+  const [ultimaVoce, setUltimaVoce] = useState<number>(apriVoceSegnale);
+  if (apriVoceSegnale !== ultimaVoce) {
+    setUltimaVoce(apriVoceSegnale);
+    if (apriVoceSegnale > 0 && sheet === "closed") setSheet(canVoice ? "record" : "write");
   }
 
   const dayLabel = compactDayDate(parseISODate(date));
@@ -160,6 +179,7 @@ export function AddToDay({
 
   return (
     <>
+      {variant !== "muto" && (
       <button
         type="button"
         className={variant === "empty" ? "jm-day-add empty" : "jm-day-add"}
@@ -182,6 +202,7 @@ export function AddToDay({
             ? t("Racconta il {giorno}", { giorno: dayName })
             : t("Aggiungi a questa giornata")}
       </button>
+      )}
 
       {/* Il foglio non e piu disegnato qui: e la primitiva di scheletro
           (src/components/ui/sheet.tsx), promossa DA questo file il 28

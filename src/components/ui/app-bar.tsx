@@ -76,7 +76,12 @@ const TITOLI: ReadonlyArray<readonly [string, string]> = [
   ["/app/remember", "Memo"],
   ["/app/recap", "Recap"],
   ["/app/settings", "Impostazioni"],
-  ["/app/giorno", "Giornata"],
+  /* UNA GIORNATA SOLA (mockup una-giornata-sola.html, approvato il 2
+     settembre 2026): /app e /app/giorno sono la stessa schermata — la
+     pagina di un giorno — e la barra dice il POSTO, "Diario", per
+     tutte e due. Il QUANDO (Oggi, Ieri, giovedi 27) lo dice il nav
+     sotto. "Oggi" e "Giornata" come titoli non esistono piu. */
+  ["/app/giorno", "Diario"],
   ["/app/persona", "Persona"],
   ["/app/palestra", "Palestra"],
 ];
@@ -91,7 +96,7 @@ export function titoloSchermata(pathname: string): string | null {
      confrontare, in questo unico punto: da qui passano sia AppBar sia il
      guscio (jm-conbarra), quindi barra e safe-area restano d'accordo. */
   const puro = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
-  if (puro === "/app") return "Oggi";
+  if (puro === "/app") return "Diario";
   pathname = puro;
   for (const [prefisso, titolo] of TITOLI) {
     if (pathname === prefisso || pathname.startsWith(`${prefisso}/`)) {

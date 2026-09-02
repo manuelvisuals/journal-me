@@ -165,11 +165,11 @@ async function trascina(page, dx) {
   /* Dal 1 settembre 2026 sera (mockup testate-oggi-giornata, approvato
      da Manuel) la riga del giorno e IDENTICA su tutte le schermate del
      tempo, Oggi compreso: nome in serif sopra, data sotto. Il doppione
-     con la barra ("Oggi" due volte) e il prezzo dichiarato della
-     coerenza — supera la regola del 30 agosto che qui si provava. */
+     con la barra non c'e piu dal 2 settembre 2026 (mockup una-giornata
+     -sola): la barra dice il POSTO, "Diario", e il nav dice il QUANDO. */
   await page.waitForSelector(".jm-appbar-t", { timeout: 20000 });
   const nellaBarra = (await page.locator(".jm-appbar-t").innerText()).trim();
-  check("e Oggi si chiama Oggi: lo dice la barra in alto", nellaBarra.toLowerCase() === "oggi", nellaBarra);
+  check("la barra dice il posto, Diario, non la data", nellaBarra.toLowerCase() === "diario", nellaBarra);
   check(
     "sul telefono la testata dice il nome anche su Oggi (coerenza col resto)",
     await page.locator(".jm-day-nav-rel").first().isVisible(),

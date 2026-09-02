@@ -322,20 +322,29 @@ async function aggiungi(page, nomi) {
 }
 
 /* ============ 3. un giorno senza racconto ha le sue foto ============ */
+/* Dal 2 settembre 2026 il giorno vuoto e lo stesso stato vuoto di Oggi:
+   le foto si aggiungono dal + della barra e compaiono SOTTO i tasti. */
 {
   const { ctx, page, errors } = await contesto();
   await page.goto(`${BASE}/app/giorno?d=${VUOTO}`, { waitUntil: "networkidle" });
-  await page.waitForSelector(".jm-day-empty-wrap", { timeout: 20000 });
+  await page.waitForSelector(".btn-primary", { timeout: 20000 });
 
-  await aggiungi(page, ["g.png"]);
+  await page.locator('.jm-appbar-az .jm-cmd[aria-label="Aggiungi a questa giornata"]').click();
+  await page.waitForSelector(".jm-sheet", { timeout: 10000 });
+  const [chooser] = await Promise.all([
+    page.waitForEvent("filechooser"),
+    page.locator(".jm-sheet-row", { hasText: "Aggiungi dal rullino" }).click(),
+  ]);
+  await chooser.setFiles([file("g.png")]);
   await page.waitForSelector(".jm-foto-wrap", { timeout: 10000 });
   check(
-    "sul giorno vuoto la foto compare sopra il tasto racconta",
-    (await page.locator(".jm-day-empty-wrap .jm-foto-th").count()) === 1,
+    "sul giorno vuoto la foto compare, sotto i tasti dello stato vuoto",
+    (await page.locator(".jm-foto-th").count()) === 1,
   );
   check(
     "e il giorno resta vuoto di parole (nessun racconto inventato)",
-    (await page.locator(".jm-day-empty-h").count()) === 1,
+    (await page.locator(".btn-primary").count()) === 1 &&
+      /Com'e andat/.test(await page.locator("body").innerText()),
   );
   check("zero errori console sul giorno vuoto", errors.length === 0, errors[0] ?? "");
   await ctx.close();

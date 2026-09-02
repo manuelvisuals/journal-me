@@ -316,7 +316,7 @@ for (const [percorso, w, h, nome] of [
   await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-appbar", { timeout: 25000 });
   const titolo = await page.textContent(".jm-appbar-t");
-  check('/app e ancora la schermata "Oggi"', titolo === "Oggi", String(titolo));
+  check('/app e ancora la schermata del diario ("Diario")', titolo === "Diario", String(titolo));
   const dock = await page.locator(".jm-dock-wrap").count();
   check("/app ha ancora il dock", dock === 1, String(dock));
   const sito = await page.locator(".jm-sito").count();

@@ -95,7 +95,9 @@ type Tab = {
 const SIDE_TABS_LEFT: Tab[] = [
   {
     key: "today",
-    label: "Oggi",
+    /* "Diario", come la barra: il tab e il posto (la pagina di un giorno,
+       aperta su oggi), non la data. Mockup una-giornata-sola, 2 set 2026. */
+    label: "Diario",
     href: "/app",
     icon: (
       <svg

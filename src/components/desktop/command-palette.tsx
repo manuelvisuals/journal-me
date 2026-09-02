@@ -92,7 +92,7 @@ export function CommandPalette() {
   if (!open || !isDesktop) return null;
 
   const navCommands: Command[] = [
-    { id: "oggi", group: t("Vai a"), label: t("Oggi"), run: () => router.push("/app") },
+    { id: "oggi", group: t("Vai a"), label: t("Diario"), run: () => router.push("/app") },
     { id: "mese", group: t("Vai a"), label: t("Mese"), run: () => router.push("/app/mese") },
     { id: "ricorda", group: t("Vai a"), label: t("Memo"), run: () => router.push("/app/remember") },
     { id: "recap", group: t("Vai a"), label: "Recap", run: () => router.push("/app/recap") },

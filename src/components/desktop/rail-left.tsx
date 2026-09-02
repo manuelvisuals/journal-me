@@ -27,7 +27,7 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   {
     key: "today",
     href: "/app",
-    label: "Oggi",
+    label: "Diario",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="8" />
