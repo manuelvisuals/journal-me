@@ -196,7 +196,7 @@ td b{color:var(--pg-ink);font-weight:600}
           <div class="b1">&#127908; Racconta a voce</div>
           <div class="b2">&#9998; Scrivi</div>
         </div>
-        <div class="dock"><span class="on">OGGI</span><span>MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+        <div class="dock"><span class="on">DIARIO</span><span>MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
       </div>
       <div class="under"><b>A . Oggi, vuota</b> — dal tab. Nessun "Today" ripetuto: la barra dice dove sei (Diario), il nav dice quando.</div>
     </div>
@@ -211,7 +211,7 @@ td b{color:var(--pg-ink);font-weight:600}
           <div class="b1">&#127908; Racconta a voce</div>
           <div class="b2">&#9998; Scrivi</div>
         </div>
-        <div class="dock"><span>OGGI</span><span class="on">MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+        <div class="dock"><span>DIARIO</span><span class="on">MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
       </div>
       <div class="under"><b>B . Un giorno passato, vuoto</b> — dal Mese. La STESSA schermata di A: cambia la data nella domanda, e la riga sotto porta la rassicurazione che oggi vive in una frase a parte.</div>
     </div>
@@ -242,7 +242,7 @@ td b{color:var(--pg-ink);font-weight:600}
           <div class="k">Lavoro</div><div class="a">Lavorato dalle 11 alle 13.</div>
           <div class="k">Movimento</div><div class="a">Palestra dalle 13 alle 15.</div>
         </div>
-        <div class="dock"><span class="on">OGGI</span><span>MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+        <div class="dock"><span class="on">DIARIO</span><span>MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
       </div>
       <div class="under"><b>D . Piena</b> — gia cosi oggi: resta. I comandi (matita, +, e il cestino per i giorni passati) vivono nella barra, come deciso il 1 settembre.</div>
     </div>
@@ -267,6 +267,27 @@ td b{color:var(--pg-ink);font-weight:600}
     <h3>5. Cosa NON cambia</h3>
     <p>La vista piena e i suoi comandi nella barra (1 settembre), le frecce e il dito (29 agosto), il "+" e il foglio "Aggiungi", il muro premium, la bozza recuperata, il futuro spento.
       Il Mese, Memo e Gym non vengono toccati. Si tolgono cose, non se ne aggiungono: e il segno che l'architettura sta diventando giusta.</p>
+    <h3>5 bis. Controaudit (2 settembre 2026, sera): quattro cose che la prima stesura aveva sbagliato o taciuto</h3>
+    <p><b>a. La pillola della data era una richiesta di Manuel del giorno prima</b> (commit 2941b7d: "il calendarietto sta QUI, prima di aprire il
+      microfono, per la voce E per lo scritto"). Toglierla e basta sarebbe stato disfare una decisione presa ventiquattro ore prima senza dirlo.
+      Correzione: il giorno si sceglie DENTRO l'atto, in tutti e due gli atti — la chip sta nell'ascolto (dove c'e gia) e va aggiunta anche alla
+      scrittura (ManualWrite oggi non ce l'ha: la data e quella della schermata). Prefissata con il giorno della Giornata da cui parti. Cosi
+      dal dock si racconta o si scrive di ieri senza passare dal Mese, e la regola "una cosa in un posto solo" regge: il posto e l'atto.</p>
+    <p><b>b. Il tab si chiama Oggi, la barra direbbe Diario.</b> Su Mese e Memo il nome del tab e il nome della barra coincidono; qui no.
+      Correzione: anche il tab si chiama <b>Diario</b> (dock: Diario, Mese, mic, Memo, Gym). Toccarlo porta alla Giornata di oggi, come Foto porta
+      alla Libreria. Il nome "Oggi" resta nel nav, dove e una data e non un posto.</p>
+    <p><b>c. "Lo stesso componente" e piu caro di quanto sembri.</b> today-client e una macchina a stati di 1.200 righe (voce, review, elaborazione,
+      chiarimenti, persone, editor desktop, bozze); day-client sa fare una data sola e si sfoglia col dito. Fonderli davvero e un lavoro da scheletro
+      con un rischio vero sul desktop (da lg la colonna di Oggi E l'editor, PR 7). Correzione onesta: la regola "una schermata" si ottiene in due
+      passi. Passo 1 (piccolo, subito): stesso stato vuoto, stessa domanda con la data, stesso titolo, la pagina Racconta tolta, la chip nella
+      scrittura — le due rotte restano ma NON si distinguono piu a occhio. Passo 2 (grande, quando conviene): una rotta sola. Il metro del punto 6
+      vale gia dopo il passo 1, ed e questo che conta.</p>
+    <p><b>d. Le foto in un giorno vuoto.</b> Un giorno senza parole puo avere foto (day-client le mostra sotto lo stato vuoto); lo stato vuoto di Oggi
+      non lo fa. Lo stato vuoto condiviso deve portare la striscia delle foto per qualsiasi data, oggi compreso: altrimenti unificando si perderebbe
+      una cosa che oggi c'e.</p>
+    <p>Confermato invece dal codice: l'ascolto ha gia il cambio data (DatePickerPopover); il microfono del dock su desktop passa dalla stessa
+      strada (?record=1) e l'overlay e a schermo pieno anche li; il futuro resta spento; il muro premium e la modalita locale vivono gia in un posto
+      solo (EmptyState, writeFirst) e non cambiano.</p>
     <h3>6. Il metro</h3>
     <p>Prova da fare a fine lavoro: aprire oggi dal tab, dal Mese e dal dock, e non riuscire a dire da quale dei tre si e arrivati. Se si vede la differenza, non e finito.</p>
   </div>
