@@ -8,6 +8,19 @@ Il guscio c'e gia (Capacitor 8, `npm run build:ios`, progetto in `ios/App`,
 `NSMicrophoneUsageDescription` presente). Quello che manca non e infrastruttura:
 sono TRE blocchi da revisione, piu il lavoro di App Store Connect.
 
+## 0. Le frasi d'uso di fotocamera e rullino — FATTE il 2 settembre
+
+Dal 1 settembre l'app tocca la fotocamera (foto profilo, "Scatta una foto",
+input con `capture="user"`) e il rullino (foto profilo e foto della giornata).
+Senza `NSCameraUsageDescription` in Info.plist il primo tocco su "Scatta foto"
+CHIUDE l'app (iOS non chiede: uccide), e senza `NSPhotoLibraryUsageDescription`
+l'upload viene rifiutato (ITMS-90683). Aggiunte tutte e due, in italiano come
+il microfono e Face ID, e il banco `scripts/verify-permessi-ios.mjs` le tiene
+d'occhio (morso provato: rinominando una chiave esce rosso). Il rullino non
+mostra nessuna richiesta di permesso: passa dal selettore privato di iOS, che da
+all'app SOLO le foto scelte — e cosi che Apple lo vuole. La fotocamera chiede il
+permesso al primo "Scatta una foto", con la frase di Info.plist.
+
 ## 1. I tre blocchi da risolvere PRIMA di sottomettere — FATTI il 23 agosto
 
 Decisione di Manuel: **v1 senza acquisto su iOS**. Implementati tutti e tre nello

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Marchio } from "@/components/brand/marchio";
 import { isReady, onReady } from "@/lib/app-ready";
 
 /**
@@ -73,9 +73,8 @@ export function Splash() {
       aria-hidden="true"
     >
       <div className="jm-splash-halo" />
-      <div className="jm-splash-mark jm-marchio">
-        <BrandMark />
-        <span className="jm-splash-dot">day</span>alogue
+      <div className="jm-splash-mark">
+        <Marchio />
       </div>
       <div className="jm-splash-bar">
         <i />

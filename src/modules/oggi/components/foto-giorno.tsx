@@ -18,7 +18,14 @@
  * senza foto non cambia di un pixel.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { createPortal } from "react-dom";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
 import {
   EVENTO_FOTO,
@@ -26,6 +33,7 @@ import {
   annunciaFoto,
   elencoFoto,
   eliminaFoto,
+  fotoAttese,
   urlIntera,
   urlMiniatura,
   type FotoGiornata,
@@ -38,6 +46,10 @@ import { toast } from "@/components/ui/toast";
 
 const IN_STRISCIA = 4;
 
+function subscribeNoop(): () => void {
+  return () => {};
+}
+
 export function FotoGiorno({ date }: { date: string }) {
   const t = useT();
   const risolta = useStorageMode();
@@ -45,6 +57,16 @@ export function FotoGiorno({ date }: { date: string }) {
     risolta === "local" || risolta === "cloud" ? risolta : null;
 
   const [foto, setFoto] = useState<FotoGiornata[]>([]);
+  /* L'elenco e arrivato? Finche non arriva, la striscia puo solo
+     PROMETTERE (vedi fotoAttese in foto.ts): tante caselle vuote quante
+     erano le foto l'ultima volta, cosi la giornata sotto non si sposta
+     quando le foto vere compaiono. */
+  const [lette, setLette] = useState<boolean>(false);
+  const attese = useSyncExternalStore(
+    subscribeNoop,
+    () => fotoAttese(date),
+    () => 0,
+  );
   const [miniature, setMiniature] = useState<Record<string, string>>({});
   const [griglia, setGriglia] = useState<boolean>(false);
   const [aperta, setAperta] = useState<number | null>(null);
@@ -59,6 +81,7 @@ export function FotoGiorno({ date }: { date: string }) {
   if (perData !== date) {
     setPerData(date);
     setFoto([]);
+    setLette(false);
     setGriglia(false);
     setAperta(null);
   }
@@ -77,6 +100,7 @@ export function FotoGiorno({ date }: { date: string }) {
       }
       if (!vivo) return;
       setFoto(lista);
+      setLette(true);
       // Le miniature arrivano una a una e si mostrano appena pronte:
       // aspettare l'ultima per disegnare la prima sarebbe la lentezza
       // che questa striscia esiste per non avere.
@@ -102,7 +126,28 @@ export function FotoGiorno({ date }: { date: string }) {
     return () => window.removeEventListener(EVENTO_FOTO, su);
   }, [date]);
 
-  if (!modo || foto.length === 0) return null;
+  if (!modo) return null;
+
+  /* La promessa: lo spazio della striscia, gia riservato, con le caselle
+     che scintillano. Stesse misure della striscia vera (etichetta + 80px),
+     cosi lo scambio non muove un pixel. Se poi le foto non ci sono piu,
+     lo spazio si richiude: un rientro, non un'irruzione. */
+  if (!lette && foto.length === 0) {
+    if (attese === 0) return null;
+    const caselle = Math.min(attese, IN_STRISCIA);
+    return (
+      <div className="jm-foto-wrap" aria-busy="true">
+        <div className="jm-fv-social-l">{t("Foto del giorno")}</div>
+        <div className="jm-foto-strip">
+          {Array.from({ length: caselle }, (_, i) => (
+            <div key={i} className="jm-foto-th jm-foto-attesa jm-skel" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (foto.length === 0) return null;
 
   const oltre = foto.length - (IN_STRISCIA - 1);
   const mostraTile = !griglia && foto.length > IN_STRISCIA;
@@ -197,7 +242,10 @@ function VisoreFoto({
   const corrente = foto[indice];
   const [intere, setIntere] = useState<Record<string, string>>({});
   const [eliminando, setEliminando] = useState<boolean>(false);
-  const tocco = useRef<{ x: number; y: number } | null>(null);
+  /* Il dito: da dove e partito, e se il gesto e gia stato riconosciuto
+     come orizzontale (da li in poi la foto segue il dito). */
+  const tocco = useRef<{ x: number; y: number; orizzontale: boolean } | null>(null);
+  const corpo = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!corrente || intere[corrente.id]) return;
@@ -252,7 +300,27 @@ function VisoreFoto({
     month: "long",
   });
 
-  return (
+  /* Il piano della foto segue il dito, e torna a posto (o scatta alla
+     vicina) quando lo alzi. Senza transizione mentre trascini, con la
+     molla quando lasci. */
+  const sposta = (px: number, molla: boolean) => {
+    const el = corpo.current;
+    if (!el) return;
+    el.style.transition = molla ? "transform 220ms cubic-bezier(0.32, 0.72, 0, 1)" : "";
+    el.style.transform = px === 0 ? "" : `translateX(${px}px)`;
+  };
+
+  /* SUL BODY, NON QUI DENTRO (2 settembre 2026, screenshot di Manuel: il
+     visore sotto la barra in alto, la foto fuori dallo schermo). La
+     striscia vive dentro il piano dello scorrimento dei giorni
+     (.jm-day-sw-piano), che ha will-change: transform — e un elemento con
+     un transform diventa il riferimento di ogni position: fixed dentro di
+     se. Quindi "inset: 0" voleva dire "il piano", non "lo schermo", e
+     overflow-x: clip tagliava il resto. Un portal sul body mette il visore
+     davvero sopra tutto; i tocchi non risalgono piu al gesto dei giorni
+     (che ascolta con listener nativi sul suo riquadro), quindi scorrere
+     le foto non cambia giorno. */
+  const visore = (
     <div
       className="jm-foto-visore"
       role="dialog"
@@ -265,6 +333,9 @@ function VisoreFoto({
       // z-index 1) batte le classi — stessa strada dell'overlay di
       // registrazione. La safe-area si prende con env(), come tutti gli
       // overlay a schermo pieno: stanno SOPRA la barra in alto.
+      // touch-action: none — qui il dito scorre le FOTO, e la pagina sotto
+      // non deve muoversi di un pixel (richiesta di Manuel: "blocca lo
+      // scroll verticale, da fastidio agli occhi").
       style={{
         position: "fixed",
         inset: 0,
@@ -274,19 +345,52 @@ function VisoreFoto({
         flexDirection: "column",
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)",
+        touchAction: "none",
+        overscrollBehavior: "none",
       }}
       onTouchStart={(e) => {
-        tocco.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        if (e.touches.length !== 1) return;
+        tocco.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+          orizzontale: false,
+        };
+        sposta(0, false);
+      }}
+      onTouchMove={(e) => {
+        const via = tocco.current;
+        if (!via || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - via.x;
+        const dy = e.touches[0].clientY - via.y;
+        if (!via.orizzontale) {
+          if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+          if (Math.abs(dx) < Math.abs(dy)) {
+            tocco.current = null;
+            return;
+          }
+          via.orizzontale = true;
+        }
+        /* Ai bordi (prima foto verso destra, ultima verso sinistra) il
+           piano segue il dito a meta: e il modo di dire "qui finisce". */
+        const alBordo = (dx > 0 && indice === 0) || (dx < 0 && indice === foto.length - 1);
+        sposta(alBordo ? dx * 0.35 : dx, false);
       }}
       onTouchEnd={(e) => {
         const via = tocco.current;
         tocco.current = null;
-        if (!via) return;
+        if (!via || !via.orizzontale) return;
         const dx = e.changedTouches[0].clientX - via.x;
-        const dy = e.changedTouches[0].clientY - via.y;
-        if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
-        if (dx > 0) prima();
-        else dopo();
+        const soglia = Math.min(72, window.innerWidth * 0.2);
+        if (dx > soglia && indice > 0) {
+          prima();
+        } else if (dx < -soglia && indice < foto.length - 1) {
+          dopo();
+        }
+        sposta(0, true);
+      }}
+      onTouchCancel={() => {
+        tocco.current = null;
+        sposta(0, true);
       }}
     >
       <div className="jm-foto-v-top">
@@ -309,7 +413,7 @@ function VisoreFoto({
         </button>
       </div>
 
-      <div className="jm-foto-v-corpo">
+      <div className="jm-foto-v-corpo" ref={corpo}>
         {src && (
           // eslint-disable-next-line @next/next/no-img-element -- blob URL
           <img src={src} alt="" />
@@ -349,6 +453,9 @@ function VisoreFoto({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(visore, document.body);
 }
 
 /* ----------------------- la scelta dal rullino -------------------------- */

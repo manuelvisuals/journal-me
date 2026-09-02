@@ -108,3 +108,41 @@ scelta di Manuel). La freccia verso domani sparisce ma la sua colonna
 resta. Le vecchie intestazioni (`jm-col-head` di Oggi, `jm-day-head-riga`)
 sono SOLO desktop (`jm-solo-desktop`). Tutto il ridisegno telefono sta in
 un blocco `@media (max-width: 1023px)` in styles.css: da lg niente cambia.
+
+## L'attesa dell'elaborazione e le foto senza salto (2 settembre 2026)
+
+Mockup `design/mockups/attesa-elaborazione.html`. La rotella muta di
+today-client e diventata `components/attesa-elaborazione.tsx`: un anello
+che si svuota in 45 s (ATTESA_PREVISTA) coi secondi al centro, tre passi
+che sono EVENTI del codice — "lettura" fino a `onAnalisi` di
+save-recording.ts (scheletro), "salvataggio" fino al ritorno di
+saveRecording, "dubbi" fino ai chiarimenti — e una riga onesta che a zero
+cambia frase invece di mentire. Prefisso CSS `jm-attesa`. Le tre frasi dei
+passi passano da t() come variabile: stanno nell'elenco DINAMICHE di
+verify-i18n. Monta useRitiraDock (e a schermo pieno).
+
+Sotto: misurato sul sito vero, split 3,6 s + analisi ~10 s + chiarimenti
+16-21 s, prima tutti in fila. Ora lo split e l'analisi del caso "un
+giorno solo" partono insieme (save-recording.ts: la scommessa vale se lo
+split conferma un segmento con la data e le parole di partenza — e il
+server split-by-date, con un segmento solo, restituisce le PAROLE
+ORIGINALI), e i chiarimenti partono da `onAnalisi`, prima delle scritture.
+Il grosso che resta e il modello dei chiarimenti: si cambia solo con una
+prova misurata, non a sentimento.
+
+Le foto del giorno (`foto.ts`, `fotoAttese`): a ogni elenco letto si
+annota in localStorage quante foto aveva il giorno, e la striscia si
+disegna subito con altrettante caselle `.jm-foto-attesa` (80px come le
+miniature) finche l'elenco non arriva. Niente salto della giornata sotto.
+La prima visita in assoluto a un giorno con foto resta senza promessa.
+
+Il visore delle foto (2 settembre 2026, screenshot di Manuel: visore
+sotto la barra, foto fuori dallo schermo) sta sul BODY via createPortal:
+`.jm-day-sw-piano` ha `will-change: transform`, e un elemento con
+transform diventa il riferimento di ogni `position: fixed` al suo interno
+— "inset: 0" voleva dire il piano, non lo schermo. Regola da tenere: una
+superficie fixed nata dentro il piano dei giorni va portata fuori col
+portal. Il visore ha `touch-action: none` (il dito scorre le FOTO, la
+pagina non si muove), lo swipe segue il dito e scatta oltre 72px; i tocchi
+non risalgono al gesto dei giorni. Banco: `verify-foto` (28 controlli,
+con tocchi sintetici via CDP).

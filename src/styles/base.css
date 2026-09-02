@@ -7,18 +7,19 @@
    e quello che avevano in globals.css: non riordinare.
    ============================================================= */
 
-/* IL CARATTERE DEL MARCHIO (31 agosto 2026).
+/* IL CARATTERE DEL MARCHIO (31 agosto 2026; RIFATTO il 2 settembre 2026).
    Non e un token del tema: i sette caratteri dei temi cambiano quando
    cambi tema, questo no — il nome del prodotto si scrive sempre uguale,
    come un logo, e per questo sta qui e non in themes/contract.ts.
-   Dichiarato in layout.tsx (next/font/local su
-   src/fonts/sacramento-latin-400-normal.woff2; la licenza OFL viaggia
-   accanto al file, come l'OFL richiede).
-   La riserva non e a caso: Snell Roundhand esiste su Mac e iPhone, quindi
-   nell'istante prima che il file arrivi la parola e gia corsiva invece di
-   essere un blocco di grottesco che poi salta. */
+   Dal 2 settembre e Newsreader (mockup sfondo-lancio.html, "02 .
+   Newsreader", scelta di Manuel): lo stesso serif con cui l'app scrive la
+   giornata, gia dichiarato in layout.tsx per i temi. Il corsivo
+   Sacramento e il suo file sono stati tolti.
+   La riserva e un serif di sistema (Iowan Old Style sta su Mac e iPhone):
+   nell'istante prima che il file arrivi la parola e gia un serif, non un
+   blocco di grottesco che poi salta. */
 :root {
-  --jm-font-marchio: var(--font-sacramento), "Snell Roundhand", "Segoe Script", cursive;
+  --jm-font-marchio: var(--font-newsreader), "Iowan Old Style", Palatino, Georgia, serif;
 }
 
 html,
@@ -342,20 +343,13 @@ body > * {
 }
 
 .jm-splash-mark {
+  /* Il marchio (segno sopra, parola sotto) e in overrides.css; qui solo
+     l'entrata. */
   position: relative;
-  font-family: var(--font-sans);
-  font-size: calc(30px * var(--jm-ui-scale));
-  font-weight: 600;
-  letter-spacing: -0.01em;
   color: var(--color-ink);
   opacity: 0;
   transform: translateY(6px);
   animation: jm-splash-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-}
-
-.jm-splash-dot {
-  color: var(--color-accent);
-  text-shadow: 0 0 14px color-mix(in oklab, var(--color-glow) 60%, transparent);
 }
 
 .jm-splash-halo {
@@ -1407,9 +1401,6 @@ summary:active {
   padding: 0 10px calc(24px * var(--jm-space));
 }
 
-.jm-rail-brand span {
-  color: var(--color-accent);
-}
 
 /* IL VASSOIO: la pillola del dock, messa in piedi (mockup
    dock-desktop.html §02, strada 2 "la stessa forma", scelta da Manuel il

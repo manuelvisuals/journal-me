@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Marchio } from "@/components/brand/marchio";
 
 /**
  * La privacy policy (PIANO-APPSTORE §2): App Store Connect PRETENDE un URL
@@ -53,12 +53,8 @@ function Sezione({
 export default function PrivacyPage() {
   return (
     <main className="mx-auto w-full max-w-[680px] px-7 py-12">
-      <p
-        className="mb-10 font-semibold tracking-tight"
-        style={{ fontSize: "calc(22px * var(--jm-ui-scale))" }}
-      >
-        <BrandMark />
-        <span className="text-accent">day</span>alogue
+      <p className="mb-10">
+        <Marchio className="jm-marchio-22" />
       </p>
 
       <h1

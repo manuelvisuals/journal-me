@@ -3,7 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Marchio } from "@/components/brand/marchio";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import { registraAccesso } from "@/lib/welcome";
@@ -250,18 +250,8 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10">
       <div className="w-full max-w-sm">
-        <p
-          className="jm-marchio text-center text-[calc(22px*var(--jm-ui-scale))] font-semibold mb-16 tracking-tight"
-          style={{ letterSpacing: "-0.01em" }}
-        >
-          <BrandMark />
-          <span
-            className="text-accent"
-            style={{ textShadow: "0 0 12px color-mix(in oklab, var(--color-glow) 55%, transparent)" }}
-          >
-            day
-          </span>
-          alogue
+        <p className="text-center mb-16">
+          <Marchio className="jm-marchio-22" />
         </p>
 
         {faceIdFase !== null ? (

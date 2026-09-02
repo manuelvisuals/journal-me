@@ -20,6 +20,9 @@ import { collectKeys } from "./i18n-keys.mjs";
 
 /** Chiavi passate a t() tramite variabile, con la loro provenienza. */
 const DINAMICHE = {
+  "modules/oggi/components/attesa-elaborazione.tsx (PASSI: i tre passi dell'attesa)": [
+    "Leggo il racconto", "Salvo la giornata", "Controllo cosa non e chiaro",
+  ],
   "components/ui/tab-bar.tsx (SIDE_TABS)": ["Oggi", "Mese", "Memo", "Impost."],
   "components/ui/app-bar.tsx (TITOLI: il nome della schermata nella barra)": [
     "Oggi", "Mese", "Memo", "Recap", "Impostazioni",

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Marchio } from "@/components/brand/marchio";
 import type { LinguaSito } from "@/modules/sito/seo";
 import { prefisso, testiDi } from "@/modules/sito/testi";
 
@@ -29,8 +30,8 @@ export function NavSito({
   return (
     <header className="jm-sito-nav">
       <div className="jm-sito-nav-in">
-        <Link href={`${p}/`} className="jm-sito-marchio jm-marchio">
-          dayalogue
+        <Link href={`${p}/`} className="jm-sito-marchio">
+          <Marchio />
         </Link>
         {ancore ? (
           <nav className="jm-sito-nav-l">
@@ -72,7 +73,9 @@ export function PiedeSito({ lingua }: { lingua: LinguaSito }) {
     <footer className="jm-sito-piede">
       <div className="jm-sito-piede-in">
         <div>
-          <p className="jm-sito-marchio jm-marchio">dayalogue</p>
+          <p className="jm-sito-piede-marchio">
+            <Marchio segno={false} />
+          </p>
           <p className="nota">
             {t.piede.riga}
             <br />

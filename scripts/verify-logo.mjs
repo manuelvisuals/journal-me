@@ -65,19 +65,15 @@ for (const [dove, url, opts] of [
   await ctx.close();
 }
 
-/* Nella rail sta PRIMA della scritta e non la sfonda. */
+/* Nella rail sta SOPRA la scritta (dal 2 settembre 2026: segno sopra,
+   parola sotto) e non la sfonda. */
 {
   const { ctx, page } = await open("/app/mese");
   const box = await page.locator(".jm-rail-brand img.jm-logo").boundingBox();
   const brand = await page.locator(".jm-rail-brand").boundingBox();
   check("rail: il segno e dentro il blocco del marchio", box.x >= brand.x - 1 && box.y >= brand.y - 1, JSON.stringify(box));
-  const txt = await page.locator(".jm-rail-brand").evaluate((el) => {
-    const r = document.createRange();
-    r.setStart(el, 1);
-    r.setEnd(el, el.childNodes.length);
-    return r.getBoundingClientRect().x;
-  });
-  check("rail: il segno sta PRIMA della scritta", box.x + box.width <= txt + 2, `segno finisce ${Math.round(box.x + box.width)}, testo inizia ${Math.round(txt)}`);
+  const parola = await page.locator(".jm-rail-brand .jm-marchio-parola").boundingBox();
+  check("rail: il segno sta SOPRA la scritta", box.y + box.height <= parola.y + 2, `segno finisce a y ${Math.round(box.y + box.height)}, parola inizia a y ${Math.round(parola.y)}`);
   check("rail: altezza sensata rispetto al testo", box.height > 18 && box.height < 60, `${Math.round(box.height)}px`);
   await ctx.close();
 }

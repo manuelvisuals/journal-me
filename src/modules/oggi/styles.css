@@ -675,15 +675,144 @@
   border-color: color-mix(in oklab, var(--color-accent) 55%, transparent);
 }
 
-/* Spinner used during AI processing of a recorded entry */
-.jm-spinner {
-  width: 38px;
-  height: 38px;
+/* =============================================================
+   L'ATTESA DELL'ELABORAZIONE (2 settembre 2026, mockup
+   attesa-elaborazione.html). Ha preso il posto della rotella .jm-spinner:
+   un anello-orologio coi secondi al centro, tre passi che si accendono
+   quando succedono davvero, una riga onesta. Il componente e
+   components/attesa-elaborazione.tsx. Sta SOPRA tutto (fixed, z 50) col
+   fondo dell'app all'85% e un velo, come la rotella che c'era prima.
+   ============================================================= */
+.jm-attesa {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in oklab, var(--color-bg) 85%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* L'anello: 96px, filo 2. La traccia e il filo di sempre, il pieno e
+   l'accento del tema. Ruotato di -90 gradi perche parta dall'alto. */
+.jm-attesa-anello {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+.jm-attesa-anello svg {
+  width: 96px;
+  height: 96px;
+  transform: rotate(-90deg);
+}
+.jm-attesa-anello circle {
+  fill: none;
+  stroke-width: 2;
+}
+.jm-attesa-traccia {
+  stroke: var(--color-line);
+}
+.jm-attesa-pieno {
+  stroke: var(--color-accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 300ms linear;
+}
+
+/* I secondi, in serif: la stessa voce dei titoli. Tabulari, cosi il
+   numero non balla mentre scende. */
+.jm-attesa-secondi {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif);
+  font-size: calc(30px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.jm-attesa-secondi small {
+  font-family: var(--font-sans);
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  margin-left: 1px;
+}
+
+.jm-attesa-kicker {
+  margin-top: calc(26px * var(--jm-space));
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* I tre passi: una colonna stretta allineata a sinistra. Il punto e
+   pieno se fatto, pulsa se in corso, e vuoto se deve ancora venire. */
+.jm-attesa-passi {
+  list-style: none;
+  margin: calc(22px * var(--jm-space)) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(14px * var(--jm-space));
+  width: 236px;
+}
+.jm-attesa-passo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.3;
+  color: var(--color-ink-faint);
+}
+.jm-attesa-punto {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
   border-radius: var(--jm-radius-circle);
-  border: 2px solid color-mix(in oklab, var(--color-ink) 10%, transparent);
-  border-top-color: var(--color-accent);
-  animation: jm-spin 0.9s linear infinite;
-  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 20%, transparent);
+  border: 1.5px solid var(--color-ink-faint);
+}
+.jm-attesa-fatto {
+  color: var(--color-ink-muted);
+}
+.jm-attesa-fatto .jm-attesa-punto {
+  background: var(--color-ink-muted);
+  border-color: var(--color-ink-muted);
+}
+.jm-attesa-ora {
+  color: var(--color-ink);
+}
+.jm-attesa-ora .jm-attesa-punto {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  animation: jm-attesa-pulse 1.4s ease-in-out infinite;
+}
+@keyframes jm-attesa-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-accent) 45%, transparent); }
+  50% { box-shadow: 0 0 0 6px transparent; }
+}
+
+.jm-attesa-nota {
+  margin-top: calc(30px * var(--jm-space));
+  max-width: 260px;
+  text-align: center;
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-attesa-ora .jm-attesa-punto { animation: none; }
+  .jm-attesa-pieno { transition: none; }
 }
 
 /* =============================================================
@@ -1769,6 +1898,22 @@
   cursor: pointer;
   position: relative;
 }
+/* La casella in attesa (foto-giorno.tsx, la promessa): stessa misura
+   della miniatura, ma scintilla come ogni altro scheletro dell'app.
+   Ripete lo shimmer di .jm-skel (base.css) perche .jm-foto-th qui sopra
+   dichiara un background e, venendo dopo base.css, lo vincerebbe. */
+.jm-foto-th.jm-foto-attesa {
+  cursor: default;
+  border-color: transparent;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-2) 37%,
+    var(--color-surface) 63%
+  );
+  background-size: 400% 100%;
+  animation: jm-skel-shimmer 1.3s ease infinite;
+}
 .jm-foto-griglia .jm-foto-th {
   width: auto;
   height: auto;
@@ -1807,10 +1952,15 @@
   margin: 14px 0;
 }
 .jm-foto-v-corpo img {
-  max-width: 100%;
-  max-height: 100%;
+  /* Larghezza e altezza PIENE del corpo, con contain: la foto sta tutta
+     dentro lo schermo, verticale o orizzontale che sia, senza dipendere
+     da come un'altezza in percentuale si risolve dentro un flex. */
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 .jm-foto-v-fondo {
   display: flex;
