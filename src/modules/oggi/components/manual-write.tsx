@@ -166,7 +166,7 @@ export function ManualWrite({
           spellCheck
           autoCorrect="on"
           autoCapitalize="sentences"
-          placeholder={t("Racconta la tua giornata. A che ora ti sei alzato, quanto hai dormito, quanto pesi, di che umore ti sei svegliato, cosa ricordi di aver sognato. Cosa hai mangiato, com'e andata al lavoro, chi hai visto, cosa hai provato. Movimento, hobby, corsi, obiettivi. E i dettagli da non perdere: le cose da ricordare, e quello che hai capito di te.")}
+          placeholder={t("Racconta la tua giornata: come hai dormito e di che umore ti senti, cosa hai mangiato e fatto, chi hai visto e cosa hai provato. Aggiungi se vuoi peso, esercizio, crescita, corsi, cio che vuoi ricordare e quello che hai capito di te.\n\nEsempio: \u201cOggi ho dormito 7 ore ed ero serena. Ho lavorato, visto Giulia, fatto una passeggiata e capito che uscire mi fa stare meglio. Poi ho fatto colazione con fiocchi d'avena e yogurt. In ufficio ho incontrato...\u201d")}
         />
 
         <div className="jm-editor-hint">
