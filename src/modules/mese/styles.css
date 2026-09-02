@@ -40,8 +40,14 @@
       calc(38px * var(--jm-space));
     align-items: center;
     gap: calc(8px * var(--jm-space));
-    padding-left: calc(16px * var(--jm-space));
-    padding-right: calc(16px * var(--jm-space));
+    /* 24 e non 16 (2 settembre 2026, screenshot di Manuel): la freccia
+       del Mese stava 8px piu a sinistra di quella della Giornata
+       (day-nav, padding 16/24/12), e passando da un tab all'altro il
+       cerchio saltava. Il "re" e la Giornata, che vive su due schermate
+       (Diario e /giorno) e allinea il cerchio ai comandi della barra
+       (24 dal bordo): il Mese si adegua. */
+    padding-left: calc(24px * var(--jm-space));
+    padding-right: calc(24px * var(--jm-space));
   }
   .jm-month-header.nav .jm-month-title {
     justify-self: center;
