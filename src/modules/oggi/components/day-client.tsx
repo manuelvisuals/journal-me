@@ -8,6 +8,7 @@ import { FilledView } from "@/modules/oggi/components/filled-view";
 import { FotoGiorno } from "@/modules/oggi/components/foto-giorno";
 import { TranscriptEditor } from "@/modules/oggi/components/transcript-editor";
 import { AddToDay } from "@/modules/oggi/components/add-to-day";
+import { EmptyState } from "@/modules/oggi/components/empty-state";
 import {
   DayNav,
   eFuturo,
@@ -87,6 +88,12 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
   // solo l'alias. Questo contatore e l'altro motivo per rileggerli.
   const [aliasRev, setAliasRev] = useState(0);
   const canAI = useCan("aiSummary");
+  const canVoice = useCan("voice");
+  /* I due tasti dello stato vuoto parlano ad AddToDay coi segnali (stesso
+     meccanismo del + della barra): il numero cresce, il foglio si apre. */
+  const [scritturaSegnale, setScritturaSegnale] = useState<number>(0);
+  const [voceSegnale, setVoceSegnale] = useState<number>(0);
+  const [menuSegnale, setMenuSegnale] = useState<number>(0);
 
   /* =====================================================================
      Sfogliare i giorni senza cambiare pagina.
@@ -314,6 +321,24 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
           notte: "eliminami il tasto indietro davanti a The day"): per
           tornare al Mese c'e il tasto Mese nel dock, sempre visibile. La
           barra tiene solo matita e cestino. */}
+      {/* Sul giorno VUOTO la barra tiene un +: apre il foglio di AddToDay
+          (foto dal rullino, Memo, scrivi, voce). Senza, un giorno senza
+          parole non avrebbe piu una porta per le sue foto (prima la apriva
+          il tasto "Racconta il 27", che non esiste piu). */}
+      {!entry && !caricando && (
+        <AppBarAzione>
+          <button
+            type="button"
+            className="jm-cmd"
+            aria-label={t("Aggiungi a questa giornata")}
+            onClick={() => setMenuSegnale((n) => n + 1)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </AppBarAzione>
+      )}
       {entry && (
         <AppBarAzione>
           <button
@@ -480,27 +505,34 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
           }
         />
       ) : (
-        /* Giornata vuota: il vicolo cieco diventa un'azione. La data resta
-           questa, non diventa oggi — ed e la cosa che il testo deve dire,
-           perche e l'unico dubbio vero di chi sta per scrivere. */
-        <div className="jm-day-empty-wrap">
-          <div className="jm-day-empty-h">
-            {t("Non hai raccontato questo giorno")}
-          </div>
-          <div className="jm-day-empty-p">
-            {t("Puoi farlo adesso: la data resta quella, non diventa oggi.")}
-          </div>
-          {/* Le foto appartengono al giorno, non al racconto: un giorno
-              senza parole puo comunque avere i suoi ricordi. */}
-          <FotoGiorno date={date} />
+        /* UNA GIORNATA SOLA (mockup una-giornata-sola.html, approvato il
+           2 settembre 2026): la giornata vuota di un giorno passato e LO
+           STESSO stato vuoto di Oggi — stessa domanda con la data, gli
+           stessi due tasti, le foto del giorno sotto. I tasti aprono
+           l'atto (scrittura o ascolto) sul giorno di QUESTA schermata,
+           attraverso il foglio di AddToDay, che qui non disegna niente. */
+        <>
+          <EmptyState
+            date={date}
+            writeFirst={!canVoice}
+            onStartRecording={() => setVoceSegnale((n) => n + 1)}
+            onWriteManually={() => setScritturaSegnale((n) => n + 1)}
+            fotoSlot={<FotoGiorno date={date} />}
+          />
           <AddToDay
             mode={mode}
             date={date}
-            variant="empty"
-            onSaved={(e) => setEntry(e)}
+            variant="muto"
+            apriSegnale={menuSegnale}
+            apriScritturaSegnale={scritturaSegnale}
+            apriVoceSegnale={voceSegnale}
+            onSaved={(e) => {
+              setEntry(e);
+              void chiediDopoAnalisi(e);
+            }}
             onError={setSaveError}
           />
-        </div>
+        </>
       )}
       </DaySwipe>
 

@@ -83,12 +83,12 @@ async function pallino(page) {
 }
 
 const SCHERMATE = [
-  ["/app", "Oggi"],
+  ["/app", "Diario"],
   ["/app/mese", "Mese"],
   ["/app/remember", "Memo"],
   ["/app/recap", "Recap"],
   ["/app/settings", "Impostazioni"],
-  ["/app/giorno?d=2026-08-29", "Giornata"],
+  ["/app/giorno?d=2026-08-29", "Diario"],
   ["/app/persona?nome=Marco", "Persona"],
 ];
 

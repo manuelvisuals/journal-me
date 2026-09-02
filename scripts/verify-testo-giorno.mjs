@@ -225,39 +225,43 @@ for (const [path, w, h] of [
   await ctx.close();
 }
 
-/* ============ B1. il tasto nella giornata vuota ============ */
+/* ============ B1. la giornata vuota e lo STESSO stato vuoto di Oggi ============ */
+/* Dal 2 settembre 2026 (mockup una-giornata-sola): niente piu "Non hai
+   raccontato questo giorno" con un tasto solo. La domanda con la data,
+   gli stessi tasti di Oggi (in locale: "Scrivi la giornata", primario),
+   e il + nella barra per il resto (rullino, Memo). */
 {
-  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
+  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".btn-primary" });
+  const testo = await page.locator("body").innerText();
+  check("giornata vuota: non dice piu 'vai su Oggi'", !testo.includes("Vai su Oggi"));
   check(
-    "giornata vuota: non dice piu 'vai su Oggi'",
-    !(await page.locator("body").innerText()).includes("Vai su Oggi"),
+    "giornata vuota: la domanda porta la data (\"Com'e andato mercoledi 19?\")",
+    /Com'e andato .*19\?/.test(testo),
+    testo.match(/Com'e andat[oa][^?]*\?/)?.[0] ?? "(assente)",
   );
   check(
-    "giornata vuota: c'e un tasto per raccontarla",
-    await page.locator(".jm-day-add").isVisible(),
+    "giornata vuota: dice che resta quel giorno",
+    testo.includes("resta quel giorno"),
   );
-  const box = await page.locator(".jm-day-add").boundingBox();
+  check(
+    "giornata vuota: c'e il tasto per scriverla, lo stesso di Oggi",
+    (await page.locator(".btn-primary").innerText()).includes("Scrivi la giornata"),
+  );
+  const box = await page.locator(".btn-primary").boundingBox();
   check("il tasto e un bersaglio da 44px almeno", box.height >= 44, String(Math.round(box.height)));
-
-  await page.locator(".jm-day-add").click();
-  await page.waitForTimeout(350);
-  const voci = await page.locator(".jm-sheet-t").allInnerTexts();
-  check("il foglio si apre", voci.length >= 2, voci.join(" . "));
+  check(
+    "la barra ha il + (foto e Memo passano da li)",
+    (await page.locator('.jm-appbar-az .jm-cmd[aria-label="Aggiungi a questa giornata"]').count()) === 1,
+  );
   check(
     "in locale la voce non compare (assente, non spenta)",
-    !voci.includes("Racconta a voce"),
-    voci.join(" . "),
-  );
-  check(
-    "ci sono 'Scrivi altro' e 'Salva in Memo'",
-    voci.includes("Scrivi altro") && voci.includes("Salva in Memo"),
-    voci.join(" . "),
+    (await page.locator("body").innerText()).includes("Racconta a voce") === false,
   );
 
-  // "Scrivi altro" apre l'editor, e la data resta quella della schermata.
-  await page.locator(".jm-sheet-row", { hasText: "Scrivi altro" }).click();
+  // Il tasto apre l'editor, e la data resta quella della schermata.
+  await page.locator(".btn-primary").click();
   await page.waitForTimeout(400);
-  check("'Scrivi altro' apre l'editor", await page.locator(".jm-editor-textarea").isVisible());
+  check("il tasto apre l'editor", await page.locator(".jm-editor-textarea").isVisible());
 
   await page.locator(".jm-editor-textarea").fill("Prova di aggiunta a un giorno passato.");
   await page.locator(".jm-editor-btn.save").click();
@@ -272,10 +276,8 @@ for (const [path, w, h] of [
 
 /* ============ B2. e sulla giornata gia raccontata ============ */
 {
-  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".jm-day-empty-wrap" });
-  await page.locator(".jm-day-add").click();
-  await page.waitForTimeout(300);
-  await page.locator(".jm-sheet-row", { hasText: "Scrivi altro" }).click();
+  const { ctx, page, errors } = await open("/app/giorno?d=2026-08-19", { wait: ".btn-primary" });
+  await page.locator(".btn-primary").click();
   await page.waitForTimeout(300);
   await page.locator(".jm-editor-textarea").fill("Prima riga della giornata.");
   await page.locator(".jm-editor-btn.save").click();

@@ -23,13 +23,13 @@ const DINAMICHE = {
   "modules/oggi/components/attesa-elaborazione.tsx (PASSI: i tre passi dell'attesa)": [
     "Leggo il racconto", "Salvo la giornata", "Controllo cosa non e chiaro",
   ],
-  "components/ui/tab-bar.tsx (SIDE_TABS)": ["Oggi", "Mese", "Memo", "Impost."],
+  "components/ui/tab-bar.tsx (SIDE_TABS)": ["Diario", "Mese", "Memo", "Impost."],
   "components/ui/app-bar.tsx (TITOLI: il nome della schermata nella barra)": [
-    "Oggi", "Mese", "Memo", "Recap", "Impostazioni",
-    "Giornata", "Persona", "Palestra",
+    "Diario", "Mese", "Memo", "Recap", "Impostazioni",
+    "Persona", "Palestra",
   ],
   "components/desktop/rail-left.tsx (NAV_ITEMS, account)": [
-    "Oggi", "Mese", "Memo", "Recap", "Impostazioni",
+    "Diario", "Mese", "Memo", "Recap", "Impostazioni",
     "questo dispositivo", "Locale", "Cloud", "Premium",
   ],
   "modules/impostazioni/components/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TabBar } from "@/components/ui/tab-bar";
-import { AppBarAzione, useTitoloBarra } from "@/components/ui/app-bar";
+import { AppBarAzione } from "@/components/ui/app-bar";
 import { EmptyState } from "@/modules/oggi/components/empty-state";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { FilledView } from "@/modules/oggi/components/filled-view";
@@ -15,7 +15,6 @@ import { PeopleReview } from "@/modules/oggi/components/people-review";
 import { DesktopEditor } from "@/modules/oggi/components/desktop-editor";
 import { RailToday } from "@/modules/oggi/components/rail-today";
 import { DayNav, giornoPrima } from "@/modules/oggi/components/day-nav";
-import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 import { DaySwipe } from "@/modules/oggi/components/day-swipe";
 import { AddToDay } from "@/modules/oggi/components/add-to-day";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
@@ -23,7 +22,7 @@ import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { openPremiumWall } from "@/modules/abbonamento";
 import { useCan } from "@/lib/capabilities";
 import { clearDraft, loadDraft } from "@/lib/data/drafts";
-import { compactDayDate, formatNumber, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
+import { formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import {
@@ -71,7 +70,6 @@ type View =
    *  27 agosto 2026): PRIMA la scelta coi due tasti pieni, POI l'ascolto —
    *  che si apre ARMATO ma muto: si registra solo tenendo premuto il
    *  cerchione (walkie-talkie, regola di Manuel). */
-  | "scelta"
   | "recording"
   | "manual"
   | "no-capture"
@@ -158,7 +156,7 @@ export function TodayClient({
   const [view, setView] = useState<View>(
     autoRecord
       ? canVoice
-        ? "scelta"
+        ? "recording"
         : "manual"
       : initialEntry
         ? "filled"
@@ -232,19 +230,17 @@ export function TodayClient({
     if (canVoice) warmRealtime();
   }, [canVoice]);
 
-  /* LA PAGINA RECORD HA UN NOME SUO E UN GIORNO SUO (2 settembre 2026,
-     richiesta di Manuel). Il nome: la barra dice "Racconta", non "Oggi" —
-     qui non stai guardando la giornata, la stai raccontando. Il giorno:
-     il calendarietto sta QUI, prima di aprire il microfono, non solo
-     dentro l'ascolto (dove resta): il racconto va al giorno scelto, sia
-     a voce sia scritto. Torna a oggi ogni volta che la pagina si apre. */
+  /* UNA GIORNATA SOLA (mockup una-giornata-sola.html, approvato il 2
+     settembre 2026): la pagina "Racconta" non esiste piu. Il microfono del
+     dock apre l'ASCOLTO sopra la Giornata di oggi, e il giorno del
+     racconto si sceglie DENTRO l'atto — la chip nell'ascolto e, da oggi,
+     anche nella scrittura — non in una pagina di mezzo. `dataRacconto` e
+     quel giorno; riparte da oggi ogni volta che il dock apre l'atto. */
   const [dataRacconto, setDataRacconto] = useState<string>(() => todayISO());
-  const [calendarioRacconto, setCalendarioRacconto] = useState<boolean>(false);
   /* IL + DELLA BARRA (mockup oggi-aggiungi, approvato il 2 settembre
      2026): apre lo stesso foglio del box "Aggiungi a questa giornata"
      in fondo alla vista piena. Il numero cresce, il foglio si apre. */
   const [aggiungiSegnale, setAggiungiSegnale] = useState<number>(0);
-  useTitoloBarra("Racconta", view === "scelta");
 
   // Watch for ?record=1 changes coming from clicking the mic in the tab bar
   // while we're already on /. Defer the setState via queueMicrotask so React
@@ -264,14 +260,13 @@ export function TodayClient({
         return;
       }
       warmRealtime();
-      // Non piu dritti nell'ascolto: prima la scelta coi due tasti
-      // (mockup record-due-tasti, 27 agosto). Se stai GIA registrando,
-      // il tocco sul dock non ti butta fuori.
-      setView((current) =>
-        current === "recording" || current === "scelta" ? current : "scelta",
-      );
-      // La pagina Record riparte sempre da oggi: la data scelta ieri
-      // sera non deve restare appiccicata al racconto di stasera.
+      // Dritti nell'ascolto, ARMATO ma muto (walkie-talkie: si registra
+      // solo tenendo premuto). Nessuna pagina di mezzo: sotto c'e la
+      // Giornata di oggi. Se stai GIA registrando, il tocco sul dock non
+      // ti butta fuori.
+      setView((current) => (current === "recording" ? current : "recording"));
+      // L'atto riparte sempre da oggi: la data scelta ieri sera non deve
+      // restare appiccicata al racconto di stasera.
       setDataRacconto(todayISO());
       router.replace("/app", { scroll: false });
     });
@@ -379,6 +374,7 @@ export function TodayClient({
   const handleStartRecording = () => {
     setSaveError(null);
     setSavedDates([]);
+    setDataRacconto(todayISO());
     if (!canVoice) {
       // Il muro compare solo qui, quando TU tocchi il microfono. "Non ora"
       // resta un'uscita gratuita: si apre la scrittura a mano.
@@ -392,6 +388,7 @@ export function TodayClient({
   const handleWriteManually = () => {
     setSaveError(null);
     setSavedDates([]);
+    setDataRacconto(todayISO());
     setView("manual");
   };
 
@@ -837,6 +834,20 @@ export function TodayClient({
           handler, un solo comportamento. Ordine come l'ha detto Manuel:
           modifica (matita), scrivi (matita nel foglio), racconta
           (microfono). */}
+      {view === "empty" && !desktopWriting && (
+        <AppBarAzione>
+          <button
+            type="button"
+            className="jm-cmd"
+            aria-label={t("Aggiungi a questa giornata")}
+            onClick={() => setAggiungiSegnale((n) => n + 1)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </AppBarAzione>
+      )}
       {view === "filled" && (
         <AppBarAzione>
           <button
@@ -922,42 +933,26 @@ export function TodayClient({
           onMuro={() => setMuro((n) => n + 1)}
         >
           <EmptyState
+            date={todayISO()}
             writeFirst={!canVoice}
             onStartRecording={handleStartRecording}
             onWriteManually={handleWriteManually}
+            fotoSlot={<FotoGiorno date={todayISO()} />}
+          />
+          {/* Il + della barra sul giorno vuoto: il foglio di AddToDay
+              (rullino, Memo, testo, voce) senza nessun tasto suo. */}
+          <AddToDay
+            mode={mode}
+            date={todayISO()}
+            variant="muto"
+            apriSegnale={aggiungiSegnale}
+            onSaved={(e) => {
+              setView("filled");
+              void chiediDopoAggiunta(e);
+            }}
+            onError={setSaveError}
           />
         </DaySwipe>
-      )}
-
-      {/* La pagina Record (microfono del dock): la STESSA schermata dei
-          due tasti, piu l'uscita. "Racconta a voce" apre l'ascolto ARMATO
-          ma muto: si registra SOLO tenendo premuto il cerchione, come un
-          walkie-talkie (regola di Manuel: solo cosi i bar di sottofondo
-          restano fuori dal nastro). */}
-      {view === "scelta" && (
-        <EmptyState
-          writeFirst={!canVoice}
-          onStartRecording={handleStartRecording}
-          onWriteManually={handleWriteManually}
-          dataChip={{
-            label: (
-              <span suppressHydrationWarning>
-                <span style={{ color: "var(--color-ink)", fontWeight: 600 }}>
-                  {relativeDayLabel(
-                    parseISODate(dataRacconto),
-                    parseISODate(todayISO()),
-                  )}
-                </span>
-                <span style={{ marginLeft: 5, color: "var(--color-ink-faint)" }}>
-                  {" \u00b7 "}
-                  {compactDayDate(parseISODate(dataRacconto))}
-                </span>
-              </span>
-            ),
-            onClick: () => setCalendarioRacconto(true),
-          }}
-          onCancel={handleCancel}
-        />
       )}
 
       {desktopWriting && (
@@ -1076,6 +1071,7 @@ export function TodayClient({
           notice={draftNotice}
           onContinue={handleManualContinue}
           onCancel={() => setView(entry ? "filled" : "empty")}
+          onTargetDateChange={setDataRacconto}
         />
       )}
 
@@ -1118,15 +1114,6 @@ export function TodayClient({
         />
       )}
 
-      <DatePickerPopover
-        open={calendarioRacconto}
-        selected={dataRacconto}
-        onSelect={(iso) => {
-          setCalendarioRacconto(false);
-          setDataRacconto(iso);
-        }}
-        onClose={() => setCalendarioRacconto(false)}
-      />
 
       {view === "no-capture" && (
         <div

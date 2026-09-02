@@ -18,12 +18,12 @@ export const COMUNE: Record<string, string> = {
   "Riprova": "Try again",
   "Vai a": "Go to",
   "Oggi": "Today",
+  "Diario": "Journal",
   "Ieri": "Yesterday",
   "Mese": "Month",
   "Memo": "Memo",
   "Impostazioni": "Settings",
   // Il nome di /giorno nella barra in alto (app-bar.tsx, strada B).
-  "Giornata": "The day",
   // La porta dell'account (mockup porta-account, 28 agosto 2026): frasi
   // di scheletro, usate da account-menu.tsx su tutte le superfici.
   "Il tuo account": "Your account",

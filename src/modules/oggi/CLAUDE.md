@@ -146,3 +146,30 @@ portal. Il visore ha `touch-action: none` (il dito scorre le FOTO, la
 pagina non si muove), lo swipe segue il dito e scatta oltre 72px; i tocchi
 non risalgono al gesto dei giorni. Banco: `verify-foto` (28 controlli,
 con tocchi sintetici via CDP).
+
+## Una giornata sola (2 settembre 2026, passo 1)
+
+Mockup `design/mockups/una-giornata-sola.html` (con il controaudit, 5 bis)
+e l'interattivo `una-giornata-prima-dopo.html`, approvati da Manuel. Tre
+volti della stessa cosa (Talk, Today, The day) sono diventati UNO:
+
+- La barra dice il POSTO, "Diario", sia su /app sia su /app/giorno
+  (app-bar.tsx, scheletro); il tab del dock e la rail dicono "Diario". Il
+  QUANDO lo dice solo il nav sotto (Oggi, Ieri, giovedi 27).
+- Lo stato vuoto e uno: `EmptyState` con `date` (la domanda cambia solo la
+  data: "Com'e andato giovedi 27?") e `fotoSlot` (le foto del giorno anche
+  senza parole). day-client lo monta al posto di "Non hai raccontato questo
+  giorno"; i due tasti aprono l'atto sul giorno della schermata attraverso
+  `AddToDay variant="muto"` (nessun tasto suo, solo i segnali
+  apriScritturaSegnale / apriVoceSegnale / apriSegnale). Il + nella barra
+  apre il foglio (rullino, Memo) anche sul giorno vuoto, su Oggi e su
+  /giorno.
+- La pagina "Racconta" (view "scelta", titolo forzato, pillola, Annulla)
+  NON esiste piu: `?record=1` apre l'ascolto sopra la Giornata di oggi.
+- Il giorno si sceglie DENTRO l'atto: la chip della data sta nell'ascolto
+  (gia c'era) e in `ManualWrite` (prop `onTargetDateChange`; senza prop la
+  chip non compare, perche l'aggiunta a una giornata ha gia la sua data).
+
+Le due rotte restano (passo 2, fonderle davvero, quando conviene): il
+metro e che a occhio non si distinguono. Banchi toccati: verify-testo-
+giorno, verify-foto, verify-barra-alto, verify-nav-giorno, verify-sito.
