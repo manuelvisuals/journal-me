@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . Una giornata sola: Talk, Today e The day sono la stessa schermata</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+:root{
+  --s:1;
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --pg:#17171A;--pg-2:#202024;--pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;
+  --ok:#4ADE80;--no:#F87171;--hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:880px}
+.page-sub b,.caption b,.prose b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;max-width:960px;line-height:1.75}
+.row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.under{font-size:12px;color:var(--pg-faint);text-align:center;max-width:390px;line-height:1.6}
+.under b{color:var(--pg-mut)}
+.under .no{color:var(--no);font-weight:600}
+.under .si{color:var(--ok);font-weight:600}
+.prose{max-width:880px;margin:0 auto;font-size:14.5px;line-height:1.8;color:var(--pg-mut)}
+.prose p{margin:0 0 14px}
+.prose h3{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:26px 0 8px;letter-spacing:-.01em}
+table{border-collapse:collapse;width:100%;max-width:1100px;margin:0 auto;font-size:13px}
+th,td{border-top:1px solid var(--pg-line);padding:10px 12px;text-align:left;vertical-align:top;line-height:1.5}
+th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+td.no{color:var(--no)} td.si{color:var(--ok)}
+td b{color:var(--pg-ink);font-weight:600}
+
+/* ---------------- il telefono, tema minimal chiaro come negli screenshot ---------------- */
+.phone{width:390px;height:844px;border-radius:38px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;
+  background:var(--bg);color:var(--ink);font-family:var(--font)}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 4px;color:var(--ink);font-size:15px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.appbar .t{font-family:var(--serif);font-size:20px;font-weight:420;letter-spacing:-.015em;color:var(--ink)}
+.appbar .dx{display:flex;gap:10px;align-items:center}
+.appbar .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6b7b8a,#2c3a48)}
+.cmd{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted);font-size:15px}
+/* la riga di navigazione del giorno: 38 | 1fr | 38, come .jm-month-header.nav */
+.nav{display:grid;grid-template-columns:38px 1fr 38px;align-items:center;padding:16px 24px 12px;border-bottom:1px solid var(--line)}
+.nav .c{text-align:center}
+.nav .c .g{font-family:var(--serif);font-size:20px;color:var(--ink);line-height:1.1}
+.nav .c .d{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-top:3px}
+.nav .arw{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted)}
+.nav .arw.off{visibility:hidden}
+/* lo stato vuoto */
+.empty{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 40px;text-align:center}
+.empty h2{font-family:var(--serif);font-size:34px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.15}
+.empty p{margin-top:14px;font-size:16px;color:var(--ink-muted);line-height:1.5}
+.empty .b1{margin-top:44px;width:100%;height:60px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 26px rgba(120,60,30,.22)}
+.empty .b2{margin-top:12px;width:100%;height:56px;border-radius:14px;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px}
+.empty .cancel{margin-top:38px;color:var(--ink-faint);text-decoration:underline;font-size:16px}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border-radius:999px;padding:10px 18px;font-size:15px;color:var(--ink-faint);margin-bottom:26px}
+.pill b{color:var(--ink);font-weight:600}
+/* dock */
+.dock{position:absolute;left:22px;right:22px;bottom:34px;height:72px;background:rgba(255,255,255,.92);border-radius:999px;display:flex;align-items:center;justify-content:space-around;padding:0 14px;box-shadow:0 10px 30px rgba(0,0,0,.10)}
+.dock span{font-size:10px;letter-spacing:.14em;color:var(--ink-faint);font-weight:650;text-align:center}
+.dock span.on{color:var(--ink);background:#F3E6DE;border-radius:999px;padding:12px 16px}
+.dock .mic{width:52px;height:52px;border-radius:50%;background:var(--accent)}
+/* annotazioni rosse (diagnosi) */
+.ann{position:absolute;background:rgba(248,113,113,.92);color:#1a0b0b;font-size:11px;font-weight:650;padding:4px 8px;border-radius:6px;line-height:1.3;z-index:5;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.ann.ok{background:rgba(74,222,128,.92);color:#062a12}
+/* l'ascolto (overlay) */
+.listen{position:absolute;inset:0;background:rgba(31,27,24,.96);color:#F4EDE6;display:flex;flex-direction:column;align-items:center;padding:150px 32px 0;text-align:center}
+.listen .chip{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:9px 16px;font-size:14px;color:rgba(255,255,255,.75)}
+.listen .chip b{color:#fff;font-weight:600}
+.listen h3{font-family:var(--serif);font-size:28px;font-weight:400;margin-top:70px;letter-spacing:-.01em}
+.listen p{font-size:14px;color:rgba(255,255,255,.6);margin-top:8px}
+.listen .ptt{width:132px;height:132px;border-radius:50%;border:2px solid rgba(255,255,255,.35);margin-top:64px;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,rgba(166,81,47,.55),rgba(166,81,47,.15))}
+.listen .ptt i{width:36px;height:36px;border-radius:50%;background:#fff;display:block}
+.listen .hint{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:18px;font-weight:600}
+.listen .x{position:absolute;top:66px;left:24px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.25);display:grid;place-items:center;font-size:15px}
+/* la giornata piena, accennata */
+.filled{padding:22px 24px 0}
+.filled h2{font-family:var(--serif);font-size:30px;font-weight:400;line-height:1.15;color:var(--ink);letter-spacing:-.01em}
+.filled p{font-size:15px;color:var(--ink-muted);line-height:1.6;margin-top:14px}
+.filled .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin-top:26px}
+.filled .a{font-size:15px;color:var(--ink);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">Una giornata sola</h1>
+  <p class="page-sub">Talk, Today e The day fanno la stessa cosa — ti fanno raccontare un giorno — con tre nomi, tre intestazioni e tre
+    frasi diverse. Qui la diagnosi caso per caso, e la proposta: <b>una schermata, la Giornata</b>, che sa di che giorno e e
+    in che stato e. Tutto il resto (il tab, il Mese, il microfono del dock) e solo un modo di arrivarci.</p>
+
+  <div class="divider"></div>
+  <p class="label">01 . Diagnosi: tre volti della stessa cosa</p>
+  <p class="caption">Screenshot di Manuel del 2 settembre, ridisegnati con le differenze in rosso. Sono la stessa azione su lo stesso giorno (oggi, vuoto).</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Talk</span><span class="dx"><span class="av"></span></span></div>
+        <div class="ann" style="top:118px;left:24px">nome 1 di 3: e un'azione, non un posto</div>
+        <div class="empty" style="top:100px">
+          <div class="pill">&#128197; <b>Today</b> &middot; Wed 2 Sep &#9662;</div>
+          <div class="ann" style="top:140px;right:16px">il giorno si sceglie QUI (pillola)...</div>
+          <h2>How was your day?</h2>
+          <p>Open the mic and talk.<br>Without overthinking it.</p>
+          <div class="b1">&#127908; Tell it out loud</div>
+          <div class="b2">&#9998; Type it</div>
+          <div class="cancel">Cancel</div>
+          <div class="ann" style="bottom:210px;right:30px">Cancel: annullare cosa? Non e ancora successo niente</div>
+        </div>
+        <div class="dock"><span class="on">TODAY</span><span>MONTH</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+      </div>
+      <div class="under"><b>Talk</b> — dal microfono del dock. Vive su /app con un nome forzato. <span class="no">Pillola della data, nessuna freccia, un Cancel.</span></div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Today</span><span class="dx"><span class="av"></span></span></div>
+        <div class="nav"><span class="arw">&#8249;</span><span class="c"><div class="g">Today</div><div class="d">2 Sep</div></span><span class="arw off">&#8250;</span></div>
+        <div class="ann" style="top:118px;left:24px">nome 2 di 3</div>
+        <div class="ann" style="top:262px;right:20px">...e qui si sceglie con le frecce: due modi</div>
+        <div class="ann" style="top:236px;left:24px">"Today" due volte, una sotto l'altra</div>
+        <div class="empty" style="top:170px">
+          <h2>How was your day?</h2>
+          <p>Open the mic and talk.<br>Without overthinking it.</p>
+          <div class="b1">&#127908; Tell it out loud</div>
+          <div class="b2">&#9998; Type it</div>
+        </div>
+        <div class="dock"><span class="on">TODAY</span><span>MONTH</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+      </div>
+      <div class="under"><b>Today</b> — dal tab. Stessa pagina di Talk, stessi tasti, <span class="no">ma un'altra intestazione e niente Cancel.</span></div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">The day</span><span class="dx"><span class="av"></span></span></div>
+        <div class="nav"><span class="arw">&#8249;</span><span class="c"><div class="g">Today</div><div class="d">2 Sep</div></span><span class="arw off">&#8250;</span></div>
+        <div class="ann" style="top:96px;left:120px">nome 3 di 3, per LO STESSO giorno</div>
+        <div class="empty" style="top:170px">
+          <h2 style="font-family:var(--font);font-size:26px;font-weight:600">You have not told this day</h2>
+          <p>You can do it now: the date stays as it is, it does not become today.</p>
+          <div class="ann" style="top:330px;left:0">frase diversa, carattere diverso, spiega un timore che su OGGI non esiste</div>
+          <div class="b1" style="width:80%">+ Tell 2 September</div>
+          <div class="ann" style="bottom:150px;right:10px">un tasto solo, e diverso: qui la voce non c'e piu?</div>
+        </div>
+        <div class="dock"><span>TODAY</span><span class="on">MONTH</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+      </div>
+      <div class="under"><b>The day</b> — dal Mese, toccando oggi. Terza pagina (/giorno), <span class="no">terzo nome, terza frase, un tasto invece di due.</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">02 . La mappa dei casi (tutti quelli che esistono oggi)</p>
+  <p class="caption">Da dove si arriva, su che giorno, in che stato — e cosa vede l'utente. Le righe rosse sono dove la stessa cosa ha una faccia diversa.</p>
+  <table>
+    <tr><th>Da dove</th><th>Giorno</th><th>Stato</th><th>Cosa vede oggi</th><th>Cosa vedra</th></tr>
+    <tr><td><b>Tab Today</b></td><td>oggi</td><td>vuoto</td><td class="no">"Today" + nav + "How was your day?" + 2 tasti</td><td class="si">Giornata di oggi, vuota</td></tr>
+    <tr><td>Tab Today</td><td>oggi</td><td>raccontato</td><td>"Today" + nav + racconto (matita, scrivi, mic nella barra)</td><td class="si">Giornata di oggi, piena — uguale</td></tr>
+    <tr><td><b>Mic del dock</b></td><td>oggi (pillola per cambiarlo)</td><td>qualsiasi</td><td class="no">"Talk": pillola + 2 tasti + Cancel, poi l'ascolto</td><td class="si">Giornata di oggi con l'ASCOLTO gia aperto; il giorno si cambia dentro l'ascolto (dove gia si puo)</td></tr>
+    <tr><td><b>Mese, tocco su oggi</b></td><td>oggi</td><td>vuoto</td><td class="no">"The day": "You have not told this day" + 1 tasto</td><td class="si">Giornata di oggi, vuota — IDENTICA al tab Today</td></tr>
+    <tr><td>Mese, tocco su un giorno passato</td><td>passato</td><td>vuoto</td><td class="no">"The day": stessa frase, "Tell 27 August"</td><td class="si">Giornata del 27, vuota: "Com'e andato mercoledi 27?" + gli stessi 2 tasti</td></tr>
+    <tr><td>Mese, tocco su un giorno passato</td><td>passato</td><td>raccontato</td><td>"The day" + nav + racconto (indietro, matita, cestino)</td><td class="si">Giornata del 27, piena — stessi comandi di oggi (l'indietro c'e dove c'e un da-dove)</td></tr>
+    <tr><td>Frecce / dito dalla Giornata</td><td>ieri, l'altro ieri...</td><td>qualsiasi</td><td>"The day" per il passato, "Today" per oggi</td><td class="si">Giornata, e basta: cambia solo la data nel nav</td></tr>
+    <tr><td>Giornata piena, "+" nella barra</td><td>quello aperto</td><td>raccontato</td><td>foglio: scrivi altro / a voce / rullino / in Memo</td><td class="si">uguale (gia unico)</td></tr>
+    <tr><td>Memo, cattura a voce</td><td>—</td><td>—</td><td>l'ascolto, senza giornata</td><td>uguale: non e una giornata, e un appunto</td></tr>
+    <tr><td>Domani e oltre</td><td>futuro</td><td>—</td><td>freccia spenta, il dito rimbalza</td><td class="si">uguale: il futuro non si racconta</td></tr>
+    <tr><td>Modalita locale / gratis</td><td>qualsiasi</td><td>vuoto</td><td>i tasti si invertono (prima "Scrivi"), il mic apre il muro</td><td class="si">uguale, in UN posto solo invece che in tre</td></tr>
+    <tr><td>Bozza non salvata</td><td>oggi</td><td>vuoto + bozza</td><td>l'editor si riapre con l'avviso</td><td class="si">uguale, vale per qualsiasi giorno</td></tr>
+  </table>
+
+  <div class="divider"></div>
+  <p class="label">03 . La proposta: la Giornata, e basta</p>
+  <p class="caption">Un nome solo nella barra — <b>Diario</b> — perche la schermata e sempre la stessa: la pagina di un giorno. Il giorno lo dice il nav sotto,
+    che c'e sempre e nello stesso posto. Lo stato vuoto e uno, con la domanda che cambia solo la data. Il microfono del dock non apre una
+    pagina di mezzo: apre l'ascolto sopra la Giornata di oggi, e il giorno si cambia li, dove gia si poteva.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="dx"><span class="av"></span></span></div>
+        <div class="nav"><span class="arw">&#8249;</span><span class="c"><div class="g">Oggi</div><div class="d">Mercoledi 2 settembre</div></span><span class="arw off">&#8250;</span></div>
+        <div class="empty" style="top:170px">
+          <h2>Com'e andata oggi?</h2>
+          <p>Apri il microfono e parla.<br>Senza pensarci troppo.</p>
+          <div class="b1">&#127908; Racconta a voce</div>
+          <div class="b2">&#9998; Scrivi</div>
+        </div>
+        <div class="dock"><span class="on">OGGI</span><span>MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+      </div>
+      <div class="under"><b>A . Oggi, vuota</b> — dal tab. Nessun "Today" ripetuto: la barra dice dove sei (Diario), il nav dice quando.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="dx"><span class="av"></span></span></div>
+        <div class="nav"><span class="arw">&#8249;</span><span class="c"><div class="g">Giovedi</div><div class="d">27 agosto</div></span><span class="arw">&#8250;</span></div>
+        <div class="empty" style="top:170px">
+          <h2>Com'e andato giovedi 27?</h2>
+          <p>Raccontalo adesso: resta il 27,<br>non diventa oggi.</p>
+          <div class="b1">&#127908; Racconta a voce</div>
+          <div class="b2">&#9998; Scrivi</div>
+        </div>
+        <div class="dock"><span>OGGI</span><span class="on">MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+      </div>
+      <div class="under"><b>B . Un giorno passato, vuoto</b> — dal Mese. La STESSA schermata di A: cambia la data nella domanda, e la riga sotto porta la rassicurazione che oggi vive in una frase a parte.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="dx"><span class="av"></span></span></div>
+        <div class="nav"><span class="arw">&#8249;</span><span class="c"><div class="g">Oggi</div><div class="d">Mercoledi 2 settembre</div></span><span class="arw off">&#8250;</span></div>
+        <div class="listen">
+          <span class="x">&#10005;</span>
+          <span class="chip">&#128197; <b>Oggi</b> &middot; mer 2 set &#9662;</span>
+          <h3>Ti ascolto</h3>
+          <p>Tieni premuto e parla. Lascia per fare una pausa.</p>
+          <div class="ptt"><i></i></div>
+          <div class="hint">tieni premuto</div>
+        </div>
+      </div>
+      <div class="under"><b>C . Il microfono del dock</b> — nessuna pagina "Talk": si apre l'ascolto SOPRA la Giornata di oggi. Il giorno si cambia nella chip dell'ascolto, l'unico posto. La X chiude e sotto c'e la Giornata: niente "Cancel".</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>12:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="dx"><span class="cmd">&#9998;</span><span class="cmd">+</span><span class="av"></span></span></div>
+        <div class="nav"><span class="arw">&#8249;</span><span class="c"><div class="g">Oggi</div><div class="d">Mercoledi 2 settembre</div></span><span class="arw off">&#8250;</span></div>
+        <div class="filled">
+          <h2>giornata produttiva con palestra e caffe</h2>
+          <p>Sveglia e colazione al 7-Eleven con caffe. Lavoro dalle 11 alle 13, poi palestra fino alle 15. Pesato 84 kg, otto ore di sonno.</p>
+          <div class="k">Lavoro</div><div class="a">Lavorato dalle 11 alle 13.</div>
+          <div class="k">Movimento</div><div class="a">Palestra dalle 13 alle 15.</div>
+        </div>
+        <div class="dock"><span class="on">OGGI</span><span>MESE</span><span class="mic"></span><span>MEMO</span><span>GYM</span></div>
+      </div>
+      <div class="under"><b>D . Piena</b> — gia cosi oggi: resta. I comandi (matita, +, e il cestino per i giorni passati) vivono nella barra, come deciso il 1 settembre.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">04 . Le regole (quello che il codice deve rispettare)</p>
+  <div class="prose">
+    <h3>1. Una schermata: la Giornata</h3>
+    <p>Esiste una sola schermata che mostra un giorno, in due stati (vuoto, raccontato), per qualsiasi data. Il tab Oggi e "la Giornata di oggi".
+      Toccare un giorno nel Mese e "la Giornata di quel giorno". Le frecce e il dito cambiano solo la data. Nel codice: <b>/app e /app/giorno diventano lo stesso componente</b>;
+      day-client perde il suo stato vuoto ("Non hai raccontato questo giorno") e monta lo stesso EmptyState di Oggi, con la data.</p>
+    <h3>2. Un nome nella barra: Diario</h3>
+    <p>La barra in alto dice il POSTO (Diario), il nav dice il QUANDO (Oggi, Ieri, Giovedi 27). Spariscono "Today", "The day" e "Talk" come titoli:
+      la mappa TITOLI di app-bar.tsx ha una riga sola per /app e /app/giorno. Il "Today" ripetuto due volte in verticale non esiste piu.</p>
+    <h3>3. Uno stato vuoto, una domanda</h3>
+    <p>"Com'e andata oggi?" per oggi; "Com'e andato giovedi 27?" per il passato (con "Raccontalo adesso: resta il 27, non diventa oggi" al posto della frase sul microfono,
+      che e la sola cosa che il passato ha da dire in piu). Gli stessi due tasti, nello stesso ordine, nella stessa posizione, per qualsiasi data. In locale/gratis si invertono come oggi, ma in un posto solo.</p>
+    <h3>4. Il microfono del dock non ha una pagina</h3>
+    <p>Apre l'ascolto sopra la Giornata di oggi. La pagina "Racconta" (view "scelta", il titolo forzato, la pillola, il Cancel) si toglie.
+      Il giorno si cambia nella chip dentro l'ascolto, che gia esiste: una cosa si fa in un posto solo. Chiudere l'ascolto (X) ti lascia sulla Giornata, cioe dove eri.</p>
+    <h3>5. Cosa NON cambia</h3>
+    <p>La vista piena e i suoi comandi nella barra (1 settembre), le frecce e il dito (29 agosto), il "+" e il foglio "Aggiungi", il muro premium, la bozza recuperata, il futuro spento.
+      Il Mese, Memo e Gym non vengono toccati. Si tolgono cose, non se ne aggiungono: e il segno che l'architettura sta diventando giusta.</p>
+    <h3>6. Il metro</h3>
+    <p>Prova da fare a fine lavoro: aprire oggi dal tab, dal Mese e dal dock, e non riuscire a dire da quale dei tre si e arrivati. Se si vede la differenza, non e finito.</p>
+  </div>
+</div>
+</body>
+</html>
