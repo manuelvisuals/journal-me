@@ -29,3 +29,16 @@ Cosa il pannello NON fa, per contratto (le decisioni sono di Manuel):
   `api/admin/aree/` (guscio della rotta).
 - Prefisso CSS: `jm-adm`.
 - Banchi prima del push: `verify-aree` e `verify-i18n` (piu tsc, eslint).
+
+## Regalo AI (notte del 3 settembre 2026, branch `ospite-server`): solo la rotta
+
+SPEC R4. `server/regalo.ts` -> GET/PUT /api/admin/regalo (guscio in
+`src/app/api/admin/regalo/route.ts`): l'interruttore, le giornate per
+ospite, il tetto mensile in euro, il cambio USD->EUR, e lo speso del mese
+(funzione SQL `riassunto_regalo_mese`, leggibile solo col service role).
+Dopo ogni PUT chiama `dimenticaRegalo()` (src/lib/server/regalo.ts) cosi la
+guardia rilegge subito. La tabella `regalo` (migration 023) e a una riga,
+pubblica in lettura, senza policy di scrittura. La SCHERMATA "Regalo AI"
+(mockup `design/mockups/ospite-primo-avvio.html`, 05) prende il posto del
+segnaposto "Piani e limiti" ed e da fare dopo l'ok di Manuel. Il contratto
+dei limiti e nello scheletro (`src/lib/regalo.ts`), come per le aree.

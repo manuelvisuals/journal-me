@@ -47,7 +47,7 @@ conviene, mai perche' l'app blocca.
 Ogni voce e' un'affermazione verificabile. Se non sai come provarla, non e'
 scritta bene: torna qui e riscrivila prima di implementarla.
 
-### R1 - Il primo avvio non chiede niente
+### R1 - Il primo avvio non chiede niente (CODICE FATTO il 3 settembre 2026, branch `ospite-server`: solo la parte server/client invisibile, dietro l'interruttore `src/lib/ospite/flag.ts` spento di fabbrica; schermate in attesa del mockup `design/mockups/ospite-primo-avvio.html`)
 
 - Chi installa l'app e la apre per la prima volta arriva **direttamente sulla
   giornata di oggi**, senza nessuna schermata intermedia, nessuna domanda,
@@ -58,7 +58,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: da installazione pulita, il numero di tocchi fra l'apertura e il
   primo carattere scritto e' **zero**.
 
-### R2 - L'AI funziona senza account, con una quota
+### R2 - L'AI funziona senza account, con una quota (CODICE FATTO: braccialetto, guardia, quota sul server, migration 023; schermate in attesa del mockup)
 
 - L'AI (voce, titolo, sintesi, aree, fatti) e' accesa per l'ospite, fino a una
   quota.
@@ -73,7 +73,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: un ospite consuma la quota, l'app viene disinstallata e
   reinstallata, la quota resta consumata.
 
-### R3 - Quando la quota finisce, finisce solo l'AI
+### R3 - Quando la quota finisce, finisce solo l'AI (CODICE FATTO: 402 `regalo_finito` distinto dal premium, la giornata si salva comunque; il muro della quota e l'avviso discreto sono schermate in attesa del mockup)
 
 - L'app continua a funzionare: si scrive la giornata, si salva, si rilegge, si
   naviga il Mese e i Memo.
@@ -84,7 +84,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: a quota zero, salvare una giornata scritta riesce e non apre
   nessun muro.
 
-### R4 - Un tetto di spesa che si chiude da solo
+### R4 - Un tetto di spesa che si chiude da solo (CODICE FATTO: tabella `regalo`, rotta /api/admin/regalo, grazia per la giornata iniziata; la voce "Regalo AI" in /admin e una schermata in attesa del mockup)
 
 - Esiste un limite di spesa complessivo, nel tempo, oltre il quale il regalo si
   spegne per i nuovi ospiti.
@@ -283,6 +283,12 @@ La promessa nuova, che sostituisce la vecchia e va scritta nel banco:
 Il banco va riscritto per verificare la promessa nuova, non cancellato. Un banco
 cancellato e' una promessa che smette di esistere in silenzio.
 
+FATTO il 3 settembre 2026 (branch `ospite-server`): la promessa nuova vive in
+`scripts/lib/promessa-ospite.mjs` (tre regole: nessuna richiesta esterna,
+verso /api solo le route AI dell'elenco chiuso e solo col braccialetto,
+nessuna scrittura verso le tabelle delle giornate) e la misurano
+`verify-pr10`, `verify-benvenuto` e `verify-ospite`. Provata a mordere.
+
 Conseguenza da dichiarare anche fuori dal codice: nell'etichetta privacy
 dell'App Store e nella pagina della privacy, perche' e' vera solo se e' detta.
 
@@ -351,10 +357,49 @@ telefono-browser come pezzo 2-bis).
 - **Cosa NON fa la prima versione:** aggiornamento degli schermi accesi
   (divieto 2), cifratura del file di backup, il pezzo 2-bis.
 
+## 6-ter. Il COME dell'ospite (costruito la notte del 3 settembre 2026, in attesa dell'ok sulle schermate)
+
+Segue il par. 10 del referto `src/modules/accesso/REFERTO-ospite-mappa.md`,
+verificato sul codice; le differenze sono scritte in
+`src/modules/accesso/REFERTO-ospite-notte.md`.
+
+- **Braccialetto (R2):** 32 byte casuali generati al primo avvio, nel
+  portachiavi iCloud con `Cassaforte.swift` (conto "braccialetto", stesso
+  plugin e stessa astrazione `chiave.ts` della cassaforte) e in IndexedDB
+  sul web. Sul server SOLO l'hash SHA-256 (`braccialetti.segreto_hash`).
+  Viaggia nell'intestazione `x-jm-braccialetto` di ogni chiamata AI. Sul
+  web chi svuota i dati del sito ricomincia: accettato.
+- **Guardia:** `requireOspiteOPremium` (src/lib/server/ospite.ts). Premium
+  con gettone -> dentro senza contare. Altrimenti braccialetto -> la
+  funzione SQL `usa_giornata_ospite` decide sotto lock di riga. Un account
+  GRATIS col braccialetto viene legato a quel braccialetto: la quota non
+  ricomincia. Sei route: transcribe, process-entry, split-by-date,
+  extract-facts, chiarimenti, classify. Recap resta premium.
+- **Cosa conta come una giornata:** un giorno di calendario (Europe/Rome)
+  in cui l'AI ha lavorato per quel braccialetto: una riga in
+  `braccialetto_giornate`. Rilavorare lo stesso giorno non costa. Il
+  warm-up della trascrizione controlla senza spendere.
+- **Tetto (R4):** tabella `regalo` a una riga (`attivo`,
+  `giornate_per_ospite` = 10, `tetto_mensile_eur` = 100,
+  `cambio_usd_eur` = 0,92; valori di fabbrica, si cambiano da
+  /api/admin/regalo senza deploy). `ai_usage` scrive `costo_usd` e il flag
+  `regalo`; la spesa del mese e `speso_regalo_mese()`. Sopra il tetto, o a
+  regalo spento, chi ha gia la riga di oggi finisce la giornata; chi non
+  l'ha riceve 402 `{ error: "regalo_finito", motivo }`.
+- **Interruttore:** `src/lib/ospite/flag.ts`, di fabbrica SPENTO: finche le
+  schermate non sono approvate l'app si comporta come prima. I banchi lo
+  accendono con localStorage `jm.ospite = "1"`.
+- **Promessa del par. 5:** `scripts/lib/promessa-ospite.mjs`, misurata da
+  verify-pr10, verify-benvenuto e verify-ospite.
+
 ## 7. Decisioni ancora di Manuel (servono prima di finire)
 
 Chi implementa **non le decide da solo**. Se manca la risposta, si costruisce
 il meccanismo con il valore configurabile e si chiede.
+
+(Il codice della notte del 3 settembre usa come valori di fabbrica 10
+giornate e 100 euro al mese: si cambiano dal pannello, non da un deploy. Le
+opzioni numerate sono in fondo a `design/mockups/ospite-primo-avvio.html`.)
 
 1. **Quanto e' grande il regalo.** Quante giornate con l'AI. Ordine di
    grandezza noto: dieci giornate raccontate a voce piu' un recap costano circa
@@ -398,7 +443,8 @@ ci si ferma dopo il terzo, non deve restare niente a meta'.
 2. **La cassaforte e le cassettine (R6, R7, R8).** Il pezzo grosso. Va prima
    dell'ospite perche' tutto il resto ci appoggia sopra.
 3. **L'ospite e la quota (R1, R2, R3, R4).** Compreso il cambio di contratto
-   della sezione 5.
+   della sezione 5. La parte invisibile e FATTA (branch `ospite-server`,
+   3 settembre 2026); le schermate aspettano l'ok sul mockup.
 4. **La domanda dell'email (R5).**
 5. **Il backup automatico (R9).**
 6. **Le foto (R10).**
