@@ -7,6 +7,7 @@ import { ensureEveningReminder } from "@/lib/native/reminders";
 import {
   ascoltaCassaforte,
   cancelloDaMostrare,
+  erroreCassaforte,
   giornateChiuse,
   passaCancello,
   risolviCassaforte,
@@ -148,6 +149,26 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (mode !== "local" && auth === "in" && userId && !publicPath) {
     if (cassaforte === "risolvendo") return null;
+    if (cassaforte === "errore") {
+      // Il server della cassaforte non ha risposto (rete, o migration 021
+      // non ancora applicata): si dice, e si riprova. Testo semplice e non
+      // tradotto di proposito: e una schermata da manutenzione.
+      return (
+        <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10 text-center">
+          <p className="text-ink" style={{ maxWidth: "24rem", lineHeight: 1.5 }}>
+            La cassaforte non risponde: {erroreCassaforte()}
+          </p>
+          <button
+            type="button"
+            className="btn-ghost mt-6"
+            style={{ maxWidth: "16rem" }}
+            onClick={() => void risolviCassaforte(userId)}
+          >
+            Riprova
+          </button>
+        </main>
+      );
+    }
     if (cancello) {
       return (
         <CassaforteCancello

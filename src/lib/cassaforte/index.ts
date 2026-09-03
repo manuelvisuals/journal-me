@@ -35,7 +35,7 @@ import {
   type Chiavi,
 } from "./serratura";
 
-export type StatoCassaforte = "risolvendo" | "assente" | "chiusa" | "aperta" | "locale";
+export type StatoCassaforte = "risolvendo" | "assente" | "chiusa" | "aperta" | "locale" | "errore";
 
 export class CassaforteChiusa extends Error {
   constructor() {
@@ -58,9 +58,15 @@ type Interno = {
   cancello: "assente" | "chiusa" | null;
   /** Per la schermata "chiusa": quante giornate ci sono sul server, e da quando. */
   giornate: { quante: number; dal: string | null } | null;
+  /** Il messaggio dell'ultimo errore di risoluzione (server irraggiungibile, tabelle mancanti). */
+  errore: string | null;
 };
 
-const interno: Interno = { stato: "risolvendo", userId: null, chiavi: null, seme: null, cancello: null, giornate: null };
+const interno: Interno = { stato: "risolvendo", userId: null, chiavi: null, seme: null, cancello: null, giornate: null, errore: null };
+
+export function erroreCassaforte(): string | null {
+  return interno.errore;
+}
 
 export function giornateChiuse(): { quante: number; dal: string | null } | null {
   return interno.giornate;
@@ -150,7 +156,18 @@ async function provaSiApre(ch: Chiavi, prova: string): Promise<boolean> {
  */
 export async function risolviCassaforte(userId: string): Promise<StatoCassaforte> {
   if (interno.userId === userId && interno.stato === "aperta") return "aperta";
-  imposta({ stato: "risolvendo", userId, chiavi: null, seme: null });
+  imposta({ stato: "risolvendo", userId, chiavi: null, seme: null, errore: null });
+  try {
+    return await risolviDavvero(userId);
+  } catch (e) {
+    // Mai una schermata vuota: se il server non risponde o le tabelle non
+    // ci sono ancora, lo si dice (AuthGate mostra il messaggio e un riprova).
+    imposta({ stato: "errore", errore: (e as Error)?.message ?? String(e) });
+    return "errore";
+  }
+}
+
+async function risolviDavvero(userId: string): Promise<StatoCassaforte> {
   const [seme, prova] = await Promise.all([
     leggiSeme(userId).catch(() => null),
     conTetto(leggiProva(userId), 20_000, "prova della cassaforte"),

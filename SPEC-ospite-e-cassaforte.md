@@ -104,7 +104,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: rifiutando, l'app resta identica e la proposta non ricompare
   nella stessa sessione.
 
-### R6 - La cassaforte: nessuno tranne l'utente puo' leggere
+### R6 - La cassaforte: nessuno tranne l'utente puo' leggere (CODICE FATTO il 3 settembre 2026, branch `cassaforte`; in attesa delle migration 021-022 in produzione)
 
 Questo e' il requisito piu' importante del documento.
 
@@ -126,7 +126,7 @@ Questo e' il requisito piu' importante del documento.
 - Verificabile: un banco che scrive una giornata, la legge dal database col
   ruolo di servizio, e **fallisce** se ci trova una qualsiasi parola del testo.
 
-### R7 - Una cassettina per giornata, con un numero di versione
+### R7 - Una cassettina per giornata, con un numero di versione (CODICE FATTO, vedi R6)
 
 - L'unita' cifrata e' **la singola giornata**, non il diario intero.
 - Ogni cassettina porta un numero di versione che cresce a ogni scrittura.
@@ -138,7 +138,7 @@ Questo e' il requisito piu' importante del documento.
 - Verificabile: due sessioni, la seconda con una copia vecchia; il salvataggio
   della seconda viene rifiutato e l'avviso compare. Nessun dato perso.
 
-### R8 - La chiave, e come si recupera
+### R8 - La chiave, e come si recupera (CODICE FATTO, vedi R6; la lastra nativa Keychain va provata sul telefono)
 
 - Su un dispositivo Apple la chiave deve viaggiare **da sola** verso gli altri
   dispositivi Apple della stessa persona: nel caso normale, chi cambia iPhone e
@@ -226,7 +226,7 @@ di tetto e clip conservato per riprovare in `recording-overlay.tsx`. Banco
 `scripts/verify-rete-spenta.mjs` (14 controlli, messaggio in 4 s, morso
 verificato). Referto: `src/modules/oggi/PROVA-trascrizione.md`.
 
-### R12 - Cosa NON cambia per chi gia' usa l'app
+### R12 - Cosa NON cambia per chi gia' usa l'app (CODICE FATTO: passaggio esplicito in Impostazioni > Cassaforte)
 
 - Le giornate gia' scritte da Manuel non si perdono e restano leggibili.
 - Il passaggio alla cassaforte per i dati gia' esistenti e' un percorso
