@@ -163,7 +163,7 @@ async function newPage(width, height) {
   check("phone gratis: prosa visibile", (await page.locator(".jm-fv-prose").count()) === 1);
   check("phone gratis: nudge presente", await page.locator(".jm-fv-nudge").isVisible());
 
-  // Il microfono del dock su una giornata piena. Dal 30 agosto 2026
+  // Il microfono del dock su una giornata piena. Dal 1 settembre 2026 (commit a5b6a6f)
   // l'intestazione di Oggi e solo desktop (barra in alto), quindi sul
   // telefono il mic e quello del dock: in locale non apre nessun muro,
   // apre la scrittura (today-client, ?record=1 con isLocalMode).
