@@ -479,12 +479,15 @@ export function TodayClient({
       // "mio fratello" diventa Daniele adesso, la domanda dopo offre di
       // salvare Daniele. Al contrario si finirebbe con "mio fratello" nella
       // rubrica delle persone, che e esattamente il difetto di partenza.
-      // `canAI`, non `opts.withAI`: il secondo dice cosa e stato CHIESTO, il
-      // primo dice se l'AI c'e davvero. In modalita locale la scrittura a
-      // mano passa comunque da withAI=true, e chiedere dei chiarimenti a
-      // un'AI che non esiste voleva dire una richiesta buttata a ogni
-      // giornata scritta da un utente gratis.
-      if (canAI && entryForDate) {
+      // `canAI` E `opts.withAI`: il primo dice se l'AI c'e davvero (in
+      // modalita locale la scrittura a mano passa comunque da withAI=true,
+      // e chiedere dei chiarimenti a un'AI che non esiste voleva dire una
+      // richiesta buttata a ogni giornata scritta da un utente gratis); il
+      // secondo dice cosa e stato CHIESTO. "Salva e basta" (Cmd+S) promette
+      // zero chiamate AI, e fino al 3 settembre 2026 ne faceva una: per
+      // l'ospite (SPEC R2-R3) sarebbe stata una giornata del regalo spesa
+      // senza averlo chiesto, e testo uscito dal dispositivo senza motivo.
+      if (canAI && opts.withAI && entryForDate) {
         setPassoAttesa("dubbi");
         const domande = await (chiarimentiInCorso.get(attachDate) ??
           chiediChiarimenti(mode, attachDate, entryForDate.transcript, {
