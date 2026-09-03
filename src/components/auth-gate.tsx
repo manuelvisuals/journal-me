@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useStorageMode } from "@/lib/data/store";
+import { chooseLocalMode, useStorageMode } from "@/lib/data/store";
+import { ospiteAttivo } from "@/lib/ospite/flag";
+import { assicuraBraccialetto } from "@/lib/ospite/braccialetto";
 import { ensureEveningReminder } from "@/lib/native/reminders";
 import {
   ascoltaCassaforte,
@@ -125,6 +127,17 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (settledOut && !publicPath) {
+      if (ospiteAttivo()) {
+        // L'OSPITE (SPEC R1, mockup ospite-primo-avvio 01, in attesa
+        // dell'ok): nessun login e nessun bivio, si entra dritti su Oggi in
+        // modalita locale, e nasce il braccialetto anonimo che accende
+        // l'AI a quota regalata (R2). Con l'interruttore spento
+        // (ospite/flag.ts, il valore di fabbrica finche Manuel non
+        // approva le schermate) vale il ramo di sempre qui sotto.
+        chooseLocalMode();
+        void assicuraBraccialetto();
+        return;
+      }
       // Dal 24 agosto 2026 la prima schermata e il LOGIN, non piu il bivio
       // (deciso da Manuel: "app si apre e c'e una schermata di login").
       // /benvenuto non sparisce: diventa cio che si vede DOPO l'accesso, e

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requirePremium } from "@/lib/server/entitlement";
+import { requireOspiteOPremium } from "@/lib/server/ospite";
+import { openaiUrl } from "@/lib/server/openai";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 import { langName, langOf } from "@/lib/server/lang";
 
@@ -16,7 +17,7 @@ import { langName, langOf } from "@/lib/server/lang";
 type Kind = "persona" | "todo" | "luogo" | "idea" | "nota";
 
 export async function POST(req: NextRequest) {
-  const gate = await requirePremium(req);
+  const gate = await requireOspiteOPremium(req);
   if (gate instanceof NextResponse) return gate;
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -58,7 +59,7 @@ export async function POST(req: NextRequest) {
   ].join("\n");
 
   const completion = await fetch(
-    "https://api.openai.com/v1/chat/completions",
+    openaiUrl("/v1/chat/completions"),
     {
       method: "POST",
       headers: {
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
     usage?: ChatUsage;
   };
   void logAiUsage({
-    userId: gate.userId,
+    ...gate.chi,
     route: "classify",
     model: "gpt-4o-mini",
     inputTokens: data.usage?.prompt_tokens,

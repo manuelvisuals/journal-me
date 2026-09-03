@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requirePremium } from "@/lib/server/entitlement";
+import { requireOspiteOPremium } from "@/lib/server/ospite";
+import { openaiUrl } from "@/lib/server/openai";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 import { langName, langOf } from "@/lib/server/lang";
 import { areeAttive, type Area } from "@/lib/aree";
@@ -81,9 +82,9 @@ function responseFormat(chiavi: string[]) {
 }
 
 export async function POST(req: NextRequest) {
-  const gate = await requirePremium(req);
+  const gate = await requireOspiteOPremium(req);
   if (gate instanceof NextResponse) return gate;
-  const { userId } = gate;
+  const { chi } = gate;
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
@@ -217,7 +218,7 @@ export async function POST(req: NextRequest) {
     ];
     if (correzione) messages.push({ role: "system", content: correzione });
 
-    const completion = await fetch("https://api.openai.com/v1/chat/completions", {
+    const completion = await fetch(openaiUrl("/v1/chat/completions"), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -251,7 +252,7 @@ export async function POST(req: NextRequest) {
     };
     // Conteggio consumi: token ufficiali di OpenAI, fire-and-forget.
     void logAiUsage({
-      userId,
+      ...chi,
       route: "process-entry",
       model: "gpt-4o-mini",
       inputTokens: data.usage?.prompt_tokens,

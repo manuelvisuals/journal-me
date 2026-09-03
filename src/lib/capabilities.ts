@@ -15,11 +15,25 @@
 
 import { getStore, useStorageMode } from "@/lib/data/store";
 import { getPlanSync, usePlan } from "@/lib/plan";
+import { ospiteAttivo } from "@/lib/ospite/flag";
+
+/**
+ * L'OSPITE (SPEC-ospite-e-cassaforte R2): tiene le giornate sul dispositivo
+ * (modalita locale) e ha l'AI accesa a quota regalata. Il client non conosce
+ * la quota: dice "si puo provare" e la decisione vera resta al server, che
+ * a regalo finito risponde 402 regalo_finito (gestito in apiFetch, e domani
+ * dal muro della quota). Recap e pattern restano del gradino premium
+ * (SPEC par. 2). Tutto questo vale SOLO con l'interruttore acceso
+ * (ospite/flag.ts): spento, il locale resta a zero AI come prima.
+ */
+function ospitePuo(c: Capability): boolean {
+  return (c === "voice" || c === "aiSummary") && ospiteAttivo();
+}
 
 export type Capability = "voice" | "aiSummary" | "recap" | "patterns" | "sync";
 
 export function can(c: Capability): boolean {
-  if (getStore().mode !== "cloud") return false;
+  if (getStore().mode !== "cloud") return getStore().mode === "local" && ospitePuo(c);
   if (c === "sync") return true;
   return getPlanSync() === "premium";
 }
@@ -33,7 +47,7 @@ export function useCan(c: Capability): boolean {
   const mode = useStorageMode();
   // Stessa semantica di can(): finche la modalita non e risolta risponde
   // il ramo cloud (le schermate dati stanno comunque dietro AuthGate).
-  if (mode === "local") return false;
+  if (mode === "local") return ospitePuo(c);
   if (c === "sync") return true;
   return plan === "premium";
 }
