@@ -20,6 +20,8 @@ import { getStore } from "@/lib/data/store";
 import { cached, invalidateAll } from "@/lib/data/cache";
 import { reprocessEntryTranscript } from "@/lib/actions/save-recording";
 import type { AreaSummary, Entry, EntryMetrics } from "@/lib/types";
+import type { Contenuto } from "@/lib/data/store/cassettine";
+import type { CloudStore } from "@/lib/data/store/cloud";
 
 /**
  * After the move to Supabase Anonymous Auth, every user has a real
@@ -128,4 +130,16 @@ export async function saveAreas(
 ): Promise<Entry> {
   invalidateAll();
   return getStore().saveAreas(dateISO, areas);
+}
+
+/**
+ * Dopo un conflitto di versione (SPEC R7): scrive la versione che la
+ * persona ha scelto, sopra quella corrente del server. Solo in cloud: in
+ * locale non esistono versioni ne conflitti.
+ */
+export async function risolviConflitto(dateISO: string, contenuto: Contenuto): Promise<Entry> {
+  invalidateAll();
+  const store = getStore();
+  if (store.mode !== "cloud") throw new Error("Nessun conflitto in modalita locale");
+  return (store as CloudStore).scriviVersioneScelta(dateISO, contenuto);
 }

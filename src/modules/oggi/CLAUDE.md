@@ -66,7 +66,9 @@ bucket privato `foto` (migration 020), client Supabase a import dinamico
 export/import (scheletro) NON include ancora le foto — e scritto anche
 nella nota di consegna, non dimenticarlo quando si tocca il backup.
 
-- Banchi prima del push: `verify-rete-spenta` (R11: senza rete la trascrizione
+- Banchi prima del push: `verify-cassaforte` (R6 R7 R8 R12: la giornata esce
+  chiusa a chiave, il conflitto di versione, il dispositivo nuovo),
+  `verify-rete-spenta` (R11: senza rete la trascrizione
   mostra un messaggio, mai un'attesa infinita), `verify-foto`, `verify-chiarimenti`, `verify-chiarimenti-vivo`,
   `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
@@ -187,3 +189,15 @@ richiesta), `apiFetch` col cronometro prima del gettone. In questo modulo:
 stesso audio). REGOLA da tenere: ogni attesa che precede una chiamata con
 tetto deve avere un tetto anche lei, o il tetto non serve. Referto e prova a
 mordere in `PROVA-trascrizione.md`.
+
+## La giornata modificata altrove (3 settembre 2026, SPEC R7)
+
+`components/conflitto-giornata.tsx` (prefisso `jm-conflitto`, mockup
+`design/mockups/codice-di-recupero.html` 03): il foglio con le DUE versioni
+quando il server rifiuta una scrittura perche la versione non e piu quella
+corrente. Montato UNA volta dal guscio (via la porta), si apre da solo: le
+cassettine (`src/lib/data/store/cassettine.ts`, scheletro) avvisano ogni
+conflitto con `suConflitto`, da qualunque schermata. Tre tasti, nessuna
+scelta automatica: tieni quella, tieni questa, tutte e due (l'altra finisce
+in fondo al racconto sotto `--- dall'altra versione ---`). Le frasi diverse
+sono evidenziate. Banco: `verify-cassaforte` (sezione R7).

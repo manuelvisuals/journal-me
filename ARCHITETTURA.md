@@ -116,6 +116,19 @@ cambia NIENTE: il velo CSS resta quello qui sopra. Banco della meta web:
 `scripts/verify-dock-nativo.mjs` (guscio finto via `window.__jmVetroFinto`);
 la lastra vera si giudica solo sul telefono.
 
+La cassaforte (3 settembre 2026, sessione scheletro dichiarata, SPEC
+ospite-e-cassaforte §6-bis): `src/lib/cassaforte/` (serratura AES-GCM, otto
+parole, seme nel portachiavi via `ios/App/App/Cassaforte.swift` o in
+IndexedDB, stato e prova sul server) e `src/lib/data/store/cassettine.ts`
+(una giornata = una busta con numero di versione; le righe in chiaro come
+ripiego finche non entrano). CloudStore chiude e apre TUTTO il contenuto
+cloud: giornate e fatti nelle cassettine, memo/recap/domande/soprannomi/
+esclusioni in una colonna `busta` (migration 021 e 022). I moduli non
+sanno che esiste una chiave: chiedono e ricevono testo. Banco:
+`scripts/verify-cassaforte.mjs`, contro un Supabase finto
+(`scripts/lib/supabase-finto.mjs`) che registra ogni byte uscito dal
+dispositivo. `src/lib/tetto.ts` (R11): i tetti di tempo, un posto solo.
+
 Regola: un modulo USA lo scheletro, non lo modifica. Se un modulo ha bisogno di una
 primitiva nuova, la chiede (una sessione scheletro la aggiunge) o la tiene nel proprio
 folder finche non e matura.

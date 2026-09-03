@@ -33,3 +33,22 @@ per tre volte; al terzo no il congedo che indica le Impostazioni) stanno in
 cambiare idea sta nel modulo impostazioni. Il lucchetto
 (`src/components/biometric-lock.tsx`, scheletro) si arma solo se la scelta
 e "on". Banco: `verify-bugfix-20260901` (serve `JM_MOBILE=1 npx next build`).
+
+## Il cancello della cassaforte (3 settembre 2026, SPEC R8)
+
+`components/cassaforte-cancello.tsx` (prefisso `jm-login-cassa`, mockup
+`design/mockups/codice-di-recupero.html` 01-02), montato dallo scheletro
+(AuthGate) in cloud quando la cassaforte non e aperta su questo dispositivo:
+
+- `ParoleNuove`: le otto parole, UNA volta. Screenshot consigliato per
+  primo, tasto Copia, casella "le ho salvate" che accende il tasto (scelta di
+  Manuel dopo il controaudit). Nessuna X. Il cancello resta finche non si
+  preme "Ho capito, continua" (`passaCancello()` in src/lib/cassaforte).
+- `ChiediParole`: il dispositivo senza chiave. Dice quante giornate ci sono e
+  da quando (giorno e conteggio sono in chiaro), segnala QUALE parola non
+  esiste prima di provare, accetta maiuscole, accenti, numeri davanti e
+  troncamenti di almeno quattro lettere. "Non ho il codice" dice le tre
+  strade vere e "Ricomincia da zero" e a due passi.
+
+La logica sta tutta in `src/lib/cassaforte/` (scheletro): qui solo le
+schermate. Banco: `verify-cassaforte`.

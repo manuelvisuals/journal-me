@@ -2078,3 +2078,104 @@
     border-bottom: none;
   }
 }
+
+/* ---------- la giornata modificata altrove (SPEC R7, mockup codice-di-recupero 03) ----------
+   Stesso impianto del muro premium: un velo, un foglio a scorrimento, tutto a token. */
+.jm-conflitto {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: color-mix(in oklab, var(--color-bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+@media (min-width: 1024px) {
+  .jm-conflitto { align-items: center; padding: 24px; }
+}
+.jm-conflitto-box {
+  width: 100%;
+  max-width: 560px;
+  max-height: 92dvh;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in oklab, var(--color-ink) 14%, transparent);
+  border-radius: var(--jm-radius-lg) var(--jm-radius-lg) 0 0;
+  padding: calc(18px * var(--jm-space)) calc(24px * var(--jm-space)) calc(28px * var(--jm-space));
+  box-shadow: 0 14px 28px color-mix(in oklab, var(--color-shadow) 50%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: calc(12px * var(--jm-space));
+}
+@media (min-width: 1024px) {
+  .jm-conflitto-box { border-radius: var(--jm-radius-lg); }
+}
+.jm-conflitto-titolo {
+  font-family: var(--font-serif);
+  font-size: calc(20px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+.jm-conflitto-h2 {
+  font-family: var(--font-serif);
+  font-size: calc(26px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+  color: var(--color-ink);
+}
+.jm-conflitto-intro,
+.jm-conflitto-errore {
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+.jm-conflitto-errore { color: var(--color-danger); }
+.jm-conflitto-ver {
+  background: var(--color-bg-phone, var(--color-bg));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(14px * var(--jm-space)) calc(16px * var(--jm-space));
+  display: flex;
+  flex-direction: column;
+  gap: calc(8px * var(--jm-space));
+}
+.jm-conflitto-k {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(11px * var(--jm-ui-scale));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  font-weight: 650;
+}
+.jm-conflitto-k b {
+  color: var(--color-ink);
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 600;
+  font-size: calc(12px * var(--jm-ui-scale));
+}
+.jm-conflitto-t {
+  font-family: var(--font-serif);
+  font-size: calc(19px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  line-height: 1.2;
+}
+.jm-conflitto-p {
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.jm-conflitto-p mark {
+  background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+  color: var(--color-ink);
+  border-radius: 3px;
+  padding: 0 2px;
+}

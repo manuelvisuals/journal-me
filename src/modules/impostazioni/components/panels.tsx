@@ -10,7 +10,14 @@
  */
 
 import type { CSSProperties } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { contaCassaforte, portaNellaCassaforte, type StatoGiornate } from "@/lib/data/cassaforte";
+import { paroleCorrenti } from "@/lib/cassaforte";
+import { sedeDellaChiave } from "@/lib/cassaforte/chiave";
+import { chiediIlVolto } from "@/lib/native/face-id";
+import { isNative } from "@/lib/native/platform";
+import { formatNumber } from "@/lib/format";
 import { SetGroup, SetRow } from "@/modules/impostazioni/components/rows";
 import { addGoal, removeGoal } from "@/lib/data/goals";
 import { cssVarsFor, FONTS, THEMES } from "@/themes";
@@ -476,6 +483,130 @@ export function ModuliPanel() {
           "Spegnendo un modulo la voce sparisce dalla barra, ma quello che hai registrato resta dov'e: riaccendendolo lo ritrovi.",
         )}
       </p>
+    </>
+  );
+}
+
+/* ===================== Cassaforte (SPEC ospite-e-cassaforte, R12) ===================== */
+
+/**
+ * Impostazioni > Cassaforte (mockup codice-di-recupero.html, schermata 04).
+ * Dice lo stato VERO: quante giornate sono chiuse a chiave e quante sono
+ * ancora in chiaro sul server (quelle scritte prima della cassaforte), e
+ * offre il passaggio esplicito con un tasto suo: mai un effetto collaterale
+ * di un aggiornamento. Le otto parole si rivedono dietro il volto.
+ */
+export function CassafortePanel() {
+  const t = useT();
+  const [stato, setStato] = useState<StatoGiornate | null>(null);
+  const [errore, setErrore] = useState<string | null>(null);
+  const [passo, setPasso] = useState<"fermo" | "in-corso" | "fatto">("fermo");
+  const [avanzamento, setAvanzamento] = useState<{ fatte: number; totale: number } | null>(null);
+  const [parole, setParole] = useState<string[] | null>(null);
+  const [paroleBusy, setParoleBusy] = useState(false);
+
+  useEffect(() => {
+    let vivo = true;
+    contaCassaforte()
+      .then((s) => {
+        if (vivo) setStato(s);
+      })
+      .catch((e: unknown) => {
+        if (vivo) setErrore((e as Error)?.message ?? String(e));
+      });
+    return () => {
+      vivo = false;
+    };
+  }, [passo]);
+
+  async function porta() {
+    setPasso("in-corso");
+    setErrore(null);
+    try {
+      await portaNellaCassaforte((fatte, totale) => setAvanzamento({ fatte, totale }));
+      setPasso("fatto");
+    } catch (e) {
+      setErrore((e as Error)?.message ?? String(e));
+      setPasso("fermo");
+    }
+  }
+
+  async function vediParole() {
+    setParoleBusy(true);
+    try {
+      const ok = await chiediIlVolto(t("Per vedere il codice di recupero"));
+      if (!ok) return;
+      setParole(await paroleCorrenti());
+    } finally {
+      setParoleBusy(false);
+    }
+  }
+
+  const inChiaro = (stato?.inChiaro ?? 0) + (stato?.righeInChiaro ?? 0);
+  const tuttoChiuso = stato !== null && inChiaro === 0;
+
+  return (
+    <>
+      {stato && inChiaro > 0 && passo !== "fatto" ? (
+        <>
+          <p className="jm-st-lede">
+            {stato.inChiaro > 0
+              ? t("{n} giornate sono ancora in chiaro sul server.", { n: formatNumber(stato.inChiaro) })
+              : t("{n} righe (memo, recap, domande) sono ancora in chiaro sul server.", { n: formatNumber(stato.righeInChiaro) })}
+          </p>
+          <p className="jm-st-lede">
+            {t(
+              "Sono state scritte prima della cassaforte. Chiuderle a chiave le rende illeggibili per chiunque non abbia la tua chiave, noi compresi. Ci vuole meno di un minuto e non tocca il testo.",
+            )}
+          </p>
+          <div className="jm-st-cassa-azione">
+            <Button onClick={() => void porta()} disabled={passo === "in-corso"}>
+              {passo === "in-corso"
+                ? avanzamento
+                  ? t("Chiudo a chiave... {fatte} di {totale}", { fatte: avanzamento.fatte, totale: avanzamento.totale })
+                  : t("Chiudo a chiave...")
+                : stato.inChiaro > 0
+                  ? t("Chiudi a chiave le {n} giornate", { n: formatNumber(stato.inChiaro) })
+                  : t("Chiudi a chiave tutto")}
+            </Button>
+          </div>
+        </>
+      ) : null}
+      {passo === "fatto" ? (
+        <p className="jm-st-lede">{t("Fatto: tutto quello che era in chiaro adesso e chiuso a chiave.")}</p>
+      ) : null}
+      {errore ? <p className="jm-st-lede jm-st-cassa-errore">{errore}</p> : null}
+
+      <SetGroup label={t("Stato")}>
+        <SetRow
+          title={t("Stato")}
+          value={
+            stato === null
+              ? undefined
+              : tuttoChiuso
+                ? t("Tutto chiuso a chiave")
+                : t("{n} in chiaro", { n: formatNumber(inChiaro) })
+          }
+        />
+        <SetRow title={t("Giornate nella cassaforte")} value={stato ? formatNumber(stato.chiuse) : undefined} />
+        <SetRow
+          title={t("La chiave su questo dispositivo")}
+          value={sedeDellaChiave() === "portachiavi" ? t("Nel portachiavi di iCloud") : t("In questo browser")}
+        />
+        <SetRow
+          title={t("Vedi il codice di recupero")}
+          desc={parole ? parole.join(" ") : undefined}
+          value={parole ? undefined : isNative() ? t("Face ID") : undefined}
+          onClick={parole ? undefined : () => void vediParole()}
+          disabled={paroleBusy}
+        />
+      </SetGroup>
+      <SetGroup label={t("Cosa vede il server")}>
+        <SetRow
+          title={t("Di chi e ogni giornata, che giorno e, la versione, quando e stata scritta e quanto pesa.")}
+          desc={t("Il testo, il titolo, la sintesi, le aree, i fatti, i memo e i recap: no.")}
+        />
+      </SetGroup>
     </>
   );
 }

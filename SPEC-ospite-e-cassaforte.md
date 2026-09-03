@@ -104,7 +104,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: rifiutando, l'app resta identica e la proposta non ricompare
   nella stessa sessione.
 
-### R6 - La cassaforte: nessuno tranne l'utente puo' leggere
+### R6 - La cassaforte: nessuno tranne l'utente puo' leggere (CODICE FATTO il 3 settembre 2026, branch `cassaforte`; in attesa delle migration 021-022 in produzione)
 
 Questo e' il requisito piu' importante del documento.
 
@@ -126,7 +126,7 @@ Questo e' il requisito piu' importante del documento.
 - Verificabile: un banco che scrive una giornata, la legge dal database col
   ruolo di servizio, e **fallisce** se ci trova una qualsiasi parola del testo.
 
-### R7 - Una cassettina per giornata, con un numero di versione
+### R7 - Una cassettina per giornata, con un numero di versione (CODICE FATTO, vedi R6)
 
 - L'unita' cifrata e' **la singola giornata**, non il diario intero.
 - Ogni cassettina porta un numero di versione che cresce a ogni scrittura.
@@ -138,7 +138,7 @@ Questo e' il requisito piu' importante del documento.
 - Verificabile: due sessioni, la seconda con una copia vecchia; il salvataggio
   della seconda viene rifiutato e l'avviso compare. Nessun dato perso.
 
-### R8 - La chiave, e come si recupera
+### R8 - La chiave, e come si recupera (CODICE FATTO, vedi R6; la lastra nativa Keychain va provata sul telefono)
 
 - Su un dispositivo Apple la chiave deve viaggiare **da sola** verso gli altri
   dispositivi Apple della stessa persona: nel caso normale, chi cambia iPhone e
@@ -226,7 +226,7 @@ di tetto e clip conservato per riprovare in `recording-overlay.tsx`. Banco
 `scripts/verify-rete-spenta.mjs` (14 controlli, messaggio in 4 s, morso
 verificato). Referto: `src/modules/oggi/PROVA-trascrizione.md`.
 
-### R12 - Cosa NON cambia per chi gia' usa l'app
+### R12 - Cosa NON cambia per chi gia' usa l'app (CODICE FATTO: passaggio esplicito in Impostazioni > Cassaforte)
 
 - Le giornate gia' scritte da Manuel non si perdono e restano leggibili.
 - Il passaggio alla cassaforte per i dati gia' esistenti e' un percorso
@@ -302,6 +302,54 @@ dell'App Store e nella pagina della privacy, perche' e' vera solo se e' detta.
 - La trascrizione resta su OpenAI (vedi divieto 6).
 
 ---
+
+## 6-bis. Il COME della cassaforte (deciso il 3 settembre 2026, dopo controaudit)
+
+Mockup approvato: `design/mockups/codice-di-recupero.html` (opzione 1 di Manuel:
+8 parole, screenshot consigliato per primo, tasto Copia mantenuto, collegamento
+telefono-browser come pezzo 2-bis).
+
+- **Serratura (R6):** AES-256-GCM di WebCrypto (`crypto.subtle`), disponibile in
+  Safari, Chrome e WKWebView. Una chiave sola per diario, un nonce casuale di 12
+  byte per ogni chiusura. Busta: `{ v: 1, alg: "A256GCM", iv, ct }` in base64.
+- **Cassettina (R7):** tabella `cassettine` (`user_id`, `giorno`, `v`, `busta`,
+  `bytes`, `created_at`, `updated_at`, PK `user_id+giorno`). Dentro la busta:
+  transcript, headline, snippet, areas, people, metrics, goals_on,
+  headline_locked, durationSeconds, e i FATTI del giorno. La scrittura passa da
+  una funzione SQL `salva_cassettina(giorno, v_attesa, busta)`: inserisce se
+  `v_attesa = 0` e la riga non esiste, aggiorna se `v = v_attesa`, altrimenti
+  solleva `versione_superata` senza aprire niente. Le tabelle `entries` e
+  `facts` restano per le giornate ancora in chiaro (R12) e vengono svuotate dal
+  passaggio esplicito.
+- **Le altre tabelle con contenuto** (remembers, recaps, open_questions,
+  fact_aliases, day_exclusions): stessa busta in una colonna `busta`, e dove il
+  contenuto faceva da chiave di unicita (`alias`, `soggetto_key`, `label_key`)
+  al suo posto va un HMAC-SHA256 con la chiave del diario: deterministico, cosi
+  l'unicita regge, e illeggibile.
+- **Chiave (R8):** seme casuale di 80 bit + 8 bit di controllo = 8 parole da un
+  elenco di 2048 parole italiane (lista BIP-39 italiana, pubblica). Chiave =
+  PBKDF2-SHA256(seme, sale = "dayalogue-cassaforte-v1:" + user_id, 600.000
+  giri, 256 bit). Il seme sta nel portachiavi iOS con `kSecAttrSynchronizable`
+  (plugin nativo `Cassaforte.swift`, sul modello di `DockVetro.swift`); sul web
+  in IndexedDB `journalme-chiave`. Sul server SOLO `cassaforte_utente(user_id,
+  prova, creata_il)`: `prova` e una frase fissa chiusa con la chiave, serve a
+  dire "le parole sono giuste" su un dispositivo nuovo. Nessun percorso di
+  reimpostazione lato server.
+- **Perche 8 parole e non 12:** con le parole usate come seme e stirate da
+  PBKDF2, indovinare 2^80 semi costa ~10^29 hash: fuori portata anche per chi
+  avesse il database e migliaia di GPU. Con 6 parole (66 bit) si resta al sicuro
+  da qualunque persona, non da un avversario industriale: rifiutato.
+- **Pezzo 2-bis (dopo la cassaforte):** il browser sul computer non ha il
+  portachiavi iCloud. Collegamento come WhatsApp Web: il browser genera una
+  coppia di chiavi usa-e-getta e mostra un codice a 6 cifre; il telefono chiude
+  il seme con la chiave pubblica del browser e lo posa sul server, che fa da
+  postino e vede solo un pacchetto illeggibile. Le parole restano per il
+  disastro (persi tutti i dispositivi).
+- **Cosa resta in chiaro, e perche:** `giorno`, `v`, `bytes`, le date; il
+  conteggio delle foto per giorno in `localStorage` (solo sul dispositivo); il
+  file di backup (scelta dichiarata in `backup.ts`, leggibile fra dieci anni).
+- **Cosa NON fa la prima versione:** aggiornamento degli schermi accesi
+  (divieto 2), cifratura del file di backup, il pezzo 2-bis.
 
 ## 7. Decisioni ancora di Manuel (servono prima di finire)
 

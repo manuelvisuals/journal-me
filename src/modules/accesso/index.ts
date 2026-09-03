@@ -5,3 +5,4 @@
  */
 export { Linguetta } from "@/modules/accesso/components/linguetta";
 export { SalutoAvvio } from "@/modules/accesso/components/saluto-avvio";
+export { CassaforteCancello, ParoleNuove } from "@/modules/accesso/components/cassaforte-cancello";

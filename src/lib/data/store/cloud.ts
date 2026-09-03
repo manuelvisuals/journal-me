@@ -15,7 +15,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { todayISO } from "@/lib/format";
-import { chiaveAlias, dividiNomi, uniscoNomi } from "@/lib/aliases";
+import { chiaveAlias, dividiNomi } from "@/lib/aliases";
 import type {
   Alias,
   DayExclusion,
@@ -45,6 +45,8 @@ import {
   type StorageMode,
 } from "./types";
 import { t } from "@/lib/i18n";
+import { Cassettine, type Contenuto, type RigaInChiaro } from "./cassettine";
+import { apriRiga, chiudiRiga, improntaDi } from "./buste";
 
 /* ----------------- helpers condivisi (da entries.ts) ----------------- */
 
@@ -138,23 +140,6 @@ const VALID_SOURCES: ReadonlySet<RememberSource> = new Set([
   "extracted",
 ]);
 
-function rowToEntry(row: Record<string, unknown>, goalDefs: GoalDef[]): Entry {
-  return {
-    id: row.id as string,
-    entryDate: row.entry_date as string,
-    transcript: (row.transcript as string) ?? "",
-    durationSeconds: 0,
-    headline: (row.headline as string) ?? null,
-    snippet: (row.snippet as string) ?? null,
-    areas: parseAreasJson(row.areas),
-    metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
-    goals: buildGoals(goalDefs, parseStringArray(row.goals_on)),
-    people: parseStringArray(row.people),
-    headlineLocked: row.headline_locked === true,
-    createdAt: row.created_at as string,
-  };
-}
-
 /* -------------------------------- store -------------------------------- */
 
 export class CloudStore implements JournalStore {
@@ -198,34 +183,266 @@ export class CloudStore implements JournalStore {
     return user.id;
   }
 
-  /* ----------------- entries ----------------- */
+  /* ----------------- giornate: le cassettine ----------------- */
 
-  private async loadEntryRow(
-    dateISO: string,
-    defs?: GoalDef[],
-  ): Promise<Entry | null> {
+  /**
+   * Da qui in giu ogni giornata cloud e una CASSETTINA (store/cassettine.ts):
+   * chiusa a chiave sul dispositivo, versionata dal server. Le righe in
+   * chiaro di `entries` e `facts` restano leggibili finche la persona non
+   * le porta nella cassaforte (R12), e questo store le legge come RIPIEGO.
+   */
+  private readonly cassettine = new Cassettine(
+    () => this.supabase(),
+    () => this.userId(),
+    {
+      leggiInChiaro: (g) => this.leggiRigaInChiaro(g),
+      leggiInChiaroTra: (da, a) => this.leggiRigheInChiaroTra(da, a),
+      cancellaInChiaro: (g) => this.cancellaRigaInChiaro(g),
+    },
+  );
+
+  private rowToContenuto(row: Record<string, unknown>, facts: Fact[]): Contenuto {
+    return {
+      transcript: (row.transcript as string) ?? "",
+      headline: (row.headline as string) ?? null,
+      snippet: (row.snippet as string) ?? null,
+      areas: parseAreasJson(row.areas),
+      people: parseStringArray(row.people),
+      metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
+      goalsOn: parseStringArray(row.goals_on),
+      headlineLocked: row.headline_locked === true,
+      durationSeconds: 0,
+      facts: facts.map((f) => {
+        const { entryDate: _d, ...resto } = f;
+        return resto;
+      }),
+      createdAt: (row.created_at as string) ?? new Date().toISOString(),
+    };
+  }
+
+  private async leggiRigaInChiaro(giorno: string): Promise<RigaInChiaro | null> {
     const supabase = this.supabase();
-    const goalDefs = defs ?? (await this.loadGoalDefs());
-    // Defensive: the `people` column ships with migration 005. If it hasn't
-    // been applied yet, the full select errors — fall back to the base columns
-    // so entries still load (Social pills just stay empty).
     const full = await supabase
       .from("entries")
       .select(ENTRY_COLS_FULL)
-      .eq("entry_date", dateISO)
+      .eq("entry_date", giorno)
       .maybeSingle();
     let row = full.data as Record<string, unknown> | null;
     if (full.error) {
       const base = await supabase
         .from("entries")
         .select(ENTRY_COLS_BASE)
-        .eq("entry_date", dateISO)
+        .eq("entry_date", giorno)
         .maybeSingle();
       if (base.error) return null;
       row = base.data as Record<string, unknown> | null;
     }
     if (!row) return null;
-    return rowToEntry(row, goalDefs);
+    const facts = await this.leggiFattiInChiaro(giorno, giorno);
+    return { id: row.id as string, contenuto: this.rowToContenuto(row, facts) };
+  }
+
+  private async leggiRigheInChiaroTra(da: string, a: string): Promise<Map<string, RigaInChiaro>> {
+    const supabase = this.supabase();
+    const full = await supabase
+      .from("entries")
+      .select(ENTRY_COLS_FULL)
+      .gte("entry_date", da)
+      .lte("entry_date", a)
+      .order("entry_date", { ascending: false });
+    let rows = full.data as Record<string, unknown>[] | null;
+    if (full.error) {
+      const base = await supabase
+        .from("entries")
+        .select(ENTRY_COLS_BASE)
+        .gte("entry_date", da)
+        .lte("entry_date", a)
+        .order("entry_date", { ascending: false });
+      if (base.error || !base.data) return new Map();
+      rows = base.data as Record<string, unknown>[];
+    }
+    const out = new Map<string, RigaInChiaro>();
+    if (!rows || rows.length === 0) return out;
+    const fatti = await this.leggiFattiInChiaro(da, a);
+    const perGiorno = new Map<string, Fact[]>();
+    for (const f of fatti) {
+      const l = perGiorno.get(f.entryDate) ?? [];
+      l.push(f);
+      perGiorno.set(f.entryDate, l);
+    }
+    for (const r of rows) {
+      const g = r.entry_date as string;
+      out.set(g, { id: r.id as string, contenuto: this.rowToContenuto(r, perGiorno.get(g) ?? []) });
+    }
+    return out;
+  }
+
+  private async leggiFattiInChiaro(da: string, a: string): Promise<Fact[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("*")
+      .eq("user_id", userId)
+      .gte("entry_date", da)
+      .lte("entry_date", a)
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+  }
+
+  private async cancellaRigaInChiaro(giorno: string): Promise<void> {
+    const userId = await this.userId();
+    const supabase = this.supabase();
+    await supabase.from("facts").delete().eq("user_id", userId).eq("entry_date", giorno);
+    const { error } = await supabase
+      .from("entries")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", giorno);
+    if (error) throw new Error(error.message);
+  }
+
+  private contenutoToEntry(giorno: string, c: Contenuto, goalDefs: GoalDef[]): Entry {
+    return {
+      id: `c:${giorno}`,
+      entryDate: giorno,
+      transcript: c.transcript,
+      durationSeconds: c.durationSeconds,
+      headline: c.headline,
+      snippet: c.snippet,
+      areas: c.areas,
+      metrics: c.metrics,
+      goals: buildGoals(goalDefs, c.goalsOn),
+      people: c.people,
+      headlineLocked: c.headlineLocked,
+      createdAt: c.createdAt,
+    };
+  }
+
+  /** Quante giornate sono chiuse e quante ancora in chiaro (Impostazioni > Cassaforte). */
+  async contaGiornate(): Promise<{ chiuse: number; inChiaro: number }> {
+    return this.cassettine.conta();
+  }
+
+  /**
+   * Il passaggio esplicito nella cassaforte (R12): prima le giornate in
+   * chiaro (una cassettina ciascuna), poi le righe in chiaro delle altre
+   * tabelle (memo, recap, domande, soprannomi, esclusioni), che ricevono la
+   * loro busta. Ogni riga e o di qua o di la, mai a meta: se si interrompe,
+   * si riprende da dove era.
+   */
+  async portaNellaCassaforte(avanza?: (fatte: number, totale: number) => void): Promise<number> {
+    const giornate = await this.cassettine.portaTutteNellaCassaforte(avanza);
+    await this.portaRigheNellaCassaforte();
+    return giornate;
+  }
+
+  /** Quante righe (oltre alle giornate) sono ancora in chiaro. */
+  async contaRigheInChiaro(): Promise<number> {
+    const sb = this.supabase();
+    const tabelle = ["remembers", "recaps", "open_questions", "fact_aliases", "day_exclusions"];
+    let n = 0;
+    for (const t of tabelle) {
+      const { count } = await sb.from(t).select("id", { count: "exact", head: true }).is("busta", null);
+      n += count ?? 0;
+    }
+    return n;
+  }
+
+  private async portaRigheNellaCassaforte(): Promise<void> {
+    const userId = await this.userId();
+    const sb = this.supabase();
+
+    const memo = await sb.from("remembers").select("id, text").eq("user_id", userId).is("busta", null);
+    for (const r of (memo.data ?? []) as { id: string; text: string }[]) {
+      await sb
+        .from("remembers")
+        .update({ text: "", busta: await chiudiRiga({ text: r.text ?? "" }) })
+        .eq("user_id", userId)
+        .eq("id", r.id);
+    }
+
+    const recaps = await sb.from("recaps").select("id, title, snippet, body").eq("user_id", userId).is("busta", null);
+    for (const r of (recaps.data ?? []) as { id: string; title: string; snippet: string; body: string }[]) {
+      await sb
+        .from("recaps")
+        .update({
+          title: "",
+          snippet: "",
+          body: "",
+          busta: await chiudiRiga({ title: r.title ?? "", snippet: r.snippet ?? "", body: r.body ?? "" }),
+        })
+        .eq("user_id", userId)
+        .eq("id", r.id);
+    }
+
+    const domande = await sb.from("open_questions").select("*").eq("user_id", userId).is("busta", null);
+    for (const r of (domande.data ?? []) as Record<string, unknown>[]) {
+      const dentro: Record<string, unknown> = {
+        soggetto: r.soggetto ?? "",
+        citazione: r.citazione ?? "",
+        testo: r.testo ?? "",
+        perche: r.perche ?? "",
+        opzioni: Array.isArray(r.opzioni) ? r.opzioni : [],
+      };
+      if (typeof r.risposta === "string") dentro.risposta = r.risposta;
+      await sb
+        .from("open_questions")
+        .update({
+          soggetto: "",
+          soggetto_key: await improntaDi(String(r.soggetto_key ?? "")),
+          citazione: "",
+          testo: "",
+          perche: "",
+          opzioni: [],
+          risposta: typeof r.risposta === "string" ? "nella-busta" : null,
+          busta: await chiudiRiga(dentro),
+        })
+        .eq("user_id", userId)
+        .eq("id", r.id);
+    }
+
+    const alias = await sb.from("fact_aliases").select("kind, alias, label_key").eq("user_id", userId).is("busta", null);
+    for (const r of (alias.data ?? []) as { kind: string; alias: string; label_key: string }[]) {
+      await sb
+        .from("fact_aliases")
+        .update({
+          alias: await improntaDi(r.alias),
+          label_key: "",
+          busta: await chiudiRiga({ alias: r.alias, labelKeys: dividiNomi(r.label_key ?? "") }),
+        })
+        .eq("user_id", userId)
+        .eq("kind", r.kind)
+        .eq("alias", r.alias);
+    }
+
+    const escl = await sb.from("day_exclusions").select("entry_date, kind, label_key").eq("user_id", userId).is("busta", null);
+    for (const r of (escl.data ?? []) as { entry_date: string; kind: string; label_key: string }[]) {
+      await sb
+        .from("day_exclusions")
+        .update({
+          label_key: await improntaDi(r.label_key),
+          busta: await chiudiRiga({ labelKey: r.label_key }),
+        })
+        .eq("user_id", userId)
+        .eq("entry_date", r.entry_date)
+        .eq("kind", r.kind)
+        .eq("label_key", r.label_key);
+    }
+  }
+
+  /** Dopo un conflitto: scrive la versione che la persona ha scelto. */
+  async scriviVersioneScelta(giorno: string, contenuto: Contenuto): Promise<Entry> {
+    const c = await this.cassettine.sovrascrivi(giorno, contenuto);
+    return this.contenutoToEntry(giorno, c, await this.loadGoalDefs());
+  }
+
+  /* ----------------- entries ----------------- */
+
+  private async loadEntryRow(dateISO: string, defs?: GoalDef[]): Promise<Entry | null> {
+    const goalDefs = defs ?? (await this.loadGoalDefs());
+    const c = await this.cassettine.leggi(dateISO);
+    return c ? this.contenutoToEntry(dateISO, c, goalDefs) : null;
   }
 
   async loadTodayEntry(): Promise<Entry | null> {
@@ -237,42 +454,30 @@ export class CloudStore implements JournalStore {
   }
 
   async loadMonthEntries(year: number, month: number): Promise<Entry[]> {
-    const supabase = this.supabase();
     const m = String(month).padStart(2, "0");
     const lastDay = new Date(year, month, 0).getDate();
     const start = `${year}-${m}-01`;
     const end = `${year}-${m}-${String(lastDay).padStart(2, "0")}`;
     const goalDefs = await this.loadGoalDefs();
-    // Month rows don't render people, so we skip that column here (also keeps
-    // this query working regardless of migration 005 state).
-    const { data, error } = await supabase
-      .from("entries")
-      .select(ENTRY_COLS_BASE)
-      .gte("entry_date", start)
-      .lte("entry_date", end)
-      .order("entry_date", { ascending: false });
-    if (error || !data) return [];
-    return data.map((d) => ({
-      ...rowToEntry(d as Record<string, unknown>, goalDefs),
-      people: [],
-    }));
+    const tra = await this.cassettine.leggiTra(start, end);
+    return [...tra.entries()].map(([g, c]) => this.contenutoToEntry(g, c, goalDefs));
   }
 
   async countEntries(): Promise<number> {
-    const { count } = await this.supabase()
-      .from("entries")
-      .select("id", { count: "exact", head: true });
-    return count ?? 0;
+    const { chiuse, inChiaro } = await this.cassettine.conta();
+    return chiuse + inChiaro;
   }
 
   async deleteEntry(dateISO: string): Promise<void> {
-    const userId = await this.userId();
-    const { error } = await this.supabase()
-      .from("entries")
-      .delete()
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    if (error) throw new Error(error.message);
+    await this.cassettine.cancella(dateISO);
+  }
+
+  private async modificaGiornata(
+    dateISO: string,
+    fn: (c: Contenuto, esisteva: boolean) => Contenuto,
+  ): Promise<Entry> {
+    const c = await this.cassettine.modifica(dateISO, fn);
+    return this.contenutoToEntry(dateISO, c, await this.loadGoalDefs());
   }
 
   async saveProcessedEntry(
@@ -281,138 +486,69 @@ export class CloudStore implements JournalStore {
     ai: AIFields,
     durationSeconds: number,
   ): Promise<Entry> {
-    const userId = await this.userId();
-    // `people` entra nella riga SOLO se l'analisi lo ha prodotto: assente
-    // vuol dire "non toccare", vedi AIFields in store/types.ts.
-    // Il titolo scritto a mano vince su qualunque rilettura: si guarda
-    // prima se questa giornata lo ha bloccato, e in quel caso non lo si
-    // manda nemmeno. Vedi migration 012.
-    const { data: prima } = await this.supabase()
-      .from("entries")
-      .select("headline_locked")
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .maybeSingle();
-    const bloccato = (prima as { headline_locked?: boolean } | null)
-      ?.headline_locked === true;
-
-    const row: Record<string, unknown> = {
-      user_id: userId,
-      entry_date: dateISO,
+    // `people` entra SOLO se l'analisi lo ha prodotto: assente vuol dire
+    // "non toccare" (AIFields in store/types.ts). Il titolo scritto a mano
+    // vince su qualunque rilettura (migration 012, ora dentro la busta).
+    const e = await this.modificaGiornata(dateISO, (c) => ({
+      ...c,
       transcript,
       snippet: ai.snippet,
       areas: ai.areas,
-    };
-    if (!bloccato) row.headline = ai.headline;
-    if (ai.people) row.people = ai.people;
-    const { error } = await this.supabase()
-      .from("entries")
-      .upsert(row, { onConflict: "user_id,entry_date" });
-    if (error) {
-      throw new Error(error.message ?? "Failed to save entry");
-    }
-    // Reload so the returned entry is fully hydrated (metrics, goals from the
-    // live definitions, people) instead of stubbed.
-    const reloaded = await this.loadEntryRow(dateISO);
-    if (reloaded) return { ...reloaded, durationSeconds };
-    return blankEntryShell(dateISO);
+      headline: c.headlineLocked ? c.headline : ai.headline,
+      people: ai.people ?? c.people,
+      durationSeconds: durationSeconds || c.durationSeconds,
+    }));
+    return { ...e, durationSeconds };
   }
 
   async saveHeadline(dateISO: string, headline: string): Promise<Entry> {
-    const userId = await this.userId();
-    const { error } = await this.supabase()
-      .from("entries")
-      .update({ headline: headline.trim(), headline_locked: true })
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    if (error) throw new Error(error.message);
-    const reloaded = await this.loadEntryRow(dateISO);
-    return reloaded ?? blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (c) => ({
+      ...c,
+      headline: headline.trim(),
+      headlineLocked: true,
+    }));
   }
 
   async saveAreas(dateISO: string, areas: AreaSummary[]): Promise<Entry> {
-    const userId = await this.userId();
-    const { error } = await this.supabase()
-      .from("entries")
-      .update({ areas })
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    if (error) throw new Error(error.message);
-    const reloaded = await this.loadEntryRow(dateISO);
-    return reloaded ?? blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (c) => ({ ...c, areas }));
   }
 
   async updateEntryTranscript(dateISO: string, text: string): Promise<Entry> {
     // NOTA (spec §2.2): la ri-elaborazione AI del transcript modificato NON
-    // sta qui — la fa l'azione reprocessEntryTranscript (src/lib/actions),
-    // che chiama /api/process-entry e poi saveProcessedEntry. Questo metodo
-    // salva e basta, preservando i campi AI esistenti: e cio che potra fare
-    // anche LocalStore senza toccare la rete.
-    const existing = await this.loadEntryRow(dateISO);
-    return this.saveProcessedEntry(
-      dateISO,
-      text,
-      {
-        headline: existing?.headline ?? "",
-        snippet: existing?.snippet ?? "",
-        areas: existing?.areas ?? [],
-      },
-      0,
-    );
+    // sta qui — la fa l'azione reprocessEntryTranscript (src/lib/actions).
+    // Questo metodo salva e basta, preservando i campi AI esistenti.
+    return this.modificaGiornata(dateISO, (c) => ({ ...c, transcript: text }));
   }
 
-  async updateMetric(
-    dateISO: string,
-    patch: Partial<EntryMetrics>,
-  ): Promise<Entry> {
-    const userId = await this.userId();
-    const dbPatch: Record<string, unknown> = {};
-    if (Object.prototype.hasOwnProperty.call(patch, "weightKg")) {
-      dbPatch.weight_kg = patch.weightKg;
-    }
-    if (Object.prototype.hasOwnProperty.call(patch, "sleepHours")) {
-      dbPatch.sleep_hours = patch.sleepHours;
-    }
-    if (Object.prototype.hasOwnProperty.call(patch, "mood")) {
-      dbPatch.mood = patch.mood;
-    }
-    const { error } = await this.supabase()
-      .from("entries")
-      .upsert(
-        { user_id: userId, entry_date: dateISO, ...dbPatch },
-        { onConflict: "user_id,entry_date" },
-      );
-    if (error) throw new Error(error.message);
-    return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+  async updateMetric(dateISO: string, patch: Partial<EntryMetrics>): Promise<Entry> {
+    return this.modificaGiornata(dateISO, (c) => ({
+      ...c,
+      metrics: {
+        weightKg: Object.prototype.hasOwnProperty.call(patch, "weightKg")
+          ? (patch.weightKg ?? null)
+          : c.metrics.weightKg,
+        sleepHours: Object.prototype.hasOwnProperty.call(patch, "sleepHours")
+          ? (patch.sleepHours ?? null)
+          : c.metrics.sleepHours,
+        mood: Object.prototype.hasOwnProperty.call(patch, "mood")
+          ? (patch.mood ?? null)
+          : c.metrics.mood,
+      },
+    }));
   }
 
   async toggleGoal(dateISO: string, label: string): Promise<Entry> {
-    const userId = await this.userId();
-    const { data: existingRow } = await this.supabase()
-      .from("entries")
-      .select("goals_on")
-      .eq("entry_date", dateISO)
-      .maybeSingle();
-
-    const current = parseStringArray(existingRow?.goals_on);
-    const norm = label.toLowerCase();
-    const has = current.some((x) => x.toLowerCase() === norm);
-    const next = has
-      ? current.filter((x) => x.toLowerCase() !== norm)
-      : [...current, label];
-
-    const { error } = await this.supabase()
-      .from("entries")
-      .upsert(
-        { user_id: userId, entry_date: dateISO, goals_on: next },
-        { onConflict: "user_id,entry_date" },
-      );
-    if (error) throw new Error(error.message);
-    return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (c) => {
+      const norm = label.toLowerCase();
+      const has = c.goalsOn.some((x) => x.toLowerCase() === norm);
+      return {
+        ...c,
+        goalsOn: has ? c.goalsOn.filter((x) => x.toLowerCase() !== norm) : [...c.goalsOn, label],
+      };
+    });
   }
 
   async saveEntryPeople(dateISO: string, people: string[]): Promise<Entry> {
-    const userId = await this.userId();
     // Normalize: trim, drop empty, dedupe (case-insensitive, keep first casing).
     const seen = new Set<string>();
     const clean: string[] = [];
@@ -424,20 +560,13 @@ export class CloudStore implements JournalStore {
       seen.add(k);
       clean.push(t);
     }
-    // UPDATE only — never create a blank row here (BUG1).
-    const { error } = await this.supabase()
-      .from("entries")
-      .update({ people: clean })
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    // Tolerate a missing `people` column (migration 005 not yet applied).
-    if (error && !/people/i.test(error.message)) {
-      throw new Error(error.message);
-    }
-    return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+    // Solo su una giornata che esiste: mai creare una riga vuota qui (BUG1).
+    const c = await this.cassettine.leggi(dateISO);
+    if (!c) return blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (cc) => ({ ...cc, people: clean }));
   }
 
-  /* ----------------- fatti (SPEC-fatti §3) ----------------- */
+  /* ----------------- fatti (SPEC-fatti §3): dentro la busta ----------------- */
 
   private factRow(r: Record<string, unknown>): Fact {
     return {
@@ -456,47 +585,17 @@ export class CloudStore implements JournalStore {
   }
 
   async replaceAiFacts(dateISO: string, facts: NewFact[]): Promise<Fact[]> {
-    const userId = await this.userId();
-    const supabase = this.supabase();
-
-    // Prima si cancellano SOLO i fatti letti dall'AI per quel giorno: quelli
+    // Si sostituiscono SOLO i fatti letti dall'AI per quel giorno: quelli
     // scritti a mano restano, sempre.
-    const { error: delError } = await supabase
-      .from("facts")
-      .delete()
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .eq("origin", "ai");
-    if (delError) throw new Error(delError.message);
-
-    if (facts.length === 0) return this.loadFactsForDate(dateISO);
-
-    // entry_id: se la giornata esiste, i fatti spariscono con lei.
-    const { data: entryRow } = await supabase
-      .from("entries")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .maybeSingle();
-    const entryId = (entryRow as { id?: string } | null)?.id ?? null;
-
-    const { error } = await supabase.from("facts").insert(
-      facts.map((f) => ({
-        user_id: userId,
-        entry_id: entryId,
-        entry_date: dateISO,
-        kind: f.kind,
-        label: f.label,
-        label_key: f.labelKey,
-        attrs: f.attrs ?? {},
-        confidence: f.confidence,
-        origin: f.origin ?? "ai",
-      })),
-    );
-    if (error) throw new Error(error.message);
-    return this.loadFactsForDate(dateISO);
+    const c = await this.cassettine.modifica(dateISO, (cc) => ({
+      ...cc,
+      facts: [
+        ...cc.facts.filter((f) => f.origin === "manual"),
+        ...facts.map((f) => Cassettine.fatto(dateISO, f)),
+      ],
+    }));
+    return c.facts.map((f) => ({ ...f, entryDate: dateISO }));
   }
-
   async loadAliases(): Promise<Alias[]> {
     const userId = await this.userId();
     const { data, error } = await this.supabase()
@@ -508,11 +607,18 @@ export class CloudStore implements JournalStore {
     if (error || !data) return [];
     // Una casella sola puo contenere piu nomi (vedi dividiNomi): le righe
     // scritte prima del 31 agosto 2026 ne hanno uno e si leggono uguale.
-    return (data as Record<string, unknown>[]).map((r) => ({
-      kind: String(r.kind) as Alias["kind"],
-      alias: String(r.alias),
-      labelKeys: dividiNomi(String(r.label_key)),
-    }));
+    // Le righe nuove hanno tutto nella busta e l'impronta al posto
+    // dell'alias (buste.ts); quelle vecchie si leggono dalle colonne.
+    const out: Alias[] = [];
+    for (const r of data as Record<string, unknown>[]) {
+      const dentro = await apriRiga<{ alias: string; labelKeys: string[] }>(r.busta).catch(() => null);
+      out.push({
+        kind: String(r.kind) as Alias["kind"],
+        alias: dentro ? dentro.alias : String(r.alias),
+        labelKeys: dentro ? dentro.labelKeys : dividiNomi(String(r.label_key)),
+      });
+    }
+    return out;
   }
 
   async saveAlias(alias: Alias): Promise<Alias[]> {
@@ -523,12 +629,21 @@ export class CloudStore implements JournalStore {
         {
           user_id: userId,
           kind: alias.kind,
-          alias: alias.alias,
-          label_key: uniscoNomi(alias.labelKeys),
+          alias: await improntaDi(alias.alias),
+          label_key: "",
+          busta: await chiudiRiga({ alias: alias.alias, labelKeys: alias.labelKeys }),
         },
         { onConflict: "user_id,kind,alias" },
       );
     if (error) throw new Error(error.message);
+    // Se la stessa riga esisteva in chiaro (prima della cassaforte) ora e
+    // un doppione: via.
+    await this.supabase()
+      .from("fact_aliases")
+      .delete()
+      .eq("user_id", userId)
+      .eq("kind", alias.kind)
+      .eq("alias", alias.alias);
     return this.loadAliases();
   }
 
@@ -542,11 +657,16 @@ export class CloudStore implements JournalStore {
     // Se la lettura fallisce si mostra tutto: e meglio rivedere una persona
     // che avevi tolto, che una giornata che non si apre.
     if (error || !data) return [];
-    return (data as Record<string, unknown>[]).map((r) => ({
-      entryDate: String(r.entry_date),
-      kind: String(r.kind) as DayExclusion["kind"],
-      labelKey: String(r.label_key),
-    }));
+    const out: DayExclusion[] = [];
+    for (const r of data as Record<string, unknown>[]) {
+      const dentro = await apriRiga<{ labelKey: string }>(r.busta).catch(() => null);
+      out.push({
+        entryDate: String(r.entry_date),
+        kind: String(r.kind) as DayExclusion["kind"],
+        labelKey: dentro ? dentro.labelKey : String(r.label_key),
+      });
+    }
+    return out;
   }
 
   async addExclusion(e: DayExclusion): Promise<void> {
@@ -558,7 +678,8 @@ export class CloudStore implements JournalStore {
           user_id: userId,
           entry_date: e.entryDate,
           kind: e.kind,
-          label_key: e.labelKey,
+          label_key: await improntaDi(e.labelKey),
+          busta: await chiudiRiga({ labelKey: e.labelKey }),
         },
         { onConflict: "user_id,entry_date,kind,label_key" },
       );
@@ -573,7 +694,8 @@ export class CloudStore implements JournalStore {
       .eq("user_id", userId)
       .eq("entry_date", e.entryDate)
       .eq("kind", e.kind)
-      .eq("label_key", e.labelKey);
+      // sia la riga nuova (impronta) sia una eventuale riga vecchia (in chiaro)
+      .in("label_key", [await improntaDi(e.labelKey), e.labelKey]);
     if (error) throw new Error(error.message);
   }
 
@@ -589,7 +711,16 @@ export class CloudStore implements JournalStore {
       .order("entry_date", { ascending: false })
       .order("created_at", { ascending: true });
     if (error || !data) return [];
-    return (data as Record<string, unknown>[]).map((r) => domandaRow(r));
+    const out: Domanda[] = [];
+    for (const r of data as Record<string, unknown>[]) out.push(await this.domandaAperta(r));
+    return out;
+  }
+
+  /** Una domanda dalla riga: dalla busta se c'e, altrimenti dalle colonne. */
+  private async domandaAperta(r: Record<string, unknown>): Promise<Domanda> {
+    const dentro = await apriRiga<Partial<Domanda> & { risposta?: string | null }>(r.busta).catch(() => null);
+    if (!dentro) return domandaRow(r);
+    return domandaRow({ ...r, ...dentro, opzioni: dentro.opzioni ?? [] });
   }
 
   async saveOpenQuestions(dateISO: string, domande: Domanda[]): Promise<void> {
@@ -615,27 +746,40 @@ export class CloudStore implements JournalStore {
       .eq("user_id", userId)
       .eq("entry_date", dateISO)
       .not("risposta", "is", null);
+    // Le righe decise portano l'impronta (nuove) o la chiave in chiaro
+    // (vecchie): si confrontano tutte e due.
     const giaDeciso = new Set(
       ((decise as Record<string, unknown>[]) ?? []).map(
         (r) => `${r.azione}|${r.soggetto_key}`,
       ),
     );
 
-    const righe = domande
-      .filter((d) => !giaDeciso.has(`${d.azione}|${chiaveAlias(d.soggetto)}`))
-      .map((d) => ({
+    const righe: Record<string, unknown>[] = [];
+    for (const d of domande) {
+      const chiara = chiaveAlias(d.soggetto);
+      const impr = await improntaDi(chiara);
+      if (giaDeciso.has(`${d.azione}|${chiara}`) || giaDeciso.has(`${d.azione}|${impr}`)) continue;
+      righe.push({
         user_id: userId,
         entry_date: dateISO,
         specie: d.specie,
         azione: d.azione,
-        soggetto: d.soggetto,
-        soggetto_key: chiaveAlias(d.soggetto),
-        citazione: d.citazione,
-        testo: d.testo,
-        perche: d.perche,
-        opzioni: d.opzioni,
+        soggetto: "",
+        soggetto_key: impr,
+        citazione: "",
+        testo: "",
+        perche: "",
+        opzioni: [],
         libero: d.libero,
-      }));
+        busta: await chiudiRiga({
+          soggetto: d.soggetto,
+          citazione: d.citazione,
+          testo: d.testo,
+          perche: d.perche,
+          opzioni: d.opzioni,
+        }),
+      });
+    }
     if (righe.length === 0) return;
 
     const { error } = await supabase
@@ -646,14 +790,28 @@ export class CloudStore implements JournalStore {
 
   async answerQuestion(id: string, risposta: string | null): Promise<void> {
     const userId = await this.userId();
-    const { error } = await this.supabase()
+    const supabase = this.supabase();
+    // La risposta e contenuto: va nella busta. La colonna `risposta` resta
+    // solo come marcatore "e stata risposta" (i filtri is null / not null
+    // continuano a funzionare senza leggere niente).
+    const { data: riga } = await supabase
       .from("open_questions")
-      .update({
-        // Una domanda saltata resta aperta: "non adesso" non e "mai piu".
-        // Solo "non saprei" e una risposta, e si scrive come tale.
-        risposta: risposta ?? "non-saprei",
-        answered_at: new Date().toISOString(),
-      })
+      .select("busta")
+      .eq("user_id", userId)
+      .eq("id", id)
+      .maybeSingle();
+    const dentro = (await apriRiga<Record<string, unknown>>((riga as { busta?: unknown } | null)?.busta).catch(() => null)) ?? {};
+    // Una domanda saltata resta aperta: "non adesso" non e "mai piu".
+    // Solo "non saprei" e una risposta, e si scrive come tale.
+    const vera = risposta ?? "non-saprei";
+    const patch: Record<string, unknown> = {
+      risposta: "nella-busta",
+      answered_at: new Date().toISOString(),
+      busta: await chiudiRiga({ ...dentro, risposta: vera }),
+    };
+    const { error } = await supabase
+      .from("open_questions")
+      .update(patch)
       .eq("user_id", userId)
       .eq("id", id);
     if (error) throw new Error(error.message);
@@ -672,58 +830,43 @@ export class CloudStore implements JournalStore {
   }
 
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {
-    const userId = await this.userId();
-    const { data, error } = await this.supabase()
-      .from("facts")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .order("created_at", { ascending: true });
-    if (error || !data) return [];
-    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+    const c = await this.cassettine.leggi(dateISO);
+    return (c?.facts ?? []).map((f) => ({ ...f, entryDate: dateISO }));
   }
 
   async loadFactsForMonth(year: number, month: number): Promise<Fact[]> {
-    const userId = await this.userId();
-    const from = `${year}-${String(month).padStart(2, "0")}-01`;
-    const to =
-      month === 12
-        ? `${year + 1}-01-01`
-        : `${year}-${String(month + 1).padStart(2, "0")}-01`;
-    const { data, error } = await this.supabase()
-      .from("facts")
-      .select("*")
-      .eq("user_id", userId)
-      .gte("entry_date", from)
-      .lt("entry_date", to)
-      .order("entry_date", { ascending: false });
-    if (error || !data) return [];
-    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+    const m = String(month).padStart(2, "0");
+    const lastDay = new Date(year, month, 0).getDate();
+    const tra = await this.cassettine.leggiTra(
+      `${year}-${m}-01`,
+      `${year}-${m}-${String(lastDay).padStart(2, "0")}`,
+    );
+    const out: Fact[] = [];
+    for (const [g, c] of tra) for (const f of c.facts) out.push({ ...f, entryDate: g });
+    return out;
   }
 
   async loadKnownLabels(limit = 120): Promise<string[]> {
-    const userId = await this.userId();
-    // Le ultime 600 righe bastano: le etichette che uno usa davvero
-    // ricompaiono spesso, e una query di aggregazione qui non vale la pena.
-    const { data, error } = await this.supabase()
-      .from("facts")
-      .select("label_key")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(600);
-    if (error || !data) return [];
+    // Le etichette che uno usa davvero ricompaiono spesso: bastano gli
+    // ultimi tre mesi di giornate (non c'e piu una tabella da interrogare,
+    // i fatti stanno nelle buste).
+    const oggi = todayISO();
+    const da = new Date(oggi);
+    da.setDate(da.getDate() - 92);
+    const tra = await this.cassettine.leggiTra(da.toISOString().slice(0, 10), oggi);
     const conteggio = new Map<string, number>();
-    for (const r of data as { label_key?: string }[]) {
-      const k = (r.label_key ?? "").trim();
-      if (!k) continue;
-      conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+    for (const c of tra.values()) {
+      for (const f of c.facts) {
+        const k = (f.labelKey ?? "").trim();
+        if (!k) continue;
+        conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+      }
     }
     return [...conteggio.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit)
       .map(([k]) => k);
   }
-
   /* ----------------- goals ----------------- */
 
   async loadGoalDefs(): Promise<GoalDef[]> {
@@ -785,21 +928,24 @@ export class CloudStore implements JournalStore {
   async loadRemembers(): Promise<Remember[]> {
     const { data } = await this.supabase()
       .from("remembers")
-      .select("id, text, kind, source, source_entry_id, created_at")
+      .select("id, text, kind, source, source_entry_id, created_at, busta")
       .order("created_at", { ascending: false });
     if (!data) return [];
-    return data
-      .filter((d) => VALID_KINDS.has(d.kind as RememberKind))
-      .map((d) => ({
+    const out: Remember[] = [];
+    for (const d of data.filter((d) => VALID_KINDS.has(d.kind as RememberKind))) {
+      const dentro = await apriRiga<{ text: string }>(d.busta).catch(() => null);
+      out.push({
         id: d.id as string,
-        text: d.text as string,
+        text: dentro ? dentro.text : (d.text as string),
         kind: d.kind as RememberKind,
         source: VALID_SOURCES.has(d.source as RememberSource)
           ? (d.source as RememberSource)
           : "manual",
         sourceEntryId: (d.source_entry_id as string | null) ?? null,
         createdAt: d.created_at as string,
-      }));
+      });
+    }
+    return out;
   }
 
   async addRemember(text: string, kind: RememberKind): Promise<Remember> {
@@ -810,7 +956,8 @@ export class CloudStore implements JournalStore {
       .from("remembers")
       .insert({
         user_id: userId,
-        text: clean,
+        text: "",
+        busta: await chiudiRiga({ text: clean }),
         kind,
         source: "manual",
       })
@@ -846,14 +993,16 @@ export class CloudStore implements JournalStore {
   async loadPersonaNames(): Promise<string[]> {
     const { data } = await this.supabase()
       .from("remembers")
-      .select("text")
+      .select("text, busta")
       .eq("kind", "persona")
       .order("created_at", { ascending: false });
     if (!data) return [];
     const seen = new Set<string>();
     const names: string[] = [];
     for (const d of data) {
-      const t = typeof d.text === "string" ? d.text.trim() : "";
+      const dentro = await apriRiga<{ text: string }>(d.busta).catch(() => null);
+      const grezzo = dentro ? dentro.text : d.text;
+      const t = typeof grezzo === "string" ? grezzo.trim() : "";
       if (!t) continue;
       const k = t.toLowerCase();
       if (seen.has(k)) continue;
@@ -881,13 +1030,19 @@ export class CloudStore implements JournalStore {
       toInsert.push(n);
     }
     if (toInsert.length === 0) return [];
-    const rows = toInsert.map((text) => ({
-      user_id: userId,
-      text,
-      kind: "persona" as const,
-      source: "extracted" as const,
-      source_entry_id: sourceEntryId ?? null,
-    }));
+    const rows: Record<string, unknown>[] = [];
+    for (const text of toInsert) {
+      rows.push({
+        user_id: userId,
+        text: "",
+        busta: await chiudiRiga({ text }),
+        kind: "persona" as const,
+        source: "extracted" as const,
+        // Le giornate sono cassettine senza uuid: il legame alla giornata
+        // d'origine non si scrive piu (era un `on delete set null`).
+        source_entry_id: sourceEntryId && !sourceEntryId.startsWith("c:") ? sourceEntryId : null,
+      });
+    }
     const { error } = await this.supabase().from("remembers").insert(rows);
     if (error) throw new Error(error.message);
     return toInsert;
@@ -899,49 +1054,46 @@ export class CloudStore implements JournalStore {
     const { data } = await this.supabase()
       .from("recaps")
       .select(
-        "id, period_type, period_start, period_end, title, snippet, body, generated_at",
+        "id, period_type, period_start, period_end, title, snippet, body, generated_at, busta",
       )
       .order("period_start", { ascending: false });
     if (!data) return [];
-    return data.map((d) => ({
-      id: d.id as string,
-      periodType: d.period_type as RecapPeriod,
-      periodStart: d.period_start as string,
-      periodEnd: d.period_end as string,
-      title: d.title as string,
-      snippet: d.snippet as string,
-      body: d.body as string,
-      generatedAt: d.generated_at as string,
-    }));
+    const out: Recap[] = [];
+    for (const d of data) {
+      const dentro = await apriRiga<{ title: string; snippet: string; body: string }>(d.busta).catch(() => null);
+      out.push({
+        id: d.id as string,
+        periodType: d.period_type as RecapPeriod,
+        periodStart: d.period_start as string,
+        periodEnd: d.period_end as string,
+        title: dentro ? dentro.title : (d.title as string),
+        snippet: dentro ? dentro.snippet : (d.snippet as string),
+        body: dentro ? dentro.body : (d.body as string),
+        generatedAt: d.generated_at as string,
+      });
+    }
+    return out;
   }
 
   async updateRecap(
     id: string,
     patch: { title?: string; snippet?: string; body?: string },
   ): Promise<Recap> {
-    const dbPatch: Record<string, unknown> = {};
-    if (patch.title !== undefined) dbPatch.title = patch.title;
-    if (patch.snippet !== undefined) dbPatch.snippet = patch.snippet;
-    if (patch.body !== undefined) dbPatch.body = patch.body;
-    const { data, error } = await this.supabase()
-      .from("recaps")
-      .update(dbPatch)
-      .eq("id", id)
-      .select(
-        "id, period_type, period_start, period_end, title, snippet, body, generated_at",
-      )
-      .single();
-    if (error || !data) throw new Error(error?.message ?? "DB error");
-    return {
-      id: data.id as string,
-      periodType: data.period_type as RecapPeriod,
-      periodStart: data.period_start as string,
-      periodEnd: data.period_end as string,
-      title: data.title as string,
-      snippet: data.snippet as string,
-      body: data.body as string,
-      generatedAt: data.generated_at as string,
+    // Si legge la riga (busta o colonne), si applica la modifica, si
+    // riscrive TUTTO nella busta: da qui in poi le colonne restano vuote.
+    const corrente = (await this.loadRecaps()).find((r) => r.id === id);
+    if (!corrente) throw new Error("Recap non trovato");
+    const nuovo = {
+      title: patch.title ?? corrente.title,
+      snippet: patch.snippet ?? corrente.snippet,
+      body: patch.body ?? corrente.body,
     };
+    const { error } = await this.supabase()
+      .from("recaps")
+      .update({ title: "", snippet: "", body: "", busta: await chiudiRiga(nuovo) })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ...corrente, ...nuovo };
   }
 
   async saveRecap(input: {
@@ -961,9 +1113,10 @@ export class CloudStore implements JournalStore {
           period_type: input.periodType,
           period_start: input.periodStart,
           period_end: input.periodEnd,
-          title: input.title,
-          snippet: input.snippet,
-          body: input.body,
+          title: "",
+          snippet: "",
+          body: "",
+          busta: await chiudiRiga({ title: input.title, snippet: input.snippet, body: input.body }),
         },
         { onConflict: "user_id,period_type,period_start" },
       )
@@ -985,25 +1138,10 @@ export class CloudStore implements JournalStore {
   /* ----------------- backup (SPEC-v2 §4) ----------------- */
 
   async loadAllEntries(): Promise<Entry[]> {
-    const supabase = this.supabase();
     const goalDefs = await this.loadGoalDefs();
-    const full = await supabase
-      .from("entries")
-      .select(ENTRY_COLS_FULL)
-      .order("entry_date", { ascending: true });
-    let rows = full.data as Record<string, unknown>[] | null;
-    if (full.error) {
-      const base = await supabase
-        .from("entries")
-        .select(ENTRY_COLS_BASE)
-        .order("entry_date", { ascending: true });
-      if (base.error || !base.data) return [];
-      rows = base.data as Record<string, unknown>[];
-    }
-    if (!rows) return [];
-    return rows.map((r) => rowToEntry(r, goalDefs));
+    const tutte = await this.cassettine.leggiTutte();
+    return [...tutte.entries()].map(([g, c]) => this.contenutoToEntry(g, c, goalDefs));
   }
-
   async exportAll(): Promise<BackupFile> {
     const [entries, goals, remembers, recaps] = await Promise.all([
       this.loadAllEntries(),
@@ -1043,35 +1181,31 @@ export class CloudStore implements JournalStore {
     };
 
     // entries: chiave naturale entryDate; salta se esiste, a meno che
-    // l'esistente sia vuoto. Gli id non si trasportano.
-    const goalDefs = await this.loadGoalDefs();
+    // l'esistente sia vuoto. Gli id non si trasportano. Ogni giornata
+    // importata entra direttamente nella cassaforte.
     for (const e of file.entries ?? []) {
       if (!e?.entryDate) continue;
-      const existing = await this.loadEntryRow(e.entryDate, goalDefs);
+      const existing = await this.cassettine.leggi(e.entryDate);
       if (existing && existing.transcript.trim().length > 0) {
         report.entries.skipped++;
         continue;
       }
-      const payload: Record<string, unknown> = {
-        user_id: userId,
-        entry_date: e.entryDate,
+      await this.cassettine.modifica(e.entryDate, (c) => ({
+        ...c,
         transcript: e.transcript ?? "",
-        headline: e.headline,
-        snippet: e.snippet,
+        headline: e.headline ?? null,
+        snippet: e.snippet ?? null,
         areas: e.areas ?? [],
-        mood: e.metrics?.mood ?? null,
-        weight_kg: e.metrics?.weightKg ?? null,
-        sleep_hours: e.metrics?.sleepHours ?? null,
-        goals_on: (e.goals ?? []).filter((g) => g.on).map((g) => g.label),
-      };
-      const { error } = await supabase
-        .from("entries")
-        .upsert(payload, { onConflict: "user_id,entry_date" });
-      if (error) throw new Error(error.message);
-      // people a parte, con la tolleranza sulla colonna mancante
-      if (e.people && e.people.length > 0) {
-        await this.saveEntryPeople(e.entryDate, e.people);
-      }
+        metrics: {
+          weightKg: e.metrics?.weightKg ?? null,
+          sleepHours: e.metrics?.sleepHours ?? null,
+          mood: e.metrics?.mood ?? null,
+        },
+        goalsOn: (e.goals ?? []).filter((g) => g.on).map((g) => g.label),
+        people: e.people ?? [],
+        headlineLocked: e.headlineLocked === true,
+        createdAt: e.createdAt ?? c.createdAt,
+      }));
       report.entries.added++;
     }
 

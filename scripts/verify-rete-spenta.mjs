@@ -27,6 +27,7 @@
 // Serve un dev server su :3100 con quelle env. Lancio:
 //   node scripts/verify-rete-spenta.mjs
 import { chromium } from "playwright-core";
+import { SupabaseFinto, sessioneFinta } from "./lib/supabase-finto.mjs";
 import { readFileSync, writeFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -46,18 +47,6 @@ function check(name, ok, extra = "") {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "  -- " + extra : ""}`);
 }
 
-function jwtFinto(exp) {
-  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
-  return `${b64({ alg: "HS256", typ: "JWT" })}.${b64({
-    sub: "00000000-0000-4000-8000-000000000001",
-    aud: "authenticated",
-    role: "authenticated",
-    email: "banco@dayalogue.test",
-    session_id: "banco",
-    exp,
-  })}.firma-finta`;
-}
-
 const browser = await chromium.launch({
   executablePath: EXE,
   args: ["--no-sandbox", "--autoplay-policy=no-user-gesture-required"],
@@ -69,23 +58,10 @@ async function pagina() {
     locale: "it-IT",
     permissions: ["microphone"],
   });
-  const exp = Math.floor(Date.now() / 1000) + 6 * 3600;
-  const sessione = {
-    access_token: jwtFinto(exp),
-    refresh_token: "refresh-finto",
-    token_type: "bearer",
-    expires_in: 6 * 3600,
-    expires_at: exp,
-    user: {
-      id: "00000000-0000-4000-8000-000000000001",
-      aud: "authenticated",
-      role: "authenticated",
-      email: "banco@dayalogue.test",
-      app_metadata: {},
-      user_metadata: {},
-      created_at: "2026-01-01T00:00:00Z",
-    },
-  };
+  const sessione = sessioneFinta();
+  // Un Supabase finto risponde a tutto il resto (cassaforte compresa: dal 3
+  // settembre 2026 in cloud si passa dal cancello delle otto parole).
+  const finto = new SupabaseFinto();
   // Il microfono: nel sandbox non c'e nessun dispositivo audio (nemmeno
   // quello finto di Chromium), quindi getUserMedia restituisce un flusso
   // sintetico di Web Audio (un oscillatore). MediaRecorder lo registra come
@@ -113,31 +89,17 @@ async function pagina() {
     } catch {}
   }, sessione);
 
-  // Il buco nero, mirato: le letture che servono a DISEGNARE la schermata
-  // (giornata, obiettivi, chi sono) rispondono vuote e subito, cosi si
-  // arriva al microfono; la lettura del glossario (remembers) e tutto il
-  // resto partono e non tornano MAI. E la forma esatta del difetto del 3
-  // settembre: la schermata c'era, la trascrizione no.
+  // Il buco nero, mirato: la lettura del glossario (remembers) parte e non
+  // torna MAI; tutto il resto risponde (finto). E la forma esatta del
+  // difetto del 3 settembre: la schermata c'era, la trascrizione no.
   const trattenute = [];
   await ctx.route(`**/${SB_HOST}/**`, (route) => {
     const u = route.request().url();
-    if (u.includes("/auth/v1/user")) {
-      return route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(sessione.user),
-      });
+    if (u.includes("/rest/v1/remembers")) {
+      trattenute.push(u);
+      return; // nessun fulfill, nessun abort: la richiesta resta appesa
     }
-    if (u.includes("/rest/v1/") && !u.includes("/rest/v1/remembers")) {
-      return route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        headers: { "content-range": "0-0/0" },
-        body: "[]",
-      });
-    }
-    trattenute.push(u);
-    // nessun fulfill, nessun abort: la richiesta resta appesa
+    return finto.gestisci(route);
   });
   // La trascrizione: la rete assente la fa cadere (e la sua chiamata ha
   // gia un tetto suo: qui si prova cio che le sta DAVANTI).
@@ -157,6 +119,9 @@ async function pagina() {
 {
   const { ctx, page, errors, trattenute, trascrizioni } = await pagina();
   await page.goto(BASE + "/app?record=1", { waitUntil: "domcontentloaded" });
+  // Il cancello della cassaforte (le otto parole, una volta): si passa.
+  await page.locator(".jm-login-cassa-check input").check({ timeout: 30_000 });
+  await page.locator("button.btn-primary").click();
   const ptt = page.locator(".rec-ptt");
   await ptt.waitFor({ state: "visible", timeout: 20_000 });
   check("registrazione: l'ascolto si apre in modalita cloud finta", true);

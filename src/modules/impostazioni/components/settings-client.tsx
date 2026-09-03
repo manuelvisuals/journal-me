@@ -37,7 +37,9 @@ import {
   TextSizePanel,
   ThemePanel,
   WherePanel,
+  CassafortePanel,
 } from "@/modules/impostazioni/components/panels";
+import { contaCassaforte } from "@/lib/data/cassaforte";
 import { BackupBanner } from "@/modules/impostazioni/components/data-section";
 import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
@@ -92,7 +94,7 @@ type Props = {
 
 type Panel =
   | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi"
-  | "moduli" | "nome";
+  | "moduli" | "nome" | "cassaforte";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -103,6 +105,7 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   consumi: "Consumi AI",
   moduli: "Moduli",
   nome: "Il tuo nome",
+  cassaforte: "Cassaforte",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -153,6 +156,30 @@ export function SettingsClient({
   const faceIdOn = useFaceIdAttivo();
   const [faceIdRow, setFaceIdRow] = useState<boolean>(false);
   const [faceIdBusy, setFaceIdBusy] = useState<boolean>(false);
+
+  // La riga Cassaforte dice lo stato vero: quante giornate (e righe) sono
+  // ancora in chiaro sul server, o "tutto chiuso a chiave" (SPEC R12).
+  const [cassaforteValore, setCassaforteValore] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (isLocal || storageMode === "resolving") return;
+    let alive = true;
+    void contaCassaforte()
+      .then((s) => {
+        if (!alive) return;
+        const n = s.inChiaro + s.righeInChiaro;
+        setCassaforteValore(
+          n === 0
+            ? t("Tutto chiuso a chiave")
+            : s.inChiaro > 0
+              ? t("{n} giornate in chiaro", { n: formatNumber(s.inChiaro) })
+              : t("{n} righe in chiaro", { n: formatNumber(n) }),
+        );
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [isLocal, storageMode, t]);
   useEffect(() => {
     if (!isNative()) return;
     let alive = true;
@@ -361,6 +388,7 @@ export function SettingsClient({
         {panel === "language" && <LanguagePanel />}
         {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
+        {panel === "cassaforte" && <CassafortePanel />}
         {panel === "consumi" && <ConsumiPanel />}
         {panel === "moduli" && <ModuliPanel />}
         {panel === "nome" && (
@@ -509,6 +537,14 @@ export function SettingsClient({
                 desc={t("Cosa esce da questo dispositivo, e cosa no.")}
                 onClick={() => setPanel("where")}
               />
+              {!isLocal && (
+                <SetRow
+                  title={t("Cassaforte")}
+                  desc={t("Chiusa a chiave sul dispositivo: nessuno legge il tuo diario, noi compresi.")}
+                  value={cassaforteValore}
+                  onClick={() => setPanel("cassaforte")}
+                />
+              )}
               {faceIdRow && (
                 <SetRow
                   title={t("Face ID")}

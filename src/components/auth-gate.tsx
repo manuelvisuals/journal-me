@@ -1,9 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useStorageMode } from "@/lib/data/store";
 import { ensureEveningReminder } from "@/lib/native/reminders";
+import {
+  ascoltaCassaforte,
+  cancelloDaMostrare,
+  erroreCassaforte,
+  giornateChiuse,
+  passaCancello,
+  risolviCassaforte,
+  segnaModalitaLocale,
+  statoCassaforte,
+} from "@/lib/cassaforte";
+import { CassaforteCancello } from "@/modules/accesso";
 
 type CloudAuth = "unknown" | "in" | "out";
 
@@ -43,6 +54,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const mode = useStorageMode();
   const [auth, setAuth] = useState<CloudAuth>("unknown");
+  const [userId, setUserId] = useState<string | null>(null);
+  const cassaforte = useSyncExternalStore(ascoltaCassaforte, statoCassaforte, () => "risolvendo" as const);
+  // Il cancello resta a schermo finche la persona non lo passa: creare la
+  // cassaforte la apre subito, ma le otto parole vanno viste e salvate
+  // PRIMA di entrare (mockup 01: "Ho capito, continua").
+  const cancello = useSyncExternalStore(ascoltaCassaforte, cancelloDaMostrare, () => null);
 
   useEffect(() => {
     // Solo FUORI dalla modalita locale il client Supabase esiste. Anche con
@@ -57,12 +74,16 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       const supabase = createClient();
 
       supabase.auth.getSession().then(({ data }) => {
-        if (alive) setAuth(data.session ? "in" : "out");
+        if (!alive) return;
+        setAuth(data.session ? "in" : "out");
+        setUserId(data.session?.user?.id ?? null);
       });
 
       const { data: sub } = supabase.auth.onAuthStateChange(
         (_event, session) => {
-          if (alive) setAuth(session ? "in" : "out");
+          if (!alive) return;
+          setAuth(session ? "in" : "out");
+          setUserId(session?.user?.id ?? null);
         },
       );
       unsubscribe = () => sub.subscription.unsubscribe();
@@ -76,6 +97,23 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   const publicPath = isPublicPath(pathname);
   const entered = mode === "local" || auth === "in";
+
+  /*
+   * LA CASSAFORTE (SPEC ospite-e-cassaforte R6-R8). Con la sessione cloud
+   * in tasca si guarda se questo dispositivo ha la chiave del diario:
+   * "aperta" -> dentro; "assente" (mai creata) o "chiusa" (creata altrove,
+   * chiave non qui) -> il cancello del modulo accesso, che mostra le otto
+   * parole o le chiede. In locale non c'e niente da chiudere: lo si dice
+   * subito, cosi nessuno aspetta. Le pagine pubbliche (login, privacy)
+   * non hanno bisogno della chiave.
+   */
+  useEffect(() => {
+    if (mode === "local") {
+      segnaModalitaLocale();
+      return;
+    }
+    if (auth === "in" && userId) void risolviCassaforte(userId).catch(() => undefined);
+  }, [mode, auth, userId]);
   const settledOut = mode !== "resolving" && mode !== "local" && auth === "out";
 
   // Ask for the notification permission once inside, never on the login
@@ -108,6 +146,43 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   if (mode === "resolving") return null;
   if (!entered && auth === "unknown" && !publicPath) return null;
   if (settledOut && !publicPath) return null;
+
+  if (mode !== "local" && auth === "in" && userId && !publicPath) {
+    if (cassaforte === "risolvendo") return null;
+    if (cassaforte === "errore") {
+      // Il server della cassaforte non ha risposto (rete, o migration 021
+      // non ancora applicata): si dice, e si riprova. Testo semplice e non
+      // tradotto di proposito: e una schermata da manutenzione.
+      return (
+        <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10 text-center">
+          <p className="text-ink" style={{ maxWidth: "24rem", lineHeight: 1.5 }}>
+            La cassaforte non risponde: {erroreCassaforte()}
+          </p>
+          <button
+            type="button"
+            className="btn-ghost mt-6"
+            style={{ maxWidth: "16rem" }}
+            onClick={() => void risolviCassaforte(userId)}
+          >
+            Riprova
+          </button>
+        </main>
+      );
+    }
+    if (cancello) {
+      return (
+        <CassaforteCancello
+          stato={cancello}
+          userId={userId}
+          giornate={giornateChiuse() ?? undefined}
+          onAperta={() => {
+            passaCancello();
+            void risolviCassaforte(userId);
+          }}
+        />
+      );
+    }
+  }
 
   return <>{children}</>;
 }

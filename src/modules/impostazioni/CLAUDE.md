@@ -108,3 +108,15 @@ nel guscio iOS e solo se la biometria esiste davvero; accenderlo fa una
 prova vera (`provaEAttivaFaceId`) e salva "on" solo se il volto ha aperto.
 Il contratto e in `src/lib/native/face-id.ts` (scheletro): la proposta dopo
 il login vive nel modulo accesso, il lucchetto nello scheletro.
+
+## Impostazioni > Cassaforte (3 settembre 2026, SPEC R12)
+
+Riga "Cassaforte" nel gruppo "I tuoi dati" (solo in cloud) e pannello
+`CassafortePanel` in `panels.tsx` (mockup `codice-di-recupero.html` 04). La
+riga dice lo stato VERO (`contaCassaforte()` in src/lib/data/cassaforte.ts):
+"Tutto chiuso a chiave" oppure quante giornate/righe sono ancora in chiaro.
+Il passaggio e un tasto esplicito ("Chiudi a chiave le N giornate"), mai un
+effetto collaterale di un aggiornamento: legge, chiude, scrive e cancella
+riga per riga. "Vedi il codice di recupero" chiede il volto sul telefono
+(`chiediIlVolto`, scheletro). Classi nuove: `jm-st-cassa-*`. Banco:
+`verify-cassaforte` (sezione R12).
