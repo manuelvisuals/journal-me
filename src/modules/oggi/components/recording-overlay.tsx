@@ -13,6 +13,7 @@ import {
 } from "@/lib/format";
 import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 import { loadPersonaNames } from "@/lib/data/remembers";
+import { conTetto, eTettoScaduto } from "@/lib/tetto";
 import { useT } from "@/lib/i18n";
 import type { DataMode } from "@/lib/data/entries";
 
@@ -97,6 +98,18 @@ type RecState = "connecting" | "recording" | "paused" | "error";
 
 const PRIMER_KEY = "journalme-rec-primer";
 
+/*
+ * I tetti della trascrizione (SPEC ospite-e-cassaforte, R11). Il 3 settembre
+ * 2026, senza rete, l'app e rimasta su "Trascrivo..." per sempre: la
+ * chiamata aveva un tetto di 120 s, ma la lettura del glossario davanti a
+ * lei non ne aveva nessuno. Adesso il cronometro e UNO, parte quando si
+ * preme Fine e copre tutto: il glossario puo prendersene al massimo
+ * GLOSSARIO_TETTO_MS (migliora la trascrizione, non la abilita: se non
+ * arriva si trascrive lo stesso), e alla chiamata resta cio che avanza.
+ */
+const TRASCRIZIONE_TETTO_MS = 120_000;
+const GLOSSARIO_TETTO_MS = 4_000;
+
 /**
  * Records the user's voice to a local clip and transcribes it in one shot when
  * he is done, via `/api/transcribe-fallback` (gpt-4o-transcribe).
@@ -166,6 +179,11 @@ export function RecordingOverlay({
   // why it kept working on the iOS first launch where the WebRTC sender did not.
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  // L'ultimo clip chiuso con Fine. Se la trascrizione fallisce (rete assente,
+  // tempo scaduto) il registratore e gia smontato, ma il racconto e qui:
+  // premere di nuovo Fine riprova con questo, invece di dire "non e arrivato
+  // audio" e buttare via cio che la persona ha detto.
+  const clipRef = useRef<Blob | null>(null);
   // Guards against double-ending if the stop button is tapped twice.
   const endingRef = useRef<boolean>(false);
 
@@ -532,8 +550,15 @@ export function RecordingOverlay({
         ? "ogg"
         : "webm";
     fd.set("audio", blob, `entry.${ext}`);
+    const partenza = Date.now();
     try {
-      const terms = await loadPersonaNames(mode ?? "auth");
+      // Il glossario e un aiuto, non una condizione: pochi secondi e poi si
+      // parte senza. Era QUESTA l'attesa senza fondo del 3 settembre 2026.
+      const terms = await conTetto(
+        loadPersonaNames(mode ?? "auth"),
+        GLOSSARIO_TETTO_MS,
+        "glossario",
+      );
       if (terms.length > 0) fd.set("glossary", terms.join(", "));
     } catch {
       // glossary hint is best-effort
@@ -541,8 +566,10 @@ export function RecordingOverlay({
     try {
       // A long evening story is a big file on a mountain connection; 30s used
       // to be plenty for a rescue clip and is not, for the whole recording.
+      // Il tetto e quello che resta del cronometro unico partito con Fine.
+      const resto = TRASCRIZIONE_TETTO_MS - (Date.now() - partenza);
       const resp = await apiFetch("/api/transcribe-fallback", {
-        timeoutMs: 120_000,
+        timeoutMs: Math.max(1_000, resto),
         method: "POST",
         body: fd,
       });
@@ -560,17 +587,43 @@ export function RecordingOverlay({
       // Una fetch che non parte proprio (CORS, offline, timeout) arrivava qui
       // e usciva identica a un audio silenzioso. Adesso `http` lo dice.
       const e = err as { name?: string; message?: string };
-      httpRef.current = `err:${e?.name ?? "Error"}`;
+      httpRef.current = eTettoScaduto(err)
+        ? "err:tempo-scaduto"
+        : `err:${e?.name ?? "Error"}`;
       dbg(`transcribe threw ${e?.name ?? "Error"} ${e?.message ?? ""}`);
       return "";
     }
+  }
+
+  /**
+   * Cosa dire quando la trascrizione non e riuscita. La persona deve sempre
+   * vedere qualcosa (SPEC R11): cosa e successo e cosa puo fare. Il clip e
+   * conservato (clipRef), quindi "premi di nuovo Fine" e una promessa vera.
+   */
+  function messaggioTrascrizioneFallita(): string {
+    const senzaRete =
+      typeof navigator !== "undefined" && navigator.onLine === false;
+    const perche = senzaRete
+      ? t("Sembra che non ci sia connessione.")
+      : httpRef.current === "err:tempo-scaduto"
+        ? t("La rete non ha risposto in tempo.")
+        : "";
+    return [
+      t("La registrazione c'e, ma non sono riuscito a trascriverla."),
+      perche,
+      t("Il racconto e ancora qui: controlla la connessione e premi di nuovo Fine."),
+    ]
+      .filter(Boolean)
+      .join(" ");
   }
 
   async function handleStop() {
     if (endingRef.current) return; // guard against a double tap
     endingRef.current = true;
     // Close the recording BEFORE tearing the mic down, or the last chunk is lost.
-    const blob = await stopTape();
+    // Se il registratore e gia smontato (Fine premuto dopo un errore di
+    // trascrizione) si riparte dal clip conservato.
+    const blob = (await stopTape()) ?? clipRef.current;
     cleanup();
 
     // Nothing was captured — he tapped Fine without ever holding the button, or
@@ -594,6 +647,7 @@ export function RecordingOverlay({
       return;
     }
 
+    clipRef.current = blob;
     setRecovering(true);
     const text = await transcribeClip(blob);
     setRecovering(false);
@@ -602,12 +656,11 @@ export function RecordingOverlay({
     // giornata vuota senza spiegazioni.
     if (!text && httpRef.current !== "200") {
       endingRef.current = false;
-      setErrorMessage(
-        `${t("La registrazione c'e, ma non sono riuscito a trascriverla.")} [${diagLine()}]`,
-      );
+      setErrorMessage(`${messaggioTrascrizioneFallita()} [${diagLine()}]`);
       setState("error");
       return;
     }
+    clipRef.current = null;
     setState("connecting"); // transient; the parent switches the view away
     onStop(text, seconds, targetDate);
   }

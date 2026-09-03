@@ -11,6 +11,7 @@
  */
 import { getAccessToken } from "@/lib/supabase/client";
 import { getLang } from "@/lib/i18n";
+import { conSegnale } from "@/lib/tetto";
 
 const BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/+$/, "");
 
@@ -38,7 +39,10 @@ export type ApiFetchInit = RequestInit & { timeoutMs?: number };
  *   interfaccia inglese che genera un titolo in italiano e mezza tradotta,
  *   cioe rotta, and
  * - aborts through an AbortController after `timeoutMs`, so no call can hang
- *   silently (HANDOVER §8 C-bis).
+ *   silently (HANDOVER §8 C-bis). Il cronometro parte PRIMA del recupero
+ *   del gettone: fino al 3 settembre 2026 partiva dopo, e un `getSession`
+ *   appeso (rinnovo del gettone senza rete) non era coperto da nessun tetto
+ *   (SPEC ospite-e-cassaforte, R11: il tetto vale sull'intera operazione).
  *
  * No fetch("/api/...") may exist outside this helper. Callers keep their own
  * error handling: apiFetch returns the Response (or throws on abort/network
@@ -54,13 +58,20 @@ export async function apiFetch(
   const { timeoutMs = DEFAULT_TIMEOUT_MS, headers, ...rest } = init;
 
   const merged = new Headers(headers);
-  const token = await getAccessToken();
-  if (token) merged.set("Authorization", `Bearer ${token}`);
-  merged.set("x-jm-lang", getLang());
-
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
+    // Il gettone sta sotto lo stesso cronometro della chiamata: se scade
+    // qui, il chiamante riceve lo stesso AbortError che riceverebbe dalla
+    // fetch.
+    const token = await conSegnale(
+      getAccessToken(),
+      ctrl.signal,
+      "gettone di accesso",
+    );
+    if (token) merged.set("Authorization", `Bearer ${token}`);
+    merged.set("x-jm-lang", getLang());
+
     const resp = await fetch(apiUrl(path), {
       ...rest,
       headers: merged,
