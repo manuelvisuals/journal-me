@@ -306,6 +306,12 @@ struct AppRouter: Router {
 class AppViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(DockVetroPlugin())
+        // La cassaforte (Cassaforte.swift). Il 3 settembre 2026 era stata
+        // aggiunta al progetto ma NON registrata qui: sul telefono la
+        // schermata delle otto parole diceva '"Cassaforte" plugin is not
+        // implemented on ios' e la chiave non finiva nel portachiavi.
+        // Ogni plugin che vive dentro l'app passa da questa riga.
+        bridge?.registerPluginInstance(CassafortePlugin())
     }
 
     override open func router() -> Router {

@@ -7,7 +7,7 @@
  * Tre stati possibili per un utente cloud:
  *
  *  - "assente": sul server non c'e nessuna cassaforte per questo utente. Va
- *    CREATA (semeNuovo -> parole -> prova sul server -> seme nel portachiavi)
+ *    CREATA (semeNuovo -> parole -> seme nel portachiavi -> prova sul server)
  *    e la persona vede le otto parole una volta sola;
  *  - "chiusa": sul server la cassaforte c'e, ma questo dispositivo non ha il
  *    seme (browser nuovo, iCloud spento). Servono le parole;
@@ -199,8 +199,8 @@ export function segnaModalitaLocale(): void {
 }
 
 /**
- * Crea la cassaforte per l'utente: seme nuovo, prova sul server, seme nel
- * portachiavi. Restituisce le otto parole, da mostrare UNA volta.
+ * Crea la cassaforte per l'utente: seme nuovo, seme nel portachiavi, prova
+ * sul server. Restituisce le otto parole, da mostrare UNA volta.
  */
 let creazioneInCorso: { userId: string; promessa: Promise<string[]> } | null = null;
 
@@ -224,10 +224,20 @@ async function creaCassaforteDavvero(userId: string): Promise<string[]> {
   const seme = semeNuovo();
   const ch = await chiaviDaSeme(seme, userId);
   const prova = testoDaBusta(await chiudi(ch.aes, FRASE_DI_PROVA));
+  // PRIMA la chiave al sicuro sul dispositivo, POI la prova sul server.
+  // Il 3 settembre 2026 era al contrario: la prova e stata scritta, il
+  // portachiavi ha fallito (plugin non registrato), e sul server e rimasta
+  // la prova di una chiave che nessun dispositivo aveva: diario chiuso al
+  // primo avvio. Se il portachiavi fallisce, il server non viene toccato e
+  // si puo riprovare; se fallisce il server, il seme appena scritto si
+  // toglie, cosi non resta un seme senza cassaforte.
+  await scriviSeme(userId, seme);
   const sb = await supabase();
   const { error } = await sb.from("cassaforte_utente").insert({ user_id: userId, prova });
-  if (error) throw new Error(error.message);
-  await scriviSeme(userId, seme);
+  if (error) {
+    await cancellaSeme(userId).catch(() => {});
+    throw new Error(error.message);
+  }
   imposta({ stato: "aperta", userId, chiavi: ch, seme });
   return paroleDaSeme(seme);
 }
