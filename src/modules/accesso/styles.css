@@ -465,3 +465,146 @@
   color: var(--color-ink-faint);
   line-height: 1.5;
 }
+
+/* ---------- la cassaforte: le parole e il dispositivo nuovo ----------
+   (SPEC ospite-e-cassaforte R8, mockup codice-di-recupero.html 01-02).
+   Stessa lingua del login: colonna stretta, titolo grande, un pieno e un
+   fantasma. Tutto a token. */
+.jm-login-cassa {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(40px * var(--jm-space)) calc(28px * var(--jm-space));
+}
+.jm-login-cassa-col {
+  width: 100%;
+  max-width: 24rem;
+  display: flex;
+  flex-direction: column;
+  gap: calc(12px * var(--jm-space));
+}
+.jm-login-cassa-sopra {
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+.jm-login-cassa-h1 {
+  font-family: var(--font-serif);
+  font-size: calc(30px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+  color: var(--color-ink);
+}
+.jm-login-cassa-p {
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+.jm-login-cassa-p b { color: var(--color-ink); font-weight: 600; }
+.jm-login-cassa-avviso {
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--color-danger);
+}
+.jm-login-cassa-errore {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-danger);
+}
+.jm-login-cassa-hint {
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-faint);
+}
+.jm-login-cassa-parole {
+  list-style: none;
+  margin: calc(6px * var(--jm-space)) 0 0;
+  padding: calc(16px * var(--jm-space)) calc(14px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(9px * var(--jm-space)) calc(14px * var(--jm-space));
+  /* le otto parole si leggono per colonna: 1-4 a sinistra, 5-8 a destra */
+  grid-auto-flow: column;
+  grid-template-rows: repeat(4, auto);
+}
+.jm-login-cassa-parole li {
+  display: flex;
+  gap: calc(10px * var(--jm-space));
+  align-items: baseline;
+  font-family: var(--font-ibm-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: calc(16px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  /* la parola deve restare selezionabile e leggibile in uno screenshot */
+  user-select: text;
+  -webkit-user-select: text;
+}
+.jm-login-cassa-parole li i {
+  font-style: normal;
+  font-size: calc(11px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  width: 1.2em;
+  text-align: right;
+  flex: none;
+}
+.jm-login-cassa-check {
+  display: flex;
+  gap: calc(12px * var(--jm-space));
+  align-items: center;
+  font-size: calc(15px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  padding: calc(4px * var(--jm-space)) 0;
+  cursor: pointer;
+}
+.jm-login-cassa-check input {
+  width: 24px;
+  height: 24px;
+  accent-color: var(--color-accent);
+  flex: none;
+}
+.jm-login-cassa-campo {
+  width: 100%;
+  min-height: 7.5em;
+  padding: calc(14px * var(--jm-space));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-ibm-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: calc(16px * var(--jm-ui-scale));
+  line-height: 1.7;
+  resize: none;
+  outline: none;
+}
+.jm-login-cassa-campo::placeholder { color: var(--color-ink-faint); }
+.jm-login-cassa-campo:focus { border-color: color-mix(in oklab, var(--color-accent) 55%, var(--color-line)); }
+.jm-login-cassa-strade {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: calc(10px * var(--jm-space));
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+.jm-login-cassa-quiet {
+  background: none;
+  border: 0;
+  padding: calc(8px * var(--jm-space));
+  margin-top: calc(6px * var(--jm-space));
+  color: var(--color-ink-faint);
+  font-size: calc(15px * var(--jm-ui-scale));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  align-self: center;
+}

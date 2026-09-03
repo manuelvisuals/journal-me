@@ -45,6 +45,7 @@ import {
   type StorageMode,
 } from "./types";
 import { t } from "@/lib/i18n";
+import { Cassettine, type Contenuto, type RigaInChiaro } from "./cassettine";
 
 /* ----------------- helpers condivisi (da entries.ts) ----------------- */
 
@@ -138,23 +139,6 @@ const VALID_SOURCES: ReadonlySet<RememberSource> = new Set([
   "extracted",
 ]);
 
-function rowToEntry(row: Record<string, unknown>, goalDefs: GoalDef[]): Entry {
-  return {
-    id: row.id as string,
-    entryDate: row.entry_date as string,
-    transcript: (row.transcript as string) ?? "",
-    durationSeconds: 0,
-    headline: (row.headline as string) ?? null,
-    snippet: (row.snippet as string) ?? null,
-    areas: parseAreasJson(row.areas),
-    metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
-    goals: buildGoals(goalDefs, parseStringArray(row.goals_on)),
-    people: parseStringArray(row.people),
-    headlineLocked: row.headline_locked === true,
-    createdAt: row.created_at as string,
-  };
-}
-
 /* -------------------------------- store -------------------------------- */
 
 export class CloudStore implements JournalStore {
@@ -198,34 +182,164 @@ export class CloudStore implements JournalStore {
     return user.id;
   }
 
-  /* ----------------- entries ----------------- */
+  /* ----------------- giornate: le cassettine ----------------- */
 
-  private async loadEntryRow(
-    dateISO: string,
-    defs?: GoalDef[],
-  ): Promise<Entry | null> {
+  /**
+   * Da qui in giu ogni giornata cloud e una CASSETTINA (store/cassettine.ts):
+   * chiusa a chiave sul dispositivo, versionata dal server. Le righe in
+   * chiaro di `entries` e `facts` restano leggibili finche la persona non
+   * le porta nella cassaforte (R12), e questo store le legge come RIPIEGO.
+   */
+  private readonly cassettine = new Cassettine(
+    () => this.supabase(),
+    () => this.userId(),
+    {
+      leggiInChiaro: (g) => this.leggiRigaInChiaro(g),
+      leggiInChiaroTra: (da, a) => this.leggiRigheInChiaroTra(da, a),
+      cancellaInChiaro: (g) => this.cancellaRigaInChiaro(g),
+    },
+  );
+
+  private rowToContenuto(row: Record<string, unknown>, facts: Fact[]): Contenuto {
+    return {
+      transcript: (row.transcript as string) ?? "",
+      headline: (row.headline as string) ?? null,
+      snippet: (row.snippet as string) ?? null,
+      areas: parseAreasJson(row.areas),
+      people: parseStringArray(row.people),
+      metrics: buildMetrics(row.weight_kg, row.sleep_hours, row.mood),
+      goalsOn: parseStringArray(row.goals_on),
+      headlineLocked: row.headline_locked === true,
+      durationSeconds: 0,
+      facts: facts.map((f) => {
+        const { entryDate: _d, ...resto } = f;
+        return resto;
+      }),
+      createdAt: (row.created_at as string) ?? new Date().toISOString(),
+    };
+  }
+
+  private async leggiRigaInChiaro(giorno: string): Promise<RigaInChiaro | null> {
     const supabase = this.supabase();
-    const goalDefs = defs ?? (await this.loadGoalDefs());
-    // Defensive: the `people` column ships with migration 005. If it hasn't
-    // been applied yet, the full select errors — fall back to the base columns
-    // so entries still load (Social pills just stay empty).
     const full = await supabase
       .from("entries")
       .select(ENTRY_COLS_FULL)
-      .eq("entry_date", dateISO)
+      .eq("entry_date", giorno)
       .maybeSingle();
     let row = full.data as Record<string, unknown> | null;
     if (full.error) {
       const base = await supabase
         .from("entries")
         .select(ENTRY_COLS_BASE)
-        .eq("entry_date", dateISO)
+        .eq("entry_date", giorno)
         .maybeSingle();
       if (base.error) return null;
       row = base.data as Record<string, unknown> | null;
     }
     if (!row) return null;
-    return rowToEntry(row, goalDefs);
+    const facts = await this.leggiFattiInChiaro(giorno, giorno);
+    return { id: row.id as string, contenuto: this.rowToContenuto(row, facts) };
+  }
+
+  private async leggiRigheInChiaroTra(da: string, a: string): Promise<Map<string, RigaInChiaro>> {
+    const supabase = this.supabase();
+    const full = await supabase
+      .from("entries")
+      .select(ENTRY_COLS_FULL)
+      .gte("entry_date", da)
+      .lte("entry_date", a)
+      .order("entry_date", { ascending: false });
+    let rows = full.data as Record<string, unknown>[] | null;
+    if (full.error) {
+      const base = await supabase
+        .from("entries")
+        .select(ENTRY_COLS_BASE)
+        .gte("entry_date", da)
+        .lte("entry_date", a)
+        .order("entry_date", { ascending: false });
+      if (base.error || !base.data) return new Map();
+      rows = base.data as Record<string, unknown>[];
+    }
+    const out = new Map<string, RigaInChiaro>();
+    if (!rows || rows.length === 0) return out;
+    const fatti = await this.leggiFattiInChiaro(da, a);
+    const perGiorno = new Map<string, Fact[]>();
+    for (const f of fatti) {
+      const l = perGiorno.get(f.entryDate) ?? [];
+      l.push(f);
+      perGiorno.set(f.entryDate, l);
+    }
+    for (const r of rows) {
+      const g = r.entry_date as string;
+      out.set(g, { id: r.id as string, contenuto: this.rowToContenuto(r, perGiorno.get(g) ?? []) });
+    }
+    return out;
+  }
+
+  private async leggiFattiInChiaro(da: string, a: string): Promise<Fact[]> {
+    const userId = await this.userId();
+    const { data, error } = await this.supabase()
+      .from("facts")
+      .select("*")
+      .eq("user_id", userId)
+      .gte("entry_date", da)
+      .lte("entry_date", a)
+      .order("created_at", { ascending: true });
+    if (error || !data) return [];
+    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+  }
+
+  private async cancellaRigaInChiaro(giorno: string): Promise<void> {
+    const userId = await this.userId();
+    const supabase = this.supabase();
+    await supabase.from("facts").delete().eq("user_id", userId).eq("entry_date", giorno);
+    const { error } = await supabase
+      .from("entries")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entry_date", giorno);
+    if (error) throw new Error(error.message);
+  }
+
+  private contenutoToEntry(giorno: string, c: Contenuto, goalDefs: GoalDef[]): Entry {
+    return {
+      id: `c:${giorno}`,
+      entryDate: giorno,
+      transcript: c.transcript,
+      durationSeconds: c.durationSeconds,
+      headline: c.headline,
+      snippet: c.snippet,
+      areas: c.areas,
+      metrics: c.metrics,
+      goals: buildGoals(goalDefs, c.goalsOn),
+      people: c.people,
+      headlineLocked: c.headlineLocked,
+      createdAt: c.createdAt,
+    };
+  }
+
+  /** Quante giornate sono chiuse e quante ancora in chiaro (Impostazioni > Cassaforte). */
+  async contaGiornate(): Promise<{ chiuse: number; inChiaro: number }> {
+    return this.cassettine.conta();
+  }
+
+  /** Il passaggio esplicito delle giornate in chiaro nella cassaforte (R12). */
+  async portaNellaCassaforte(avanza?: (fatte: number, totale: number) => void): Promise<number> {
+    return this.cassettine.portaTutteNellaCassaforte(avanza);
+  }
+
+  /** Dopo un conflitto: scrive la versione che la persona ha scelto. */
+  async scriviVersioneScelta(giorno: string, contenuto: Contenuto): Promise<Entry> {
+    const c = await this.cassettine.sovrascrivi(giorno, contenuto);
+    return this.contenutoToEntry(giorno, c, await this.loadGoalDefs());
+  }
+
+  /* ----------------- entries ----------------- */
+
+  private async loadEntryRow(dateISO: string, defs?: GoalDef[]): Promise<Entry | null> {
+    const goalDefs = defs ?? (await this.loadGoalDefs());
+    const c = await this.cassettine.leggi(dateISO);
+    return c ? this.contenutoToEntry(dateISO, c, goalDefs) : null;
   }
 
   async loadTodayEntry(): Promise<Entry | null> {
@@ -237,42 +351,30 @@ export class CloudStore implements JournalStore {
   }
 
   async loadMonthEntries(year: number, month: number): Promise<Entry[]> {
-    const supabase = this.supabase();
     const m = String(month).padStart(2, "0");
     const lastDay = new Date(year, month, 0).getDate();
     const start = `${year}-${m}-01`;
     const end = `${year}-${m}-${String(lastDay).padStart(2, "0")}`;
     const goalDefs = await this.loadGoalDefs();
-    // Month rows don't render people, so we skip that column here (also keeps
-    // this query working regardless of migration 005 state).
-    const { data, error } = await supabase
-      .from("entries")
-      .select(ENTRY_COLS_BASE)
-      .gte("entry_date", start)
-      .lte("entry_date", end)
-      .order("entry_date", { ascending: false });
-    if (error || !data) return [];
-    return data.map((d) => ({
-      ...rowToEntry(d as Record<string, unknown>, goalDefs),
-      people: [],
-    }));
+    const tra = await this.cassettine.leggiTra(start, end);
+    return [...tra.entries()].map(([g, c]) => this.contenutoToEntry(g, c, goalDefs));
   }
 
   async countEntries(): Promise<number> {
-    const { count } = await this.supabase()
-      .from("entries")
-      .select("id", { count: "exact", head: true });
-    return count ?? 0;
+    const { chiuse, inChiaro } = await this.cassettine.conta();
+    return chiuse + inChiaro;
   }
 
   async deleteEntry(dateISO: string): Promise<void> {
-    const userId = await this.userId();
-    const { error } = await this.supabase()
-      .from("entries")
-      .delete()
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    if (error) throw new Error(error.message);
+    await this.cassettine.cancella(dateISO);
+  }
+
+  private async modificaGiornata(
+    dateISO: string,
+    fn: (c: Contenuto, esisteva: boolean) => Contenuto,
+  ): Promise<Entry> {
+    const c = await this.cassettine.modifica(dateISO, fn);
+    return this.contenutoToEntry(dateISO, c, await this.loadGoalDefs());
   }
 
   async saveProcessedEntry(
@@ -281,138 +383,69 @@ export class CloudStore implements JournalStore {
     ai: AIFields,
     durationSeconds: number,
   ): Promise<Entry> {
-    const userId = await this.userId();
-    // `people` entra nella riga SOLO se l'analisi lo ha prodotto: assente
-    // vuol dire "non toccare", vedi AIFields in store/types.ts.
-    // Il titolo scritto a mano vince su qualunque rilettura: si guarda
-    // prima se questa giornata lo ha bloccato, e in quel caso non lo si
-    // manda nemmeno. Vedi migration 012.
-    const { data: prima } = await this.supabase()
-      .from("entries")
-      .select("headline_locked")
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .maybeSingle();
-    const bloccato = (prima as { headline_locked?: boolean } | null)
-      ?.headline_locked === true;
-
-    const row: Record<string, unknown> = {
-      user_id: userId,
-      entry_date: dateISO,
+    // `people` entra SOLO se l'analisi lo ha prodotto: assente vuol dire
+    // "non toccare" (AIFields in store/types.ts). Il titolo scritto a mano
+    // vince su qualunque rilettura (migration 012, ora dentro la busta).
+    const e = await this.modificaGiornata(dateISO, (c) => ({
+      ...c,
       transcript,
       snippet: ai.snippet,
       areas: ai.areas,
-    };
-    if (!bloccato) row.headline = ai.headline;
-    if (ai.people) row.people = ai.people;
-    const { error } = await this.supabase()
-      .from("entries")
-      .upsert(row, { onConflict: "user_id,entry_date" });
-    if (error) {
-      throw new Error(error.message ?? "Failed to save entry");
-    }
-    // Reload so the returned entry is fully hydrated (metrics, goals from the
-    // live definitions, people) instead of stubbed.
-    const reloaded = await this.loadEntryRow(dateISO);
-    if (reloaded) return { ...reloaded, durationSeconds };
-    return blankEntryShell(dateISO);
+      headline: c.headlineLocked ? c.headline : ai.headline,
+      people: ai.people ?? c.people,
+      durationSeconds: durationSeconds || c.durationSeconds,
+    }));
+    return { ...e, durationSeconds };
   }
 
   async saveHeadline(dateISO: string, headline: string): Promise<Entry> {
-    const userId = await this.userId();
-    const { error } = await this.supabase()
-      .from("entries")
-      .update({ headline: headline.trim(), headline_locked: true })
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    if (error) throw new Error(error.message);
-    const reloaded = await this.loadEntryRow(dateISO);
-    return reloaded ?? blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (c) => ({
+      ...c,
+      headline: headline.trim(),
+      headlineLocked: true,
+    }));
   }
 
   async saveAreas(dateISO: string, areas: AreaSummary[]): Promise<Entry> {
-    const userId = await this.userId();
-    const { error } = await this.supabase()
-      .from("entries")
-      .update({ areas })
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    if (error) throw new Error(error.message);
-    const reloaded = await this.loadEntryRow(dateISO);
-    return reloaded ?? blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (c) => ({ ...c, areas }));
   }
 
   async updateEntryTranscript(dateISO: string, text: string): Promise<Entry> {
     // NOTA (spec §2.2): la ri-elaborazione AI del transcript modificato NON
-    // sta qui — la fa l'azione reprocessEntryTranscript (src/lib/actions),
-    // che chiama /api/process-entry e poi saveProcessedEntry. Questo metodo
-    // salva e basta, preservando i campi AI esistenti: e cio che potra fare
-    // anche LocalStore senza toccare la rete.
-    const existing = await this.loadEntryRow(dateISO);
-    return this.saveProcessedEntry(
-      dateISO,
-      text,
-      {
-        headline: existing?.headline ?? "",
-        snippet: existing?.snippet ?? "",
-        areas: existing?.areas ?? [],
-      },
-      0,
-    );
+    // sta qui — la fa l'azione reprocessEntryTranscript (src/lib/actions).
+    // Questo metodo salva e basta, preservando i campi AI esistenti.
+    return this.modificaGiornata(dateISO, (c) => ({ ...c, transcript: text }));
   }
 
-  async updateMetric(
-    dateISO: string,
-    patch: Partial<EntryMetrics>,
-  ): Promise<Entry> {
-    const userId = await this.userId();
-    const dbPatch: Record<string, unknown> = {};
-    if (Object.prototype.hasOwnProperty.call(patch, "weightKg")) {
-      dbPatch.weight_kg = patch.weightKg;
-    }
-    if (Object.prototype.hasOwnProperty.call(patch, "sleepHours")) {
-      dbPatch.sleep_hours = patch.sleepHours;
-    }
-    if (Object.prototype.hasOwnProperty.call(patch, "mood")) {
-      dbPatch.mood = patch.mood;
-    }
-    const { error } = await this.supabase()
-      .from("entries")
-      .upsert(
-        { user_id: userId, entry_date: dateISO, ...dbPatch },
-        { onConflict: "user_id,entry_date" },
-      );
-    if (error) throw new Error(error.message);
-    return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+  async updateMetric(dateISO: string, patch: Partial<EntryMetrics>): Promise<Entry> {
+    return this.modificaGiornata(dateISO, (c) => ({
+      ...c,
+      metrics: {
+        weightKg: Object.prototype.hasOwnProperty.call(patch, "weightKg")
+          ? (patch.weightKg ?? null)
+          : c.metrics.weightKg,
+        sleepHours: Object.prototype.hasOwnProperty.call(patch, "sleepHours")
+          ? (patch.sleepHours ?? null)
+          : c.metrics.sleepHours,
+        mood: Object.prototype.hasOwnProperty.call(patch, "mood")
+          ? (patch.mood ?? null)
+          : c.metrics.mood,
+      },
+    }));
   }
 
   async toggleGoal(dateISO: string, label: string): Promise<Entry> {
-    const userId = await this.userId();
-    const { data: existingRow } = await this.supabase()
-      .from("entries")
-      .select("goals_on")
-      .eq("entry_date", dateISO)
-      .maybeSingle();
-
-    const current = parseStringArray(existingRow?.goals_on);
-    const norm = label.toLowerCase();
-    const has = current.some((x) => x.toLowerCase() === norm);
-    const next = has
-      ? current.filter((x) => x.toLowerCase() !== norm)
-      : [...current, label];
-
-    const { error } = await this.supabase()
-      .from("entries")
-      .upsert(
-        { user_id: userId, entry_date: dateISO, goals_on: next },
-        { onConflict: "user_id,entry_date" },
-      );
-    if (error) throw new Error(error.message);
-    return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (c) => {
+      const norm = label.toLowerCase();
+      const has = c.goalsOn.some((x) => x.toLowerCase() === norm);
+      return {
+        ...c,
+        goalsOn: has ? c.goalsOn.filter((x) => x.toLowerCase() !== norm) : [...c.goalsOn, label],
+      };
+    });
   }
 
   async saveEntryPeople(dateISO: string, people: string[]): Promise<Entry> {
-    const userId = await this.userId();
     // Normalize: trim, drop empty, dedupe (case-insensitive, keep first casing).
     const seen = new Set<string>();
     const clean: string[] = [];
@@ -424,20 +457,13 @@ export class CloudStore implements JournalStore {
       seen.add(k);
       clean.push(t);
     }
-    // UPDATE only — never create a blank row here (BUG1).
-    const { error } = await this.supabase()
-      .from("entries")
-      .update({ people: clean })
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO);
-    // Tolerate a missing `people` column (migration 005 not yet applied).
-    if (error && !/people/i.test(error.message)) {
-      throw new Error(error.message);
-    }
-    return (await this.loadEntryRow(dateISO)) ?? blankEntryShell(dateISO);
+    // Solo su una giornata che esiste: mai creare una riga vuota qui (BUG1).
+    const c = await this.cassettine.leggi(dateISO);
+    if (!c) return blankEntryShell(dateISO);
+    return this.modificaGiornata(dateISO, (cc) => ({ ...cc, people: clean }));
   }
 
-  /* ----------------- fatti (SPEC-fatti §3) ----------------- */
+  /* ----------------- fatti (SPEC-fatti §3): dentro la busta ----------------- */
 
   private factRow(r: Record<string, unknown>): Fact {
     return {
@@ -456,47 +482,17 @@ export class CloudStore implements JournalStore {
   }
 
   async replaceAiFacts(dateISO: string, facts: NewFact[]): Promise<Fact[]> {
-    const userId = await this.userId();
-    const supabase = this.supabase();
-
-    // Prima si cancellano SOLO i fatti letti dall'AI per quel giorno: quelli
+    // Si sostituiscono SOLO i fatti letti dall'AI per quel giorno: quelli
     // scritti a mano restano, sempre.
-    const { error: delError } = await supabase
-      .from("facts")
-      .delete()
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .eq("origin", "ai");
-    if (delError) throw new Error(delError.message);
-
-    if (facts.length === 0) return this.loadFactsForDate(dateISO);
-
-    // entry_id: se la giornata esiste, i fatti spariscono con lei.
-    const { data: entryRow } = await supabase
-      .from("entries")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .maybeSingle();
-    const entryId = (entryRow as { id?: string } | null)?.id ?? null;
-
-    const { error } = await supabase.from("facts").insert(
-      facts.map((f) => ({
-        user_id: userId,
-        entry_id: entryId,
-        entry_date: dateISO,
-        kind: f.kind,
-        label: f.label,
-        label_key: f.labelKey,
-        attrs: f.attrs ?? {},
-        confidence: f.confidence,
-        origin: f.origin ?? "ai",
-      })),
-    );
-    if (error) throw new Error(error.message);
-    return this.loadFactsForDate(dateISO);
+    const c = await this.cassettine.modifica(dateISO, (cc) => ({
+      ...cc,
+      facts: [
+        ...cc.facts.filter((f) => f.origin === "manual"),
+        ...facts.map((f) => Cassettine.fatto(dateISO, f)),
+      ],
+    }));
+    return c.facts.map((f) => ({ ...f, entryDate: dateISO }));
   }
-
   async loadAliases(): Promise<Alias[]> {
     const userId = await this.userId();
     const { data, error } = await this.supabase()
@@ -672,58 +668,43 @@ export class CloudStore implements JournalStore {
   }
 
   async loadFactsForDate(dateISO: string): Promise<Fact[]> {
-    const userId = await this.userId();
-    const { data, error } = await this.supabase()
-      .from("facts")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("entry_date", dateISO)
-      .order("created_at", { ascending: true });
-    if (error || !data) return [];
-    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+    const c = await this.cassettine.leggi(dateISO);
+    return (c?.facts ?? []).map((f) => ({ ...f, entryDate: dateISO }));
   }
 
   async loadFactsForMonth(year: number, month: number): Promise<Fact[]> {
-    const userId = await this.userId();
-    const from = `${year}-${String(month).padStart(2, "0")}-01`;
-    const to =
-      month === 12
-        ? `${year + 1}-01-01`
-        : `${year}-${String(month + 1).padStart(2, "0")}-01`;
-    const { data, error } = await this.supabase()
-      .from("facts")
-      .select("*")
-      .eq("user_id", userId)
-      .gte("entry_date", from)
-      .lt("entry_date", to)
-      .order("entry_date", { ascending: false });
-    if (error || !data) return [];
-    return (data as Record<string, unknown>[]).map((r) => this.factRow(r));
+    const m = String(month).padStart(2, "0");
+    const lastDay = new Date(year, month, 0).getDate();
+    const tra = await this.cassettine.leggiTra(
+      `${year}-${m}-01`,
+      `${year}-${m}-${String(lastDay).padStart(2, "0")}`,
+    );
+    const out: Fact[] = [];
+    for (const [g, c] of tra) for (const f of c.facts) out.push({ ...f, entryDate: g });
+    return out;
   }
 
   async loadKnownLabels(limit = 120): Promise<string[]> {
-    const userId = await this.userId();
-    // Le ultime 600 righe bastano: le etichette che uno usa davvero
-    // ricompaiono spesso, e una query di aggregazione qui non vale la pena.
-    const { data, error } = await this.supabase()
-      .from("facts")
-      .select("label_key")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(600);
-    if (error || !data) return [];
+    // Le etichette che uno usa davvero ricompaiono spesso: bastano gli
+    // ultimi tre mesi di giornate (non c'e piu una tabella da interrogare,
+    // i fatti stanno nelle buste).
+    const oggi = todayISO();
+    const da = new Date(oggi);
+    da.setDate(da.getDate() - 92);
+    const tra = await this.cassettine.leggiTra(da.toISOString().slice(0, 10), oggi);
     const conteggio = new Map<string, number>();
-    for (const r of data as { label_key?: string }[]) {
-      const k = (r.label_key ?? "").trim();
-      if (!k) continue;
-      conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+    for (const c of tra.values()) {
+      for (const f of c.facts) {
+        const k = (f.labelKey ?? "").trim();
+        if (!k) continue;
+        conteggio.set(k, (conteggio.get(k) ?? 0) + 1);
+      }
     }
     return [...conteggio.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit)
       .map(([k]) => k);
   }
-
   /* ----------------- goals ----------------- */
 
   async loadGoalDefs(): Promise<GoalDef[]> {
@@ -985,25 +966,10 @@ export class CloudStore implements JournalStore {
   /* ----------------- backup (SPEC-v2 §4) ----------------- */
 
   async loadAllEntries(): Promise<Entry[]> {
-    const supabase = this.supabase();
     const goalDefs = await this.loadGoalDefs();
-    const full = await supabase
-      .from("entries")
-      .select(ENTRY_COLS_FULL)
-      .order("entry_date", { ascending: true });
-    let rows = full.data as Record<string, unknown>[] | null;
-    if (full.error) {
-      const base = await supabase
-        .from("entries")
-        .select(ENTRY_COLS_BASE)
-        .order("entry_date", { ascending: true });
-      if (base.error || !base.data) return [];
-      rows = base.data as Record<string, unknown>[];
-    }
-    if (!rows) return [];
-    return rows.map((r) => rowToEntry(r, goalDefs));
+    const tutte = await this.cassettine.leggiTutte();
+    return [...tutte.entries()].map(([g, c]) => this.contenutoToEntry(g, c, goalDefs));
   }
-
   async exportAll(): Promise<BackupFile> {
     const [entries, goals, remembers, recaps] = await Promise.all([
       this.loadAllEntries(),
@@ -1043,35 +1009,31 @@ export class CloudStore implements JournalStore {
     };
 
     // entries: chiave naturale entryDate; salta se esiste, a meno che
-    // l'esistente sia vuoto. Gli id non si trasportano.
-    const goalDefs = await this.loadGoalDefs();
+    // l'esistente sia vuoto. Gli id non si trasportano. Ogni giornata
+    // importata entra direttamente nella cassaforte.
     for (const e of file.entries ?? []) {
       if (!e?.entryDate) continue;
-      const existing = await this.loadEntryRow(e.entryDate, goalDefs);
+      const existing = await this.cassettine.leggi(e.entryDate);
       if (existing && existing.transcript.trim().length > 0) {
         report.entries.skipped++;
         continue;
       }
-      const payload: Record<string, unknown> = {
-        user_id: userId,
-        entry_date: e.entryDate,
+      await this.cassettine.modifica(e.entryDate, (c) => ({
+        ...c,
         transcript: e.transcript ?? "",
-        headline: e.headline,
-        snippet: e.snippet,
+        headline: e.headline ?? null,
+        snippet: e.snippet ?? null,
         areas: e.areas ?? [],
-        mood: e.metrics?.mood ?? null,
-        weight_kg: e.metrics?.weightKg ?? null,
-        sleep_hours: e.metrics?.sleepHours ?? null,
-        goals_on: (e.goals ?? []).filter((g) => g.on).map((g) => g.label),
-      };
-      const { error } = await supabase
-        .from("entries")
-        .upsert(payload, { onConflict: "user_id,entry_date" });
-      if (error) throw new Error(error.message);
-      // people a parte, con la tolleranza sulla colonna mancante
-      if (e.people && e.people.length > 0) {
-        await this.saveEntryPeople(e.entryDate, e.people);
-      }
+        metrics: {
+          weightKg: e.metrics?.weightKg ?? null,
+          sleepHours: e.metrics?.sleepHours ?? null,
+          mood: e.metrics?.mood ?? null,
+        },
+        goalsOn: (e.goals ?? []).filter((g) => g.on).map((g) => g.label),
+        people: e.people ?? [],
+        headlineLocked: e.headlineLocked === true,
+        createdAt: e.createdAt ?? c.createdAt,
+      }));
       report.entries.added++;
     }
 

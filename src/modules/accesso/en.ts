@@ -69,4 +69,46 @@ export const ACCESSO: Record<string, string> = {
   "Capito": "Got it",
   "Attivalo ora": "Turn it on now",
   "Un attimo...": "One moment...",
+  // --- la cassaforte: le parole e il dispositivo nuovo (R8) ---
+  "Il tuo codice di recupero": "Your recovery code",
+  "Otto parole. Sono la chiave del tuo diario.": "Eight words. They are the key to your diary.",
+  "Da adesso ogni giornata viene chiusa a chiave sul telefono prima di partire: sul server arriva un blocco illeggibile, e nessuno, nemmeno chi ha fatto questa app, puo aprirlo.":
+    "From now on every day is locked on your phone before it leaves: the server receives an unreadable block, and nobody, not even the person who made this app, can open it.",
+  "Se perdi queste parole e perdi tutti i tuoi dispositivi, il diario non lo recupera nessuno. Neanche noi.":
+    "If you lose these words and you lose all your devices, nobody can recover the diary. Not even us.",
+  "Fai uno screenshot adesso": "Take a screenshot now",
+  "o copiale: tienile in un posto che apri solo tu.": "or copy them: keep them somewhere only you can open.",
+  "Copia le parole": "Copy the words",
+  "Copiate": "Copied",
+  "Le ho salvate": "I have saved them",
+  "Ho capito, continua": "Got it, continue",
+  "Il tuo diario e chiuso a chiave": "Your diary is locked",
+  "Ci sono {n} giornate, dal {dal}. Questo dispositivo non ha la chiave.": "There are {n} days, since {dal}. This device does not have the key.",
+  "Questo dispositivo non ha la chiave del tuo diario.": "This device does not have the key to your diary.",
+  "Scrivi le otto parole del codice di recupero, nell'ordine. Le hai ricevute quando hai creato l'account.":
+    "Type the eight words of your recovery code, in order. You received them when you created the account.",
+  "albero finestra dodici ...": "albero finestra dodici ... (the words are Italian)",
+  "Le maiuscole e gli accenti non contano. Puoi incollarle tutte insieme.": "Capitals and accents do not matter. You can paste them all at once.",
+  "La parola numero {n} non esiste nell'elenco. Controlla: \"{parola}\".": "Word number {n} is not in the list. Check: \"{parola}\".",
+  "Servono {n} parole: ne hai scritte {q}.": "{n} words are needed: you typed {q}.",
+  "Le parole esistono tutte, ma non nell'ordine giusto o non tutte di questo diario. Ricontrolla l'ordine.":
+    "All the words exist, but not in the right order or not all from this diary. Check the order again.",
+  "Queste parole sono di un altro diario: non aprono questo.": "These words belong to another diary: they do not open this one.",
+  "Apri il diario": "Open the diary",
+  "Apro...": "Opening...",
+  "Non ho il codice": "I do not have the code",
+  "Senza il codice, questo dispositivo non puo aprire il diario.": "Without the code, this device cannot open the diary.",
+  "Non esiste un \"ho dimenticato la password\": la chiave non ce l'abbiamo, e per questo il diario e tuo e basta.":
+    "There is no \"I forgot my password\": we do not have the key, and that is why the diary is yours and nobody else's.",
+  "Le strade che restano:": "The ways that remain:",
+  "Un iPhone, iPad o Mac con lo stesso Apple ID che ha gia aperto il diario: la chiave arriva da sola col portachiavi di iCloud, e da li puoi rivedere le parole in Impostazioni > Cassaforte.":
+    "An iPhone, iPad or Mac with the same Apple ID that has already opened the diary: the key arrives by itself through iCloud Keychain, and from there you can see the words again in Settings > Vault.",
+  "Un file di backup salvato in passato: si importa e si legge da qui.": "A backup file saved in the past: import it and read it from here.",
+  "Ricominciare da zero, con un diario nuovo e un codice nuovo.": "Start over, with a new diary and a new code.",
+  "Le {n} giornate chiuse restano sul server, illeggibili, finche non le cancelli tu.": "The {n} locked days stay on the server, unreadable, until you delete them.",
+  "Ricomincia da zero": "Start over",
+  "Sicuro? Le {n} giornate chiuse non si potranno piu leggere, da nessun dispositivo.": "Sure? The {n} locked days will no longer be readable, from any device.",
+  "Sicuro? Il diario riparte vuoto, con un codice nuovo.": "Sure? The diary starts again empty, with a new code.",
+  "Si, ricomincia da zero": "Yes, start over",
+  "Un diario nuovo. Otto parole nuove.": "A new diary. Eight new words.",
 };

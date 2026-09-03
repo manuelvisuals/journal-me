@@ -8,6 +8,7 @@ import { CommandPalette } from "@/components/desktop/command-palette";
 import { FocusEscape } from "@/components/desktop/focus-toggle";
 import { useShortcuts } from "@/components/desktop/use-shortcuts";
 import { PremiumWall } from "@/modules/abbonamento/components/premium-wall";
+import { ConflittoGiornata } from "@/modules/oggi";
 
 /**
  * Il guscio desktop (SPEC-v2 §5.2): sotto lg non rende NULLA di suo — il
@@ -60,6 +61,7 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
           il guscio e display:contents e il muro (position:fixed) funziona
           identico sul telefono, dove serve di piu. */}
       <PremiumWall />
+      <ConflittoGiornata />
     </div>
   );
 }

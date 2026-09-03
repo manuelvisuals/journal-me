@@ -15,3 +15,6 @@ export { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
    NOTA per chi lo monta: il suo CSS (.jm-day-sw) vive in
    src/modules/oggi/styles.css, che globals.css importa sempre. */
 export { DaySwipe } from "@/modules/oggi/components/day-swipe";
+/* Il foglio "giornata modificata altrove" (SPEC R7): montato UNA volta dal
+   guscio, si apre da solo a ogni conflitto di versione. */
+export { ConflittoGiornata } from "@/modules/oggi/components/conflitto-giornata";

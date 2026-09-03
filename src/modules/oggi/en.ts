@@ -180,4 +180,14 @@ export const OGGI: Record<string, string> = {
   "{n} foto aggiunte": "{n} photos added",
   "Non sono riuscito ad aggiungere le foto. Riprova.":
     "I could not add the photos. Try again.",
+  // --- la giornata modificata altrove (R7) ---
+  "Giornata modificata altrove": "Day changed elsewhere",
+  "{giorno} e cambiata su un altro dispositivo mentre la scrivevi qui.": "{giorno} changed on another device while you were writing it here.",
+  "Ci sono due versioni. Scegli quale tenere, oppure tienile tutte e due: l'altra finisce in fondo al racconto.":
+    "There are two versions. Choose which one to keep, or keep both: the other one goes at the end of the story.",
+  "Sull'altro dispositivo": "On the other device",
+  "Qui, non ancora salvata": "Here, not saved yet",
+  "adesso": "now",
+  "Tieni questa": "Keep this one",
+  "Tienile tutte e due": "Keep both",
 };
