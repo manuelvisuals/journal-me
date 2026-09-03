@@ -247,7 +247,11 @@ let paroleDiRecupero = [];
   await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
   const riga = page.locator(".jm-st-row", { hasText: "Cassaforte" }).first();
   await riga.waitFor({ state: "visible", timeout: 30_000 });
-  await page.waitForFunction(() => /in chiaro/.test(document.body.innerText), null, { timeout: 20_000 });
+  await page.waitForFunction(
+    () => [...document.querySelectorAll(".jm-st-row")].some((r) => /Cassaforte/.test(r.textContent) && /in chiaro/.test(r.textContent)),
+    null,
+    { timeout: 20_000 },
+  ).catch(() => undefined);
   check("R12: la riga Cassaforte dice quante giornate sono in chiaro", /1 giornate in chiaro/.test(await riga.innerText()), await riga.innerText());
   await riga.click();
   const tasto = page.locator("button.btn-primary", { hasText: /Chiudi a chiave/ });

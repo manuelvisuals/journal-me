@@ -49,7 +49,9 @@ check(
 const cloud = leggi("src/lib/data/store/cloud.ts");
 check(
   "cloud: saveHeadline scrive il titolo E alza il blocco",
-  /headline_locked:\s*true/.test(cloud),
+  // dal 3 settembre 2026 il blocco vive dentro la busta della cassettina
+  // (headlineLocked), non piu nella colonna headline_locked
+  /headline(_l|L)ocked:\s*true/.test(cloud),
 );
 check(
   "cloud: a titolo bloccato il salvataggio AI non scrive headline",
@@ -64,7 +66,7 @@ check(
   const corpo = i === -1 ? "" : cloud.slice(i, i + 4000);
   check(
     "cloud: saveProcessedEntry scrive headline solo se non e bloccato",
-    i !== -1 && /headline_locked/.test(corpo),
+    i !== -1 && /headline(_l|L)ocked/.test(corpo),
   );
 }
 

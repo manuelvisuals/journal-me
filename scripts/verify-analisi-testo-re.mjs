@@ -98,7 +98,10 @@ const locale = leggi("src/lib/data/store/local.ts");
   );
   check(
     "il cloud scrive i nomi solo se ci sono",
-    /if \(ai\.people\) row\.people = ai\.people;/.test(cloud),
+    // prima della cassaforte: `if (ai.people) row.people = ai.people;`
+    // dal 3 settembre 2026 la busta tiene i nomi di prima se l'analisi non
+    // li ha prodotti: `people: ai.people ?? c.people`
+    /if \(ai\.people\) row\.people = ai\.people;|people: ai\.people \?\? c\.people/.test(cloud),
   );
   check(
     "il locale idem",
