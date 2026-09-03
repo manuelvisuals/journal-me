@@ -16,7 +16,7 @@
 //
 // Serve il dev server su :3100 con NEXT_PUBLIC_SUPABASE_URL=https://sbfinto.supabase.co.
 import { chromium } from "playwright-core";
-import { SupabaseFinto, montaSupabaseFinto, UTENTE_ID } from "./lib/supabase-finto.mjs";
+import { SupabaseFinto, montaSupabaseFinto } from "./lib/supabase-finto.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = process.env.JM_BASE ?? "http://localhost:3100";
