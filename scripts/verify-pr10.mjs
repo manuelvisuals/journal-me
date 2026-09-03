@@ -1,8 +1,22 @@
 // Verifica PR 10 (gating-ui: muro premium, giornata gratis, larghezze) — locale.
+//
+// LA PROMESSA SULLA RETE E CAMBIATA (SPEC-ospite-e-cassaforte par. 5, notte
+// del 3 settembre 2026). Questo banco misurava "in locale ZERO richieste
+// esterne"; l'ospite, che tiene le giornate sul dispositivo e chiama l'AI,
+// rompe quella frase. La promessa nuova sta in scripts/lib/promessa-ospite.mjs
+// e si misura qui in tre regole: nessuna richiesta esterna, verso /api solo
+// le route AI dell'elenco chiuso e solo con il braccialetto, nessuna
+// scrittura verso le tabelle delle giornate. Questo banco gira con
+// l'interruttore dell'ospite SPENTO (jm.ospite non impostato: e il valore
+// di fabbrica finche Manuel non approva le schermate), quindi qui la
+// promessa collassa in quella vecchia: nessuna chiamata ammessa, perche
+// nessun braccialetto la firma. Il giro dell'ospite acceso e in
+// scripts/verify-ospite.mjs.
 import { chromium } from "playwright-core";
+import { osservaPromessa, verificaPromessa } from "./lib/promessa-ospite.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const BASE = "http://localhost:3100";
+const BASE = process.env.JM_BASE ?? "http://localhost:3100";
 const results = [];
 function check(name, ok, extra = "") {
   results.push({ name, ok });
@@ -18,19 +32,15 @@ async function newPage(width, height) {
   });
   const page = await ctx.newPage();
   const errors = [];
-  const external = [];
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
-  page.on("request", (r) => {
-    const u = r.url();
-    if (!u.startsWith(BASE) && !u.startsWith("data:") && !u.startsWith("blob:")) external.push(u);
-  });
-  return { ctx, page, errors, external };
+  const rete = osservaPromessa(page, BASE);
+  return { ctx, page, errors, rete };
 }
 
 /* ============ DESKTOP 1440, modalita locale ============ */
 {
-  const { ctx, page, errors, external } = await newPage(1440, 900);
+  const { ctx, page, errors, rete } = await newPage(1440, 900);
   await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
 
@@ -117,14 +127,19 @@ async function newPage(width, height) {
   const remW = (await page.locator("main").first().boundingBox())?.width;
   check("ricorda: contenitore fluido (>=1200, niente rail destra)", (remW ?? 0) >= 1200, String(remW));
 
-  check("locale: ZERO richieste esterne", external.length === 0, external.slice(0, 3).join(" | "));
+  {
+    // La promessa del par. 5: nessuna richiesta esterna, verso /api solo
+    // l'elenco chiuso con il braccialetto, niente tabelle delle giornate.
+    const v = verificaPromessa(rete);
+    check("locale: la promessa sulla rete (par. 5) regge", v.ok, v.dettagli);
+  }
   check("desktop: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
   await ctx.close();
 }
 
 /* ============ TELEFONO 430, modalita locale ============ */
 {
-  const { ctx, page, errors, external } = await newPage(430, 900);
+  const { ctx, page, errors, rete } = await newPage(430, 900);
   await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(1000);
 
@@ -148,15 +163,19 @@ async function newPage(width, height) {
   check("phone gratis: prosa visibile", (await page.locator(".jm-fv-prose").count()) === 1);
   check("phone gratis: nudge presente", await page.locator(".jm-fv-nudge").isVisible());
 
-  // Mic in header -> muro anche sotto lg
-  await page.locator('[aria-label="Registra di nuovo"]').click();
-  await page.waitForTimeout(300);
-  check("phone: muro voice visibile", await page.locator(".jm-wall").isVisible());
-  await page.locator(".jm-wall .btn-ghost").click();
-  await page.waitForTimeout(300);
-  check("phone: 'non ora' apre la scrittura", await page.locator(".jm-editor-textarea").isVisible());
+  // Il microfono del dock su una giornata piena. Dal 30 agosto 2026
+  // l'intestazione di Oggi e solo desktop (barra in alto), quindi sul
+  // telefono il mic e quello del dock: in locale non apre nessun muro,
+  // apre la scrittura (today-client, ?record=1 con isLocalMode).
+  await page.locator('[aria-label="Registra"]').first().click();
+  await page.waitForTimeout(600);
+  check("phone: il mic del dock in locale non apre il muro", (await page.locator(".jm-wall").count()) === 0);
+  check("phone: il mic del dock in locale apre la scrittura", await page.locator(".jm-editor-textarea").isVisible());
 
-  check("phone locale: ZERO richieste esterne", external.length === 0, external.slice(0, 3).join(" | "));
+  {
+    const v = verificaPromessa(rete);
+    check("phone locale: la promessa sulla rete (par. 5) regge", v.ok, v.dettagli);
+  }
   check("phone: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
   await ctx.close();
 }

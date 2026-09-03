@@ -5,8 +5,13 @@
 // Le promesse da difendere, in ordine di importanza:
 //   1. il velo copre TUTTO e blocca i tocchi finche non si preme il tasto
 //      (e la cosa che Manuel ha chiesto per iscritto);
-//   2. in modalita locale non parte NEMMENO UNA richiesta di rete, e il
-//      testo arriva da quello cotto nel pacchetto;
+//   2. in modalita locale la promessa sulla rete del par. 5 della SPEC
+//      ospite-e-cassaforte regge (scripts/lib/promessa-ospite.mjs: nessuna
+//      richiesta esterna, verso /api solo le route AI dell'elenco chiuso e
+//      solo con il braccialetto, niente tabelle delle giornate) e il testo
+//      arriva da quello cotto nel pacchetto. Fino al 3 settembre 2026 la
+//      frase era "NEMMENO UNA richiesta di rete": l'ospite la rompe per
+//      forza, e la promessa e stata riscritta, non cancellata;
 //   3. la lettera si legge tutta e il tasto resta in vista anche col testo
 //      ingrandito al massimo;
 //   4. la casella "non mostrare piu" compare dalla terza apertura, e il
@@ -19,9 +24,10 @@
 //      pagina dei contatti del sito (/support). Vuoto, la linguetta torna
 //      un bottone muto invece di aprire una scheda vuota.
 import { chromium } from "playwright-core";
+import { osservaPromessa, verificaPromessa } from "./lib/promessa-ospite.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const BASE = "http://localhost:3200";
+const BASE = process.env.JM_BASE ?? "http://localhost:3200";
 const results = [];
 function check(name, ok, extra = "") {
   results.push({ name, ok });
@@ -59,17 +65,22 @@ async function nuovoContesto({
   return ctx;
 }
 
+/**
+ * `external` e il registro della promessa sulla rete: lo riempie
+ * osservaPromessa e lo giudica verificaPromessa (par. 5 della SPEC).
+ * La proprieta `esterne` tiene il vecchio nome per i controlli che la
+ * stampano.
+ */
 function osserva(page, errors, external) {
   page.on("console", (m) => {
     if (m.type() === "error") errors.push(m.text());
   });
   page.on("pageerror", (e) => errors.push(String(e)));
-  page.on("request", (r) => {
-    const u = r.url();
-    if (!u.startsWith(BASE) && !u.startsWith("data:") && !u.startsWith("blob:")) {
-      external.push(u);
-    }
-  });
+  const reg = osservaPromessa(page, BASE);
+  external.reg = reg;
+}
+function promessaRegge(external) {
+  return verificaPromessa(external.reg ?? { esterne: [], api: [], tabelle: [] });
 }
 
 async function apri(ctx, url = "/app") {
@@ -191,7 +202,7 @@ async function apri(ctx, url = "/app") {
     (await box.locator(".jm-benv-sal-c").count()) === 0,
   );
 
-  check("zero richieste di rete in modalita locale", external.length === 0, external.join(", "));
+  { const v = promessaRegge(external); check("in modalita locale la promessa sulla rete (par. 5) regge", v.ok, v.dettagli); }
   check("zero errori in console", errors.length === 0, errors.join(" | "));
   await page.close();
   await ctx.close();
@@ -457,7 +468,7 @@ async function apri(ctx, url = "/app") {
     "un indirizzo di fuori si apre in una scheda nuova",
     (await ling2.getAttribute("target")) === "_blank",
   );
-  check("zero richieste di rete anche cosi", b.external.length === 0, b.external.join(", "));
+  { const v = promessaRegge(b.external); check("la promessa sulla rete regge anche cosi", v.ok, v.dettagli); }
   await b.page.close();
   await ctx2.close();
   await ctx.close();
@@ -544,7 +555,7 @@ async function apri(ctx, url = "/app") {
   const { page, external } = await apri(ctx, "/admin");
   const n = await page.locator(".jm-adm").count();
   check("in modalita locale il pannello admin non disegna niente", n === 0, `${n} trovati`);
-  check("e non chiede niente alla rete", external.length === 0, external.join(", "));
+  { const v = promessaRegge(external); check("e la promessa sulla rete regge (niente verso /api ne fuori)", v.ok, v.dettagli); }
   await page.close();
   await ctx.close();
 }
