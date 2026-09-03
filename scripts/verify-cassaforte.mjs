@@ -32,6 +32,7 @@ function check(name, ok, extra = "") {
 const TESTO_TITOLO = "Quarzite ambrata sul molo di Zafferana";
 const TESTO_CORPO =
   "Stamattina ho incontrato Brunilde Vespucci al bar del porto e mi ha raccontato del cugino Ottaviano che restaura clavicembali a Ortigia.";
+const TESTO_MEMO = "Chiamare la Sfinge per il preventivo";
 const PAROLE_SPIA = ["Quarzite", "Zafferana", "Brunilde", "Vespucci", "Ottaviano", "clavicembali", "Ortigia"];
 
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
@@ -94,6 +95,21 @@ let paroleDiRecupero = [];
   const busta = JSON.parse(cass[0].busta);
   check("R6: la busta e AES-GCM v1 con iv e ct in base64", busta.alg === "A256GCM" && busta.v === 1 && /^[A-Za-z0-9+/=]+$/.test(busta.iv) && /^[A-Za-z0-9+/=]+$/.test(busta.ct));
   check("R6: in chiaro restano solo giorno, v, bytes, date", Object.keys(cass[0]).sort().join(",") === "busta,bytes,created_at,giorno,updated_at,user_id,v");
+
+  /* ============ 2-bis. Un memo: anche le altre tabelle sono buste (migration 022) ============ */
+  await page.goto(BASE + "/app/remember", { waitUntil: "domcontentloaded" });
+  const qc = page.locator(".jm-qc-card input, .jm-qc-card textarea").first();
+  await qc.waitFor({ state: "visible", timeout: 30_000 });
+  await qc.fill(TESTO_MEMO);
+  await page.locator(".jm-qc-add").click();
+  await page.waitForFunction((t) => document.body.innerText.includes(t), TESTO_MEMO, { timeout: 30_000 });
+  const memo = finto.tab("remembers");
+  check("R6 memo: la riga esiste, il testo in chiaro e VUOTO e c'e la busta", memo.length === 1 && memo[0].text === "" && typeof memo[0].busta === "string" && memo[0].busta.length > 20, JSON.stringify(memo.map((m) => ({ text: m.text, kind: m.kind })))) ;
+  check("R6 memo: la parola del memo non e uscita dal dispositivo", !finto.tuttoCioCheEUscito().includes("Sfinge"));
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForFunction((t) => document.body.innerText.includes(t), TESTO_MEMO, { timeout: 30_000 });
+  check("R6 memo: dopo un reload il memo si rilegge dalla busta", true);
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
 
   // Ricaricando, la giornata si rilegge (la chiave e sul dispositivo)
   await page.reload({ waitUntil: "domcontentloaded" });
