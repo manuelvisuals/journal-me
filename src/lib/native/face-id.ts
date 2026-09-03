@@ -145,3 +145,22 @@ export async function provaEAttivaFaceId(reason: string): Promise<boolean> {
 export function useFaceIdAttivo(): boolean {
   return useSyncExternalStore(subscribe, faceIdAttivo, () => false);
 }
+
+/**
+ * Chiede il volto (o il codice del telefono) per un'azione delicata, senza
+ * toccare l'interruttore: e cio che protegge "vedi il codice di recupero"
+ * in Impostazioni > Cassaforte. Fuori dal guscio non c'e biometria: risponde
+ * true, e la protezione e la sessione stessa.
+ */
+export async function chiediIlVolto(reason: string): Promise<boolean> {
+  if (!isNative()) return true;
+  try {
+    const { BiometricAuth } = await import(
+      "@aparajita/capacitor-biometric-auth"
+    );
+    await BiometricAuth.authenticate({ reason, allowDeviceCredential: true });
+    return true;
+  } catch {
+    return false;
+  }
+}

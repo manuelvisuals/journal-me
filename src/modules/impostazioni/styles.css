@@ -1258,3 +1258,7 @@
 }
 
 .jm-nome-salva:disabled { opacity: 0.4; cursor: default; }
+
+/* ---------- Impostazioni > Cassaforte (SPEC R12, mockup codice-di-recupero 04) ---------- */
+.jm-st-cassa-azione { margin: calc(8px * var(--jm-space)) 0 calc(20px * var(--jm-space)); }
+.jm-st-cassa-errore { color: var(--color-danger); }

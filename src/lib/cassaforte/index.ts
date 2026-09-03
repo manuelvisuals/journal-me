@@ -56,9 +56,25 @@ type Interno = {
    * vanno viste e salvate prima di entrare).
    */
   cancello: "assente" | "chiusa" | null;
+  /** Per la schermata "chiusa": quante giornate ci sono sul server, e da quando. */
+  giornate: { quante: number; dal: string | null } | null;
 };
 
-const interno: Interno = { stato: "risolvendo", userId: null, chiavi: null, seme: null, cancello: null };
+const interno: Interno = { stato: "risolvendo", userId: null, chiavi: null, seme: null, cancello: null, giornate: null };
+
+export function giornateChiuse(): { quante: number; dal: string | null } | null {
+  return interno.giornate;
+}
+
+/** Quante cassettine ha l'utente e la piu vecchia: si sa anche senza chiave (giorno e conteggio sono in chiaro). */
+async function contaGiornate(userId: string): Promise<{ quante: number; dal: string | null }> {
+  const sb = await supabase();
+  const [c, prima] = await Promise.all([
+    sb.from("cassettine").select("giorno", { count: "exact", head: true }).eq("user_id", userId),
+    sb.from("cassettine").select("giorno").eq("user_id", userId).order("giorno", { ascending: true }).limit(1).maybeSingle(),
+  ]);
+  return { quante: c.count ?? 0, dal: (prima.data as { giorno?: string } | null)?.giorno ?? null };
+}
 const ascoltatori = new Set<() => void>();
 function avvisa() {
   for (const a of ascoltatori) a();
@@ -146,14 +162,14 @@ export async function risolviCassaforte(userId: string): Promise<StatoCassaforte
     return "assente";
   }
   if (!seme) {
-    imposta({ stato: "chiusa" });
+    imposta({ stato: "chiusa", giornate: await contaGiornate(userId).catch(() => null) });
     return "chiusa";
   }
   const ch = await chiaviDaSeme(seme, userId);
   if (!(await provaSiApre(ch, prova))) {
     // Il seme sul dispositivo non e quello di QUESTA cassaforte (account
     // ricominciato da zero altrove): come non averlo.
-    imposta({ stato: "chiusa" });
+    imposta({ stato: "chiusa", giornate: await contaGiornate(userId).catch(() => null) });
     return "chiusa";
   }
   imposta({ stato: "aperta", chiavi: ch, seme });

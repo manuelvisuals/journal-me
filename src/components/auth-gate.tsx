@@ -7,6 +7,7 @@ import { ensureEveningReminder } from "@/lib/native/reminders";
 import {
   ascoltaCassaforte,
   cancelloDaMostrare,
+  giornateChiuse,
   passaCancello,
   risolviCassaforte,
   segnaModalitaLocale,
@@ -152,6 +153,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         <CassaforteCancello
           stato={cancello}
           userId={userId}
+          giornate={giornateChiuse() ?? undefined}
           onAperta={() => {
             passaCancello();
             void risolviCassaforte(userId);

@@ -132,7 +132,9 @@ export class SupabaseFinto {
       return route.fulfill({
         status,
         contentType: "application/json",
-        headers,
+        // content-range non e un header "safelisted": senza expose il browser
+        // lo nasconde a fetch e count=exact torna sempre null
+        headers: { "access-control-expose-headers": "*", ...headers },
         body: body === undefined ? "" : JSON.stringify(body),
       });
     };

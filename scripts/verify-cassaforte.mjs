@@ -126,6 +126,7 @@ let paroleDiRecupero = [];
   const h1 = page.locator(".jm-login-cassa-h1");
   await h1.waitFor({ state: "visible", timeout: 30_000 });
   check("dispositivo nuovo: chiede le parole (non le mostra)", /non ha la chiave/.test(await h1.innerText()), await h1.innerText());
+  check("dispositivo nuovo: dice quante giornate ci sono e da quando (in chiaro restano giorno e conteggio)", /1 giornate, dal 3 settembre/.test(await h1.innerText()));
   check("dispositivo nuovo: il testo del diario NON e a schermo", !(await page.evaluate(() => document.body.innerText.includes("Quarzite"))));
   const campo = page.locator(".jm-login-cassa-campo");
   const sbagliate = [...paroleDiRecupero];
@@ -208,6 +209,68 @@ let paroleDiRecupero = [];
     }
   }
   check("zero errori di pagina (conflitto)", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
+}
+
+/* ============ 5. Le giornate scritte PRIMA della cassaforte (R12) ============ */
+{
+  // Un utente con una giornata, un fatto e un memo ancora in chiaro sul
+  // server (scritti prima della cassaforte): si leggono lo stesso, la riga
+  // in Impostazioni lo dice, e il tasto li porta dentro, uno per uno.
+  const legacy = new SupabaseFinto({
+    utente: "00000000-0000-4000-8000-000000000002",
+    tabelle: {
+      entries: [{
+        id: "11111111-1111-4111-8111-111111111111", user_id: "00000000-0000-4000-8000-000000000002",
+        entry_date: "2026-08-20", transcript: "Gita a Tindari con Ermenegildo, poi granita.",
+        headline: "Tindari con Ermenegildo", snippet: "Una gita.", areas: [], mood: "good", weight_kg: null,
+        sleep_hours: null, goals_on: [], people: ["Ermenegildo"], headline_locked: false, created_at: "2026-08-20T20:00:00Z",
+      }],
+      facts: [{
+        id: "22222222-2222-4222-8222-222222222222", user_id: "00000000-0000-4000-8000-000000000002",
+        entry_date: "2026-08-20", kind: "persona", label: "Ermenegildo", label_key: "ermenegildo", attrs: {}, confidence: 0.9, origin: "ai", created_at: "2026-08-20T20:01:00Z",
+      }],
+      remembers: [{
+        id: "33333333-3333-4333-8333-333333333333", user_id: "00000000-0000-4000-8000-000000000002",
+        text: "Comprare il basilico da Crisostomo", kind: "todo", source: "manual", source_entry_id: null, created_at: "2026-08-21T08:00:00Z",
+      }],
+    },
+  });
+  const { ctx, page, errors } = await nuovaPagina(legacy);
+  await page.goto(BASE + "/app/giorno?d=2026-08-20", { waitUntil: "domcontentloaded" });
+  await page.locator(".jm-login-cassa-check input").check({ timeout: 30_000 });
+  await page.locator("button.btn-primary").click();
+  await page.waitForFunction(() => document.body.innerText.includes("Tindari con Ermenegildo"), null, { timeout: 30_000 });
+  check("R12: una giornata scritta prima della cassaforte si legge ancora (ripiego)", true);
+  check("R12: leggerla non la sposta da sola (nessuna scrittura spontanea)", legacy.tab("cassettine").length === 0 && legacy.tab("entries").length === 1);
+
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  const riga = page.locator(".jm-st-row", { hasText: "Cassaforte" }).first();
+  await riga.waitFor({ state: "visible", timeout: 30_000 });
+  await page.waitForFunction(() => /in chiaro/.test(document.body.innerText), null, { timeout: 20_000 });
+  check("R12: la riga Cassaforte dice quante giornate sono in chiaro", /1 giornate in chiaro/.test(await riga.innerText()), await riga.innerText());
+  await riga.click();
+  const tasto = page.locator("button.btn-primary", { hasText: /Chiudi a chiave/ });
+  await tasto.waitFor({ state: "visible", timeout: 20_000 });
+  await tasto.click();
+  await page.waitForFunction(() => document.body.innerText.includes("Fatto: tutto quello che era in chiaro"), null, { timeout: 60_000 });
+  check("R12: dopo il tasto, entries e facts sono VUOTE", legacy.tab("entries").length === 0 && legacy.tab("facts").length === 0);
+  check("R12: la giornata e diventata una cassettina v=1", legacy.tab("cassettine").length === 1 && legacy.tab("cassettine")[0].giorno === "2026-08-20" && legacy.tab("cassettine")[0].v === 1);
+  const memo = legacy.tab("remembers")[0];
+  check("R12: il memo ha la busta e il testo in chiaro e vuoto", memo.text === "" && typeof memo.busta === "string");
+  const uscito = legacy.tuttoCioCheEUscito();
+  // Il testo in chiaro e ENTRATO (letto dal server) ma non deve essere USCITO
+  // in nessuna scrittura: si guardano solo i corpi delle richieste.
+  const corpiUsciti = legacy.registro.filter((v) => v.metodo !== "GET" && v.metodo !== "HEAD").map((v) => v.corpo ?? "").join("\n");
+  check("R12: nel passaggio nessuna parola e uscita in chiaro (corpi delle scritture)", !/Tindari|Ermenegildo|Crisostomo|basilico/.test(corpiUsciti));
+  void uscito;
+  await page.goto(BASE + "/app/giorno?d=2026-08-20", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => document.body.innerText.includes("Tindari con Ermenegildo"), null, { timeout: 30_000 });
+  check("R12: dopo il passaggio la giornata si legge dalla cassettina", true);
+  await page.goto(BASE + "/app/remember", { waitUntil: "domcontentloaded" });
+  await page.waitForFunction(() => document.body.innerText.includes("Crisostomo"), null, { timeout: 30_000 });
+  check("R12: dopo il passaggio il memo si legge dalla busta", true);
+  check("zero errori di pagina (passaggio)", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 }
 
