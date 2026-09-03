@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . L'ospite: primo avvio, il regalo AI che finisce, la riga in Impostazioni, il pannello admin</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Plex Mono";src:url("../../src/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:block}
+:root{
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --mono:"Plex Mono",ui-monospace,Menlo,monospace;
+  --pg:#17171A;--pg-2:#202024;--pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;
+  --ok:#4ADE80;--no:#F87171;--hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:880px}
+.page-sub b,.caption b,.prose b,.under b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;max-width:960px;line-height:1.75}
+.row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.under{font-size:12px;color:var(--pg-faint);text-align:center;max-width:390px;line-height:1.6}
+.under .no{color:var(--no);font-weight:600}
+.under .si{color:var(--ok);font-weight:600}
+.prose{max-width:880px;margin:0 auto;font-size:14.5px;line-height:1.8;color:var(--pg-mut)}
+.prose p{margin:0 0 14px}
+.prose h3{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:26px 0 8px;letter-spacing:-.01em}
+table{border-collapse:collapse;width:100%;max-width:1100px;margin:0 auto;font-size:13px}
+th,td{border-top:1px solid var(--pg-line);padding:10px 12px;text-align:left;vertical-align:top;line-height:1.5}
+th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+td b{color:var(--pg-ink);font-weight:600}
+td .opz{display:block;margin-top:4px}
+td .opz i{font-style:normal;color:var(--hot);font-weight:650;margin-right:6px}
+td .prop{color:var(--ok);font-weight:600}
+
+/* ---------------- il telefono, tema minimal chiaro ---------------- */
+.phone{width:390px;height:844px;border-radius:38px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
+  background:var(--bg);color:var(--ink);font-family:var(--font)}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 4px;color:var(--ink);font-size:15px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.appbar .t{font-family:var(--serif);font-size:20px;font-weight:420;letter-spacing:-.015em;color:var(--ink)}
+.appbar .av{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-faint);font-size:14px;font-weight:600}
+.appbar .x{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted);font-size:15px}
+/* lo stato vuoto di Oggi, com'e nel codice (empty-state.tsx) */
+.vuoto{position:absolute;left:0;right:0;top:110px;bottom:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px 40px}
+.vuoto h1{font-family:var(--serif);font-size:31px;font-weight:420;line-height:1.18;letter-spacing:-.02em;color:var(--ink);text-align:center;margin-bottom:14px}
+.vuoto p{font-size:14px;color:var(--ink-muted);text-align:center;line-height:1.55;max-width:280px;margin-bottom:64px}
+.tasti{width:100%;max-width:320px;display:grid;gap:12px}
+.b1{width:100%;height:56px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px}
+.b1.off{background:#D8CFC5;color:#8A817A}
+.b2{width:100%;height:54px;border-radius:14px;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface)}
+.quiet{margin-top:18px;text-align:center;color:var(--ink-faint);font-size:15px;text-decoration:underline}
+/* il dock di vetro, in due righe */
+.dock{position:absolute;left:22px;right:22px;bottom:26px;height:64px;border-radius:32px;background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.08);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;font-size:11px;color:var(--ink-muted);font-weight:600}
+.dock span{display:flex;flex-direction:column;align-items:center;gap:3px}
+.dock span i{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--ink-muted);display:block;opacity:.7;font-style:normal}
+.dock span.on{color:var(--ink)}
+.dock span.on i{background:var(--ink);border-color:var(--ink)}
+.dock .mic{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:20px}
+/* la giornata piena */
+.gior{padding:14px 24px 0}
+.gior .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.gior h2{font-family:var(--serif);font-size:27px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.15;margin-top:6px}
+.gior .sn{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-muted);margin-top:10px;line-height:1.45}
+.gior .aree{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gior .aree div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--ink-muted);line-height:1.4}
+.gior .aree div b{display:block;color:var(--ink);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.gior .testo{margin-top:16px;font-family:var(--serif);font-size:16px;color:var(--ink);line-height:1.55}
+/* l'avviso discreto */
+.avviso{margin:18px 24px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;font-size:13.5px;color:var(--ink-muted);line-height:1.45}
+.avviso i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;font-style:normal}
+.avviso b{color:var(--ink);font-weight:600}
+.avviso .x{margin-left:auto;color:var(--ink-faint);font-size:16px}
+/* il muro */
+.scrim{position:absolute;inset:0;background:rgba(31,27,24,.45)}
+.wall{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:28px 28px 0 0;padding:26px 24px 34px}
+.wall .t{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.12;white-space:pre-line}
+.wall .p{font-size:15px;color:var(--ink-muted);line-height:1.55;margin-top:12px}
+.wall .p b{color:var(--ink);font-weight:600}
+.wall .feat{display:flex;gap:12px;align-items:flex-start;margin-top:14px;font-size:14px;color:var(--ink-muted);line-height:1.4}
+.wall .feat i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;margin-top:6px;font-style:normal}
+.wall .feat b{display:block;color:var(--ink);font-weight:600;font-size:14px}
+.wall .b1,.wall .b2{margin-top:10px}
+.wall .b1{margin-top:22px}
+.wall .nota{font-size:13px;color:var(--ink-faint);margin-top:16px;line-height:1.5}
+/* la vista gratis */
+.gratis{padding:14px 24px 0}
+.gratis .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.gratis h2{font-family:var(--serif);font-size:27px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.15;margin-top:6px}
+.gratis .sub{font-size:13px;color:var(--ink-faint);margin-top:6px}
+.gratis .testo{margin-top:18px;font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.6}
+.gratis .nudge{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13.5px;color:var(--ink-muted);line-height:1.45}
+.gratis .nudge b{color:var(--ink);font-weight:600}
+/* impostazioni: righe */
+.grp{margin:22px 24px 0}
+.grp .h{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin-bottom:8px}
+.grp .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.grp .r{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid var(--line);font-size:16px;color:var(--ink);gap:12px}
+.grp .r:first-child{border-top:0}
+.grp .r .v{color:var(--ink-faint);font-size:14px;display:flex;gap:8px;align-items:center;text-align:right;flex:none}
+.grp .r .v.ok{color:#2E7D4F}
+.grp .r .v.warn{color:var(--danger)}
+.grp .r .d{font-size:13px;color:var(--ink-faint);margin-top:3px;line-height:1.4}
+.grp .r.col2{display:block}
+.grp .r.col2 .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sheet{padding:26px 24px 0}
+.sheet h2{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.12}
+.sheet p{font-size:15px;color:var(--ink-muted);line-height:1.55;margin-top:12px}
+.sheet p b{color:var(--ink);font-weight:600}
+.opzione{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.opzione.on{border-color:var(--ink)}
+.opzione .k{font-size:16px;color:var(--ink);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.opzione .k i{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink-muted);display:grid;place-items:center;font-size:12px;font-style:normal}
+.opzione.on .k i{background:var(--ink);color:#fff;border-color:var(--ink)}
+.opzione .p{font-size:13.5px;color:var(--ink-muted);margin-top:6px;line-height:1.5}
+/* annotazioni */
+.ann{position:absolute;background:rgba(248,113,113,.92);color:#1a0b0b;font-size:11px;font-weight:650;padding:4px 8px;border-radius:6px;line-height:1.3;z-index:5;max-width:230px}
+.ann.ok{background:rgba(74,222,128,.92);color:#062a12}
+.toast{position:absolute;left:24px;right:24px;bottom:110px;background:#1F1B18;color:#F4EDE6;border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.5}
+
+/* ---------------- il pannello admin, desktop ---------------- */
+.desk{width:1180px;max-width:100%;height:700px;border-radius:18px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
+  background:var(--bg);color:var(--ink);font-family:var(--font)}
+.desk aside{width:240px;flex:none;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column}
+.desk .brand{font-family:var(--serif);font-size:22px;color:var(--ink);letter-spacing:-.01em}
+.desk .brand b{font-weight:600}
+.desk .brand-sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin:4px 0 26px}
+.desk nav{display:flex;flex-direction:column;gap:2px}
+.desk nav span{padding:10px 12px;border-radius:10px;font-size:14px;color:var(--ink-muted);display:flex;justify-content:space-between}
+.desk nav span em{font-style:normal;color:var(--ink-faint);font-size:12px}
+.desk nav span.on{background:var(--surface);color:var(--ink);font-weight:600;border:1px solid var(--line)}
+.desk nav span.off{color:#B9AFA6}
+.desk .who{margin-top:auto;font-size:12px;color:var(--ink-faint);line-height:1.5}
+.desk .who b{display:block;color:var(--ink);font-weight:600}
+.desk main{flex:1;padding:34px 40px;overflow:hidden}
+.desk h1{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.015em;color:var(--ink)}
+.desk .sub{font-size:14px;color:var(--ink-muted);margin-top:6px;max-width:640px;line-height:1.55}
+.desk .griglia{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px;max-width:820px}
+.desk .box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.desk .box .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.desk .box .n{font-family:var(--serif);font-size:34px;color:var(--ink);margin-top:8px;line-height:1.1;letter-spacing:-.02em}
+.desk .box .n small{font-family:var(--font);font-size:14px;color:var(--ink-faint);margin-left:6px;letter-spacing:0}
+.desk .box .p{font-size:13px;color:var(--ink-muted);margin-top:8px;line-height:1.5}
+.desk .box .campo{margin-top:12px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-family:var(--mono);font-size:15px;color:var(--ink)}
+.desk .box .campo span{font-family:var(--font);font-size:12px;color:var(--ink-faint)}
+.desk .sw{display:flex;align-items:center;gap:12px;margin-top:12px}
+.desk .sw .pill{width:52px;height:30px;border-radius:15px;background:#2E7D4F;position:relative}
+.desk .sw .pill:after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.desk .sw .pill.off{background:#C9BFB5}
+.desk .sw .pill.off:after{right:auto;left:3px}
+.desk .sw b{font-size:15px;color:var(--ink);font-weight:600}
+.desk .barra{margin-top:12px;height:10px;border-radius:5px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.desk .barra i{display:block;height:100%;width:12%;background:var(--accent)}
+.desk .azioni{display:flex;gap:10px;margin-top:22px;align-items:center}
+.desk .azioni .s{height:42px;padding:0 18px;border-radius:11px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;display:flex;align-items:center}
+.desk .azioni .g{height:42px;padding:0 18px;border-radius:11px;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:14px;display:flex;align-items:center;background:var(--surface)}
+.desk .azioni .nota{font-size:12px;color:var(--ink-faint);margin-left:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">L'ospite: quello che si vede</h1>
+  <p class="page-sub">Il pezzo 3 della SPEC (R1-R4) e per la maggior parte invisibile: un braccialetto anonimo, un conteggio sul server,
+    un tetto di spesa. Le cose che una persona VEDE sono quattro, piu una per te: <b>il primo avvio dritto sulla giornata</b>,
+    <b>l'avviso discreto</b> quando restano poche giornate, <b>il muro</b> quando il regalo finisce (su iPhone senza nessun acquisto),
+    <b>la riga in Impostazioni</b>, e la voce <b>Regalo AI</b> in /admin. Stile e parole seguono la presentazione approvata
+    (<i>ospite-e-cassaforte.html</i>, schermate 02-05) e il mockup della cassaforte. Niente qui promette una cosa che non esiste (divieto 7).</p>
+
+  <div class="divider"></div>
+  <p class="label">01 . Il primo avvio: si apre e basta</p>
+  <p class="caption">Installazione pulita, prima apertura. <b>Nessun login, nessun bivio "dove vuoi tenere il diario", nessuna schermata da leggere.</b>
+    La splash si toglie e sotto c'e Oggi, com'e gia oggi per chi e dentro: la stessa domanda, gli stessi due tasti. Il microfono e acceso
+    perche l'AI e in regalo. Il numero di tocchi fra l'apertura e il primo carattere e <b>zero</b> (R1). Il braccialetto anonimo nasce
+    in quel momento, in silenzio: la persona non lo vede e non lo sa.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="vuoto">
+          <h1>Com'e andata oggi?</h1>
+          <p>Apri il microfono e racconta.<br>Senza pensarci troppo.</p>
+          <div class="tasti">
+            <div class="b1">&#9679; Racconta a voce</div>
+            <div class="b2">&#9998; Scrivi a mano</div>
+          </div>
+        </div>
+        <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
+        <div class="ann ok" style="top:150px;left:14px">identica a Oggi di chi e dentro: nessuna schermata nuova</div>
+        <div class="ann ok" style="top:520px;right:14px">il microfono e acceso: l'AI e in regalo</div>
+        <div class="ann" style="top:96px;right:14px">il pallino dice "questo telefono", non "Locale"</div>
+      </div>
+      <div class="under"><b>Cosa e sparito dal primo avvio:</b> la schermata di login e il bivio di /benvenuto. <b>Cosa resta:</b> tutto, come voce in Impostazioni (schermata 04). Il login si raggiunge dal pallino in alto a destra e da Impostazioni, per chi un account ce l'ha gia.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:19</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="gior">
+          <div class="k">Giovedi 3 settembre . raccontata alle 21:18</div>
+          <h2>Chiusa la call con Ilenia, poi cena sotto casa</h2>
+          <div class="sn">Una giornata che si e sbloccata nel pomeriggio: il brief e passato, e la sera e stata leggera.</div>
+          <div class="aree">
+            <div><b>Lavoro</b>La call con Ilenia sul brief nuovo: stavolta l'ha presa bene.</div>
+            <div><b>Relazioni</b>Cena con Serena, il locale sotto casa ha riaperto.</div>
+            <div><b>Corpo</b>Sveglia alle sette e mezza, niente palestra.</div>
+            <div><b>Emozioni</b>Sollievo dopo la call, poi calma.</div>
+          </div>
+          <div class="testo">Oggi mi sono svegliato alle sette e mezza. Ho chiuso la call con Ilenia sul brief nuovo, e stavolta l'ha presa bene. Cena con Serena, pizza...</div>
+        </div>
+        <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
+        <div class="ann ok" style="top:590px;right:14px">titolo, sintesi e aree: l'AI ha lavorato, senza account</div>
+      </div>
+      <div class="under"><b>La prima giornata dell'ospite, chiusa dall'AI.</b> Nessun contatore a schermo: il consumo e silenzioso finche non resta poco (R3). Il server sa solo "il braccialetto 7A3F ha usato 1 giornata su 10".</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">02 . L'avviso discreto, quando restano poche giornate</p>
+  <p class="caption">Compare <b>sotto la giornata appena chiusa</b>, non all'avvio e non come finestra: una riga in una card, si chiude con la X e non torna
+    per quella giornata. Parte quando ne restano <b>3</b> (proposta), poi a 2, poi a 1. Dice la verita e dice cosa succede dopo: l'app resta,
+    finisce solo l'AI. Nessun tasto "compra" su iPhone.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>22:03</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="gior">
+          <div class="k">Mercoledi 10 settembre . raccontata alle 22:02</div>
+          <h2>Il preventivo e partito, e la schiena regge</h2>
+          <div class="sn">Una giornata di cose chiuse, con il corpo che finalmente collabora.</div>
+          <div class="aree">
+            <div><b>Lavoro</b>Mandato il preventivo a Xenovision dopo tre giri.</div>
+            <div><b>Corpo</b>Seconda seduta di fisioterapia, meglio.</div>
+          </div>
+        </div>
+        <div class="avviso"><i></i><span>Ti restano <b>2 giornate</b> con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.</span><span class="x">&#10005;</span></div>
+        <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
+        <div class="ann ok" style="top:520px;right:14px">una riga, in fondo, con la X: non un popup</div>
+        <div class="ann" style="top:600px;left:14px">niente tasto "compra": su iPhone non esiste</div>
+      </div>
+      <div class="under"><b>Quando:</b> alla chiusura di una giornata, se ne restano 3 o meno. <b>Quante volte:</b> una per giornata chiusa, mai all'avvio. <b>Dove no:</b> non nel Mese, non in Memo, non nella scrittura.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>22:03</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="gior">
+          <div class="k">Mercoledi 10 settembre . raccontata alle 22:02</div>
+          <h2>Il preventivo e partito, e la schiena regge</h2>
+          <div class="sn">Una giornata di cose chiuse, con il corpo che finalmente collabora.</div>
+          <div class="aree">
+            <div><b>Lavoro</b>Mandato il preventivo a Xenovision dopo tre giri.</div>
+            <div><b>Corpo</b>Seconda seduta di fisioterapia, meglio.</div>
+          </div>
+        </div>
+        <div class="avviso"><i></i><span>Ti restano <b>2 giornate</b> con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI. <u style="color:var(--ink)">Scopri premium</u></span><span class="x">&#10005;</span></div>
+        <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
+        <div class="ann" style="top:600px;right:14px">Variante web (browser): stessa riga, piu "scopri premium" sotto. E l'unica differenza web/iPhone</div>
+      </div>
+      <div class="under"><b>Sul web</b> (dove il pagamento esiste, Stripe) la riga ha in coda un collegamento "scopri premium". Dentro il guscio iPhone no: niente inviti a comprare (App Store 3.1.1, come gia fa il muro premium).</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">03 . Il muro: quando il regalo e finito</p>
+  <p class="caption">Compare <b>solo nel momento</b> in cui l'ospite chiede all'AI qualcosa (tocca il microfono, o chiude una giornata con l'AI) e il server risponde
+    "regalo finito". Mai all'avvio, mai nel Mese. <b>Su iPhone non c'e nessun acquisto in app:</b> due uscite sole, "continua senza AI" e "ho gia un account".
+    Il testo attuale del muro premium ("le paghi tu o le pago io") non va bene per chi ha appena ricevuto un regalo, e viene riscritto.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:40</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="vuoto" style="opacity:.5">
+          <h1>Com'e andata oggi?</h1>
+          <p>Apri il microfono e racconta.<br>Senza pensarci troppo.</p>
+        </div>
+        <div class="scrim"></div>
+        <div class="wall">
+          <div class="t">Le dieci giornate con l'AI
+in regalo sono finite</div>
+          <div class="p">Grazie di averle usate. Da qui puoi <b>continuare a scrivere</b> ogni giorno: la giornata si salva, si rilegge, si ritrova nel Mese. Manca solo la parte fatta dall'AI: il racconto a voce, il titolo, la sintesi, le aree.</div>
+          <div class="feat"><i></i><div><b>Scrivere resta gratis, per sempre</b>Il titolo e la prima riga che scrivi.</div></div>
+          <div class="feat"><i></i><div><b>Le tue giornate restano qui</b>Sul telefono, come prima. Niente si perde.</div></div>
+          <div class="b1">Continua senza AI</div>
+          <div class="b2">Ho gia un account</div>
+          <div class="nota">L'abbonamento dentro l'app sta arrivando. Per ora, su iPhone, non c'e niente da comprare.</div>
+        </div>
+        <div class="ann" style="top:250px;right:14px">nessun prezzo, nessun "compra": su iPhone non esiste</div>
+        <div class="ann ok" style="top:640px;left:14px">il tasto grande e quello che NON costa</div>
+      </div>
+      <div class="under"><b>iPhone, dal microfono.</b> "Continua senza AI" apre la scrittura a mano (la stessa uscita gratuita di oggi). "Ho gia un account" porta al login: chi e premium sul web ritrova l'AI. Il muro si richiude anche toccando fuori.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:40</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="vuoto" style="opacity:.5">
+          <h1>Com'e andata oggi?</h1>
+          <p>Apri il microfono e racconta.<br>Senza pensarci troppo.</p>
+        </div>
+        <div class="scrim"></div>
+        <div class="wall">
+          <div class="t">Le dieci giornate con l'AI
+in regalo sono finite</div>
+          <div class="p">Grazie di averle usate. Da qui puoi <b>continuare a scrivere</b> ogni giorno: la giornata si salva, si rilegge, si ritrova nel Mese. Manca solo la parte fatta dall'AI: il racconto a voce, il titolo, la sintesi, le aree.</div>
+          <div class="feat"><i></i><div><b>Con premium l'AI non ha limiti</b>Voce, titolo, sintesi, aree e i recap del mese.</div></div>
+          <div class="feat"><i></i><div><b>Le tue giornate restano qui</b>Sul telefono, come prima. Niente si perde.</div></div>
+          <div class="b1">prova premium . 4,99 EUR al mese</div>
+          <div class="b2">Continua senza AI</div>
+          <div class="quiet" style="margin-top:14px">Ho gia un account</div>
+        </div>
+        <div class="ann" style="top:250px;right:14px">SOLO sul web: il prezzo viene da pricing.ts, il checkout da Stripe</div>
+      </div>
+      <div class="under"><b>Web (browser), stesso momento.</b> Qui il pagamento esiste, quindi il tasto pieno e premium. Il muro premium di oggi resta per chi ha un account gratis: questo e un muro <b>diverso</b> (il server risponde "regalo finito", non "serve premium").</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:52</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="gratis">
+          <div class="k">Venerdi 12 settembre</div>
+          <h2>Oggi ho finito il preventivo e sono andato a correre</h2>
+          <div class="sub">scritta alle 21:51</div>
+          <div class="testo">Oggi ho finito il preventivo e sono andato a correre. Prima uscita dopo la schiena, sei chilometri piano. Serena ha cucinato, io ho lavato i piatti e siamo stati sul divano fino a tardi.</div>
+          <div class="nudge">Il titolo e la prima riga che hai scritto. <b>Le dieci giornate con l'AI in regalo sono finite:</b> l'app continua cosi, e le giornate restano tue.</div>
+        </div>
+        <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
+        <div class="ann ok" style="top:260px;right:14px">salvata senza muro: R3, a quota zero il salvataggio riesce</div>
+      </div>
+      <div class="under"><b>Dopo il muro, la giornata scritta a mano.</b> E la "vista gratis" che esiste gia (mockup due-modalita 02): titolo = prima riga, il testo come prosa. La riga in fondo dice la verita una volta e non insiste.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">04 . La riga in Impostazioni</p>
+  <p class="caption">L'ospite oggi vedrebbe la parola "Locale", che vuol dire "ho scelto di stare offline": non e vero, lui non ha scelto niente. Il gruppo Account
+    dice invece lo stato vero: <b>dove sono le giornate</b>, <b>quanto regalo resta</b>, e la porta per chi un account lo ha gia. La scelta "dove tenere il diario"
+    che e sparita dal primo avvio <b>vive qui</b> (R1).</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>10:20</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Impostazioni</span><span class="av">&#8226;</span></div>
+        <div class="grp"><div class="h">Account</div><div class="card">
+          <div class="r"><span>Dove sono le mie giornate</span><span class="v">Solo su questo telefono &#8250;</span></div>
+          <div class="r"><span>AI in regalo</span><span class="v">7 giornate su 10 &#8250;</span></div>
+          <div class="r col2"><div class="top"><span>Accedi al tuo account</span><span class="v">&#8250;</span></div><div class="d">Le giornate che hai gia scritto qui restano, e il regalo non ricomincia da capo.</div></div>
+        </div></div>
+        <div class="grp"><div class="h">App</div><div class="card">
+          <div class="r"><span>Versione</span><span class="v">1.0 (42)</span></div>
+        </div></div>
+        <div class="ann ok" style="top:236px;right:20px">stato vero: quante ne restano, non una barra sempre accesa</div>
+        <div class="ann" style="top:400px;right:20px">niente "Passa a Premium" su iPhone</div>
+      </div>
+      <div class="under"><b>Con regalo in corso.</b> "AI in regalo" e l'unico posto dove il contatore si vede sempre: e in Impostazioni, non nel diario (R3). Toccandola si apre la spiegazione a destra.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>10:21</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">AI in regalo</span><span class="x">&#8249;</span></div>
+        <div class="sheet">
+          <h2>7 giornate su 10, ancora con l'AI.</h2>
+          <p>Le prime dieci giornate le paga chi ha fatto questa app: racconto a voce, titolo, sintesi e aree. Una giornata conta <b>una volta</b>, anche se la riapri e la completi.</p>
+          <p>Quando finiscono, l'app continua: scrivi, salvi, rileggi. Manca solo la parte fatta dall'AI.</p>
+          <p>Il conto e legato a questo telefono, non all'app: <b>cancellare e reinstallare non lo azzera.</b> Se metti una email, il conto ti segue e non ricomincia.</p>
+        </div>
+        <div class="grp" style="margin-top:22px"><div class="card">
+          <div class="r"><span>Usate</span><span class="v">3</span></div>
+          <div class="r"><span>Rimaste</span><span class="v ok">7</span></div>
+        </div></div>
+        <div class="ann ok" style="top:600px;right:14px">dice la regola della reinstallazione: nessuna sorpresa</div>
+      </div>
+      <div class="under"><b>Il pannello "AI in regalo".</b> Tre frasi vere e due numeri. Nessun tasto: non c'e niente da comprare qui su iPhone, e sul web il tasto e nel muro.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>10:22</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Dove sono le mie giornate</span><span class="x">&#8249;</span></div>
+        <div class="sheet">
+          <h2>Adesso: solo su questo telefono.</h2>
+          <p>Se lo perdi, o lo cambi senza un backup, le giornate non si recuperano. Puoi salvarle su file quando vuoi, oppure mettere una email.</p>
+          <div class="opzione on"><div class="k">Solo su questo telefono <i>&#10003;</i></div><div class="p">Niente esce dal telefono, tranne il testo nel momento in cui l'AI ci lavora. Salva su file ogni tanto.</div></div>
+          <div class="opzione"><div class="k">Anche sul server, chiuso a chiave <i></i></div><div class="p">Metti una email. Le giornate salgono chiuse a chiave: nemmeno chi ha fatto l'app le legge. Le ritrovi se cambi telefono.</div></div>
+          <div class="b2" style="margin-top:22px">Salva su file adesso</div>
+        </div>
+        <div class="ann ok" style="top:420px;right:14px">il bivio di /benvenuto vive qui, come voce (R1)</div>
+      </div>
+      <div class="under"><b>La scelta che e sparita dal primo avvio.</b> Non e piu un muro ma una voce: chi la vuole la trova, chi non la vuole non la vede. La seconda opzione porta al login (email, codice, otto parole).</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">05 . In /admin: la voce "Regalo AI"</p>
+  <p class="caption">Al posto dello spazio spento "Piani e limiti". Quattro cose, tutte cambiabili <b>senza deploy</b>: l'interruttore, le giornate per ospite, il tetto
+    mensile, e quanto e stato speso questo mese (letto da ai_usage, in euro stimati). <b>Quando il tetto scatta</b>, il regalo si spegne per gli ospiti NUOVI
+    e per chi non ha ancora toccato la giornata di oggi; chi e a meta giornata la finisce (R4).</p>
+  <div class="row">
+    <div class="desk">
+      <aside>
+        <div class="brand"><b>day</b>alogue</div>
+        <div class="brand-sub">Admin</div>
+        <nav>
+          <span>Aree <em>6</em></span>
+          <span>Sito</span>
+          <span>Messaggio di benvenuto</span>
+          <span class="on">Regalo AI</span>
+          <span class="off">Obiettivi di default</span>
+          <span class="off">Modelli AI</span>
+        </nav>
+        <div class="who"><b>madh52@gmail.com</b>l'unico che entra qui</div>
+      </aside>
+      <main>
+        <h1>Regalo AI</h1>
+        <p class="sub">Le giornate con l'AI che regali a chi apre l'app senza account, e il tetto di spesa oltre il quale il regalo si spegne da solo. Si cambia qui e vale subito: nessun deploy.</p>
+        <div class="griglia">
+          <div class="box">
+            <div class="k">Il regalo</div>
+            <div class="sw"><div class="pill"></div><b>Acceso</b></div>
+            <div class="p">Spento: gli ospiti nuovi non ricevono AI, chi ha gia iniziato una giornata la finisce. Le giornate gia scritte non cambiano.</div>
+          </div>
+          <div class="box">
+            <div class="k">Giornate per ospite</div>
+            <div class="campo">10 <span>giornate con l'AI, una volta per telefono</span></div>
+            <div class="p">Una giornata conta una volta sola, anche se l'ospite la riapre. Cambiarlo vale per tutti, anche per chi e a meta.</div>
+          </div>
+          <div class="box">
+            <div class="k">Tetto mensile</div>
+            <div class="campo">100,00 <span>EUR al mese, stimati sui listini in ai-usage.ts</span></div>
+            <div class="p">Superato il tetto, il regalo si spegne da solo fino al primo del mese dopo. L'interruttore sopra resta com'e.</div>
+          </div>
+          <div class="box">
+            <div class="k">Speso questo mese</div>
+            <div class="n">12,40 <small>EUR su 100 . 48 ospiti . 214 giornate</small></div>
+            <div class="barra"><i></i></div>
+            <div class="p">Somma delle chiamate AI degli ospiti da inizio mese (in euro stimati, cambio fisso). Gli abbonati non entrano nel conto.</div>
+          </div>
+        </div>
+        <div class="azioni"><div class="s">Salva</div><div class="g">Annulla</div><span class="nota">L'ultima modifica: 3 settembre 2026, 23:10</span></div>
+      </main>
+      <div class="ann ok" style="top:12px;left:262px">il segnaposto "Piani e limiti" diventa questa voce</div>
+      <div class="ann" style="top:520px;right:40px">speso: letto dal server, mai da una tabella pubblica</div>
+    </div>
+  </div>
+  <p class="under" style="max-width:820px;margin:16px auto 0">Il limite (giornate, tetto, interruttore) sta in una tabella a una riga letta dal server prima di chiamare OpenAI. Lo <b>speso</b> non e un campo: e la somma di ai_usage del mese, che solo il pannello puo leggere. La tabella si chiama <i>regalo</i> ed e gia scritta stanotte (branch ospite-server), con questi valori di fabbrica.</p>
+
+  <div class="divider"></div>
+  <p class="label">06 . Il come, in parole semplici (il dettaglio e nel referto e nella SPEC)</p>
+  <div class="prose">
+    <h3>Il braccialetto</h3>
+    <p>Alla prima apertura il telefono si inventa un numero casuale lungo (32 byte) e lo mette nel <b>portachiavi di iCloud</b>, con lo stesso plugin
+      della cassaforte (<i>Cassaforte.swift</i>, conto "braccialetto"). Il portachiavi sopravvive alla cancellazione dell'app: per questo reinstallare
+      non regala una quota nuova (R2). Sul browser il numero sta in IndexedDB, e li la promessa e piu debole: chi svuota i dati del sito ricomincia.
+      E accettato, e scritto nel referto. Il server riceve il numero, non il nome: sa solo "questo braccialetto ha usato N giornate".</p>
+    <h3>Il conteggio</h3>
+    <p>Sul server, non sul telefono. Una tabella tiene <b>una riga per giornata</b> su cui l'AI ha lavorato per quel braccialetto: rilavorare la
+      stessa giornata (riapri, aggiungi, correggi) non costa una seconda giornata. Il numero di righe e la quota consumata. Le chiamate AI
+      arrivano con il braccialetto nell'intestazione, e la guardia del server accetta o un abbonato o un braccialetto con quota.</p>
+    <h3>Il tetto</h3>
+    <p>Ogni chiamata AI scrive gia oggi quanti token ha usato; da stanotte scrive anche il <b>costo stimato in euro</b> e il braccialetto. La somma del mese
+      e una domanda sola al database. Sopra il tetto, il server dice "regalo finito" a un braccialetto che non ha ancora una riga per oggi,
+      e lascia finire chi ce l'ha (R4). Il muro che compare e quello della schermata 03.</p>
+    <h3>La promessa nuova (SPEC, sezione 5)</h3>
+    <p>La promessa vecchia era "in locale nemmeno una richiesta di rete", e l'ospite la rompe per forza. Quella nuova, che i banchi ora verificano:
+      <b>delle giornate dell'ospite sul server non resta niente</b>. Il testo esce solo verso le route AI dell'elenco chiuso, nel momento in cui l'AI lavora,
+      e nessuna scrittura parte verso le tabelle delle giornate. Va detta anche nell'etichetta privacy dell'App Store: e vera solo se e detta.</p>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">07 . Le decisioni che servono a te (SPEC, sezione 7)</p>
+  <p class="caption">Il codice di stanotte usa la colonna <b>proposta</b> come valore di fabbrica: si cambia da /admin senza deploy, quindi decidere una cifra
+    diversa non costa un rilascio. Rispondi con i numeri, una riga sola (per esempio: "A2 B2 C1 D2 E1 F1").</p>
+  <table>
+    <tr><th>Domanda</th><th>Opzioni</th><th>Perche la proposta</th></tr>
+    <tr><td><b>A. Quante giornate con l'AI regali</b></td>
+      <td><span class="opz"><i>1</i>5 giornate</span><span class="opz"><i>2</i><span class="prop">10 giornate (proposta)</span></span><span class="opz"><i>3</i>20 giornate</span></td>
+      <td>Dieci giornate a voce piu un recap costano circa 25 centesimi a persona (SPEC 7.1). Cinque non bastano a prendere l'abitudine; venti raddoppiano il conto senza raddoppiare l'affetto. E la cifra della presentazione approvata.</td></tr>
+    <tr><td><b>B. Il tetto di spesa mensile</b></td>
+      <td><span class="opz"><i>1</i>50 EUR</span><span class="opz"><i>2</i><span class="prop">100 EUR (proposta)</span></span><span class="opz"><i>3</i>250 EUR</span></td>
+      <td>Con 10 giornate a 25 centesimi, 100 EUR coprono circa 400 ospiti nuovi al mese: sopra, il regalo si spegne da solo fino al primo del mese dopo. Se il lancio va forte lo alzi dal pannello in un minuto.</td></tr>
+    <tr><td><b>C. Cosa conta come "una giornata"</b></td>
+      <td><span class="opz"><i>1</i><span class="prop">Un giorno del calendario su cui l'AI ha lavorato, una volta sola (proposta)</span></span><span class="opz"><i>2</i>Ogni chiamata AI (anche riaprire costa)</span></td>
+      <td>Riaprire una giornata per aggiungere due righe e un gesto normale: farlo pagare come una giornata nuova sembrerebbe un imbroglio. Il costo extra e piccolo (il grosso e l'audio della prima volta).</td></tr>
+    <tr><td><b>D. Quando compare l'avviso discreto</b></td>
+      <td><span class="opz"><i>1</i>Solo all'ultima giornata</span><span class="opz"><i>2</i><span class="prop">Quando ne restano 3 o meno (proposta)</span></span><span class="opz"><i>3</i>Mai: solo il muro alla fine</span></td>
+      <td>R3 dice "silenzioso finche non resta poco". Tre giornate danno il tempo di decidere senza sorprese, e sono tre righe in tutto, mai un popup.</td></tr>
+    <tr><td><b>E. iPhone e iPad della stessa persona</b></td>
+      <td><span class="opz"><i>1</i><span class="prop">Un regalo solo, condiviso (proposta)</span></span><span class="opz"><i>2</i>Un regalo per dispositivo</span></td>
+      <td>Il portachiavi di iCloud e condiviso fra i dispositivi Apple della stessa persona, quindi il braccialetto lo e: e la strada che rende impossibile "reinstallo e ricomincio". Un regalo per dispositivo vorrebbe un braccialetto NON sincronizzato, che pero muore con la reinstallazione.</td></tr>
+    <tr><td><b>F. Il saluto di benvenuto (il velo di /admin)</b></td>
+      <td><span class="opz"><i>1</i><span class="prop">Resta com'e: e il tuo messaggio, e la casella si apre solo dopo alcune aperture (proposta)</span></span><span class="opz"><i>2</i>Si toglie dal primo avvio per rispettare "zero tocchi" alla lettera</span></td>
+      <td>R1 vuole zero tocchi fra apertura e primo carattere. Il saluto oggi e un velo bloccante: se resta, al primo avvio c'e UN tocco. Stanotte non l'ho toccato (e una schermata, e vuole il tuo ok): dimmi tu.</td></tr>
+    <tr><td><b>G. Dopo quante giornate si chiede l'email</b> (pezzo 4, R5: non urge)</td>
+      <td><span class="opz"><i>1</i>Dopo 3 giornate</span><span class="opz"><i>2</i><span class="prop">Dopo 5 giornate (proposta)</span></span><span class="opz"><i>3</i>Dopo 7 giornate</span></td>
+      <td>La domanda ha senso quando c'e qualcosa da perdere. Cinque giornate sono una settimana di abitudine, prima che il regalo finisca: la persona ha ancora l'AI e un motivo per restare.</td></tr>
+  </table>
+</div>
+</body>
+</html>
