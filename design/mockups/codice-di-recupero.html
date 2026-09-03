@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup . La cassaforte: il codice di recupero, il dispositivo nuovo, la giornata modificata altrove</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Plex Mono";src:url("../../src/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:block}
+:root{
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --mono:"Plex Mono",ui-monospace,Menlo,monospace;
+  --pg:#17171A;--pg-2:#202024;--pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;
+  --ok:#4ADE80;--no:#F87171;--hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:880px}
+.page-sub b,.caption b,.prose b,.under b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;max-width:960px;line-height:1.75}
+.row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.under{font-size:12px;color:var(--pg-faint);text-align:center;max-width:390px;line-height:1.6}
+.under .no{color:var(--no);font-weight:600}
+.under .si{color:var(--ok);font-weight:600}
+.prose{max-width:880px;margin:0 auto;font-size:14.5px;line-height:1.8;color:var(--pg-mut)}
+.prose p{margin:0 0 14px}
+.prose h3{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:26px 0 8px;letter-spacing:-.01em}
+table{border-collapse:collapse;width:100%;max-width:1000px;margin:0 auto;font-size:13px}
+th,td{border-top:1px solid var(--pg-line);padding:10px 12px;text-align:left;vertical-align:top;line-height:1.5}
+th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+td b{color:var(--pg-ink);font-weight:600}
+
+/* ---------------- il telefono, tema minimal chiaro ---------------- */
+.phone{width:390px;height:844px;border-radius:38px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
+  background:var(--bg);color:var(--ink);font-family:var(--font)}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 4px;color:var(--ink);font-size:15px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.appbar .t{font-family:var(--serif);font-size:20px;font-weight:420;letter-spacing:-.015em;color:var(--ink)}
+.appbar .x{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted);font-size:15px}
+.sheet{padding:26px 24px 0}
+.sheet h2{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.12}
+.sheet p{font-size:15px;color:var(--ink-muted);line-height:1.55;margin-top:12px}
+.sheet p.warn{color:var(--danger);font-weight:500}
+.words{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 14px;display:grid;grid-template-columns:1fr 1fr;gap:9px 14px}
+.words div{font-family:var(--mono);font-size:15px;color:var(--ink);display:flex;gap:10px;align-items:baseline}
+.words div i{font-style:normal;font-size:11px;color:var(--ink-faint);width:18px;text-align:right}
+.b1{margin-top:22px;width:100%;height:58px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px}
+.b1.off{background:#D8CFC5;color:#8A817A}
+.b2{margin-top:10px;width:100%;height:54px;border-radius:14px;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface)}
+.quiet{margin-top:22px;text-align:center;color:var(--ink-faint);font-size:15px;text-decoration:underline}
+.check{margin-top:20px;display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--ink)}
+.check .box{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--ink-muted);flex:none;margin-top:1px;display:grid;place-items:center;font-size:14px}
+.check .box.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.field{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:16px;min-height:140px;padding:14px;font-family:var(--mono);font-size:15px;line-height:1.7;color:var(--ink)}
+.field .ph{color:var(--ink-faint)}
+.field .bad{color:var(--danger);text-decoration:underline wavy}
+.hint{font-size:13px;color:var(--ink-faint);margin-top:10px;line-height:1.5}
+.hint.bad{color:var(--danger)}
+/* il conflitto: due versioni */
+.ver{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.ver .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;display:flex;justify-content:space-between}
+.ver .k b{color:var(--ink);letter-spacing:0;text-transform:none;font-weight:600;font-size:12px}
+.ver .t{font-family:var(--serif);font-size:19px;color:var(--ink);margin-top:8px;line-height:1.2}
+.ver .p{font-size:14px;color:var(--ink-muted);margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ver .p mark{background:#F3E6DE;color:var(--ink)}
+.ver .act{margin-top:12px;height:44px;border-radius:12px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px;color:var(--ink)}
+.ver.mine .act{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* impostazioni: righe */
+.grp{margin:22px 24px 0}
+.grp .h{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin-bottom:8px}
+.grp .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.grp .r{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid var(--line);font-size:16px;color:var(--ink)}
+.grp .r:first-child{border-top:0}
+.grp .r .v{color:var(--ink-faint);font-size:14px;display:flex;gap:8px;align-items:center}
+.grp .r .v.ok{color:#2E7D4F}
+.grp .r .v.warn{color:var(--danger)}
+/* annotazioni */
+.ann{position:absolute;background:rgba(248,113,113,.92);color:#1a0b0b;font-size:11px;font-weight:650;padding:4px 8px;border-radius:6px;line-height:1.3;z-index:5;max-width:230px}
+.ann.ok{background:rgba(74,222,128,.92);color:#062a12}
+.toast{position:absolute;left:24px;right:24px;bottom:40px;background:#1F1B18;color:#F4EDE6;border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">La cassaforte: le tre schermate che si vedono</h1>
+  <p class="page-sub">La cassaforte e per il 90% invisibile: chiudere a chiave, numeri di versione, chiave nel portachiavi. Le uniche cose
+    che una persona VEDE sono tre: <b>il codice di recupero</b> (una volta, quando mette la email), <b>la richiesta del codice</b>
+    su un dispositivo che non ha la chiave, e <b>l'avviso</b> quando una giornata e stata modificata altrove. Piu una riga in
+    Impostazioni. Tutto qui sotto segue la presentazione approvata (<i>ospite-e-cassaforte.html</i>, schermate 07-10).</p>
+
+  <div class="divider"></div>
+  <p class="label">01 . Il codice di recupero, dato una volta sola</p>
+  <p class="caption">Compare subito dopo il codice email a 6 cifre, la prima volta che l'account nasce. <b>Non e una nota a pie di pagina:</b>
+    la frase sulla perdita e grande, rossa, e il tasto resta spento finche non spunti "l'ho salvato". Otto parole italiane
+    (non un blocco di caratteri): entrano in uno screenshot, si dettano al telefono, si scrivono su un foglio senza sbagliare.
+    <b>Controaudit del 3 settembre:</b> erano 12; con le parole usate come seme e stirate da PBKDF2 (funzione standard di Safari e Chrome) ne bastano 8.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Il tuo codice di recupero</span></div>
+        <div class="sheet">
+          <h2>Otto parole. Sono la chiave del tuo diario.</h2>
+          <p>Da adesso ogni giornata viene chiusa a chiave sul telefono prima di partire: sul server arriva un blocco illeggibile, e nessuno, nemmeno chi ha fatto questa app, puo aprirlo.</p>
+          <div class="words">
+            <div><i>1</i>albero</div><div><i>5</i>tramonto</div>
+            <div><i>2</i>finestra</div><div><i>6</i>marmo</div>
+            <div><i>3</i>dodici</div><div><i>7</i>cenere</div>
+            <div><i>4</i>sabbia</div><div><i>8</i>nuvola</div>
+          </div>
+          <p class="warn">Se perdi queste parole e perdi tutti i tuoi dispositivi, il diario non lo recupera nessuno. Neanche noi.</p>
+          <p style="margin-top:14px"><b style="color:var(--ink)">Fai uno screenshot adesso</b>, o copiale: tienile in un posto che apri solo tu.</p>
+          <div class="b2">&#10697; Copia le parole</div>
+          <div class="check"><span class="box on">&#10003;</span><span>Le ho salvate</span></div>
+          <div class="b1">Ho capito, continua</div>
+        </div>
+        <div class="ann ok" style="top:780px;right:14px">tasto spento finche non spunta</div>
+      </div>
+      <div class="under"><b>Quando:</b> subito dopo il codice email, prima di vedere il diario. <b>Quante volte:</b> una. Si puo rivedere da Impostazioni &gt; Cassaforte, dopo Face ID.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:14</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Il tuo codice di recupero</span></div>
+        <div class="sheet">
+          <h2>Otto parole. Sono la chiave del tuo diario.</h2>
+          <p>Da adesso ogni giornata viene chiusa a chiave sul telefono prima di partire: sul server arriva un blocco illeggibile, e nessuno, nemmeno chi ha fatto questa app, puo aprirlo.</p>
+          <div class="words">
+            <div><i>1</i>albero</div><div><i>5</i>tramonto</div>
+            <div><i>2</i>finestra</div><div><i>6</i>marmo</div>
+            <div><i>3</i>dodici</div><div><i>7</i>cenere</div>
+            <div><i>4</i>sabbia</div><div><i>8</i>nuvola</div>
+          </div>
+          <p class="warn">Se perdi queste parole e perdi tutti i tuoi dispositivi, il diario non lo recupera nessuno. Neanche noi.</p>
+          <p style="margin-top:14px"><b style="color:var(--ink)">Fai uno screenshot adesso</b>, o copiale: tienile in un posto che apri solo tu.</p>
+          <div class="b2">&#10697; Copia le parole</div>
+          <div class="check"><span class="box"></span><span>Le ho salvate</span></div>
+          <div class="b1 off">Ho capito, continua</div>
+        </div>
+        <div class="ann" style="top:96px;right:14px">nessuna X: non si salta</div>
+        <div class="ann" style="top:640px;right:14px">grande e rossa, non in fondo in piccolo</div>
+      </div>
+      <div class="under">Lo stesso schermo prima della spunta. <b>Su iPhone il codice serve quasi mai</b> (la chiave viaggia col portachiavi di iCloud) ma lo diamo lo stesso a tutti: e l'unica rete per chi spegne iCloud o usa un computer Windows.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">02 . Un dispositivo che non ha la chiave</p>
+  <p class="caption">Entri con la email su un browser, o su un iPhone senza il portachiavi di iCloud. L'app VEDE che le giornate esistono
+    (quante, da quando) ma non le puo aprire. Lo dice, e chiede le parole. <b>Una volta per dispositivo:</b> poi la chiave resta li.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>09:02</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Il tuo diario e chiuso a chiave</span></div>
+        <div class="sheet">
+          <h2>Ci sono 148 giornate, dal 12 maggio. Questo dispositivo non ha la chiave.</h2>
+          <p>Scrivi le otto parole del codice di recupero, nell'ordine. Le hai ricevute quando hai creato l'account.</p>
+          <div class="field"><span class="ph">albero finestra dodici ...</span></div>
+          <p class="hint">Le maiuscole e gli accenti non contano. Puoi incollarle tutte insieme.</p>
+          <div class="b1 off">Apri il diario</div>
+          <div class="quiet">Non ho il codice</div>
+        </div>
+        <div class="ann" style="top:96px;right:14px">148 e 12 maggio sono veri: data e conteggio restano in chiaro</div>
+      </div>
+      <div class="under"><b>Stato vuoto.</b> Il tasto si accende solo a otto parole valide.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>09:02</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Il tuo diario e chiuso a chiave</span></div>
+        <div class="sheet">
+          <h2>Ci sono 148 giornate, dal 12 maggio. Questo dispositivo non ha la chiave.</h2>
+          <p>Scrivi le otto parole del codice di recupero, nell'ordine. Le hai ricevute quando hai creato l'account.</p>
+          <div class="field">albero finestra dodici sabbia tramonto marmo <span class="bad">cenerr</span> nuvola</div>
+          <p class="hint bad">La settima parola non esiste nell'elenco. Controlla: "cenerr".</p>
+          <div class="b1 off">Apri il diario</div>
+          <div class="quiet">Non ho il codice</div>
+        </div>
+        <div class="ann ok" style="top:470px;right:16px">l'errore dice QUALE parola, non "codice sbagliato"</div>
+      </div>
+      <div class="under"><b>Errore di battitura.</b> Ogni parola viene da un elenco chiuso: una parola che non c'e si segnala subito, prima di provare ad aprire.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>09:02</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Non ho il codice</span></div>
+        <div class="sheet">
+          <h2>Senza il codice, questo dispositivo non puo aprire il diario.</h2>
+          <p>Non esiste un "ho dimenticato la password": la chiave non ce l'abbiamo, e per questo il diario e tuo e basta.</p>
+          <p>Le strade che restano:</p>
+          <p><b>1.</b> Un iPhone, iPad o Mac con lo stesso Apple ID che ha gia aperto il diario: la chiave arriva da sola col portachiavi di iCloud, e da li puoi rivedere le parole in Impostazioni &gt; Cassaforte.</p>
+          <p><b>2.</b> Un file di backup salvato in passato: si importa e si legge da qui.</p>
+          <p><b>3.</b> Ricominciare da zero, con un diario nuovo e un codice nuovo. Le 148 giornate chiuse restano sul server, illeggibili, finche non le cancelli tu.</p>
+          <div class="b2">Ricomincia da zero</div>
+          <div class="quiet">Indietro</div>
+        </div>
+      </div>
+      <div class="under"><b>La verita, detta chiara.</b> Nessuna porta di servizio (SPEC R8, divieto 5). Le tre strade sono le uniche vere.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">03 . La giornata modificata altrove</p>
+  <p class="caption">Due dispositivi, e il secondo prova a salvare una copia vecchia. <b>Il server rifiuta</b> (numero di versione non piu attuale) senza
+    aprire nessuna cassettina, e il telefono mostra tutte e due le versioni. Non sceglie da solo, non cancella niente.</p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>23:40</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Giornata modificata altrove</span><span class="x">&#10005;</span></div>
+        <div class="sheet" style="padding-top:18px">
+          <h2 style="font-size:26px">Mercoledi 2 settembre e cambiata su un altro dispositivo mentre la scrivevi qui.</h2>
+          <p>Ci sono due versioni. Scegli quale tenere, oppure tienile tutte e due: l'altra finisce in fondo al racconto.</p>
+          <div class="ver">
+            <div class="k"><span>Sull'altro dispositivo</span><b>Mac, 23:31</b></div>
+            <div class="t">Chiusa la call con Ilenia, poi cena</div>
+            <div class="p">Oggi mi sono svegliato alle sette e mezza. Ho chiuso la call con Ilenia sul brief nuovo, e stavolta l'ha presa bene. <mark>Cena con Serena, pizza, il locale sotto casa ha riaperto.</mark></div>
+            <div class="act">Tieni questa</div>
+          </div>
+          <div class="ver mine">
+            <div class="k"><span>Qui, non ancora salvata</span><b>iPhone, adesso</b></div>
+            <div class="t">Chiusa la call con Ilenia</div>
+            <div class="p">Oggi mi sono svegliato alle sette e mezza. Ho chiuso la call con Ilenia sul brief nuovo, e stavolta l'ha presa bene. <mark>Nel pomeriggio ho scritto per un'ora e poi ho guardato il telefono per un'altra.</mark></div>
+            <div class="act">Tieni questa</div>
+          </div>
+          <div class="b2" style="margin-top:14px">Tienile tutte e due</div>
+        </div>
+        <div class="ann ok" style="top:150px;right:14px">le frasi diverse sono evidenziate</div>
+      </div>
+      <div class="under"><b>Chi vince:</b> la persona. "Tienile tutte e due" mette la versione scartata in fondo al racconto con un separatore, cosi non si perde una riga.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>23:41</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span></div>
+        <div class="sheet">
+          <p style="margin-top:0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650">Mercoledi 2 settembre</p>
+          <h2 style="font-size:28px;margin-top:6px">Chiusa la call con Ilenia, poi cena</h2>
+          <p>Oggi mi sono svegliato alle sette e mezza. Ho chiuso la call con Ilenia sul brief nuovo, e stavolta l'ha presa bene. Cena con Serena, pizza, il locale sotto casa ha riaperto.</p>
+          <p style="color:var(--ink-faint);font-size:13px;letter-spacing:.08em;margin-top:18px">&mdash; dall'altra versione &mdash;</p>
+          <p style="margin-top:6px">Nel pomeriggio ho scritto per un'ora e poi ho guardato il telefono per un'altra.</p>
+        </div>
+        <div class="toast">Giornata salvata. La versione dell'iPhone e in fondo al racconto.</div>
+      </div>
+      <div class="under"><b>Dopo "tienile tutte e due".</b> Niente sparisce: il pezzo dell'iPhone e li, sotto un separatore, e si puo sistemare a mano.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">04 . La riga in Impostazioni</p>
+  <p class="caption">Una riga sola, "Cassaforte", nel gruppo dei dati. Dice lo stato vero. Per chi ha gia giornate in chiaro (Manuel, oggi) c'e il
+    passaggio esplicito, come chiede R12: <b>non un effetto collaterale di un aggiornamento.</b></p>
+  <div class="row">
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>10:20</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Impostazioni</span></div>
+        <div class="grp"><div class="h">Le tue giornate</div><div class="card">
+          <div class="r"><span>Dove sono le mie giornate</span><span class="v">Sul telefono e sul server &#8250;</span></div>
+          <div class="r"><span>Cassaforte</span><span class="v warn">148 giornate in chiaro &#8250;</span></div>
+          <div class="r"><span>Salva su file</span><span class="v">2 giorni fa &#8250;</span></div>
+        </div></div>
+        <div class="ann" style="top:236px;right:20px">stato vero, non un'icona</div>
+      </div>
+      <div class="under"><b>Prima del passaggio</b> (il caso di Manuel): la riga dice quante giornate sono ancora leggibili sul server.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>10:20</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Cassaforte</span><span class="x">&#8249;</span></div>
+        <div class="sheet">
+          <h2>148 giornate sono ancora in chiaro sul server.</h2>
+          <p>Sono state scritte prima della cassaforte. Chiuderle a chiave le rende illeggibili per chiunque non abbia la tua chiave, noi compresi. Ci vuole meno di un minuto e non tocca il testo.</p>
+          <p>Prima di farlo, il telefono ti da il codice di recupero: otto parole da salvare con uno screenshot.</p>
+          <div class="b1">Chiudi a chiave le 148 giornate</div>
+          <div class="quiet">Non adesso</div>
+        </div>
+        <div class="ann ok" style="top:560px;right:14px">esplicito, con un tasto suo</div>
+      </div>
+      <div class="under"><b>Il passaggio.</b> Legge le giornate, le chiude una per una, poi cancella il testo in chiaro dal server. Se si interrompe a meta, riprende da dove era: ogni giornata e o di qua o di la, mai a meta.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>10:22</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Cassaforte</span><span class="x">&#8249;</span></div>
+        <div class="grp" style="margin-top:8px"><div class="card">
+          <div class="r"><span>Stato</span><span class="v ok">Tutto chiuso a chiave</span></div>
+          <div class="r"><span>Giornate nella cassaforte</span><span class="v">148</span></div>
+          <div class="r"><span>La chiave su questo dispositivo</span><span class="v ok">Nel portachiavi di iCloud</span></div>
+          <div class="r"><span>Vedi il codice di recupero</span><span class="v">Face ID &#8250;</span></div>
+        </div></div>
+        <div class="grp"><div class="h">Cosa vede il server</div><div class="card">
+          <div class="r" style="display:block;font-size:14px;color:var(--ink-muted);line-height:1.55">Di chi e ogni giornata, che giorno e, la versione, quando e stata scritta e quanto pesa. <b style="color:var(--ink)">Il testo, il titolo, la sintesi, le aree e i fatti: no.</b></div>
+        </div></div>
+      </div>
+      <div class="under"><b>Dopo.</b> La stessa riga dice "Tutto chiuso a chiave", e il pannello spiega in due righe cosa il server vede e cosa no. E la promessa di R6, scritta dove la persona la puo leggere.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">05 . Il come, in parole semplici (il dettaglio tecnico sta nella SPEC)</p>
+  <div class="prose">
+    <h3>La serratura</h3>
+    <p>Si usa la serratura standard che hanno gia dentro Safari, Chrome e il guscio iOS (si chiama AES-GCM a 256 bit, ed e la stessa
+      che usano le banche e iMessage). Nessuna invenzione: e una funzione del sistema, non codice nostro. Ogni giornata viene chiusa
+      con una chiave sola, quella del diario, e ogni chiusura ha un numero casuale diverso, cosi due giornate uguali non si assomigliano.</p>
+    <h3>La cassettina</h3>
+    <p>Sul server esiste una tabella nuova: una riga per giorno, con dentro <b>di chi e, che giorno e, che versione ha, quando e stata
+      scritta, quanto pesa, e il blocco chiuso</b>. Nel blocco stanno testo, titolo, sintesi, aree, persone, misure, obiettivi e fatti di
+      quel giorno: tutto cio che oggi sta sparso in cinque tabelle. Il server accetta una scrittura solo se il numero di versione e
+      quello che si aspetta, e lo controlla con una funzione sua, senza aprire niente.</p>
+    <h3>La chiave</h3>
+    <p>Nasce sul dispositivo, a caso, quando si crea l'account: otto parole prese da un alfabeto pubblico di 2048 parole italiane, con un
+      controllo d'errore incorporato (una parola sbagliata si vede subito). Dalle otto parole il dispositivo ricava la chiave vera con
+      una funzione lenta apposta (PBKDF2, mezzo secondo). Su iPhone il seme va nel portachiavi con la sincronizzazione iCloud accesa: cosi
+      arriva da solo sugli altri dispositivi Apple. Sul server va SOLO una prova (una frase fissa chiusa con la chiave) che serve a dire
+      "le parole sono giuste" senza rivelare niente. Nessuna copia della chiave o delle parole va sul server.</p>
+    <h3>Cosa non fa questa versione</h3>
+    <p>Non cifra ancora Memo, Recap e le domande aperte (le cassettine sono le giornate); non cifra il file di backup, che resta
+      leggibile per scelta dichiarata; non aggiorna gli schermi accesi (divieto 2). Sono i passi dopo, sopra lo stesso impianto.</p>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">06 . Le decisioni che servono a Manuel</p>
+  <table>
+    <tr><th>Domanda</th><th>Proposta</th><th>Perche</th></tr>
+    <tr><td><b>Quante parole</b></td><td>8 (deciso il 3 settembre, dopo controaudit)</td><td>Le parole sono un seme (80 bit + controllo) stirato da PBKDF2-SHA256 con 600.000 giri: indovinarle a forza bruta e fuori portata anche per chi avesse il database intero e migliaia di computer.</td></tr>
+    <tr><td><b>Come si salvano</b></td><td>Screenshot consigliato per primo, piu il tasto Copia</td><td>Scelta di Manuel. Il prezzo detto chiaro: uno screenshot vale quanto la sicurezza delle Foto.</td></tr>
+    <tr><td><b>Il browser sul computer</b></td><td>Pezzo 2-bis: collegamento dal telefono con un codice a 6 cifre, senza parole</td><td>Il portachiavi iCloud non copre il sito web. Il telefono manda la chiave al browser chiusa con una serratura usa-e-getta; il server fa il postino e vede un pacchetto illeggibile.</td></tr>
+    <tr><td><b>Quando si da il codice</b></td><td>Subito dopo il codice email, prima di vedere il diario</td><td>Come nella presentazione (schermata 06). E l'unico momento in cui la persona e attenta.</td></tr>
+    <tr><td><b>Il passaggio delle giornate vecchie</b></td><td>Tasto esplicito in Impostazioni &gt; Cassaforte</td><td>R12: non un effetto collaterale. Per te e per chiunque abbia dati dal prima.</td></tr>
+    <tr><td><b>Il conflitto</b></td><td>Tre tasti: tieni questa, tieni quella, tienile tutte e due</td><td>Nessuna scelta automatica (R7). "Tutte e due" evita la paura di perdere una riga.</td></tr>
+  </table>
+</div>
+</body>
+</html>
