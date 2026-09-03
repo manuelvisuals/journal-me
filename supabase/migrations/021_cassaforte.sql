@@ -34,10 +34,13 @@ create table if not exists cassaforte_utente (
 
 alter table cassaforte_utente enable row level security;
 
+drop policy if exists "cassaforte_utente_select_own" on cassaforte_utente;
 create policy "cassaforte_utente_select_own" on cassaforte_utente
   for select using (auth.uid() = user_id);
+drop policy if exists "cassaforte_utente_insert_own" on cassaforte_utente;
 create policy "cassaforte_utente_insert_own" on cassaforte_utente
   for insert with check (auth.uid() = user_id);
+drop policy if exists "cassaforte_utente_delete_own" on cassaforte_utente;
 create policy "cassaforte_utente_delete_own" on cassaforte_utente
   for delete using (auth.uid() = user_id);
 
@@ -57,8 +60,10 @@ create index if not exists cassettine_user_updated on cassettine (user_id, updat
 
 alter table cassettine enable row level security;
 
+drop policy if exists "cassettine_select_own" on cassettine;
 create policy "cassettine_select_own" on cassettine
   for select using (auth.uid() = user_id);
+drop policy if exists "cassettine_delete_own" on cassettine;
 create policy "cassettine_delete_own" on cassettine
   for delete using (auth.uid() = user_id);
 -- NIENTE insert ne update dal client: si passa da salva_cassettina().
