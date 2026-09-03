@@ -18,7 +18,10 @@ import Security
  * Nessun metodo esporta niente altrove: leggi, scrivi, cancella. Il seme
  * viaggia come base64, mai come stringa di parole.
  *
- * Registrazione: CAPBridgedPlugin, auto-scoperto (come DockVetro.swift).
+ * Registrazione: a mano, in AppViewController.capacitorDidLoad (DockVetro.swift).
+ * Capacitor scopre da solo SOLO i plugin dei pacchetti npm (packageClassList
+ * in capacitor.config.json): un plugin che vive dentro l'app senza quella
+ * riga non esiste, e da JavaScript si vede "not implemented on ios".
  */
 @objc(CassafortePlugin)
 public class CassafortePlugin: CAPPlugin, CAPBridgedPlugin {
