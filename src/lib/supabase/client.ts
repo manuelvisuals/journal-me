@@ -3,6 +3,18 @@ import {
   type SupabaseClient,
 } from "@supabase/supabase-js";
 import { t } from "@/lib/i18n";
+import { fetchConTetto } from "@/lib/tetto";
+
+/**
+ * Tetto di tempo di OGNI richiesta che il client Supabase manda in rete:
+ * letture, scritture, upload nel bucket, rinnovo del gettone (SPEC
+ * ospite-e-cassaforte, R11). Prima non ce n'era nessuno, e senza rete una
+ * `select` restava appesa per sempre: la trascrizione del 3 settembre 2026
+ * si e fermata su "sto trascrivendo" proprio li, nella lettura del
+ * glossario. Trenta secondi bastano anche a un upload di foto da una
+ * connessione lenta; una lettura normale ci mette meno di uno.
+ */
+export const SUPABASE_TETTO_MS = 30_000;
 
 /**
  * Browser/native Supabase client.
@@ -40,6 +52,8 @@ export function createClient(): SupabaseClient {
     url,
     anonKey,
     {
+      // Un tetto su ogni richiesta, in un punto solo (vedi SUPABASE_TETTO_MS).
+      global: { fetch: fetchConTetto(SUPABASE_TETTO_MS) },
       auth: {
         persistSession: true,
         autoRefreshToken: true,

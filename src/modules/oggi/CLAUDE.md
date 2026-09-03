@@ -66,7 +66,8 @@ bucket privato `foto` (migration 020), client Supabase a import dinamico
 export/import (scheletro) NON include ancora le foto — e scritto anche
 nella nota di consegna, non dimenticarlo quando si tocca il backup.
 
-- Banchi prima del push: `verify-foto`, `verify-chiarimenti`, `verify-chiarimenti-vivo`,
+- Banchi prima del push: `verify-rete-spenta` (R11: senza rete la trascrizione
+  mostra un messaggio, mai un'attesa infinita), `verify-foto`, `verify-chiarimenti`, `verify-chiarimenti-vivo`,
   `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,
@@ -173,3 +174,16 @@ volti della stessa cosa (Talk, Today, The day) sono diventati UNO:
 Le due rotte restano (passo 2, fonderle davvero, quando conviene): il
 metro e che a occhio non si distinguono. Banchi toccati: verify-testo-
 giorno, verify-foto, verify-barra-alto, verify-nav-giorno, verify-sito.
+
+## Il buco della rete (3 settembre 2026, SPEC ospite-e-cassaforte R11)
+
+Senza rete, dopo Fine, la trascrizione restava su "Trascrivo..." per sempre:
+la lettura del glossario da Supabase, davanti alla chiamata, non aveva tetto.
+Chiuso dalla sessione scheletro `scheletro-rete-tetto`: tetti in
+`src/lib/tetto.ts`, client Supabase con `fetchConTetto` (30 s su ogni
+richiesta), `apiFetch` col cronometro prima del gettone. In questo modulo:
+`GLOSSARIO_TETTO_MS` (4 s, poi si trascrive senza), `TRASCRIZIONE_TETTO_MS`
+(120 s sull'intera operazione), `clipRef` (Fine dopo un errore riprova con lo
+stesso audio). REGOLA da tenere: ogni attesa che precede una chiamata con
+tetto deve avere un tetto anche lei, o il tetto non serve. Referto e prova a
+mordere in `PROVA-trascrizione.md`.
