@@ -6,6 +6,7 @@ import {
   pianoDaTransazione,
   transazioneDaApple,
   type TransazioneApple,
+  configurata,
 } from "@/modules/abbonamento/server/apple-api";
 
 /**
@@ -67,6 +68,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "transactionId mancante" }, { status: 400 });
   }
 
+  // Senza la chiave di App Store Connect sul server non si chiede niente ad
+  // Apple: lo si dice per quello che e (4 settembre 2026: le variabili non
+  // erano su Vercel e la risposta era "Apple non conosce questa
+  // transazione", una bugia sul motivo).
+  if (!configurata() && !process.env.APPLE_API_BASE_URL) {
+    return NextResponse.json(
+      { error: "apple_non_configurato", messaggio: "Il server non e ancora collegato ad Apple. L'acquisto e al sicuro: riprova piu tardi." },
+      { status: 503 },
+    );
+  }
+
   let t: TransazioneApple | null;
   try {
     t = await transazioneDaApple(transactionId);
@@ -74,7 +86,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Apple non risponde: ${String((e as Error).message)}` }, { status: 502 });
   }
   if (!t) {
-    return NextResponse.json({ error: "Apple non conosce questa transazione" }, { status: 404 });
+    return NextResponse.json({ error: "Apple non trova questa transazione." }, { status: 404 });
   }
 
   const piano = pianoDaTransazione(t);

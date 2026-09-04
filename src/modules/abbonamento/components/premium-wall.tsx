@@ -176,6 +176,10 @@ export function PremiumWall() {
   // Le schede: i prodotti come li dice Apple. L'interruttore dell'annuale
   // arriva da /api/ospite/stato (stessa origine, senza testo: e nell'elenco
   // chiuso della promessa sulla rete), cosi vale anche per l'ospite.
+  // `giro` rilegge i prodotti dopo un foglio di Apple chiuso senza premium:
+  // entrando nell'App Store dal foglio la vetrina puo cambiare paese (in
+  // sandbox: da $ a EUR), e il prezzo in scheda deve dire quello vero.
+  const [giro, setGiro] = useState(0);
   useEffect(() => {
     if (!wall || !negozio) return;
     let vivo = true;
@@ -196,7 +200,7 @@ export function PremiumWall() {
     return () => {
       vivo = false;
     };
-  }, [wall, negozio]);
+  }, [wall, negozio, giro]);
 
   if (!wall) return null;
 
@@ -221,6 +225,7 @@ export function PremiumWall() {
       openPremiumWelcome();
       return;
     }
+    setGiro((g) => g + 1);
     if (esito.esito === "in_attesa") {
       setErrore(t("L'acquisto aspetta un'approvazione (In famiglia): premium si accende da solo appena arriva."));
       return;
