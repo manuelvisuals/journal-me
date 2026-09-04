@@ -34,7 +34,7 @@ const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = process.env.JM_BASE ?? "http://localhost:3100";
 const MENSILE = "com.manuelvisuals.journalme.premium.mensile";
 const ANNUALE = "com.manuelvisuals.journalme.premium.annuale";
-const BUNDLE = "com.manuelvisuals.journalme";
+const BUNDLE = "com.manuelvisuals.dayalogue";
 const ALTRO_UTENTE = "00000000-0000-4000-8000-000000000002";
 
 const results = [];
