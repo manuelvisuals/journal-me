@@ -133,22 +133,26 @@ async function apri(path, attesa) {
   await page.waitForSelector(".jm-sw", { timeout: 10000 });
 
   const righe = page.locator(".jm-st-box .jm-st-row");
-  check("ci sono quattro moduli", (await righe.count()) === 4, String(await righe.count()));
+  // Dal 4 settembre 2026 il Recap e un modulo (acceso di fabbrica, nel
+  // dock) e sta in cima con il glifo del dock; Palestra e l'altro accendibile.
+  check("ci sono cinque moduli (Recap compreso)", (await righe.count()) === 5, String(await righe.count()));
   check(
-    "solo Palestra si puo accendere",
-    (await page.locator(".jm-sw").count()) === 1,
+    "Recap e Palestra si possono accendere",
+    (await page.locator(".jm-sw").count()) === 2,
     `interruttori: ${await page.locator(".jm-sw").count()}`,
   );
+  check("Recap e acceso di fabbrica, in cima, col glifo del dock (nessuna frase)", (await righe.first().innerText()).includes("Recap") && (await righe.first().locator(".jm-st-dock-glyph").count()) === 1);
   const testoPannello = await page.locator(".jm-st-scroll").innerText();
   check("gli altri dicono che arrivano", /presto/i.test(testoPannello));
   check(
-    "e detto che spegnendo non si perde niente",
-    /resta dov'e|riaccendendolo/i.test(testoPannello),
+    "e detto che spegnendo non si perde niente (in una riga)",
+    /Spegnere non cancella niente/i.test(testoPannello),
   );
 
-  // Accendo Palestra: deve prendere il quarto posto.
-  await page.locator(".jm-sw").click();
+  // Accendo Palestra: deve prendere il quinto posto (davanti al Recap) e il glifo.
+  await page.getByRole("switch", { name: "Palestra" }).click();
   await page.waitForTimeout(700);
+  check("acceso, Palestra sale in cima e prende il glifo del dock", (await righe.first().innerText()).includes("Palestra") && (await righe.first().locator(".jm-st-dock-glyph").count()) === 1 && (await page.locator(".jm-st-dock-glyph").count()) === 1);
   const tabs = (await page.locator("nav.lg\\:hidden a").allInnerTexts()).map((x) => x.toLowerCase());
   check("acceso, Palestra entra nella barra", tabs.join(" ").includes("palestra"), tabs.join(" | "));
   check(

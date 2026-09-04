@@ -133,8 +133,30 @@
 
 .jm-wall-scheda-attesa {
   color: var(--color-ink-faint);
-  font-size: calc(13px * var(--jm-ui-scale));
   cursor: default;
+}
+
+/* Il fantasma: stessa scheda, stessa nota, sbiadite e in attesa. */
+.jm-wall-scheda-attesa,
+.jm-wall-fantasma {
+  opacity: 0.45;
+  animation: jm-fantasma 1.4s ease-in-out infinite;
+}
+
+.jm-wall-scheda-attesa .k .pr,
+.jm-wall-scheda-attesa .p,
+.jm-wall-fantasma {
+  color: var(--color-ink-faint);
+}
+
+@keyframes jm-fantasma {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-wall-scheda-attesa,
+  .jm-wall-fantasma { animation: none; }
 }
 
 .jm-wall-scheda .k {

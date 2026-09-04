@@ -237,7 +237,7 @@ export function WherePanel() {
     <>
       <p className="jm-st-lede">
         {ospite
-          ? t("Adesso: solo su questo dispositivo. Se lo perdi, o lo cambi senza un backup, le giornate non si recuperano.")
+          ? t("Solo su questo dispositivo. Senza backup, se lo perdi le perdi.")
           : isLocal
             ? t("Nessuna riga del tuo diario e mai uscita da questo dispositivo.")
             : t(
@@ -252,11 +252,11 @@ export function WherePanel() {
               title={t("Solo su questo dispositivo")}
               value={"\u2713"}
               chevron={false}
-              desc={t("Niente esce dal dispositivo, tranne il testo nel momento in cui l'AI ci lavora. Salva su file ogni tanto: la riga \"Esporta un backup\" e qui sopra.")}
+              desc={t("Esce solo il testo, quando l'AI ci lavora.")}
             />
             <SetRow
               title={t("Anche sul server, chiuso a chiave")}
-              desc={t("Metti una email. Le giornate salgono chiuse a chiave: nemmeno chi ha fatto l'app le legge. Le ritrovi se cambi telefono.")}
+              desc={t("Con una email. Nemmeno noi possiamo leggerle.")}
               onClick={() => {
                 window.location.assign("/login");
               }}
@@ -265,7 +265,7 @@ export function WherePanel() {
           <SetGroup label={t("Cosa esce da qui")}>
             <SetRow
               title={t("Il testo, quando l'AI ci lavora")}
-              desc={t("Racconto a voce, titolo, sintesi e aree passano da un server nel momento in cui li chiedi, con le giornate del regalo. Delle tue giornate sul server non resta niente.")}
+              desc={t("Poi sul server non resta niente.")}
               chevron={false}
             />
           </SetGroup>
@@ -458,6 +458,24 @@ export function TextSizePanel() {
  * non si muove: uno che si muove senza che succeda niente e peggio di uno
  * assente.
  */
+/**
+ * Il dock in miniatura: una pillola con cinque posti, l'ultimo acceso.
+ * Sta accanto al nome del modulo che occupa il quinto posto del dock.
+ */
+function DockGlyph() {
+  const t = useT();
+  return (
+    <svg className="jm-st-dock-glyph" viewBox="0 0 44 16" aria-label={t("Nel dock")} role="img">
+      <rect x="0.75" y="0.75" width="42.5" height="14.5" rx="7.25" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="8" cy="8" r="1.6" fill="currentColor" opacity="0.35" />
+      <circle cx="15" cy="8" r="1.6" fill="currentColor" opacity="0.35" />
+      <circle cx="22" cy="8" r="2.6" fill="currentColor" opacity="0.35" />
+      <circle cx="29" cy="8" r="1.6" fill="currentColor" opacity="0.35" />
+      <circle cx="36" cy="8" r="2.2" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function ModuliPanel() {
   const t = useT();
   const attivi = useActiveModules();
@@ -472,22 +490,26 @@ export function ModuliPanel() {
   return (
     <>
       <p className="jm-st-lede">
-        {t(
-          "Sezioni in piu, accese solo se le vuoi. Quella che accendi per ultima prende il quarto posto nella barra in basso; sul computer ci sono tutte nella colonna di sinistra.",
-        )}
+        {t("Accendi quello che vuoi. L'ultimo acceso va nel dock.")}
       </p>
 
       <div className="jm-st-box">
-        {ordinati.map((m) => {
+        {ordinati.map((m, i) => {
           const on = attiviIds.includes(m.id);
           const pronto = m.status === "pronto";
+          // Il primo acceso e quello nel dock: lo dice un glifo, non una
+          // frase (4 settembre 2026, Manuel: "senza scrivere testi").
+          const nelDock = on && i === 0;
           return (
             <div
               key={m.id}
-              className={`jm-st-row static${pronto ? "" : " presto"}`}
+              className={`jm-st-row static${pronto ? "" : " presto"}${nelDock ? " nel-dock" : ""}`}
             >
               <span className="jm-st-grow">
-                <span className="jm-st-t">{t(m.label)}</span>
+                <span className="jm-st-t">
+                  {t(m.label)}
+                  {nelDock && <DockGlyph />}
+                </span>
                 <span className="jm-st-d">
                   {pronto ? t(m.description) : t("Presto")}
                 </span>
@@ -511,11 +533,7 @@ export function ModuliPanel() {
         })}
       </div>
 
-      <p className="jm-st-note">
-        {t(
-          "Spegnendo un modulo la voce sparisce dalla barra, ma quello che hai registrato resta dov'e: riaccendendolo lo ritrovi.",
-        )}
-      </p>
+      <p className="jm-st-note">{t("Spegnere non cancella niente.")}</p>
     </>
   );
 }

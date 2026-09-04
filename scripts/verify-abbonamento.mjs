@@ -172,6 +172,18 @@ apple.transazioni.set("2001", {
   offerType: 1,
 });
 
+// Il server tiene il regalo in memoria 30 s: se un banco precedente ha
+// lasciato l'annuale acceso, si aspetta che torni a leggere questo finto.
+{
+  const inizio = Date.now();
+  for (;;) {
+    const r = await fetch(BASE + "/api/ospite/stato").then((x) => x.json()).catch(() => null);
+    if (r && r.annualeAttivo === false && r.attivo === true) break;
+    if (Date.now() - inizio > 70_000) { console.log("il server non rilegge il regalo: " + JSON.stringify(r)); process.exit(1); }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+}
+
 const NEGOZIO = {
   prodotti: [
     { id: MENSILE, prezzo: "4,99 EUR", valuta: "EUR", nome: "Premium", periodo: "mese", provaGiorni: 14, provaDisponibile: true },

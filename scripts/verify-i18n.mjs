@@ -62,6 +62,7 @@ const DINAMICHE = {
     "al mese",
   ],
   "lib/modules.ts (MODULES: nomi e descrizioni)": [
+    "Recap", "Il mese, riletto per te",
     "Palestra", "Cibo", "Sonno", "Meditazione",
     "Allenamenti, serie e progressi",
     "Cosa mangi, quanto spesso, e come cambia",

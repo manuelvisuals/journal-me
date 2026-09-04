@@ -29,7 +29,7 @@
 
 import { useSyncExternalStore } from "react";
 
-export type ModuleId = "palestra" | "cibo" | "sonno" | "meditazione";
+export type ModuleId = "recap" | "palestra" | "cibo" | "sonno" | "meditazione";
 
 export type ModuleDef = {
   id: ModuleId;
@@ -47,6 +47,16 @@ export type ModuleDef = {
 };
 
 export const MODULES: ModuleDef[] = [
+  // Il Recap e un modulo come gli altri (4 settembre 2026, Manuel): acceso
+  // di fabbrica, e il quinto posto del dock finche non ne accendi un
+  // altro. Chi lo spegne lo ritrova qui.
+  {
+    id: "recap",
+    label: "Recap",
+    description: "Il mese, riletto per te",
+    href: "/app/recap",
+    status: "pronto",
+  },
   {
     id: "palestra",
     label: "Palestra",
@@ -83,8 +93,11 @@ export function moduleById(id: string): ModuleDef | undefined {
 
 export const MODULES_STORAGE_KEY = "jm:moduli";
 
+/** Di fabbrica: solo il Recap. Vale finche nessuno ha mai toccato un interruttore. */
+const DI_FABBRICA: ModuleId[] = ["recap"];
+
 /** Gli accesi, dal piu recente. Il primo comanda la quarta icona. */
-let active: ModuleId[] = [];
+let active: ModuleId[] = [...DI_FABBRICA];
 let read = false;
 const listeners = new Set<() => void>();
 
@@ -97,6 +110,9 @@ function load(): ModuleId[] {
   read = true;
   try {
     const raw = window.localStorage.getItem(MODULES_STORAGE_KEY);
+    // Un elenco salvato prima che il Recap fosse un modulo (4 settembre
+    // 2026) non lo contiene: lo si aggiunge in fondo, cosi chi aveva la
+    // Palestra nel dock la tiene, e il Recap resta acceso come prima.
     if (raw) {
       const parsed: unknown = JSON.parse(raw);
       if (Array.isArray(parsed)) {
@@ -109,6 +125,13 @@ function load(): ModuleId[] {
           const def = moduleById(id);
           return !!def && def.status === "pronto";
         });
+        let spentoAMano = false;
+        try {
+          spentoAMano = window.localStorage.getItem(MODULES_STORAGE_KEY + ":recap-spento") === "1";
+        } catch {
+          // niente
+        }
+        if (!active.includes("recap") && !spentoAMano) active.push("recap");
       }
     }
   } catch {
@@ -146,6 +169,16 @@ export function setModuleActive(id: ModuleId, on: boolean): void {
   load();
   active = active.filter((x) => x !== id);
   if (on) active = [id, ...active];
+  // Il Recap e acceso di fabbrica: spegnerlo e una scelta da ricordare,
+  // altrimenti la lettura lo rimetterebbe in fondo a ogni avvio.
+  if (id === "recap") {
+    try {
+      if (on) window.localStorage.removeItem(MODULES_STORAGE_KEY + ":recap-spento");
+      else window.localStorage.setItem(MODULES_STORAGE_KEY + ":recap-spento", "1");
+    } catch {
+      // niente
+    }
+  }
   save();
   emit();
 }
