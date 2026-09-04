@@ -19,7 +19,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
 
 for (const w of [1280, 1440, 1728, 1920]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: 1000 }, locale: "it-IT" });
-  await ctx.addInitScript(() => { try { localStorage.setItem("jm.mode", "local"); } catch {} });
+  await ctx.addInitScript(() => { try { localStorage.setItem("jm.mode", "local"); localStorage.setItem("jm.ospite", "0"); } catch {} });
   const page = await ctx.newPage();
   await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForTimeout(1400);

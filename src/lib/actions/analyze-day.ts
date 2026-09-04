@@ -72,13 +72,17 @@ function misureValide(raw: unknown): Partial<EntryMetrics> | undefined {
 /** Il riassunto: titolo, sintesi, aree, misure del risveglio. */
 async function callProcessEntry(
   transcript: string,
-): Promise<Omit<AIFields, "people"> | null> {
+): Promise<Omit<AIFields, "people"> | null | "negato"> {
   try {
     const resp = await apiFetch("/api/process-entry", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),
     });
+    // 402: l'AI non c'e PER SCELTA del server (regalo finito, o serve
+    // premium), non per un guasto. La giornata va salvata come una giornata
+    // senza AI (titolo = prima riga), non come un'AI che non ha risposto.
+    if (resp.status === 402) return "negato";
     if (!resp.ok) return null;
     const data = (await resp.json()) as Partial<AIFields>;
     if (!data.headline || !data.snippet) return null;
@@ -197,7 +201,8 @@ export async function analyzeDay(transcript: string): Promise<AIFields> {
     ? [...new Set(facts.filter((f) => f.kind === "persona").map((f) => f.label))]
     : null;
 
-  const base = summary ?? fallbackFields(transcript);
+  const base =
+    summary === "negato" ? localFields(transcript) : (summary ?? fallbackFields(transcript));
   return {
     ...base,
     people: people ?? undefined,

@@ -528,6 +528,19 @@
 
 .jm-st-rrow:last-of-type { border-bottom: none; }
 
+/* La riga "AI in regalo" della rail e un bottone (apre il pannello):
+   stessa veste delle righe, il cursore dice che si tocca. */
+.jm-st-rrow-btn {
+  width: 100%;
+  background: none;
+  font: inherit;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
 .jm-st-rrow .k { color: var(--color-ink-faint); flex: 0 0 auto; }
 
 .jm-st-rrow .v { color: var(--color-ink-muted); text-align: right; min-width: 0; }

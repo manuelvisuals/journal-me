@@ -91,7 +91,7 @@ const DOMANDE = {
 async function apri({ conDomande = true, conta = null } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
-    try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
+    try { window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
   });
   const page = await ctx.newPage();
   const errors = [];
@@ -143,7 +143,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
   // l'alias si applica quando si MOSTRA e non riscrivendo le giornate.
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
-    try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
+    try { window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
   });
   const page = await ctx.newPage();
   await page.goto(BASE + "/app", { waitUntil: "networkidle" });
@@ -225,7 +225,7 @@ async function apri({ conDomande = true, conta = null } = {}) {
   // nata da un'analisi, e si guarda cosa succede saltandola e rispondendo.
   const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
-    try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
+    try { window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
   });
   const page = await ctx.newPage();
   await page.goto(BASE + "/app", { waitUntil: "networkidle" });

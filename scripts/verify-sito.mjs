@@ -307,7 +307,7 @@ for (const [percorso, w, h, nome] of [
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: "it-IT" });
   await ctx.addInitScript(() => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
       window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
       window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
     } catch {}

@@ -7,11 +7,12 @@
 // e si misura qui in tre regole: nessuna richiesta esterna, verso /api solo
 // le route AI dell'elenco chiuso e solo con il braccialetto, nessuna
 // scrittura verso le tabelle delle giornate. Questo banco gira con
-// l'interruttore dell'ospite SPENTO (jm.ospite non impostato: e il valore
-// di fabbrica finche Manuel non approva le schermate), quindi qui la
-// promessa collassa in quella vecchia: nessuna chiamata ammessa, perche
-// nessun braccialetto la firma. Il giro dell'ospite acceso e in
-// scripts/verify-ospite.mjs.
+// l'interruttore dell'ospite SPENTO (jm.ospite = "0"; dal 4 settembre 2026
+// il valore di fabbrica e acceso, e tutti i banchi del locale "puro" lo
+// spengono a mano), quindi qui la promessa collassa in quella vecchia:
+// nessuna chiamata ammessa, perche nessun braccialetto la firma. Il giro
+// dell'ospite acceso e in scripts/verify-ospite.mjs e
+// scripts/verify-ospite-schermate.mjs.
 import { chromium } from "playwright-core";
 import { osservaPromessa, verificaPromessa } from "./lib/promessa-ospite.mjs";
 
@@ -28,7 +29,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
 async function newPage(width, height) {
   const ctx = await browser.newContext({ viewport: { width, height }, locale: "it-IT" });
   await ctx.addInitScript(() => {
-    try { window.localStorage.setItem("jm.mode", "local"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
+    try { window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0"); /* niente velo del saluto sui banchi */ window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco"); window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1"); } catch {}
   });
   const page = await ctx.newPage();
   const errors = [];

@@ -43,6 +43,9 @@ import { contaCassaforte } from "@/lib/data/cassaforte";
 import { BackupBanner } from "@/modules/impostazioni/components/data-section";
 import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
+import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
+import { ospiteAttivo } from "@/lib/ospite/flag";
+import { useStatoOspite } from "@/lib/ospite/stato";
 import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
 import {
@@ -101,7 +104,7 @@ type Props = {
 
 type Panel =
   | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi"
-  | "moduli" | "nome" | "cassaforte";
+  | "moduli" | "nome" | "cassaforte" | "regalo";
 
 const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   goals: "Obiettivi",
@@ -113,6 +116,7 @@ const PANEL_TITLES: Record<Exclude<Panel, "root">, string> = {
   moduli: "Moduli",
   nome: "Il tuo nome",
   cassaforte: "Cassaforte",
+  regalo: "AI in regalo",
 };
 
 const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] = [
@@ -133,6 +137,12 @@ export function SettingsClient({
   const router = useRouter();
   const storageMode = useStorageMode();
   const isLocal = storageMode === "local";
+  // L'ospite (mockup ospite-primo-avvio 04, approvato il 4 settembre 2026):
+  // in locale con l'interruttore acceso il gruppo Account dice lo stato
+  // vero (dove sono le giornate, quanto regalo resta, la porta per chi ha
+  // un account) invece della parola "Locale".
+  const ospite = isLocal && ospiteAttivo();
+  const statoOspite = useStatoOspite(ospite);
   const plan = usePlan();
   const dettaglioPiano = useDettaglioPiano();
   const themeId = useThemeId();
@@ -405,6 +415,7 @@ export function SettingsClient({
         {panel === "textsize" && <TextSizePanel />}
         {panel === "where" && <WherePanel />}
         {panel === "cassaforte" && <CassafortePanel />}
+        {panel === "regalo" && <RegaloPanel />}
         {panel === "consumi" && <ConsumiPanel />}
         {panel === "moduli" && <ModuliPanel />}
         {panel === "nome" && (
@@ -548,11 +559,13 @@ export function SettingsClient({
                 onClick={() => fileRef.current?.click()}
                 disabled={busy !== "idle"}
               />
-              <SetRow
-                title={t("Dove sono le mie giornate")}
-                desc={t("Cosa esce da questo dispositivo, e cosa no.")}
-                onClick={() => setPanel("where")}
-              />
+              {!ospite && (
+                <SetRow
+                  title={t("Dove sono le mie giornate")}
+                  desc={t("Cosa esce da questo dispositivo, e cosa no.")}
+                  onClick={() => setPanel("where")}
+                />
+              )}
               {!isLocal && (
                 <SetRow
                   title={t("Cassaforte")}
@@ -600,7 +613,33 @@ export function SettingsClient({
             <div className="jm-st-phoneonly">
               {!isLocal && plan !== "premium" && <PremiumInvite />}
               <SetGroup label={t("Account")}>
-                {isLocal ? (
+                {ospite ? (
+                  <>
+                    <SetRow
+                      title={t("Dove sono le mie giornate")}
+                      value={t("Solo su questo dispositivo")}
+                      onClick={() => setPanel("where")}
+                    />
+                    <SetRow
+                      title={t("AI in regalo")}
+                      value={valoreRegalo(t, statoOspite)}
+                      onClick={() => setPanel("regalo")}
+                    />
+                    <SetRow
+                      title={t("Passa a Premium")}
+                      value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
+                      desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, backup ogni notte, i recap.")}`}
+                      onClick={() => openPremiumWall("aiSummary")}
+                    />
+                    <SetRow
+                      title={t("Accedi al tuo account")}
+                      desc={t(
+                        "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso, e il regalo non ricomincia da capo.",
+                      )}
+                      onClick={() => router.push("/login")}
+                    />
+                  </>
+                ) : isLocal ? (
                   <>
                     <SetRow
                       title={t("Dove")}
@@ -772,7 +811,7 @@ export function SettingsClient({
             <NomeRiga mostrato={accountName} onNota={say} />
           )}
           {!isLocal && email && <div className="jm-st-em">{email}</div>}
-          {isLocal ? (
+          {ospite ? null : isLocal ? (
             <span className="jm-st-pill">{t("Locale")}</span>
           ) : (
             <span
@@ -800,6 +839,12 @@ export function SettingsClient({
               </span>
             </div>
           )}
+          {ospite && (
+            <button type="button" className="jm-st-rrow jm-st-rrow-btn" onClick={() => setPanel("regalo")}>
+              <span className="k">{t("AI in regalo")}</span>
+              <span className="v">{valoreRegalo(t, statoOspite) ?? "…"}</span>
+            </button>
+          )}
           {!isLocal && <ConsumiRailRow onOpen={() => setPanel("consumi")} />}
           <div className="jm-st-rrow">
             <span className="k">{t("Versione")}</span>
@@ -810,6 +855,15 @@ export function SettingsClient({
             <span className="v">{BUILD_INFO}</span>
           </div>
 
+          {ospite && (
+            <button
+              type="button"
+              className="jm-st-out"
+              onClick={() => openPremiumWall("aiSummary")}
+            >
+              {t("Passa a Premium")}
+            </button>
+          )}
           {isLocal && (
             <button
               type="button"

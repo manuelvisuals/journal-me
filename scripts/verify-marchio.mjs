@@ -125,7 +125,7 @@ async function apri(percorso, w, h, locale = true) {
   if (locale) {
     await ctx.addInitScript(() => {
       try {
-        window.localStorage.setItem("jm.mode", "local");
+        window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
         window.localStorage.setItem("jm.saluto.silenzio", "dev:banco");
       } catch {}

@@ -120,3 +120,20 @@ effetto collaterale di un aggiornamento: legge, chiude, scrive e cancella
 riga per riga. "Vedi il codice di recupero" chiede il volto sul telefono
 (`chiediIlVolto`, scheletro). Classi nuove: `jm-st-cassa-*`. Banco:
 `verify-cassaforte` (sezione R12).
+
+## L'ospite in Impostazioni (4 settembre 2026, branch `ospite-schermate`)
+
+Mockup approvato `design/mockups/ospite-primo-avvio.html` (04). In
+modalita locale con l'ospite acceso (`ospiteAttivo()`, di fabbrica dal 4
+settembre) il gruppo Account del telefono dice lo stato vero invece di
+"Locale": "Dove sono le mie giornate" (apre il pannello `where`, con le
+parole dell'ospite: il testo esce quando l'AI ci lavora, mai "nemmeno una
+richiesta di rete"), "AI in regalo" con il conto letto dal server
+(`components/regalo-panel.tsx`, `valoreRegalo`; pannello `regalo` con
+usate/rimaste e le tre frasi), "Passa a Premium" (apre il muro a schede;
+la riga dice "14 giorni gratis" e "Poi 4,99 EUR al mese"), "Accedi al tuo
+account". Sul desktop la rail destra ha la riga "AI in regalo" (bottone,
+`jm-st-rrow-btn`) e "Passa a Premium"; la pill "Locale" sparisce. Il conto
+NON si calcola qui: `src/lib/ospite/stato.ts` chiede a /api/ospite/stato.
+Il pannello `where` col locale "puro" (jm.ospite = "0") tiene le parole di
+prima. Banco: `scripts/verify-ospite-schermate.mjs`.

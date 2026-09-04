@@ -47,7 +47,7 @@ conviene, mai perche' l'app blocca.
 Ogni voce e' un'affermazione verificabile. Se non sai come provarla, non e'
 scritta bene: torna qui e riscrivila prima di implementarla.
 
-### R1 - Il primo avvio non chiede niente (CODICE FATTO il 3 settembre 2026, branch `ospite-server`: solo la parte server/client invisibile, dietro l'interruttore `src/lib/ospite/flag.ts` spento di fabbrica; schermate in attesa del mockup `design/mockups/ospite-primo-avvio.html`)
+### R1 - Il primo avvio non chiede niente (CODICE FATTO: parte invisibile il 3 settembre 2026, branch `ospite-server`; SCHERMATE il 4 settembre 2026, branch `ospite-schermate`, mockup `design/mockups/ospite-primo-avvio.html` approvato da Manuel; interruttore `src/lib/ospite/flag.ts` ACCESO di fabbrica)
 
 - Chi installa l'app e la apre per la prima volta arriva **direttamente sulla
   giornata di oggi**, senza nessuna schermata intermedia, nessuna domanda,
@@ -58,7 +58,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: da installazione pulita, il numero di tocchi fra l'apertura e il
   primo carattere scritto e' **zero**.
 
-### R2 - L'AI funziona senza account, con una quota (CODICE FATTO: braccialetto, guardia, quota sul server, migration 023; schermate in attesa del mockup)
+### R2 - L'AI funziona senza account, con una quota (CODICE FATTO: braccialetto, guardia, quota sul server, migration 023; la riga e il pannello "AI in regalo" di Impostazioni il 4 settembre 2026)
 
 - L'AI (voce, titolo, sintesi, aree, fatti) e' accesa per l'ospite, fino a una
   quota.
@@ -73,7 +73,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: un ospite consuma la quota, l'app viene disinstallata e
   reinstallata, la quota resta consumata.
 
-### R3 - Quando la quota finisce, finisce solo l'AI (CODICE FATTO: 402 `regalo_finito` distinto dal premium, la giornata si salva comunque; il muro della quota e l'avviso discreto sono schermate in attesa del mockup)
+### R3 - Quando la quota finisce, finisce solo l'AI (CODICE FATTO: 402 `regalo_finito` distinto dal premium, la giornata si salva comunque come giornata gratis (titolo = prima riga); il muro del regalo (4 settembre, branch `abbonamento-iap`) e l'avviso discreto a 3 giornate (4 settembre, branch `ospite-schermate`, `src/modules/oggi/components/avviso-regalo.tsx`))
 
 - L'app continua a funzionare: si scrive la giornata, si salva, si rilegge, si
   naviga il Mese e i Memo.
@@ -84,7 +84,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: a quota zero, salvare una giornata scritta riesce e non apre
   nessun muro.
 
-### R4 - Un tetto di spesa che si chiude da solo (CODICE FATTO: tabella `regalo`, rotta /api/admin/regalo, grazia per la giornata iniziata; la voce "Regalo AI" in /admin e una schermata in attesa del mockup)
+### R4 - Un tetto di spesa che si chiude da solo (CODICE FATTO: tabella `regalo`, rotta /api/admin/regalo, grazia per la giornata iniziata; la voce "Regalo AI" in /admin il 4 settembre 2026, `src/modules/admin/components/regalo-schermata.tsx`, con l'interruttore dell'Annuale)
 
 - Esiste un limite di spesa complessivo, nel tempo, oltre il quale il regalo si
   spegne per i nuovi ospiti.

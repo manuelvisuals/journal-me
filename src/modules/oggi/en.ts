@@ -190,4 +190,10 @@ export const OGGI: Record<string, string> = {
   "adesso": "now",
   "Tieni questa": "Keep this one",
   "Tienile tutte e due": "Keep both",
+  "Questa era l'ultima giornata con l'AI in regalo. Da domani scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.": "That was the last gift AI day. From tomorrow you write and reread as always: only the title made by the AI is missing.",
+  "Ti resta 1 giornata con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.": "You have 1 gift AI day left. After that, you write and reread as always: only the title made by the AI is missing.",
+  "Ti restano {n} giornate con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.": "You have {n} gift AI days left. After that, you write and reread as always: only the title made by the AI is missing.",
+  "Prova premium": "Try premium",
+  "Chiudi l'avviso": "Close the notice",
+  "Il titolo e la prima riga che hai scritto. Le {n} giornate con l'AI in regalo sono finite: l'app continua cosi, e le giornate restano tue.": "The title is the first line you wrote. The {n} gift AI days are used up: the app goes on like this, and the days stay yours.",
 };

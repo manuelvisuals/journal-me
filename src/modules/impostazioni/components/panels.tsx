@@ -23,6 +23,7 @@ import { addGoal, removeGoal } from "@/lib/data/goals";
 import { cssVarsFor, FONTS, THEMES } from "@/themes";
 import { setTheme, useResolvedMode, useThemeId } from "@/themes/runtime";
 import { useStorageMode } from "@/lib/data/store";
+import { ospiteAttivo } from "@/lib/ospite/flag";
 import {
   DEFAULT_UI_SCALE,
   setUiScale,
@@ -226,18 +227,50 @@ export function WherePanel() {
   const t = useT();
   const mode = useStorageMode();
   const isLocal = mode === "local";
+  // L'ospite (mockup ospite-primo-avvio 04, terza schermata): la scelta
+  // "dove tenere il diario" che e sparita dal primo avvio vive qui, come
+  // voce. Le parole del locale "puro" (nemmeno una richiesta di rete)
+  // restano solo con l'ospite spento: con l'AI in regalo non sarebbero vere.
+  const ospite = isLocal && ospiteAttivo();
 
   return (
     <>
       <p className="jm-st-lede">
-        {isLocal
-          ? t("Nessuna riga del tuo diario e mai uscita da questo dispositivo.")
-          : t(
-              "Le tue giornate vivono sul tuo account e ti seguono su ogni dispositivo.",
-            )}
+        {ospite
+          ? t("Adesso: solo su questo dispositivo. Se lo perdi, o lo cambi senza un backup, le giornate non si recuperano.")
+          : isLocal
+            ? t("Nessuna riga del tuo diario e mai uscita da questo dispositivo.")
+            : t(
+                "Le tue giornate vivono sul tuo account e ti seguono su ogni dispositivo.",
+              )}
       </p>
 
-      {isLocal ? (
+      {ospite ? (
+        <>
+          <SetGroup label={t("Dove stanno")}>
+            <SetRow
+              title={t("Solo su questo dispositivo")}
+              value={"\u2713"}
+              chevron={false}
+              desc={t("Niente esce dal dispositivo, tranne il testo nel momento in cui l'AI ci lavora. Salva su file ogni tanto: la riga \"Esporta un backup\" e qui sopra.")}
+            />
+            <SetRow
+              title={t("Anche sul server, chiuso a chiave")}
+              desc={t("Metti una email. Le giornate salgono chiuse a chiave: nemmeno chi ha fatto l'app le legge. Le ritrovi se cambi telefono.")}
+              onClick={() => {
+                window.location.assign("/login");
+              }}
+            />
+          </SetGroup>
+          <SetGroup label={t("Cosa esce da qui")}>
+            <SetRow
+              title={t("Il testo, quando l'AI ci lavora")}
+              desc={t("Racconto a voce, titolo, sintesi e aree passano da un server nel momento in cui li chiedi, con le giornate del regalo. Delle tue giornate sul server non resta niente.")}
+              chevron={false}
+            />
+          </SetGroup>
+        </>
+      ) : isLocal ? (
         <>
           <SetGroup label={t("Dove stanno")}>
             <SetRow

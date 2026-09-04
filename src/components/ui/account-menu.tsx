@@ -35,6 +35,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
 import { usePlan } from "@/lib/plan";
 import { isNative } from "@/lib/native/platform";
+import { ospiteAttivo } from "@/lib/ospite/flag";
 import { eseguiLogout } from "@/lib/auth/logout";
 import { openPremiumWall } from "@/modules/abbonamento";
 // Nome e foto li SA il modulo impostazioni (e li che si cambiano), li
@@ -67,7 +68,10 @@ function useAccount(): Account | null {
     void (async () => {
       const m = await resolveStorageMode();
       if (m === "local") {
-        if (alive) setAccount({ email: null, badge: "Locale" });
+        // L'ospite (mockup ospite-primo-avvio 01, 4 settembre 2026): il
+        // pallino non dice "Locale", che vuol dire "ho scelto di stare
+        // offline" e non e vero: lui non ha scelto niente. Niente pill.
+        if (alive) setAccount({ email: null, badge: ospiteAttivo() ? "" : "Locale" });
         return;
       }
       try {
@@ -112,6 +116,9 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
   const locale = mode === "local";
+  // Con l'AI in regalo il testo esce dal dispositivo nel momento in cui
+  // l'AI ci lavora: "non escono di qui" non sarebbe vero (divieto 7).
+  const sottotitoloLocale = locale && ospiteAttivo() ? t("Solo su questo dispositivo") : t("Le giornate non escono di qui");
   const native = isNative();
   const suSettings = pathname.startsWith("/app/settings");
   const nome = useNomeMostrato(account?.email, t("ospite"));
@@ -186,9 +193,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
     <div className="jm-acct-head">
       <div className="n">{mostrato}</div>
       <div className="e">
-        {locale
-          ? t("Le giornate non escono di qui")
-          : (account?.email ?? "")}
+        {locale ? sottotitoloLocale : (account?.email ?? "")}
       </div>
     </div>
   );
@@ -271,7 +276,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
                   )}
                 </span>
                 <span className="e">
-                  {locale ? t("Le giornate non escono di qui") : (account?.email ?? "")}
+                  {locale ? sottotitoloLocale : (account?.email ?? "")}
                 </span>
               </span>
             </div>
@@ -301,7 +306,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
         <div className="jm-rail-avatar">{ritratto}</div>
         <div className="jm-rail-acct-txt">
           <div className="jm-rail-acct-nm">{account ? mostrato : "…"}</div>
-          {account && (
+          {account && account.badge && (
             <span
               className={`jm-rail-pill${account.badge === "Premium" ? " prem" : ""}`}
             >

@@ -42,3 +42,11 @@ pubblica in lettura, senza policy di scrittura. La SCHERMATA "Regalo AI"
 (mockup `design/mockups/ospite-primo-avvio.html`, 05) prende il posto del
 segnaposto "Piani e limiti" ed e da fare dopo l'ok di Manuel. Il contratto
 dei limiti e nello scheletro (`src/lib/regalo.ts`), come per le aree.
+
+La SCHERMATA e fatta il 4 settembre 2026 (branch `ospite-schermate`,
+mockup approvato): `components/regalo-schermata.tsx`, voce "Regalo AI"
+nella rail al posto di "Piani e limiti". Interruttore del regalo, giornate
+per ospite, tetto mensile, speso del mese (sola lettura, con la barra) e
+l'interruttore "Annuale in vendita" (migration 024). Si salva con UNA
+scrittura (PUT), "Annulla" rimette la bozza. Banco:
+`scripts/verify-ospite-schermate.mjs` (05).

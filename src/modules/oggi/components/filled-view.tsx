@@ -67,6 +67,18 @@ type Props = {
    * solo il chiamante sa la data del giorno e la modalita.
    */
   fotoSlot?: React.ReactNode;
+  /**
+   * L'avviso discreto dell'ospite (mockup ospite-primo-avvio 02): sotto le
+   * aree della giornata appena chiusa dall'AI. Uno slot: solo Oggi sa se
+   * la giornata e stata chiusa adesso.
+   */
+  avvisoSlot?: React.ReactNode;
+  /**
+   * La frase della vista gratis, quando non e quella di sempre: a regalo
+   * finito l'ospite non ha "premium" da scoprire come un utente gratis, ha
+   * un regalo che e finito (mockup ospite-primo-avvio 03, terza schermata).
+   */
+  nudgeTesto?: string;
 };
 
 export function FilledView({
@@ -87,6 +99,8 @@ export function FilledView({
   onSeePremium,
   footer = null,
   fotoSlot = null,
+  avvisoSlot = null,
+  nudgeTesto,
 }: Props) {
   const t = useT();
   const lang = useLang();
@@ -147,9 +161,10 @@ export function FilledView({
           {fotoSlot}
           <div className="jm-fv-nudge">
             <div className="t">
-              {t(
-                "Con premium questa giornata avrebbe un titolo, una sintesi e le macro-aree. E la puoi raccontare a voce, invece di scriverla.",
-              )}
+              {nudgeTesto ??
+                t(
+                  "Con premium questa giornata avrebbe un titolo, una sintesi e le macro-aree. E la puoi raccontare a voce, invece di scriverla.",
+                )}
             </div>
             {onSeePremium && (
               <button type="button" className="btn-ghost" onClick={onSeePremium}>
@@ -187,6 +202,7 @@ export function FilledView({
               {t("aree macro non ancora estratte")}
             </div>
           )}
+          {avvisoSlot}
         </>
       )}
 

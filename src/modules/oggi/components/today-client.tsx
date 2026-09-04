@@ -17,6 +17,7 @@ import { RailToday } from "@/modules/oggi/components/rail-today";
 import { DayNav, giornoPrima } from "@/modules/oggi/components/day-nav";
 import { DaySwipe } from "@/modules/oggi/components/day-swipe";
 import { AddToDay } from "@/modules/oggi/components/add-to-day";
+import { AvvisoRegalo } from "@/modules/oggi/components/avviso-regalo";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { openPremiumWall } from "@/modules/abbonamento";
@@ -25,6 +26,7 @@ import { clearDraft, loadDraft } from "@/lib/data/drafts";
 import { formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
+import { aggiornaStatoOspite, regaloFinito, useStatoOspite } from "@/lib/ospite/stato";
 import {
   deleteEntry,
   loadEntryForDate,
@@ -151,7 +153,17 @@ export function TodayClient({
   const isLocalMode = storageMode === "local";
   const canVoice = useCan("voice");
   const canAI = useCan("aiSummary");
+  // L'ospite (SPEC R3, mockup ospite-primo-avvio 02-03): quante giornate del
+  // regalo restano lo sa il server; qui si legge solo per l'avviso discreto
+  // e per mostrare la giornata come "vista gratis" quando il regalo e
+  // finito e l'AI non ci ha lavorato. In cloud vale null: nessuna richiesta.
   const [entry, setEntry] = useState<Entry | null>(initialEntry);
+  // Si chiede SOLO quando serve a decidere qualcosa a schermo: una giornata
+  // salvata senza sintesi (e la vista gratis, o l'AI non l'ha vista?). Aprire l'app con niente sotto non chiama nessuna route
+  // (R1, verify-ospite); dopo una chiusura con l'AI si rilegge da sola.
+  const senzaSintesi = !!entry && (entry.snippet ?? "").trim().length === 0;
+  const statoOspite = useStatoOspite(isLocalMode && senzaSintesi);
+  const regaloEsaurito = isLocalMode && regaloFinito(statoOspite);
   const optimisticGoals = useOptimisticGoals();
   const [view, setView] = useState<View>(
     autoRecord
@@ -449,6 +461,8 @@ export function TodayClient({
           chiarimentiInCorso.set(a.date, p);
         },
       });
+      // L'AI ha lavorato per l'ospite: la quota in tasca e vecchia (R3).
+      if (isLocalMode && opts.withAI) void aggiornaStatoOspite();
       // Giornata salvata davvero: SOLO ora la bozza si cancella (§6).
       await clearDraft(opts.targetDate);
       setDraftInitial("");
@@ -708,6 +722,10 @@ export function TodayClient({
   // niente overlay, si arriva su Oggi e si scrive.
   const desktopWriting = isDesktop && (view === "empty" || view === "manual");
   const aiAvailable = canAI;
+  // La giornata senza titolo dell'ospite a regalo finito e una giornata
+  // gratis (mockup ospite-primo-avvio 03, terza schermata): titolo = prima
+  // riga, il testo come prosa. Con canAI vero il client non lo saprebbe.
+  const vistaGratis = !!entry && (!canAI || (regaloEsaurito && senzaSintesi));
 
   const handleDesktopSaveOnly = (text: string) => {
     void runSave(text, {
@@ -1012,7 +1030,7 @@ export function TodayClient({
             // Solo a giornata salvata e con l'AI: senza AI il titolo non
             // esiste proprio (la prima riga del testo fa da titolo), e non
             // c'e niente da riscrivere.
-            entry && canAI
+            entry && canAI && !vistaGratis
               ? {
                   dateISO: entry.entryDate,
                   mode,
@@ -1026,7 +1044,7 @@ export function TodayClient({
           onGoalToggle={handleGoalToggle}
           fotoSlot={entry ? <FotoGiorno date={entry.entryDate} /> : null}
           freeProse={
-            !canAI && entry
+            vistaGratis && entry
               ? {
                   transcript: entry.transcript,
                   createdAt: entry.createdAt,
@@ -1034,7 +1052,24 @@ export function TodayClient({
                 }
               : null
           }
-          onSeePremium={() => openPremiumWall("aiSummary")}
+          nudgeTesto={
+            regaloEsaurito
+              ? t(
+                  "Il titolo e la prima riga che hai scritto. Le {n} giornate con l'AI in regalo sono finite: l'app continua cosi, e le giornate restano tue.",
+                  { n: String(statoOspite?.max ?? 0) },
+                )
+              : undefined
+          }
+          avvisoSlot={
+            entry && isLocalMode && savedDates.includes(entry.entryDate) ? (
+              <AvvisoRegalo date={entry.entryDate} vivo={isLocalMode} />
+            ) : null
+          }
+          onSeePremium={() =>
+            regaloEsaurito
+              ? openPremiumWall("regalo", undefined, { max: statoOspite?.max })
+              : openPremiumWall("aiSummary")
+          }
           footer={
             entry ? (
               <AddToDay

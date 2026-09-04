@@ -87,7 +87,7 @@ async function contesto(width = 430, conDito = false) {
   });
   await ctx.addInitScript(() => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
       window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
       window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
     } catch {}

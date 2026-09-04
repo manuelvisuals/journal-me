@@ -1,15 +1,15 @@
 /**
  * L'interruttore dell'ospite sul dispositivo (SPEC-ospite-e-cassaforte R1-R3).
  *
- * La parte invisibile dell'ospite (braccialetto, guardia, quota, tetto) e
- * costruita e provata; le SCHERMATE aspettano l'ok di Manuel sul mockup
- * ospite-primo-avvio.html (SPEC par. 9). Finche l'ok non c'e, l'app deve
- * comportarsi esattamente come prima: per questo il valore di fabbrica e
- * spento. I banchi lo accendono con localStorage `jm.ospite = "1"`; quando
- * arriva l'ok, si porta OSPITE_DI_FABBRICA a true e le schermate entrano.
+ * ACCESO DI FABBRICA dal 4 settembre 2026: Manuel ha approvato le
+ * schermate del mockup ospite-primo-avvio.html (tutte le proposte in
+ * verde della sezione 07). Chi apre l'app senza account entra dritto su
+ * Oggi come ospite (auth-gate), con l'AI in regalo a giornate contate dal
+ * server. I banchi possono spegnerlo con localStorage `jm.ospite = "0"`
+ * per provare il locale "puro" di prima (verify-rete-spenta).
  */
 
-export const OSPITE_DI_FABBRICA = false;
+export const OSPITE_DI_FABBRICA = true;
 
 const CHIAVE = "jm.ospite";
 
