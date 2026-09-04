@@ -10,7 +10,7 @@
 //      nota su rinnovo e disdetta; acceso l'interruttore, compare Annuale;
 //   3. l'ACQUISTO: il telefono riceve la transazione, la manda al server, il
 //      server chiede ad APPLE (un App Store Server API finto che verifica il
-//      gettone ES256 firmato con la chiave di scripts/lib/apple-chiave-finta.pem)
+//      gettone ES256 firmato con la chiave di scripts/lib/apple-chiave-finta.txt)
 //      e SOLO allora il profilo diventa premium; la transazione si segna
 //      finita DOPO; compare il benvenuto premium;
 //   4. una ricevuta INVENTATA (transazione che Apple non conosce) NON accende
@@ -23,7 +23,7 @@
 // Serve il dev server su :3100 con i finti (par. 6 del referto):
 //   JM_SUPABASE_URL_SERVER=http://127.0.0.1:3198 OPENAI_BASE_URL=http://127.0.0.1:3199
 //   APPLE_API_BASE_URL=http://127.0.0.1:3197 APPLE_IAP_KEY_ID=FINTOKEY01
-//   APPLE_IAP_ISSUER_ID=00000000-finto-issuer APPLE_IAP_PRIVATE_KEY="$(cat scripts/lib/apple-chiave-finta.pem)"
+//   APPLE_IAP_ISSUER_ID=00000000-finto-issuer APPLE_IAP_PRIVATE_KEY="$(cat scripts/lib/apple-chiave-finta.txt)"
 //   SUPABASE_SERVICE_ROLE_KEY=finto OPENAI_API_KEY=finto ./node_modules/.bin/next dev -p 3100
 // poi: node scripts/verify-abbonamento.mjs
 import { chromium } from "playwright-core";

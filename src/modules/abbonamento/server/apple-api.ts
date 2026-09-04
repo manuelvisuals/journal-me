@@ -60,7 +60,10 @@ function b64url(b: Buffer | string): string {
 export function gettoneApple(adesso: number = Date.now()): string {
   const kid = process.env.APPLE_IAP_KEY_ID ?? "";
   const iss = process.env.APPLE_IAP_ISSUER_ID ?? "";
-  const pem = (process.env.APPLE_IAP_PRIVATE_KEY ?? "").replace(/\\n/g, "\n");
+  // La chiave puo arrivare con gli a capo scritti come \n (Vercel) o con
+  // testo prima del BEGIN (la chiave finta dei banchi): si pulisce qui.
+  const grezza = (process.env.APPLE_IAP_PRIVATE_KEY ?? "").replace(/\\n/g, "\n");
+  const pem = grezza.includes("-----BEGIN") ? grezza.slice(grezza.indexOf("-----BEGIN")) : grezza;
   const iat = Math.floor(adesso / 1000);
   const header = b64url(JSON.stringify({ alg: "ES256", kid, typ: "JWT" }));
   const payload = b64url(

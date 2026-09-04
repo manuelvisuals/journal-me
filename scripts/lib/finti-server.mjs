@@ -334,7 +334,7 @@ export class OpenAIFinto {
 /**
  * Un App Store Server API finto: risponde a GET /inApps/v1/transactions/{id}
  * SOLO se il gettone JWT e firmato con la chiave di scripts/lib/
- * apple-chiave-finta.pem (cosi il banco prova che il server firma bene) e
+ * apple-chiave-finta.txt (cosi il banco prova che il server firma bene) e
  * conosce la transazione. I banchi registrano le transazioni con
  * `transazioni.set(id, { ...campi })`; il corpo torna come JWS finto
  * (firma non verificata dal server, per scelta: e la TLS verso Apple a
@@ -346,7 +346,10 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const QUI = dirname(fileURLToPath(import.meta.url));
-export const CHIAVE_APPLE_FINTA_PEM = readFileSync(join(QUI, "apple-chiave-finta.pem"), "utf8");
+// La chiave finta e un .txt (non .pem: *.pem e ignorato da git) con una riga
+// di avvertenza in testa: si legge dal BEGIN in poi.
+const testoChiave = readFileSync(join(QUI, "apple-chiave-finta.txt"), "utf8");
+export const CHIAVE_APPLE_FINTA_PEM = testoChiave.slice(testoChiave.indexOf("-----BEGIN"));
 export const KEY_ID_FINTO = "FINTOKEY01";
 export const ISSUER_ID_FINTO = "00000000-finto-issuer";
 

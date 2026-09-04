@@ -56,6 +56,6 @@ fare su App Store Connect: `APP-STORE-CONNECT-passi.md`.
   requirePremium, dalla guardia dell'ospite e da plan.ts.
 - Banco: `verify-abbonamento` (30 controlli, con un App Store Server API
   finto che verifica il gettone ES256: scripts/lib/finti-server.mjs e la
-  chiave finta scripts/lib/apple-chiave-finta.pem), provato a mordere.
+  chiave finta scripts/lib/apple-chiave-finta.txt), provato a mordere.
   Prefissi CSS nuovi dentro `jm-wall`: `jm-wall-schede`, `jm-wall-scheda`,
   `jm-wall-quiet`, `jm-wall-nota`.
