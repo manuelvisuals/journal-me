@@ -789,9 +789,19 @@
 .jm-attesa-fatto {
   color: var(--color-ink-muted);
 }
+/* Il passo fatto: un verde acceso, uguale in ogni tema (Manuel, 4 settembre
+   sera: "dagli un bel verde acceso"). Il verde di sistema di iOS, con un
+   alone che si apre una volta sola quando il passo si chiude. */
 .jm-attesa-fatto .jm-attesa-punto {
-  background: var(--color-ink-muted);
-  border-color: var(--color-ink-muted);
+  --jm-attesa-verde: #34C759;
+  background: var(--jm-attesa-verde);
+  border-color: var(--jm-attesa-verde);
+  animation: jm-attesa-fatto 600ms ease-out 1;
+}
+@keyframes jm-attesa-fatto {
+  0% { transform: scale(0.6); box-shadow: 0 0 0 0 color-mix(in oklab, var(--jm-attesa-verde) 55%, transparent); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); box-shadow: 0 0 0 8px transparent; }
 }
 .jm-attesa-ora {
   color: var(--color-ink);
@@ -817,6 +827,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .jm-attesa-ora .jm-attesa-punto { animation: none; }
+  .jm-attesa-fatto .jm-attesa-punto { animation: none; }
   .jm-attesa-pieno { transition: none; }
 }
 
