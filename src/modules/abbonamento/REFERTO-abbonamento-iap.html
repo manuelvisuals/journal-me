@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referto . L'abbonamento su iPhone e l'ospite: cosa e fatto, cosa tocca a te, cosa manca (4 settembre 2026)</title>
+<style>
+/* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Plex Mono";src:url("../../src/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:block}
+:root{
+  --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
+  --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
+  --mono:"Plex Mono",ui-monospace,Menlo,monospace;
+  --pg:#17171A;--pg-2:#202024;--pg-line:rgba(255,255,255,.10);
+  --pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;
+  --ok:#4ADE80;--no:#F87171;--hot:#FBBF24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+.page-title{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;text-align:center;color:var(--pg-ink);line-height:1.15}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:880px}
+.page-sub b,.caption b,.prose b,.under b{color:var(--pg-mut);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:52px auto}
+.label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 10px}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;max-width:960px;line-height:1.75}
+.row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px}
+.under{font-size:12px;color:var(--pg-faint);text-align:center;max-width:390px;line-height:1.6}
+.under .no{color:var(--no);font-weight:600}
+.under .si{color:var(--ok);font-weight:600}
+.prose{max-width:880px;margin:0 auto;font-size:14.5px;line-height:1.8;color:var(--pg-mut)}
+.prose p{margin:0 0 14px}
+.prose h3{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:26px 0 8px;letter-spacing:-.01em}
+table{border-collapse:collapse;width:100%;max-width:1100px;margin:0 auto;font-size:13px}
+th,td{border-top:1px solid var(--pg-line);padding:10px 12px;text-align:left;vertical-align:top;line-height:1.5}
+th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+td b{color:var(--pg-ink);font-weight:600}
+td .opz{display:block;margin-top:4px}
+td .opz i{font-style:normal;color:var(--hot);font-weight:650;margin-right:6px}
+td .prop{color:var(--ok);font-weight:600}
+
+/* ---------------- il telefono, tema minimal chiaro ---------------- */
+.phone{width:390px;height:844px;border-radius:38px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
+  background:var(--bg);color:var(--ink);font-family:var(--font)}
+.status{height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 4px;color:var(--ink);font-size:15px;font-weight:600}
+.status .icons{letter-spacing:2px;font-size:12px}
+.appbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.appbar .t{font-family:var(--serif);font-size:20px;font-weight:420;letter-spacing:-.015em;color:var(--ink)}
+.appbar .av{width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-faint);font-size:14px;font-weight:600}
+.appbar .x{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--ink-muted);font-size:15px}
+/* lo stato vuoto di Oggi, com'e nel codice (empty-state.tsx) */
+.vuoto{position:absolute;left:0;right:0;top:110px;bottom:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px 40px}
+.vuoto h1{font-family:var(--serif);font-size:31px;font-weight:420;line-height:1.18;letter-spacing:-.02em;color:var(--ink);text-align:center;margin-bottom:14px}
+.vuoto p{font-size:14px;color:var(--ink-muted);text-align:center;line-height:1.55;max-width:280px;margin-bottom:64px}
+.tasti{width:100%;max-width:320px;display:grid;gap:12px}
+.b1{width:100%;height:56px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600;font-size:17px;display:flex;align-items:center;justify-content:center;gap:10px}
+.b1.off{background:#D8CFC5;color:#8A817A}
+.b2{width:100%;height:54px;border-radius:14px;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface)}
+.quiet{margin-top:18px;text-align:center;color:var(--ink-faint);font-size:15px;text-decoration:underline}
+/* il dock di vetro, in due righe */
+.dock{position:absolute;left:22px;right:22px;bottom:26px;height:64px;border-radius:32px;background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.08);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-around;font-size:11px;color:var(--ink-muted);font-weight:600}
+.dock span{display:flex;flex-direction:column;align-items:center;gap:3px}
+.dock span i{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--ink-muted);display:block;opacity:.7;font-style:normal}
+.dock span.on{color:var(--ink)}
+.dock span.on i{background:var(--ink);border-color:var(--ink)}
+.dock .mic{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:20px}
+/* la giornata piena */
+.gior{padding:14px 24px 0}
+.gior .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.gior h2{font-family:var(--serif);font-size:27px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.15;margin-top:6px}
+.gior .sn{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-muted);margin-top:10px;line-height:1.45}
+.gior .aree{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gior .aree div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13px;color:var(--ink-muted);line-height:1.4}
+.gior .aree div b{display:block;color:var(--ink);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
+.gior .testo{margin-top:16px;font-family:var(--serif);font-size:16px;color:var(--ink);line-height:1.55}
+/* l'avviso discreto */
+.avviso{margin:18px 24px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center;font-size:13.5px;color:var(--ink-muted);line-height:1.45}
+.avviso i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;font-style:normal}
+.avviso b{color:var(--ink);font-weight:600}
+.avviso .x{margin-left:auto;color:var(--ink-faint);font-size:16px}
+/* il muro */
+.scrim{position:absolute;inset:0;background:rgba(31,27,24,.45)}
+.wall{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:28px 28px 0 0;padding:26px 24px 34px}
+.wall .t{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.12;white-space:pre-line}
+.wall .p{font-size:15px;color:var(--ink-muted);line-height:1.55;margin-top:12px}
+.wall .p b{color:var(--ink);font-weight:600}
+.wall .feat{display:flex;gap:12px;align-items:flex-start;margin-top:14px;font-size:14px;color:var(--ink-muted);line-height:1.4}
+.wall .feat i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);display:block;margin-top:6px;font-style:normal}
+.wall .feat b{display:block;color:var(--ink);font-weight:600;font-size:14px}
+.wall .b1,.wall .b2{margin-top:10px}
+.wall .b1{margin-top:22px}
+.wall .nota{font-size:13px;color:var(--ink-faint);margin-top:16px;line-height:1.5}
+/* la vista gratis */
+.gratis{padding:14px 24px 0}
+.gratis .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.gratis h2{font-family:var(--serif);font-size:27px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.15;margin-top:6px}
+.gratis .sub{font-size:13px;color:var(--ink-faint);margin-top:6px}
+.gratis .testo{margin-top:18px;font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.6}
+.gratis .nudge{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:13.5px;color:var(--ink-muted);line-height:1.45}
+.gratis .nudge b{color:var(--ink);font-weight:600}
+/* impostazioni: righe */
+.grp{margin:22px 24px 0}
+.grp .h{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin-bottom:8px}
+.grp .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.grp .r{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border-top:1px solid var(--line);font-size:16px;color:var(--ink);gap:12px}
+.grp .r:first-child{border-top:0}
+.grp .r .v{color:var(--ink-faint);font-size:14px;display:flex;gap:8px;align-items:center;text-align:right;flex:none}
+.grp .r .v.ok{color:#2E7D4F}
+.grp .r .v.warn{color:var(--danger)}
+.grp .r .d{font-size:13px;color:var(--ink-faint);margin-top:3px;line-height:1.4}
+.grp .r.col2{display:block}
+.grp .r.col2 .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sheet{padding:26px 24px 0}
+.sheet h2{font-family:var(--serif);font-size:28px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1.12}
+.sheet p{font-size:15px;color:var(--ink-muted);line-height:1.55;margin-top:12px}
+.sheet p b{color:var(--ink);font-weight:600}
+.opzione{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.opzione.on{border-color:var(--ink)}
+.opzione .k{font-size:16px;color:var(--ink);font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.opzione .k i{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ink-muted);display:grid;place-items:center;font-size:12px;font-style:normal}
+.opzione.on .k i{background:var(--ink);color:#fff;border-color:var(--ink)}
+.opzione .p{font-size:13.5px;color:var(--ink-muted);margin-top:6px;line-height:1.5}
+/* annotazioni */
+.ann{position:absolute;background:rgba(248,113,113,.92);color:#1a0b0b;font-size:11px;font-weight:650;padding:4px 8px;border-radius:6px;line-height:1.3;z-index:5;max-width:230px}
+.ann.ok{background:rgba(74,222,128,.92);color:#062a12}
+.toast{position:absolute;left:24px;right:24px;bottom:110px;background:#1F1B18;color:#F4EDE6;border-radius:14px;padding:14px 16px;font-size:14px;line-height:1.5}
+
+/* ---------------- il pannello admin, desktop ---------------- */
+.desk{width:1180px;max-width:100%;height:700px;border-radius:18px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
+  background:var(--bg);color:var(--ink);font-family:var(--font)}
+.desk aside{width:240px;flex:none;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column}
+.desk .brand{font-family:var(--serif);font-size:22px;color:var(--ink);letter-spacing:-.01em}
+.desk .brand b{font-weight:600}
+.desk .brand-sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;margin:4px 0 26px}
+.desk nav{display:flex;flex-direction:column;gap:2px}
+.desk nav span{padding:10px 12px;border-radius:10px;font-size:14px;color:var(--ink-muted);display:flex;justify-content:space-between}
+.desk nav span em{font-style:normal;color:var(--ink-faint);font-size:12px}
+.desk nav span.on{background:var(--surface);color:var(--ink);font-weight:600;border:1px solid var(--line)}
+.desk nav span.off{color:#B9AFA6}
+.desk .who{margin-top:auto;font-size:12px;color:var(--ink-faint);line-height:1.5}
+.desk .who b{display:block;color:var(--ink);font-weight:600}
+.desk main{flex:1;padding:34px 40px;overflow:hidden}
+.desk h1{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.015em;color:var(--ink)}
+.desk .sub{font-size:14px;color:var(--ink-muted);margin-top:6px;max-width:640px;line-height:1.55}
+.desk .griglia{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px;max-width:820px}
+.desk .box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.desk .box .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.desk .box .n{font-family:var(--serif);font-size:34px;color:var(--ink);margin-top:8px;line-height:1.1;letter-spacing:-.02em}
+.desk .box .n small{font-family:var(--font);font-size:14px;color:var(--ink-faint);margin-left:6px;letter-spacing:0}
+.desk .box .p{font-size:13px;color:var(--ink-muted);margin-top:8px;line-height:1.5}
+.desk .box .campo{margin-top:12px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-family:var(--mono);font-size:15px;color:var(--ink)}
+.desk .box .campo span{font-family:var(--font);font-size:12px;color:var(--ink-faint)}
+.desk .sw{display:flex;align-items:center;gap:12px;margin-top:12px}
+.desk .sw .pill{width:52px;height:30px;border-radius:15px;background:#2E7D4F;position:relative}
+.desk .sw .pill:after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.desk .sw .pill.off{background:#C9BFB5}
+.desk .sw .pill.off:after{right:auto;left:3px}
+.desk .sw b{font-size:15px;color:var(--ink);font-weight:600}
+.desk .barra{margin-top:12px;height:10px;border-radius:5px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.desk .barra i{display:block;height:100%;width:12%;background:var(--accent)}
+.desk .azioni{display:flex;gap:10px;margin-top:22px;align-items:center}
+.desk .azioni .s{height:42px;padding:0 18px;border-radius:11px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;display:flex;align-items:center}
+.desk .azioni .g{height:42px;padding:0 18px;border-radius:11px;border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:14px;display:flex;align-items:center;background:var(--surface)}
+.desk .azioni .nota{font-size:12px;color:var(--ink-faint);margin-left:8px}
+
+/* ---------------- interattivo: interruttore oggi/domani e quiz ---------------- */
+.sw2{display:flex;justify-content:center;gap:8px;margin:0 0 18px}
+.sw2 button{background:var(--pg-2);border:1px solid var(--pg-line);color:var(--pg-mut);border-radius:999px;padding:8px 16px;font:inherit;font-size:13px;cursor:pointer}
+.sw2 button.on{background:var(--pg-ink);color:var(--pg);border-color:var(--pg-ink);font-weight:600}
+.quiz{max-width:900px;margin:0 auto}
+.q{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.q .qt{font-size:15px;color:var(--pg-ink);font-weight:600;line-height:1.5}
+.q .qt i{font-style:normal;color:var(--hot);margin-right:8px}
+.q .qp{font-size:13px;color:var(--pg-faint);margin-top:6px;line-height:1.6}
+.q label{display:flex;gap:12px;align-items:flex-start;margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--pg-line);cursor:pointer;font-size:14px;color:var(--pg-mut);line-height:1.5}
+.q label:has(input:checked){border-color:var(--ok);color:var(--pg-ink);background:rgba(74,222,128,.06)}
+.q input[type=radio]{margin-top:4px;accent-color:#4ADE80}
+.q label b{color:var(--pg-ink);font-weight:600}
+.q label .n{color:var(--hot);font-weight:650;min-width:16px}
+.q textarea{width:100%;margin-top:10px;background:var(--pg);border:1px solid var(--pg-line);border-radius:10px;color:var(--pg-ink);font:inherit;font-size:14px;padding:10px 12px;min-height:70px}
+.esito{position:sticky;bottom:16px;background:var(--pg-ink);color:var(--pg);border-radius:16px;padding:16px 20px;margin-top:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.esito .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:650;opacity:.6}
+.esito .c{font-family:var(--mono);font-size:18px;font-weight:600;flex:1;min-width:200px}
+.esito button{background:var(--pg);color:var(--pg-ink);border:0;border-radius:10px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.esito .h{font-size:12px;opacity:.7;width:100%}
+
+.lista{max-width:900px;margin:0 auto;font-size:14.5px;line-height:1.7;color:var(--pg-mut)}
+.lista li{margin:6px 0 6px 18px}
+.lista b,.tab b{color:var(--pg-ink);font-weight:600}
+.tab{max-width:900px;margin:0 auto}
+.ok-pill{display:inline-block;background:rgba(74,222,128,.15);color:#4ADE80;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:650;margin-left:6px}
+.no-pill{display:inline-block;background:rgba(248,113,113,.15);color:#F87171;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:650;margin-left:6px}
+.todo label{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--pg-line);border-radius:10px;margin-top:8px;color:var(--pg-mut);font-size:14px;line-height:1.5;cursor:pointer}
+.todo label:has(input:checked){border-color:var(--ok);color:var(--pg-ink)}
+.todo input{margin-top:4px;accent-color:#4ADE80}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">L'abbonamento su iPhone e l'ospite: il referto</h1>
+  <p class="page-sub">4 settembre 2026. Due branch su GitHub, <b>niente in main</b>, <b>niente eseguito sul database di produzione</b>:
+    <b>ospite-server</b> (la parte invisibile dell'ospite: braccialetto, quota sul server, tetto di spesa) e <b>abbonamento-iap</b> (l'acquisto dentro l'app
+    con Apple, che parte da ospite-server). Qui sotto: cosa e fatto e provato, cosa tocca a te, cosa manca, e il quiz per decidere il prossimo passo.</p>
+
+  <div class="divider"></div>
+  <p class="label">01 . Cosa e fatto (e provato con i banchi)</p>
+  <div class="lista">
+    <p><b>L'acquisto dentro l'app (In-App Purchase, StoreKit 2)</b> <span class="ok-pill">30/30</span></p>
+    <ul>
+      <li><b>Il telefono</b>: un plugin nativo nuovo (<i>Abbonamento.swift</i>) parla con il negozio di Apple: legge i prodotti (prezzo e prova nella valuta della persona), apre il foglio di acquisto, ripristina, apre la pagina Abbonamenti di Apple, ascolta i rinnovi. Il telefono <b>non accende mai premium da solo</b>.</li>
+      <li><b>Il server</b>: riceve la ricevuta dal telefono, <b>chiede ad Apple</b> se e vera (con la chiave che mi darai, passo 4 del foglio), e SOLO allora scrive premium. Una ricevuta inventata viene rifiutata: provato. Rinnovi, disdette e rimborsi arrivano dal server di Apple a una route nostra, e lo stesso avviso consegnato due volte non si applica due volte: provato.</li>
+      <li><b>Il muro a schede</b>, quello che ti e piaciuto: oggi una scheda sola, Mensile 4,99 EUR con 14 giorni gratis; l'Annuale compare quando accendi l'interruttore in /admin (il codice c'e, il tasto nel pannello no: vedi sezione 03). "Ripristina acquisti", rinnovo, disdetta, Termini e Privacy sotto il tasto, come vuole la revisione.</li>
+      <li><b>Sul web</b> non si compra: il muro dice "Premium si attiva dall'app per iPhone" e il tasto porta all'App Store (l'indirizzo lo metto quando l'app esiste su App Store Connect). Stripe resta nel codice, spento.</li>
+      <li><b>Impostazioni</b>: "Piano: Premium fino al 4 ottobre", "Gestisci abbonamento" (apre la pagina di Apple), "Ripristina acquisti", e "Passa a Premium" anche su iPhone con "14 giorni gratis, poi 4,99 EUR al mese".</li>
+      <li><b>Un premium scaduto e un free</b>, in un posto solo: vale per Apple, per Stripe e per i tuoi account di prova (ios-v1), che hanno UN mese di premium e poi scadono da soli.</li>
+      <li><b>Il premium gratis della v1 e spento.</b> La card di /benvenuto apre il muro, come sul web.</li>
+    </ul>
+    <p><b>L'ospite, la parte invisibile</b> <span class="ok-pill">46/46</span> (fatta stanotte, referto in <i>src/modules/accesso/REFERTO-ospite-notte.md</i>): braccialetto anonimo nel portachiavi iCloud, quota contata sul server, tetto di spesa mensile, la promessa nuova sulla rete nei banchi. Tutto dietro un interruttore SPENTO: chi apre l'app oggi non nota niente.</p>
+    <p><b>I banchi, tutti verdi sul branch</b>: tsc ed eslint puliti, verify-i18n 7/7, verify-abbonamento 30/30 (nuovo, provato a mordere: senza la domanda ad Apple una ricevuta inventata accendeva premium, e il banco lo ha visto), verify-ospite 46/46, verify-pr10 26/26, verify-benvenuto 69/69, verify-cassaforte 46/46, verify-rete-spenta 14/14. Le due migration (023 ospite, 024 apple) provate due volte su un Postgres locale.</p>
+    <p><b>Cosa NON ho potuto provare</b> <span class="no-pill">da fare sul tuo iPhone</span>: il codice Swift compila solo in Xcode, e l'acquisto vero si prova solo con la sandbox di Apple sul telefono. E il primo passo dopo il tuo ok.</p>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">02 . Cosa tocca a te (spunta man mano)</p>
+  <p class="caption">I dettagli passo per passo sono nel foglio <i>src/modules/abbonamento/APP-STORE-CONNECT-passi.md</i> (nella tua cartella). Qui l'elenco corto.</p>
+  <div class="todo quiz">
+    <label><input type="checkbox" data-t="SQL ospite"><span><b>Il database, prima cosa:</b> incolla nel SQL Editor di Supabase <i>supabase/DA-ESEGUIRE-ospite.sql</i>, poi <i>supabase/DA-ESEGUIRE-apple.sql</i> (in quest'ordine: il secondo usa una tabella del primo). Si possono rieseguire senza danni.</span></label>
+    <label><input type="checkbox" data-t="Paid Apps"><span><b>App Store Connect, accordo Paid Apps</b>: banca e dati fiscali (partita IVA). Se l'hai gia fatto per Stoqfolio, e gia a posto.</span></label>
+    <label><input type="checkbox" data-t="prodotto mensile"><span><b>Il prodotto</b>: gruppo "dayalogue premium", abbonamento <b>com.manuelvisuals.journalme.premium.mensile</b>, 1 mese, 4,99 EUR, offerta introduttiva gratis di <b>2 settimane</b>. Il nome esatto conta: il codice lo cerca cosi.</span></label>
+    <label><input type="checkbox" data-t="sandbox"><span><b>Un utente sandbox</b> (Users and Access > Sandbox), e sul tuo iPhone Impostazioni > App Store > Account sandbox.</span></label>
+    <label><input type="checkbox" data-t="chiave"><span><b>La chiave per il server</b> (Users and Access > Integrations > In-App Purchase): mandami in chat il file .p8, il Key ID e l'Issuer ID. Li metto su Vercel. E l'indirizzo delle notifiche: <i>https://journal-me-weld.vercel.app/api/apple/notifiche</i>, Version 2.</span></label>
+    <label><input type="checkbox" data-t="xcode"><span><b>Xcode</b> (quando ti dico che il branch e pronto): Signing &amp; Capabilities &gt; + Capability &gt; In-App Purchase; e per provare subito senza App Store Connect, il file <i>ios/App/Dayalogue.storekit</i> nello schema (Edit Scheme &gt; Run &gt; Options &gt; StoreKit Configuration).</span></label>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">03 . Cosa manca ancora</p>
+  <div class="lista">
+    <ul>
+      <li><b>Le schermate dell'ospite</b> che hai approvato (tabella 07: tutte le proposte in verde): il primo avvio dritto su Oggi per tutti (oggi e dietro l'interruttore spento), l'avviso discreto a 3 giornate rimaste, la riga "AI in regalo" e "Dove sono le mie giornate" in Impostazioni, la voce <b>Regalo AI</b> in /admin (con l'interruttore dell'Annuale). Il muro del regalo finito invece e GIA fatto: e lo stesso muro a schede.</li>
+      <li><b>L'indirizzo dell'App Store</b> nel tasto del web: si mette quando l'app esiste su App Store Connect.</li>
+      <li><b>La prova sul telefono</b>: sandbox di Apple, giro completo (prova, rinnovo, disdetta) in un quarto d'ora.</li>
+      <li><b>Il pezzo 4 della SPEC</b> (la domanda dell'email dopo 5 giornate), col suo mockup.</li>
+      <li>Due banchi vecchi erano gia rossi prima di stanotte, non per colpa di questo lavoro: <i>verify-consumi</i> (dal giorno della cassaforte) e <i>verify-checkout-obiettivi</i> (dal 2 settembre, la schermata /giorno e cambiata). Li aggiorno quando mi dici.</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">04 . Il quiz: cosa faccio adesso</p>
+  <div class="quiz">
+    <div class="q"><div class="qt"><i>A</i>L'ordine dei lavori</div><div class="qp">In ogni caso niente va in main finche non hai eseguito i due SQL. I due branch si uniscono in fila: prima ospite-server, poi abbonamento-iap.</div>
+      <label><input type="radio" name="A" value="1" checked><span class="n">1</span><span><b>Prima le schermate dell'ospite</b> (sezione 03) sul branch, poi tu esegui i due SQL e io unisco tutto in main in una volta. Cosi in main arriva un'app completa.</span></label>
+      <label><input type="radio" name="A" value="2"><span class="n">2</span><span><b>Prima l'acquisto sul tuo iPhone</b>: tu fai i passi di App Store Connect e Xcode, proviamo la sandbox, poi le schermate dell'ospite.</span></label>
+      <label><input type="radio" name="A" value="3"><span class="n">3</span><span><b>Unisco subito in main</b> (dopo i due SQL) quello che c'e, con l'ospite spento e il muro nuovo acceso, e le schermate dell'ospite dopo.</span></label></div>
+    <div class="q"><div class="qt"><i>B</i>La riga "Piano" in Impostazioni quando la prova e in corso</div><div class="qp">Il server sa la scadenza, non sa se e prova o pagato (Apple lo dice nella transazione, offerType: lo posso salvare).</div>
+      <label><input type="radio" name="B" value="1" checked><span class="n">1</span><span><b>"Premium fino al 18 settembre"</b> e basta (com'e ora: semplice e sempre vero)</span></label>
+      <label><input type="radio" name="B" value="2"><span class="n">2</span><span>"Premium, in prova fino al 18 settembre" quando e la prova: salvo anche questo dato</span></label></div>
+    <div class="q"><div class="qt"><i>C</i>Il muro sul web, finche l'app non e sull'App Store</div>
+      <label><input type="radio" name="C" value="1" checked><span class="n">1</span><span><b>Il tasto dice la verita</b>: "L'app per iPhone sta arrivando sull'App Store" (com'e ora)</span></label>
+      <label><input type="radio" name="C" value="2"><span class="n">2</span><span>Il tasto porta alla home di dayalogue.com</span></label></div>
+    <div class="q"><div class="qt"><i>Note</i>Altro (facoltativo)</div><textarea id="note" placeholder="Per esempio: il .p8 te lo mando domani"></textarea></div>
+    <div class="esito"><div><div class="k">Le tue risposte</div><div class="c" id="codice">A1 B1 C1</div></div><button id="copia">Copia</button><div class="h">Incolla questa riga in chat. Le spunte della sezione 02 e le note ci finiscono dentro.</div></div>
+  </div>
+</div>
+<script>
+(function(){
+  var codice = document.getElementById('codice');
+  function aggiorna(){
+    var parti = [];
+    ['A','B','C'].forEach(function(q){
+      var s = document.querySelector('input[name="' + q + '"]:checked');
+      if (s) parti.push(q + s.value);
+    });
+    var fatte = [];
+    document.querySelectorAll('.todo input:checked').forEach(function(c){ fatte.push(c.getAttribute('data-t')); });
+    var note = document.getElementById('note').value.trim();
+    var riga = parti.join(' ');
+    if (fatte.length) riga += ' -- fatto: ' + fatte.join(', ');
+    if (note) riga += ' -- ' + note;
+    codice.textContent = riga;
+  }
+  document.querySelectorAll('.quiz input, .quiz textarea').forEach(function(el){ el.addEventListener('input', aggiorna); el.addEventListener('change', aggiorna); });
+  document.getElementById('copia').addEventListener('click', function(){
+    var b = this, t = codice.textContent;
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){ b.textContent = 'Copiato'; setTimeout(function(){ b.textContent = 'Copia'; }, 1500); }, function(){ b.textContent = 'Seleziona e copia a mano'; });
+    else b.textContent = 'Seleziona e copia a mano';
+  });
+  aggiorna();
+})();
+</script>
+</body>
+</html>
