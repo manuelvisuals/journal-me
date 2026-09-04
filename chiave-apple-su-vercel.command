@@ -146,20 +146,35 @@ if [ ! -f .vercel/project.json ]; then
 fi
 ok "Cartella collegata al progetto $TEAM_VERCEL/$PROGETTO_VERCEL"
 
+# Il valore passa da un file temporaneo, MAI in background: un comando in
+# background legge lo standard input da /dev/null e Vercel riceveva un
+# valore vuoto (e il difetto della prima versione di questo script, 4
+# settembre 2026: diceva "scritta" e su Vercel non c'era niente).
+TMPV="$(mktemp)"; trap 'rm -f "$TMPV"' EXIT
 metti(){
   nome="$1"; valore="$2"
+  printf '%s' "$valore" > "$TMPV"
+  $VERCEL env rm "$nome" --yes >/dev/null 2>&1
   for ambiente in production preview; do
-    con_tetto 60 $VERCEL env rm "$nome" "$ambiente" --yes >/dev/null 2>&1
-    if printf '%s' "$valore" | con_tetto 60 $VERCEL env add "$nome" "$ambiente" >/dev/null 2>&1; then
+    if $VERCEL env add "$nome" "$ambiente" < "$TMPV" >/dev/null 2>"$TMPV.err"; then
       ok "$nome scritta ($ambiente)"
     else
-      ko "$nome NON scritta ($ambiente)"
+      ko "$nome NON scritta ($ambiente): $(tr '\n' ' ' < "$TMPV.err" | cut -c1-200)"
     fi
   done
+  rm -f "$TMPV.err"
 }
 metti APPLE_IAP_KEY_ID "$KEY_ID"
 metti APPLE_IAP_ISSUER_ID "$ISSUER_ID"
 metti APPLE_IAP_PRIVATE_KEY "$(cat "$CHIAVE")"
+rm -f "$TMPV"
+
+# La prova che conta: Vercel le elenca davvero?
+nota "Rileggo da Vercel..."
+ELENCO="$($VERCEL env ls production 2>/dev/null)"
+for nome in APPLE_IAP_KEY_ID APPLE_IAP_ISSUER_ID APPLE_IAP_PRIVATE_KEY; do
+  if printf '%s' "$ELENCO" | grep -q "$nome"; then ok "Vercel conferma: $nome c'e"; else ko "Vercel NON ha $nome"; fi
+done
 
 # ---------- 5. il file al sicuro ----------
 mkdir -p "$CASSETTO"
@@ -178,7 +193,7 @@ if [ "$PROBLEMI" -eq 0 ] && [ -n "$APPLE_401" ]; then
   info "gialla che inizia con 'Apple risponde 401'."
 elif [ "$PROBLEMI" -eq 0 ]; then
   printf "${G}${B}  ESITO: TUTTO A POSTO. Le tre variabili sono su Vercel.${V}\n"
-  info "Valgono dal prossimo deploy (il prossimo push su main): ci pensa Claude."
+  info "Valgono dal prossimo deploy: scrivi a Claude 'variabili su Vercel ok' e ci pensa lui."
 else
   printf "${R}${B}  ESITO: $PROBLEMI PROBLEMI. Copia le righe rosse a Claude.${V}\n"
 fi

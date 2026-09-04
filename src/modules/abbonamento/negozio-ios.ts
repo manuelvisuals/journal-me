@@ -149,8 +149,9 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
   if (!resp.ok) {
     let m = `Il server ha risposto ${resp.status}.`;
     try {
-      const j = (await resp.json()) as { error?: string };
-      if (j.error) m = j.error;
+      const j = (await resp.json()) as { error?: string; messaggio?: string };
+      if (j.messaggio) m = j.messaggio;
+      else if (j.error) m = j.error;
     } catch {
       // niente corpo
     }
