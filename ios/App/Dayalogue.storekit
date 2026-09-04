@@ -1,0 +1,98 @@
+{
+  "identifier" : "DAYALOGUE0001",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "0",
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "it_IT",
+    "_storefront" : "ITA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 6
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21500001",
+      "localizations" : [
+        {
+          "description" : "AI senza limiti e backup ogni notte",
+          "displayName" : "dayalogue premium",
+          "locale" : "it_IT"
+        }
+      ],
+      "name" : "dayalogue premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6740000001",
+          "introductoryOffer" : {
+            "internalID" : "6740000011",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2W"
+          },
+          "localizations" : [
+            {
+              "description" : "AI senza limiti: racconto a voce, titolo, sintesi, aree, recap. Backup ogni notte.",
+              "displayName" : "Premium",
+              "locale" : "it_IT"
+            }
+          ],
+          "productID" : "com.manuelvisuals.journalme.premium.mensile",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium mensile",
+          "subscriptionGroupID" : "21500001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "39.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6740000002",
+          "introductoryOffer" : {
+            "internalID" : "6740000012",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P2W"
+          },
+          "localizations" : [
+            {
+              "description" : "AI senza limiti per un anno. Due mesi in regalo.",
+              "displayName" : "Premium annuale",
+              "locale" : "it_IT"
+            }
+          ],
+          "productID" : "com.manuelvisuals.journalme.premium.annuale",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium annuale",
+          "subscriptionGroupID" : "21500001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

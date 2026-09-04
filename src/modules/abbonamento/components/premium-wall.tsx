@@ -11,27 +11,46 @@
  * componente e montato una volta nel guscio e funziona anche sotto lg:
  * il muro serve soprattutto al telefono gratis.
  *
- * Prezzo: NON ancora deciso (aperto per la PR 11) — il bottone dice solo
- * "prova premium". L'acquisto vero arriva con Stripe (PR 11): oggi il
- * primario porta al login (in locale, dove premium = farsi un account);
- * in cloud gratis spiega che l'abbonamento sta arrivando.
+ * DAL 4 SETTEMBRE 2026 (mockup abbonamento-iphone.html v3, deciso da
+ * Manuel): dentro il guscio iOS il muro e A SCHEDE — un prodotto per
+ * scheda, prezzo e prova letti da Apple (negozio-ios.ts), oggi il solo
+ * mensile, l'annuale quando l'interruttore del pannello lo accende — e il
+ * tasto apre il foglio di acquisto di Apple (In-App Purchase). In locale
+ * (l'ospite) il tasto porta prima al login: premium e dell'account. Sul
+ * web non si compra: il muro rimanda all'App Store. Il codice Stripe resta
+ * (fakeCheckout per l'ambiente di prova) ma non e piu la strada del web.
+ *
+ * Il muro "regalo" (SPEC R3, ospite a giornate finite) e lo stesso muro con
+ * un altro titolo: si apre da solo sull'evento `jm:regalo-finito` di
+ * apiFetch, e la sua uscita gratuita e "Continua senza AI".
  */
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import { PREMIUM_PRICE_LABEL } from "@/lib/pricing";
+import { APP_STORE_URL, PREMIUM_PRICE_LABEL, PREMIUM_PROVA_GIORNI } from "@/lib/pricing";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
 import { useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
-import { isNative } from "@/lib/native/platform";
+import {
+  ascoltaTransazioni,
+  compraPremium,
+  negozioDisponibile,
+  prodottiPremium,
+  ripristinaAcquisti,
+  type ProdottoNegozio,
+} from "@/modules/abbonamento/negozio-ios";
+import { openPremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 
-export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns";
+/** "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3). */
+export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns" | "regalo";
 
 type WallState = {
   feature: WallFeature;
   /** Uscita gratuita contestuale (es. mic -> apri la scrittura a mano). */
   onDismiss?: () => void;
+  /** Per "regalo": quante giornate erano (per dirlo nel titolo). */
+  max?: number;
 } | null;
 
 let state: WallState = null;
@@ -43,8 +62,9 @@ function emit(): void {
 export function openPremiumWall(
   feature: WallFeature,
   onDismiss?: () => void,
+  extra?: { max?: number },
 ): void {
-  state = { feature, onDismiss };
+  state = { feature, onDismiss, max: extra?.max };
   emit();
 }
 
@@ -75,26 +95,27 @@ const TITLES: Record<WallFeature, string> = {
   aiSummary: "Per il titolo e la sintesi\nserve premium",
   recap: "Per i recap del mese\nserve premium",
   patterns: "Per le letture sui pattern\nserve premium",
+  regalo: "Le giornate con l'AI\nin regalo sono finite",
 };
 
 const FEATURES: { t: string; p: string }[] = [
   {
     t: "Racconti e basta",
-    p: "Parli in italiano, il testo si scrive da solo. Correggi i nomi e sei a posto.",
-  },
-  {
-    t: "Titolo, sintesi, macro-aree",
-    p: "Ogni giornata riassunta in una riga e divisa fra lavoro, relazioni, corpo, emozioni.",
-  },
-  {
-    t: "Recap e pattern",
-    p: "Il racconto del mese, e cosa cambia davvero quando cammini o dormi di piu.",
+    p: "Voce, titolo, sintesi, aree, persone, recap.",
   },
   {
     t: "Su tutti i dispositivi",
-    p: "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.",
+    p: "Chiuso a chiave, con backup ogni notte.",
   },
 ];
+
+/** Il nome del periodo per il tasto e la nota ("al mese", "all'anno"). */
+const PERIODI: Record<string, string> = {
+  mese: "al mese",
+  anno: "all'anno",
+  settimana: "alla settimana",
+  giorno: "al giorno",
+};
 
 export function PremiumWall() {
   const t = useT();
@@ -103,13 +124,35 @@ export function PremiumWall() {
   const mode = useStorageMode();
   const [cloudNote, setCloudNote] = useState<boolean>(false);
   const [busy, setBusy] = useState<boolean>(false);
+  // I prodotti letti per QUESTA apertura del muro: legati allo stato con
+  // cui si e aperto, cosi un'apertura nuova riparte da "un attimo..."
+  // senza dover azzerare niente dentro un effetto.
+  const [carico, setCarico] = useState<{ per: WallState; lista: ProdottoNegozio[] } | null>(null);
+  const [scelto, setScelto] = useState<string | null>(null);
+  const prodotti = carico && carico.per === wall ? carico.lista : null;
+  const [errore, setErrore] = useState<string | null>(null);
+  const negozio = negozioDisponibile();
 
   const dismiss = () => {
     const after = state?.onDismiss;
     closePremiumWall();
     setCloudNote(false);
+    setErrore(null);
     after?.();
   };
+
+  // Le transazioni che arrivano da sole (rinnovi, acquisti approvati dopo)
+  // e il muro dell'ospite a regalo finito: si ascoltano una volta, qui,
+  // perche questo componente e montato una volta sola nel guscio.
+  useEffect(() => {
+    ascoltaTransazioni();
+    const suRegalo = (e: Event) => {
+      const d = (e as CustomEvent<{ max?: number }>).detail;
+      openPremiumWall("regalo", undefined, { max: d?.max });
+    };
+    window.addEventListener("jm:regalo-finito", suRegalo);
+    return () => window.removeEventListener("jm:regalo-finito", suRegalo);
+  }, []);
 
   // Esc = uscita gratuita, come il tasto "non ora".
   useEffect(() => {
@@ -124,48 +167,108 @@ export function PremiumWall() {
     };
   }, [wall]);
 
+  // Le schede: i prodotti come li dice Apple. L'interruttore dell'annuale
+  // arriva da /api/ospite/stato (stessa origine, senza testo: e nell'elenco
+  // chiuso della promessa sulla rete), cosi vale anche per l'ospite.
+  useEffect(() => {
+    if (!wall || !negozio) return;
+    let vivo = true;
+    const per = wall;
+    (async () => {
+      let annuale = false;
+      try {
+        const r = await apiFetch("/api/ospite/stato");
+        if (r.ok) annuale = ((await r.json()) as { annualeAttivo?: boolean }).annualeAttivo === true;
+      } catch {
+        // senza risposta: solo il mensile
+      }
+      const lista = await prodottiPremium(annuale);
+      if (!vivo) return;
+      setCarico({ per, lista });
+      setScelto(lista[0]?.id ?? null);
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [wall, negozio]);
+
   if (!wall) return null;
 
-  const tryPremium = async () => {
+  const regalo = wall.feature === "regalo";
+  const prodotto = prodotti?.find((p) => p.id === scelto) ?? prodotti?.[0] ?? null;
+  const prova = prodotto && prodotto.provaGiorni && prodotto.provaDisponibile !== false ? prodotto.provaGiorni : 0;
+
+  /** Il tasto pieno dentro il guscio: compra (o prima l'account). */
+  const compra = async () => {
+    if (busy) return;
     if (mode === "local") {
-      // Premium = account: si passa dal login. La scelta locale resta
-      // finche non completa l'accesso (clearLocalMode arriva col flusso
-      // di migrazione, §7.2).
+      // Premium e dell'account: l'ospite fa prima email e codice, poi
+      // ritrova il muro al prossimo tocco e compra.
       closePremiumWall();
-      setCloudNote(false);
       router.push("/login");
       return;
     }
-    // Ambiente di prova: al posto di Stripe c'e il pagamento simulato
-    // (/checkout-finto). Serve a provare l'app da premium finche le chiavi
-    // vere non ci sono; in produzione l'interruttore e spento e questa riga
-    // non esiste nemmeno.
+    if (!prodotto) return;
+    setBusy(true);
+    setErrore(null);
+    const esito = await compraPremium(prodotto.id);
+    setBusy(false);
+    if (esito.esito === "premium") {
+      closePremiumWall();
+      openPremiumWelcome();
+      return;
+    }
+    if (esito.esito === "in_attesa") {
+      setErrore(t("L'acquisto aspetta un'approvazione (In famiglia): premium si accende da solo appena arriva."));
+      return;
+    }
+    if (esito.esito === "errore") setErrore(esito.messaggio);
+  };
+
+  const ripristina = async () => {
+    if (busy) return;
+    if (mode === "local") {
+      closePremiumWall();
+      router.push("/login");
+      return;
+    }
+    setBusy(true);
+    setErrore(null);
+    const esito = await ripristinaAcquisti();
+    setBusy(false);
+    if (esito.esito === "premium") {
+      closePremiumWall();
+      openPremiumWelcome();
+      return;
+    }
+    if (esito.esito === "errore") setErrore(esito.messaggio);
+  };
+
+  /** Il tasto pieno sul web: nessun acquisto qui, si va all'App Store. */
+  const vaiAllAppStore = () => {
+    if (mode === "local") {
+      closePremiumWall();
+      router.push("/login");
+      return;
+    }
+    // Ambiente di prova: il pagamento simulato resta la strada per provare
+    // l'app da premium sul web (checkout-finto).
     if (fakeCheckoutEnabled()) {
       closePremiumWall();
-      setCloudNote(false);
       router.push("/app/checkout-finto");
       return;
     }
-    // Cloud: si apre Stripe Checkout (PR 11). Se Stripe non e ancora
-    // configurato la route risponde 503 e qui si dice la verita.
-    if (busy) return;
-    setBusy(true);
-    try {
-      const resp = await apiFetch("/api/stripe/checkout", { method: "POST" });
-      if (resp.ok) {
-        const data = (await resp.json()) as { url?: string };
-        if (data.url) {
-          window.location.href = data.url;
-          return;
-        }
-      }
-      setCloudNote(true);
-    } catch {
-      setCloudNote(true);
-    } finally {
-      setBusy(false);
+    if (APP_STORE_URL) {
+      window.location.href = APP_STORE_URL;
+      return;
     }
+    setCloudNote(true);
   };
+
+  const titolo =
+    regalo && wall.max
+      ? t("Le {n} giornate con l'AI\nin regalo sono finite", { n: String(wall.max) })
+      : t(TITLES[wall.feature]);
 
   return (
     <div
@@ -176,12 +279,57 @@ export function PremiumWall() {
       onClick={dismiss}
     >
       <div className="jm-wall" onClick={(e) => e.stopPropagation()}>
-        <div className="jm-wall-t">{t(TITLES[wall.feature])}</div>
+        <div className="jm-wall-t">{titolo}</div>
         <div className="jm-wall-p">
-          {t(
-            "La trascrizione e la rielaborazione girano su un server e costano a ogni minuto registrato. Per questo non posso regalarle: le paghi tu o le pago io.",
-          )}
+          {regalo
+            ? t("Grazie di averle usate. Puoi continuare a scrivere ogni giorno: manca solo la parte fatta dall'AI.")
+            : negozio
+              ? t("Una prova gratis per provare tutto. Poi, se ti piace, resta.")
+              : t("Premium si attiva dall'app per iPhone: {n} giorni gratis, poi {prezzo}. Con lo stesso account vale anche qui.", {
+                  n: String(PREMIUM_PROVA_GIORNI),
+                  prezzo: PREMIUM_PRICE_LABEL,
+                })}
         </div>
+
+        {negozio && (
+          <div className="jm-wall-schede" data-testid="jm-wall-schede">
+            {prodotti === null && <div className="jm-wall-scheda jm-wall-scheda-attesa">{t("un attimo...")}</div>}
+            {prodotti?.map((p) => {
+              const on = p.id === scelto;
+              const pr = p.provaGiorni && p.provaDisponibile !== false ? p.provaGiorni : 0;
+              return (
+                <button
+                  type="button"
+                  key={p.id}
+                  className={on ? "jm-wall-scheda on" : "jm-wall-scheda"}
+                  onClick={() => setScelto(p.id)}
+                  data-prodotto={p.chiave}
+                >
+                  <span className="k">
+                    <b>{p.chiave === "annuale" ? t("Annuale") : t("Mensile")}</b>
+                    <span className="pr">{`${p.prezzo} ${t(PERIODI[p.periodo] ?? "al mese")}`}</span>
+                    <i>{on ? "\u2713" : ""}</i>
+                  </span>
+                  <span className="p">
+                    {pr > 0
+                      ? t("{n} giorni gratis, poi {prezzo} {periodo}. Disdici quando vuoi.", {
+                          n: String(pr),
+                          prezzo: p.prezzo,
+                          periodo: t(PERIODI[p.periodo] ?? "al mese"),
+                        })
+                      : t("Disdici quando vuoi.")}
+                  </span>
+                </button>
+              );
+            })}
+            {prodotti !== null && prodotti.length === 0 && (
+              <div className="jm-wall-scheda jm-wall-scheda-attesa">
+                {t("Il negozio non risponde: riprova fra poco.")}
+              </div>
+            )}
+          </div>
+        )}
+
         {FEATURES.map((f) => (
           <div key={f.t} className="jm-wall-feat">
             <i />
@@ -191,47 +339,65 @@ export function PremiumWall() {
             </div>
           </div>
         ))}
-        {/* Dentro il guscio iOS l'acquisto NON esiste (App Store 3.1.1,
-            deciso da Manuel il 23 ago: v1 senza acquisto su iOS). Niente
-            bottone col prezzo, niente inviti a comprare altrove: solo la
-            verita, e - per chi un account ce l'ha gia - la via del login.
-            L'In-App Purchase arriva in un aggiornamento. */}
-        {(cloudNote || isNative()) && (
+
+        {errore && <div className="jm-wall-note" role="alert">{errore}</div>}
+        {cloudNote && (
           <div className="jm-wall-note">
-            {t(
-              "L'abbonamento si attiva a breve: l'acquisto dentro l'app sta arrivando.",
-            )}
+            {t("L'app per iPhone sta arrivando sull'App Store: premium si attiva da li.")}
           </div>
         )}
-        {isNative() ? (
-          mode === "local" && (
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => {
-                closePremiumWall();
-                setCloudNote(false);
-                router.push("/login");
-              }}
-            >
-              {t("Ho gia un account")}
-            </button>
-          )
-        ) : (
+
+        {negozio ? (
           <button
             type="button"
             className="btn-primary"
-            onClick={() => void tryPremium()}
-            disabled={busy}
+            onClick={() => void compra()}
+            disabled={busy || (mode !== "local" && !prodotto)}
           >
             {busy
               ? t("un attimo...")
-              : `${t("prova premium")} . ${PREMIUM_PRICE_LABEL}`}
+              : prova > 0
+                ? t("Prova gratis {n} giorni", { n: String(prova) })
+                : prodotto
+                  ? `${t("Abbonati")} . ${prodotto.prezzo} ${t(PERIODI[prodotto.periodo] ?? "al mese")}`
+                  : t("Passa a premium")}
+          </button>
+        ) : (
+          <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
+            {t("Scarica dayalogue per iPhone")}
           </button>
         )}
         <button type="button" className="btn-ghost" onClick={dismiss}>
-          {t("non ora")}
+          {regalo ? t("Continua senza AI") : t("non ora")}
         </button>
+
+        <div className="jm-wall-quiet">
+          {mode === "local" && (
+            <button type="button" onClick={() => { closePremiumWall(); router.push("/login"); }}>
+              {t("Ho gia un account")}
+            </button>
+          )}
+          {negozio && (
+            <button type="button" onClick={() => void ripristina()} disabled={busy}>
+              {t("Ripristina acquisti")}
+            </button>
+          )}
+        </div>
+
+        {negozio && prodotto && (
+          <div className="jm-wall-nota">
+            {prova > 0
+              ? t("Dopo la prova si rinnova da solo a {prezzo} {periodo}, finche non lo disdici dalle Impostazioni di Apple.", {
+                  prezzo: prodotto.prezzo,
+                  periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
+                })
+              : t("Si rinnova da solo a {prezzo} {periodo}, finche non lo disdici dalle Impostazioni di Apple.", {
+                  prezzo: prodotto.prezzo,
+                  periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
+                })}{" "}
+            <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot; <a href="/privacy">{t("Privacy")}</a>
+          </div>
+        )}
       </div>
     </div>
   );

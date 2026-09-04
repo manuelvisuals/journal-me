@@ -7,6 +7,16 @@
  * "chiave": "valore", — verify-i18n legge questo formato.
  */
 export const IMPOSTAZIONI: Record<string, string> = {
+  "Premium fino al {data}": "Premium until {data}",
+  "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso.": "The days you already wrote here move to the cloud on your first sign-in.",
+  "Gestisci abbonamento": "Manage subscription",
+  "Apple": "via Apple",
+  "Chiedo ad Apple...": "Asking Apple...",
+  "Premium ripristinato.": "Premium restored.",
+  "Niente da ripristinare.": "Nothing to restore.",
+  "{n} giorni gratis": "{n} days free",
+  "poi": "then",
+  "Si attiva dall'app per iPhone": "Activated from the iPhone app",
   "Pacchetto": "Build",
   "aggiungi": "add",
   "togli": "remove",

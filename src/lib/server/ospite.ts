@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminClient, requireUser } from "@/lib/server/entitlement";
+import { pianoEffettivo } from "@/lib/piano";
 import {
   aggiungiSpesaUsd,
   leggiRegalo,
@@ -153,12 +154,17 @@ async function braccialettoDaSegreto(
   return nuova.id as string;
 }
 
-/** Il piano dell'utente, o null se non si legge. */
+/** Il piano EFFETTIVO dell'utente (scadenza compresa), o null se non si legge. */
 async function pianoDi(userId: string): Promise<string | null> {
   const admin = getAdminClient();
   if (!admin) return null;
-  const { data } = await admin.from("profiles").select("plan").eq("user_id", userId).maybeSingle();
-  return (data?.plan as string | undefined) ?? null;
+  const { data } = await admin
+    .from("profiles")
+    .select("plan, current_period_end")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!data) return null;
+  return pianoEffettivo(data as { plan?: string | null; current_period_end?: string | null });
 }
 
 export async function requireOspiteOPremium(
@@ -276,6 +282,9 @@ export async function statoOspite(req: NextRequest): Promise<NextResponse> {
     attivo: regalo.attivo,
     max: regalo.giornatePerOspite,
     sopraIlTetto: sopraIlTetto(regalo, speso),
+    // L'interruttore dell'annuale (migration 024): il muro premium lo legge
+    // da qui, che e nell'elenco chiuso della promessa sulla rete.
+    annualeAttivo: regalo.annualeAttivo,
   };
   if (!segreto) return NextResponse.json({ ...base, usate: 0, rimaste: regalo.giornatePerOspite, oggi: false });
   const id = await braccialettoDaSegreto(segreto, null, { crea: false });

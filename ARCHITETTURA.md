@@ -151,6 +151,16 @@ braccialetto_id/regalo/costo_usd, funzioni di quota e spesa). Banco:
 verify-benvenuto. Mockup in attesa dell'ok:
 `design/mockups/ospite-primo-avvio.html`.
 
+L'abbonamento su iPhone (4 settembre 2026, branch `abbonamento-iap`,
+decisione di Manuel: In-App Purchase, StoreKit 2): allo scheletro tocca
+solo `src/lib/piano.ts` (un premium scaduto e un free, in un posto solo,
+usato da requirePremium, dalla guardia dell'ospite e da plan.ts) e le
+costanti in `src/lib/pricing.ts` (PRODOTTI_IOS, BUNDLE_ID_IOS,
+PREMIUM_PROVA_GIORNI, APP_STORE_URL; PREMIUM_IOS_V1_GRATIS spento). Tutto
+il resto vive nel modulo `abbonamento` (negozio-ios.ts, il plugin nativo
+`Abbonamento.swift`, le route /api/apple/verifica e /api/apple/notifiche,
+il muro a schede) e il suo CLAUDE.md dice il perche di ogni pezzo.
+
 Regola: un modulo USA lo scheletro, non lo modifica. Se un modulo ha bisogno di una
 primitiva nuova, la chiede (una sessione scheletro la aggiunge) o la tiene nel proprio
 folder finche non e matura.

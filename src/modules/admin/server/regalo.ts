@@ -15,7 +15,7 @@ import { regaloDaRiga } from "@/lib/regalo";
  * La tabella `regalo` e pubblica in lettura e contiene solo i limiti.
  */
 
-const COLONNE = "attivo, giornate_per_ospite, tetto_mensile_eur, cambio_usd_eur, updated_at";
+const COLONNE = "attivo, giornate_per_ospite, tetto_mensile_eur, cambio_usd_eur, annuale_attivo, updated_at";
 
 export async function GET(req: NextRequest) {
   const gate = await requireAdmin(req);
@@ -75,6 +75,12 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "attivo deve essere vero o falso" }, { status: 400 });
     }
     patch.attivo = body.attivo;
+  }
+  if (body.annuale_attivo !== undefined) {
+    if (typeof body.annuale_attivo !== "boolean") {
+      return NextResponse.json({ error: "annuale_attivo deve essere vero o falso" }, { status: 400 });
+    }
+    patch.annuale_attivo = body.annuale_attivo;
   }
   if (body.giornate_per_ospite !== undefined) {
     const n = Number(body.giornate_per_ospite);

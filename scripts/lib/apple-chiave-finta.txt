@@ -1,0 +1,6 @@
+CHIAVE FINTA per i banchi (scripts/verify-abbonamento.mjs): generata a caso nel sandbox, non e di nessuno e non apre niente. E un .txt perche *.pem e ignorato da git.
+-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgGVOf+j/H5PjPWCT4
+yM5uD+6ZEVcReGbxj0icyrEppQ2hRANCAAS06HBDVJndDsQpe1+eliOw7A+ptVSW
+0zH0zORO4229l6u5RilOqo0rd6AQ+bAv9Ocee72p764XaN84a08ol32O
+-----END PRIVATE KEY-----

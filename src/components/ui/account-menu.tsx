@@ -30,6 +30,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { pianoEffettivo } from "@/lib/piano";
 import { usePathname, useRouter } from "next/navigation";
 import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
 import { usePlan } from "@/lib/plan";
@@ -81,10 +82,10 @@ function useAccount(): Account | null {
         if (user) {
           const { data: profile } = await supabase
             .from("profiles")
-            .select("plan")
+            .select("plan, current_period_end")
             .eq("user_id", user.id)
             .maybeSingle();
-          if (profile?.plan === "premium") badge = "Premium";
+          if (pianoEffettivo(profile) === "premium") badge = "Premium";
         }
         if (alive) setAccount({ email, badge });
       } catch {

@@ -14,8 +14,9 @@
 //       portachiavi (quello che fa iCloud) ha la quota gia consumata; un
 //       dispositivo davvero nuovo parte da zero;
 //   R3  a quota finita il salvataggio a mano riesce, la chiusura con l'AI
-//       salva comunque il testo grezzo, e NON si apre il muro premium
-//       (il server risponde 402 regalo_finito, non "Premium required");
+//       salva comunque il testo grezzo, e si apre il muro del REGALO FINITO
+//       (con "Continua senza AI"), non il muro premium (il server risponde
+//       402 regalo_finito, non "Premium required");
 //   R4  tetto abbassato sotto il consumo: un ospite nuovo non riceve AI, un
 //       ospite che ha gia iniziato la giornata la finisce; regalo spento,
 //       idem;
@@ -289,7 +290,11 @@ let segretoA = null;
   const t2 = await scriviEChiudi(page, "Chiusa con l'AI a quota zero: deve salvarsi comunque.", { conAI: true });
   const testo2 = await page.locator("main").innerText();
   check("R3 a quota zero: chiudere con l'AI salva comunque la giornata (testo grezzo, titolo di ripiego)", /Chiusa con l'AI a quota zero/.test(testo2) && !/giornata da ospite/.test(t2), t2);
-  check("R3 a quota zero: il muro PREMIUM non si apre", (await page.locator(".jm-wall").count()) === 0);
+  // Dal 4 settembre 2026 il muro esiste (abbonamento a schede): a regalo
+  // finito si apre QUELLO del regalo, con "Continua senza AI", non il muro
+  // premium di chi ha un account gratis.
+  const muroTesto = await page.locator(".jm-wall").innerText().catch(() => "");
+  check("R3 a quota zero: si apre il muro del regalo finito (non quello premium), con 'Continua senza AI'", /in regalo sono finite/.test(muroTesto) && /Continua senza AI/.test(muroTesto) && !/serve premium/.test(muroTesto), muroTesto.slice(0, 60));
   check("R3 a quota zero: il dispositivo riceve l'evento regalo_finito (motivo quota)", regaloFinito.some((d) => d?.error === "regalo_finito" && d?.motivo === "quota"), JSON.stringify(regaloFinito[0] ?? null));
   check("R3 a quota zero: il server non ha concesso giornate nuove", sb.tab("braccialetto_giornate").length === righePrima, String(sb.tab("braccialetto_giornate").length));
   check("R3 a quota zero: OpenAI non e stato chiamato e nessun consumo e stato scritto", oa.chiamate.length === chiamateOaPrima && sb.tab("ai_usage").length === usiPrima, `openai ${oa.chiamate.length - chiamateOaPrima}, ai_usage ${sb.tab("ai_usage").length - usiPrima}`);
@@ -323,7 +328,8 @@ let segretoA = null;
   check("R4 tetto: l'ospite nuovo NON riceve AI (giornata salvata, titolo di ripiego)", /Ospite nuovo sopra il tetto/.test(testoN) && !/giornata da ospite/.test(tN), tN);
   check("R4 tetto: il server risponde regalo_finito con motivo tetto", finitoN.some((d) => d?.motivo === "tetto"), JSON.stringify(finitoN[0] ?? null));
   check("R4 tetto: OpenAI non e stato chiamato per lui", oa.chiamate.slice(chiamateOa).filter((c) => c.url === "/v1/chat/completions").length === 0);
-  check("R4 tetto: nessun muro premium", (await nuovo.page.locator(".jm-wall").count()) === 0);
+  const muroTetto = await nuovo.page.locator(".jm-wall").innerText().catch(() => "");
+  check("R4 tetto: si apre il muro del regalo finito, non quello premium", /in regalo sono finite/.test(muroTetto) && !/serve premium/.test(muroTetto), muroTetto.slice(0, 60));
   await nuovo.ctx.close();
 
   // Ospite A, a meta giornata: la finisce.

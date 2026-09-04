@@ -14,8 +14,7 @@ import { useT } from "@/lib/i18n";
 import { isNative } from "@/lib/native/platform";
 import { haChiestoSilenzio, markWelcomeSeen, nonChiederePiu } from "@/lib/welcome";
 import { usePianoNoto } from "@/lib/plan";
-import { openPremiumWall, startPremiumV1 } from "@/modules/abbonamento";
-import { toast } from "@/components/ui/toast";
+import { openPremiumWall } from "@/modules/abbonamento";
 
 /**
  * /benvenuto — la scelta, al primo avvio (SPEC-v2 §7.1, mockup
@@ -71,26 +70,10 @@ export default function BenvenutoPage() {
   // dispositivo e la schermata non torna piu ogni dieci accessi.
   const [stopScelto, setStopScelto] = useState<boolean>(() => haChiestoSilenzio());
 
-  // La card Premium dentro il guscio iOS (v1): il tasto c'e di nuovo, dice
-  // solo "inizia premium" (niente prezzo,
-  // niente lessico da acquisto — App Store 3.1.1) e attiva il premium
-  // DAVVERO, gratis, via startPremiumV1. La decisione e il percorso di
-  // upgrade al pagamento vero sono scritti in un punto solo:
+  // La card Premium dentro il guscio iOS: dal 4 settembre 2026 il tasto
+  // apre il MURO A SCHEDE (In-App Purchase, modulo abbonamento), come sul
+  // web. Il premium gratis della v1 (startPremiumV1) e spento:
   // PREMIUM_IOS_V1_GRATIS in src/lib/pricing.ts.
-  const [premiumBusy, setPremiumBusy] = useState<boolean>(false);
-  const startPremiumIos = async () => {
-    if (premiumBusy) return;
-    setPremiumBusy(true);
-    const ok = await startPremiumV1();
-    if (ok) {
-      markWelcomeSeen();
-      router.replace("/app");
-      return;
-    }
-    toast.error(t("Non sono riuscito ad attivare il premium. Riprova."));
-    setPremiumBusy(false);
-  };
-
   const startLocal = async () => {
     if (starting) return;
     setStarting(true);
@@ -175,22 +158,7 @@ export default function BenvenutoPage() {
               {PREMIUM_HAS_FREE_TRIAL ? ` . ${t("primo mese incluso")}` : ""}
             </div>
           )}
-          {native ? (
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => {
-                if (!postLogin) {
-                  router.push("/login");
-                  return;
-                }
-                void startPremiumIos();
-              }}
-              disabled={starting || waiting || premiumBusy}
-            >
-              {premiumBusy ? t("un attimo...") : t("inizia premium")}
-            </button>
-          ) : (
+          {(
             <button
               type="button"
               className="btn-primary"

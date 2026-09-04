@@ -312,6 +312,8 @@ class AppViewController: CAPBridgeViewController {
         // implemented on ios' e la chiave non finiva nel portachiavi.
         // Ogni plugin che vive dentro l'app passa da questa riga.
         bridge?.registerPluginInstance(CassafortePlugin())
+        // Il negozio di Apple (Abbonamento.swift, In-App Purchase).
+        bridge?.registerPluginInstance(AbbonamentoPlugin())
     }
 
     override open func router() -> Router {
