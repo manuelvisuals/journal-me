@@ -1274,3 +1274,33 @@ com'era.
 | Immagine di anteprima social (1200x630) | il campo c'e, **il file non esiste** |
 | Termini di servizio | non esistono: per questo il piede non li linka |
 | Bundle iOS | da rifare (`npm run build:ios`) prima di rimettere le mani sul telefono |
+
+## 15. L'ospite e l'abbonamento Apple (3-4 settembre 2026)
+
+Tre branch uniti in main il 4 settembre, in fila: `ospite-server` (PR #54),
+`abbonamento-iap` (PR #55), `ospite-schermate` (PR #56). Migration 023 e 024
+applicate in produzione e verificate via Management API. I referti, in
+ordine di lettura: `src/modules/accesso/REFERTO-ospite-notte.md` (la parte
+invisibile), `src/modules/abbonamento/REFERTO-abbonamento-iap.html`,
+`REFERTO-app-store-connect.html` (cosa e configurato su Apple: prodotto
+`com.manuelvisuals.journalme.premium.mensile`, 4,99 EUR, 2 settimane gratis,
+gruppo 22358149, chiave "dayalogue server" NU8R95CKY9, avvisi V2 a
+`/api/apple/notifiche`), `REFERTO-prova-iphone.html` (la prova sandbox).
+
+Le tre cose da ricordare:
+
+1. **L'ospite e acceso di fabbrica** (`src/lib/ospite/flag.ts`). Chi apre
+   l'app senza account entra su Oggi in modalita locale con l'AI in regalo
+   (10 giornate, contate dal SERVER per braccialetto). "Locale puro" esiste
+   solo con `jm.ospite = "0"`, ed e cio che fanno i banchi vecchi.
+2. **Il telefono non accende mai premium.** Ogni transazione StoreKit va a
+   `/api/apple/verifica`; il server chiede ad Apple con il JWT della chiave
+   `.p8` (env `APPLE_IAP_KEY_ID`, `APPLE_IAP_ISSUER_ID`,
+   `APPLE_IAP_PRIVATE_KEY`, messe su Vercel da Manuel con
+   `chiave-apple-su-vercel.command`: il segreto non passa mai da Claude).
+3. **I limiti del regalo e l'interruttore dell'Annuale si cambiano da
+   /admin > Regalo AI**, senza deploy (tabella `regalo`, cache 30 s).
+
+Ancora aperto: la prova sandbox sul telefono (E1), l'indirizzo dell'App
+Store nel tasto del web, screenshot e note per il revisore del prodotto, il
+pezzo 4 della SPEC (l'email dopo 5 giornate).
