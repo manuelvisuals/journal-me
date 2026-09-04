@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt per il Claude dell amico - temi in regalo</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #FBF7F2; --card: #FFFFFF; --ink: #2B1A17; --muted: #5E463E;
+    --faint: #82655A; --line: rgba(43,26,23,.12); --accent: #9A5A22;
+    --on-accent: #FFFDF9; --ok: #4A7A56;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0E0709; --card: #1D1013; --ink: #F4E7DE; --muted: #CDB7AE;
+      --faint: #9A8279; --line: rgba(255,229,214,.12); --accent: #E3A15F;
+      --on-accent: #1A0E0F; --ok: #A8C9B0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 20px 140px;
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; }
+  h1 { font-size: 26px; letter-spacing: -.02em; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .passi { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; margin: 0 0 26px; }
+  .passi h2 { font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--faint); margin: 0 0 12px; font-weight: 650; }
+  .passi ol { margin: 0; padding-left: 20px; }
+  .passi li { margin: 0 0 8px; }
+  pre.prompt {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 22px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;
+    font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink);
+  }
+  .barra {
+    position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 20px;
+    background: var(--card); border-top: 1px solid var(--line);
+    display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap;
+  }
+  button {
+    font: 600 15px/1 -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--accent); color: var(--on-accent); border: 0;
+    border-radius: 999px; padding: 14px 26px; cursor: pointer;
+  }
+  button:active { transform: scale(.97); }
+  #esito { color: var(--ok); font-weight: 600; min-height: 1em; }
+  .ripiego { color: var(--faint); font-size: 13px; }
+  textarea {
+    width: 100%; height: 160px; margin-top: 8px; padding: 12px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--card); color: var(--ink);
+    font: 12px/1.45 ui-monospace, Menlo, monospace;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Il prompt per il Claude del tuo amico</h1>
+  <p class="sub">Serve a farsi consegnare i suoi temi in una forma che dayalogue puo importare senza indovinare niente.</p>
+
+  <div class="passi">
+    <h2>Come si usa</h2>
+    <ol>
+      <li>Premi <strong>Copia il prompt</strong> qui sotto.</li>
+      <li>Incollalo nella chat Claude del tuo amico, dentro il progetto della sua app.</li>
+      <li>Lui ti rimanda <strong>un file HTML</strong>. Aprilo in Safari con doppio clic.</li>
+      <li>Spunta i temi che ti piacciono, premi <strong>Copia i temi scelti</strong>.</li>
+      <li>Incolla quel testo nella mia chat: da li li traduco e li importo in dayalogue.</li>
+    </ol>
+  </div>
+
+  <pre class="prompt" id="testo"></pre>
+</div>
+
+<div class="barra">
+  <button id="copia">Copia il prompt</button>
+  <span id="esito"></span>
+  <div class="ripiego" style="flex-basis:100%; text-align:center;">
+    Se il bottone non funziona, seleziona tutto il testo qui sopra e copialo a mano.
+  </div>
+</div>
+
+<script>
+  var PROMPT = "# Regalo: i temi di questa app per dayalogue\n\nSei nel progetto di un'app. Un amico dell'autore, Manuel, ha un'app diario che si chiama\ndayalogue, e l'autore gli sta regalando i temi di QUESTA app.\n\nIl tuo compito non e scrivere codice per dayalogue, e non e modificare questo progetto.\nE leggere i temi che esistono qui e consegnarli in UN SOLO file HTML, autosufficiente,\nche Manuel apre in Safari per scegliere quali gli piacciono.\n\n## Regola zero, prima di tutto il resto\n\n**Non inventare nessun valore.** Ogni colore e ogni numero deve essere letto dal codice di\nquesto progetto. Se un valore non esiste qui (per esempio: questa app non ha un tema\nchiaro, o non ha un colore \"pericolo\"), NON riempire la casella con qualcosa di\nplausibile: lasciala vuota e scrivilo nelle note del tema.\n\nIl motivo e pratico, non morale. Chi riceve il file non puo distinguere a occhio un colore\nletto dal codice da uno inventato bene: entrambi sembrano giusti e passano ogni controllo\nautomatico. Un buco dichiarato si riempie in dieci minuti a quattro mani; un valore\ninventato resta li per anni.\n\n## Cosa consegni\n\nUn file solo: `temi-per-dayalogue.html`.\n\nVincoli, tutti obbligatori:\n\n- **Autosufficiente.** Nessun `<script src>`, nessun `<link rel=\"stylesheet\">`, nessun\n  `@import`, nessun font caricato dalla rete, nessuna immagine esterna. Tutto dentro il\n  file, CSS e JS inline. Deve aprirsi con doppio clic in Safari, su un Mac senza rete.\n- **Safari 17+**, aperto da `file://`.\n- **Niente localStorage / sessionStorage**: da `file://` possono essere bloccati e la\n  pagina muore. Tieni lo stato in variabili JavaScript.\n- Niente emoji, niente apostrofi tipografici: solo apostrofo ASCII.\n- Non allegare il codice sorgente del progetto e non copiare dentro il file niente di\n  privato (chiavi, indirizzi, dati di utenti reali, testi veri di qualcuno).\n\n## Cosa deve fare quel file\n\n**In cima:** titolo, nome dell'app di origine, nome dell'autore, quanti temi ci sono, e\nuna riga che dice a quali condizioni sono regalati (uso libero dentro dayalogue? serve un\ncredito con il nome dell'autore? va bene anche se dayalogue diventa a pagamento?).\n\n**Una scheda per tema**, e dentro ogni scheda:\n\n1. Nome del tema, e due o tre righe sull'INTENZIONE: cosa deve far sentire, e soprattutto\n   cosa NON deve diventare se un domani qualcuno lo \"aggiusta\". (Esempio vero di dayalogue:\n   il tema Malva ha un accento prugna smorzato; se qualcuno ne alza la saturazione il tema\n   smette di funzionare. Quella frase li vale piu di venti valori.)\n2. **Un'anteprima renderizzata dal vivo** (vedi sotto), in chiaro e in scuro, con un\n   interruttore a tre posizioni: chiaro / scuro / affiancati.\n3. La tabella dei colori: per ogni modo, i 18 valori, ognuno con un quadratino del colore\n   vero accanto al valore testuale.\n4. Tipografia, forme, densita: i valori, non una descrizione.\n5. **Il referto di contrasto** (vedi sotto): sei coppie per modo, con il rapporto numerico\n   e verde/rosso rispetto alla soglia.\n6. Una casella di spunta \"mi piace\".\n\n**In fondo, una barra sempre visibile** con:\n\n- un bottone **\"Copia i temi scelti\"**: mette negli appunti UN SOLO blocco JSON, l'array\n  dei temi spuntati, esattamente nello schema qui sotto;\n- un bottone **\"Copia tutti\"**;\n- e, sotto, un `<textarea>` di ripiego sempre presente e selezionabile che contiene lo\n  stesso testo. Questo non e un extra: in Safari da `file://` la scrittura negli appunti\n  puo fallire in silenzio, e senza il ripiego il regalo non arriva a destinazione.\n\n## L'anteprima: cosa disegnare\n\nUn finto pezzo di app diario, disegnato usando SOLO i valori del tema (nessun colore\nscritto a mano dentro l'anteprima: se un elemento ti serve e non c'e un token per lui,\nquell'elemento non va nell'anteprima). Deve contenere, come minimo:\n\n- il fondo pagina (`bg`) con dentro il fondo app (`bgApp`), con eventuale `warmth` e `grain`;\n- un'intestazione con una data grande (ruolo `display` o `chapter`);\n- una scheda (`surface`) con tre paragrafi di prosa finta nel font della prosa\n  (ruolo `prose`), piu una riga di testo secondario (`inkMuted`) e una didascalia (`inkFaint`);\n- una etichetta maiuscoletta con il tracking positivo (ruolo `label`);\n- un bottone primario pieno di `accent` con sopra il testo `onAccent`;\n- un elemento secondario su `surface2`, un separatore sottile (`line`), un numero grande\n  (ruolo `metric`), un segno di conferma (`success`) e uno distruttivo (`danger`);\n- gli angoli presi dai raggi del tema e le spaziature moltiplicate per la densita.\n\nI font: usa quelli veri del tema SOLO se sono gia installati sul Mac, quindi dichiarali\ncome stack CSS con un ripiego onesto (per esempio\n`font-family: \"Newsreader\", Georgia, \"Times New Roman\", serif`). **Non caricare font dalla\nrete e non incorporare woff2 in base64.** Scrivi accanto all'anteprima, a parole: \"il font\nvero e X; se non ce l'hai installato stai vedendo Y\". Serve perche altrimenti si giudica\nun tema guardando Georgia e non ce ne si accorge.\n\n## Lo schema: il contratto dei temi di dayalogue\n\nUn tema di dayalogue e **dati, mai codice**. Niente CSS libero, niente `url()`, niente\nstringhe che finiscano in uno `style` senza passare da un validatore. Le chiavi che non\nsono in questo elenco vengono scartate; i numeri fuori range vengono scartati; e in\nentrambi i casi **in silenzio**, senza errore. Quindi rispettare i range non e pignoleria:\ne l'unica cosa che distingue un tema importato da un tema che assomiglia al default.\n\nOgni tema e un oggetto con questa forma esatta:\n\n```json\n{\n  \"id\": \"kebab-case-senza-spazi\",\n  \"name\": \"Nome leggibile\",\n  \"author\": \"Nome dell autore\",\n  \"space\": 1.0,\n  \"motion\": { \"press\": 0.97 },\n  \"typography\": {\n    \"fontUi\": \"inter\",\n    \"fontProse\": \"newsreader\",\n    \"sizes\": {\n      \"display\": 40, \"chapter\": 28, \"pageHeader\": 24, \"headline\": 26,\n      \"title\": 21, \"prose\": 19, \"body\": 14, \"meta\": 12, \"label\": 11, \"metric\": 32\n    },\n    \"weights\": { \"headline\": 600, \"prose\": 400, \"label\": 650, \"metric\": 300 },\n    \"tracking\": { \"headline\": \"-0.022em\", \"label\": \"0.06em\" },\n    \"lineHeight\": { \"display\": 1.1, \"editorial\": 1.2, \"prose\": 1.6, \"body\": 1.45 }\n  },\n  \"shape\": {\n    \"radius\": { \"sm\": 8, \"md\": 12, \"lg\": 16, \"xl\": 20, \"pill\": 999, \"circle\": \"50%\" },\n    \"borderWidth\": { \"hairline\": 1, \"strong\": 2 }\n  },\n  \"light\": { \"...i 18 valori...\" },\n  \"dark\":  { \"...i 18 valori...\" }\n}\n```\n\n### I 18 valori di un set di colori (uguali per `light` e per `dark`)\n\n| chiave | cosa e |\n|---|---|\n| `bg` | fondo esterno della pagina |\n| `bgApp` | fondo dell'app |\n| `surface` | schede, campi di testo |\n| `surface2` | superficie sollevata |\n| `ink` | testo primario |\n| `inkMuted` | testo secondario, prosa |\n| `inkFaint` | didascalie, etichette, suggerimenti |\n| `accent` | l'unico colore che parla |\n| `accentPressed` | stato premuto |\n| `accentHi` | hover, decorazioni, capolettera |\n| `onAccent` | testo sopra l'accent (si dichiara, non si indovina) |\n| `success` | conferma, obiettivo raggiunto |\n| `danger` | distruttivo |\n| `line` | il filo sottile che separa |\n| `shadow` | colore base delle ombre (nero nei temi scuri, bruno nei chiari) |\n| `glow` | colore degli aloni. `\"transparent\"` li spegne tutti |\n| `warmth` | i gradienti di calore del fondo, oppure `\"none\"` |\n| `grain` | opacita della grana, numero da 0 a 0.08. `0` = via |\n\nNon esistono altri colori. Tutto il resto (fondi tinti, bordi colorati, alette) dayalogue\nlo ricava da questi con `color-mix`. Se nel tema di origine ci sono venti colori, il lavoro\ne proprio ridurli a questi diciotto e dire nelle note cosa e andato perso.\n\n### Formati ammessi per i colori\n\nAmmessi: `#RGB`, `#RRGGBB`, `#RRGGBBAA`, `rgb(...)`, `rgba(...)`, `hsl(...)`, `hsla(...)`,\n`oklch(...)`, `transparent`.\n\n**Non ammessi** (vengono scartati in silenzio): nomi CSS come `white` o `tomato`,\n`color-mix(...)`, `var(...)`, qualunque funzione diversa da quelle sopra.\n\n**Preferenza forte:** i tredici colori veri (da `bg` a `danger`) vanno dati come\n`#RRGGBB`. Il validatore di contrasto di dayalogue sa leggere solo esadecimale e `rgb()`:\nun colore in `oklch()` entra nell'app ma **non e misurabile**, quindi quel tema non puo\nessere certificato. `line`, `shadow` e `glow` possono stare in `rgba()`.\n\n`warmth` accetta solo la stringa `\"none\"` oppure uno o piu `radial-gradient(...)` separati\nda virgola. Nient'altro passa.\n\n### I range: fuori da qui il valore viene ignorato\n\n```\nspace                    0.7  ..  1.4      (0.88 denso, 1 normale, 1.15 arioso)\nmotion.press             0.9  ..  1        (1 = nessun feedback al tocco)\n\nsizes.display             24  ..  64       sizes.body       11 .. 18\nsizes.chapter             18  ..  44       sizes.meta        9 .. 15\nsizes.pageHeader          16  ..  36       sizes.label       8 .. 14\nsizes.headline            15  ..  36       sizes.metric     18 .. 44\nsizes.title               14  ..  30\nsizes.prose               13  ..  26\n\nweights.headline         300  .. 800       weights.label   400 .. 800\nweights.prose            300  .. 700       weights.metric  200 .. 700\n\ntracking.headline / label   stringa in em, es. \"-0.018em\" oppure \"0.22em\"\n\nlineHeight.display       0.9  .. 1.4       lineHeight.prose  1.3 .. 2\nlineHeight.editorial       1  .. 1.5       lineHeight.body   1.2 .. 1.8\n\nradius.sm                  0  .. 24        radius.xl         0 .. 40\nradius.md                  0  .. 28        radius.pill       0 .. 999\nradius.lg                  0  .. 32        radius.circle     solo \"50%\" oppure \"0px\"\n\nborderWidth.hairline     0.5  ..  2        borderWidth.strong  1 .. 4\ngrain                      0  .. 0.08\n```\n\nNota su `sizes`: sono **ruoli**, non misure di un componente. Il tema non decide \"il\ntitolo della scheda e 18px\": decide \"quanto e grande il ruolo prosa\". Se nel progetto di\norigine una dimensione non corrisponde a nessuno di questi dieci ruoli, non forzarla:\nmettila nelle note.\n\n### I font\n\ndayalogue non scarica font dalla rete (deve funzionare offline dentro l'app iOS). I font\nsono committati nel bundle, e un tema puo scegliere **solo** uno di questi id:\n\n```\ninter                 UI, sans neutro\ndm-sans               UI, sans geometrico e caldo\nibm-plex-mono         monospaziato\nnewsreader            prosa, serif moderno\nspectral              prosa, serif\neb-garamond           prosa, serif classico\ncormorant-garamond    prosa, serif ad alto contrasto (da 21px in su)\n```\n\nSe il font vero del tema **non e in questo elenco** (caso probabile e del tutto normale):\n\n1. metti in `fontUi` / `fontProse` l'id piu vicino fra questi sette;\n2. e dichiara il font vero nelle note del tema (vedi sotto), con: nome esatto della\n   famiglia, da dove viene (Google Fonts, fontsource, una fonderia a pagamento, ...),\n   licenza, se e variabile o a pesi fissi, quali pesi usa il tema.\n\nNon provare a incorporare il font: la decisione se aggiungerlo al bundle di dayalogue la\nprende Manuel dopo, e dipende dalla licenza e dai kilobyte.\n\n### Il referto di contrasto\n\nCalcola nel file, in JavaScript, il rapporto WCAG (luminanza relativa) per queste sei\ncoppie, **su tutti e due i set**, e mostralo con il numero e verde/rosso:\n\n```\nink / bgApp          >= 4.5\nink / surface        >= 4.5\ninkMuted / surface   >= 4.5\ninkFaint / surface   >= 4.5\nonAccent / accent    >= 4.5\naccent / bgApp       >= 3.0\n```\n\nUn tema che fallisce **non va corretto da te di tua iniziativa**: mostralo rosso, col\nnumero, e scrivi nelle note di quanto manca. dayalogue rifiuta i temi che non passano, ma\nla correzione la fa l'autore, non chi importa: cambiare un colore per far passare un\nnumero e il modo piu rapido per rovinare un tema che funzionava.\n\nSe un tema fallisce solo perche il colore e in `oklch()` e non misurabile, dillo\nesplicitamente invece di dare un rapporto finto.\n\n### Se un tema ha un modo solo\n\nSe questa app ha temi solo scuri (o solo chiari): **non inventare l'altro set invertendo\nla luminanza.** Invertire produce sempre un risultato mediocre, e un tema mediocre in una\ndelle due modalita e un tema rotto per meta degli utenti. Metti l'altro set a `null`,\nsegna `\"soloModo\": \"dark\"` (o `\"light\"`) nelle note, e basta: quel set lo disegnera Manuel\ncon il suo Claude, partendo dall'intenzione che hai scritto tu.\n\n### Le note di ogni tema\n\nAccanto al JSON di ogni tema, dentro lo stesso oggetto, una chiave `note` con questa forma:\n\n```json\n\"note\": {\n  \"intenzione\": \"cosa deve far sentire il tema, e cosa non deve diventare\",\n  \"fontReale\": { \"ui\": \"...\", \"prosa\": \"...\", \"licenza\": \"...\", \"variabile\": true, \"pesi\": [400, 600] },\n  \"assenti\": [\"elenco dei valori che in questo progetto non esistono\"],\n  \"persi\": [\"cosa c e nell originale e non entra nei 18 colori o nei 10 ruoli\"],\n  \"soloModo\": null,\n  \"sorgente\": \"dove vivono questi valori in questo progetto: file e nomi dei token originali\"\n}\n```\n\n`sorgente` e importante quanto i colori: se una mappatura e sbagliata, e l'unica cosa che\npermette di accorgersene e correggerla senza rifare tutto da capo.\n\n## Formato di uscita dei bottoni \"copia\"\n\nUn solo blocco JSON, questa forma:\n\n```json\n{\n  \"daApp\": \"nome dell app di origine\",\n  \"autore\": \"nome\",\n  \"licenza\": \"a che condizioni sono regalati\",\n  \"dataEstrazione\": \"2026-09-04\",\n  \"temi\": [ { \"...un tema completo, note incluse...\" } ]\n}\n```\n\nNiente testo prima o dopo, niente commenti dentro il JSON: quel testo viene incollato\ndentro un'altra chat e letto da una macchina.\n\n## Ricapitolando, l'ordine di lavoro\n\n1. Trova dove vivono i temi in questo progetto e leggili davvero (non a memoria).\n2. Mappa i valori originali sui 18 colori, sui 10 ruoli tipografici, sulle forme e sulla\n   densita. Ogni volta che una cosa non entra, e una riga in `persi` o in `assenti`, non\n   un valore inventato.\n3. Calcola i sei contrasti per modo.\n4. Scrivi l'unico file `temi-per-dayalogue.html` con le anteprime vive, le spunte, i due\n   bottoni di copia e il textarea di ripiego.\n5. Apri il file e controlla davvero che: si apra senza rete, le anteprime cambino con\n   l'interruttore chiaro/scuro, la spunta cambi cosa esce dalla copia, e il JSON copiato\n   sia JSON valido. Non dire che e pronto prima di averlo visto funzionare.";
+  document.getElementById('testo').textContent = PROMPT;
+  document.getElementById('copia').addEventListener('click', function () {
+    var esito = document.getElementById('esito');
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = PROMPT;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      esito.textContent = ok ? 'Copiato' : 'Non riesco a copiare: selezionalo a mano';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(PROMPT).then(function () {
+        esito.textContent = 'Copiato';
+      }, fallback);
+    } else {
+      fallback();
+    }
+  });
+</script>
+</body>
+</html>
