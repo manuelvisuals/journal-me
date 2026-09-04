@@ -66,4 +66,7 @@ export const ABBONAMENTO: Record<string, string> = {
   "Recap del mese e letture sui pattern": "Monthly recaps and readings on your patterns",
   "Provalo adesso": "Try it now",
   "Ho gia un account": "I already have an account",
+  "L'AI ha chiuso\nquesta giornata per te": "The AI closed\nthis day for you",
+  "Titolo, sintesi e aree li ha scritti lei. Ne hai altre {n} giornate in regalo, senza fare niente. Poi, se ti piace, questo e premium.": "Title, summary and areas were written by it. You have {n} more gift days, nothing to do. Then, if you like it, this is premium.",
+  "Titolo, sintesi e aree li ha scritti lei. Le prime giornate sono in regalo, senza fare niente. Poi, se ti piace, questo e premium.": "Title, summary and areas were written by it. The first days are a gift, nothing to do. Then, if you like it, this is premium.",
 };

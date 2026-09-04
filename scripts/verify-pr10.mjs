@@ -92,27 +92,29 @@ async function newPage(width, height) {
   await page.locator(".jm-wall .btn-ghost").click();
   await page.waitForTimeout(400);
   check("mic: uscita gratuita = scrittura", await page.locator(".jm-ed-ta").isVisible());
-  // 'prova premium' -> /login (in locale)
+  // Il tasto del muro sul web NON porta piu al login (mockup
+  // premium-senza-password, D1/B1, 4 settembre 2026): premium si compra
+  // dall'app per iPhone, e il tasto lo dice, senza chiedere un account.
   await page.locator('.jm-ed-foot .btn-ghost').first().click(); // annulla -> filled
   await page.waitForTimeout(300);
   await page.locator('[aria-label="Registra di nuovo"]').click();
   await page.waitForTimeout(300);
   await page.locator(".jm-wall .btn-primary").click();
   await page.waitForTimeout(900);
-  try { await page.waitForURL("**/login**", { timeout: 8000 }); } catch {}
-  check("muro: 'prova premium' porta al login", page.url().includes("/login"));
+  check("muro: il tasto sul web non porta al login (dice che premium si attiva dall'app)", !page.url().includes("/login") && (await page.locator(".jm-wall").count()) === 1, page.url());
+  await page.keyboard.press("Escape");
 
-  // Recap: Genera -> muro recap
+  // Recap: per chi non e premium c'e la VETRINA (E1), il cui tasto apre il muro recap
   await page.goto(BASE + "/app/recap", { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
-  const gen = page.locator(".jm-gen-btn");
+  const gen = page.locator(".jm-rec-vetrina .btn-primary");
   if ((await gen.count()) > 0) {
     await gen.click();
     await page.waitForTimeout(300);
-    check("recap: Genera apre il muro", (await page.locator(".jm-wall-t").innerText().catch(() => "")).includes("recap"));
+    check("recap: la vetrina apre il muro recap", (await page.locator(".jm-wall-t").innerText().catch(() => "")).includes("recap"));
     await page.keyboard.press("Escape");
   } else {
-    check("recap: card Genera presente", false, "manca jm-gen-btn");
+    check("recap: la vetrina premium c'e", false, "manca .jm-rec-vetrina");
   }
 
   // Mese: pill premium su Pattern + larghezza griglia

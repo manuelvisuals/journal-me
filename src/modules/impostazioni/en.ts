@@ -257,5 +257,8 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "AI in regalo": "AI gift",
   "Poi": "Then",
   "AI senza limiti, backup ogni notte, i recap.": "Unlimited AI, nightly backup, recaps.",
-  "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso, e il regalo non ricomincia da capo.": "The days you already wrote here go up to the cloud at first sign-in, and the gift does not start over.",
+  "Backup ogni notte": "Nightly backup",
+  "Spento": "Off",
+  "Metti una email: le giornate salgono chiuse a chiave e le ritrovi su iPad e sul computer. Premium ti segue.": "Add an email: your days go up locked and you find them on iPad and on the computer. Premium follows you.",
+  "Email e codice, mai una password. Le giornate scritte qui salgono al primo accesso.": "Email and code, never a password. The days written here go up at first sign-in.",
 };

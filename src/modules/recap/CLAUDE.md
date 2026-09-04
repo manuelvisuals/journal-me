@@ -22,3 +22,10 @@ La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
 pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
 in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
 rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.
+
+## La vetrina (4 settembre 2026, E1 del mockup premium-senza-password)
+
+Chi non e premium e non ha recap vede `Vetrina` in `recap-client.tsx`:
+tag Premium, "Il mese, riletto per te.", due righe, "Prova gratis 14
+giorni" che apre il muro `recap`. Prezzo e prova da `src/lib/pricing.ts`.
+Classe `jm-rec-vetrina`. Banchi: verify-pr10, verify-abbonamento.

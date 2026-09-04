@@ -16,6 +16,7 @@
 import { getStore, useStorageMode } from "@/lib/data/store";
 import { getPlanSync, usePlan } from "@/lib/plan";
 import { ospiteAttivo } from "@/lib/ospite/flag";
+import { premiumDispositivo, usePremiumDispositivo } from "@/lib/ospite/stato";
 
 /**
  * L'OSPITE (SPEC-ospite-e-cassaforte R2): tiene le giornate sul dispositivo
@@ -30,10 +31,21 @@ function ospitePuo(c: Capability): boolean {
   return (c === "voice" || c === "aiSummary") && ospiteAttivo();
 }
 
+/**
+ * IL PREMIUM SUL DISPOSITIVO (mockup premium-senza-password, B1): l'ospite
+ * che ha comprato con il foglio di Apple senza mettere una email. Tutto
+ * tranne `sync`, che vuole un account per definizione.
+ */
+function dispositivoPremiumPuo(c: Capability): boolean {
+  return c !== "sync" && premiumDispositivo();
+}
+
 export type Capability = "voice" | "aiSummary" | "recap" | "patterns" | "sync";
 
 export function can(c: Capability): boolean {
-  if (getStore().mode !== "cloud") return getStore().mode === "local" && ospitePuo(c);
+  if (getStore().mode !== "cloud") {
+    return getStore().mode === "local" && (ospitePuo(c) || dispositivoPremiumPuo(c));
+  }
   if (c === "sync") return true;
   return getPlanSync() === "premium";
 }
@@ -45,9 +57,10 @@ export function can(c: Capability): boolean {
 export function useCan(c: Capability): boolean {
   const plan = usePlan();
   const mode = useStorageMode();
+  const premiumSulDispositivo = usePremiumDispositivo();
   // Stessa semantica di can(): finche la modalita non e risolta risponde
   // il ramo cloud (le schermate dati stanno comunque dietro AuthGate).
-  if (mode === "local") return ospitePuo(c);
+  if (mode === "local") return ospitePuo(c) || (c !== "sync" && premiumSulDispositivo);
   if (c === "sync") return true;
   return plan === "premium";
 }

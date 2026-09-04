@@ -93,7 +93,7 @@ scritta bene: torna qui e riscrivila prima di implementarla.
 - Verificabile: abbassato il limite sotto il consumo corrente, un ospite nuovo
   non riceve piu' AI e un ospite in mezzo a una giornata la finisce.
 
-### R5 - L'email si chiede dopo, una volta, e "non adesso" vale
+### R5 - L'email si chiede dopo, una volta, e "non adesso" vale (CODICE FATTO in parte il 4 settembre 2026, branch `premium-senza-password`: la schermata dell'email senza bivio, l'email come porta del backup in Impostazioni, le giornate che salgono al primo accesso, il premium che passa dal braccialetto all'account; manca il promemoria dopo 5 giornate, pezzo 4)
 
 - La proposta di mettere una email arriva **dopo che l'ospite ha qualcosa da
   perdere** (piu' giornate scritte, non al primo avvio, non a tempo).

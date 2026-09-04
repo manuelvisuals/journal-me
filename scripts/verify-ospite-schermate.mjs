@@ -131,7 +131,14 @@ let semeA = null;
   await page.getByRole("button", { name: "Il tuo account" }).first().click().catch(() => {});
   await page.waitForTimeout(500);
   const foglio = await page.locator("body").innerText();
-  check("01 il pallino non dice 'Locale' e dice 'Solo su questo dispositivo'", !/\bLocale\b/.test(foglio) && /Solo su questo dispositivo/.test(foglio), foglio.replace(/\s+/g, " ").slice(0, 120));
+  // Il foglio del pallino (mockup premium-senza-password 01): il sottotitolo
+  // dice il regalo che resta (letto dal server all'apertura), la voce
+  // "Premium" c'e anche per l'ospite, "Ho gia un account" al posto di "Accedi".
+  await page.getByText(/giornate con l'AI in regalo/).waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+  const foglio2 = await page.locator("body").innerText();
+  check("01 il pallino non dice 'Locale' e dice quante giornate restano in regalo", !/\bLocale\b/.test(foglio2) && /10 giornate con l'AI in regalo/.test(foglio2), foglio2.replace(/\s+/g, " ").slice(0, 160));
+  check("01 il menu ha la voce 'Premium' e 'Ho gia un account' (non 'Accedi al tuo account')", /\bPremium\b/.test(foglio2) && /Ho gia un account/.test(foglio2) && !/Accedi al tuo account/.test(foglio2));
+  void foglio;
   await page.keyboard.press("Escape");
 
   // Impostazioni.
@@ -142,7 +149,7 @@ let semeA = null;
   check("04 Impostazioni: 'Dove sono le mie giornate' con 'Solo su questo dispositivo'", /Dove sono le mie giornate/.test(testo) && /Solo su questo dispositivo/.test(testo));
   check("04 Impostazioni: 'AI in regalo' dice il conto vero letto dal server: 10 giornate su 10", /AI in regalo\s*\n?\s*10 giornate su 10/.test(testo), testo.match(/AI in regalo[\s\S]{0,40}/)?.[0]?.replace(/\s+/g, " "));
   check("04 Impostazioni: 'Passa a Premium' con '14 giorni gratis' e il prezzo dopo", /Passa a Premium/.test(testo) && /14 giorni gratis/.test(testo) && /Poi .*al mese/.test(testo));
-  check("04 Impostazioni: 'Accedi al tuo account' con la frase del regalo che non ricomincia", /Accedi al tuo account/.test(testo) && /il regalo non ricomincia da capo/.test(testo));
+  check("04 Impostazioni: 'Ho gia un account' e 'Backup ogni notte: Spento' (la porta all'email, C1)", /Ho gia un account/.test(testo) && /Backup ogni notte[\s\S]{0,160}Spento/.test(testo) && !/Accedi al tuo account/.test(testo), testo.match(/Backup ogni notte[\s\S]{0,30}/)?.[0]?.replace(/\s+/g, " "));
   check("04 Impostazioni: la parola 'Locale' non compare", !/\bLocale\b/.test(testo));
 
   await page.getByText("AI in regalo").first().click();
@@ -187,6 +194,17 @@ let semeA = null;
   const avvisoPrima = await page.locator(".jm-avviso-regalo").count();
   const t1 = await scriviEChiudi(page, "Oggi ho chiuso una giornata con l'AI e ne restano poche.", { conAI: true });
   check("02 la giornata e chiusa dall'AI (titolo del modello finto)", /giornata da ospite/.test(t1), t1);
+  // A2 (mockup premium-senza-password): la PRIMA giornata chiusa dall'AI su
+  // questo dispositivo apre il foglio "L'AI ha chiuso questa giornata per
+  // te", una volta sola, con la scheda e "non ora".
+  const foglioA2 = page.locator(".jm-wall");
+  await foglioA2.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+  const testoA2 = await foglioA2.innerText().catch(() => "");
+  check("A2 dopo la prima giornata chiusa dall'AI si apre il foglio 'L'AI ha chiuso questa giornata per te' con 'Ne hai altre 2 giornate'", /L'AI ha chiuso\s*questa giornata per te/.test(testoA2) && /altre 2 giornate/.test(testoA2), testoA2.replace(/\s+/g, " ").slice(0, 120));
+  check("A2 il foglio NON chiede l'account: niente 'Ho gia un account', c'e 'non ora'", !/Ho gia un account/.test(testoA2) && /non ora/.test(testoA2));
+  check("A2 e segnato come gia presentato (localStorage jm.premium.presentato)", (await page.evaluate(() => localStorage.getItem("jm.premium.presentato"))) === "1");
+  await page.locator(".jm-wall .btn-ghost").click().catch(() => {});
+  await page.waitForTimeout(500);
   const avviso = page.locator(".jm-avviso-regalo");
   await avviso.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
   const testoAvviso = await avviso.innerText().catch(() => "");
@@ -196,7 +214,7 @@ let semeA = null;
   await avviso.getByRole("button", { name: /Prova premium/ }).click();
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
   const muro = await page.locator(".jm-wall").innerText().catch(() => "");
-  check("02 'Prova premium' apre il muro a schede (non quello del regalo finito), con 'Ho gia un account'", /serve premium/.test(muro) && /Ho gia un account/.test(muro) && !/in regalo sono finite/.test(muro), muro.replace(/\s+/g, " ").slice(0, 80));
+  check("02 'Prova premium' apre il muro a schede (non quello del regalo finito), senza chiedere l'account", /serve premium/.test(muro) && !/Ho gia un account/.test(muro) && !/in regalo sono finite/.test(muro), muro.replace(/\s+/g, " ").slice(0, 80));
   await page.keyboard.press("Escape");
   await page.locator(".jm-wall .btn-ghost").click().catch(() => {});
   await page.waitForTimeout(400);
@@ -311,6 +329,69 @@ let semeA = null;
   sb.regalo.giornate_per_ospite = 10;
   sb.regalo.tetto_mensile_eur = 100;
   sb.regalo.annuale_attivo = false;
+}
+
+/* ================= 06: la schermata dell'email (D1) e le giornate che salgono (C1) ================= */
+{
+  // Desktop: l'editor e gia nella colonna e "salva e basta" e Ctrl+S.
+  const { ctx, page, errors } = await dispositivo({ viewport: { width: 1440, height: 900 } });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+  // Una giornata scritta sul dispositivo, che poi deve salire.
+  await scriviEChiudi(page, "Giornata scritta da ospite, prima dell'email.", { conAI: false });
+
+  // La schermata dell'email, dal pallino della rail: "Ho gia un account".
+  await page.locator(".jm-acct-btn").click();
+  await page.getByRole("menuitem", { name: /Ho gia un account/ }).click();
+  await page.waitForURL("**/login**", { timeout: 15_000 });
+  await page.waitForTimeout(800);
+  const login = await page.locator("main").innerText();
+  check("06 la schermata dell'email dice il perche: 'Le tue giornate, anche altrove.' e 'chiuse a chiave'", /Le tue giornate, anche altrove\./.test(login) && /chiuse a chiave/.test(login), login.replace(/\s+/g, " ").slice(0, 120));
+  check("06 niente bivio: via 'Tienilo solo su questo dispositivo' e 'oppure', c'e 'Non ora'", !/Tienilo solo su questo dispositivo/.test(login) && !/\boppure\b/.test(login) && /Non ora/.test(login));
+  check("06 niente 'La versione gratis non ha bisogno di email' (confondeva chi veniva a comprare)", !/versione gratis/.test(login));
+  await page.getByRole("button", { name: "Non ora" }).click();
+  await page.waitForTimeout(800);
+  check("06 'Non ora' torna sul diario, non su un bivio", !page.url().includes("/login"), page.url());
+
+  // Il login vero e proprio non si puo fare qui (il codice arriva per
+  // email): si simula cio che il login lascia (la sessione, il promemoria
+  // della migrazione, la modalita cloud) e si guarda il cancello fare il
+  // resto: cassaforte nuova, giornate che salgono, braccialetto adottato.
+  const finto = new SupabaseFinto();
+  finto.tabelle.profiles = [{ user_id: UTENTE_ID, plan: "free" }];
+  await montaSupabaseFinto(ctx, finto);
+  const exp = Math.floor(Date.now() / 1000) + 6 * 3600;
+  const TOKEN = jwtFinto(exp, UTENTE_ID);
+  sb.utenti.set(TOKEN, { id: UTENTE_ID, email: "ospite-diventato-account@dayalogue.test" });
+  await page.evaluate((token) => {
+    const s = JSON.parse(window.localStorage.getItem("sb-sbfinto-auth-token") || "{}");
+    s.access_token = token;
+    window.localStorage.setItem("sb-sbfinto-auth-token", JSON.stringify(s));
+    window.localStorage.removeItem("jm.mode");
+    window.localStorage.setItem("jm.migrazione.locale", "1");
+    window.localStorage.setItem("jm.saluto.silenzio", "sid:banco#v1");
+  }, TOKEN);
+  const api = [];
+  page.on("request", (r) => { const u = r.url(); if (u.startsWith(BASE) && new URL(u).pathname.startsWith("/api/")) api.push({ path: new URL(u).pathname, auth: r.headers()["authorization"] ?? null, braccialetto: r.headers()["x-jm-braccialetto"] ?? null }); });
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+  const parole = page.locator(".jm-login-cassa-check input");
+  await parole.waitFor({ state: "visible", timeout: 30_000 });
+  await parole.check();
+  await page.locator("button.btn-primary").click();
+  // La migrazione parte con la cassaforte aperta: si aspetta la riga sul server finto del browser.
+  const inizio = Date.now();
+  while (finto.tab("cassettine").length === 0 && Date.now() - inizio < 30_000) await page.waitForTimeout(500);
+  check("06 con la cassaforte aperta la giornata del telefono SALE, chiusa a chiave (una cassettina sul server)", finto.tab("cassettine").length === 1 && !JSON.stringify(finto.tab("cassettine")).includes("prima dell'email"), String(finto.tab("cassettine").length));
+  const adotta = api.filter((a) => a.path === "/api/ospite/adotta");
+  check("06 il braccialetto viene adottato: /api/ospite/adotta con gettone E braccialetto", adotta.length >= 1 && adotta[0].auth !== null && typeof adotta[0].braccialetto === "string", JSON.stringify(adotta[0] ?? null));
+  const brA = sb.tab("braccialetti").find((b) => b.user_id === UTENTE_ID);
+  check("06 sul server il braccialetto e legato all'account", !!brA);
+  await page.waitForTimeout(500);
+  check("06 il promemoria della migrazione cade solo a fine riuscita", (await page.evaluate(() => localStorage.getItem("jm.migrazione.locale"))) === null);
+  await page.locator(".jm-fv-h, .jm-ed-ta").first().waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
+  const dopo = await page.locator("main").innerText().catch(() => "");
+  check("06 la giornata scritta da ospite si vede anche da account", /Giornata scritta da ospite/.test(dopo), dopo.replace(/\s+/g, " ").slice(0, 100));
+  check("06 zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
+  await ctx.close();
 }
 
 await browser.close();

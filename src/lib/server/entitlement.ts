@@ -103,7 +103,21 @@ export async function requireUser(
  */
 export async function requirePremium(
   req: NextRequest,
-): Promise<{ userId: string } | NextResponse> {
+): Promise<{ userId: string | null; braccialettoId?: string | null } | NextResponse> {
+  // Il premium comprato SENZA email (migration 025) vive sul braccialetto
+  // del telefono: se non c'e un gettone ma c'e il braccialetto e ha un
+  // premium valido, e premium. Import dinamico: ospite.ts importa questo
+  // file, e un ciclo statico fra i due confonderebbe il bundler.
+  const header = req.headers.get("authorization") ?? "";
+  if (!header.startsWith("Bearer ")) {
+    const { segretoDalla, braccialettoDaSegreto, premiumDelBraccialetto } = await import("@/lib/server/ospite");
+    const segreto = segretoDalla(req);
+    if (segreto) {
+      const id = await braccialettoDaSegreto(segreto, null, { crea: false });
+      if (id && (await premiumDelBraccialetto(id))) return { userId: null, braccialettoId: id };
+      return NextResponse.json({ error: "Premium required" }, { status: 402 });
+    }
+  }
   const user = await requireUser(req);
   if (user instanceof NextResponse) return user;
 

@@ -238,3 +238,10 @@ cose in questo modulo:
 Banco: `scripts/verify-ospite-schermate.mjs` (42 controlli, provato a
 mordere: prima della distinzione del 402 la giornata a regalo finito
 usciva con "Giornata raccontata" e il banco lo ha visto).
+
+Dal 4 settembre sera (A2 del mockup premium-senza-password): la PRIMA
+giornata chiusa dall'AI in locale apre il foglio "L'AI ha chiuso questa
+giornata per te" (`openPremiumWall("presentazione")`), una volta per
+dispositivo (`src/lib/ospite/presentazione.ts`, localStorage
+`jm.premium.presentato`). Si apre quando la giornata e a schermo (view
+"filled"), mai sopra le domande o la rubrica.

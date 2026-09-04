@@ -35,7 +35,10 @@ export const ROUTE_AI_OSPITE = [
   "/api/chiarimenti",
   "/api/remember/classify",
 ];
-export const ROUTE_AMMESSE_OSPITE = [...ROUTE_AI_OSPITE, "/api/ospite/stato"];
+// /api/apple/verifica (4 settembre 2026, premium senza password): la
+// ricevuta di Apple, per accendere premium sul braccialetto. Porta l'id di
+// una transazione, mai una riga del diario.
+export const ROUTE_AMMESSE_OSPITE = [...ROUTE_AI_OSPITE, "/api/ospite/stato", "/api/apple/verifica"];
 
 const TABELLE_DELLE_GIORNATE = /\/rest\/v1\/(entries|cassettine|facts|remembers|recaps|open_questions|fact_aliases|day_exclusions|foto)\b/;
 

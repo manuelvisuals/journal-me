@@ -92,7 +92,7 @@ export function hashBraccialetto(segreto: string): string {
   return createHash("sha256").update(segreto, "utf8").digest("hex");
 }
 
-function segretoDalla(req: NextRequest): string | null {
+export function segretoDalla(req: NextRequest): string | null {
   const s = (req.headers.get(HEADER_BRACCIALETTO) ?? "").trim();
   return RE_SEGRETO.test(s) ? s : null;
 }
@@ -115,7 +115,7 @@ function regaloFinito(motivo: MotivoRegaloFinito, usate: number, max: number): N
  * all'utente se c'e un utente e il braccialetto non ne ha ancora uno.
  * Risponde con l'id, o null se il database non collabora.
  */
-async function braccialettoDaSegreto(
+export async function braccialettoDaSegreto(
   segreto: string,
   userId: string | null,
   { crea }: { crea: boolean },
@@ -152,6 +152,23 @@ async function braccialettoDaSegreto(
     return (di_nuovo?.id as string | undefined) ?? null;
   }
   return nuova.id as string;
+}
+
+/**
+ * Il premium che vive sul BRACCIALETTO (migration 025: comprato dall'ospite
+ * con il foglio di Apple, senza email). Torna la scadenza se e valido.
+ */
+export async function premiumDelBraccialetto(braccialettoId: string): Promise<string | null> {
+  const admin = getAdminClient();
+  if (!admin) return null;
+  const { data } = await admin
+    .from("braccialetti")
+    .select("plan, current_period_end")
+    .eq("id", braccialettoId)
+    .maybeSingle();
+  if (!data) return null;
+  const riga = data as { plan?: string | null; current_period_end?: string | null };
+  return pianoEffettivo(riga) === "premium" ? (riga.current_period_end ?? null) : null;
 }
 
 /** Il piano EFFETTIVO dell'utente (scadenza compresa), o null se non si legge. */
@@ -204,6 +221,12 @@ export async function requireOspiteOPremium(
   const braccialettoId = await braccialettoDaSegreto(segreto, userId, { crea: true });
   if (!braccialettoId) {
     return NextResponse.json({ error: "Cannot read braccialetti" }, { status: 500 });
+  }
+
+  // Il premium comprato senza email vive sul braccialetto: e un premium
+  // a tutti gli effetti, non conta giornate e non entra nel tetto.
+  if (await premiumDelBraccialetto(braccialettoId)) {
+    return { chi: { userId, braccialettoId, regalo: false }, tipo: "premium" };
   }
 
   const speso = await spesoRegaloMeseUsd();
@@ -296,6 +319,8 @@ export async function statoOspite(req: NextRequest): Promise<NextResponse> {
     usate,
     rimaste: Math.max(0, regalo.giornatePerOspite - usate),
     oggi: esito.gia === true,
+    // Il premium sul braccialetto (migration 025): la scadenza, o null.
+    premiumFino: await premiumDelBraccialetto(id),
   });
 }
 
