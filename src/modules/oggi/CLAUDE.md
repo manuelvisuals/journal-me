@@ -215,3 +215,26 @@ controlla senza spendere una giornata. `logAiUsage` riceve `...gate.chi`
 In `today-client.tsx` "salva e basta" (Cmd+S) non chiede piu i
 chiarimenti: prometteva zero chiamate AI e ne faceva una, che per l'ospite
 sarebbe stata una giornata del regalo spesa senza averlo chiesto.
+
+## Le schermate dell'ospite (4 settembre 2026, branch `ospite-schermate`)
+
+Mockup approvato `design/mockups/ospite-primo-avvio.html` (02-03). Due
+cose in questo modulo:
+
+- `components/avviso-regalo.tsx`: l'avviso discreto SOTTO la giornata
+  appena chiusa dall'AI, quando restano 3 giornate o meno (decisione D).
+  Uno slot di `FilledView` (`avvisoSlot`), montato da `today-client` solo
+  per una giornata chiusa in questa visita (`savedDates`): mai all'avvio,
+  mai nel Mese. La X lo chiude per quella giornata (localStorage
+  `jm.ospite.avviso.<data>`). "Prova premium" apre il muro a schede.
+- La vista gratis a regalo finito: `analyze-day.ts` distingue il 402
+  (l'AI negata per scelta: regalo finito o serve premium) dal guasto, e in
+  quel caso salva come giornata senza AI (`localFields`: titolo = prima
+  riga, sintesi vuota). `today-client` legge lo stato del regalo
+  (`src/lib/ospite/stato.ts`) SOLO quando c'e una giornata senza sintesi
+  da decidere, e mostra la prosa con la frase del regalo (`nudgeTesto`)
+  invece di quella di premium; "vedi" apre il muro del regalo.
+
+Banco: `scripts/verify-ospite-schermate.mjs` (42 controlli, provato a
+mordere: prima della distinzione del 402 la giornata a regalo finito
+usciva con "Giornata raccontata" e il banco lo ha visto).

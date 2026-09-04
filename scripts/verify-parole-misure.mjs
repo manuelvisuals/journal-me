@@ -32,7 +32,7 @@ async function open(url, { width = 1440, height = 950, mode = "local", scale = n
   await ctx.addInitScript(([m, s, sess]) => {
     try {
       if (m === "local") {
-        window.localStorage.setItem("jm.mode", "local");
+        window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
         /* niente velo del saluto sui banchi */
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
         window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");

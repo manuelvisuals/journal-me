@@ -42,7 +42,7 @@ async function contesto({ finto = true, aspetto = "dark" } = {}) {
     // gia colorScheme. Senza il secondo nome eslint resta a zero warning.
     ([conFinto]) => {
       try {
-        window.localStorage.setItem("jm.mode", "local");
+        window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
         window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
         window.localStorage.setItem("jm:theme", "minimal");

@@ -49,6 +49,7 @@ con_tetto(){
   return $?
 }
 
+APPLE_401=""
 ISSUER_ID="27112788-4078-4dd9-9089-edfa11913163"
 BUNDLE_ID="com.manuelvisuals.journalme"
 PROGETTO="$HOME/Developer/journal-me"
@@ -109,12 +110,21 @@ const s = createSign("SHA256"); s.update(h + "." + p); s.end();
 const raw = s.sign({ key: createPrivateKey(pem), dsaEncoding: "ieee-p1363" });
 const jwt = h + "." + p + "." + b64(raw);
 fetch("https://api.storekit-sandbox.itunes.apple.com/inApps/v1/transactions/1", { headers: { Authorization: "Bearer " + jwt }, signal: AbortSignal.timeout(15000) })
-  .then((r) => { console.log(String(r.status)); })
+  .then(async (r) => { const b = await r.text().catch(() => ""); console.log(String(r.status) + " " + b.replace(/\s+/g, " ").slice(0, 160)); })
   .catch((e) => { console.log("rete:" + e.message); });
 ' 2>&1)"
-case "$PROVA" in
-  404|200) ok "Apple riconosce la chiave (risposta $PROVA alla prova in sandbox)." ;;
-  401) ko "Apple risponde 401: chiave, Key ID o Issuer ID non tornano. Non scrivo niente su Vercel."; stop ;;
+CODICE="${PROVA%% *}"
+case "$CODICE" in
+  404|200) ok "Apple riconosce la chiave (risposta $CODICE alla prova in sandbox)." ;;
+  401)
+    # Una chiave APPENA creata su App Store Connect puo dare 401 per un po'
+    # (Apple la propaga ai suoi server con calma, anche mezz'ora). La chiave
+    # e ben formata e firma: si scrive comunque, e si riprova piu tardi.
+    nota "Apple risponde 401 alla prova: $PROVA"
+    nota "Se la chiave e stata creata da poco e normale: Apple ci mette un po' a riconoscerla."
+    nota "Scrivo comunque su Vercel (la chiave firma correttamente). Rilancia questo script fra"
+    nota "15-30 minuti: se allora dice [OK] Apple riconosce la chiave, e tutto a posto."
+    APPLE_401=1 ;;
   rete:*) ko "Non raggiungo Apple: ${PROVA#rete:}"; stop ;;
   *) ko "Risposta inattesa da Apple o dalla chiave: $PROVA"; stop ;;
 esac
@@ -162,7 +172,11 @@ if [ "$(dirname "$CHIAVE")" != "$CASSETTO" ]; then
 fi
 
 echo
-if [ "$PROBLEMI" -eq 0 ]; then
+if [ "$PROBLEMI" -eq 0 ] && [ -n "$APPLE_401" ]; then
+  printf "${Y}${B}  ESITO: SCRITTO SU VERCEL, MA APPLE NON HA ANCORA RICONOSCIUTO LA CHIAVE (401).${V}\n"
+  info "Rilancia questo script fra 15-30 minuti. Se dice ancora 401, copia a Claude la riga"
+  info "gialla che inizia con 'Apple risponde 401'."
+elif [ "$PROBLEMI" -eq 0 ]; then
   printf "${G}${B}  ESITO: TUTTO A POSTO. Le tre variabili sono su Vercel.${V}\n"
   info "Valgono dal prossimo deploy (il prossimo push su main): ci pensa Claude."
 else

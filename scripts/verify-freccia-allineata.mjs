@@ -18,7 +18,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
 const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
 await ctx.addInitScript(() => {
   try {
-    localStorage.setItem("jm.mode", "local");
+    localStorage.setItem("jm.mode", "local"); localStorage.setItem("jm.ospite", "0");
     localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
     localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
     localStorage.setItem("jm.mese.vista", "griglia");

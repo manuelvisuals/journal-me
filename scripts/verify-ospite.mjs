@@ -80,7 +80,7 @@ async function dispositivo({ seme = null, viewport = { width: 1440, height: 900 
   });
   await ctx.addInitScript(({ seme }) => {
     try {
-      window.localStorage.setItem("jm.ospite", "1");
+      // Niente jm.ospite: dal 4 settembre 2026 acceso e il valore di fabbrica.
       window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
       window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
     } catch {}
@@ -367,12 +367,16 @@ let segretoA = null;
   await ctx.close();
 }
 
-/* ================= Interruttore spento: tutto come prima ================= */
+/* ================= Interruttore spento (jm.ospite = "0"): tutto come prima ================= */
+// Dal 4 settembre 2026 il valore di fabbrica e ACCESO (Manuel ha approvato
+// le schermate): il locale "puro" di prima esiste solo spegnendolo a mano,
+// ed e cio che fanno tutti i banchi vecchi del locale.
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "it-IT" });
   await ctx.route(`**/${SB_HOST}/**`, (route) => route.fulfill({ status: 200, contentType: "application/json", body: "{}" }));
   await ctx.addInitScript(() => {
     try {
+      window.localStorage.setItem("jm.ospite", "0");
       window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
       window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
     } catch {}
@@ -380,7 +384,7 @@ let segretoA = null;
   const page = await ctx.newPage();
   await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   try { await page.waitForURL("**/login**", { timeout: 15_000 }); } catch {}
-  check("interruttore spento (fabbrica): il primo avvio porta ancora al login", page.url().includes("/login"));
+  check("interruttore spento (jm.ospite=0): il primo avvio porta ancora al login", page.url().includes("/login"));
   await ctx.close();
 }
 

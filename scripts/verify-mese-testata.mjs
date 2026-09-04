@@ -92,7 +92,7 @@ async function apri({ vista = "griglia", width = LARGO, height = 800 } = {}) {
   });
   await ctx.addInitScript((v) => {
     try {
-      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
       window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
       window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
       if (v) window.localStorage.setItem("jm.mese.vista", v);

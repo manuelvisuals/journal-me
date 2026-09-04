@@ -58,7 +58,7 @@ async function apri(width, height, { tema, aspetto } = {}) {
   await ctx.addInitScript(
     ([t, a]) => {
       try {
-        window.localStorage.setItem("jm.mode", "local");
+        window.localStorage.setItem("jm.mode", "local"); window.localStorage.setItem("jm.ospite", "0");
         // niente velo del saluto sui banchi
         window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
         window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");

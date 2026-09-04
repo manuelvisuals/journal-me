@@ -2,8 +2,9 @@
 
 /**
  * Il pannello admin: le impostazioni globali dell'app. Mockup approvati:
- * design/mockups/admin.html (Aree), design/mockups/sito-seo.html (Sito) e
- * design/mockups/messaggio-benvenuto.html (Messaggio di benvenuto).
+ * design/mockups/admin.html (Aree), design/mockups/sito-seo.html (Sito),
+ * design/mockups/messaggio-benvenuto.html (Messaggio di benvenuto) e
+ * design/mockups/ospite-primo-avvio.html 05 (Regalo AI).
  *
  * CHI NON E ADMIN NON VEDE NIENTE. Il controllo vero sta sul server
  * (requireAdmin in src/lib/server/entitlement.ts): questa pagina chiede
@@ -31,9 +32,10 @@ import { useT } from "@/lib/i18n";
 import { PannelloSeo } from "@/modules/sito";
 import { AreeSchermata, type Riga } from "@/modules/admin/components/aree-schermata";
 import { BenvenutoSchermata } from "@/modules/admin/components/benvenuto-schermata";
+import { RegaloSchermata } from "@/modules/admin/components/regalo-schermata";
 
 type Stato = "carico" | "negato" | "pronto";
-type Voce = "aree" | "sito" | "benvenuto";
+type Voce = "aree" | "sito" | "benvenuto" | "regalo";
 
 export function AdminClient() {
   const t = useT();
@@ -105,9 +107,11 @@ export function AdminClient() {
           <button type="button" className={vai("benvenuto")} onClick={() => setVoce("benvenuto")}>
             {t("Messaggio di benvenuto")}
           </button>
+          <button type="button" className={vai("regalo")} onClick={() => setVoce("regalo")}>
+            {t("Regalo AI")}
+          </button>
           <span className="jm-adm-nav-off">{t("Obiettivi di default")}</span>
           <span className="jm-adm-nav-off">{t("Modelli AI")}</span>
-          <span className="jm-adm-nav-off">{t("Piani e limiti")}</span>
         </nav>
         <div className="jm-adm-who">
           <b>madh52@gmail.com</b>
@@ -117,6 +121,7 @@ export function AdminClient() {
 
       {voce === "aree" && <AreeSchermata righe={righe} setRighe={setRighe} />}
       {voce === "benvenuto" && <BenvenutoSchermata />}
+      {voce === "regalo" && <RegaloSchermata />}
       {voce === "sito" && (
         <main className="jm-adm-main">
           <div className="jm-adm-bar">

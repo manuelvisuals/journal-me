@@ -22,7 +22,7 @@ async function open(url, { width = 1440, height = 900, appearance = "light", the
   const ctx = await browser.newContext({ viewport: { width, height }, locale: "it-IT" });
   await ctx.addInitScript(([a, t, z]) => {
     try {
-      localStorage.setItem("jm.mode", "local");
+      localStorage.setItem("jm.mode", "local"); localStorage.setItem("jm.ospite", "0");
       localStorage.setItem("jm:appearance", a);
       localStorage.setItem("jm:theme", t);
       localStorage.setItem("jm:scale", String(z));

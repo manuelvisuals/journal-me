@@ -69,7 +69,9 @@ th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;tex
     <p>Lo script trova il file .p8 in Scaricati, prova la chiave contro il server di Apple (se Apple non la riconosce si ferma e non scrive niente),
       la mette su Vercel insieme a Key ID e Issuer ID, e sposta il file in <b>Documenti/dayalogue-chiavi</b> (tienilo: Apple lo fa scaricare una volta sola).
       Se non sei dentro Vercel su questo Mac, si apre il browser e ti chiede di confermare l'accesso: e normale.</p>
-    <p>Alla fine deve dire <b>ESITO: TUTTO A POSTO</b>. Se dice altro, copia le righe rosse in chat.</p>
+    <p>Alla fine deve dire <b>ESITO: TUTTO A POSTO</b>. Se dice, in giallo, che Apple non ha ancora riconosciuto la chiave (401) e normale per una
+      chiave appena creata: le variabili sono comunque scritte su Vercel, e basta rilanciare la stessa riga fra 15-30 minuti per la controprova.
+      Se dice altro, copia le righe rosse in chat.</p>
     <div class="perche">Perche non l'ho fatto io: quel file e la chiave con cui il server parla con Apple a nome tuo. Le mie regole mi vietano di copiare chiavi e
       segreti in un campo, anche se me lo chiedi. Lo script gira sul tuo Mac e il segreto non passa mai da me ne dal repo.</div>
   </div>
@@ -84,8 +86,10 @@ th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;tex
       <li>Password: a tua scelta, segnala: la scriverai sul telefono una volta sola.</li>
       <li>Paese: Italia. Salva.</li>
     </ol>
-    <p>Poi sul tuo iPhone: <b>Impostazioni &gt; App Store</b>, in fondo, <b>Account sandbox</b> &gt; entra con quell'email e quella password.
-      Il tuo Apple ID vero resta dov'e: la sandbox e una casella a parte.</p>
+    <p>Sul tuo iPhone NON serve fare niente adesso: la voce "Account sandbox" compare solo dopo che un'app di prova (quella che Xcode installa) ha
+      chiesto un acquisto. La prima volta che tocchi "Prova gratis" nell'app, l'iPhone ti chiede di entrare: li metti l'email e la password
+      dell'utente sandbox. Il tuo Apple ID vero resta dov'e: la sandbox e una casella a parte. (Su iOS 18 e dopo, la voce sta in
+      <b>Impostazioni &gt; Sviluppatore &gt; Account Apple sandbox</b>, e la sezione Sviluppatore esiste solo dopo il primo collegamento a Xcode.)</p>
     <div class="perche">Perche non l'ho fatto io: e la creazione di un account con una password, e anche questa e una cosa che non posso fare al posto tuo.</div>
   </div>
 
