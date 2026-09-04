@@ -124,7 +124,9 @@ export type Theme = {
   dark: ColorSet;
 };
 
-export const DEFAULT_THEME_ID = "minimal";
+// "carta" dal 4 settembre 2026, deciso da Manuel alla prima prova
+// dell'ospite sul telefono (prima era "minimal").
+export const DEFAULT_THEME_ID = "carta";
 export const DEFAULT_APPEARANCE: Appearance = "system";
 
 /** Chiavi localStorage — le uniche che lo script di boot puo leggere in modo sincrono. */

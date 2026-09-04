@@ -89,7 +89,14 @@ const webConfig: NextConfig = {
             // preflight non esiste — dentro il guscio iOS invece muore tutto
             // cio che passa da /api, in silenzio. Chi aggiunge un header al
             // client lo aggiunge anche qui.
-            value: "Content-Type, Authorization, x-jm-lang",
+            //
+            // x-jm-braccialetto: il braccialetto dell'ospite (SPEC R2),
+            // dimenticato qui il 3 settembre 2026 e scoperto il 4 sul
+            // telefono di Manuel: "http=err:TypeError" alla prima
+            // registrazione, cioe il preflight bocciato. I banchi girano
+            // sulla stessa origine e non potevano vederlo: da oggi
+            // verify-ospite legge questo file e pretende l'header.
+            value: "Content-Type, Authorization, x-jm-lang, x-jm-braccialetto",
           },
           {
             key: "Access-Control-Allow-Methods",
