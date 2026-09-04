@@ -102,7 +102,7 @@ chiusa (come il webhook di Stripe).
    **Version 2**. (L'indirizzo lo confermo io quando la route e deployata.)
 5. Nella stessa pagina App Information annota l'**Apple ID** dell'app (un
    numero) e, sotto General, il **Bundle ID**
-   `com.manuelvisuals.journalme`: il server li controlla su ogni ricevuta.
+   `com.manuelvisuals.dayalogue`: il server li controlla su ogni ricevuta.
 
 ## 5. Su Xcode (quando il branch e pronto, te lo dico io)
 

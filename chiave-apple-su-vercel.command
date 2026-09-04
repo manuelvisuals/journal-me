@@ -51,7 +51,7 @@ con_tetto(){
 
 APPLE_401=""
 ISSUER_ID="27112788-4078-4dd9-9089-edfa11913163"
-BUNDLE_ID="com.manuelvisuals.journalme"
+BUNDLE_ID="com.manuelvisuals.dayalogue"
 PROGETTO="$HOME/Developer/journal-me"
 CASSETTO="$HOME/Documents/dayalogue-chiavi"
 TEAM_VERCEL="hodl-inc"

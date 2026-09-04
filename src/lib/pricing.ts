@@ -54,8 +54,17 @@ export const PRODOTTI_IOS = {
 
 export type ProdottoIos = keyof typeof PRODOTTI_IOS;
 
-/** Il bundle id dell'app iOS: il server lo pretende su ogni ricevuta. */
-export const BUNDLE_ID_IOS = "com.manuelvisuals.journalme";
+/**
+ * Il bundle id dell'app iOS: il server lo pretende su ogni ricevuta ed e
+ * il `bid` del gettone con cui parla con Apple. E quello VERO del progetto
+ * Xcode e di App Store Connect (capacitor.config.ts, project.pbxproj):
+ * `com.manuelvisuals.dayalogue`. Il 4 settembre 2026 c'era scritto
+ * "com.manuelvisuals.journalme" (preso da un appunto vecchio di HANDOVER),
+ * e Apple rispondeva 401 a ogni gettone: un bundle id che il team non ha
+ * e un gettone non valido. I NOMI DEI PRODOTTI restano
+ * com.manuelvisuals.journalme.premium.*: sono etichette, non il bundle.
+ */
+export const BUNDLE_ID_IOS = "com.manuelvisuals.dayalogue";
 
 /**
  * La pagina dell'App Store, per il muro del web ("Scarica dayalogue per
