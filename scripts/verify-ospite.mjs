@@ -54,10 +54,26 @@ const ROUTE_AI = [
 ];
 const ROUTE_AMMESSE = [...ROUTE_AI, "/api/ospite/stato"];
 
+import { readFileSync } from "node:fs";
+
 const results = [];
 function check(name, ok, extra = "") {
   results.push({ name, ok });
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${extra ? "  -- " + extra : ""}`);
+}
+
+/* ================= CORS: l'header del braccialetto deve passare il preflight =================
+   Dentro il guscio iOS l'app sta su capacitor://localhost e ogni header
+   custom fa partire un preflight: un header non elencato in next.config.ts
+   muore con "TypeError" prima ancora di uscire (successo il 4 settembre
+   2026 alla prima registrazione sul telefono di Manuel). I banchi girano
+   sulla stessa origine e non lo vedono: si legge il file. */
+{
+  const cfg = readFileSync("next.config.ts", "utf8");
+  const m = cfg.match(/key:\s*"Access-Control-Allow-Headers",[\s\S]*?value:\s*"([^"]+)"/);
+  const lista = (m?.[1] ?? "").split(",").map((x) => x.trim().toLowerCase());
+  check("CORS: x-jm-braccialetto e fra gli header ammessi in next.config.ts (preflight del guscio iOS)", lista.includes("x-jm-braccialetto"), m?.[1] ?? "non trovato");
+  check("CORS: anche x-jm-lang e Authorization ci sono ancora", lista.includes("x-jm-lang") && lista.includes("authorization"));
 }
 
 const sb = new SupabaseFintoServer();
