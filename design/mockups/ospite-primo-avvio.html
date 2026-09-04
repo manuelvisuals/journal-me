@@ -174,7 +174,7 @@ td .prop{color:var(--ok);font-weight:600}
   <h1 class="page-title">L'ospite: quello che si vede</h1>
   <p class="page-sub">Il pezzo 3 della SPEC (R1-R4) e per la maggior parte invisibile: un braccialetto anonimo, un conteggio sul server,
     un tetto di spesa. Le cose che una persona VEDE sono quattro, piu una per te: <b>il primo avvio dritto sulla giornata</b>,
-    <b>l'avviso discreto</b> quando restano poche giornate, <b>il muro</b> quando il regalo finisce (su iPhone senza nessun acquisto),
+    <b>l'avviso discreto</b> quando restano poche giornate, <b>il muro</b> quando il regalo finisce (con l'acquisto Apple su iPhone, Stripe sul web),
     <b>la riga in Impostazioni</b>, e la voce <b>Regalo AI</b> in /admin. Stile e parole seguono la presentazione approvata
     (<i>ospite-e-cassaforte.html</i>, schermate 02-05) e il mockup della cassaforte. Niente qui promette una cosa che non esiste (divieto 7).</p>
 
@@ -231,7 +231,7 @@ td .prop{color:var(--ok);font-weight:600}
   <p class="label">02 . L'avviso discreto, quando restano poche giornate</p>
   <p class="caption">Compare <b>sotto la giornata appena chiusa</b>, non all'avvio e non come finestra: una riga in una card, si chiude con la X e non torna
     per quella giornata. Parte quando ne restano <b>3</b> (proposta), poi a 2, poi a 1. Dice la verita e dice cosa succede dopo: l'app resta,
-    finisce solo l'AI. Nessun tasto "compra" su iPhone.</p>
+    finisce solo l'AI. Il collegamento "prova premium" c'e anche su iPhone: <b>dal 4 settembre l'acquisto dentro l'app e In-App Purchase</b> (mockup <i>abbonamento-iphone.html</i>).</p>
   <div class="row">
     <div class="col">
       <div class="phone">
@@ -246,10 +246,10 @@ td .prop{color:var(--ok);font-weight:600}
             <div><b>Corpo</b>Seconda seduta di fisioterapia, meglio.</div>
           </div>
         </div>
-        <div class="avviso"><i></i><span>Ti restano <b>2 giornate</b> con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.</span><span class="x">&#10005;</span></div>
+        <div class="avviso"><i></i><span>Ti restano <b>2 giornate</b> con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI. <u style="color:var(--ink)">Prova premium</u></span><span class="x">&#10005;</span></div>
         <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
         <div class="ann ok" style="top:520px;right:14px">una riga, in fondo, con la X: non un popup</div>
-        <div class="ann" style="top:600px;left:14px">niente tasto "compra": su iPhone non esiste</div>
+        <div class="ann ok" style="top:600px;left:14px">"Prova premium" apre il muro con l'acquisto Apple</div>
       </div>
       <div class="under"><b>Quando:</b> alla chiusura di una giornata, se ne restano 3 o meno. <b>Quante volte:</b> una per giornata chiusa, mai all'avvio. <b>Dove no:</b> non nel Mese, non in Memo, non nella scrittura.</div>
     </div>
@@ -268,16 +268,16 @@ td .prop{color:var(--ok);font-weight:600}
         </div>
         <div class="avviso"><i></i><span>Ti restano <b>2 giornate</b> con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI. <u style="color:var(--ink)">Scopri premium</u></span><span class="x">&#10005;</span></div>
         <div class="dock"><span class="on"><i></i>Oggi</span><span><i></i>Mese</span><span class="mic">+</span><span><i></i>Memo</span><span><i></i>Altro</span></div>
-        <div class="ann" style="top:600px;right:14px">Variante web (browser): stessa riga, piu "scopri premium" sotto. E l'unica differenza web/iPhone</div>
+        <div class="ann" style="top:600px;right:14px">Variante web (browser): identica; il tasto del muro apre Stripe invece del foglio di Apple</div>
       </div>
-      <div class="under"><b>Sul web</b> (dove il pagamento esiste, Stripe) la riga ha in coda un collegamento "scopri premium". Dentro il guscio iPhone no: niente inviti a comprare (App Store 3.1.1, come gia fa il muro premium).</div>
+      <div class="under"><b>Sul web</b> la riga e la stessa: cambia solo il negozio dietro il tasto (Stripe sul web, In-App Purchase su iPhone). Deciso da Manuel il 4 settembre 2026.</div>
     </div>
   </div>
 
   <div class="divider"></div>
   <p class="label">03 . Il muro: quando il regalo e finito</p>
   <p class="caption">Compare <b>solo nel momento</b> in cui l'ospite chiede all'AI qualcosa (tocca il microfono, o chiude una giornata con l'AI) e il server risponde
-    "regalo finito". Mai all'avvio, mai nel Mese. <b>Su iPhone non c'e nessun acquisto in app:</b> due uscite sole, "continua senza AI" e "ho gia un account".
+    "regalo finito". Mai all'avvio, mai nel Mese. <b>Su iPhone il tasto pieno e l'acquisto Apple</b> (In-App Purchase, mockup <i>abbonamento-iphone.html</i>): prova gratis di una settimana, poi 4,99 EUR al mese; sotto, "continua senza AI" e "ho gia un account".
     Il testo attuale del muro premium ("le paghi tu o le pago io") non va bene per chi ha appena ricevuto un regalo, e viene riscritto.</p>
   <div class="row">
     <div class="col">
@@ -293,16 +293,17 @@ td .prop{color:var(--ok);font-weight:600}
           <div class="t">Le dieci giornate con l'AI
 in regalo sono finite</div>
           <div class="p">Grazie di averle usate. Da qui puoi <b>continuare a scrivere</b> ogni giorno: la giornata si salva, si rilegge, si ritrova nel Mese. Manca solo la parte fatta dall'AI: il racconto a voce, il titolo, la sintesi, le aree.</div>
-          <div class="feat"><i></i><div><b>Scrivere resta gratis, per sempre</b>Il titolo e la prima riga che scrivi.</div></div>
+          <div class="feat"><i></i><div><b>Con premium l'AI non ha limiti</b>Voce, titolo, sintesi, aree e i recap del mese.</div></div>
           <div class="feat"><i></i><div><b>Le tue giornate restano qui</b>Sul telefono, come prima. Niente si perde.</div></div>
-          <div class="b1">Continua senza AI</div>
-          <div class="b2">Ho gia un account</div>
-          <div class="nota">L'abbonamento dentro l'app sta arrivando. Per ora, su iPhone, non c'e niente da comprare.</div>
+          <div class="b1">Prova gratis 7 giorni, poi 4,99 EUR al mese</div>
+          <div class="b2">Continua senza AI</div>
+          <div class="quiet" style="margin-top:12px">Ho gia un account &middot; Ripristina acquisti</div>
+          <div class="nota">Si rinnova da solo, disdici quando vuoi dalle Impostazioni di Apple. Termini &middot; Privacy</div>
         </div>
-        <div class="ann" style="top:250px;right:14px">nessun prezzo, nessun "compra": su iPhone non esiste</div>
-        <div class="ann ok" style="top:604px;left:14px">il tasto grande e quello che NON costa</div>
+        <div class="ann ok" style="top:250px;right:14px">In-App Purchase: il tasto apre il foglio di acquisto di Apple</div>
+        <div class="ann ok" style="top:604px;left:14px">l'uscita gratuita resta a un tocco</div>
       </div>
-      <div class="under"><b>iPhone, dal microfono.</b> "Continua senza AI" apre la scrittura a mano (la stessa uscita gratuita di oggi). "Ho gia un account" porta al login: chi e premium sul web ritrova l'AI. Il muro si richiude anche toccando fuori.</div>
+      <div class="under"><b>iPhone, dal microfono.</b> Il tasto pieno chiede prima l'account (email, codice) e poi apre il foglio di Apple: il premium e legato all'account, cosi vale anche sul web. "Continua senza AI" apre la scrittura a mano. Il muro si richiude anche toccando fuori.</div>
     </div>
     <div class="col">
       <div class="phone">
@@ -323,9 +324,9 @@ in regalo sono finite</div>
           <div class="b2">Continua senza AI</div>
           <div class="quiet" style="margin-top:14px">Ho gia un account</div>
         </div>
-        <div class="ann" style="top:250px;right:14px">SOLO sul web: il prezzo viene da pricing.ts, il checkout da Stripe</div>
+        <div class="ann" style="top:250px;right:14px">Web: stesso muro, il tasto apre Stripe. Il prezzo viene da pricing.ts</div>
       </div>
-      <div class="under"><b>Web (browser), stesso momento.</b> Qui il pagamento esiste, quindi il tasto pieno e premium. Il muro premium di oggi resta per chi ha un account gratis: questo e un muro <b>diverso</b> (il server risponde "regalo finito", non "serve premium").</div>
+      <div class="under"><b>Web (browser), stesso momento.</b> Stesso muro, negozio diverso (Stripe). Il muro premium di oggi resta per chi ha un account gratis: questo e un muro <b>diverso</b> (il server risponde "regalo finito", non "serve premium").</div>
     </div>
     <div class="col">
       <div class="phone">
@@ -358,13 +359,14 @@ in regalo sono finite</div>
         <div class="grp"><div class="h">Account</div><div class="card">
           <div class="r"><span>Dove sono le mie giornate</span><span class="v">Solo su questo telefono &#8250;</span></div>
           <div class="r"><span>AI in regalo</span><span class="v">7 giornate su 10 &#8250;</span></div>
+          <div class="r col2"><div class="top"><span>Passa a Premium</span><span class="v">7 giorni gratis &#8250;</span></div><div class="d">Poi 4,99 EUR al mese. AI senza limiti, backup ogni notte, i recap.</div></div>
           <div class="r col2"><div class="top"><span>Accedi al tuo account</span><span class="v">&#8250;</span></div><div class="d">Le giornate che hai gia scritto qui restano, e il regalo non ricomincia da capo.</div></div>
         </div></div>
         <div class="grp"><div class="h">App</div><div class="card">
           <div class="r"><span>Versione</span><span class="v">1.0 (42)</span></div>
         </div></div>
         <div class="ann ok" style="top:236px;right:20px">stato vero: quante ne restano, non una barra sempre accesa</div>
-        <div class="ann" style="top:400px;right:20px">niente "Passa a Premium" su iPhone</div>
+        <div class="ann ok" style="top:330px;right:20px">"Passa a Premium" anche su iPhone: apre il muro con l'acquisto Apple</div>
       </div>
       <div class="under"><b>Con regalo in corso.</b> "AI in regalo" e l'unico posto dove il contatore si vede sempre: e in Impostazioni, non nel diario (R3). Toccandola si apre la spiegazione a destra.</div>
     </div>
@@ -384,7 +386,7 @@ in regalo sono finite</div>
         </div></div>
         <div class="ann ok" style="top:600px;right:14px">dice la regola della reinstallazione: nessuna sorpresa</div>
       </div>
-      <div class="under"><b>Il pannello "AI in regalo".</b> Tre frasi vere e due numeri. Nessun tasto: non c'e niente da comprare qui su iPhone, e sul web il tasto e nel muro.</div>
+      <div class="under"><b>Il pannello "AI in regalo".</b> Tre frasi vere e due numeri. Il tasto per comprare sta nella riga "Passa a Premium" della schermata prima, non qui.</div>
     </div>
     <div class="col">
       <div class="phone">
