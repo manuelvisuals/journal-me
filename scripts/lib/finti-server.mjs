@@ -25,6 +25,13 @@
 
 import { createServer } from "node:http";
 
+/** Le chiavi di unicita, come i `unique` delle migration. */
+const UNICHE = {
+  braccialetti: ["segreto_hash"],
+  profiles: ["user_id"],
+  apple_notifiche: ["notification_uuid"],
+};
+
 function uuid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
@@ -55,6 +62,7 @@ export class SupabaseFintoServer {
           giornate_per_ospite: 10,
           tetto_mensile_eur: 100,
           cambio_usd_eur: 0.92,
+          annuale_attivo: false,
           updated_at: new Date().toISOString(),
         },
       ],
@@ -186,9 +194,17 @@ export class SupabaseFintoServer {
       const dati = JSON.parse(corpo || "[]");
       const lista = Array.isArray(dati) ? dati : [dati];
       const inserite = [];
+      const chiavi = UNICHE[tabella];
+      const merge = /merge-duplicates/.test(prefer);
       for (const d of lista) {
-        if (tabella === "braccialetti" && righe.some((r) => r.segreto_hash === d.segreto_hash)) {
-          return rispondi(409, { code: "23505", message: "duplicate key value violates unique constraint" });
+        if (chiavi) {
+          const i = righe.findIndex((r) => chiavi.every((k) => String(r[k]) === String(d[k])));
+          if (i >= 0) {
+            if (!merge) return rispondi(409, { code: "23505", message: "duplicate key value violates unique constraint" });
+            Object.assign(righe[i], d);
+            inserite.push(righe[i]);
+            continue;
+          }
         }
         if (tabella === "ai_usage" && !d.user_id && !d.braccialetto_id) {
           return rispondi(400, { code: "23514", message: "ai_usage_chi_ha_chiamato" });
@@ -302,6 +318,107 @@ export class OpenAIFinto {
       this.gestisci(req, res).catch((e) => {
         res.statusCode = 500;
         res.end(JSON.stringify({ error: String(e) }));
+      });
+    });
+    await new Promise((r) => this.server.listen(porta, "127.0.0.1", r));
+    this.porta = this.server.address().port;
+    return `http://127.0.0.1:${this.porta}`;
+  }
+
+  async ferma() {
+    if (this.server) await new Promise((r) => this.server.close(r));
+  }
+}
+
+
+/**
+ * Un App Store Server API finto: risponde a GET /inApps/v1/transactions/{id}
+ * SOLO se il gettone JWT e firmato con la chiave di scripts/lib/
+ * apple-chiave-finta.pem (cosi il banco prova che il server firma bene) e
+ * conosce la transazione. I banchi registrano le transazioni con
+ * `transazioni.set(id, { ...campi })`; il corpo torna come JWS finto
+ * (firma non verificata dal server, per scelta: e la TLS verso Apple a
+ * fare fede, e qui Apple e questo processo).
+ */
+import { createPublicKey, createVerify } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const QUI = dirname(fileURLToPath(import.meta.url));
+export const CHIAVE_APPLE_FINTA_PEM = readFileSync(join(QUI, "apple-chiave-finta.pem"), "utf8");
+export const KEY_ID_FINTO = "FINTOKEY01";
+export const ISSUER_ID_FINTO = "00000000-finto-issuer";
+
+export function jwsFinto(payload) {
+  const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
+  return `${b64({ alg: "ES256", x5c: ["finto"] })}.${b64(payload)}.firma-finta`;
+}
+
+export class AppleFinto {
+  constructor() {
+    /** transactionId -> il corpo della transazione (campi come Apple) */
+    this.transazioni = new Map();
+    this.chiamate = [];
+    this.server = null;
+    this.porta = 0;
+    this.pubblica = createPublicKey(CHIAVE_APPLE_FINTA_PEM);
+  }
+
+  gettoneValido(auth) {
+    const tok = (auth ?? "").replace(/^Bearer\s+/i, "");
+    const parti = tok.split(".");
+    if (parti.length !== 3) return { ok: false, motivo: "non e un JWT" };
+    let h, p;
+    try {
+      h = JSON.parse(Buffer.from(parti[0], "base64url").toString("utf8"));
+      p = JSON.parse(Buffer.from(parti[1], "base64url").toString("utf8"));
+    } catch {
+      return { ok: false, motivo: "intestazione o corpo illeggibili" };
+    }
+    if (h.alg !== "ES256" || h.kid !== KEY_ID_FINTO) return { ok: false, motivo: "alg o kid sbagliati" };
+    if (p.iss !== ISSUER_ID_FINTO || p.aud !== "appstoreconnect-v1") return { ok: false, motivo: "iss o aud sbagliati" };
+    const adesso = Math.floor(Date.now() / 1000);
+    if (typeof p.exp !== "number" || p.exp < adesso || p.exp - adesso > 3600) return { ok: false, motivo: "exp" };
+    const v = createVerify("SHA256");
+    v.update(`${parti[0]}.${parti[1]}`);
+    v.end();
+    const firma = Buffer.from(parti[2], "base64url");
+    const ok = v.verify({ key: this.pubblica, dsaEncoding: "ieee-p1363" }, firma);
+    return ok ? { ok: true, bid: p.bid } : { ok: false, motivo: "firma non valida" };
+  }
+
+  async gestisci(req, res) {
+    const url = new URL(req.url, "http://x");
+    await leggiCorpo(req);
+    const g = this.gettoneValido(req.headers.authorization);
+    this.chiamate.push({ url: url.pathname, gettone: g });
+    res.setHeader("content-type", "application/json");
+    if (!g.ok) {
+      res.statusCode = 401;
+      res.end(JSON.stringify({ errorCode: 4040000, errorMessage: "gettone: " + g.motivo }));
+      return;
+    }
+    const m = /^\/inApps\/v1\/transactions\/([^/]+)$/.exec(url.pathname);
+    if (m) {
+      const t = this.transazioni.get(decodeURIComponent(m[1]));
+      if (!t) {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ errorCode: 4040010, errorMessage: "Transaction id not found." }));
+        return;
+      }
+      res.end(JSON.stringify({ signedTransactionInfo: jwsFinto(t) }));
+      return;
+    }
+    res.statusCode = 404;
+    res.end(JSON.stringify({ errorCode: 4040000, errorMessage: "non gestito" }));
+  }
+
+  async avvia(porta = 0) {
+    this.server = createServer((req, res) => {
+      this.gestisci(req, res).catch((e) => {
+        res.statusCode = 500;
+        res.end(JSON.stringify({ errorMessage: String(e) }));
       });
     });
     await new Promise((r) => this.server.listen(porta, "127.0.0.1", r));

@@ -251,9 +251,12 @@ del divieto: se il motivo cade, si riapre.
    prima versione.
 3. **Niente foto in qualita' piena sul server.** Solo miniature. E' la voce che
    puo' far esplodere il conto dello spazio.
-4. **Niente pagamento vero dentro l'app iOS.** Resta come oggi
-   (`PREMIUM_IOS_V1_GRATIS`, vedi `src/lib/pricing.ts`): Apple vuole il suo
-   sistema, e la decisione e' rimandata da Manuel.
+4. ~~**Niente pagamento vero dentro l'app iOS.**~~ CADUTO il 4 settembre
+   2026: Manuel ha deciso l'In-App Purchase (StoreKit 2, mensile 4,99 EUR
+   con 14 giorni di prova, annuale pronto ma spento). Branch
+   `abbonamento-iap`, mockup `design/mockups/abbonamento-iphone.html`,
+   `PREMIUM_IOS_V1_GRATIS` spento. Sul web non si compra: il muro rimanda
+   all'App Store (Stripe resta inerte).
 5. **Niente percorso di recupero lato server per la chiave.** Vedi R8.
 6. **Non si tocca la trascrizione.** Misurata il 3 settembre 2026 contro la
    dettatura di Apple: vince OpenAI, e non di poco. La domanda e' CHIUSA. Chi la
@@ -400,6 +403,14 @@ il meccanismo con il valore configurabile e si chiede.
 (Il codice della notte del 3 settembre usa come valori di fabbrica 10
 giornate e 100 euro al mese: si cambiano dal pannello, non da un deploy. Le
 opzioni numerate sono in fondo a `design/mockups/ospite-primo-avvio.html`.)
+
+DECISE da Manuel il 4 settembre 2026 (tabella 07 del mockup
+ospite-primo-avvio, "approvo tutte le proposte in verde"): 10 giornate;
+tetto 100 euro al mese; una giornata = un giorno di calendario su cui l'AI
+ha lavorato; l'avviso discreto quando ne restano 3 o meno; iPhone e iPad
+della stessa persona condividono il regalo; il saluto di benvenuto resta;
+l'email si chiede dopo 5 giornate (pezzo 4). Il tasto premium c'e anche su
+iPhone (In-App Purchase, divieto 4 caduto).
 
 1. **Quanto e' grande il regalo.** Quante giornate con l'AI. Ordine di
    grandezza noto: dieci giornate raccontate a voce piu' un recap costano circa

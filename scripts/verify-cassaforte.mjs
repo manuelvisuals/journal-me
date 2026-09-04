@@ -126,7 +126,11 @@ let paroleDiRecupero = [];
   const h1 = page.locator(".jm-login-cassa-h1");
   await h1.waitFor({ state: "visible", timeout: 30_000 });
   check("dispositivo nuovo: chiede le parole (non le mostra)", /non ha la chiave/.test(await h1.innerText()), await h1.innerText());
-  check("dispositivo nuovo: dice quante giornate ci sono e da quando (in chiaro restano giorno e conteggio)", /1 giornate, dal 3 settembre/.test(await h1.innerText()));
+  // La data e quella di OGGI nel fuso dell'app: il 4 settembre 2026 il banco
+  // diceva ancora "dal 3 settembre" ed era rosso per il calendario, non per
+  // la cassaforte.
+  const oggiInParole = new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", day: "numeric", month: "long" }).format(new Date());
+  check("dispositivo nuovo: dice quante giornate ci sono e da quando (in chiaro restano giorno e conteggio)", new RegExp(`1 giornate, dal ${oggiInParole}`).test(await h1.innerText()), await h1.innerText());
   check("dispositivo nuovo: il testo del diario NON e a schermo", !(await page.evaluate(() => document.body.innerText.includes("Quarzite"))));
   const campo = page.locator(".jm-login-cassa-campo");
   const sbagliate = [...paroleDiRecupero];

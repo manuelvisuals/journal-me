@@ -5,9 +5,9 @@ perche vogliono il tuo account Apple Developer (intestato a te come persona
 fisica). Il codice (plugin StoreKit, route del server, migration) lo scrive
 Claude nel branch `abbonamento-iap`; senza questi passi non si puo provare.
 
-Le opzioni numerate qui dentro sono quelle del mockup
-`design/mockups/abbonamento-iphone.html`, tabella 04. Dove leggi "(A1)" e il
-valore proposto: se hai scelto diverso, usa il tuo.
+Le decisioni sono quelle prese da Manuel il 4 settembre 2026 sul mockup
+`design/mockups/abbonamento-iphone.html`: mensile 4,99 EUR, prova gratis di
+14 giorni, annuale pronto ma spento.
 
 Regola: NON cambiare il nome del prodotto dopo averlo creato. Su Apple non
 si rinomina, si cancella e si rifa, e il codice lo cerca per nome.
@@ -37,7 +37,7 @@ Se hai gia fatto tutto per Stoqfolio, qui e gia "Active": salta al punto 2.
    dall'uno all'altro non paga due volte).
 4. Dentro il gruppo, **Create** un abbonamento:
    - Reference Name: `Premium mensile`
-   - **Product ID: `com.manuelvisuals.journalme.premium.mensile`** (A1).
+   - **Product ID: `com.manuelvisuals.journalme.premium.mensile`**.
      Copialo esatto: il codice lo cerca cosi.
 5. Nella pagina del prodotto:
    - **Subscription Duration**: 1 Month.
@@ -49,14 +49,24 @@ Se hai gia fatto tutto per Stoqfolio, qui e gia "Active": salta al punto 2.
      AI: voice, title, summary, areas, recaps. Nightly backup.).
    - **Review Information**: uno screenshot del muro premium (lo faccio io
      dal simulatore e te lo mando) e due righe di note per il revisore.
-6. **La prova gratis** (B1 = 7 giorni): nella stessa pagina, sezione
-   **Subscription Prices** > **Introductory Offers** > "+" > tutti i paesi >
-   tipo **Free** > durata **1 Week** > senza data di fine. Salva.
+6. **La prova gratis** (decisione di Manuel: 14 giorni, uguale per tutti):
+   nella stessa pagina, sezione **Subscription Prices** > **Introductory
+   Offers** > "+" > tutti i paesi > tipo **Free** > durata **2 Weeks** >
+   senza data di fine. Salva.
 7. Torna al gruppo e apri **Localization** del gruppo: Italian, nome
    `dayalogue premium`. Apple lo mostra nella pagina "Abbonamenti" del
    telefono.
 8. Lo stato del prodotto restera "Missing Metadata" o "Ready to Submit"
    finche non si invia l'app: per la sandbox va bene cosi.
+
+## 2-bis. L'annuale (quando lo vorrai, non oggi)
+
+Nello STESSO gruppo, **Create** un secondo abbonamento: Reference Name
+`Premium annuale`, **Product ID `com.manuelvisuals.journalme.premium.annuale`**,
+durata 1 Year, prezzo a tua scelta, stessa offerta introduttiva di 2
+settimane. Poi in `/admin > Regalo AI` accendi l'interruttore "Annuale in
+vendita": la seconda scheda compare nell'app senza deploy. Il mensile non
+si tocca.
 
 ## 3. Un utente di prova (sandbox)
 
@@ -69,8 +79,8 @@ Se hai gia fatto tutto per Stoqfolio, qui e gia "Active": salta al punto 2.
    sandbox** > accedi con quell'utente. NON uscire dal tuo Apple ID vero: la
    sandbox e una casella a parte.
 4. Nella stessa schermata, dopo il primo acquisto, compare **Gestisci** con
-   il "Subscription Renewal Rate": lascia il default. In sandbox una
-   settimana di prova dura 3 minuti e un mese 5: si vede tutto il giro
+   il "Subscription Renewal Rate": lascia il default. In sandbox due
+   settimane di prova durano 3 minuti e un mese 5: si vede tutto il giro
    (prova, rinnovo, disdetta) in un quarto d'ora.
 
 ## 4. La chiave per le notifiche del server di Apple
