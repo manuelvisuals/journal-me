@@ -144,7 +144,9 @@ async function entra(page) {
 /** Apre il muro premium dal Recap ("Genera", gated su recap). */
 async function apriMuro(page) {
   await page.goto(BASE + "/app/recap", { waitUntil: "domcontentloaded" });
-  const gen = page.locator(".jm-gen-btn");
+  // Chi non e premium vede la VETRINA del Recap (mockup premium-senza-password
+  // E1): il tasto della prova apre il muro. Chi e premium ha "Genera".
+  const gen = page.locator(".jm-rec-vetrina .btn-primary, .jm-gen-btn").first();
   await gen.waitFor({ state: "visible", timeout: 30_000 });
   await gen.click();
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 });
@@ -305,6 +307,107 @@ const NEGOZIO = {
   check("annuale: scegliendolo, la nota dice il prezzo annuale", /39,99 EUR all'anno/.test(await page.locator(".jm-wall-nota").innerText()));
   await ctx.close();
   sb.regalo.annuale_attivo = false;
+}
+
+/* ================= 9. Premium SENZA email: l'ospite compra con il foglio di Apple =================
+   Mockup premium-senza-password (risposte di Manuel: B1 C1 D1), migration
+   025: il premium vive sul braccialetto del telefono; l'email arriva dopo,
+   e allora il premium passa all'account (adotta_braccialetto). */
+{
+  sb.regalo.annuale_attivo = false;
+  // Un dispositivo OSPITE: modalita locale, nessuna sessione, il negozio finto.
+  const TRANS_OSPITE = { jws: jwsFinto({ transactionId: "3001", originalTransactionId: "3000", productId: MENSILE, bundleId: BUNDLE }), transactionId: "3001", originalTransactionId: "3000", productId: MENSILE };
+  apple.transazioni.set("3001", { transactionId: "3001", originalTransactionId: "3000", productId: MENSILE, bundleId: BUNDLE, environment: "Sandbox", purchaseDate: Date.now(), expiresDate: fraUnMese, type: "Auto-Renewable Subscription", offerType: 1 });
+  const ctx = await browser.newContext({ viewport: { width: 430, height: 900 }, locale: "it-IT" });
+  await ctx.route("**/sbfinto.supabase.co/**", (route) => route.fulfill({ status: 500, contentType: "application/json", body: "{}" }));
+  await ctx.addInitScript(({ negozio }) => {
+    try {
+      window.localStorage.setItem("jm.mode", "local");
+      window.localStorage.setItem("jm.saluto.dispositivo", "dev:banco");
+      window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v1");
+      window.localStorage.setItem("jm.premium.presentato", "1");
+    } catch {}
+    const ascolto = [];
+    window.__jmNegozioFinto = {
+      __chiamate: [],
+      async prodotti({ ids }) { this.__chiamate.push({ m: "prodotti", ids }); return { prodotti: negozio.prodotti.filter((p) => ids.includes(p.id)) }; },
+      async compra({ id }) { this.__chiamate.push({ m: "compra", id }); const t = negozio.transazioni.find((x) => x.productId === id); return t ? { esito: "ok", ...t } : { esito: "annullato" }; },
+      async ripristina() { this.__chiamate.push({ m: "ripristina" }); return { transazioni: negozio.transazioni }; },
+      async gestisci() { this.__chiamate.push({ m: "gestisci" }); },
+      async finisci({ transactionId }) { this.__chiamate.push({ m: "finisci", transactionId }); },
+      addListener(evento, f) { ascolto.push(f); return { remove() {} }; },
+    };
+  }, { negozio: { prodotti: NEGOZIO.prodotti, transazioni: [TRANS_OSPITE] } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("console", (m) => { if (m.type() === "error" && !/402 \(Payment Required\)/.test(m.text())) errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  const api = [];
+  page.on("request", (r) => { const u = r.url(); if (u.startsWith(BASE) && new URL(u).pathname.startsWith("/api/")) api.push({ path: new URL(u).pathname, auth: r.headers()["authorization"] ?? null, braccialetto: r.headers()["x-jm-braccialetto"] ?? null }); });
+
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  await page.getByText("Passa a Premium").first().waitFor({ state: "visible", timeout: 30_000 });
+  await page.getByText("Passa a Premium").first().click();
+  await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 });
+  await page.locator(".jm-wall-scheda[data-prodotto]").first().waitFor({ state: "visible", timeout: 15_000 });
+  const muro = await page.locator(".jm-wall").innerText();
+  check("ospite: il muro ha la scheda Mensile e NON 'Ho gia un account' (D1)", /Mensile/.test(muro) && !/Ho gia un account/.test(muro), muro.replace(/\s+/g, " ").slice(0, 100));
+  await page.locator(".jm-wall .btn-primary").click();
+  await page.locator(".jm-cong").waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+  check("ospite: dopo 'Prova gratis' si apre direttamente il foglio di Apple (compra) e poi il benvenuto premium, nessun login", (await page.evaluate(() => window.__jmNegozioFinto.__chiamate.some((c) => c.m === "compra"))) && (await page.locator(".jm-cong").count()) === 1 && !page.url().includes("/login"));
+  const ver = api.filter((a) => a.path === "/api/apple/verifica");
+  check("ospite: /api/apple/verifica chiamata SENZA gettone e CON il braccialetto", ver.length === 1 && ver[0].auth === null && typeof ver[0].braccialetto === "string", JSON.stringify(ver[0] ?? null));
+  const br = sb.tab("braccialetti").find((b) => b.apple_original_transaction_id === "3000");
+  check("ospite: il server ha scritto premium sul BRACCIALETTO (plan, scadenza, transazione), non su un profilo", !!br && br.plan === "premium" && br.plan_source === "apple" && !sb.tab("profiles").some((p) => p.apple_original_transaction_id === "3000"), JSON.stringify(br ?? null));
+  check("ospite: la transazione e finita (finisci) dopo la risposta del server", await page.evaluate(() => window.__jmNegozioFinto.__chiamate.some((c) => c.m === "finisci" && c.transactionId === "3001")));
+  check("ospite: il dispositivo ricorda la scadenza (jm.premium.dispositivo)", Boolean(await page.evaluate(() => localStorage.getItem("jm.premium.dispositivo"))));
+  await page.locator(".jm-cong button, .jm-cong .btn-primary").first().click().catch(() => {});
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  await page.getByText(/Premium fino al/).first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+  const imp = await page.locator("main").innerText();
+  check("ospite premium: Impostazioni dice 'Premium fino al ...', 'Backup ogni notte: Spento', 'Gestisci abbonamento'; niente 'Passa a Premium'", /Premium fino al/.test(imp) && /Backup ogni notte/.test(imp) && /Gestisci abbonamento/.test(imp) && !/Passa a Premium/.test(imp), imp.replace(/\s+/g, " ").slice(0, 200));
+
+  // L'AI lavora da premium: nessuna giornata del regalo spesa, ai_usage senza regalo.
+  const giornatePrima = sb.tab("braccialetto_giornate").length;
+  const stato = await fetch(BASE + "/api/ospite/stato", { headers: { "x-jm-braccialetto": ver[0].braccialetto } }).then((r) => r.json());
+  check("ospite premium: /api/ospite/stato dice premiumFino", typeof stato.premiumFino === "string", JSON.stringify(stato));
+  const rAI = await fetch(BASE + "/api/process-entry", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": ver[0].braccialetto }, body: JSON.stringify({ transcript: "Una giornata da premium senza email." }) });
+  check("ospite premium: una route AI risponde 200 e NON spende una giornata del regalo", rAI.status === 200 && sb.tab("braccialetto_giornate").length === giornatePrima, String(rAI.status));
+  await new Promise((r) => setTimeout(r, 2000)); // logAiUsage e "void": scrive dopo la risposta
+  const usoPremium = sb.tab("ai_usage").filter((u) => u.braccialetto_id === br.id);
+  check("ospite premium: ai_usage ha la riga col braccialetto e regalo=false (non entra nel tetto)", usoPremium.length >= 1 && usoPremium.every((u) => u.regalo === false), JSON.stringify(usoPremium[0] ?? null));
+  const rRecap = await fetch(BASE + "/api/recap/generate", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": ver[0].braccialetto }, body: JSON.stringify({}) });
+  check("ospite premium: anche il Recap (requirePremium) accetta il braccialetto premium (non 402)", rRecap.status !== 402 && rRecap.status !== 401, String(rRecap.status));
+  const rRecapNo = await fetch(BASE + "/api/recap/generate", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": "braccialetto-che-non-esiste-000000000000" }, body: JSON.stringify({}) });
+  check("un braccialetto senza premium sul Recap: 402", rRecapNo.status === 402, String(rRecapNo.status));
+
+  // La notifica di Apple sul braccialetto: EXPIRED -> free.
+  const notifica = (uuid, tipo, sottotipo, t) => JSON.stringify({ signedPayload: jwsFinto({ notificationType: tipo, subtype: sottotipo, notificationUUID: uuid, data: { environment: "Sandbox", bundleId: BUNDLE, signedTransactionInfo: jwsFinto(t) } }) });
+  apple.transazioni.set("3002", { transactionId: "3002", originalTransactionId: "3000", productId: MENSILE, bundleId: BUNDLE, environment: "Sandbox", expiresDate: Date.now() - 1000, type: "Auto-Renewable Subscription" });
+  const rN = await fetch(BASE + "/api/apple/notifiche", { method: "POST", headers: { "Content-Type": "application/json" }, body: notifica("uuid-ospite-scaduto", "EXPIRED", "VOLUNTARY", { transactionId: "3002", originalTransactionId: "3000", productId: MENSILE }) });
+  const jN = await rN.json();
+  check("notifica EXPIRED sul braccialetto: applicata, il braccialetto torna free", rN.status === 200 && jN.applicata === true && jN.dove === "dispositivo" && br.plan === "free", JSON.stringify(jN));
+  const statoDopo = await fetch(BASE + "/api/ospite/stato", { headers: { "x-jm-braccialetto": ver[0].braccialetto } }).then((r) => r.json());
+  check("dopo la scadenza /api/ospite/stato non dice piu premiumFino", statoDopo.premiumFino === null, JSON.stringify(statoDopo));
+  check("ospite: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
+
+  // L'adozione: l'ospite (di nuovo premium, rinnovato) mette l'email. Il
+  // braccialetto si lega all'account e il premium passa al profilo.
+  Object.assign(br, { plan: "premium", plan_source: "apple", current_period_end: new Date(fraUnMese).toISOString(), apple_original_transaction_id: "3000", apple_product_id: MENSILE, apple_environment: "Sandbox" });
+  const NUOVO_UTENTE = "00000000-0000-4000-8000-000000000009";
+  const TOKEN_NUOVO = jwtFinto(exp, NUOVO_UTENTE);
+  sb.utenti.set(TOKEN_NUOVO, { id: NUOVO_UTENTE, email: "nuovo@dayalogue.test" });
+  const rA = await fetch(BASE + "/api/ospite/adotta", { method: "POST", headers: { Authorization: `Bearer ${TOKEN_NUOVO}`, "x-jm-braccialetto": ver[0].braccialetto } });
+  const jA = await rA.json();
+  const profNuovo = sb.tab("profiles").find((p) => p.user_id === NUOVO_UTENTE);
+  check("adozione: /api/ospite/adotta lega il braccialetto all'account e sposta il premium sul profilo", rA.status === 200 && jA.premium_spostato === true && br.user_id === NUOVO_UTENTE && profNuovo?.plan === "premium" && profNuovo?.apple_original_transaction_id === "3000" && br.plan === "free", JSON.stringify({ jA, profNuovo, br }));
+  const rA2 = await fetch(BASE + "/api/ospite/adotta", { method: "POST", headers: { Authorization: `Bearer ${TOKEN_NUOVO}`, "x-jm-braccialetto": ver[0].braccialetto } });
+  const jA2 = await rA2.json();
+  check("adozione ripetuta: niente da spostare, nessun errore", rA2.status === 200 && jA2.premium_spostato === false, JSON.stringify(jA2));
+  // La transazione ora e del profilo: un braccialetto che prova a prendersela riceve 409.
+  const rV = await fetch(BASE + "/api/apple/verifica", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": "altro-telefono-senza-email-0000000000000" }, body: JSON.stringify({ transactionId: "3001" }) });
+  check("una transazione gia di un account non torna su un braccialetto: 409", rV.status === 409, String(rV.status));
+  await ctx.close();
 }
 
 await browser.close();

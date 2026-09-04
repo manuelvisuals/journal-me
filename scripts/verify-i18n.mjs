@@ -43,6 +43,7 @@ const DINAMICHE = {
     "Per i recap del mese\nserve premium",
     "Per le letture sui pattern\nserve premium",
     "Le giornate con l'AI\nin regalo sono finite",
+    "L'AI ha chiuso\nquesta giornata per te",
     "Racconti e basta",
     "Voce, titolo, sintesi, aree, persone, recap.",
     "Su tutti i dispositivi",

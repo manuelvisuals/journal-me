@@ -45,7 +45,7 @@ import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
 import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
 import { ospiteAttivo } from "@/lib/ospite/flag";
-import { useStatoOspite } from "@/lib/ospite/stato";
+import { premiumDispositivoFino, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
 import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
 import {
@@ -143,6 +143,11 @@ export function SettingsClient({
   // un account) invece della parola "Locale".
   const ospite = isLocal && ospiteAttivo();
   const statoOspite = useStatoOspite(ospite);
+  // Il premium comprato senza email (mockup premium-senza-password, B1):
+  // vive sul telefono; la riga Piano lo dice, e "Backup ogni notte" e la
+  // porta all'email (C1).
+  const premiumSulDispositivo = usePremiumDispositivo();
+  const finoDispositivo = premiumSulDispositivo ? premiumDispositivoFino() : null;
   const plan = usePlan();
   const dettaglioPiano = useDettaglioPiano();
   const themeId = useThemeId();
@@ -615,27 +620,62 @@ export function SettingsClient({
               <SetGroup label={t("Account")}>
                 {ospite ? (
                   <>
+                    {premiumSulDispositivo ? (
+                      <SetRow
+                        title={t("Piano")}
+                        value={
+                          finoDispositivo
+                            ? t("Premium fino al {data}", {
+                                data: formatDate(new Date(finoDispositivo), { day: "numeric", month: "long" }),
+                              })
+                            : t("Premium")
+                        }
+                        chevron={false}
+                      />
+                    ) : (
+                      <SetRow
+                        title={t("AI in regalo")}
+                        value={valoreRegalo(t, statoOspite)}
+                        onClick={() => setPanel("regalo")}
+                      />
+                    )}
+                    <SetRow
+                      title={t("Backup ogni notte")}
+                      value={t("Spento")}
+                      desc={t(
+                        "Metti una email: le giornate salgono chiuse a chiave e le ritrovi su iPad e sul computer. Premium ti segue.",
+                      )}
+                      onClick={() => router.push("/login")}
+                    />
                     <SetRow
                       title={t("Dove sono le mie giornate")}
                       value={t("Solo su questo dispositivo")}
                       onClick={() => setPanel("where")}
                     />
+                    {!premiumSulDispositivo && (
+                      <SetRow
+                        title={t("Passa a Premium")}
+                        value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
+                        desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, backup ogni notte, i recap.")}`}
+                        onClick={() => openPremiumWall("aiSummary")}
+                      />
+                    )}
+                    {negozioDisponibile() && premiumSulDispositivo && (
+                      <SetRow
+                        title={t("Gestisci abbonamento")}
+                        value={t("Apple")}
+                        onClick={() => void gestisciAbbonamento()}
+                      />
+                    )}
+                    {negozioDisponibile() && (
+                      <SetRow
+                        title={t("Ripristina acquisti")}
+                        onClick={() => void ripristina()}
+                      />
+                    )}
                     <SetRow
-                      title={t("AI in regalo")}
-                      value={valoreRegalo(t, statoOspite)}
-                      onClick={() => setPanel("regalo")}
-                    />
-                    <SetRow
-                      title={t("Passa a Premium")}
-                      value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
-                      desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, backup ogni notte, i recap.")}`}
-                      onClick={() => openPremiumWall("aiSummary")}
-                    />
-                    <SetRow
-                      title={t("Accedi al tuo account")}
-                      desc={t(
-                        "Le giornate che hai gia scritto qui salgono nel cloud al primo accesso, e il regalo non ricomincia da capo.",
-                      )}
+                      title={t("Ho gia un account")}
+                      desc={t("Email e codice, mai una password. Le giornate scritte qui salgono al primo accesso.")}
                       onClick={() => router.push("/login")}
                     />
                   </>
@@ -839,11 +879,21 @@ export function SettingsClient({
               </span>
             </div>
           )}
-          {ospite && (
+          {ospite && !premiumSulDispositivo && (
             <button type="button" className="jm-st-rrow jm-st-rrow-btn" onClick={() => setPanel("regalo")}>
               <span className="k">{t("AI in regalo")}</span>
               <span className="v">{valoreRegalo(t, statoOspite) ?? "…"}</span>
             </button>
+          )}
+          {ospite && premiumSulDispositivo && (
+            <div className="jm-st-rrow">
+              <span className="k">{t("Piano")}</span>
+              <span className="v">
+                {finoDispositivo
+                  ? t("Premium fino al {data}", { data: formatDate(new Date(finoDispositivo), { day: "numeric", month: "long" }) })
+                  : t("Premium")}
+              </span>
+            </div>
           )}
           {!isLocal && <ConsumiRailRow onOpen={() => setPanel("consumi")} />}
           <div className="jm-st-rrow">
@@ -855,7 +905,7 @@ export function SettingsClient({
             <span className="v">{BUILD_INFO}</span>
           </div>
 
-          {ospite && (
+          {ospite && !premiumSulDispositivo && (
             <button
               type="button"
               className="jm-st-out"
@@ -870,7 +920,7 @@ export function SettingsClient({
               className="jm-st-out"
               onClick={() => router.push("/login")}
             >
-              {t("Accedi al tuo account")}
+              {ospite ? t("Ho gia un account") : t("Accedi al tuo account")}
             </button>
           )}
           {!isLocal && plan !== "premium" && (

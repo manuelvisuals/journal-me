@@ -27,6 +27,7 @@ import { formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import { aggiornaStatoOspite, regaloFinito, useStatoOspite } from "@/lib/ospite/stato";
+import { premiumGiaPresentato, segnaPremiumPresentato } from "@/lib/ospite/presentazione";
 import {
   deleteEntry,
   loadEntryForDate,
@@ -174,6 +175,18 @@ export function TodayClient({
         ? "filled"
         : "empty",
   );
+  // Il foglio "L'AI ha chiuso questa giornata per te" (A2): si apre quando
+  // la giornata e a schermo, non sopra le domande dell'AI o la rubrica.
+  const presentaPremium = useRef<boolean>(false);
+  useEffect(() => {
+    if (view !== "filled" || !presentaPremium.current) return;
+    presentaPremium.current = false;
+    if (premiumGiaPresentato()) return;
+    segnaPremiumPresentato();
+    void aggiornaStatoOspite().then((s) => {
+      openPremiumWall("presentazione", undefined, { rimaste: s?.rimaste });
+    });
+  }, [view]);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState<boolean>(false);
   const [savedDates, setSavedDates] = useState<string[]>([]);
@@ -462,7 +475,14 @@ export function TodayClient({
         },
       });
       // L'AI ha lavorato per l'ospite: la quota in tasca e vecchia (R3).
-      if (isLocalMode && opts.withAI) void aggiornaStatoOspite();
+      if (isLocalMode && opts.withAI) {
+        void aggiornaStatoOspite();
+        // La PRIMA giornata chiusa dall'AI: il regalo si presenta, una volta
+        // per dispositivo (mockup premium-senza-password, decisione A2).
+        // Solo se l'AI ha lavorato davvero (c'e una sintesi).
+        const chiusaDallAI = saved.some((e) => (e.snippet ?? "").trim().length > 0);
+        if (chiusaDallAI && !premiumGiaPresentato()) presentaPremium.current = true;
+      }
       // Giornata salvata davvero: SOLO ora la bozza si cancella (§6).
       await clearDraft(opts.targetDate);
       setDraftInitial("");

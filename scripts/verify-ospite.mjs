@@ -52,7 +52,7 @@ const ROUTE_AI = [
   "/api/chiarimenti",
   "/api/remember/classify",
 ];
-const ROUTE_AMMESSE = [...ROUTE_AI, "/api/ospite/stato"];
+const ROUTE_AMMESSE = [...ROUTE_AI, "/api/ospite/stato", "/api/apple/verifica"];
 
 import { readFileSync } from "node:fs";
 

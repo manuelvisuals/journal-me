@@ -22,6 +22,7 @@ import { registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 import { apiFetch } from "@/lib/api";
 import { isNative } from "@/lib/native/platform";
 import { forcePlanRefresh, setPlanNow } from "@/lib/plan";
+import { aggiornaStatoOspite, setPremiumDispositivo } from "@/lib/ospite/stato";
 import { PRODOTTI_IOS, type ProdottoIos } from "@/lib/pricing";
 
 export type ProdottoNegozio = {
@@ -140,7 +141,7 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     return { esito: "errore", messaggio: "Il server non risponde: riprova fra poco. L'acquisto e al sicuro presso Apple." };
   }
   if (resp.status === 401) {
-    return { esito: "errore", messaggio: "Per attivare premium serve l'account: entra e poi tocca Ripristina acquisti." };
+    return { esito: "errore", messaggio: "Il server non ha riconosciuto questo telefono: riapri l'app e tocca Ripristina acquisti." };
   }
   if (resp.status === 409) {
     return { esito: "errore", messaggio: "Questo abbonamento e legato a un altro account: entra con quello." };
@@ -155,15 +156,23 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     }
     return { esito: "errore", messaggio: m };
   }
-  const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null };
+  const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null; dove?: string };
   try {
     await n?.finisci({ transactionId: t.transactionId });
   } catch {
     // la finiremo al prossimo avvio: Apple la ripropone
   }
   if (dati.plan === "premium") {
-    setPlanNow("premium");
-    void forcePlanRefresh();
+    if (dati.dove === "dispositivo") {
+      // Comprato senza email (mockup premium-senza-password, B1): il
+      // premium vive sul braccialetto del telefono. Si ricorda la scadenza
+      // e si rilegge lo stato, che ora dice premiumFino.
+      setPremiumDispositivo(dati.expiresAt ?? null);
+      void aggiornaStatoOspite();
+    } else {
+      setPlanNow("premium");
+      void forcePlanRefresh();
+    }
     return { esito: "premium", expiresAt: dati.expiresAt ?? null };
   }
   return { esito: "errore", messaggio: "Apple dice che l'abbonamento non e attivo." };

@@ -216,3 +216,49 @@
 .jm-det-head {
   padding-top: calc(18px + var(--jm-safe-top));
 }
+
+/* La vetrina del Recap per chi non e premium (mockup premium-senza-password
+   E1, 4 settembre 2026): tag, titolo, due righe, il tasto della prova. */
+.jm-rec-vetrina {
+  padding: calc(56px * var(--jm-space)) calc(28px * var(--jm-space)) 0;
+  text-align: center;
+}
+
+.jm-rec-vetrina .tag {
+  display: inline-block;
+  font-size: calc(11px * var(--jm-ui-scale));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-weight: 650;
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.jm-rec-vetrina h2 {
+  font-family: var(--font-serif);
+  font-size: calc(30px * var(--jm-ui-scale));
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  line-height: 1.15;
+  margin-top: calc(18px * var(--jm-space));
+}
+
+.jm-rec-vetrina p {
+  font-size: calc(14.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.55;
+  margin-top: calc(12px * var(--jm-space));
+}
+
+.jm-rec-vetrina .btn-primary {
+  margin-top: calc(30px * var(--jm-space));
+}
+
+.jm-rec-vetrina .sotto {
+  margin-top: calc(14px * var(--jm-space));
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}

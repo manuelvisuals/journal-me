@@ -137,3 +137,9 @@ account". Sul desktop la rail destra ha la riga "AI in regalo" (bottone,
 NON si calcola qui: `src/lib/ospite/stato.ts` chiede a /api/ospite/stato.
 Il pannello `where` col locale "puro" (jm.ospite = "0") tiene le parole di
 prima. Banco: `scripts/verify-ospite-schermate.mjs`.
+
+Dal 4 settembre sera (branch `premium-senza-password`): con il premium sul
+dispositivo (`usePremiumDispositivo`) la riga Piano dice "Premium fino al
+{data}", "Passa a Premium" sparisce, compaiono "Gestisci abbonamento" e
+"Ripristina acquisti"; la riga **Backup ogni notte: Spento** e la porta
+all'email (C1) e apre /login; "Ho gia un account" al posto di "Accedi".

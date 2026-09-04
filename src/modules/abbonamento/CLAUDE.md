@@ -59,3 +59,35 @@ fare su App Store Connect: `APP-STORE-CONNECT-passi.md`.
   chiave finta scripts/lib/apple-chiave-finta.txt), provato a mordere.
   Prefissi CSS nuovi dentro `jm-wall`: `jm-wall-schede`, `jm-wall-scheda`,
   `jm-wall-quiet`, `jm-wall-nota`.
+
+## Premium senza password (4 settembre 2026, branch `premium-senza-password`)
+
+Mockup `design/mockups/premium-senza-password.html`, risposte di Manuel
+A2 B1 C1 D1 E1. Regola: premium si compra con un tocco e vive sul
+telefono; l'email serve solo per backup e altri dispositivi (linea guida
+Apple 5.1.1).
+
+- `server/apple-verifica.ts` accetta anche SENZA gettone: con il
+  braccialetto (`x-jm-braccialetto`) scrive il premium sulla riga di
+  `braccialetti` (migration 025: le stesse colonne Apple di profiles). Una
+  transazione gia di un profilo non torna su un braccialetto (409); una su
+  un altro braccialetto lo lascia (l'ultimo vince: e lo stesso Apple ID).
+  Risponde `dove: "account" | "dispositivo"`.
+- `server/apple-notifiche.ts` cerca la transazione prima nei profili, poi
+  nei braccialetti, e aggiorna chi la tiene.
+- `negozio-ios.ts`: se `dove` e "dispositivo" ricorda la scadenza in
+  `src/lib/ospite/stato.ts` (`setPremiumDispositivo`, localStorage
+  `jm.premium.dispositivo`); `capabilities.ts` accende tutto tranne `sync`.
+- `premium-wall.tsx`: in locale il tasto compra direttamente (niente
+  /login in mezzo); via "Ho gia un account" dal muro; feature nuova
+  `presentazione` (A2): il foglio "L'AI ha chiuso questa giornata per te"
+  dopo la prima giornata chiusa dall'AI, una volta per dispositivo
+  (`src/lib/ospite/presentazione.ts`, aperto da today-client).
+- La guardia (`src/lib/server/ospite.ts`) e `requirePremium`
+  (entitlement.ts) trattano un braccialetto con premium valido come
+  premium: nessuna giornata del regalo spesa, `ai_usage.regalo = false`.
+- Quando l'ospite mette l'email: `/api/ospite/adotta` (modulo accesso) ->
+  funzione SQL `adotta_braccialetto`: il braccialetto si lega e il premium
+  passa al profilo. Lo chiama `src/lib/ospite/migrazione.ts` dal cancello.
+
+Banco: `scripts/verify-abbonamento.mjs` sezione 9 (48/48).

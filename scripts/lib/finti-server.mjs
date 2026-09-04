@@ -133,6 +133,27 @@ export class SupabaseFintoServer {
     return { esito: "ok", usate: n + 1, gia: false };
   }
 
+  /** La funzione SQL adotta_braccialetto della migration 025, in JS. */
+  adottaBraccialetto({ p_braccialetto_id, p_user_id }) {
+    const b = this.tab("braccialetti").find((r) => r.id === p_braccialetto_id);
+    if (!b) return { esito: "assente" };
+    b.user_id = p_user_id;
+    const valido = b.plan === "premium" && b.current_period_end && new Date(b.current_period_end) > new Date();
+    if (!valido) return { esito: "legato", premium_spostato: false };
+    const altro = this.tab("profiles").find((p) => p.apple_original_transaction_id === b.apple_original_transaction_id && p.user_id !== p_user_id);
+    if (altro) return { esito: "legato", premium_spostato: false, motivo: "transazione_di_altro_account" };
+    let prof = this.tab("profiles").find((p) => p.user_id === p_user_id);
+    if (prof && prof.plan === "premium" && prof.current_period_end && new Date(prof.current_period_end) >= new Date(b.current_period_end)) {
+      return { esito: "legato", premium_spostato: false, motivo: "profilo_gia_premium" };
+    }
+    const fino = b.current_period_end;
+    const campi = { plan: "premium", plan_source: b.plan_source ?? "apple", current_period_end: fino, apple_original_transaction_id: b.apple_original_transaction_id, apple_product_id: b.apple_product_id, apple_environment: b.apple_environment };
+    Object.assign(b, { plan: "free", plan_source: null, current_period_end: null, apple_original_transaction_id: null, apple_product_id: null, apple_environment: null, apple_ultimo_avviso: null });
+    if (!prof) { prof = { user_id: p_user_id }; this.tab("profiles").push(prof); }
+    Object.assign(prof, campi);
+    return { esito: "legato", premium_spostato: true, fino };
+  }
+
   spesoMese() {
     const da = inizioMeseUtc();
     return this.tab("ai_usage")
@@ -159,6 +180,9 @@ export class SupabaseFintoServer {
 
     if (url.pathname === "/rest/v1/rpc/usa_giornata_ospite") {
       return rispondi(200, this.usaGiornata(JSON.parse(corpo || "{}")));
+    }
+    if (url.pathname === "/rest/v1/rpc/adotta_braccialetto") {
+      return rispondi(200, this.adottaBraccialetto(JSON.parse(corpo || "{}")));
     }
     if (url.pathname === "/rest/v1/rpc/speso_regalo_mese") {
       return rispondi(200, this.spesoMese());

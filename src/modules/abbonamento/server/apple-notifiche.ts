@@ -101,35 +101,51 @@ export async function POST(req: NextRequest) {
   }
 
   const originale = String(t.originalTransactionId);
+  const piano = pianoDaTransazione(t);
+  const scadenza = typeof t.expiresDate === "number" ? new Date(t.expiresDate).toISOString() : null;
+  const patch = {
+    plan: piano,
+    plan_source: "apple",
+    apple_product_id: t.productId,
+    apple_environment: t.environment ?? null,
+    current_period_end: scadenza,
+    apple_ultimo_avviso: `${avviso.notificationType}${avviso.subtype ? "/" + avviso.subtype : ""}`,
+  };
+
+  // Chi tiene questo abbonamento: un profilo (con email) o un braccialetto
+  // (comprato senza email, migration 025).
   const { data: profilo } = await supabase
     .from("profiles")
     .select("user_id")
     .eq("apple_original_transaction_id", originale)
     .maybeSingle();
-  if (!profilo) {
-    // Comprato ma mai passato da /api/apple/verifica (l'app si e chiusa
-    // prima): al prossimo avvio l'app rimanda la transazione non finita.
-    await segna("nessun profilo con questa transazione", false);
-    return NextResponse.json({ ok: true, applicata: false });
+  if (profilo) {
+    const { error } = await supabase.from("profiles").update(patch).eq("user_id", profilo.user_id);
+    if (error) {
+      await segna(error.message, false, profilo.user_id as string);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    await segna(`piano ${piano}`, true, profilo.user_id as string);
+    return NextResponse.json({ ok: true, applicata: true, plan: piano });
   }
 
-  const piano = pianoDaTransazione(t);
-  const scadenza = typeof t.expiresDate === "number" ? new Date(t.expiresDate).toISOString() : null;
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      plan: piano,
-      plan_source: "apple",
-      apple_product_id: t.productId,
-      apple_environment: t.environment ?? null,
-      current_period_end: scadenza,
-      apple_ultimo_avviso: `${avviso.notificationType}${avviso.subtype ? "/" + avviso.subtype : ""}`,
-    })
-    .eq("user_id", profilo.user_id);
-  if (error) {
-    await segna(error.message, false, profilo.user_id as string);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  const { data: braccialetto } = await supabase
+    .from("braccialetti")
+    .select("id")
+    .eq("apple_original_transaction_id", originale)
+    .maybeSingle();
+  if (braccialetto) {
+    const { error } = await supabase.from("braccialetti").update(patch).eq("id", braccialetto.id);
+    if (error) {
+      await segna(error.message, false);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    await segna(`piano ${piano} (braccialetto)`, true);
+    return NextResponse.json({ ok: true, applicata: true, plan: piano, dove: "dispositivo" });
   }
-  await segna(`piano ${piano}`, true, profilo.user_id as string);
-  return NextResponse.json({ ok: true, applicata: true, plan: piano });
+
+  // Comprato ma mai passato da /api/apple/verifica (l'app si e chiusa
+  // prima): al prossimo avvio l'app rimanda la transazione non finita.
+  await segna("nessun profilo ne braccialetto con questa transazione", false);
+  return NextResponse.json({ ok: true, applicata: false });
 }

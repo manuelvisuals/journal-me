@@ -7,8 +7,8 @@ import { Marchio } from "@/components/brand/marchio";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import { registraAccesso } from "@/lib/welcome";
-import { chooseLocalMode, clearLocalMode, getStore } from "@/lib/data/store";
-import { LocalStore } from "@/lib/data/store/local";
+import { clearLocalMode, getStore } from "@/lib/data/store";
+import { segnaMigrazioneDaFare } from "@/lib/ospite/migrazione";
 import {
   deveProporreFaceId,
   MAX_PROPOSTE_FACE_ID,
@@ -58,7 +58,6 @@ export default function LoginPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [startingLocal, setStartingLocal] = useState(false);
 
   /**
    * Dove si va dopo un codice giusto. Al PRIMO accesso su questo
@@ -114,6 +113,12 @@ export default function LoginPage() {
   };
 
   function afterLogin(): string {
+    // L'ospite che mette l'email (mockup premium-senza-password, C1): le
+    // giornate scritte sul telefono devono salire, e il braccialetto (con
+    // il premium comprato senza email, se c'e) va legato all'account. Lo
+    // fa il cancello (auth-gate) appena la cassaforte e aperta: qui si
+    // lascia solo il promemoria.
+    if (getStore().mode === "local") segnaMigrazioneDaFare();
     // La modalita e in cache in un modulo, non nell'indirizzo: senza questa
     // riga resterebbe "none" (com'era un istante fa, prima della sessione)
     // e /benvenuto crederebbe di stare PRIMA del login. Rileggerla e
@@ -122,24 +127,10 @@ export default function LoginPage() {
     return registraAccesso() ? "/app/benvenuto" : "/app";
   }
 
-  /**
-   * La via senza account, che era gia qui in fondo alla pagina. Prima
-   * rimandava a /benvenuto perche la scelta viveva li; adesso il bivio non
-   * esiste piu e questa riga fa direttamente cio che dice: sceglie la
-   * modalita locale ed entra. Stessa sequenza del vecchio bottone di
-   * /benvenuto, persistenza compresa (SPEC-v2 §2.5: navigator.storage
-   * .persist() va chiesto DOPO un gesto dell'utente, e questo click lo e).
-   */
-  const startLocal = async () => {
-    if (startingLocal) return;
-    setStartingLocal(true);
-    chooseLocalMode();
-    const store = getStore();
-    if (store instanceof LocalStore) {
-      await store.requestPersistence().catch(() => false);
-      await store.setMeta("onboardingDone", true).catch(() => undefined);
-    }
-    router.replace("/app");
+  /** "Non ora": la schermata non e un bivio (mockup premium-senza-password, D1). Si torna dov'eri. */
+  const nonOra = () => {
+    if (window.history.length > 1) router.back();
+    else router.replace("/app");
   };
   const [error, setError] = useState<string | null>(null);
   // Accesso del revisore Apple (PIANO-APPSTORE §1c): se il server dice che
@@ -385,7 +376,7 @@ export default function LoginPage() {
               className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
               style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
             >
-              {isReturning ? t("Bentornato") : t("Benvenuto")}
+              {isReturning ? t("Bentornato") : t("Le tue giornate, anche altrove.")}
             </h1>
             <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3">
               {isReturning
@@ -393,7 +384,7 @@ export default function LoginPage() {
                     "Inserisci l'email che hai usato l'ultima volta: ti mando un codice.",
                   )
                 : t(
-                    "Inserisci la tua email. Ti mando un codice di sei cifre, niente password.",
+                    "Metti una email: le giornate salgono chiuse a chiave ogni notte e le ritrovi su iPad e sul computer. Ti mando un codice di sei cifre. Mai una password.",
                   )}
             </p>
             <form onSubmit={sendCode}>
@@ -417,36 +408,15 @@ export default function LoginPage() {
                 </p>
               )}
             </form>
-            <div className="flex items-center gap-2.5 my-[22px]">
-              <div
-                className="flex-1 h-px"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, var(--color-line), transparent)",
-                }}
-              ></div>
-              <span className="text-[calc(10px*var(--jm-ui-scale))] font-semibold tracking-[0.2em] uppercase text-ink-faint">
-                {t("oppure")}
-              </span>
-              <div
-                className="flex-1 h-px"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, var(--color-line), transparent)",
-                }}
-              ></div>
+            <div className="mt-3">
+              <Button variant="ghost" onClick={nonOra} disabled={loading}>
+                {t("Non ora")}
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              onClick={() => void startLocal()}
-              disabled={startingLocal}
-            >
-              {t("Tienilo solo su questo dispositivo")}
-            </Button>
             <p className="text-center text-[calc(11px*var(--jm-ui-scale))] text-ink-faint leading-[1.6] mt-7">
               {t("Il codice vale un'ora.")}
               <br />
-              {t("La versione gratis non ha bisogno di email: resta tutto qui.")}
+              {t("Le giornate che hai gia scritto qui restano, e salgono al primo accesso.")}
             </p>
           </>
         )}

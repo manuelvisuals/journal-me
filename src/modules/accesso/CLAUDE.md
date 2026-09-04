@@ -82,3 +82,19 @@ della quota, riga in Impostazioni) aspettano l'ok di Manuel sul mockup
   server: scripts/lib/finti-server.mjs). `verify-pr10` misura la promessa
   nuova del par. 5 (scripts/lib/promessa-ospite.mjs) con l'interruttore
   spento.
+
+## L'email dopo, non prima (4 settembre 2026, branch `premium-senza-password`)
+
+Mockup `design/mockups/premium-senza-password.html` (D1, C1). La pagina
+`/login` non e piu un bivio: via "Tienilo solo su questo dispositivo" (l'ospite
+E gia solo sul dispositivo), titolo "Le tue giornate, anche altrove.",
+un campo, "Non ora" che torna indietro. Chi arriva dalla modalita locale
+lascia il promemoria `jm.migrazione.locale` (`segnaMigrazioneDaFare`); il
+cancello (`src/components/auth-gate.tsx`), appena la cassaforte e aperta,
+chiama `migraSePromesso()` (`src/lib/ospite/migrazione.ts`): POST
+`/api/ospite/adotta` (`server/ospite-adotta.ts`: lega il braccialetto e
+sposta il premium comprato senza email sul profilo, funzione SQL
+`adotta_braccialetto`, migration 025), poi `LocalStore.exportAll()` ->
+`CloudStore.importAll()`: le giornate del telefono salgono gia chiuse a
+chiave. Le giornate locali non si cancellano. Banco:
+`scripts/verify-ospite-schermate.mjs` sezione 06.

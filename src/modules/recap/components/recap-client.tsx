@@ -5,6 +5,7 @@ import { TabBar } from "@/components/ui/tab-bar";
 import { RecapDetail } from "@/modules/recap/components/recap-detail";
 import { openPremiumWall } from "@/modules/abbonamento";
 import { useCan } from "@/lib/capabilities";
+import { PREMIUM_PRICE_AMOUNT, PREMIUM_PRICE_PERIOD, PREMIUM_PROVA_GIORNI } from "@/lib/pricing";
 import { monthBoundaries } from "@/lib/data/recaps";
 import { generateAndSaveRecap } from "@/lib/actions/generate-recap";
 import { formatMonthTitle } from "@/lib/format";
@@ -119,7 +120,9 @@ export function RecapClient({ mode, initialRecaps }: Props) {
       </header>
 
       <div className="jm-rec-list">
-        {filtered.length === 0 && !showSuggestion ? (
+        {!canRecap && recaps.length === 0 ? (
+          <Vetrina onProva={() => openPremiumWall("recap")} />
+        ) : filtered.length === 0 && !showSuggestion ? (
           <EmptyState />
         ) : (
           <>
@@ -193,6 +196,36 @@ function SuggestionCard({
           ? t("Sto leggendo le tue giornate...")
           : t("Genera {periodo}", { periodo: label })}
       </button>
+    </div>
+  );
+}
+
+/**
+ * La vetrina del Recap per chi non e premium (mockup premium-senza-password,
+ * decisione E1 di Manuel): una pagina che dice cosa fa, con la prova sotto.
+ * Chi arriva qui ha gia curiosita: si risponde, non si blocca. Il tasto
+ * apre il muro a schede (prezzo e prova li dice Apple).
+ */
+function Vetrina({ onProva }: { onProva: () => void }) {
+  const t = useT();
+  return (
+    <div className="jm-rec-vetrina">
+      <span className="tag">{t("Premium")}</span>
+      <h2>{t("Il mese, riletto per te.")}</h2>
+      <p>
+        {t(
+          "Ogni mese l'AI rilegge le tue giornate e scrive cosa e cambiato: le persone, il corpo, il lavoro, i pattern che da soli non si vedono.",
+        )}
+      </p>
+      <button type="button" className="btn-primary" onClick={onProva}>
+        {t("Prova gratis {n} giorni", { n: String(PREMIUM_PROVA_GIORNI) })}
+      </button>
+      <div className="sotto">
+        {t("poi {prezzo} {periodo}, disdici quando vuoi", {
+          prezzo: PREMIUM_PRICE_AMOUNT,
+          periodo: t(PREMIUM_PRICE_PERIOD),
+        })}
+      </div>
     </div>
   );
 }

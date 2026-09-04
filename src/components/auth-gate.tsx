@@ -17,6 +17,7 @@ import {
   statoCassaforte,
 } from "@/lib/cassaforte";
 import { CassaforteCancello } from "@/modules/accesso";
+import { migraSePromesso } from "@/lib/ospite/migrazione";
 
 type CloudAuth = "unknown" | "in" | "out";
 
@@ -112,6 +113,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (mode === "local") {
       segnaModalitaLocale();
+      // Il braccialetto nasce al primo avvio (sotto), ma un dispositivo
+      // che era gia in modalita locale prima dell'ospite non ne ha uno:
+      // senza, le chiamate AI e l'acquisto senza email non hanno chi
+      // firmarli (trovato dal banco dell'abbonamento, 4 settembre 2026).
+      // assicuraBraccialetto e idempotente e non fa rete.
+      if (ospiteAttivo()) void assicuraBraccialetto();
       return;
     }
     if (auth === "in" && userId) void risolviCassaforte(userId).catch(() => undefined);
@@ -155,6 +162,15 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       router.replace("/app");
     }
   }, [settledOut, auth, publicPath, pathname, router]);
+
+  // L'ospite che ha appena messo l'email (mockup premium-senza-password,
+  // C1): con la sessione e la cassaforte aperta, le giornate del telefono
+  // salgono e il braccialetto si lega all'account. Un effetto, una volta
+  // per apertura della cassaforte; se non c'e niente da fare torna subito.
+  useEffect(() => {
+    if (mode !== "cloud" || auth !== "in" || cassaforte !== "aperta") return;
+    void migraSePromesso();
+  }, [mode, auth, cassaforte]);
 
   if (mode === "resolving") return null;
   if (!entered && auth === "unknown" && !publicPath) return null;

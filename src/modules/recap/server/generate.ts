@@ -144,6 +144,7 @@ export async function POST(req: NextRequest) {
   };
   void logAiUsage({
     userId: gate.userId,
+    braccialettoId: gate.braccialettoId ?? null,
     route: "recap",
     model: "gpt-4o",
     inputTokens: data.usage?.prompt_tokens,

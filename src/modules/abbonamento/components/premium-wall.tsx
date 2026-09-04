@@ -30,7 +30,6 @@ import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { APP_STORE_URL, PREMIUM_PRICE_LABEL, PREMIUM_PROVA_GIORNI } from "@/lib/pricing";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
-import { useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
 import {
   ascoltaTransazioni,
@@ -42,8 +41,13 @@ import {
 } from "@/modules/abbonamento/negozio-ios";
 import { openPremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 
-/** "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3). */
-export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns" | "regalo";
+/**
+ * "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3).
+ * "presentazione" = il foglio dopo la PRIMA giornata chiusa dall'AI
+ * (mockup premium-senza-password, decisione A2 di Manuel): il regalo si
+ * presenta una volta sola, e premium ha un nome.
+ */
+export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns" | "regalo" | "presentazione";
 
 type WallState = {
   feature: WallFeature;
@@ -51,6 +55,8 @@ type WallState = {
   onDismiss?: () => void;
   /** Per "regalo": quante giornate erano (per dirlo nel titolo). */
   max?: number;
+  /** Per "presentazione": quante giornate restano in regalo. */
+  rimaste?: number;
 } | null;
 
 let state: WallState = null;
@@ -62,9 +68,9 @@ function emit(): void {
 export function openPremiumWall(
   feature: WallFeature,
   onDismiss?: () => void,
-  extra?: { max?: number },
+  extra?: { max?: number; rimaste?: number },
 ): void {
-  state = { feature, onDismiss, max: extra?.max };
+  state = { feature, onDismiss, max: extra?.max, rimaste: extra?.rimaste };
   emit();
 }
 
@@ -96,6 +102,7 @@ const TITLES: Record<WallFeature, string> = {
   recap: "Per i recap del mese\nserve premium",
   patterns: "Per le letture sui pattern\nserve premium",
   regalo: "Le giornate con l'AI\nin regalo sono finite",
+  presentazione: "L'AI ha chiuso\nquesta giornata per te",
 };
 
 const FEATURES: { t: string; p: string }[] = [
@@ -121,7 +128,6 @@ export function PremiumWall() {
   const t = useT();
   const wall = useWallState();
   const router = useRouter();
-  const mode = useStorageMode();
   const [cloudNote, setCloudNote] = useState<boolean>(false);
   const [busy, setBusy] = useState<boolean>(false);
   // I prodotti letti per QUESTA apertura del muro: legati allo stato con
@@ -195,19 +201,16 @@ export function PremiumWall() {
   if (!wall) return null;
 
   const regalo = wall.feature === "regalo";
+  const presentazione = wall.feature === "presentazione";
   const prodotto = prodotti?.find((p) => p.id === scelto) ?? prodotti?.[0] ?? null;
   const prova = prodotto && prodotto.provaGiorni && prodotto.provaDisponibile !== false ? prodotto.provaGiorni : 0;
 
   /** Il tasto pieno dentro il guscio: compra (o prima l'account). */
   const compra = async () => {
     if (busy) return;
-    if (mode === "local") {
-      // Premium e dell'account: l'ospite fa prima email e codice, poi
-      // ritrova il muro al prossimo tocco e compra.
-      closePremiumWall();
-      router.push("/login");
-      return;
-    }
+    // L'ospite compra come tutti: il foglio di Apple, nessun login in mezzo
+    // (mockup premium-senza-password, B1). Il server scrive il premium sul
+    // braccialetto del telefono; l'email arriva quando vuole il backup.
     if (!prodotto) return;
     setBusy(true);
     setErrore(null);
@@ -227,11 +230,6 @@ export function PremiumWall() {
 
   const ripristina = async () => {
     if (busy) return;
-    if (mode === "local") {
-      closePremiumWall();
-      router.push("/login");
-      return;
-    }
     setBusy(true);
     setErrore(null);
     const esito = await ripristinaAcquisti();
@@ -246,11 +244,8 @@ export function PremiumWall() {
 
   /** Il tasto pieno sul web: nessun acquisto qui, si va all'App Store. */
   const vaiAllAppStore = () => {
-    if (mode === "local") {
-      closePremiumWall();
-      router.push("/login");
-      return;
-    }
+    // Sul web l'ospite non compra (niente Stripe, decisione di Manuel):
+    // stesso rimando all'App Store di chi ha un account.
     // Ambiente di prova: il pagamento simulato resta la strada per provare
     // l'app da premium sul web (checkout-finto).
     if (fakeCheckoutEnabled()) {
@@ -269,6 +264,18 @@ export function PremiumWall() {
     regalo && wall.max
       ? t("Le {n} giornate con l'AI\nin regalo sono finite", { n: String(wall.max) })
       : t(TITLES[wall.feature]);
+  const sottotitolo = presentazione
+    ? wall.rimaste !== undefined && wall.rimaste > 0
+      ? t("Titolo, sintesi e aree li ha scritti lei. Ne hai altre {n} giornate in regalo, senza fare niente. Poi, se ti piace, questo e premium.", { n: String(wall.rimaste) })
+      : t("Titolo, sintesi e aree li ha scritti lei. Le prime giornate sono in regalo, senza fare niente. Poi, se ti piace, questo e premium.")
+    : regalo
+      ? t("Grazie di averle usate. Puoi continuare a scrivere ogni giorno: manca solo la parte fatta dall'AI.")
+      : negozio
+        ? t("Una prova gratis per provare tutto. Poi, se ti piace, resta.")
+        : t("Premium si attiva dall'app per iPhone: {n} giorni gratis, poi {prezzo}. Con lo stesso account vale anche qui.", {
+            n: String(PREMIUM_PROVA_GIORNI),
+            prezzo: PREMIUM_PRICE_LABEL,
+          });
 
   return (
     <div
@@ -280,16 +287,7 @@ export function PremiumWall() {
     >
       <div className="jm-wall" onClick={(e) => e.stopPropagation()}>
         <div className="jm-wall-t">{titolo}</div>
-        <div className="jm-wall-p">
-          {regalo
-            ? t("Grazie di averle usate. Puoi continuare a scrivere ogni giorno: manca solo la parte fatta dall'AI.")
-            : negozio
-              ? t("Una prova gratis per provare tutto. Poi, se ti piace, resta.")
-              : t("Premium si attiva dall'app per iPhone: {n} giorni gratis, poi {prezzo}. Con lo stesso account vale anche qui.", {
-                  n: String(PREMIUM_PROVA_GIORNI),
-                  prezzo: PREMIUM_PRICE_LABEL,
-                })}
-        </div>
+        <div className="jm-wall-p">{sottotitolo}</div>
 
         {negozio && (
           <div className="jm-wall-schede" data-testid="jm-wall-schede">
@@ -352,7 +350,7 @@ export function PremiumWall() {
             type="button"
             className="btn-primary"
             onClick={() => void compra()}
-            disabled={busy || (mode !== "local" && !prodotto)}
+            disabled={busy || !prodotto}
           >
             {busy
               ? t("un attimo...")
@@ -372,11 +370,6 @@ export function PremiumWall() {
         </button>
 
         <div className="jm-wall-quiet">
-          {mode === "local" && (
-            <button type="button" onClick={() => { closePremiumWall(); router.push("/login"); }}>
-              {t("Ho gia un account")}
-            </button>
-          )}
           {negozio && (
             <button type="button" onClick={() => void ripristina()} disabled={busy}>
               {t("Ripristina acquisti")}
