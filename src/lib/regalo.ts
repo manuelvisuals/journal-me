@@ -26,6 +26,12 @@ export type Regalo = {
   tettoMensileEur: number;
   /** La spesa si stima in USD (listini di ai-usage.ts): il cambio e fisso. */
   cambioUsdEur: number;
+  /**
+   * L'abbonamento ANNUALE e in vendita? (migration 024, decisione di Manuel
+   * del 4 settembre 2026: il prodotto puo esistere su App Store Connect e
+   * restare nascosto finche questo e falso.)
+   */
+  annualeAttivo: boolean;
 };
 
 export const REGALO_DI_FABBRICA: Regalo = {
@@ -33,6 +39,7 @@ export const REGALO_DI_FABBRICA: Regalo = {
   giornatePerOspite: 10,
   tettoMensileEur: 100,
   cambioUsdEur: 0.92,
+  annualeAttivo: false,
 };
 
 function numero(v: unknown, fallback: number): number {
@@ -52,6 +59,7 @@ export function regaloDaRiga(riga: Record<string, unknown> | null | undefined): 
     ),
     tettoMensileEur: Math.max(0, numero(riga.tetto_mensile_eur, REGALO_DI_FABBRICA.tettoMensileEur)),
     cambioUsdEur: numero(riga.cambio_usd_eur, REGALO_DI_FABBRICA.cambioUsdEur) || REGALO_DI_FABBRICA.cambioUsdEur,
+    annualeAttivo: riga.annuale_attivo === true,
   };
 }
 

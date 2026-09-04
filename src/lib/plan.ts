@@ -21,6 +21,13 @@ export type Plan = "free" | "premium";
 const KEY = "jm.plan";
 
 let plan: Plan | null = null;
+/**
+ * Il dettaglio dell'abbonamento (da dove viene, quando scade), solo in
+ * memoria: serve alla riga "Piano" di Impostazioni e alle righe di Apple
+ * ("Gestisci abbonamento" ha senso solo se il premium e di Apple).
+ */
+export type DettaglioPiano = { source: string | null; periodEnd: string | null };
+let dettaglio: DettaglioPiano = { source: null, periodEnd: null };
 let refreshStarted = false;
 const listeners = new Set<() => void>();
 
@@ -80,6 +87,7 @@ export async function forcePlanRefresh(): Promise<void> {
 /** Da chiamare al logout / cambio account. */
 export function clearPlanCache(): void {
   plan = null;
+  dettaglio = { source: null, periodEnd: null };
   refreshStarted = false;
   try {
     window.localStorage.removeItem(KEY);
@@ -106,9 +114,13 @@ async function refreshPlan(): Promise<void> {
     if (!user) return;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("plan, current_period_end")
+      .select("plan, plan_source, current_period_end")
       .eq("user_id", user.id)
       .maybeSingle();
+    dettaglio = {
+      source: (profile?.plan_source as string | null | undefined) ?? null,
+      periodEnd: (profile?.current_period_end as string | null | undefined) ?? null,
+    };
     // Scadenza compresa (src/lib/piano.ts): un premium scaduto mostra i
     // lucchetti, come il server gli rispondera 402.
     setPlan(pianoEffettivo(profile));
@@ -148,6 +160,18 @@ export function usePianoNoto(): Plan | null {
       return c;
     },
     () => null,
+  );
+}
+
+/** Da dove viene il premium e quando scade (null = non lo so / non scade). */
+export function useDettaglioPiano(): DettaglioPiano {
+  return useSyncExternalStore(
+    (l) => {
+      listeners.add(l);
+      return () => listeners.delete(l);
+    },
+    () => dettaglio,
+    () => dettaglio,
   );
 }
 

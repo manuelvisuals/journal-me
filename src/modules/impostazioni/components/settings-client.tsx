@@ -59,15 +59,22 @@ import {
 import { getStore, useStorageMode } from "@/lib/data/store";
 import { APP_VERSION } from "@/lib/data/store/types";
 import { BUILD_INFO } from "@/modules/impostazioni/build-info";
-import { formatNumber } from "@/lib/format";
-import { usePlan } from "@/lib/plan";
+import { formatDate, formatNumber } from "@/lib/format";
+import { toast } from "@/components/ui/toast";
+import { useDettaglioPiano, usePlan } from "@/lib/plan";
 import { eseguiLogout } from "@/lib/auth/logout";
 
-import { openPremiumWall } from "@/modules/abbonamento";
+import {
+  gestisciAbbonamento,
+  negozioDisponibile,
+  openPremiumWall,
+  ripristinaAcquisti,
+} from "@/modules/abbonamento";
 import {
   PREMIUM_PRICE_AMOUNT,
   PREMIUM_PRICE_LABEL,
   PREMIUM_PRICE_PERIOD,
+  PREMIUM_PROVA_GIORNI,
 } from "@/lib/pricing";
 import { isNative } from "@/lib/native/platform";
 import {
@@ -127,6 +134,7 @@ export function SettingsClient({
   const storageMode = useStorageMode();
   const isLocal = storageMode === "local";
   const plan = usePlan();
+  const dettaglioPiano = useDettaglioPiano();
   const themeId = useThemeId();
   const appearance = useAppearance();
   const t = useT();
@@ -283,6 +291,14 @@ export function SettingsClient({
     } finally {
       setBusy("idle");
     }
+  };
+
+  const ripristina = async () => {
+    toast.loading(t("Chiedo ad Apple..."));
+    const esito = await ripristinaAcquisti();
+    if (esito.esito === "premium") toast.ok(t("Premium ripristinato."));
+    else if (esito.esito === "errore") toast.error(esito.messaggio);
+    else toast.ok(t("Niente da ripristinare."));
   };
 
   const handleLogout = async () => {
@@ -623,8 +639,37 @@ export function SettingsClient({
                     )}
                     <SetRow
                       title={t("Piano")}
-                      value={plan === "premium" ? t("Premium") : t("Gratis")}
+                      value={
+                        plan === "premium"
+                          ? dettaglioPiano.source === "apple" && dettaglioPiano.periodEnd
+                            ? t("Premium fino al {data}", {
+                                data: formatDate(new Date(dettaglioPiano.periodEnd), {
+                                  day: "numeric",
+                                  month: "long",
+                                }),
+                              })
+                            : t("Premium")
+                          : t("Gratis")
+                      }
                     />
+                    {/* L'abbonamento di Apple (mockup abbonamento-iphone.html
+                        v3, 02): si cambia o si disdice dalla pagina di Apple,
+                        non da noi. "Ripristina acquisti" c'e sempre dentro il
+                        guscio, anche per chi non ha mai comprato: Apple lo
+                        vuole raggiungibile. */}
+                    {negozioDisponibile() && dettaglioPiano.source === "apple" && (
+                      <SetRow
+                        title={t("Gestisci abbonamento")}
+                        value={t("Apple")}
+                        onClick={() => void gestisciAbbonamento()}
+                      />
+                    )}
+                    {negozioDisponibile() && (
+                      <SetRow
+                        title={t("Ripristina acquisti")}
+                        onClick={() => void ripristina()}
+                      />
+                    )}
                     <ConsumiRow onOpen={() => setPanel("consumi")} />
                   </>
                 )}
@@ -842,13 +887,13 @@ function PremiumInvite() {
         className="btn-primary jm-st-inv-b"
         onClick={() => openPremiumWall("aiSummary")}
       >
-        {native ? t("Scopri Premium") : t("Passa a Premium")}
+        {t("Passa a Premium")}
       </button>
-      {!native && (
-        <div className="jm-st-inv-n">
-          {`${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)} . ${t("disdici quando vuoi")}`}
-        </div>
-      )}
+      <div className="jm-st-inv-n">
+        {native
+          ? `${t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}, ${t("poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)} . ${t("disdici quando vuoi")}`
+          : t("Si attiva dall'app per iPhone")}
+      </div>
     </div>
   );
 }

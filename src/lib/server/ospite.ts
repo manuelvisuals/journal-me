@@ -282,6 +282,9 @@ export async function statoOspite(req: NextRequest): Promise<NextResponse> {
     attivo: regalo.attivo,
     max: regalo.giornatePerOspite,
     sopraIlTetto: sopraIlTetto(regalo, speso),
+    // L'interruttore dell'annuale (migration 024): il muro premium lo legge
+    // da qui, che e nell'elenco chiuso della promessa sulla rete.
+    annualeAttivo: regalo.annualeAttivo,
   };
   if (!segreto) return NextResponse.json({ ...base, usate: 0, rimaste: regalo.giornatePerOspite, oggi: false });
   const id = await braccialettoDaSegreto(segreto, null, { crea: false });

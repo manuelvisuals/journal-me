@@ -8,7 +8,6 @@
  */
 export const ACCESSO: Record<string, string> = {
   "Feedback": "Feedback",
-  "Non sono riuscito ad attivare il premium. Riprova.": "I could not turn premium on. Try again.",
   "Inizia": "Start",
   "Dove vuoi tenere\nil tuo diario?": "Where do you want\nto keep your diary?",
   "Puoi cambiare idea dopo. Quello che hai scritto viene con te.": "You can change your mind later. What you have written comes with you.",
@@ -23,7 +22,6 @@ export const ACCESSO: Record<string, string> = {
   "Un dispositivo solo": "One device only",
   "preparo...": "getting ready...",
   "inizia gratis": "start free",
-  "inizia premium": "start premium",
   "Nella versione gratis scrivi a mano: niente racconto a voce e niente AI.": "In the free version you write by hand: no voice journaling and no AI.",
   "Non chiedermelo piu": "Do not ask me again",
   "Va bene. Quando vorrai passare a premium, potrai farlo dalle Impostazioni.": "All right. Whenever you want to go premium, you can do it from Settings.",

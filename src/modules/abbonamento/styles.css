@@ -105,6 +105,113 @@
   margin-top: 10px;
 }
 
+/* Le schede dei prodotti (mockup abbonamento-iphone.html v3, 4 settembre
+   2026): una per prodotto, prezzo e prova come li dice Apple. Con un
+   prodotto solo la scheda e gia scelta e il tasto parte subito. */
+.jm-wall-schede {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.jm-wall-scheda {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  padding: 12px 14px;
+  color: var(--color-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.jm-wall-scheda.on {
+  border-color: var(--color-ink);
+}
+
+.jm-wall-scheda-attesa {
+  color: var(--color-ink-faint);
+  font-size: calc(13px * var(--jm-ui-scale));
+  cursor: default;
+}
+
+.jm-wall-scheda .k {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: calc(15px * var(--jm-ui-scale));
+}
+
+.jm-wall-scheda .k b {
+  font-weight: 600;
+}
+
+.jm-wall-scheda .k .pr {
+  color: var(--color-ink-faint);
+  font-size: calc(13px * var(--jm-ui-scale));
+}
+
+.jm-wall-scheda .k i {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-ink-muted);
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: calc(12px * var(--jm-ui-scale));
+  flex: 0 0 20px;
+}
+
+.jm-wall-scheda.on .k i {
+  background: var(--color-ink);
+  color: var(--color-surface);
+  border-color: var(--color-ink);
+}
+
+.jm-wall-scheda .p {
+  display: block;
+  margin-top: 5px;
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
+
+/* "Ho gia un account" e "Ripristina acquisti": righe quiete, sottolineate. */
+.jm-wall-quiet {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.jm-wall-quiet button {
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  color: var(--color-ink-faint);
+  font: inherit;
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Le righe che la revisione Apple vuole vicino al prezzo. */
+.jm-wall-nota {
+  margin-top: 12px;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.5;
+}
+
+.jm-wall-nota a {
+  color: var(--color-ink-muted);
+  text-decoration: underline;
+}
+
 /* ============================================================
    Checkout finto e popup di congratulazioni (mockup
    design/mockups/checkout-finto.html, approvato il 21 agosto 2026).
