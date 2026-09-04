@@ -52,10 +52,10 @@ export function AvvisoRegalo({ date, vivo }: { date: string; vivo: boolean }) {
 
   const testo =
     stato.rimaste <= 0
-      ? t("Questa era l'ultima giornata con l'AI in regalo. Da domani scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.")
+      ? t("Era l'ultima giornata con l'AI in regalo.")
       : stato.rimaste === 1
-        ? t("Ti resta 1 giornata con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.")
-        : t("Ti restano {n} giornate con l'AI in regalo. Dopo, scrivi e rileggi come sempre: manca solo il titolo fatto dall'AI.", {
+        ? t("Ancora 1 giornata con l'AI in regalo.")
+        : t("Ancora {n} giornate con l'AI in regalo.", {
             n: String(stato.rimaste),
           });
 

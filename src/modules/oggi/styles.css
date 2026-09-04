@@ -44,8 +44,13 @@
   color: var(--color-on-accent);
   border: 1px solid color-mix(in oklab, var(--color-ink) 34%, transparent);
   font-weight: 650;
-  box-shadow: 0 0 22px color-mix(in oklab, var(--color-glow) 30%, transparent),
-    0 10px 22px color-mix(in oklab, var(--color-shadow) 45%, transparent);
+  /* La stessa ombra di btn-primary (base.css): un tasto pieno solo. */
+  box-shadow: var(--jm-btn-ombra);
+}
+
+.jm-ptt-save:active:not(:disabled) {
+  background: var(--color-accent-pressed);
+  box-shadow: var(--jm-btn-ombra-premuto);
 }
 
 .jm-ptt-save:disabled {

@@ -146,7 +146,7 @@ export function RecapClient({ mode, initialRecaps }: Props) {
         )}
       </div>
 
-      <TabBar active="settings" />
+      <TabBar active="module" />
     </main>
   );
 }
@@ -188,7 +188,7 @@ function SuggestionCard({
       {error && <div className="err">{error}</div>}
       <button
         type="button"
-        className="jm-gen-btn"
+        className="btn-primary jm-gen-btn"
         onClick={onClick}
         disabled={generating}
       >
@@ -214,7 +214,7 @@ function Vetrina({ onProva }: { onProva: () => void }) {
       <h2>{t("Il mese, riletto per te.")}</h2>
       <p>
         {t(
-          "Ogni mese l'AI rilegge le tue giornate e scrive cosa e cambiato: le persone, il corpo, il lavoro, i pattern che da soli non si vedono.",
+          "Ogni mese l'AI rilegge le tue giornate e scrive cosa e cambiato.",
         )}
       </p>
       <button type="button" className="btn-primary" onClick={onProva}>

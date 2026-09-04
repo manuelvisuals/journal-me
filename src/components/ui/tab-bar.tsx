@@ -196,7 +196,11 @@ export function TabBar({ active }: Props) {
   // la pillola, non ti porta fuori dall'app (la linguetta Feedback e chi
   // altro ascolta useDentroApp non devono accorgersene).
   useEffect(segnalaDentroApp, []);
-  if (ritirato) return null;
+  // Col dock ritirato resta il SUO SPAZIO (4 settembre 2026, Manuel sul
+  // telefono): sotto il saluto di benvenuto la giornata si disegnava senza
+  // i 94px del dock e, al ritorno della pillola, saltava in su. Lo spazio
+  // e parte della schermata, non del vetro: c'e sempre, dal primo disegno.
+  if (ritirato) return <div className="jm-dock-spazio lg:hidden" aria-hidden="true" />;
   return <TabBarViva active={active} />;
 }
 

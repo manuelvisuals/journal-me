@@ -545,18 +545,19 @@
 
 .jm-st-rrow .v { color: var(--color-ink-muted); text-align: right; min-width: 0; }
 
+/* Come btn-ghost (base.css): stesso bordo, stessa misura, stesso peso. */
 .jm-st-out {
   display: block;
   width: 100%;
   margin-top: 14px;
-  padding: 13px;
+  padding: calc(14px * var(--jm-space));
   min-height: 44px;
   border-radius: var(--jm-radius-md);
   border: 1px solid var(--color-line);
   background: transparent;
   color: var(--color-ink-muted);
   font-family: var(--font-sans);
-  font-size: calc(13.5px * var(--jm-ui-scale));
+  font-size: calc(14px * var(--jm-ui-scale));
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -1275,3 +1276,28 @@
 /* ---------- Impostazioni > Cassaforte (SPEC R12, mockup codice-di-recupero 04) ---------- */
 .jm-st-cassa-azione { margin: calc(8px * var(--jm-space)) 0 calc(20px * var(--jm-space)); }
 .jm-st-cassa-errore { color: var(--color-danger); }
+
+/* Il dock in miniatura accanto al modulo che sta nel dock (Moduli). Il
+   passaggio in cima e un movimento, non una frase: la riga entra
+   scivolando dall'alto quando cambia posto. */
+.jm-st-dock-glyph {
+  display: inline-block;
+  width: 30px;
+  height: 11px;
+  margin-left: 8px;
+  vertical-align: middle;
+  color: var(--color-accent);
+}
+
+.jm-st-row.nel-dock {
+  animation: jm-nel-dock 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes jm-nel-dock {
+  from { transform: translateY(6px); opacity: 0.4; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jm-st-row.nel-dock { animation: none; }
+}

@@ -105,6 +105,6 @@ export const ACCESSO: Record<string, string> = {
   "Si, ricomincia da zero": "Yes, start over",
   "Un diario nuovo. Otto parole nuove.": "A new diary. Eight new words.",
   "Le tue giornate, anche altrove.": "Your days, elsewhere too.",
-  "Metti una email: le giornate salgono chiuse a chiave ogni notte e le ritrovi su iPad e sul computer. Ti mando un codice di sei cifre. Mai una password.": "Add an email: your days go up locked every night and you find them on iPad and on the computer. I will send you a six-digit code. Never a password.",
-  "Le giornate che hai gia scritto qui restano, e salgono al primo accesso.": "The days you already wrote here stay, and go up at first sign-in.",
+  "Backup chiuso a chiave, su iPad e computer. Ti mando un codice. Mai una password.": "Locked backup, on iPad and computer. I will send you a code. Never a password.",
+  "Le giornate scritte qui salgono.": "The days written here go up.",
 };

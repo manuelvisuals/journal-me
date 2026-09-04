@@ -1075,7 +1075,7 @@ export function TodayClient({
           nudgeTesto={
             regaloEsaurito
               ? t(
-                  "Il titolo e la prima riga che hai scritto. Le {n} giornate con l'AI in regalo sono finite: l'app continua cosi, e le giornate restano tue.",
+                  "Le {n} giornate con l'AI sono finite. Il diario continua.",
                   { n: String(statoOspite?.max ?? 0) },
                 )
               : undefined

@@ -26,6 +26,13 @@ const common = {
 };
 
 export const MODULE_ICONS: Record<ModuleId, React.ReactNode> = {
+  // Il libro del Recap (lo stesso della colonna desktop, rail-left.tsx).
+  recap: (
+    <svg {...common}>
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+      <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5" />
+    </svg>
+  ),
   // Un bilanciere.
   palestra: (
     <svg {...common}>

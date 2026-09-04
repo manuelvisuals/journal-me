@@ -51,21 +51,21 @@ export function RegaloPanel() {
       <p className="jm-st-lede">{lede}</p>
       <SetGroup label={t("Come funziona")}>
         <SetRow
-          title={t("Le prime giornate le paga chi ha fatto questa app")}
+          title={t("Un regalo")}
           desc={t(
-            "Racconto a voce, titolo, sintesi e aree. Una giornata conta una volta, anche se la riapri e la completi.",
+            "Voce, titolo, sintesi, aree. Una giornata conta una volta.",
           )}
           chevron={false}
         />
         <SetRow
-          title={t("Quando finiscono, l'app continua")}
-          desc={t("Scrivi, salvi, rileggi. Manca solo la parte fatta dall'AI.")}
+          title={t("Quando finisce, il diario continua")}
+          desc={t("Manca solo l'AI.")}
           chevron={false}
         />
         <SetRow
-          title={t("Il conto e legato a questo dispositivo, non all'app")}
+          title={t("Legato a questo dispositivo")}
           desc={t(
-            "Cancellare e reinstallare non lo azzera. Se metti una email, il conto ti segue e non ricomincia.",
+            "Reinstallare non lo azzera. Con una email ti segue.",
           )}
           chevron={false}
         />

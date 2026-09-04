@@ -384,7 +384,7 @@ export default function LoginPage() {
                     "Inserisci l'email che hai usato l'ultima volta: ti mando un codice.",
                   )
                 : t(
-                    "Metti una email: le giornate salgono chiuse a chiave ogni notte e le ritrovi su iPad e sul computer. Ti mando un codice di sei cifre. Mai una password.",
+                    "Backup chiuso a chiave, su iPad e computer. Ti mando un codice. Mai una password.",
                   )}
             </p>
             <form onSubmit={sendCode}>
@@ -416,7 +416,7 @@ export default function LoginPage() {
             <p className="text-center text-[calc(11px*var(--jm-ui-scale))] text-ink-faint leading-[1.6] mt-7">
               {t("Il codice vale un'ora.")}
               <br />
-              {t("Le giornate che hai gia scritto qui restano, e salgono al primo accesso.")}
+              {t("Le giornate scritte qui salgono.")}
             </p>
           </>
         )}

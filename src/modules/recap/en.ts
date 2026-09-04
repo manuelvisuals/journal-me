@@ -24,6 +24,7 @@ export const RECAP: Record<string, string> = {
   "Snippet": "Snippet",
   "paragrafi separati da riga vuota . citazioni tra virgolette": "paragraphs separated by a blank line . quotes between quotation marks",
   "Il mese, riletto per te.": "The month, reread for you.",
-  "Ogni mese l'AI rilegge le tue giornate e scrive cosa e cambiato: le persone, il corpo, il lavoro, i pattern che da soli non si vedono.": "Every month the AI rereads your days and writes what changed: the people, the body, the work, the patterns you cannot see on your own.",
+  "Ogni mese l'AI rilegge le tue giornate e scrive cosa e cambiato.": "Every month the AI rereads your days and writes what changed.",
   "poi {prezzo} {periodo}, disdici quando vuoi": "then {prezzo} {periodo}, cancel anytime",
+  "Il mese, riletto per te": "The month, reread for you",
 };

@@ -266,13 +266,13 @@ export function PremiumWall() {
       : t(TITLES[wall.feature]);
   const sottotitolo = presentazione
     ? wall.rimaste !== undefined && wall.rimaste > 0
-      ? t("Titolo, sintesi e aree li ha scritti lei. Ne hai altre {n} giornate in regalo, senza fare niente. Poi, se ti piace, questo e premium.", { n: String(wall.rimaste) })
-      : t("Titolo, sintesi e aree li ha scritti lei. Le prime giornate sono in regalo, senza fare niente. Poi, se ti piace, questo e premium.")
+      ? t("Titolo, sintesi, aree: li ha scritti lei. Ne hai altre {n} in regalo.", { n: String(wall.rimaste) })
+      : t("Titolo, sintesi, aree: li ha scritti lei. Le prime giornate sono in regalo.")
     : regalo
-      ? t("Grazie di averle usate. Puoi continuare a scrivere ogni giorno: manca solo la parte fatta dall'AI.")
+      ? t("Continua a scrivere. Manca solo l'AI.")
       : negozio
-        ? t("Una prova gratis per provare tutto. Poi, se ti piace, resta.")
-        : t("Premium si attiva dall'app per iPhone: {n} giorni gratis, poi {prezzo}. Con lo stesso account vale anche qui.", {
+        ? t("Prova tutto, gratis. Poi decidi.")
+        : t("Si attiva dall'app per iPhone. {n} giorni gratis, poi {prezzo}.", {
             n: String(PREMIUM_PROVA_GIORNI),
             prezzo: PREMIUM_PRICE_LABEL,
           });
@@ -291,7 +291,16 @@ export function PremiumWall() {
 
         {negozio && (
           <div className="jm-wall-schede" data-testid="jm-wall-schede">
-            {prodotti === null && <div className="jm-wall-scheda jm-wall-scheda-attesa">{t("un attimo...")}</div>}
+            {prodotti === null && (
+              // Il fantasma della scheda: STESSA struttura e stesse
+              // dimensioni di testo della scheda vera, solo sbiadito. Quando
+              // il prezzo arriva da Apple niente si sposta (4 settembre
+              // 2026, Manuel: il tasto che compare creava un salto).
+              <div className="jm-wall-scheda jm-wall-scheda-attesa" aria-label={t("un attimo...")} aria-busy="true">
+                <span className="k"><b>{t("Mensile")}</b><span className="pr">{"\u2014,\u2014\u00a0EUR " + t("al mese")}</span><i /></span>
+                <span className="p">{t("{n} giorni gratis, poi {prezzo} {periodo}. Disdici quando vuoi.", { n: String(PREMIUM_PROVA_GIORNI), prezzo: "\u2014,\u2014 EUR", periodo: t("al mese") })}</span>
+              </div>
+            )}
             {prodotti?.map((p) => {
               const on = p.id === scelto;
               const pr = p.provaGiorni && p.provaDisponibile !== false ? p.provaGiorni : 0;
@@ -377,14 +386,23 @@ export function PremiumWall() {
           )}
         </div>
 
+        {negozio && !prodotto && (
+          // Il posto della nota, gia occupato con lo stesso testo (sbiadito):
+          // il foglio e ancorato in basso e una riga che compare dopo
+          // alzerebbe tutto il resto.
+          <div className="jm-wall-nota jm-wall-fantasma" aria-hidden="true">
+            {t("Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.", { prezzo: "\u2014,\u2014 EUR", periodo: t("al mese") })}{" "}
+            <a>{t("Termini")}</a> &middot; <a>{t("Privacy")}</a>
+          </div>
+        )}
         {negozio && prodotto && (
           <div className="jm-wall-nota">
             {prova > 0
-              ? t("Dopo la prova si rinnova da solo a {prezzo} {periodo}, finche non lo disdici dalle Impostazioni di Apple.", {
+              ? t("Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.", {
                   prezzo: prodotto.prezzo,
                   periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
                 })
-              : t("Si rinnova da solo a {prezzo} {periodo}, finche non lo disdici dalle Impostazioni di Apple.", {
+              : t("Si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.", {
                   prezzo: prodotto.prezzo,
                   periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
                 })}{" "}

@@ -91,3 +91,11 @@ Apple 5.1.1).
   passa al profilo. Lo chiama `src/lib/ospite/migrazione.ts` dal cancello.
 
 Banco: `scripts/verify-abbonamento.mjs` sezione 9 (48/48).
+
+Rifiniture del 4 settembre sera (branch `rifiniture-ive`): il muro non
+salta piu quando arriva il prezzo da Apple: in attesa mostra il FANTASMA
+della scheda e della nota (stessa struttura, testo sbiadito con "—,— EUR",
+`.jm-wall-scheda-attesa`, `.jm-wall-fantasma`), cosi il foglio ancorato in
+basso ha gia la sua altezza. Testi del muro accorciati (regola: la gente
+non legge). Un tasto pieno solo in tutta l'app: `--jm-btn-ombra` in
+base.css, usato da btn-primary, dal "Genera" del Recap e da "Fine e salva".

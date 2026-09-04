@@ -143,3 +143,14 @@ dispositivo (`usePremiumDispositivo`) la riga Piano dice "Premium fino al
 {data}", "Passa a Premium" sparisce, compaiono "Gestisci abbonamento" e
 "Ripristina acquisti"; la riga **Backup ogni notte: Spento** e la porta
 all'email (C1) e apre /login; "Ho gia un account" al posto di "Accedi".
+
+## Il Recap e un modulo, e il dock lo dice senza parole (4 settembre 2026, sera)
+
+Richiesta di Manuel: il quinto posto del dock e il Recap di fabbrica; il
+Recap e un modulo come la Palestra (`src/lib/modules.ts`, acceso di
+fabbrica, `jm:moduli:recap-spento` ricorda chi lo spegne). Nel pannello
+Moduli il primo acceso porta il **dock in miniatura** (`DockGlyph`,
+`.jm-st-dock-glyph`) accanto al nome e la riga scivola in cima quando lo
+accendi (`.jm-st-row.nel-dock`): il posto nel dock si capisce guardando,
+non leggendo. Testi ridotti: "Accendi quello che vuoi. L'ultimo acceso va
+nel dock." / "Spegnere non cancella niente." Banco: verify-persona-moduli.

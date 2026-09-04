@@ -643,7 +643,7 @@ export function SettingsClient({
                       title={t("Backup ogni notte")}
                       value={t("Spento")}
                       desc={t(
-                        "Metti una email: le giornate salgono chiuse a chiave e le ritrovi su iPad e sul computer. Premium ti segue.",
+                        "Con una email. Chiuso a chiave, su tutti i tuoi dispositivi.",
                       )}
                       onClick={() => router.push("/login")}
                     />
@@ -675,7 +675,7 @@ export function SettingsClient({
                     )}
                     <SetRow
                       title={t("Ho gia un account")}
-                      desc={t("Email e codice, mai una password. Le giornate scritte qui salgono al primo accesso.")}
+                      desc={t("Email e codice. Mai una password.")}
                       onClick={() => router.push("/login")}
                     />
                   </>
