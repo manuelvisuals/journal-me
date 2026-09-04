@@ -201,3 +201,17 @@ conflitto con `suConflitto`, da qualunque schermata. Tre tasti, nessuna
 scelta automatica: tieni quella, tieni questa, tutte e due (l'altra finisce
 in fondo al racconto sotto `--- dall'altra versione ---`). Le frasi diverse
 sono evidenziate. Banco: `verify-cassaforte` (sezione R7).
+
+## L'ospite (notte del 3 settembre 2026, branch `ospite-server`)
+
+Le cinque route AI di questo modulo (chiarimenti, extract-facts,
+process-entry, split-by-date, transcribe-fallback) passano da
+`requireOspiteOPremium` (src/lib/server/ospite.ts) invece di
+`requirePremium`: dentro entra chi e premium O un ospite col braccialetto
+e quota. Il GET di warm-up della trascrizione usa `{ consuma: false }`:
+controlla senza spendere una giornata. `logAiUsage` riceve `...gate.chi`
+(utente o braccialetto, e il flag regalo). L'indirizzo di OpenAI passa da
+`openaiUrl()` (src/lib/server/openai.ts) per i banchi con l'OpenAI finto.
+In `today-client.tsx` "salva e basta" (Cmd+S) non chiede piu i
+chiarimenti: prometteva zero chiamate AI e ne faceva una, che per l'ospite
+sarebbe stata una giornata del regalo spesa senza averlo chiesto.

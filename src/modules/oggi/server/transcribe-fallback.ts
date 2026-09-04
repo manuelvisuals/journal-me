@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requirePremium } from "@/lib/server/entitlement";
+import { requireOspiteOPremium } from "@/lib/server/ospite";
+import { openaiUrl } from "@/lib/server/openai";
 import { logAiUsage, type TranscribeUsage } from "@/lib/server/ai-usage";
 import { langOf, type PromptLang } from "@/lib/server/lang";
 
@@ -26,7 +27,7 @@ import { langOf, type PromptLang } from "@/lib/server/lang";
  * still warms the lambda, so the client fires it regardless of plan.
  */
 export async function GET(req: NextRequest) {
-  const gate = await requirePremium(req);
+  const gate = await requireOspiteOPremium(req, { consuma: false });
   if (gate instanceof NextResponse) return gate;
 
   return Response.json({ ok: true, warm: true });
@@ -47,7 +48,7 @@ const ANTI_HALLUCINATION: Record<PromptLang, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  const gate = await requirePremium(req);
+  const gate = await requireOspiteOPremium(req);
   if (gate instanceof NextResponse) return gate;
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
 
   let resp: Response;
   try {
-    resp = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+    resp = await fetch(openaiUrl("/v1/audio/transcriptions"), {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}` },
       body: upstream,
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
     | null;
   // Conteggio consumi (token/secondi ufficiali di OpenAI, fire-and-forget).
   void logAiUsage({
-    userId: gate.userId,
+    ...gate.chi,
     route: "transcribe",
     model: "gpt-4o-transcribe",
     inputTokens: data?.usage?.input_tokens,

@@ -12,6 +12,8 @@
 import { getAccessToken } from "@/lib/supabase/client";
 import { getLang } from "@/lib/i18n";
 import { conSegnale } from "@/lib/tetto";
+import { ERRORE_REGALO_FINITO, HEADER_BRACCIALETTO } from "@/lib/regalo";
+import { leggiBraccialetto } from "@/lib/ospite/braccialetto";
 
 const BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/+$/, "");
 
@@ -71,6 +73,13 @@ export async function apiFetch(
     );
     if (token) merged.set("Authorization", `Bearer ${token}`);
     merged.set("x-jm-lang", getLang());
+    // Il braccialetto dell'ospite (SPEC R2), se questo dispositivo ne ha
+    // uno: e cosi che il server sa a chi sta regalando. Viaggia anche con
+    // il gettone di un account gratis, cosi l'ospite diventato account
+    // tiene la quota che aveva. Se non c'e, non si crea qui: nasce al
+    // primo avvio come ospite (auth-gate).
+    const braccialetto = await conSegnale(leggiBraccialetto(), ctrl.signal, "braccialetto");
+    if (braccialetto) merged.set(HEADER_BRACCIALETTO, braccialetto);
 
     const resp = await fetch(apiUrl(path), {
       ...rest,
@@ -78,10 +87,26 @@ export async function apiFetch(
       signal: ctrl.signal,
     });
     if (resp.status === 402) {
-      // Import dinamico per non trascinare il componente dentro ogni
-      // modulo dati; se il muro non e montato non succede niente.
-      void import("@/modules/abbonamento/components/premium-wall")
-        .then((m) => m.openPremiumWall("aiSummary"))
+      // Due 402 diversi (SPEC R3): "Premium required" apre il muro premium;
+      // "regalo_finito" e l'ospite che ha finito il regalo, e il suo muro e
+      // un'altra schermata (mockup ospite-primo-avvio 03, in attesa
+      // dell'ok). Finche non esiste si annuncia l'evento e basta: la
+      // Response torna comunque al chiamante, che fa il suo fallback (la
+      // giornata si salva col testo grezzo, R3).
+      void resp
+        .clone()
+        .json()
+        .then((body: { error?: string; motivo?: string; usate?: number; max?: number }) => {
+          if (body?.error === ERRORE_REGALO_FINITO) {
+            window.dispatchEvent(new CustomEvent("jm:regalo-finito", { detail: body }));
+            return;
+          }
+          // Import dinamico per non trascinare il componente dentro ogni
+          // modulo dati; se il muro non e montato non succede niente.
+          return import("@/modules/abbonamento/components/premium-wall").then((m) =>
+            m.openPremiumWall("aiSummary"),
+          );
+        })
         .catch(() => undefined);
     }
     return resp;

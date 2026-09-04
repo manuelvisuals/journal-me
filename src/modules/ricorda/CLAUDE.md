@@ -21,3 +21,9 @@ La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
 pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
 in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
 rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.
+
+## L'ospite (notte del 3 settembre 2026, branch `ospite-server`)
+
+`server/classify.ts` passa da `requireOspiteOPremium` (premium o ospite con
+quota) e da `openaiUrl()`. In modalita locale senza ospite non cambia
+niente: la cattura resta dietro `can("aiSummary")`, che e falso.

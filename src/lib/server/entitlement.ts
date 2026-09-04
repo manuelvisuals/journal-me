@@ -36,7 +36,10 @@ function adminClient(url: string, serviceKey: string): SupabaseClient {
  * Non esce mai verso il browser.
  */
 export function getAdminClient(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  // JM_SUPABASE_URL_SERVER: solo per i banchi, che puntano il SERVER a un
+  // Supabase finto locale mentre il browser continua a vedere l'indirizzo
+  // pubblico. In produzione non esiste e vince NEXT_PUBLIC_SUPABASE_URL.
+  const url = process.env.JM_SUPABASE_URL_SERVER || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !serviceKey) return null;
   return adminClient(url, serviceKey);

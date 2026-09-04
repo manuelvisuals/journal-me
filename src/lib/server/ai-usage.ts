@@ -68,7 +68,12 @@ export type TranscribeUsage = {
 };
 
 export async function logAiUsage(entry: {
-  userId: string;
+  /** L'account, se c'e. Un ospite non ne ha: allora c'e il braccialetto. */
+  userId: string | null;
+  /** Il braccialetto dell'ospite (migration 023), se la chiamata e la sua. */
+  braccialettoId?: string | null;
+  /** true = la chiamata la paga il regalo: entra nella somma del tetto (R4). */
+  regalo?: boolean;
   route: AiRoute;
   model: string;
   inputTokens?: number;
@@ -78,14 +83,30 @@ export async function logAiUsage(entry: {
   try {
     const admin = getAdminClient();
     if (!admin) return;
+    const inputTokens = Math.max(0, Math.round(entry.inputTokens ?? 0));
+    const outputTokens = Math.max(0, Math.round(entry.outputTokens ?? 0));
+    // La stima in USD si scrive nella riga (colonna costo_usd, 023): cosi la
+    // spesa del mese e una somma sola e non un ricalcolo riga per riga.
+    const costoUsd = estimateUsd(entry.model, inputTokens, outputTokens);
+    // Senza ne account ne braccialetto la riga non passa il check del
+    // database (ai_usage_chi_ha_chiamato): non si prova nemmeno.
+    if (!entry.userId && !entry.braccialettoId) return;
     await admin.from("ai_usage").insert({
       user_id: entry.userId,
+      braccialetto_id: entry.braccialettoId ?? null,
+      regalo: entry.regalo === true,
+      costo_usd: costoUsd,
       route: entry.route,
       model: entry.model,
-      input_tokens: Math.max(0, Math.round(entry.inputTokens ?? 0)),
-      output_tokens: Math.max(0, Math.round(entry.outputTokens ?? 0)),
+      input_tokens: inputTokens,
+      output_tokens: outputTokens,
       audio_seconds: entry.audioSeconds ?? null,
     });
+    if (entry.regalo) {
+      // Il tetto si aggiorna subito, senza aspettare il minuto della cache.
+      const { aggiungiSpesaUsd } = await import("@/lib/server/regalo");
+      aggiungiSpesaUsd(costoUsd);
+    }
   } catch {
     // Mai far fallire la risposta per un log.
   }

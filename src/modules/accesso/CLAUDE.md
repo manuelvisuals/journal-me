@@ -52,3 +52,33 @@ e "on". Banco: `verify-bugfix-20260901` (serve `JM_MOBILE=1 npx next build`).
 
 La logica sta tutta in `src/lib/cassaforte/` (scheletro): qui solo le
 schermate. Banco: `verify-cassaforte`.
+
+## L'ospite: la parte che non si vede (notte del 3 settembre 2026, branch `ospite-server`)
+
+SPEC-ospite-e-cassaforte R1-R4, pezzo 3. CODICE FATTO solo per cio che non
+si vede; le SCHERMATE (primo avvio dritto su Oggi, avviso discreto, muro
+della quota, riga in Impostazioni) aspettano l'ok di Manuel sul mockup
+`design/mockups/ospite-primo-avvio.html`. Referto della notte:
+`REFERTO-ospite-notte.md`; mappa del codice: `REFERTO-ospite-mappa.md`.
+
+- L'INTERRUTTORE: `src/lib/ospite/flag.ts` (scheletro). Di fabbrica SPENTO:
+  l'app si comporta come prima (login al primo avvio, locale a zero AI). I
+  banchi lo accendono con localStorage `jm.ospite = "1"`. Quando le
+  schermate saranno approvate si porta `OSPITE_DI_FABBRICA` a true.
+- Con l'interruttore acceso, AuthGate (scheletro) al primo avvio sceglie da
+  solo la modalita locale e fa nascere il braccialetto
+  (`src/lib/ospite/braccialetto.ts`: 32 byte casuali nel portachiavi iCloud
+  via Cassaforte.swift, conto "braccialetto"; IndexedDB sul web). `can()`
+  accende voce e riassunto in locale. Le route AI ricevono il braccialetto
+  nell'intestazione `x-jm-braccialetto` (apiFetch) e la guardia
+  `requireOspiteOPremium` (src/lib/server/ospite.ts) conta la quota SUL
+  server (migration 023). Un 402 `regalo_finito` NON apre il muro premium:
+  apiFetch lancia l'evento `jm:regalo-finito`, e il muro della quota
+  (schermata 03 del mockup) e da fare.
+- Route di questo modulo: `server/ospite-stato.ts` -> GET /api/ospite/stato
+  (usate, rimaste, oggi coperta; non crea e non spende). E la sorgente della
+  futura riga "AI in regalo" in Impostazioni.
+- Banco: `verify-ospite` (46 controlli, con Supabase e OpenAI finti lato
+  server: scripts/lib/finti-server.mjs). `verify-pr10` misura la promessa
+  nuova del par. 5 (scripts/lib/promessa-ospite.mjs) con l'interruttore
+  spento.

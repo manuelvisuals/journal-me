@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requirePremium } from "@/lib/server/entitlement";
+import { requireOspiteOPremium } from "@/lib/server/ospite";
+import { openaiUrl } from "@/lib/server/openai";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 import { langName, langOf } from "@/lib/server/lang";
 
@@ -16,7 +17,7 @@ import { langName, langOf } from "@/lib/server/lang";
  * transcript is returned as a single segment.
  */
 export async function POST(req: NextRequest) {
-  const gate = await requirePremium(req);
+  const gate = await requireOspiteOPremium(req);
   if (gate instanceof NextResponse) return gate;
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
     "  - Niente date future rispetto alla data di registrazione.",
   ].join("\n");
 
-  const completion = await fetch("https://api.openai.com/v1/chat/completions", {
+  const completion = await fetch(openaiUrl("/v1/chat/completions"), {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
     usage?: ChatUsage;
   };
   void logAiUsage({
-    userId: gate.userId,
+    ...gate.chi,
     route: "split-by-date",
     model: "gpt-4o-mini",
     inputTokens: data.usage?.prompt_tokens,

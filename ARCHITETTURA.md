@@ -129,6 +129,28 @@ sanno che esiste una chiave: chiedono e ricevono testo. Banco:
 (`scripts/lib/supabase-finto.mjs`) che registra ogni byte uscito dal
 dispositivo. `src/lib/tetto.ts` (R11): i tetti di tempo, un posto solo.
 
+L'ospite, la parte che non si vede (notte del 3 settembre 2026, sessione
+scheletro dichiarata, SPEC ospite-e-cassaforte R1-R4, branch
+`ospite-server`): `src/lib/ospite/` (l'interruttore `flag.ts`, di fabbrica
+SPENTO finche Manuel non approva le schermate; il braccialetto
+`braccialetto.ts`, 32 byte nel portachiavi iCloud via Cassaforte.swift con
+conto "braccialetto", IndexedDB sul web), `src/lib/regalo.ts` (il
+contratto dei limiti, come `aree.ts`), `src/lib/server/regalo.ts` (lettura
+con cache e spesa del mese), `src/lib/server/ospite.ts` (la quarta guardia
+`requireOspiteOPremium`: premium o braccialetto con quota, tetto R4 con la
+grazia per la giornata gia iniziata), `src/lib/server/openai.ts`
+(l'indirizzo di OpenAI in un posto solo, per i banchi). `apiFetch` manda
+il braccialetto e distingue il 402 `regalo_finito` da "Premium required";
+`can()` e AuthGate leggono l'interruttore. Migration 023 (`regalo` a una
+riga, `braccialetti`, `braccialetto_giornate`, `ai_usage` con
+braccialetto_id/regalo/costo_usd, funzioni di quota e spesa). Banco:
+`scripts/verify-ospite.mjs` con Supabase e OpenAI finti LATO SERVER
+(`scripts/lib/finti-server.mjs`, via `JM_SUPABASE_URL_SERVER` e
+`OPENAI_BASE_URL`); la promessa sulla rete del par. 5 vive in
+`scripts/lib/promessa-ospite.mjs` e la misurano verify-pr10 e
+verify-benvenuto. Mockup in attesa dell'ok:
+`design/mockups/ospite-primo-avvio.html`.
+
 Regola: un modulo USA lo scheletro, non lo modifica. Se un modulo ha bisogno di una
 primitiva nuova, la chiede (una sessione scheletro la aggiunge) o la tiene nel proprio
 folder finche non e matura.
