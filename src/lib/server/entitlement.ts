@@ -3,6 +3,7 @@ import {
   createClient as createSupabaseClient,
   type SupabaseClient,
 } from "@supabase/supabase-js";
+import { pianoEffettivo } from "@/lib/piano";
 
 /**
  * Server-side entitlement gate for the AI routes (SPEC-v2 §3.2).
@@ -116,7 +117,7 @@ export async function requirePremium(
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("plan")
+    .select("plan, current_period_end")
     .eq("user_id", user.userId)
     .maybeSingle();
   if (profileError) {
@@ -128,7 +129,9 @@ export async function requirePremium(
     );
   }
 
-  if (profile?.plan !== "premium") {
+  // Un premium scaduto e un free (src/lib/piano.ts): la data la scrivono
+  // Stripe, le notifiche di Apple e la migration 024 per i profili ios-v1.
+  if (pianoEffettivo(profile) !== "premium") {
     return NextResponse.json({ error: "Premium required" }, { status: 402 });
   }
 

@@ -14,6 +14,7 @@
 
 import { useSyncExternalStore } from "react";
 import { resolveStorageMode } from "@/lib/data/store";
+import { pianoEffettivo } from "@/lib/piano";
 
 export type Plan = "free" | "premium";
 
@@ -105,10 +106,12 @@ async function refreshPlan(): Promise<void> {
     if (!user) return;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("plan")
+      .select("plan, current_period_end")
       .eq("user_id", user.id)
       .maybeSingle();
-    setPlan(profile?.plan === "premium" ? "premium" : "free");
+    // Scadenza compresa (src/lib/piano.ts): un premium scaduto mostra i
+    // lucchetti, come il server gli rispondera 402.
+    setPlan(pianoEffettivo(profile));
   } catch {
     // rete giu o env mancanti: resta la cache (o l'ottimismo)
   }
