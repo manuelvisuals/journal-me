@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mockup . Premium su iPhone: l'acquisto dentro l'app, versione 2 (4 settembre 2026)</title>
+<title>Mockup . Premium su iPhone: l'acquisto dentro l'app, versione 3 (4 settembre 2026)</title>
 <style>
 /* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
 @font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
@@ -193,7 +193,7 @@ td .prop{color:var(--ok);font-weight:600}
 <body>
 <div class="wrap">
   <h1 class="page-title">Premium su iPhone: l'acquisto dentro l'app</h1>
-  <p class="page-sub"><b>Versione 2</b> (4 settembre 2026, dopo il tuo giro): il muro usa la grafica a <b>schede</b> che ti e piaciuta, e oggi mostra
+  <p class="page-sub"><b>Versione 3</b> (4 settembre 2026, dopo il tuo secondo giro): il muro usa la grafica a <b>schede</b> che ti e piaciuta, e oggi mostra
     UNA scheda sola, Mensile. Quando vorrai l'annuale, si aggiunge il prodotto su App Store Connect e la seconda scheda compare da sola:
     usa l'interruttore <b>Oggi / Domani</b> sotto per vedere le due versioni. In fondo c'e il <b>quiz</b>: rispondi li, poi copia la riga
     delle risposte e incollamela in chat.</p>
@@ -203,7 +203,8 @@ td .prop{color:var(--ok);font-weight:600}
   <div class="sw2"><button class="on" data-v="oggi">Oggi: solo Mensile</button><button data-v="domani">Domani: con l'Annuale</button></div>
   <p class="caption">Il prezzo e la prova arrivano <b>da Apple</b> (StoreKit), non da una costante nostra: se cambi il prezzo su App Store Connect il muro
     lo dice da solo, nella valuta della persona. La scheda e gia selezionata: con un prodotto solo non c'e niente da scegliere, il tasto parte subito.
-    <b>Premium e legato all'account</b>: chi non ne ha uno (l'ospite) fa prima email e codice, poi il foglio di Apple.</p>
+    <b>Premium e legato all'account</b>: chi non ne ha uno (l'ospite) fa prima email e codice, poi il foglio di Apple.
+    Le righe sotto il tasto (rinnovo, disdetta, termini, privacy, ripristino) le vuole la revisione Apple. <b>Sul web (browser) niente Stripe, per ora:</b> lo stesso muro dice che premium si attiva dall'app per iPhone, con il collegamento all'App Store (terza schermata).</p>
   <div class="row">
     <div class="col">
       <div class="phone">
@@ -211,47 +212,7 @@ td .prop{color:var(--ok);font-weight:600}
         <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
         <div class="vuoto" style="opacity:.5"><h1>Com'e andata oggi?</h1><p>Apri il microfono e racconta.<br>Senza pensarci troppo.</p></div>
         <div class="scrim"></div>
-        <div data-v="oggi">
-        <div class="wall" style="padding-top:22px">
-          <div class="t" style="font-size:24px">Per raccontare a voce
-serve premium</div>
-          <div class="p" style="margin-top:8px">Una settimana gratis per provare tutto. Poi, se ti piace, resta.</div>
-          <div class="opzione on" style="margin-top:14px"><div class="k">Mensile <span style="font-weight:400;color:var(--ink-faint);font-size:13px">4,99 EUR al mese</span><i>&#10003;</i></div><div class="p">7 giorni gratis, poi 4,99 EUR al mese. Disdici quando vuoi.</div></div>
-          <div class="feat" style="margin-top:14px"><i></i><div><b>Racconti e basta</b>Voce, titolo, sintesi, aree, persone, recap.</div></div>
-          <div class="feat"><i></i><div><b>Su tutti i dispositivi</b>Chiuso a chiave, con backup ogni notte.</div></div>
-          <div class="b1" style="margin-top:14px">Prova gratis 7 giorni</div>
-          <div class="b2">non ora</div>
-          <div class="quiet" style="margin-top:10px">Ripristina acquisti</div>
-          <div class="nota" style="margin-top:10px">Dopo la prova si rinnova da solo a 4,99 EUR al mese, finche non lo disdici dalle Impostazioni di Apple. <u>Termini</u> &middot; <u>Privacy</u></div>
-        </div></div>
-        <div data-v="domani" hidden>
-        <div class="wall" style="padding-top:22px">
-          <div class="t" style="font-size:24px">Per raccontare a voce
-serve premium</div>
-          <div class="p" style="margin-top:8px">Scegli come. La prova gratis di una settimana vale per entrambi.</div>
-          <div class="opzione on" style="margin-top:14px"><div class="k">Mensile <span style="font-weight:400;color:var(--ink-faint);font-size:13px">4,99 EUR al mese</span><i>&#10003;</i></div><div class="p">7 giorni gratis, poi 4,99 EUR al mese. Disdici quando vuoi.</div></div>
-          <div class="opzione" style="margin-top:8px"><div class="k">Annuale <span style="font-weight:400;color:var(--ink-faint);font-size:13px">39,99 EUR l'anno</span><i></i></div><div class="p">3,33 EUR al mese. Due mesi in regalo.</div></div>
-          <div class="feat" style="margin-top:14px"><i></i><div><b>Racconti e basta</b>Voce, titolo, sintesi, aree, persone, recap.</div></div>
-          <div class="feat"><i></i><div><b>Su tutti i dispositivi</b>Chiuso a chiave, con backup ogni notte.</div></div>
-          <div class="b1" style="margin-top:14px">Prova gratis 7 giorni</div>
-          <div class="b2">non ora</div>
-          <div class="quiet" style="margin-top:10px">Ripristina acquisti</div>
-          <div class="nota" style="margin-top:10px">Dopo la prova si rinnova da solo a 4,99 EUR al mese, finche non lo disdici dalle Impostazioni di Apple. <u>Termini</u> &middot; <u>Privacy</u></div>
-        </div></div>
-        <div class="ann ok" style="top:92px;right:14px">prezzo e prova letti da StoreKit, nella valuta della persona</div>
-        <div class="ann" style="top:140px;right:14px">rinnovo, disdetta, termini, privacy, ripristino: li vuole la revisione</div>
-        <div class="ann ok" style="top:190px;left:14px" data-v="oggi">una scheda sola, gia scelta: il tasto parte subito</div>
-        <div class="ann ok" style="top:190px;left:14px" data-v="domani" hidden>un prodotto in piu su App Store Connect = una scheda in piu, zero codice nuovo</div>
-      </div>
-      <div class="under"><b>Account gratis, dal microfono.</b> Il tasto apre il foglio di acquisto di Apple (Face ID). "Ripristina acquisti" serve a chi ha gia pagato su un altro iPhone con lo stesso Apple ID.</div>
-    </div>
-    <div class="col">
-      <div class="phone">
-        <div class="status"><span>21:40</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
-        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
-        <div class="vuoto" style="opacity:.5"><h1>Com'e andata oggi?</h1><p>Apri il microfono e racconta.<br>Senza pensarci troppo.</p></div>
-        <div class="scrim"></div>
-        <div class="wall" style="padding-top:22px">
+        <div data-v="oggi"><div class="wall" style="padding-top:22px">
           <div class="t" style="font-size:24px">Le dieci giornate con l'AI
 in regalo sono finite</div>
           <div class="p" style="margin-top:8px">Grazie di averle usate. Puoi <b>continuare a scrivere</b> ogni giorno: manca solo la parte fatta dall'AI.</div>
@@ -262,10 +223,25 @@ in regalo sono finite</div>
           <div class="b2">Continua senza AI</div>
           <div class="quiet" style="margin-top:10px">Ho gia un account &middot; Ripristina acquisti</div>
           <div class="nota" style="margin-top:10px">Dopo la prova si rinnova da solo a 4,99 EUR al mese, finche non lo disdici dalle Impostazioni di Apple. <u>Termini</u> &middot; <u>Privacy</u></div>
-        </div>
-        <div class="ann ok" style="top:92px;right:14px">stessa grafica: e il muro dell'ospite a regalo finito</div>
+        </div></div>
+        <div data-v="domani" hidden><div class="wall" style="padding-top:22px">
+          <div class="t" style="font-size:24px">Le dieci giornate con l'AI
+in regalo sono finite</div>
+          <div class="p" style="margin-top:8px">Grazie di averle usate. Puoi <b>continuare a scrivere</b> ogni giorno: manca solo la parte fatta dall'AI.</div>
+          <div class="opzione on" style="margin-top:14px"><div class="k">Mensile <span style="font-weight:400;color:var(--ink-faint);font-size:13px">4,99 EUR al mese</span><i>&#10003;</i></div><div class="p">7 giorni gratis, poi 4,99 EUR al mese. Disdici quando vuoi.</div></div>
+          <div class="opzione" style="margin-top:8px"><div class="k">Annuale <span style="font-weight:400;color:var(--ink-faint);font-size:13px">39,99 EUR l'anno</span><i></i></div><div class="p">3,33 EUR al mese. Due mesi in regalo.</div></div>
+          <div class="feat" style="margin-top:14px"><i></i><div><b>Con premium l'AI non ha limiti</b>Voce, titolo, sintesi, aree e i recap del mese.</div></div>
+          <div class="feat"><i></i><div><b>Le tue giornate restano qui</b>Sul telefono, come prima. Niente si perde.</div></div>
+          <div class="b1" style="margin-top:14px">Prova gratis 7 giorni</div>
+          <div class="b2">Continua senza AI</div>
+          <div class="quiet" style="margin-top:10px">Ho gia un account &middot; Ripristina acquisti</div>
+          <div class="nota" style="margin-top:10px">Dopo la prova si rinnova da solo a 4,99 EUR al mese, finche non lo disdici dalle Impostazioni di Apple. <u>Termini</u> &middot; <u>Privacy</u></div>
+        </div></div>
+        <div class="ann ok" style="top:108px;right:14px">prezzo e prova letti da StoreKit, nella valuta della persona</div>
+        <div class="ann ok" style="top:150px;left:14px" data-v="oggi">una scheda sola, gia scelta: il tasto parte subito</div>
+        <div class="ann ok" style="top:150px;left:14px" data-v="domani" hidden>un prodotto in piu su App Store Connect = una scheda in piu, zero codice nuovo</div>
       </div>
-      <div class="under"><b>L'ospite a regalo finito.</b> Stesso muro, parole diverse in testa, e l'uscita gratuita "Continua senza AI" resta a un tocco (R3).</div>
+      <div class="under"><b>Il muro, uno solo.</b> Per l'ospite a regalo finito il titolo e questo; per un account gratis dal microfono il titolo dice "Per raccontare a voce serve premium" e sparisce "Ho gia un account": tutto il resto e identico. L'uscita gratuita "Continua senza AI" resta a un tocco (R3).</div>
     </div>
     <div class="col">
       <div class="phone">
@@ -288,6 +264,25 @@ in regalo sono finite</div>
         <div class="ann" style="top:330px;right:14px">non e nostro: e la schermata di Apple, uguale per tutte le app</div>
       </div>
       <div class="under"><b>Dopo il tasto.</b> Apple mostra il suo foglio: prezzo, prova, Face ID. Quando conferma, il telefono riceve una ricevuta firmata e la manda al nostro server, che ne controlla la firma e SOLO allora accende premium.</div>
+    </div>
+    <div class="col">
+      <div class="phone">
+        <div class="status"><span>21:40</span><span class="icons">&#9679;&#9679;&#9679; &#9650; &#9646;</span></div>
+        <div class="appbar"><span class="t">Diario</span><span class="av">&#8226;</span></div>
+        <div class="vuoto" style="opacity:.5"><h1>Com'e andata oggi?</h1><p>Apri il microfono e racconta.<br>Senza pensarci troppo.</p></div>
+        <div class="scrim"></div>
+        <div class="wall" style="padding-top:22px">
+          <div class="t" style="font-size:24px">Per raccontare a voce
+serve premium</div>
+          <div class="p" style="margin-top:8px">Premium si attiva <b>dall'app per iPhone</b>: una settimana gratis, poi 4,99 EUR al mese. Con lo stesso account vale anche qui sul computer.</div>
+          <div class="feat" style="margin-top:14px"><i></i><div><b>Racconti e basta</b>Voce, titolo, sintesi, aree, persone, recap.</div></div>
+          <div class="feat"><i></i><div><b>Su tutti i dispositivi</b>Chiuso a chiave, con backup ogni notte.</div></div>
+          <div class="b1" style="margin-top:14px">Scarica dayalogue per iPhone</div>
+          <div class="b2">non ora</div>
+        </div>
+        <div class="ann ok" style="top:92px;right:14px">WEB: nessun pagamento qui, solo il rimando all'App Store</div>
+      </div>
+      <div class="under"><b>Sul web (browser, qualunque schermo).</b> Niente Stripe per ora: il tasto apre la pagina dell'App Store. Chi si abbona dall'iPhone e premium anche sul web, perche il piano sta sull'account. Il codice Stripe resta com'e, inerte.</div>
     </div>
   </div>
   <div class="divider"></div>
@@ -341,12 +336,12 @@ in regalo sono finite</div>
   </div>
 
   <div class="divider"></div>
-  <p class="label">03 . Il come, in parole semplici</p>
+  <p class="label">02-bis . Il come, in parole semplici</p>
   <div class="prose">
     <h3>Il telefono</h3>
     <p>Un plugin nativo nuovo, <b>Abbonamento.swift</b> (come Cassaforte.swift e DockVetro.swift), parla con StoreKit 2 di Apple: legge i prodotti
-      (prezzo, prova, valuta), apre il foglio di acquisto, ascolta i rinnovi, ripristina. Il web non lo vede: sul browser il tasto continua ad aprire
-      Stripe. Tutto sta nel modulo <i>abbonamento</i>, che e nato proprio per questa differenza.</p>
+      (prezzo, prova, valuta), apre il foglio di acquisto, ascolta i rinnovi, ripristina. Il web non lo vede: sul browser il muro rimanda all'App Store, e il
+      codice Stripe resta inerte finche non deciderai di accenderlo. Tutto sta nel modulo <i>abbonamento</i>, che e nato proprio per questa differenza.</p>
     <h3>Il server</h3>
     <p>Quando Apple conferma, il telefono riceve una <b>ricevuta firmata da Apple</b> (una transazione JWS) e la manda a una route nostra.
       Il server controlla la firma con i certificati di Apple, controlla che il prodotto sia il nostro e che l'app sia la nostra, e SOLO allora scrive
@@ -356,30 +351,25 @@ in regalo sono finite</div>
     <h3>La prova gratis</h3>
     <p>Si configura su App Store Connect come "offerta introduttiva" di una settimana: e Apple a darla una volta sola per Apple ID, noi non teniamo
       nessun conto. Il muro legge dal prodotto se la prova c'e e lo scrive nel tasto. <i>PREMIUM_HAS_FREE_TRIAL</i> diventa vera <b>solo su iPhone</b>:
-      sul web Stripe non ha una prova, e le schermate web continuano a non prometterla (decisione D, sotto).</p>
+      sul web non si compra, quindi non c'e niente da promettere.</p>
     <h3>Cosa succede al premium gratis della v1</h3>
-    <p>La costante <i>PREMIUM_IOS_V1_GRATIS</i> passa a false: la route sparisce e la card di /benvenuto smette di regalare premium. Chi lo ha gia
-      preso (<i>plan_source = ios-v1</i>) e nel database e si riconosce: decisione C, sotto.</p>
+    <p>La costante <i>PREMIUM_IOS_V1_GRATIS</i> passa a false: la route sparisce e la card di /benvenuto smette di regalare premium. I profili
+      <i>plan_source = ios-v1</i> tornano gratis con la migration: sono account di prova, nessuno li ha mai usati. Il tuo (madh52, <i>plan_source = manual</i>)
+      non viene toccato.</p>
   </div>
 
 
   <div class="divider"></div>
-  <p class="label">04 . Il quiz: le decisioni che servono a te</p>
+  <p class="label">03 . Il quiz: le decisioni che servono a te</p>
   <p class="caption">Tocca una risposta per ogni domanda. In fondo compare la riga con le tue scelte: <b>copiala e incollamela in chat</b>. Se vuoi dire altro, c'e il campo note.</p>
   <div class="quiz">
-    <div class="q"><div class="qt"><i>A</i>Il nome del prodotto su App Store Connect</div><div class="qp">E per sempre: su Apple non si rinomina. Segue il bundle id dell'app e lascia il posto a ".annuale" domani.</div>
+    <div class="q"><div class="qt"><i>A</i>Il nome (Product ID) dell'abbonamento mensile su App Store Connect</div><div class="qp">Ogni abbonamento e un prodotto con il suo nome, fisso per sempre. Il mensile si chiama cosi oggi e per sempre; l'annuale, quando ci sara, sara un SECONDO prodotto con un nome suo (".annuale"). Il nome del mensile non cambia mai.</div>
       <label><input type="radio" name="A" value="1" checked><span class="n">1</span><span><b>com.manuelvisuals.journalme.premium.mensile</b> (proposta)</span></label>
       <label><input type="radio" name="A" value="2"><span class="n">2</span><span>Un altro nome: lo scrivo nelle note in fondo</span></label></div>
     <div class="q"><div class="qt"><i>B</i>Quanto dura la prova gratis</div><div class="qp">Si configura su App Store Connect, si cambia senza deploy. Apple la da una volta sola per Apple ID.</div>
       <label><input type="radio" name="B" value="1" checked><span class="n">1</span><span><b>7 giorni</b> (come hai detto)</span></label>
       <label><input type="radio" name="B" value="2"><span class="n">2</span><span>3 giorni</span></label>
       <label><input type="radio" name="B" value="3"><span class="n">3</span><span>14 giorni</span></label></div>
-    <div class="q"><div class="qt"><i>C</i>Chi ha gia il premium gratis della v1 iOS (plan_source ios-v1)</div><div class="qp">Sono i primi che hanno provato l'app (tu compreso, forse qualche tester). Nel database si riconoscono.</div>
-      <label><input type="radio" name="C" value="1" checked><span class="n">1</span><span><b>Lo tiene</b>: nessuno viene retrocesso (proposta)</span></label>
-      <label><input type="radio" name="C" value="2"><span class="n">2</span><span>Torna gratis quando l'acquisto entra</span></label></div>
-    <div class="q"><div class="qt"><i>D</i>La prova gratis anche sul web (Stripe)</div><div class="qp">Stripe e rimandato per tua scelta e il codice e inerte. Il giorno che lo accendi, la prova e una riga nel checkout.</div>
-      <label><input type="radio" name="D" value="1" checked><span class="n">1</span><span><b>No</b>: sul web si paga dal primo giorno, come oggi (proposta)</span></label>
-      <label><input type="radio" name="D" value="2"><span class="n">2</span><span>Si, 7 giorni anche su Stripe</span></label></div>
     <div class="q"><div class="qt"><i>E</i>Come si prova prima di pubblicare</div><div class="qp">In sandbox una settimana di prova dura 3 minuti e un mese 5: si vede tutto il giro in un quarto d'ora.</div>
       <label><input type="radio" name="E" value="1" checked><span class="n">1</span><span><b>Sandbox di Apple sul tuo iPhone</b>: utente di prova, acquisto finto (proposta)</span></label>
       <label><input type="radio" name="E" value="2"><span class="n">2</span><span>Direttamente in TestFlight</span></label></div>
@@ -388,7 +378,7 @@ in regalo sono finite</div>
       <label><input type="radio" name="F" value="2"><span class="n">2</span><span>Approvato con le modifiche che scrivo nelle note</span></label>
       <label><input type="radio" name="F" value="3"><span class="n">3</span><span>Rifallo: scrivo nelle note cosa non va</span></label></div>
     <div class="q"><div class="qt"><i>Note</i>Altro che vuoi dirmi (facoltativo)</div><textarea id="note" placeholder="Per esempio: il tasto piu grande, oppure il nome del prodotto che preferisci"></textarea></div>
-    <div class="esito"><div><div class="k">Le tue risposte</div><div class="c" id="codice">A1 B1 C1 D1 E1 F1</div></div><button id="copia">Copia</button><div class="h">Incolla questa riga in chat (le note ci finiscono dentro). Se il tasto Copia non funziona, selezionala e copiala a mano.</div></div>
+    <div class="esito"><div><div class="k">Le tue risposte</div><div class="c" id="codice">A1 B1 E1 F1</div></div><button id="copia">Copia</button><div class="h">Incolla questa riga in chat (le note ci finiscono dentro). Se il tasto Copia non funziona, selezionala e copiala a mano.</div></div>
   </div>
 </div>
 <script>
@@ -403,7 +393,7 @@ in regalo sono finite</div>
   var codice = document.getElementById('codice');
   function aggiorna(){
     var parti = [];
-    ['A','B','C','D','E','F'].forEach(function(q){
+    ['A','B','E','F'].forEach(function(q){
       var s = document.querySelector('input[name="' + q + '"]:checked');
       if (s) parti.push(q + s.value);
     });
