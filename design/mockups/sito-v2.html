@@ -283,7 +283,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
 .s .cond-nota{margin-top:22px;font-size:14.5px;color:var(--faint);max-width:70ch}
 
 /* --------------------------------------------- iPhone / App Store */
-.s .store{display:flex;flex-direction:column;gap:22px;background:var(--carta);border:1px solid var(--line);border-radius:22px;padding:28px 24px}
+.s .store{display:flex;flex-direction:column;gap:22px;overflow:hidden;background:var(--carta);border:1px solid var(--line);border-radius:22px;padding:28px 24px}
 .s .store p{margin-top:8px;max-width:52ch}
 .s .badge{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 16px 0 12px;border-radius:10px;background:var(--ink);color:var(--bg);text-decoration:none}
 .s .badge svg{width:22px;height:22px;fill:currentColor}
@@ -396,6 +396,65 @@ body[data-vista="computer"] .palco.telefono{display:none}
   .s .supp h1{font-size:48px}
 }
 
+
+/* --------------------------------------------- v2.1: immagini e look premium */
+.s{position:relative}
+.s::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.11 0 0 0 0 0.09 0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.s>*{position:relative;z-index:1}
+.s .eroe{overflow:hidden}
+.s .eroe::before{content:"";position:absolute;right:-10%;top:-30%;width:70%;height:160%;pointer-events:none;z-index:0;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--acc) 16%,transparent),transparent 70%);filter:blur(10px)}
+.s .eroe .cont{position:relative;z-index:1}
+.dev{padding:9px;background:#0A0908;border-radius:44px;box-shadow:0 40px 90px rgba(36,28,23,.28),0 2px 0 rgba(255,255,255,.06) inset;position:relative;width:100%;max-width:378px}
+.dev::after{content:"";position:absolute;left:50%;top:18px;transform:translateX(-50%);width:96px;height:26px;border-radius:16px;background:#0A0908;z-index:3}
+.dev .app{border-radius:36px;max-width:none;border:0;box-shadow:none;padding-top:38px}
+.dev .app .a-top{padding-top:8px}
+.s[data-tema="scuro"] .dev{box-shadow:0 40px 90px rgba(0,0,0,.6)}
+.s .foto{padding:0}
+.s .foto-band{position:relative;border-radius:28px;overflow:hidden;min-height:420px;display:flex;align-items:flex-end;background:#2B1D18;color:#F4E7DE}
+.s .foto-band svg.arte{position:absolute;inset:0;width:100%;height:100%}
+.s .foto-band .ft{position:relative;padding:34px 26px 30px;max-width:44ch}
+.s .foto-band .ft h2{color:#F4E7DE;font-size:34px}
+.s .foto-band .ft p{color:rgba(244,231,222,.78);margin-top:10px;font-size:16px}
+.s .foto-band .segna{display:none;position:absolute;inset:0;border:2px dashed rgba(244,231,222,.5);border-radius:28px;background:#3A2A22;align-items:flex-start;justify-content:center;text-align:center;padding:40px;color:rgba(244,231,222,.85);font-size:15px;line-height:1.6}
+.s .foto-band .segna b{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;color:#E3A15F}
+.s[data-foto="prompt"] .foto-band svg.arte{display:none}
+.s[data-foto="prompt"] .foto-band .segna{display:flex}
+.s .voce-testo{width:100%;max-width:320px;height:auto;display:block;margin:0 0 18px}
+.s .libro{position:relative;width:200px;height:260px;margin:0 auto}
+.s .libro .pag{position:absolute;inset:0;background:var(--carta);border:1px solid var(--line2);border-radius:6px 14px 14px 6px}
+.s .libro .pag:nth-child(1){transform:translate(14px,10px) rotate(2deg);opacity:.55}
+.s .libro .pag:nth-child(2){transform:translate(7px,5px) rotate(1deg);opacity:.8}
+.s .libro .cop{position:absolute;inset:0;background:var(--ink);color:var(--bg);border-radius:6px 14px 14px 6px;padding:26px 22px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 24px 50px rgba(36,28,23,.25)}
+.s .libro .cop::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:1px;background:rgba(255,255,255,.12)}
+.s .libro .cop .m{font-family:var(--serif);font-size:20px}
+.s .libro .cop .a{font-family:var(--serif);font-size:26px;line-height:1.1}
+.s .libro .cop .a small{display:block;font-family:var(--font);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-bottom:8px}
+.s .store-dev{display:flex;justify-content:center;padding:36px 0 0}
+.s .store-t{flex:1}
+.s .store-t .badge-riga{margin-top:26px}
+.s .store{padding-bottom:0}
+.s .store-dev .dev{max-width:250px;border-radius:34px 34px 0 0;padding:7px 7px 0;margin-bottom:0}
+.s .store-dev .dev::after{display:none}
+.s .store-dev .dev .app{padding-top:14px}
+.s .store-dev .dev .app{border-radius:28px 28px 0 0}
+.s .store-dev .dev .app{border-radius:28px;padding-top:30px;font-size:11px}
+.s .store-dev .dev::after{width:70px;height:20px;top:13px}
+.s .store-dev .dev .app .a-tit{font-size:17px}.s .store-dev .dev .app .a-prosa{font-size:13px}
+.s .store-dev .dev .app .a-foglio{padding:14px}
+@container sito (min-width: 760px){
+  .s .foto-band{min-height:560px}
+  .s .foto-band .ft{padding:56px 60px 52px}
+  .s .foto-band .ft h2{font-size:48px}
+  .s .foto-band .ft p{font-size:18px}
+  .s .eroe-app{flex:0 0 400px}
+  .s .libro{width:240px;height:310px}
+  .s .store{align-items:flex-end;padding:44px 44px 0;gap:24px}
+  .s .store-dev{padding:0;flex:0 0 300px;justify-content:flex-end}
+  .s .store-t{padding-bottom:44px}
+}
+
 /* ============================================================
    IL QUIZ
    ============================================================ */
@@ -420,6 +479,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
 .nonpromesso{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;max-width:1000px}
 .nonpromesso div{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.55;color:var(--pg-mut)}
 .nonpromesso div b{color:var(--pg-ink);display:block;margin-bottom:4px}
+.nonpromesso div .cp{display:block;margin-top:10px;background:var(--pg-3);color:var(--pg-ink);border:1px solid var(--pg-line);border-radius:8px;padding:6px 12px;font:inherit;font-size:12.5px;cursor:pointer}
 
 @media (max-width:1100px){.mac-scroll{height:760px}}
 @media (max-width:720px){
@@ -436,7 +496,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
      IL SITO, scritto UNA volta. Lo script lo copia nei due palchi.
      ===================================================================== -->
 <template id="sito">
-<div class="s" data-eroe="voce" data-tema="chiaro" data-lunga="si" data-store="arrivo" data-piede="minimo" data-pagina="home">
+<div class="s" data-eroe="voce" data-tema="chiaro" data-lunga="si" data-store="arrivo" data-piede="completo" data-pagina="home" data-foto="arte">
 
   <header class="nav">
     <div class="nav-in">
@@ -475,7 +535,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
         <div class="eroe-sotto">Si apre e basta. Niente account, niente carta, niente pubblicita.</div>
       </div>
       <div class="eroe-app">
-        <div class="app">
+        <div class="dev"><div class="app">
           <div class="a-top"><span class="d">Giovedi 27 agosto</span><span class="av"></span></div>
           <div class="a-foglio">
             <div class="a-tit">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</div>
@@ -501,7 +561,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
             <span><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M9 12h6M9 16h6"/></svg>Memo</span>
             <span><svg viewBox="0 0 24 24"><path d="M4 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4zM20 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></svg>Recap</span>
           </div>
-        </div>
+        </div></div>
       </div>
     </div>
   </section>
@@ -529,11 +589,51 @@ body[data-vista="computer"] .palco.telefono{display:none}
     </div>
   </section>
 
+
+  <!-- ------------------------------------------------ IMMAGINE: LA SERA -->
+  <section class="foto solo-lunga">
+    <div class="cont">
+      <div class="foto-band">
+        <svg class="arte" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B1210"/><stop offset=".55" stop-color="#3A241C"/><stop offset="1" stop-color="#6B3A26"/></linearGradient>
+    <radialGradient id="g2" cx=".72" cy=".78" r=".55"><stop offset="0" stop-color="#E3A15F" stop-opacity=".85"/><stop offset=".45" stop-color="#A8542E" stop-opacity=".35"/><stop offset="1" stop-color="#A8542E" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g3" cx=".2" cy=".1" r=".6"><stop offset="0" stop-color="#F4E7DE" stop-opacity=".10"/><stop offset="1" stop-color="#F4E7DE" stop-opacity="0"/></radialGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 .9 0 0 0 0 .8 0 0 0 .07 0"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="1200" height="600" fill="url(#g1)"/>
+  <rect width="1200" height="600" fill="url(#g2)"/>
+  <rect width="1200" height="600" fill="url(#g3)"/>
+  <ellipse cx="880" cy="500" rx="260" ry="120" fill="#E3A15F" opacity=".22" filter="url(#soft)"/>
+  <g opacity=".9" stroke="#F4E7DE" stroke-width="3" stroke-linecap="round">
+    <line x1="700" y1="300" x2="700" y2="330"/><line x1="720" y1="285" x2="720" y2="345"/><line x1="740" y1="270" x2="740" y2="360"/><line x1="760" y1="290" x2="760" y2="340"/><line x1="780" y1="255" x2="780" y2="375"/><line x1="800" y1="280" x2="800" y2="350"/><line x1="820" y1="300" x2="820" y2="330"/><line x1="840" y1="265" x2="840" y2="365"/><line x1="860" y1="295" x2="860" y2="335"/><line x1="880" y1="305" x2="880" y2="325"/>
+  </g>
+  <rect width="1200" height="600" filter="url(#grain)"/>
+</svg>
+        <div class="segna"><div><b>Foto 1 &middot; La sera</b>Qui va una fotografia vera: una persona sul divano, la sera, luce calda di una lampada, il telefono in mano vicino al viso. Il prompt e in fondo al mockup.</div></div>
+        <div class="ft">
+          <h2>Due minuti, prima di dormire.</h2>
+          <p>Non serve la penna, non serve la pagina bianca. Serve solo dire com'e andata.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ------------------------------------------------ COME FUNZIONA -->
   <section class="sez" id="come">
     <div class="cont">
       <div class="testa">
         <div class="kick">Come funziona</div>
+        <svg class="voce-testo" viewBox="0 0 320 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke="var(--acc)" stroke-width="3" stroke-linecap="round" fill="none">
+          <line x1="8" y1="40" x2="8" y2="50"/><line x1="20" y1="30" x2="20" y2="60"/><line x1="32" y1="22" x2="32" y2="68"/><line x1="44" y1="34" x2="44" y2="56"/><line x1="56" y1="18" x2="56" y2="72"/><line x1="68" y1="30" x2="68" y2="60"/><line x1="80" y1="38" x2="80" y2="52"/><line x1="92" y1="26" x2="92" y2="64"/><line x1="104" y1="36" x2="104" y2="54"/>
+        </g>
+        <path d="M118 45 C 140 45, 140 45, 158 45" stroke="var(--line2)" stroke-width="1.5" stroke-dasharray="3 5" fill="none"/>
+        <g fill="var(--ink)" opacity=".9">
+          <rect x="172" y="26" width="120" height="7" rx="3.5"/><rect x="172" y="41" width="140" height="7" rx="3.5" opacity=".55"/><rect x="172" y="56" width="96" height="7" rx="3.5" opacity=".55"/>
+        </g>
+      </svg>
         <h2>Tre cose, e poi basta</h2>
       </div>
       <div class="passi">
@@ -704,7 +804,12 @@ body[data-vista="computer"] .palco.telefono{display:none}
             <p>A fine mese, a fine semestre, a fine anno: un testo scritto per intero, non un elenco di statistiche. Serve a ricordare come stavi, non quante volte sei andato in palestra.</p>
             <a class="link" href="#">Leggi un recap</a>
           </div>
-          <div class="app">
+          <div class="fx-libro" style="flex:0 0 360px;display:flex;flex-direction:column;gap:28px;align-items:center">
+          <div class="libro">
+            <div class="pag"></div><div class="pag"></div>
+            <div class="cop"><span class="m">dayalogue</span><span class="a"><small>Recap</small>Agosto<br>2026</span></div>
+          </div>
+          <div class="app" style="display:none">
             <div class="a-top"><span class="d">Recap &middot; Agosto 2026</span><span class="av"></span></div>
             <div class="recap">
               <div class="l">Il mese</div>
@@ -713,6 +818,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
               <div class="p">Resta Marco che chiama dopo due anni, la corsa al fiume, i pranzi della domenica. Le cose piccole hanno tenuto insieme le grandi.</div>
             </div>
             <div class="a-fondo" style="height:24px"></div>
+          </div>
           </div>
         </div>
       </div>
@@ -789,7 +895,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
   <section class="sez" id="iphone">
     <div class="cont">
       <div class="store">
-        <div>
+        <div class="store-t">
           <div class="kick">dayalogue per iPhone e iPad</div>
           <h2 style="font-size:28px">Sul telefono, come un'app.</h2>
           <p>
@@ -797,14 +903,23 @@ body[data-vista="computer"] .palco.telefono{display:none}
             <span class="st-pubb">L'app per iPhone e sull'App Store. Dal computer si usa dal browser, con le stesse giornate.</span>
           </p>
           <div class="store-home"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Da Safari: Condividi, poi "Aggiungi alla schermata Home"</div>
+          <div class="badge-riga">
+            <a class="badge spento" href="#">
+              <svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.8 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.2zM13.9 5c.7-.9 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3 1.1.1 2.3-.5 3-1.3z"/></svg>
+              <span class="bt"><small><span class="st-arrivo">In arrivo su</span><span class="st-pubb">Scarica su</span></small><b>App Store</b></span>
+            </a>
+            <span class="badge-nota" style="font-style:italic">(nota del mockup: si accende da solo quando l'app e pubblicata)</span>
+          </div>
         </div>
-        <div class="badge-riga">
-          <a class="badge spento" href="#">
-            <svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.8 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.2zM13.9 5c.7-.9 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3 1.1.1 2.3-.5 3-1.3z"/></svg>
-            <span class="bt"><small><span class="st-arrivo">In arrivo su</span><span class="st-pubb">Scarica su</span></small><b>App Store</b></span>
-          </a>
-          <span class="badge-nota" style="font-style:italic">(nota del mockup: si accende da solo quando l'app e pubblicata)</span>
-        </div>
+        <div class="store-dev"><div class="dev"><div class="app">
+          <div class="a-top"><span class="d">Giovedi 27 agosto</span><span class="av"></span></div>
+          <div class="a-foglio">
+            <div class="a-tit">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</div>
+            <div class="a-prosa">La giornata e cominciata storta e si e raddrizzata alle sei.</div>
+            <div class="a-misure"><div class="a-mis"><div class="l">Umore</div><div class="v">4</div></div><div class="a-mis"><div class="l">Energia</div><div class="v">3</div></div></div>
+          </div>
+          <div class="a-fondo" style="height:40px"></div>
+        </div></div></div>
       </div>
     </div>
   </section>
@@ -876,18 +991,19 @@ body[data-vista="computer"] .palco.telefono{display:none}
      LA PAGINA DEL MOCKUP
      ===================================================================== -->
 <div class="page">
-  <div class="page-kick">dayalogue &middot; sito v2 &middot; mockup del 5 settembre 2026</div>
+  <div class="page-kick">dayalogue &middot; sito v2.1 &middot; secondo giro, 5 settembre 2026</div>
   <h1>Il nuovo dayalogue.com</h1>
-  <p class="page-sub">Un file solo: il sito intero, <b>dentro un iPhone e dentro un Mac</b>, con gli interruttori qui sotto per vedere le varianti su cui devi decidere.
+  <p class="page-sub"><b>Secondo giro.</b> Le tue scelte del primo (eroe Voce, pagina lunga, badge spento, schermate in HTML, piede completo, sempre Carta) sono diventate il default. Ho aggiunto le immagini: una banda grande "la sera", la voce che diventa testo, il libro dei recap, le cornici iPhone vere, la grana di carta su tutto il fondo. Le fotografie le fai fare con i prompt in fondo.<br><br>Un file solo: il sito intero, <b>dentro un iPhone e dentro un Mac</b>, con gli interruttori qui sotto per vedere le varianti su cui devi decidere.
     Le schermate dell'app sono riprodotte in HTML col tema Carta, con la giornata di esempio di Marco. Scorri dentro i due schermi.
     In fondo c'e il <b>quiz</b>: rispondi con le lettere (per esempio <b>1A 2B 3A</b>).</p>
 
   <div class="cmd" id="cmd">
     <div class="g"><span class="k">Vista</span><div class="sw" data-k="vista"><button data-v="entrambi" class="on">Entrambi</button><button data-v="telefono">Telefono</button><button data-v="computer">Computer</button></div></div>
-    <div class="g"><span class="k">Eroe</span><div class="sw" data-k="eroe"><button data-v="voce" class="on">A &middot; Voce</button><button data-v="cassa">B &middot; Cassaforte</button></div></div>
-    <div class="g"><span class="k">Pagina</span><div class="sw" data-k="lunga"><button data-v="si" class="on">A &middot; Lunga</button><button data-v="no">B &middot; Corta</button></div></div>
-    <div class="g"><span class="k">Badge</span><div class="sw" data-k="store"><button data-v="arrivo" class="on">A &middot; Spento</button><button data-v="assente">B &middot; Assente</button><button data-v="pubblicata">Domani</button></div></div>
-    <div class="g"><span class="k">Piede</span><div class="sw" data-k="piede"><button data-v="minimo" class="on">A &middot; Minimo</button><button data-v="completo">B &middot; Completo</button></div></div>
+    <div class="g"><span class="k">Eroe</span><div class="sw" data-k="eroe"><button data-v="voce" class="on">Voce</button><button data-v="cassa">Cassaforte</button></div></div>
+    <div class="g"><span class="k">Pagina</span><div class="sw" data-k="lunga"><button data-v="si" class="on">Lunga</button><button data-v="no">Corta</button></div></div>
+    <div class="g"><span class="k">Badge</span><div class="sw" data-k="store"><button data-v="arrivo" class="on">Spento</button><button data-v="assente">Assente</button><button data-v="pubblicata">Domani</button></div></div>
+    <div class="g"><span class="k">Piede</span><div class="sw" data-k="piede"><button data-v="minimo">Minimo</button><button data-v="completo" class="on">Completo</button></div></div>
+    <div class="g"><span class="k">Immagini</span><div class="sw" data-k="foto"><button data-v="arte" class="on">Illustrazioni</button><button data-v="prompt">Segnaposto foto</button></div></div>
     <div class="g"><span class="k">Tema</span><div class="sw" data-k="tema"><button data-v="chiaro" class="on">Chiaro</button><button data-v="scuro">Scuro</button></div></div>
     <div class="g"><span class="k">Schermata</span><div class="sw" data-k="pagina"><button data-v="home" class="on">Home</button><button data-v="supporto">Assistenza</button></div></div>
   </div>
@@ -923,52 +1039,43 @@ body[data-vista="computer"] .palco.telefono{display:none}
     <div><b>Assistenza nello stesso stile</b>Quattro campi, un tasto. Interruttore "Schermata" in alto per vederla.</div>
   </div>
 
+
+  <div class="divider"></div>
+  <p class="label">Le fotografie: prompt per un'altra AI</p>
+  <p class="caption">Io non genero fotografie. Questi prompt sono pronti per Midjourney, DALL-E, Ideogram o Flux: <b>copia e incolla</b>. Le immagini vanno in orizzontale (3:2), tema caldo, niente testo dentro, niente loghi, niente volti riconoscibili in primo piano. Colori da chiedere sempre: avorio, ruggine, legno scuro, luce di lampada.</p>
+  <div class="nonpromesso" id="prompts">
+    <div><b>Foto 1 &middot; La sera (banda grande)</b>Editorial photograph, a person seen from behind on a linen sofa at night, holding a phone near their face as if speaking softly, warm light from a single table lamp, ivory and rust tones, dark wood, deep shadows, quiet and intimate, shallow depth of field, 35mm, film grain, no text, no logos, 3:2.<button class="cp">Copia</button></div>
+    <div><b>Foto 2 &middot; Il comodino (sezione iPhone)</b>Product photograph, an iPhone lying face up on a wooden nightstand at night beside a closed notebook and a small brass lamp, screen dark, warm amber light, ivory bed linen out of focus in the background, minimal, premium Apple-style still life, soft shadows, film grain, no text on screen, 3:2.<button class="cp">Copia</button></div>
+    <div><b>Foto 3 &middot; La cassaforte (se rispondi 1C)</b>Macro photograph, a small old brass key resting on a sheet of thick ivory paper with eight handwritten Italian words in dark ink, blurred, warm lamp light from the side, rust and cream tones, extremely shallow depth of field, calm, no readable text, no logos, 3:2.<button class="cp">Copia</button></div>
+    <div><b>Foto 4 &middot; L'eroe (se rispondi 1C)</b>Atmospheric photograph, an empty living room at dusk, a window with the last warm light of the day, an armchair and a lamp already on, ivory walls, rust-colored blanket, dark wood floor, very soft, cinematic, lots of empty space on the left for text, film grain, no people, no text, 3:2.<button class="cp">Copia</button></div>
+  </div>
+
   <div class="divider"></div>
   <p class="label">Il quiz: rispondi con le lettere</p>
   <p class="caption">Ogni domanda ha un interruttore in alto: <b>provala prima di rispondere</b>. Tocca una risposta; in fondo compare la riga con le tue scelte, copiala e incollamela in chat (o scrivimela a mano, va bene lo stesso).</p>
   <div class="quiz-wrap"><div class="quiz" id="quiz">
 
-    <div class="q"><div class="qt"><i>1</i>L'eroe: cosa dice per primo?</div><div class="qp">La voce e il gesto (il microfono); la cassaforte e il motivo per cui non e "un'altra app con l'AI". In tutte e due le varianti l'altra cosa arriva subito dopo.</div>
-      <label><input type="radio" name="1" value="A" checked><span class="n">A</span><span><b>Voce</b>: "Racconta la giornata. Il resto lo scrive lui." La cassaforte e la seconda promessa e ha la sua sezione scura.</span><span class="vedi" data-k="eroe" data-v="voce">vedi</span></label>
-      <label><input type="radio" name="1" value="B"><span class="n">B</span><span><b>Cassaforte</b>: "Un diario che si racconta a voce. E che nessuno puo leggere. Nemmeno noi."</span><span class="vedi" data-k="eroe" data-v="cassa">vedi</span></label>
+    <div class="q"><div class="qt"><i>1</i>Le immagini: illustrazioni mie o fotografie vere?</div><div class="qp">Le illustrazioni (la sera in SVG, la voce che diventa testo, il libro, le cornici iPhone) le ho fatte io e sono gia nel mockup: nitide, leggere, cambiano col tema. Le fotografie le devi far fare a un'altra AI con i prompt qui sotto: piu calde, piu "Apple", ma fisse. Interruttore <b>Immagini</b> in alto per vedere i segnaposto.</div>
+      <label><input type="radio" name="1" value="A" checked><span class="n">A</span><span><b>Fotografie</b> nei due punti segnati (la sera; il telefono sul comodino), illustrazioni per il resto.</span><span class="vedi" data-k="foto" data-v="prompt">vedi i segnaposto</span></label>
+      <label><input type="radio" name="1" value="B"><span class="n">B</span><span><b>Solo illustrazioni</b>, niente fotografie: il sito resta tutto disegnato.</span><span class="vedi" data-k="foto" data-v="arte">vedi</span></label>
+      <label><input type="radio" name="1" value="C"><span class="n">C</span><span><b>Piu fotografie</b>: anche nell'eroe, dietro il telefono, e nella cassaforte.</span></label>
     </div>
 
-    <div class="q"><div class="qt"><i>2</i>Quanto e lunga la pagina?</div><div class="qp">Lunga: eroe, tre promesse, come funziona, cassaforte, le quattro schermate, temi e lingue, le tre condizioni, iPhone, domande, chiusura. Corta: senza la sezione delle quattro schermate e con una domanda in meno.</div>
-      <label><input type="radio" name="2" value="A" checked><span class="n">A</span><span><b>Lunga</b>: racconta tutto, e a Google piace.</span><span class="vedi" data-k="lunga" data-v="si">vedi</span></label>
-      <label><input type="radio" name="2" value="B"><span class="n">B</span><span><b>Corta</b>: tre schermate nel "come funziona" e basta; le altre si scoprono nell'app.</span><span class="vedi" data-k="lunga" data-v="no">vedi</span></label>
+    <div class="q"><div class="qt"><i>2</i>La banda "Due minuti, prima di dormire"</div><div class="qp">E la sezione nuova con l'immagine grande, dopo le tre promesse.</div>
+      <label><input type="radio" name="2" value="A" checked><span class="n">A</span><span><b>Tienila</b> dov'e.</span></label>
+      <label><input type="radio" name="2" value="B"><span class="n">B</span><span><b>Spostala</b> in fondo, prima di "Com'e andata oggi?".</span></label>
+      <label><input type="radio" name="2" value="C"><span class="n">C</span><span><b>Toglila</b>.</span></label>
     </div>
 
-    <div class="q"><div class="qt"><i>3</i>Il badge App Store</div><div class="qp">In tutti i casi la riga "C'e l'app per iPhone?" e la frase della sezione iPhone cambiano da sole quando l'app e pubblicata (interruttore "Domani"), senza ridisegnare niente.</div>
-      <label><input type="radio" name="3" value="A" checked><span class="n">A</span><span><b>Disegnato e spento</b>, con la scritta "In arrivo su App Store": si vede gia dove andra.</span><span class="vedi" data-k="store" data-v="arrivo">vedi</span></label>
-      <label><input type="radio" name="3" value="B"><span class="n">B</span><span><b>Assente</b> finche non serve: solo la frase, il badge compare alla pubblicazione.</span><span class="vedi" data-k="store" data-v="assente">vedi</span></label>
+    <div class="q"><div class="qt"><i>3</i>Il telefono nella sezione iPhone</div><div class="qp">Sul computer esce dal riquadro, tagliato in basso, come fa Apple.</div>
+      <label><input type="radio" name="3" value="A" checked><span class="n">A</span><span><b>Cosi</b>, tagliato.</span></label>
+      <label><input type="radio" name="3" value="B"><span class="n">B</span><span><b>Intero</b>, dentro il riquadro.</span></label>
     </div>
 
-    <div class="q"><div class="qt"><i>4</i>Le schermate dell'app dentro il sito</div><div class="qp">Oggi nel mockup sono riprodotte in HTML (tema Carta). In HTML restano nitide a ogni misura, cambiano col tema e con la lingua, e Google le legge come testo. Gli screenshot veri sono piu fedeli ma vanno rifatti a ogni cambio dell'app, e in due lingue.</div>
-      <label><input type="radio" name="4" value="A" checked><span class="n">A</span><span><b>Riprodotte in HTML</b>, fedeli, come nel mockup.</span></label>
-      <label><input type="radio" name="4" value="B"><span class="n">B</span><span><b>Screenshot veri</b> che fornisci tu (iPhone, tema Carta, chiaro e scuro, italiano e inglese).</span></label>
-      <label><input type="radio" name="4" value="C"><span class="n">C</span><span><b>Misto</b>: HTML nell'eroe e nel "come funziona", uno screenshot vero nella sezione iPhone.</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>5</i>Il piede</div>
-      <label><input type="radio" name="5" value="A" checked><span class="n">A</span><span><b>Minimo</b>: una riga, il marchio e quattro collegamenti (Privacy, Assistenza, Accedi, English).</span><span class="vedi" data-k="piede" data-v="minimo">vedi</span></label>
-      <label><input type="radio" name="5" value="B"><span class="n">B</span><span><b>Completo</b>: Prodotto, Legale, Account, come oggi.</span><span class="vedi" data-k="piede" data-v="completo">vedi</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>6</i>Il tema del sito</div><div class="qp">Oggi il sito eredita il tema e il chiaro/scuro scelti nell'app (chi ha Macchina scuro vede il sito Macchina scuro). Il mockup mostra Carta chiaro e Carta scuro.</div>
-      <label><input type="radio" name="6" value="A" checked><span class="n">A</span><span><b>Segue il visitatore</b>, come oggi: tema dell'app e chiaro/scuro del sistema.</span><span class="vedi" data-k="tema" data-v="scuro">vedi lo scuro</span></label>
-      <label><input type="radio" name="6" value="B"><span class="n">B</span><span><b>Sempre Carta</b>, chiaro di giorno e scuro di notte col sistema: il sito e la vetrina, il tema lo scegli dentro.</span></label>
-      <label><input type="radio" name="6" value="C"><span class="n">C</span><span><b>Sempre Carta chiaro</b>, punto.</span><span class="vedi" data-k="tema" data-v="chiaro">vedi</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>7</i>La sezione cassaforte: quanto pesa?</div><div class="qp">E la promessa piu importante e per questo e scura e grande. Ma e anche la sezione con piu parole della pagina.</div>
-      <label><input type="radio" name="7" value="A" checked><span class="n">A</span><span><b>Cosi</b>: titolo, spiegazione, le due caselle leggibile/illeggibile, i tre punti (otto parole, nessun recupero, OpenAI).</span></label>
-      <label><input type="radio" name="7" value="B"><span class="n">B</span><span><b>Piu corta</b>: titolo, le due caselle, e i tre punti vanno nelle Domande.</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>8</i>Il mockup</div><div class="qp">Se approvi, la prossima chat (quella del modulo sito) parte col codice: pagine server, italiano e inglese, testi in testi.ts.</div>
-      <label><input type="radio" name="8" value="A" checked><span class="n">A</span><span><b>Approvato cosi</b>, con le scelte sopra: si passa al codice.</span></label>
-      <label><input type="radio" name="8" value="B"><span class="n">B</span><span><b>Approvato con le modifiche</b> che scrivo nelle note.</span></label>
-      <label><input type="radio" name="8" value="C"><span class="n">C</span><span><b>Rifallo</b>: scrivo nelle note cosa non va.</span></label>
+    <div class="q"><div class="qt"><i>4</i>Il mockup</div><div class="qp">Se approvi, la chat del modulo sito parte col codice: pagine server, italiano e inglese, testi in testi.ts, immagini in public/.</div>
+      <label><input type="radio" name="4" value="A" checked><span class="n">A</span><span><b>Approvato cosi</b>: si passa al codice.</span></label>
+      <label><input type="radio" name="4" value="B"><span class="n">B</span><span><b>Approvato con le modifiche</b> che scrivo nelle note.</span></label>
+      <label><input type="radio" name="4" value="C"><span class="n">C</span><span><b>Rifallo</b>: scrivo nelle note cosa non va.</span></label>
       <textarea id="note" placeholder="Note (facoltative): frasi da cambiare, cose che mancano, cose da togliere..."></textarea>
     </div>
 
@@ -986,7 +1093,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
   var siti = document.querySelectorAll('.s');
 
   // gli interruttori in alto (e i "vedi" del quiz)
-  var stato = {vista:'entrambi', eroe:'voce', lunga:'si', store:'arrivo', piede:'minimo', tema:'chiaro', pagina:'home'};
+  var stato = {foto:'arte', vista:'entrambi', eroe:'voce', lunga:'si', store:'arrivo', piede:'completo', tema:'chiaro', pagina:'home'};
   function applica(k, v){
     stato[k] = v;
     if (k === 'vista') document.body.setAttribute('data-vista', v);
@@ -1038,6 +1145,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
     if (navigator.clipboard) navigator.clipboard.writeText(t).then(fatto, function(){ b.textContent = 'Seleziona e copia a mano'; });
     else b.textContent = 'Seleziona e copia a mano';
   });
+  document.querySelectorAll('#prompts .cp').forEach(function(b){ b.addEventListener('click', function(){ var t=b.parentNode.childNodes[1].textContent.trim(); var ok=function(){ b.textContent='Copiato'; setTimeout(function(){ b.textContent='Copia'; },1500); }; if(navigator.clipboard) navigator.clipboard.writeText(t).then(ok); }); });
   aggiorna();
 })();
 </script>
