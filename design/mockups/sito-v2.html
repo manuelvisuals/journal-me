@@ -455,6 +455,60 @@ body[data-vista="computer"] .palco.telefono{display:none}
   .s .store-t{padding-bottom:44px}
 }
 
+
+/* --------------------------------------------- v2.2: le fotografie vere */
+.s .eroe{background:#1B1210 url("foto/salotto-tramonto.webp") center 40%/cover no-repeat;color:#F7EFE4;padding:72px 0 64px;min-height:640px;display:flex;align-items:center}
+.s .eroe::before{content:"";position:absolute;inset:0;width:auto;height:auto;right:auto;top:auto;filter:none;z-index:0;
+  background:linear-gradient(180deg,rgba(20,12,9,.15),rgba(20,12,9,.55) 100%),linear-gradient(90deg,rgba(20,12,9,.55),rgba(20,12,9,.25) 50%,rgba(20,12,9,0))}
+.s .eroe h1{color:#F7EFE4;text-shadow:0 2px 30px rgba(0,0,0,.25)}
+.s .eroe p{color:rgba(247,239,228,.84)}
+.s .eroe .link{color:#F0C08A}
+.s .eroe .eroe-sotto{color:rgba(247,239,228,.62)}
+.s .eroe .btn{background:#F7EFE4;color:#16120F}
+.s .eroe .btn:hover{background:#fff}
+.s .eroe .dev{box-shadow:0 50px 100px rgba(0,0,0,.55)}
+.s .eroe-in{width:100%}
+.s .foto-band img.arte{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%}
+.s .foto-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,12,9,0) 35%,rgba(20,12,9,.72));pointer-events:none}
+.s .foto-band .ft{z-index:1}
+.s .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.s .duo figure{position:relative;margin:0;border-radius:22px;overflow:hidden;aspect-ratio:3/4;background:#1B1210}
+.s .duo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.s .duo figure:hover img{transform:scale(1.03)}
+.s .duo figcaption{position:absolute;left:0;right:0;bottom:0;padding:70px 18px 18px;background:linear-gradient(180deg,rgba(20,12,9,0),rgba(20,12,9,.75));color:#F7EFE4;font-family:"EB Garamond",Georgia,serif;font-style:italic;font-size:17px;line-height:1.35}
+.s .cassa-griglia{display:flex;flex-direction:column;gap:32px}
+.s .cassa-chiave{margin:0;border-radius:22px;overflow:hidden;aspect-ratio:3/2;background:#1B1210}
+.s .cassa-chiave img{width:100%;height:100%;object-fit:cover;display:block}
+.s .store{background:#1B1210 url("foto/comodino.webp") center/cover no-repeat;color:#F7EFE4;border:0;position:relative}
+.s .store::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,12,9,.78),rgba(20,12,9,.45) 55%,rgba(20,12,9,.15));pointer-events:none}
+.s .store>*{position:relative}
+.s .store .kick{color:#F0C08A}
+.s .store h2{color:#F7EFE4}
+.s .store p,.s .store .store-home{color:rgba(247,239,228,.82)}
+.s .store .store-home svg{stroke:rgba(247,239,228,.7)}
+.s .store .badge{background:#F7EFE4;color:#16120F}
+.s .store .badge-nota{color:rgba(247,239,228,.6)}
+.s .store .dev{box-shadow:0 40px 90px rgba(0,0,0,.6)}
+.app .a-top .av{background:url("foto/ritratto.webp") center/cover;border-color:transparent}
+.app .a-foto{margin-top:14px}
+.app .a-foto .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.app .a-thumbs{display:flex;gap:6px;margin-top:8px}
+.app .a-thumbs i{display:block;flex:1;aspect-ratio:1;border-radius:10px;background-image:url("foto/giornata-quattro.webp");background-size:200% 200%}
+.app .a-thumbs i:nth-child(1){background-position:0 0}.app .a-thumbs i:nth-child(2){background-position:100% 0}.app .a-thumbs i:nth-child(3){background-position:0 100%}.app .a-thumbs i:nth-child(4){background-image:url("foto/bowl.webp");background-size:cover;background-position:center}
+.s .sez.mentre{padding-top:0}
+.s .promesse-sez{position:relative;z-index:2;margin-top:-34px}
+.s .promessa{box-shadow:0 18px 50px rgba(36,28,23,.10)}
+.s[data-tema="scuro"] .promessa{box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.s .promesse-sez+.sez{border-top:0}
+@container sito (min-width: 760px){
+  .s .eroe{min-height:760px;padding:96px 0 88px;background-position:center 45%}
+  .s h1{font-size:72px;letter-spacing:-.025em}
+  .s .duo{gap:18px}
+  .s .cassa-griglia{flex-direction:row;align-items:center;gap:56px}
+  .s .cassa-chiave{flex:1.15;aspect-ratio:auto;height:520px}
+  .s .cassa-punti{flex:1;display:flex;flex-direction:column;gap:30px}
+}
+
 /* ============================================================
    IL QUIZ
    ============================================================ */
@@ -520,13 +574,9 @@ body[data-vista="computer"] .palco.telefono{display:none}
   <section class="eroe">
     <div class="cont eroe-in">
       <div class="eroe-testo">
-        <div class="h-voce">
+        <div>
           <h1>Racconta la giornata.<br>Il resto lo scrive lui.</h1>
           <p>Due minuti a voce, la sera. dayalogue trascrive parola per parola, scrive titolo e sintesi, tiene in ordine persone e impegni. Mese dopo mese, ne esce un libro.</p>
-        </div>
-        <div class="h-cassa">
-          <h1>Un diario che si racconta a voce.<br>E che nessuno puo leggere. Nemmeno noi.</h1>
-          <p>Parli due minuti la sera e la giornata si scrive da sola. Poi viene chiusa a chiave sul tuo telefono, prima di partire: sul server arriva solo un blocco illeggibile.</p>
         </div>
         <div class="eroe-azioni">
           <a class="btn" href="#">Inizia ora</a>
@@ -547,6 +597,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
               <div class="a-area"><div class="l">Emozioni</div><div class="t">Sollievo, e un po' di nostalgia.</div></div>
             </div>
             <div class="a-chips"><span class="chip">Marco</span><span class="chip acc">Richiamare Marco</span></div>
+            <div class="a-foto"><div class="l">Foto</div><div class="a-thumbs"><i></i><i></i><i></i><i></i></div></div>
             <div class="a-misure">
               <div class="a-mis"><div class="l">Umore</div><div class="v">4</div></div>
               <div class="a-mis"><div class="l">Energia</div><div class="v">3</div></div>
@@ -567,7 +618,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
   </section>
 
   <!-- ------------------------------------------------ TRE PROMESSE -->
-  <section class="sez" style="padding-top:0">
+  <section class="sez promesse-sez" style="padding-top:0">
     <div class="cont">
       <div class="promesse">
         <div class="promessa">
@@ -594,24 +645,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
   <section class="foto solo-lunga">
     <div class="cont">
       <div class="foto-band">
-        <svg class="arte" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B1210"/><stop offset=".55" stop-color="#3A241C"/><stop offset="1" stop-color="#6B3A26"/></linearGradient>
-    <radialGradient id="g2" cx=".72" cy=".78" r=".55"><stop offset="0" stop-color="#E3A15F" stop-opacity=".85"/><stop offset=".45" stop-color="#A8542E" stop-opacity=".35"/><stop offset="1" stop-color="#A8542E" stop-opacity="0"/></radialGradient>
-    <radialGradient id="g3" cx=".2" cy=".1" r=".6"><stop offset="0" stop-color="#F4E7DE" stop-opacity=".10"/><stop offset="1" stop-color="#F4E7DE" stop-opacity="0"/></radialGradient>
-    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 .9 0 0 0 0 .8 0 0 0 .07 0"/></filter>
-    <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
-  </defs>
-  <rect width="1200" height="600" fill="url(#g1)"/>
-  <rect width="1200" height="600" fill="url(#g2)"/>
-  <rect width="1200" height="600" fill="url(#g3)"/>
-  <ellipse cx="880" cy="500" rx="260" ry="120" fill="#E3A15F" opacity=".22" filter="url(#soft)"/>
-  <g opacity=".9" stroke="#F4E7DE" stroke-width="3" stroke-linecap="round">
-    <line x1="700" y1="300" x2="700" y2="330"/><line x1="720" y1="285" x2="720" y2="345"/><line x1="740" y1="270" x2="740" y2="360"/><line x1="760" y1="290" x2="760" y2="340"/><line x1="780" y1="255" x2="780" y2="375"/><line x1="800" y1="280" x2="800" y2="350"/><line x1="820" y1="300" x2="820" y2="330"/><line x1="840" y1="265" x2="840" y2="365"/><line x1="860" y1="295" x2="860" y2="335"/><line x1="880" y1="305" x2="880" y2="325"/>
-  </g>
-  <rect width="1200" height="600" filter="url(#grain)"/>
-</svg>
-        <div class="segna"><div><b>Foto 1 &middot; La sera</b>Qui va una fotografia vera: una persona sul divano, la sera, luce calda di una lampada, il telefono in mano vicino al viso. Il prompt e in fondo al mockup.</div></div>
+        <img class="arte" src="foto/divano-notte.webp" alt="">
         <div class="ft">
           <h2>Due minuti, prima di dormire.</h2>
           <p>Non serve la penna, non serve la pagina bianca. Serve solo dire com'e andata.</p>
@@ -695,6 +729,21 @@ body[data-vista="computer"] .palco.telefono{display:none}
     </div>
   </section>
 
+  <!-- ------------------------------------------------ MENTRE FAI ALTRO -->
+  <section class="sez mentre solo-lunga" id="mentre">
+    <div class="cont">
+      <div class="testa">
+        <div class="kick">Mentre fai altro</div>
+        <h2>Non e un compito. E una chiacchiera.</h2>
+        <p>Mentre ti fai la barba, mentre ti strucchi, mentre aspetti che l'acqua bolla. Parli, e la giornata e scritta.</p>
+      </div>
+      <div class="duo">
+        <figure><img src="foto/barba.webp" alt=""><figcaption>"...e la riunione l'hanno spostata a lunedi, va bene cosi..."</figcaption></figure>
+        <figure><img src="foto/skincare.webp" alt=""><figcaption>"...e poi stasera mi ha chiamato Marco. Due anni."</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
   <!-- ------------------------------------------------ CASSAFORTE -->
   <section class="sez cassa" id="cassaforte">
     <div class="cont">
@@ -714,11 +763,12 @@ body[data-vista="computer"] .palco.telefono{display:none}
           <div class="cifra">qN3f8Vb2xLm0pRt7Kc9ZwYh4Ej6Ga1sd5UoiIeWnBvA2lP0mQ7rT9yXz4kJ8cF3hG6bD1nS5vM0wE2uR7tY9iO4pL6aZ8xC3vB5nM1kJ7hG2fD4sA9qW0eR6tY3uI8oP5lK1jH7gF2dS4a6zX9cV0bN3m</div>
         </div>
       </div>
+      <div class="cassa-griglia">
+      <figure class="cassa-chiave"><img src="foto/chiave.webp" alt=""></figure>
       <div class="cassa-punti">
         <div>
           <h3>La chiave sono otto parole</h3>
           <p>Le ricevi una volta, le tieni con uno screenshot. Viaggiano nel portachiavi di iCloud fra i tuoi dispositivi.</p>
-          <div class="parole8"><span>lampo</span><span>salice</span><span>brace</span><span>vento</span><span>rondine</span><span>argilla</span><span>fiume</span><span>ombra</span></div>
         </div>
         <div>
           <h3>Nessun recupero</h3>
@@ -728,6 +778,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
           <h3>L'AI legge solo quando glielo chiedi</h3>
           <p>Il testo esce dal dispositivo solo nel momento in cui chiedi all'AI di lavorarci, e solo per quello: passa dai modelli di OpenAI per essere trascritto e riassunto, non viene conservato ne usato per addestrare niente.</p>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -743,7 +794,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
         <div class="fx">
           <div class="fx-t">
             <h3>Oggi: la giornata, raccontata a voce</h3>
-            <p>Tieni premuto il microfono e parli. Alla fine correggi i nomi se serve, e la giornata e salva: titolo, sintesi, aree, persone, misure, obiettivi.</p>
+            <p>Tieni premuto il microfono e parli. Alla fine correggi i nomi se serve, e la giornata e salva: titolo, sintesi, aree, persone, misure, obiettivi. E le foto del giorno, dal rullino.</p>
             <a class="link" href="#">Guarda com'e fatta</a>
           </div>
           <div class="app">
@@ -755,6 +806,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
                 <div class="a-area"><div class="l">Lavoro</div><div class="t">Progetto consegnato, riunione spostata a lunedi.</div></div>
                 <div class="a-area"><div class="l">Relazioni</div><div class="t">Marco, dopo due anni. Richiamare.</div></div>
               </div>
+              <div class="a-foto"><div class="l">Foto</div><div class="a-thumbs"><i></i><i></i><i></i><i></i></div></div>
               <div class="a-misure">
                 <div class="a-mis"><div class="l">Umore</div><div class="v">4</div></div>
                 <div class="a-mis"><div class="l">Energia</div><div class="v">3</div></div>
@@ -991,19 +1043,13 @@ body[data-vista="computer"] .palco.telefono{display:none}
      LA PAGINA DEL MOCKUP
      ===================================================================== -->
 <div class="page">
-  <div class="page-kick">dayalogue &middot; sito v2.1 &middot; secondo giro, 5 settembre 2026</div>
+  <div class="page-kick">dayalogue &middot; sito v2.2 &middot; terzo giro, 5 settembre 2026</div>
   <h1>Il nuovo dayalogue.com</h1>
-  <p class="page-sub"><b>Secondo giro.</b> Le tue scelte del primo (eroe Voce, pagina lunga, badge spento, schermate in HTML, piede completo, sempre Carta) sono diventate il default. Ho aggiunto le immagini: una banda grande "la sera", la voce che diventa testo, il libro dei recap, le cornici iPhone vere, la grana di carta su tutto il fondo. Le fotografie le fai fare con i prompt in fondo.<br><br>Un file solo: il sito intero, <b>dentro un iPhone e dentro un Mac</b>, con gli interruttori qui sotto per vedere le varianti su cui devi decidere.
-    Le schermate dell'app sono riprodotte in HTML col tema Carta, con la giornata di esempio di Marco. Scorri dentro i due schermi.
-    In fondo c'e il <b>quiz</b>: rispondi con le lettere (per esempio <b>1A 2B 3A</b>).</p>
+  <p class="page-sub"><b>Terzo giro, con le tue fotografie dentro.</b> Ho deciso io: l'eroe e il salotto al tramonto con il titolo nella parete vuota e l'iPhone davanti alla finestra; la sera sul divano e la banda grande; i due ritratti (barba, skincare) sono la sezione "Mentre fai altro"; la chiave con le otto parole sta nella cassaforte; il comodino e il fondo della sezione iPhone; il ritratto e la foto profilo dentro l'app; le quattro foto e la bowl sono le miniature "Foto" nella giornata. Scorri dentro i due schermi. Se va bene rispondi <b>si</b>; se no, scrivi cosa cambiare.</p>
 
   <div class="cmd" id="cmd">
     <div class="g"><span class="k">Vista</span><div class="sw" data-k="vista"><button data-v="entrambi" class="on">Entrambi</button><button data-v="telefono">Telefono</button><button data-v="computer">Computer</button></div></div>
-    <div class="g"><span class="k">Eroe</span><div class="sw" data-k="eroe"><button data-v="voce" class="on">Voce</button><button data-v="cassa">Cassaforte</button></div></div>
-    <div class="g"><span class="k">Pagina</span><div class="sw" data-k="lunga"><button data-v="si" class="on">Lunga</button><button data-v="no">Corta</button></div></div>
     <div class="g"><span class="k">Badge</span><div class="sw" data-k="store"><button data-v="arrivo" class="on">Spento</button><button data-v="assente">Assente</button><button data-v="pubblicata">Domani</button></div></div>
-    <div class="g"><span class="k">Piede</span><div class="sw" data-k="piede"><button data-v="minimo">Minimo</button><button data-v="completo" class="on">Completo</button></div></div>
-    <div class="g"><span class="k">Immagini</span><div class="sw" data-k="foto"><button data-v="arte" class="on">Illustrazioni</button><button data-v="prompt">Segnaposto foto</button></div></div>
     <div class="g"><span class="k">Tema</span><div class="sw" data-k="tema"><button data-v="chiaro" class="on">Chiaro</button><button data-v="scuro">Scuro</button></div></div>
     <div class="g"><span class="k">Schermata</span><div class="sw" data-k="pagina"><button data-v="home" class="on">Home</button><button data-v="supporto">Assistenza</button></div></div>
   </div>
@@ -1041,47 +1087,12 @@ body[data-vista="computer"] .palco.telefono{display:none}
 
 
   <div class="divider"></div>
-  <p class="label">Le fotografie: prompt per un'altra AI</p>
-  <p class="caption">Io non genero fotografie. Questi prompt sono pronti per Midjourney, DALL-E, Ideogram o Flux: <b>copia e incolla</b>. Le immagini vanno in orizzontale (3:2), tema caldo, niente testo dentro, niente loghi, niente volti riconoscibili in primo piano. Colori da chiedere sempre: avorio, ruggine, legno scuro, luce di lampada.</p>
-  <div class="nonpromesso" id="prompts">
-    <div><b>Foto 1 &middot; La sera (banda grande)</b>Editorial photograph, a person seen from behind on a linen sofa at night, holding a phone near their face as if speaking softly, warm light from a single table lamp, ivory and rust tones, dark wood, deep shadows, quiet and intimate, shallow depth of field, 35mm, film grain, no text, no logos, 3:2.<button class="cp">Copia</button></div>
-    <div><b>Foto 2 &middot; Il comodino (sezione iPhone)</b>Product photograph, an iPhone lying face up on a wooden nightstand at night beside a closed notebook and a small brass lamp, screen dark, warm amber light, ivory bed linen out of focus in the background, minimal, premium Apple-style still life, soft shadows, film grain, no text on screen, 3:2.<button class="cp">Copia</button></div>
-    <div><b>Foto 3 &middot; La cassaforte (se rispondi 1C)</b>Macro photograph, a small old brass key resting on a sheet of thick ivory paper with eight handwritten Italian words in dark ink, blurred, warm lamp light from the side, rust and cream tones, extremely shallow depth of field, calm, no readable text, no logos, 3:2.<button class="cp">Copia</button></div>
-    <div><b>Foto 4 &middot; L'eroe (se rispondi 1C)</b>Atmospheric photograph, an empty living room at dusk, a window with the last warm light of the day, an armchair and a lamp already on, ivory walls, rust-colored blanket, dark wood floor, very soft, cinematic, lots of empty space on the left for text, film grain, no people, no text, 3:2.<button class="cp">Copia</button></div>
+  <p class="label">Una cosa sola da sapere</p>
+  <div class="nonpromesso">
+    <div><b>Le miniature "Foto" nella giornata</b>Le foto dal rullino sono in costruzione. Se al lancio del sito non ci sono ancora, quella riga si toglie dalle schermate: e una riga sola, niente ridisegno.</div>
+    <div><b>La locandina "journy.me"</b>Non l'ho usata: ha un altro nome, badge Google Play e una foto con volto in primo piano. Se la vuoi, dimmelo.</div>
+    <div><b>Le foto stanno in design/mockups/foto/</b>Nove file webp, gia con i nomi giusti. Chi costruira il sito le mette in public/sito/.</div>
   </div>
-
-  <div class="divider"></div>
-  <p class="label">Il quiz: rispondi con le lettere</p>
-  <p class="caption">Ogni domanda ha un interruttore in alto: <b>provala prima di rispondere</b>. Tocca una risposta; in fondo compare la riga con le tue scelte, copiala e incollamela in chat (o scrivimela a mano, va bene lo stesso).</p>
-  <div class="quiz-wrap"><div class="quiz" id="quiz">
-
-    <div class="q"><div class="qt"><i>1</i>Le immagini: illustrazioni mie o fotografie vere?</div><div class="qp">Le illustrazioni (la sera in SVG, la voce che diventa testo, il libro, le cornici iPhone) le ho fatte io e sono gia nel mockup: nitide, leggere, cambiano col tema. Le fotografie le devi far fare a un'altra AI con i prompt qui sotto: piu calde, piu "Apple", ma fisse. Interruttore <b>Immagini</b> in alto per vedere i segnaposto.</div>
-      <label><input type="radio" name="1" value="A" checked><span class="n">A</span><span><b>Fotografie</b> nei due punti segnati (la sera; il telefono sul comodino), illustrazioni per il resto.</span><span class="vedi" data-k="foto" data-v="prompt">vedi i segnaposto</span></label>
-      <label><input type="radio" name="1" value="B"><span class="n">B</span><span><b>Solo illustrazioni</b>, niente fotografie: il sito resta tutto disegnato.</span><span class="vedi" data-k="foto" data-v="arte">vedi</span></label>
-      <label><input type="radio" name="1" value="C"><span class="n">C</span><span><b>Piu fotografie</b>: anche nell'eroe, dietro il telefono, e nella cassaforte.</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>2</i>La banda "Due minuti, prima di dormire"</div><div class="qp">E la sezione nuova con l'immagine grande, dopo le tre promesse.</div>
-      <label><input type="radio" name="2" value="A" checked><span class="n">A</span><span><b>Tienila</b> dov'e.</span></label>
-      <label><input type="radio" name="2" value="B"><span class="n">B</span><span><b>Spostala</b> in fondo, prima di "Com'e andata oggi?".</span></label>
-      <label><input type="radio" name="2" value="C"><span class="n">C</span><span><b>Toglila</b>.</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>3</i>Il telefono nella sezione iPhone</div><div class="qp">Sul computer esce dal riquadro, tagliato in basso, come fa Apple.</div>
-      <label><input type="radio" name="3" value="A" checked><span class="n">A</span><span><b>Cosi</b>, tagliato.</span></label>
-      <label><input type="radio" name="3" value="B"><span class="n">B</span><span><b>Intero</b>, dentro il riquadro.</span></label>
-    </div>
-
-    <div class="q"><div class="qt"><i>4</i>Il mockup</div><div class="qp">Se approvi, la chat del modulo sito parte col codice: pagine server, italiano e inglese, testi in testi.ts, immagini in public/.</div>
-      <label><input type="radio" name="4" value="A" checked><span class="n">A</span><span><b>Approvato cosi</b>: si passa al codice.</span></label>
-      <label><input type="radio" name="4" value="B"><span class="n">B</span><span><b>Approvato con le modifiche</b> che scrivo nelle note.</span></label>
-      <label><input type="radio" name="4" value="C"><span class="n">C</span><span><b>Rifallo</b>: scrivo nelle note cosa non va.</span></label>
-      <textarea id="note" placeholder="Note (facoltative): frasi da cambiare, cose che mancano, cose da togliere..."></textarea>
-    </div>
-
-  </div>
-  <div class="esito"><span class="k">Le tue risposte</span><span class="c" id="codice"></span><button id="copia">Copia</button></div>
-</div></div>
 
 <script>
 (function(){
@@ -1093,7 +1104,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
   var siti = document.querySelectorAll('.s');
 
   // gli interruttori in alto (e i "vedi" del quiz)
-  var stato = {foto:'arte', vista:'entrambi', eroe:'voce', lunga:'si', store:'arrivo', piede:'completo', tema:'chiaro', pagina:'home'};
+  var stato = {vista:'entrambi', eroe:'voce', lunga:'si', store:'arrivo', piede:'completo', tema:'chiaro', pagina:'home'};
   function applica(k, v){
     stato[k] = v;
     if (k === 'vista') document.body.setAttribute('data-vista', v);
@@ -1128,7 +1139,7 @@ body[data-vista="computer"] .palco.telefono{display:none}
   scala(); setTimeout(scala, 300);
 
   // il quiz
-  var codice = document.getElementById('codice');
+  var codice = document.getElementById('codice'); if (!codice) return;
   function aggiorna(){
     var parti = [];
     document.querySelectorAll('#quiz .q').forEach(function(q){
