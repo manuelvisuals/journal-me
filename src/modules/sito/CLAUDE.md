@@ -13,6 +13,14 @@ Nato il 31 agosto 2026 (mockup `design/mockups/sito-seo.html`); rifatto il
 la cassaforte al centro, l'AI in regalo, le fotografie (`public/sito/`).
 Il badge App Store si accende con `APP_STORE_URL` in `components/home.tsx`.
 
+**Dal 6 settembre 2026 la home e la 2.0** (eroe chiaro con l'iPhone
+fotografato, poi la giornata mostrata grande), su istruzioni dirette di
+Manuel. La precedente e CONGELATA su `/v1` e `/en/v1` (`home-v1.tsx`, le
+due pagine `src/app/v1`, il link in fondo al piede, `piede.precedente` e
+`piede.nuovo` in testi.ts, `/v1` nel robots): tutto TEMPORANEO, da
+cancellare quando la 2.0 e approvata. Le classi nuove hanno prefisso
+`jm-sito2-` e non toccano le vecchie, cosi la v1 resta identica.
+
 - Pagine di `src/app/` di questo modulo: `page.web.tsx`, `en/page.web.tsx`,
   `support/page.web.tsx`, `en/support/page.web.tsx`, piu `robots.ts`,
   `sitemap.ts` e i gusci `api/sito/seo/` e `api/sito/supporto/`.

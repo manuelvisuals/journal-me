@@ -18,7 +18,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/app", "/app/", "/login", "/auth", "/admin", "/api"],
+        // /v1 e la home precedente, congelata per confronto: non e una pagina
+        // da trovare, e sparira con la 2.0 approvata.
+        disallow: ["/app", "/app/", "/login", "/auth", "/admin", "/api", "/v1", "/en/v1"],
       },
     ],
     sitemap: `${SITO}/sitemap.xml`,

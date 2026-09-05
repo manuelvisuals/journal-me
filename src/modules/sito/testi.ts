@@ -59,6 +59,8 @@ export type Testi = {
     recap: { etichetta: string; sezione: string; titolo: string; paragrafi: string[] };
   };
   promesse: { titolo: string; testo: string; icona: "voce" | "chiave" | "apri" }[];
+  /** Il blocco dopo l'eroe: la giornata finita, mostrata grande. */
+  giornata: { etichetta: string; titolo: string; testo: string; punti: { titolo: string; testo: string }[] };
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
@@ -103,6 +105,9 @@ export type Testi = {
     accedi: string;
     assistenza: string;
     lingua: string;
+    /** TEMPORANEI: i due link di confronto fra la home nuova e la v1. */
+    precedente: string;
+    nuovo: string;
   };
   supporto: {
     titolo: string;
@@ -240,6 +245,16 @@ const it: Testi = {
       icona: "apri",
     },
   ],
+  giornata: {
+    etichetta: "La giornata",
+    titolo: "Parli tu. Scrive lui.",
+    testo: "Alla fine dei due minuti la giornata e gia una pagina: titolo, sintesi, aree, persone, le foto del giorno, le misure. Parole tue, messe in ordine.",
+    punti: [
+      { titolo: "Titolo e sintesi", testo: "Un titolo che ricorda, due righe che raccontano." },
+      { titolo: "Le foto del giorno", testo: "Dal rullino, in miniatura, accanto alle parole." },
+      { titolo: "Umore, energia, peso", testo: "I numeri che dici a voce finiscono nelle caselle." },
+    ],
+  },
   sera: {
     titolo: "Due minuti, prima di dormire.",
     testo: "Non serve la penna, non serve la pagina bianca. Serve solo dire com'e andata.",
@@ -435,6 +450,8 @@ const it: Testi = {
     accedi: "Accedi",
     assistenza: "Assistenza",
     lingua: "English",
+    precedente: "Sito precedente (v1)",
+    nuovo: "Sito nuovo (2.0)",
   },
   supporto: {
     titolo: "Assistenza",
@@ -573,6 +590,16 @@ const en: Testi = {
       icona: "apri",
     },
   ],
+  giornata: {
+    etichetta: "Your day",
+    titolo: "You talk. It writes.",
+    testo: "When the two minutes are over your day is already a page: headline, summary, areas, people, the day's photos, the measures. Your words, put in order.",
+    punti: [
+      { titolo: "Headline and summary", testo: "A headline that remembers, two lines that tell." },
+      { titolo: "The day's photos", testo: "From your camera roll, as thumbnails, next to the words." },
+      { titolo: "Mood, energy, weight", testo: "The numbers you say out loud land in their boxes." },
+    ],
+  },
   sera: {
     titolo: "Two minutes, before sleep.",
     testo: "No pen, no blank page. Just say how it went.",
@@ -768,6 +795,8 @@ const en: Testi = {
     accedi: "Log in",
     assistenza: "Support",
     lingua: "Italiano",
+    precedente: "Previous site (v1)",
+    nuovo: "New site (2.0)",
   },
   supporto: {
     titolo: "Support",

@@ -1744,6 +1744,171 @@
   margin-top: 12px;
 }
 
+
+/* ================================================================ 2.0 */
+/* La versione 2.0 (6 settembre 2026) AGGIUNGE classi col prefisso
+   jm-sito2- e non tocca quelle sopra: la home precedente, congelata su
+   /v1 (home-v1.tsx), deve restare identica finche esiste. Quando la 2.0 e
+   approvata e la v1 si cancella, questo blocco si fonde con il resto. */
+
+/* --------------------------------------------------------- eroe chiaro */
+.jm-sito2-eroe {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 0 0;
+  background: var(--jm-bg);
+}
+/* La luce calda dietro il telefono: e il tramonto del tema, non una foto. */
+.jm-sito2-eroe::before {
+  content: "";
+  position: absolute;
+  right: -20%;
+  top: 0;
+  width: 80%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--jm-accent) 18%, transparent), transparent 72%);
+  filter: blur(20px);
+}
+.jm-sito2-eroe-in {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+  text-align: center;
+}
+.jm-sito2-eroe-t {
+  max-width: 52ch;
+}
+.jm-sito2-sotto {
+  margin-top: 18px;
+  font-size: calc(17px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--jm-ink-muted);
+  text-wrap: pretty;
+}
+.jm-sito2-eroe .jm-sito-cta {
+  justify-content: center;
+}
+.jm-sito2-sotto-cta {
+  margin-top: 14px;
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  color: var(--jm-ink-faint);
+}
+.jm-sito2-eroe-foto {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -6%;
+}
+.jm-sito2-eroe-foto .telefono {
+  width: min(78%, 360px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 40px 60px color-mix(in oklab, var(--jm-shadow) 28%, transparent));
+}
+@media (min-width: 768px) {
+  .jm-sito2-eroe {
+    padding: 72px 0 0;
+    min-height: 720px;
+  }
+  .jm-sito2-eroe-in {
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+    text-align: left;
+  }
+  .jm-sito2-eroe-t {
+    flex: 1 1 0;
+    max-width: none;
+    padding-bottom: 72px;
+  }
+  .jm-sito2-sotto {
+    font-size: calc(19px * var(--jm-ui-scale));
+    max-width: 46ch;
+  }
+  .jm-sito2-eroe .jm-sito-cta {
+    justify-content: flex-start;
+  }
+  .jm-sito2-eroe-foto {
+    flex: 0 0 46%;
+    justify-content: flex-end;
+    margin-bottom: -9%;
+  }
+  .jm-sito2-eroe-foto .telefono {
+    width: 100%;
+    max-width: 520px;
+  }
+}
+
+/* -------------------------------------------------------- la giornata */
+.jm-sito2-giornata {
+  position: relative;
+  padding: 72px 0 64px;
+  background: var(--jm-surface);
+  border-top: 1px solid var(--jm-line);
+  border-bottom: 1px solid var(--jm-line);
+}
+.jm-sito-testa.centro {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.jm-sito2-giornata-dev {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+.jm-sito-dev.grande {
+  max-width: 400px;
+  box-shadow: 0 60px 120px color-mix(in oklab, var(--jm-shadow) 30%, transparent);
+}
+.jm-sito2-punti {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  margin: 48px auto 0;
+  max-width: 900px;
+}
+.jm-sito2-punti > div {
+  text-align: center;
+}
+.jm-sito2-punti p {
+  margin-top: 6px;
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--jm-ink-muted);
+}
+@media (min-width: 768px) {
+  .jm-sito2-giornata {
+    padding: 112px 0 96px;
+  }
+  .jm-sito2-punti {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 64px;
+  }
+}
+/* Nella 2.0 le tre promesse non salgono piu sopra una foto: stanno al
+   loro posto, dopo la giornata. */
+.jm-sito-promesse-sez.piana {
+  margin-top: 0;
+  padding-top: 64px;
+}
+@media (min-width: 768px) {
+  .jm-sito-promesse-sez.piana {
+    padding-top: 96px;
+  }
+}
+
+/* ------------------------------------------- il link di confronto (temp) */
+.jm-sito-piede .jm-sito-piede-versione {
+  color: var(--jm-ink-faint);
+  font-size: calc(12px * var(--jm-ui-scale));
+  margin-top: 10px;
+}
+
 /* --------------------------------------------------------- assistenza */
 .jm-sito-sup {
   max-width: 640px;
