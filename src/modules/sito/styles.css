@@ -54,6 +54,16 @@
 }
 
 /* ---------------------------------------------------------- barra alta */
+/* L'altezza della barra e un numero solo, perche l'eroe deve risalirci
+   sotto esattamente di tanto. */
+.jm-sito {
+  --jm-sito-nav-h: 62px;
+}
+@media (min-width: 768px) {
+  .jm-sito {
+    --jm-sito-nav-h: 66px;
+  }
+}
 .jm-sito-nav {
   position: sticky;
   top: 0;
@@ -63,11 +73,24 @@
   background: var(--jm-bg);
   border-bottom: 1px solid var(--jm-line);
 }
+/* Dove il vetro esiste davvero (5 settembre 2026, richiesta di Manuel: la
+   barra non deve sembrare un pezzo attaccato sopra, ma fondersi con la
+   fotografia dell'eroe). Il fondo pieno resta come ripiego per i browser
+   senza backdrop-filter, dove una barra trasparente renderebbe il titolo
+   illeggibile mentre scorre. */
+@supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .jm-sito-nav {
+    background: color-mix(in srgb, var(--jm-bg-app) 52%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+    border-bottom-color: color-mix(in srgb, var(--jm-ink) 7%, transparent);
+  }
+}
 .jm-sito-nav-in {
   max-width: 1080px;
   margin: 0 auto;
   padding: 0 20px;
-  height: 62px;
+  height: var(--jm-sito-nav-h);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -75,7 +98,6 @@
 @media (min-width: 768px) {
   .jm-sito-nav-in {
     padding: 0 40px;
-    height: 66px;
     gap: 28px;
   }
 }
@@ -96,8 +118,25 @@
   margin-left: 6px;
 }
 @media (min-width: 900px) {
+  /* Tre zone vere: marchio a sinistra, menu al CENTRO della finestra,
+     tasti a destra. Con il flex di prima il menu si appoggiava al
+     marchio e il centro non era il centro. */
+  .jm-sito-nav-in {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
   .jm-sito-nav-l {
     display: flex;
+    justify-content: center;
+    margin-left: 0;
+  }
+  .jm-sito-marchio {
+    justify-self: start;
+  }
+  .jm-sito-nav-r {
+    justify-self: end;
+    margin-left: 0;
   }
 }
 .jm-sito-nav-l a {
@@ -1755,7 +1794,12 @@
 .jm-sito2-eroe {
   position: relative;
   overflow: hidden;
-  padding: 56px 0 0;
+  /* L'eroe risale SOTTO la barra e si riprende lo spazio col padding:
+     cosi la fotografia passa dietro al vetro invece di cominciare sotto
+     una striscia piena. Solo l'eroe: le altre pagine del sito non hanno
+     una foto dietro e restano come sono. */
+  margin-top: calc(var(--jm-sito-nav-h) * -1);
+  padding: calc(var(--jm-sito-nav-h) + 34px) 0 0;
   /* La fotografia (public/sito/salotto-voce.webp): lei che parla al
      telefono, di giorno, in casa. Il colore sotto e la carta del tema,
      per chi la sta ancora scaricando. */

@@ -78,9 +78,10 @@ export function PiedeSito({
 }: {
   lingua: LinguaSito;
   altraLingua: string;
-  /** TEMPORANEO: "v1" sulla home congelata, "2" sulla nuova. Serve solo al
-      link di confronto in fondo, che sparisce con la 2.0 approvata. */
-  versione?: "v1" | "2";
+  /** TEMPORANEO: "v1" e "v2" sulle home congelate, "2" sulla viva. Serve
+      solo ai link di confronto in fondo, che spariranno quando il sito
+      sara fermo. */
+  versione?: "v1" | "v2" | "2";
 }) {
   const t = testiDi(lingua);
   const p = prefisso(lingua);
@@ -117,10 +118,13 @@ export function PiedeSito({
           <Link href="/login">{t.piede.accedi}</Link>
           <Link href={`${p}/support`}>{t.piede.assistenza}</Link>
           <Link href={altraLingua}>{t.piede.lingua}</Link>
-          {versione === "v1" ? (
-            <Link href={`${p}/`} className="jm-sito-piede-versione">{t.piede.nuovo}</Link>
+          {versione === "2" ? (
+            <>
+              <Link href={`${p}/v2`} className="jm-sito-piede-versione">{t.piede.congelata}</Link>
+              <Link href={`${p}/v1`} className="jm-sito-piede-versione">{t.piede.precedente}</Link>
+            </>
           ) : (
-            <Link href={`${p}/v1`} className="jm-sito-piede-versione">{t.piede.precedente}</Link>
+            <Link href={`${p}/`} className="jm-sito-piede-versione">{t.piede.nuovo}</Link>
           )}
         </div>
       </div>

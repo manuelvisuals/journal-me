@@ -107,6 +107,7 @@ export type Testi = {
     lingua: string;
     /** TEMPORANEI: i due link di confronto fra la home nuova e la v1. */
     precedente: string;
+    congelata: string;
     nuovo: string;
   };
   supporto: {
@@ -451,6 +452,7 @@ const it: Testi = {
     assistenza: "Assistenza",
     lingua: "English",
     precedente: "Sito precedente (v1)",
+    congelata: "Sito del 5 settembre (v2)",
     nuovo: "Sito nuovo (2.0)",
   },
   supporto: {
@@ -796,6 +798,7 @@ const en: Testi = {
     assistenza: "Support",
     lingua: "Italiano",
     precedente: "Previous site (v1)",
+    congelata: "Site of 5 September (v2)",
     nuovo: "New site (2.0)",
   },
   supporto: {
