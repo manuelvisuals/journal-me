@@ -54,8 +54,8 @@ Diciotto set su diciotto passano tutte e sei le coppie. Il piu tirato e Tokyo Ni
 
 | Tema | Modo | ink/bgApp | ink/surface | inkMuted/surface | inkFaint/surface | onAccent/accent | accent/bgApp |
 |---|---|---|---|---|---|---|---|
-| Vampire Korall | chiaro | 14.03 | 15.79 | 8.33 | 4.95 | 4.86 | 4.32 |
-| Vampire Korall | scuro | 14.81 | 13.36 | 7.88 | 4.63 | 7.72 | 6.96 |
+| Korall ardesia | chiaro | 14.03 | 15.79 | 8.33 | 4.95 | 4.86 | 4.32 |
+| Korall ardesia | scuro | 14.81 | 13.36 | 7.88 | 4.63 | 7.72 | 6.96 |
 | Korall | chiaro | 15.32 | 16.53 | 8.93 | 5.39 | 4.86 | 4.50 |
 | Korall | scuro | 15.05 | 13.97 | 8.87 | 4.60 | 7.72 | 7.53 |
 | Ametista | chiaro | 15.89 | 16.48 | 8.86 | 5.77 | 6.24 | 6.02 |
@@ -112,7 +112,7 @@ mezz ora di lavoro, e il resto del tema non si tocca.
 
 L identita di un tema e il suo `id`, non il numero: la numerazione qui sotto e solo l ordine di questa lista, mentre nel mockup `temi-regalo.html` i temi sono numerati da 01 a 10 perche li c e anche Vampire, che Manuel ha escluso.
 
-### 1. Vampire Korall (`vampkor`)
+### 1. Korall ardesia (`ardesia`)
 
 Font: **inter** (UI) + **spectral** (prosa), prosa a 18px.
 
@@ -120,15 +120,15 @@ Font: **inter** (UI) + **spectral** (prosa), prosa a 18px.
 
 Il set chiaro non esisteva: disegnato in questa sessione, tenendo il fondo freddo come dice la sua intenzione.
 
-**Nota.** Nome ancora aperto: l autore lo definisce come Vampire con l accento ammorbidito, e Vampire non entra in dayalogue.
+**Nota.** Rinominato il 5 settembre 2026, scelta di Manuel. L autore lo definiva come Vampire con l accento ammorbidito, ma Vampire non entra in dayalogue e due temi non possono chiamarsi Korall. "Ardesia" dice la cosa che davvero lo distingue dall altro Korall: il fondo grigio-azzurro freddo contro il fondo bruno caldo. Non si e usato "Korall scuro" perche in dayalogue "chiaro" e "scuro" sono i due modi di ogni tema, e un tema chiamato "scuro" acceso in modo chiaro e una contraddizione a schermo.
 
 **Correzioni applicate:**
   - scuro inkFaint #8B8DA0 -> #9092A4 (4.35 -> 4.63 su surface)
 
 ```json
 {
-  "id": "vampkor",
-  "name": "Vampire Korall",
+  "id": "ardesia",
+  "name": "Korall ardesia",
   "author": "Nikita Rodionov",
   "typography": {
     "fontUi": "inter",
