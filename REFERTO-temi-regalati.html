@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referto - i nove temi regalati</title>
+<style>
+:root{--bg:#0f1115;--sur:#171a21;--sur2:#1e222b;--ink:#e8eaed;--muted:#b3b8c2;--faint:#8b929e;--line:rgba(255,255,255,.09);--acc:#2de1c2;--ok:#39c07a;--no:#f0736a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;padding:0 20px 80px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:30px;letter-spacing:-.02em;margin:44px 0 6px}
+.sub{color:var(--faint);margin:0 0 34px}
+h2{font-size:21px;letter-spacing:-.015em;margin:44px 0 14px;padding-top:22px;border-top:1px solid var(--line)}
+p{color:var(--muted)}
+.big{background:var(--sur);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:0 0 12px}
+.big b{color:var(--ink)}
+.big.fatto{border-left:3px solid var(--ok)}
+.esito{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 26px}
+.chip{background:var(--sur2);border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-size:14px;color:var(--muted)}
+.chip .ok{color:var(--ok);font-weight:650}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 8px}
+.mini{background:var(--sur);border:1px solid var(--line);border-radius:12px;padding:10px}
+.mini.new{border-color:rgba(45,225,194,.35)}
+.mbar{display:flex;height:26px;border-radius:6px;overflow:hidden;margin-bottom:8px}
+.mbar i{flex:1}
+.mnome{font-size:13px;font-weight:600}
+.mtinta{font-size:11px;color:var(--faint);margin-top:2px}
+.tema{background:var(--sur);border:1px solid var(--line);border-radius:18px;padding:18px;margin:0 0 16px}
+.tema header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.tema h3{margin:0;font-size:19px;letter-spacing:-.01em}
+.tema code{color:var(--acc);font:13px ui-monospace,Menlo,monospace}
+.fonte{margin-left:auto;color:var(--faint);font-size:13px}
+.due{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.due{grid-template-columns:1fr}}
+figure{margin:0}
+figcaption{color:var(--faint);font-size:12px;text-align:center;margin-top:6px}
+.prev{border-radius:12px;padding:14px;border:1px solid var(--line)}
+.card{border-radius:10px;border:1px solid;padding:12px}
+.ttl{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.prs{font-size:14px;margin-top:5px}
+.fnt{font-size:11px;margin-top:8px;text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;gap:7px;margin-top:12px}
+.pill{border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600}
+.dot{width:11px;height:11px;border-radius:50%}
+table.contrasto{width:100%;border-collapse:collapse;margin-top:14px;font:12px ui-monospace,Menlo,monospace}
+table.contrasto th{color:var(--faint);font-weight:400;padding:4px;text-align:center;font-size:10px;line-height:1.3}
+table.contrasto td{padding:4px;text-align:center;color:var(--muted)}
+table.contrasto td:first-child,table.contrasto th:first-child{text-align:left;color:var(--faint)}
+td.v{color:var(--ok)}td.x{color:var(--no);font-weight:700}
+.font{color:var(--faint);font-size:13px;margin:12px 0 0}
+.q{background:var(--sur);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:14px;padding:18px 20px;margin:0 0 14px}
+.q h3{margin:0 0 6px;font-size:17px}
+.q p{margin:0 0 12px}
+.opt{display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--line);align-items:flex-start}
+.opt b{color:var(--acc);font:14px ui-monospace,Menlo,monospace;flex:0 0 22px}
+.opt span{color:var(--muted);font-size:15px}
+.opt i{color:var(--faint);font-style:normal}
+pre{background:#000;border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto;font:13px ui-monospace,Menlo,monospace;color:var(--acc)}
+.fine{color:var(--faint);font-size:13px;margin-top:40px}
+</style></head><body><div class="wrap">
+
+<h1>I nove temi sono dentro, con le tue tre risposte</h1>
+<p class="sub">Referto della sessione scheletro - 5 settembre 2026, secondo giro</p>
+
+<div class="esito">
+  <span class="chip">contrasto <span class="ok">108/108</span></span>
+  <span class="chip">tipi <span class="ok">tsc pulito</span></span>
+  <span class="chip">lint <span class="ok">src e scripts puliti</span></span>
+  <span class="chip">temi <span class="ok">32/32</span></span>
+  <span class="chip">traduzioni <span class="ok">7/7</span></span>
+</div>
+
+<div class="big fatto"><b>A2 - il nome.</b> Vampire Korall si chiama <b>Korall ardesia</b> (id <code>ardesia</code>). Non "Korall scuro" per un motivo preciso: in dayalogue "chiaro" e "scuro" sono i due MODI di ogni tema, e un tema chiamato "scuro" acceso in modo chiaro e una contraddizione a schermo. "Ardesia" invece dice la cosa vera che lo separa dall altro Korall: stesso accento corallo, ma fondo grigio-azzurro freddo contro fondo bruno caldo. La decisione e scritta nella spec.</div>
+<div class="big fatto"><b>B1 - Ametista.</b> Resta com e. Il set chiaro tiene i valori di Alucard, il nome non porta marchi altrui, e la provenienza per esteso sta in LICENZE-TERZE-PARTI.md. Niente da fare.</div>
+<div class="big fatto"><b>C3 - l ordine.</b> Mescolati per somiglianza, senza gruppi: casa e regalati in fila insieme. La regola sta scritta in index.ts perche chiunque possa rifarla identica - si guarda l accento del set scuro, i due neutri in testa, gli altri lungo la ruota dei colori tagliata a 330 gradi.</div>
+
+<h2>La schermata Tema, nell ordine nuovo</h2>
+<p>Quattordici temi. Bordo verde = uno dei nove regalati. Le quattro strisce sono fondo, scheda, accento e inchiostro del set scuro.</p>
+<div class="strip"><div class="mini">
+    <div class="mbar"><i style="background:#0B0B0C"></i><i style="background:#1F1F22"></i><i style="background:#F5F5F7"></i><i style="background:#F5F5F7"></i></div>
+    <div class="mnome">1. Minimal</div><div class="mtinta">neutro</div>
+  </div><div class="mini">
+    <div class="mbar"><i style="background:#0F0F0F"></i><i style="background:#1C1C1C"></i><i style="background:#EDEDED"></i><i style="background:#EDEDED"></i></div>
+    <div class="mnome">2. Macchina da scrivere</div><div class="mtinta">neutro</div>
+  </div><div class="mini">
+    <div class="mbar"><i style="background:#1B161A"></i><i style="background:#2D262C"></i><i style="background:#D9A3B4"></i><i style="background:#F0E7EA"></i></div>
+    <div class="mnome">3. Malva</div><div class="mtinta">rosa 341</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#21222C"></i><i style="background:#343746"></i><i style="background:#FF8A8A"></i><i style="background:#F8F8F2"></i></div>
+    <div class="mnome">4. Korall ardesia</div><div class="mtinta">corallo 0, fondo freddo</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#1E1B1D"></i><i style="background:#332C30"></i><i style="background:#FF8A8A"></i><i style="background:#F6EFEF"></i></div>
+    <div class="mnome">5. Korall</div><div class="mtinta">corallo 0, fondo caldo</div>
+  </div><div class="mini">
+    <div class="mbar"><i style="background:#1A1714"></i><i style="background:#2A251F"></i><i style="background:#D08A5A"></i><i style="background:#EFE7DA"></i></div>
+    <div class="mnome">6. Carta</div><div class="mtinta">arancio 24</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#282828"></i><i style="background:#504945"></i><i style="background:#FE8019"></i><i style="background:#FBF1C7"></i></div>
+    <div class="mnome">7. Gruvbox</div><div class="mtinta">arancio 27</div>
+  </div><div class="mini">
+    <div class="mbar"><i style="background:#0E0709"></i><i style="background:#241418"></i><i style="background:#E3A15F"></i><i style="background:#F4E7DE"></i></div>
+    <div class="mnome">8. Wine premium</div><div class="mtinta">arancio 30</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#1C1F26"></i><i style="background:#2E343E"></i><i style="background:#2DE1C2"></i><i style="background:#E8EAED"></i></div>
+    <div class="mnome">9. Grafit</div><div class="mtinta">verde-acqua 170</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#2E3440"></i><i style="background:#434C5E"></i><i style="background:#88C0D0"></i><i style="background:#ECEFF4"></i></div>
+    <div class="mnome">10. Nord</div><div class="mtinta">azzurro 193</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#0F172A"></i><i style="background:#273349"></i><i style="background:#38BDF8"></i><i style="background:#E2E8F0"></i></div>
+    <div class="mnome">11. Ocean</div><div class="mtinta">azzurro 198</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#1A1B26"></i><i style="background:#2F3549"></i><i style="background:#7AA2F7"></i><i style="background:#C0CAF5"></i></div>
+    <div class="mnome">12. Tokyo Night</div><div class="mtinta">azzurro 221</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#282A36"></i><i style="background:#414458"></i><i style="background:#BD93F9"></i><i style="background:#F8F8F2"></i></div>
+    <div class="mnome">13. Ametista</div><div class="mtinta">viola 265</div>
+  </div><div class="mini new">
+    <div class="mbar"><i style="background:#24273A"></i><i style="background:#3E4459"></i><i style="background:#C6A0F6"></i><i style="background:#CAD3F5"></i></div>
+    <div class="mnome">14. Catppuccin</div><div class="mtinta">viola 267</div>
+  </div></div>
+<p class="fine">Scorrendo si passa da grigio a rosa, corallo, arancio, verde-acqua, azzurro, viola: una sfumatura sola invece di quattordici salti.</p>
+
+<h2>I nove, come si vedono davvero</h2>
+<p>Ogni riquadro usa i colori veri del tema. I numeri sono i rapporti di contrasto: tutti verdi, e identici cifra per cifra alla tabella del capitolo 3 della spec.</p>
+<section class="tema">
+    <header><h3>Korall ardesia</h3><code>ardesia</code><span class="fonte">suo, palette propria</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#F1F1F6">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(33, 34, 44, 0.10)">
+        <div class="ttl" style="color:#21222C">la telefonata rimandata</div>
+        <div class="prs" style="color:#4B4D5E">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#6C6F84">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#B0574F;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#D0675D"></span>
+          <span class="dot" style="background:#1F7A4C"></span>
+          <span class="dot" style="background:#B3261E"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#21222C">
+      <div class="card" style="background:#282A36;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#F8F8F2">la telefonata rimandata</div>
+        <div class="prs" style="color:#BFC0CC">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#9092A4">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#FF8A8A;color:#2B1214">Chiudi la giornata</span>
+          <span class="dot" style="background:#FF9B9B"></span>
+          <span class="dot" style="background:#FF8A8A"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">14.03</td><td class="v">15.79</td><td class="v">8.33</td><td class="v">4.95</td><td class="v">4.86</td><td class="v">4.32</td></tr><tr><td>scuro</td><td class="v">14.81</td><td class="v">13.36</td><td class="v">7.88</td><td class="v">4.63</td><td class="v">7.72</td><td class="v">6.96</td></tr></tbody>
+    </table>
+    <p class="font">inter + spectral, prosa 18px</p>
+  </section>
+<section class="tema">
+    <header><h3>Korall</h3><code>korall</code><span class="fonte">suo, palette propria</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#FBF5F4">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(36, 29, 31, 0.10)">
+        <div class="ttl" style="color:#241D1F">la telefonata rimandata</div>
+        <div class="prs" style="color:#54464A">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#7A6569">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#B0574F;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#D0675D"></span>
+          <span class="dot" style="background:#3F7355"></span>
+          <span class="dot" style="background:#A83A3A"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#1E1B1D">
+      <div class="card" style="background:#262124;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#F6EFEF">la telefonata rimandata</div>
+        <div class="prs" style="color:#CBBFC1">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#94878B">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#FF8A8A;color:#2B1214">Chiudi la giornata</span>
+          <span class="dot" style="background:#FF9B9B"></span>
+          <span class="dot" style="background:#FF8A8A"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">15.32</td><td class="v">16.53</td><td class="v">8.93</td><td class="v">5.39</td><td class="v">4.86</td><td class="v">4.50</td></tr><tr><td>scuro</td><td class="v">15.05</td><td class="v">13.97</td><td class="v">8.87</td><td class="v">4.60</td><td class="v">7.72</td><td class="v">7.53</td></tr></tbody>
+    </table>
+    <p class="font">dm-sans + eb-garamond, prosa 21px</p>
+  </section>
+<section class="tema">
+    <header><h3>Gruvbox</h3><code>gruvbox</code><span class="fonte">Gruvbox, MIT/X11</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#FBF1C7">
+      <div class="card" style="background:#F9F5D7;border-color:rgba(40, 40, 40, 0.10)">
+        <div class="ttl" style="color:#282828">la telefonata rimandata</div>
+        <div class="prs" style="color:#504945">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#665C54">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#AF3A03;color:#FBF1C7">Chiudi la giornata</span>
+          <span class="dot" style="background:#CE4404"></span>
+          <span class="dot" style="background:#427B58"></span>
+          <span class="dot" style="background:#9D0006"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#282828">
+      <div class="card" style="background:#3C3836;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#FBF1C7">la telefonata rimandata</div>
+        <div class="prs" style="color:#D5C4A1">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#B0A28B">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#FE8019;color:#2A1403">Chiudi la giornata</span>
+          <span class="dot" style="background:#FF8F1C"></span>
+          <span class="dot" style="background:#FE8019"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">12.99</td><td class="v">13.39</td><td class="v">8.01</td><td class="v">5.92</td><td class="v">5.40</td><td class="v">5.40</td></tr><tr><td>scuro</td><td class="v">12.99</td><td class="v">10.22</td><td class="v">6.76</td><td class="v">4.63</td><td class="v">6.93</td><td class="v">5.84</td></tr></tbody>
+    </table>
+    <p class="font">ibm-plex-mono + eb-garamond, prosa 21px</p>
+  </section>
+<section class="tema">
+    <header><h3>Grafit</h3><code>grafit</code><span class="fonte">suo, palette propria</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#F4F5F7">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(28, 31, 38, 0.10)">
+        <div class="ttl" style="color:#1C1F26">la telefonata rimandata</div>
+        <div class="prs" style="color:#454B55">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#666D78">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#0E7C6B;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#11927E"></span>
+          <span class="dot" style="background:#0E7C6B"></span>
+          <span class="dot" style="background:#B3352F"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#1C1F26">
+      <div class="card" style="background:#262B34;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#E8EAED">la telefonata rimandata</div>
+        <div class="prs" style="color:#BFC0CC">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#8D949F">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#2DE1C2;color:#10221F">Chiudi la giornata</span>
+          <span class="dot" style="background:#32FCD9"></span>
+          <span class="dot" style="background:#2DE1C2"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">15.12</td><td class="v">16.49</td><td class="v">8.78</td><td class="v">5.22</td><td class="v">5.10</td><td class="v">4.68</td></tr><tr><td>scuro</td><td class="v">13.68</td><td class="v">11.79</td><td class="v">7.87</td><td class="v">4.65</td><td class="v">9.96</td><td class="v">9.94</td></tr></tbody>
+    </table>
+    <p class="font">inter + newsreader, prosa 19px</p>
+  </section>
+<section class="tema">
+    <header><h3>Nord</h3><code>nord</code><span class="fonte">Nord, MIT</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#ECEFF4">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(46, 52, 64, 0.10)">
+        <div class="ttl" style="color:#2E3440">la telefonata rimandata</div>
+        <div class="prs" style="color:#434C5E">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#4C566A">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#5477A3;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#638CC0"></span>
+          <span class="dot" style="background:#4A6E4F"></span>
+          <span class="dot" style="background:#A5454E"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#2E3440">
+      <div class="card" style="background:#3B4252;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#ECEFF4">la telefonata rimandata</div>
+        <div class="prs" style="color:#D8DEE9">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#A7B0C0">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#88C0D0;color:#12222A">Chiudi la giornata</span>
+          <span class="dot" style="background:#98D7E9"></span>
+          <span class="dot" style="background:#88C0D0"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">10.84</td><td class="v">12.49</td><td class="v">8.63</td><td class="v">7.38</td><td class="v">4.62</td><td class="v">4.01</td></tr><tr><td>scuro</td><td class="v">10.84</td><td class="v">8.73</td><td class="v">7.45</td><td class="v">4.61</td><td class="v">8.15</td><td class="v">6.24</td></tr></tbody>
+    </table>
+    <p class="font">dm-sans + newsreader, prosa 19px</p>
+  </section>
+<section class="tema">
+    <header><h3>Ocean</h3><code>ocean</code><span class="fonte">suo, palette propria</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#EFF4F9">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(15, 23, 42, 0.10)">
+        <div class="ttl" style="color:#0F172A">la telefonata rimandata</div>
+        <div class="prs" style="color:#3C4A61">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#5E6D84">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#0369A1;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#047CBE"></span>
+          <span class="dot" style="background:#166534"></span>
+          <span class="dot" style="background:#B3261E"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#0F172A">
+      <div class="card" style="background:#1B2438;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#E2E8F0">la telefonata rimandata</div>
+        <div class="prs" style="color:#C0CADB">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#7F8DA7">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#38BDF8;color:#04202E">Chiudi la giornata</span>
+          <span class="dot" style="background:#3FD4FF"></span>
+          <span class="dot" style="background:#38BDF8"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">16.13</td><td class="v">17.85</td><td class="v">8.96</td><td class="v">5.25</td><td class="v">5.93</td><td class="v">5.36</td></tr><tr><td>scuro</td><td class="v">14.48</td><td class="v">12.56</td><td class="v">9.37</td><td class="v">4.62</td><td class="v">7.83</td><td class="v">8.33</td></tr></tbody>
+    </table>
+    <p class="font">dm-sans + spectral, prosa 19px</p>
+  </section>
+<section class="tema">
+    <header><h3>Tokyo Night</h3><code>tokyo</code><span class="fonte">Tokyo Night, Apache 2.0</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#E1E2E7">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(55, 96, 191, 0.10)">
+        <div class="ttl" style="color:#3760BF">la telefonata rimandata</div>
+        <div class="prs" style="color:#4A5A9E">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#68709A">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#1A71E7;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#1F85FF"></span>
+          <span class="dot" style="background:#587539"></span>
+          <span class="dot" style="background:#C64343"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#1A1B26">
+      <div class="card" style="background:#24283B;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#C0CAF5">la telefonata rimandata</div>
+        <div class="prs" style="color:#A9B1D6">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#888FB4">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#7AA2F7;color:#0B1220">Chiudi la giornata</span>
+          <span class="dot" style="background:#89B5FF"></span>
+          <span class="dot" style="background:#7AA2F7"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">4.52</td><td class="v">5.85</td><td class="v">6.47</td><td class="v">4.80</td><td class="v">4.61</td><td class="v">3.56</td></tr><tr><td>scuro</td><td class="v">10.59</td><td class="v">9.02</td><td class="v">6.90</td><td class="v">4.60</td><td class="v">7.43</td><td class="v">6.79</td></tr></tbody>
+    </table>
+    <p class="font">ibm-plex-mono + newsreader, prosa 19px</p>
+  </section>
+<section class="tema">
+    <header><h3>Ametista</h3><code>ametista</code><span class="fonte">Dracula (MIT) al buio, Alucard in chiaro - da leggere</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#FFFBEB">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(31, 31, 31, 0.10)">
+        <div class="ttl" style="color:#1F1F1F">la telefonata rimandata</div>
+        <div class="prs" style="color:#4A4A4A">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#6C664B">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#644AC9;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#7657ED"></span>
+          <span class="dot" style="background:#14710A"></span>
+          <span class="dot" style="background:#CB3A2A"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#282A36">
+      <div class="card" style="background:#343746;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#F8F8F2">la telefonata rimandata</div>
+        <div class="prs" style="color:#C4C6D4">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#9FA1B5">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#BD93F9;color:#17102A">Chiudi la giornata</span>
+          <span class="dot" style="background:#D4A5FF"></span>
+          <span class="dot" style="background:#BD93F9"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">15.89</td><td class="v">16.48</td><td class="v">8.86</td><td class="v">5.77</td><td class="v">6.24</td><td class="v">6.02</td></tr><tr><td>scuro</td><td class="v">13.36</td><td class="v">11.06</td><td class="v">6.95</td><td class="v">4.63</td><td class="v">7.61</td><td class="v">5.90</td></tr></tbody>
+    </table>
+    <p class="font">inter + eb-garamond, prosa 21px</p>
+  </section>
+<section class="tema">
+    <header><h3>Catppuccin</h3><code>catppuccin</code><span class="fonte">Catppuccin, MIT</span></header>
+    <div class="due">
+      <figure><div class="prev" style="background:#EFF1F5">
+      <div class="card" style="background:#FFFFFF;border-color:rgba(76, 79, 105, 0.10)">
+        <div class="ttl" style="color:#4C4F69">la telefonata rimandata</div>
+        <div class="prs" style="color:#5C5F77">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#6C6F85">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#8839EF;color:#FFFFFF">Chiudi la giornata</span>
+          <span class="dot" style="background:#A043FF"></span>
+          <span class="dot" style="background:#40A02B"></span>
+          <span class="dot" style="background:#D20F39"></span>
+        </div>
+      </div>
+    </div><figcaption>chiaro</figcaption></figure>
+      <figure><div class="prev" style="background:#24273A">
+      <div class="card" style="background:#303446;border-color:rgba(255, 255, 255, 0.07)">
+        <div class="ttl" style="color:#CAD3F5">la telefonata rimandata</div>
+        <div class="prs" style="color:#B8C0E0">Trentadue minuti, e una frase alla fine.</div>
+        <div class="fnt" style="color:#989EB4">sabato 5 settembre</div>
+        <div class="row">
+          <span class="pill" style="background:#C6A0F6;color:#1B0F2B">Chiudi la giornata</span>
+          <span class="dot" style="background:#DEB3FF"></span>
+          <span class="dot" style="background:#C6A0F6"></span>
+          <span class="dot" style="background:#F0736A"></span>
+        </div>
+      </div>
+    </div><figcaption>scuro</figcaption></figure>
+    </div>
+    <table class="contrasto">
+      <thead><tr><th></th><th>ink<br>bgApp</th><th>ink<br>surface</th><th>muted<br>surface</th><th>faint<br>surface</th><th>onAcc<br>accent</th><th>accent<br>bgApp</th></tr></thead>
+      <tbody><tr><td>chiaro</td><td class="v">7.06</td><td class="v">7.99</td><td class="v">6.25</td><td class="v">4.94</td><td class="v">5.41</td><td class="v">4.79</td></tr><tr><td>scuro</td><td class="v">9.92</td><td class="v">8.30</td><td class="v">6.83</td><td class="v">4.62</td><td class="v">8.49</td><td class="v">6.84</td></tr></tbody>
+    </table>
+    <p class="font">dm-sans + cormorant-garamond, prosa 22px</p>
+  </section>
+
+<h2>D ed E, fatte</h2>
+<div class="big fatto"><b>E1 - la licenza dei font.</b> Aggiunto <code>src/fonts/OFL.txt</code>, accanto ai woff2 come chiede la licenza: il testo ufficiale del 26 febbraio 2007 copiato senza modifiche, piu i sette avvisi di copyright. Quegli avvisi non li ho scritti a mano: li ho letti dentro i file dei font, dalla tabella dei nomi di ognuno, cosi non c e il rischio di attribuire un font alla persona sbagliata. Il banco adesso controlla anche questo: 33/33.</div>
+<div class="big fatto"><b>D1 - le due cartelle vecchie.</b> Il Mac non mi ha mai dato il permesso di cancellare (il messaggio di conferma non e arrivato), quindi le ho messe tutte e due dentro <code>_to_delete/</code>: la vecchia copia di lavoro da <code>design/.claude/worktrees/</code> (14 MB) e il file del tema rinominato. <b>Trascina <code>_to_delete/</code> nel cestino quando ti va.</b> Intanto il risultato c e gia: prima <code>npx eslint .</code> su tutta la cartella dava 49 errori e 2875 avvisi, adesso, con quella roba fuori dai piedi, e zero. Pulito davvero, non solo su src.</div>
+
+<h2>Vedere i temi sul telefono, adesso</h2>
+<p>Non serve aspettare GitHub. I temi sono sul disco del tuo Mac, e questa riga costruisce l app <b>con i file che hai adesso nella cartella</b> e apre Xcode:</p>
+<pre>clear; bash "$HOME/Developer/journal-me/vedi-i-temi-sul-telefono.command"</pre>
+<p>Poi su Xcode: collega l iPhone, scegli il telefono nella barra in alto, premi Play e aspetta che l app si apra da sola. In app, <b>Impostazioni &gt; Tema</b> deve mostrare quattordici temi nell ordine qui sopra.</p>
+<div class="big"><b>Perche uno script nuovo e non quello di sempre.</b> <code>aggiorna-e-apri-xcode.command</code> comincia andando a prendere main da GitHub e allineandoci la cartella: farebbe <code>git checkout main</code>, e main i temi non li ha ancora. Ti ritroveresti l app di ieri. Quello nuovo non tocca git per niente - ne fetch, ne checkout, ne pull - e costruisce esattamente cio che e scritto sul disco, ramo compreso. Quando i temi saranno uniti in main, torna a usare quello di sempre.</div>
+
+<h2>E poi su GitHub</h2>
+<p>Quando li hai visti sul telefono, questa riga fa i controlli, salva i diciassette file (niente ios, niente roba di lavoro) e ti stampa il link per aprire la pull request:</p>
+<pre>clear; bash "$HOME/Developer/journal-me/manda-i-temi-su-github.command"</pre>
+<p class="fine">Nota di merito: il campo <code>author</code> di tutti e nove dice "Nikita Rodionov". Non lo aveva chiesto.</p>
+
+</div></body></html>
