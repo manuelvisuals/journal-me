@@ -68,3 +68,10 @@ scripts/css-baseline.json
 # non versionati che bloccherebbero il pull. E roba tua in attesa di essere
 # guardata, non roba da versionare.
 _prima-del-pull/
+
+# Cartelle di parcheggio sul Mac di Manuel (copie vecchie, roba recuperata,
+# quello che aspetta di essere cancellato): non sono del progetto e il
+# controllo dei tipi le ignora (tsconfig exclude). 6 settembre 2026.
+/_to_delete/
+/_recuperato/
+/_prima-del-pull/
