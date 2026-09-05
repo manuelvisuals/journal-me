@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I dieci temi in regalo, visti dentro dayalogue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600&family=Spectral:ital,wght@0,300;0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+[data-theme="minimal"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px; --r-circle:50%;
+  --space:1; --grain:0; --press:.97;
+  --c-bg:#000000; --c-bg-app:#0B0B0C; --c-surface:#161618; --c-surface-2:#1F1F22;
+  --c-ink:#F5F5F7; --c-ink-muted:#B8B8BE; --c-ink-faint:#86868B;
+  --c-accent:#F5F5F7; --c-accent-pressed:#D8D8DE; --c-accent-hi:#FFFFFF; --c-on-accent:#1D1D1F;
+  --c-success:#F5F5F7; --c-danger:#FF6B60; --c-line:rgba(255,255,255,.12);
+  --elev:0 10px 26px rgba(0,0,0,.55); --glow:none; --warmth:none;
+}
+
+[data-theme="vampire"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#191A21; --c-bg-app:#21222C; --c-surface:#282A36; --c-surface-2:#343746;
+  --c-ink:#F8F8F2; --c-ink-muted:#BFC0CC; --c-ink-faint:#9092A4;
+  --c-accent:#FF5555; --c-accent-pressed:#E04B4B; --c-accent-hi:#FF5F5F;
+  --c-on-accent:#1A0E0E; --c-success:#FF5555; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(255,85,85,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(255,85,85,0.06), transparent 68%);
+}
+body.originale [data-theme="vampire"]{ --c-ink-faint:#8B8DA0; }
+
+[data-theme="vampkor"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#191A21; --c-bg-app:#21222C; --c-surface:#282A36; --c-surface-2:#343746;
+  --c-ink:#F8F8F2; --c-ink-muted:#BFC0CC; --c-ink-faint:#9092A4;
+  --c-accent:#FF8A8A; --c-accent-pressed:#E07979; --c-accent-hi:#FF9B9B;
+  --c-on-accent:#2B1214; --c-success:#FF8A8A; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(255,138,138,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(255,138,138,0.06), transparent 68%);
+}
+body.originale [data-theme="vampkor"]{ --c-ink-faint:#8B8DA0; }
+
+[data-theme="korall"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#171416; --c-bg-app:#1E1B1D; --c-surface:#262124; --c-surface-2:#332C30;
+  --c-ink:#F6EFEF; --c-ink-muted:#CBBFC1; --c-ink-faint:#94878B;
+  --c-accent:#FF8A8A; --c-accent-pressed:#E07979; --c-accent-hi:#FF9B9B;
+  --c-on-accent:#2B1214; --c-success:#FF8A8A; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(255,138,138,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(255,138,138,0.06), transparent 68%);
+}
+body.originale [data-theme="korall"]{ --c-ink-faint:#8F8286; }
+
+[data-theme="dracula"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#21222C; --c-bg-app:#282A36; --c-surface:#343746; --c-surface-2:#414458;
+  --c-ink:#F8F8F2; --c-ink-muted:#C4C6D4; --c-ink-faint:#9FA1B5;
+  --c-accent:#BD93F9; --c-accent-pressed:#A681DB; --c-accent-hi:#D4A5FF;
+  --c-on-accent:#17102A; --c-success:#BD93F9; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(189,147,249,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(189,147,249,0.06), transparent 68%);
+}
+body.originale [data-theme="dracula"]{ --c-ink-faint:#8E91A8; }
+
+[data-theme="tokyo"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#16161E; --c-bg-app:#1A1B26; --c-surface:#24283B; --c-surface-2:#2F3549;
+  --c-ink:#C0CAF5; --c-ink-muted:#A9B1D6; --c-ink-faint:#888FB4;
+  --c-accent:#7AA2F7; --c-accent-pressed:#6B8FD9; --c-accent-hi:#89B5FF;
+  --c-on-accent:#0B1220; --c-success:#7AA2F7; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(122,162,247,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(122,162,247,0.06), transparent 68%);
+}
+body.originale [data-theme="tokyo"]{ --c-ink-faint:#7A82AB; }
+
+[data-theme="nord"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#272C36; --c-bg-app:#2E3440; --c-surface:#3B4252; --c-surface-2:#434C5E;
+  --c-ink:#ECEFF4; --c-ink-muted:#D8DEE9; --c-ink-faint:#A7B0C0;
+  --c-accent:#88C0D0; --c-accent-pressed:#78A9B7; --c-accent-hi:#98D7E9;
+  --c-on-accent:#12222A; --c-success:#88C0D0; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(136,192,208,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(136,192,208,0.06), transparent 68%);
+}
+body.originale [data-theme="nord"]{ --c-ink-faint:#95A0B3; }
+
+[data-theme="gruvbox"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#1F1F1F; --c-bg-app:#282828; --c-surface:#3C3836; --c-surface-2:#504945;
+  --c-ink:#FBF1C7; --c-ink-muted:#D5C4A1; --c-ink-faint:#B0A28B;
+  --c-accent:#FE8019; --c-accent-pressed:#E07116; --c-accent-hi:#FF8F1C;
+  --c-on-accent:#2A1403; --c-success:#FE8019; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(254,128,25,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(254,128,25,0.06), transparent 68%);
+}
+body.originale [data-theme="gruvbox"]{ --c-ink-faint:#A08F73; }
+
+[data-theme="catppuccin"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#1E2030; --c-bg-app:#24273A; --c-surface:#303446; --c-surface-2:#3E4459;
+  --c-ink:#CAD3F5; --c-ink-muted:#B8C0E0; --c-ink-faint:#989EB4;
+  --c-accent:#C6A0F6; --c-accent-pressed:#AE8DD8; --c-accent-hi:#DEB3FF;
+  --c-on-accent:#1B0F2B; --c-success:#C6A0F6; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(198,160,246,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(198,160,246,0.06), transparent 68%);
+}
+body.originale [data-theme="catppuccin"]{ --c-ink-faint:#8087A2; }
+
+[data-theme="grafit"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#171A20; --c-bg-app:#1C1F26; --c-surface:#262B34; --c-surface-2:#2E343E;
+  --c-ink:#E8EAED; --c-ink-muted:#BFC0CC; --c-ink-faint:#8D949F;
+  --c-accent:#2DE1C2; --c-accent-pressed:#28C6AB; --c-accent-hi:#32FCD9;
+  --c-on-accent:#10221F; --c-success:#2DE1C2; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(45,225,194,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(45,225,194,0.06), transparent 68%);
+}
+body.originale [data-theme="grafit"]{ --c-ink-faint:#7A828F; }
+
+[data-theme="ocean"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.05em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+  --c-bg:#0B1220; --c-bg-app:#0F172A; --c-surface:#1B2438; --c-surface-2:#273349;
+  --c-ink:#E2E8F0; --c-ink-muted:#C0CADB; --c-ink-faint:#7F8DA7;
+  --c-accent:#38BDF8; --c-accent-pressed:#31A6DA; --c-accent-hi:#3FD4FF;
+  --c-on-accent:#04202E; --c-success:#38BDF8; --c-danger:#F0736A;
+  --c-line:rgba(255,255,255,0.07);
+  --elev:0 12px 28px rgba(0,0,0,0.75); --glow:0 0 22px rgba(56,189,248,0.28);
+  --warmth:radial-gradient(100% 60% at 18% -12%, rgba(56,189,248,0.06), transparent 68%);
+}
+body.originale [data-theme="ocean"]{ --c-ink-faint:#7C8AA5; }
+
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050304;color:#F4E7DE;font-family:"Inter",system-ui,sans-serif;
+  padding:0 24px 120px;-webkit-font-smoothing:antialiased}
+.testata{position:sticky;top:0;z-index:20;background:rgba(5,3,4,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,229,214,.09);margin:0 -24px 0;padding:12px 24px;
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.testata .tit{font-family:"Spectral",Georgia,serif;font-size:17px}
+.seg{display:inline-flex;gap:3px;background:#1D1013;border:1px solid rgba(255,229,214,.09);
+  border-radius:999px;padding:3px;margin-left:auto}
+.seg button{font:600 12px/1 "Inter",sans-serif;color:#8E7770;background:none;border:0;cursor:pointer;
+  height:28px;padding:0 14px;border-radius:999px}
+.seg button.on{background:rgba(227,161,95,.16);color:#E3A15F}
+.indice{font-size:12px;color:#CDB7AE}
+.indice a{color:#CDB7AE;text-decoration:none;padding:0 5px}
+.indice a:hover{color:#E3A15F}
+
+.wrap{max-width:1120px;margin:0 auto}
+section{scroll-margin-top:78px}
+h1{font-family:"Spectral",Georgia,serif;font-size:34px;font-weight:400;letter-spacing:-.02em;margin:44px 0 12px}
+.sommario{font-size:14px;color:#CDB7AE;line-height:1.7;max-width:760px}
+.sommario b{color:#F4E7DE;font-weight:600}
+.riquadro{border:1px solid rgba(255,229,214,.10);border-radius:16px;padding:20px 24px;margin:26px 0;background:#140C0E}
+.riquadro.giallo{border-color:rgba(227,161,95,.32);background:rgba(227,161,95,.06)}
+.riquadro h2{font-size:12px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:#E3A15F;margin-bottom:12px}
+.riquadro p{font-size:13.5px;color:#CDB7AE;line-height:1.75;max-width:820px}
+.riquadro p + p{margin-top:10px}
+.riquadro b{color:#F4E7DE;font-weight:600}
+.divisore{height:1px;background:rgba(255,229,214,.075);margin:46px 0}
+
+.label{font-size:11px;font-weight:650;color:#8E7770;letter-spacing:.22em;text-transform:uppercase;margin:0 0 8px}
+.nomeTema{font-family:"Spectral",Georgia,serif;font-size:26px;font-weight:400;margin-bottom:8px}
+.nomeTema .num{color:#E3A15F;font-size:15px;font-family:"Inter",sans-serif;font-weight:650;margin-right:10px;vertical-align:2px}
+.intenz{font-size:13.5px;color:#CDB7AE;line-height:1.7;max-width:820px;margin-bottom:18px}
+.intenz .no{color:#F0736A;font-weight:600}
+.frame{overflow-x:auto;padding-bottom:6px}
+.sottoschermo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;align-items:start}
+@media (max-width:900px){.sottoschermo{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{text-align:left;font-weight:400;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:#8E7770;padding:0 10px 8px 0}
+td{padding:6px 10px 6px 0;border-top:1px solid rgba(255,229,214,.075);vertical-align:middle}
+td.k{font-family:ui-monospace,Menlo,monospace;color:#CDB7AE;white-space:nowrap}
+td.v{font-family:ui-monospace,Menlo,monospace;white-space:nowrap;color:#F4E7DE}
+.quad{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,.14);
+  vertical-align:-3px;margin-right:8px}
+.ok{color:#8FCB9B}.ko{color:#F0736A}
+.freccia{color:#8E7770}
+ul{margin:8px 0 0 18px;font-size:13px;color:#CDB7AE;line-height:1.7}
+li{margin-bottom:5px}
+li b{color:#F4E7DE}
+.domanda{border-left:2px solid #E3A15F;padding:2px 0 2px 18px;margin:22px 0}
+.domanda .q{font-size:15px;color:#F4E7DE;font-weight:600;margin-bottom:10px}
+.domanda ol{margin-left:18px;font-size:13.5px;color:#CDB7AE;line-height:1.9}
+.domanda ol b{color:#F4E7DE}
+.chiusura{margin-top:40px;font-size:13.5px;color:#CDB7AE;line-height:1.75}
+
+/* ---------- finestra app (identica al mockup temi.html) ---------- */
+.win{position:relative;width:1120px;height:560px;margin:0 auto;
+  background:var(--c-bg-app);color:var(--c-ink);font-family:var(--f-ui);
+  border-radius:var(--r-md);overflow:hidden;display:flex;
+  box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05)}
+.win::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:var(--warmth)}
+.win > *{position:relative;z-index:1}
+.rail-l{width:222px;flex:0 0 222px;border-right:1px solid var(--c-line);
+  padding:calc(24px * var(--space)) 14px calc(18px * var(--space));display:flex;flex-direction:column}
+.brand{font-family:var(--f-prose);font-size:var(--t-title);font-weight:400;padding:0 10px calc(24px * var(--space))}
+.brand span{color:var(--c-accent)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:calc(10px * var(--space)) 12px;
+  border-radius:var(--r-sm);font-size:var(--t-body);font-weight:600;color:var(--c-ink-faint);border:1px solid transparent}
+.nav-i svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nav-i.on{background:color-mix(in oklab,var(--c-accent) 12%,transparent);color:var(--c-accent);
+  border-color:color-mix(in oklab,var(--c-accent) 30%,transparent)}
+.nav-i.rec{color:var(--c-accent)}
+.nav-sep{height:1px;background:var(--c-line);margin:calc(16px * var(--space)) 12px}
+.rail-l-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--c-line)}
+.acct{display:flex;align-items:center;gap:10px}
+.avatar{width:28px;height:28px;border-radius:var(--r-circle);flex:0 0 28px;background:var(--c-surface-2);
+  border:1px solid var(--c-line);display:flex;align-items:center;justify-content:center;
+  font-size:var(--t-meta);font-weight:600;color:var(--c-ink-muted)}
+.acct-nm{font-size:var(--t-meta);font-weight:600;color:var(--c-ink-muted)}
+.pillp{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;border-radius:var(--r-pill);background:color-mix(in oklab,var(--c-accent) 14%,transparent);
+  color:var(--c-accent);border:1px solid color-mix(in oklab,var(--c-accent) 28%,transparent)}
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column}
+.col-head{height:calc(56px * var(--space));flex:0 0 calc(56px * var(--space));display:flex;align-items:center;
+  justify-content:space-between;padding:0 calc(28px * var(--space));border-bottom:1px solid var(--c-line)}
+.day-label{font-size:var(--t-label);font-weight:650;letter-spacing:var(--t-tracking-label);
+  text-transform:uppercase;color:var(--c-accent)}
+.meta{font-size:var(--t-meta);color:var(--c-ink-faint)}
+.editor-scroll{flex:1;overflow:hidden;display:flex;justify-content:center;padding:calc(40px * var(--space)) 28px 0}
+.editor{width:100%;max-width:620px}
+.editor p{font-family:var(--f-prose);font-size:var(--t-prose);font-weight:var(--t-w-prose);
+  line-height:var(--t-lh-prose);color:var(--c-ink);margin-bottom:1em}
+.caret{display:inline-block;width:2px;height:.95em;background:var(--c-accent);vertical-align:-3px;margin-left:1px}
+.col-foot{flex:0 0 calc(70px * var(--space));display:flex;align-items:center;justify-content:space-between;
+  padding:0 calc(28px * var(--space));border-top:1px solid var(--c-line)}
+.hint{font-size:var(--t-meta);color:var(--c-ink-muted)}
+.acts{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-md);font-family:var(--f-ui);
+  font-size:var(--t-body);font-weight:650;letter-spacing:-.005em;
+  padding:calc(13px * var(--space)) calc(20px * var(--space));border:1px solid transparent}
+.btn-primary{background:var(--c-accent);color:var(--c-on-accent);
+  border-color:color-mix(in oklab,var(--c-on-accent) 12%,transparent);box-shadow:var(--glow),var(--elev)}
+.btn-ghost{background:transparent;color:var(--c-ink-muted);border-color:var(--c-line);
+  text-transform:uppercase;font-size:var(--t-meta);letter-spacing:.04em;font-weight:600}
+.rail-r{width:288px;flex:0 0 288px;border-left:1px solid var(--c-line);padding:calc(22px * var(--space)) 20px;overflow:hidden}
+.sec-l{font-size:var(--t-label);font-weight:650;letter-spacing:var(--t-tracking-label);
+  text-transform:uppercase;color:var(--c-accent);margin-bottom:14px}
+.sec{margin-bottom:calc(28px * var(--space))}
+.mrow{display:flex;align-items:baseline;justify-content:space-between;padding:calc(8px * var(--space)) 0;
+  border-bottom:1px solid var(--c-line)}
+.mrow:last-child{border-bottom:none}
+.mk{font-size:var(--t-meta);color:var(--c-ink-muted)}
+.mv{font-size:calc(var(--t-metric) * .6);font-weight:300;color:var(--c-ink);font-variant-numeric:tabular-nums}
+.mv small{font-size:var(--t-meta);color:var(--c-ink-faint);margin-left:3px}
+.goal{display:flex;align-items:center;gap:12px;padding:calc(7px * var(--space)) 0}
+.gdot{width:14px;height:14px;border-radius:var(--r-circle);
+  border:1.5px solid color-mix(in oklab,var(--c-ink) 18%,transparent);flex:0 0 14px}
+.gdot.on{background:var(--c-accent);border-color:var(--c-accent);box-shadow:var(--glow)}
+.gname{font-size:var(--t-body);color:var(--c-ink-faint)}
+.goal.on .gname{color:var(--c-ink)}
+.dang{font-size:var(--t-meta);color:var(--c-danger);margin-top:14px}
+
+</style>
+</head>
+<body>
+
+<div class="testata">
+  <div class="tit">I dieci temi in regalo</div>
+  <div class="indice"><a href="#t01">01</a> <a href="#t02">02</a> <a href="#t03">03</a> <a href="#t04">04</a> <a href="#t05">05</a> <a href="#t06">06</a> <a href="#t07">07</a> <a href="#t08">08</a> <a href="#t09">09</a> <a href="#t10">10</a></div>
+  <div class="seg" id="seg">
+    <button data-v="corretto" class="on">inkFaint corretto</button>
+    <button data-v="originale">com e arrivato</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<h1>I dieci temi, visti dentro dayalogue</h1>
+<p class="sommario">
+Non sono i mockup del tuo amico: qui i suoi colori sono messi addosso alla <b>schermata vera di
+dayalogue</b>, con la tipografia di dayalogue. E l unico modo di capire se un tema funziona: la
+sua app e un editor da scrivania denso, la tua e un diario. Gli stessi colori in due vestiti
+diversi non danno la stessa impressione.
+</p>
+
+<div class="riquadro giallo">
+  <h2>La cosa piu importante</h2>
+  <p>Ho rimisurato tutti e dieci i temi da solo, senza fidarmi dei numeri del suo file. Il
+  risultato e piu pulito di quanto sembrasse: <b>tutti e dieci falliscono una sola coppia, e
+  sempre la stessa</b> - <b>inkFaint / surface</b>, cioe le didascalie ("218 parole . salvata ora",
+  i nomi degli obiettivi spenti). Le altre cinque coppie passano larghe su tutti.</p>
+  <p>Non e una coincidenza: e la stessa coppia che falliva nel tema <b>wine</b> di dayalogue,
+  ed e stata corretta allo stesso modo (SPEC-temi, capitolo 6: inkFaint da #8E7770 a #9A8279).
+  La correzione qui costa pochissimo: <b>ho alzato la luminosita del grigio tenendo tinta e
+  saturazione</b>, di due-tre punti. Con l interruttore in alto a destra vedi le due versioni:
+  la differenza a occhio e quasi nulla, il numero passa.</p>
+</div>
+
+<div class="riquadro">
+  <h2>Cosa e arrivato davvero</h2>
+  <p>Il suo Claude ha lavorato bene ed e stato onesto: ha dichiarato i buchi invece di riempirli.
+  Ma quello che e arrivato <b>non sono dieci temi: sono dieci tavolozze di colori</b>. Il resto del
+  contratto o manca o non e trasportabile:</p>
+  <ul>
+    <li><b>Nessun tema chiaro.</b> Tutti e dieci sono solo scuri, e giustamente non ha invertito niente.</li>
+    <li><b>La tipografia non e utilizzabile.</b> La sua app usa corpi da scrivania densa: prosa a
+      12,5px, titoli a 13px. In dayalogue il minimo per quei ruoli e 13, 15 e 14. E un solo font
+      sans (San Francisco) anche per la prosa, mentre ogni tema di dayalogue usa un serif per il
+      testo scritto. Nelle finestre qui sopra ho usato la tipografia di <b>Minimal</b> (Inter +
+      Newsreader), che e la lettura piu onesta della sua.</li>
+    <li><b>Mancano tre valori</b>, che ho ricavato dal comportamento della sua app invece di
+      inventarli: <b>success</b> = l accento (nel suo codice la conferma e disegnata con l accento),
+      <b>accentHi</b> = accento piu chiaro del 12% (e il suo hover, <code>brightness(1.12)</code>),
+      <b>accentPressed</b> = accento piu scuro del 12%. Il suo file metteva in accentHi l accento al
+      10% di opacita, che e uno sfondo tenue e non un colore: su un capolettera sarebbe invisibile.</li>
+    <li><b>Manca la densita</b> (space): la sua app non ha un moltiplicatore. Resta 1, cioe normale.</li>
+  </ul>
+</div>
+
+<div class="divisore"></div>
+<div class="label">Riferimento</div>
+<div class="nomeTema">Dayalogue com e adesso <span style="font-size:14px;color:#8E7770;font-family:Inter,sans-serif">tema Minimal, scuro</span></div>
+<p class="intenz">Questa e la stessa schermata col tema che hai oggi. Serve per confronto: scorri
+su e giu fra questa e le dieci qui sotto.</p>
+<div class="frame"><div class="win" data-theme="minimal">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+
+
+<div class="divisore"></div>
+<section id="t01">
+  <div class="nomeTema"><span class="num">01</span>Vampire</div>
+  <p class="intenz">Il tema base dell app dell amico. Lo sfondo e freddo, blu-violetto e non grigio: e per quello che il rosso non sembra aggressivo. <span class="no">Non deve diventare:</span> uno sfondo grigio neutro, perche su grigio lo stesso rosso urla.</p>
+  <div class="frame"><div class="win" data-theme="vampire">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#191A21"></span>#191A21</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#282A36"></span>#282A36</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#343746"></span>#343746</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#F8F8F2"></span>#F8F8F2</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#BFC0CC"></span>#BFC0CC</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#9092A4"></span>#9092A4 <span class="freccia">da #8B8DA0</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#FF5555"></span>#FF5555</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#FF5F5F"></span>#FF5F5F <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#E04B4B"></span>#E04B4B <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#1A0E0E"></span>#1A0E0E</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#FF5555"></span>#FF5555 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">14.81</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">13.36</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">7.88</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">4.35 &rarr;</span> <span class="ok">4.63</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">6.00</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">5.03</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t02">
+  <div class="nomeTema"><span class="num">02</span>Vampire Korall</div>
+  <p class="intenz">Lo stesso Vampire con l accento ammorbidito in corallo. Sfondo e testo identici. <span class="no">Non deve diventare:</span> un accento saturo: se alzi la saturazione torni a Vampire e questo tema non ha piu ragione di esistere.</p>
+  <div class="frame"><div class="win" data-theme="vampkor">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#191A21"></span>#191A21</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#282A36"></span>#282A36</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#343746"></span>#343746</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#F8F8F2"></span>#F8F8F2</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#BFC0CC"></span>#BFC0CC</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#9092A4"></span>#9092A4 <span class="freccia">da #8B8DA0</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#FF9B9B"></span>#FF9B9B <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#E07979"></span>#E07979 <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#2B1214"></span>#2B1214</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">14.81</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">13.36</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">7.88</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">4.35 &rarr;</span> <span class="ok">4.63</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">7.72</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">6.96</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t03">
+  <div class="nomeTema"><span class="num">03</span>Korall</div>
+  <p class="intenz">Sfondo caldo, non grigio-blu: sotto un accento corallo una base fredda vira al rosa. Anche il testo e spostato verso il caldo. <span class="no">Non deve diventare:</span> un tema con sfondo freddo e accento corallo, che e l errore da cui questo tema e nato.</p>
+  <div class="frame"><div class="win" data-theme="korall">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#171416"></span>#171416</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#1E1B1D"></span>#1E1B1D</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#262124"></span>#262124</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#332C30"></span>#332C30</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#F6EFEF"></span>#F6EFEF</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#CBBFC1"></span>#CBBFC1</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#94878B"></span>#94878B <span class="freccia">da #8F8286</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#FF9B9B"></span>#FF9B9B <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#E07979"></span>#E07979 <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#2B1214"></span>#2B1214</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">15.05</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">13.97</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">8.87</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">4.30 &rarr;</span> <span class="ok">4.60</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">7.72</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">7.53</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t04">
+  <div class="nomeTema"><span class="num">04</span>Dracula</div>
+  <p class="intenz">Palette Dracula classica. Il viola e il piu delicato dei dieci: non chiama, accompagna. <span class="no">Non deve diventare:</span> viola saturo: alla stessa luminosita perde contrasto e diventa illeggibile.</p>
+  <div class="frame"><div class="win" data-theme="dracula">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#282A36"></span>#282A36</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#343746"></span>#343746</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#414458"></span>#414458</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#F8F8F2"></span>#F8F8F2</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#C4C6D4"></span>#C4C6D4</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#9FA1B5"></span>#9FA1B5 <span class="freccia">da #8E91A8</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#BD93F9"></span>#BD93F9</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#D4A5FF"></span>#D4A5FF <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#A681DB"></span>#A681DB <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#17102A"></span>#17102A</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#BD93F9"></span>#BD93F9 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">13.36</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">11.06</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">6.95</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">3.80 &rarr;</span> <span class="ok">4.63</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">7.61</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">5.90</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t05">
+  <div class="nomeTema"><span class="num">05</span>Tokyo Night</div>
+  <p class="intenz">Il piu scuro e il piu freddo. Il testo e bluastro e non bianco: tutta la scena sta sotto la stessa luce notturna. <span class="no">Non deve diventare:</span> testo bianco puro, che taglia e fa sparire la calma notturna.</p>
+  <div class="frame"><div class="win" data-theme="tokyo">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#16161E"></span>#16161E</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#1A1B26"></span>#1A1B26</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#24283B"></span>#24283B</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#2F3549"></span>#2F3549</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#C0CAF5"></span>#C0CAF5</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#A9B1D6"></span>#A9B1D6</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#888FB4"></span>#888FB4 <span class="freccia">da #7A82AB</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#7AA2F7"></span>#7AA2F7</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#89B5FF"></span>#89B5FF <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#6B8FD9"></span>#6B8FD9 <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#0B1220"></span>#0B1220</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#7AA2F7"></span>#7AA2F7 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">10.59</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">9.02</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">6.90</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">3.89 &rarr;</span> <span class="ok">4.60</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">7.43</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">6.79</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t06">
+  <div class="nomeTema"><span class="num">06</span>Nord</div>
+  <p class="intenz">Il piu chiaro dei dieci, contrasto basso di proposito, azzurro polare. <span class="no">Non deve diventare:</span> piu contrastato: il contrasto basso e la caratteristica di Nord, non un difetto.</p>
+  <div class="frame"><div class="win" data-theme="nord">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#272C36"></span>#272C36</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#2E3440"></span>#2E3440</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#3B4252"></span>#3B4252</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#434C5E"></span>#434C5E</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#ECEFF4"></span>#ECEFF4</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#D8DEE9"></span>#D8DEE9</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#A7B0C0"></span>#A7B0C0 <span class="freccia">da #95A0B3</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#88C0D0"></span>#88C0D0</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#98D7E9"></span>#98D7E9 <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#78A9B7"></span>#78A9B7 <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#12222A"></span>#12222A</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#88C0D0"></span>#88C0D0 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">10.84</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">8.73</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">7.45</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">3.81 &rarr;</span> <span class="ok">4.61</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">8.15</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">6.24</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t07">
+  <div class="nomeTema"><span class="num">07</span>Gruvbox</div>
+  <p class="intenz">L unico veramente caldo: fondo terra, testo crema, accento arancione. <span class="no">Non deve diventare:</span> freddo: basta spostare il fondo verso il grigio e l arancione diventa sporco.</p>
+  <div class="frame"><div class="win" data-theme="gruvbox">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#1F1F1F"></span>#1F1F1F</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#282828"></span>#282828</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#3C3836"></span>#3C3836</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#504945"></span>#504945</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#FBF1C7"></span>#FBF1C7</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#D5C4A1"></span>#D5C4A1</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#B0A28B"></span>#B0A28B <span class="freccia">da #A08F73</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#FE8019"></span>#FE8019</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#FF8F1C"></span>#FF8F1C <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#E07116"></span>#E07116 <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#2A1403"></span>#2A1403</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#FE8019"></span>#FE8019 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">12.99</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">10.22</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">6.76</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">3.68 &rarr;</span> <span class="ok">4.63</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">6.93</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">5.84</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t08">
+  <div class="nomeTema"><span class="num">08</span>Catppuccin</div>
+  <p class="intenz">Catppuccin Macchiato. Fondo blu-viola morbido, accento lavanda. <span class="no">Non deve diventare:</span> piu contrastato: tutto sta su differenze piccole, aumentarle lo rende un tema qualunque.</p>
+  <div class="frame"><div class="win" data-theme="catppuccin">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#1E2030"></span>#1E2030</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#24273A"></span>#24273A</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#303446"></span>#303446</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#3E4459"></span>#3E4459</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#CAD3F5"></span>#CAD3F5</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#B8C0E0"></span>#B8C0E0</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#989EB4"></span>#989EB4 <span class="freccia">da #8087A2</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#C6A0F6"></span>#C6A0F6</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#DEB3FF"></span>#DEB3FF <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#AE8DD8"></span>#AE8DD8 <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#1B0F2B"></span>#1B0F2B</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#C6A0F6"></span>#C6A0F6 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">9.92</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">8.30</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">6.83</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">3.46 &rarr;</span> <span class="ok">4.62</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">8.49</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">6.84</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t09">
+  <div class="nomeTema"><span class="num">09</span>Grafit</div>
+  <p class="intenz">Tema originale dell amico. Fondo grigio-blu neutro e un solo accento menta, il piu vivo dei dieci. <span class="no">Non deve diventare:</span> un fondo colorato: se il fondo prende tinta, la menta diventa velenosa.</p>
+  <div class="frame"><div class="win" data-theme="grafit">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#171A20"></span>#171A20</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#1C1F26"></span>#1C1F26</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#262B34"></span>#262B34</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#2E343E"></span>#2E343E</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#E8EAED"></span>#E8EAED</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#BFC0CC"></span>#BFC0CC</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#8D949F"></span>#8D949F <span class="freccia">da #7A828F</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#2DE1C2"></span>#2DE1C2</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#32FCD9"></span>#32FCD9 <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#28C6AB"></span>#28C6AB <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#10221F"></span>#10221F</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#2DE1C2"></span>#2DE1C2 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">13.68</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">11.79</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">7.87</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">3.67 &rarr;</span> <span class="ok">4.65</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">9.96</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">9.94</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t10">
+  <div class="nomeTema"><span class="num">10</span>Ocean</div>
+  <p class="intenz">Tema originale dell amico. Il fondo piu profondo di tutti, blu notte, accento azzurro. <span class="no">Non deve diventare:</span> un fondo piu chiaro: la profondita e cio che fa brillare l azzurro.</p>
+  <div class="frame"><div class="win" data-theme="ocean">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Venerdi 4 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I colori nel contratto dayalogue</div><table><tr><th>Chiave</th><th>Valore</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#0B1220"></span>#0B1220</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#0F172A"></span>#0F172A</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#1B2438"></span>#1B2438</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#273349"></span>#273349</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#E2E8F0"></span>#E2E8F0</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#C0CADB"></span>#C0CADB</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#7F8DA7"></span>#7F8DA7 <span class="freccia">da #7C8AA5</span></td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#38BDF8"></span>#38BDF8</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#3FD4FF"></span>#3FD4FF <span class="freccia">ricavato</span></td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#31A6DA"></span>#31A6DA <span class="freccia">ricavato</span></td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#04202E"></span>#04202E</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#38BDF8"></span>#38BDF8 <span class="freccia">ricavato</span></td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr></table></div>
+    <div><div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Rapporto</th><th>Esito</th></tr><tr><td class="k">ink / bgApp</td><td class="v"><span class="ok">14.48</span></td><td class="ok">Passa</td></tr><tr><td class="k">ink / surface</td><td class="v"><span class="ok">12.56</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkMuted / surface</td><td class="v"><span class="ok">9.37</span></td><td class="ok">Passa</td></tr><tr><td class="k">inkFaint / surface</td><td class="v"><span class="freccia">4.45 &rarr;</span> <span class="ok">4.62</span></td><td class="ok">Passa</td></tr><tr><td class="k">onAccent / accent</td><td class="v"><span class="ok">7.83</span></td><td class="ok">Passa</td></tr><tr><td class="k">accent / bgApp</td><td class="v"><span class="ok">8.33</span></td><td class="ok">Passa</td></tr></table></div>
+  </div>
+</section>
+
+<div class="divisore"></div>
+
+<h1>Le decisioni</h1>
+<p class="sommario">Rispondimi in chat con i numeri. Una domanda per volta: se rispondi solo alla
+prima, le altre le rifaccio dopo con quello che avrai scelto.</p>
+
+<div class="domanda">
+  <div class="q">1. Quali tieni?</div>
+  <ol>
+    <li>Scrivimi i numeri dei temi che vuoi, per esempio <b>"2, 5, 9"</b>.</li>
+    <li>Se li vuoi tutti e dieci, scrivi <b>"tutti"</b>.</li>
+    <li>Se non ti convince nessuno, dimmelo: si chiude qui senza offendere nessuno.</li>
+  </ol>
+</div>
+
+<div class="domanda">
+  <div class="q">2. Il tema chiaro: sono tutti solo scuri, e dayalogue oggi pretende tutti e due i set</div>
+  <ol>
+    <li><b>Disegno io il chiaro</b> per i temi che scegli, partendo dalla loro intenzione. Costa
+      lavoro, ma il tema resta un tema vero e sta accanto agli altri cinque senza note a pie di pagina.</li>
+    <li><b>Rendo legale un tema solo scuro</b>: e gia previsto in SPEC-temi (<code>supports: ["dark"]</code>)
+      ma non e mai stato scritto nel codice. Vuol dire toccare il contratto (lavoro sullo scheletro) e
+      far comparire nell interruttore chiaro/scuro il motivo per cui, con questo tema, il chiaro non c e.</li>
+    <li><b>Li tengo fuori</b> finche non c e il marketplace dei temi.</li>
+  </ol>
+</div>
+
+<div class="domanda">
+  <div class="q">3. Che tipografia gli do?</div>
+  <ol>
+    <li><b>Quella di Minimal</b> (Inter + Newsreader), come nelle finestre qui sopra: neutra, non
+      litiga con nessuna delle dieci tavolozze.</li>
+    <li><b>Una tipografia mono</b> (IBM Plex Mono, come il tema Macchina): sono palette nate da
+      editor di codice, e il mono e la loro lingua madre. Piu fedele all originale, meno adatto a
+      scrivere pagine lunghe.</li>
+    <li><b>Una per tema</b>: ci ragiono uno per uno. Piu lento, piu bello.</li>
+  </ol>
+</div>
+
+<p class="chiusura">
+Una nota che non e una domanda: il tuo amico ha regalato i temi <b>senza condizioni</b>, ma il suo
+nome resta scritto nel campo <code>author</code> di ogni tema, e comparira nel selettore dei temi.
+Se preferisce che non ci sia, dimmelo. Non e una formalita: se un giorno apri il marketplace dei
+temi, l autore e il campo che decide di chi e la roba.
+</p>
+
+</div>
+
+<script>
+document.getElementById('seg').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.querySelectorAll('button'), function(x){ x.classList.remove('on'); });
+  b.classList.add('on');
+  document.body.classList.toggle('originale', b.getAttribute('data-v') === 'originale');
+});
+</script>
+</body>
+</html>
