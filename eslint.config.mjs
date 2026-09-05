@@ -50,6 +50,10 @@ const eslintConfig = defineConfig([
     // Generated: the static export and the copy of it that ships in the app.
     ".next-mobile/**",
     "ios/**",
+    // Cartelle di parcheggio sul Mac (copie vecchie, roba da cancellare).
+    "_to_delete/**",
+    "_recuperato/**",
+    "_prima-del-pull/**",
   ]),
   {
     rules: {
