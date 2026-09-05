@@ -137,7 +137,21 @@ public class AbbonamentoPlugin: CAPPlugin, CAPBridgedPlugin {
                     call.reject("prodotto non trovato: \(id)")
                     return
                 }
-                let risultato = try await prodotto.purchase()
+                // Le transazioni APERTE e gia scadute di questo prodotto si
+                // chiudono prima: StoreKit, a un nuovo acquisto, ripropone una
+                // transazione aperta al posto di venderne una nuova (5-6
+                // settembre 2026: la ricevuta del giorno prima tornava a ogni
+                // "Compra"). Una transazione scaduta non da nessun diritto:
+                // chiuderla qui non toglie niente a nessuno.
+                await self.chiudiLeScadute(di: id)
+                var risultato = try await prodotto.purchase()
+                // Se Apple ha restituito comunque una transazione gia scaduta,
+                // non e una vendita: si chiude e si riprova una volta.
+                if case .success(let v) = risultato, case .verified(let t) = v,
+                   let fine = t.expirationDate, fine < Date() {
+                    await t.finish()
+                    risultato = try await prodotto.purchase()
+                }
                 switch risultato {
                 case .success(let verifica):
                     switch verifica {
@@ -160,6 +174,15 @@ public class AbbonamentoPlugin: CAPPlugin, CAPBridgedPlugin {
             } catch {
                 call.reject("storekit: \(error.localizedDescription)")
             }
+        }
+    }
+
+    /// Chiude le transazioni aperte e gia scadute (o revocate) di un prodotto.
+    private func chiudiLeScadute(di id: String) async {
+        for await esito in Transaction.unfinished {
+            guard case .verified(let t) = esito, t.productID == id else { continue }
+            let scaduta = (t.expirationDate.map { $0 < Date() } ?? false) || t.revocationDate != nil
+            if scaduta { await t.finish() }
         }
     }
 

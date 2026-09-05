@@ -36,10 +36,13 @@ import {
   compraPremium,
   negozioDisponibile,
   prodottiPremium,
+  prodottiInTasca,
+  dimenticaProdotti,
   ripristinaAcquisti,
   type ProdottoNegozio,
 } from "@/modules/abbonamento/negozio-ios";
 import { openPremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
+import { statoOspiteInTasca } from "@/lib/ospite/stato";
 
 /**
  * "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3).
@@ -176,27 +179,43 @@ export function PremiumWall() {
   // Le schede: i prodotti come li dice Apple. L'interruttore dell'annuale
   // arriva da /api/ospite/stato (stessa origine, senza testo: e nell'elenco
   // chiuso della promessa sulla rete), cosi vale anche per l'ospite.
+  //
+  // ISTANTANEO (Manuel, 6 settembre 2026): niente attese in fila. I prodotti
+  // sono in cache dall'avvio (precaricaProdotti) e la scheda Mensile si
+  // disegna subito; il server si interroga IN PARALLELO solo per sapere se
+  // mostrare anche l'Annuale, e se e lento (o muto) la scheda Mensile non
+  // lo aspetta. Prima: stato, POI Apple, uno dopo l'altro, anche 30 secondi.
   // `giro` rilegge i prodotti dopo un foglio di Apple chiuso senza premium:
-  // entrando nell'App Store dal foglio la vetrina puo cambiare paese (in
-  // sandbox: da $ a EUR), e il prezzo in scheda deve dire quello vero.
+  // entrando nell'App Store dal foglio la vetrina puo cambiare paese.
   const [giro, setGiro] = useState(0);
   useEffect(() => {
     if (!wall || !negozio) return;
     let vivo = true;
     const per = wall;
-    (async () => {
-      let annuale = false;
-      try {
-        const r = await apiFetch("/api/ospite/stato");
-        if (r.ok) annuale = ((await r.json()) as { annualeAttivo?: boolean }).annualeAttivo === true;
-      } catch {
-        // senza risposta: solo il mensile
-      }
-      const lista = await prodottiPremium(annuale);
+    let annualeNoto: boolean | null = statoOspiteInTasca()?.annualeAttivo ?? null;
+    const mostra = (lista: ProdottoNegozio[]) => {
       if (!vivo) return;
       setCarico({ per, lista });
-      setScelto(lista[0]?.id ?? null);
-    })();
+      setScelto((s) => (s && lista.some((p) => p.id === s) ? s : (lista[0]?.id ?? null)));
+    };
+    // 1. Subito, da cio che c'e in tasca.
+    const inTasca = prodottiInTasca(annualeNoto === true);
+    if (inTasca && inTasca.length) mostra(inTasca);
+    // 2. Apple (dalla cache o dal negozio) e il server, insieme.
+    void prodottiPremium(annualeNoto === true).then((lista) => {
+      if (annualeNoto === null || !inTasca?.length) mostra(lista);
+    });
+    if (annualeNoto === null) {
+      void (async () => {
+        try {
+          const r = await apiFetch("/api/ospite/stato");
+          if (r.ok) annualeNoto = ((await r.json()) as { annualeAttivo?: boolean }).annualeAttivo === true;
+        } catch {
+          // senza risposta: solo il mensile
+        }
+        if (annualeNoto === true) mostra(await prodottiPremium(true));
+      })();
+    }
     return () => {
       vivo = false;
     };
@@ -225,6 +244,7 @@ export function PremiumWall() {
       openPremiumWelcome();
       return;
     }
+    dimenticaProdotti();
     setGiro((g) => g + 1);
     if (esito.esito === "in_attesa") {
       setErrore(t("L'acquisto aspetta un'approvazione (In famiglia): premium si accende da solo appena arriva."));

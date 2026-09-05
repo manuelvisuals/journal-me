@@ -93,29 +93,79 @@ function chiaveDi(id: string): ProdottoIos | null {
 }
 
 /**
+ * LA CACHE DEI PRODOTTI. Product.products di StoreKit puo impiegare secondi
+ * (in sandbox, senza account attivo, anche decine): se il muro lo chiede
+ * quando si apre, la scheda resta "-,- EUR" per tutto quel tempo (Manuel, 6
+ * settembre 2026: "esigo che sia istantanea"). Si chiedono TUTTI i nostri
+ * prodotti una volta, all'avvio del guscio (precaricaProdotti), e il muro
+ * legge da qui. Il negozio e Apple, non il nostro server: la promessa "aprire
+ * l'app non chiama nessuna route" resta intera.
+ */
+let prodottiInCache: Omit<ProdottoNegozio, "chiave">[] | null = null;
+let caricamentoProdotti: Promise<Omit<ProdottoNegozio, "chiave">[]> | null = null;
+
+function tuttiGliId(): string[] {
+  return Object.values(PRODOTTI_IOS) as string[];
+}
+
+async function caricaProdotti(): Promise<Omit<ProdottoNegozio, "chiave">[]> {
+  const n = negozio();
+  if (!n) return [];
+  if (caricamentoProdotti) return caricamentoProdotti;
+  caricamentoProdotti = (async () => {
+    try {
+      const { prodotti } = await n.prodotti({ ids: tuttiGliId() });
+      prodottiInCache = prodotti;
+      return prodotti;
+    } catch {
+      return prodottiInCache ?? [];
+    } finally {
+      caricamentoProdotti = null;
+    }
+  })();
+  return caricamentoProdotti;
+}
+
+/** All'avvio del guscio: scalda la cache, senza aspettare nessuno. */
+export function precaricaProdotti(): void {
+  if (!negozio() || prodottiInCache || caricamentoProdotti) return;
+  void caricaProdotti();
+}
+
+/** La vetrina puo essere cambiata (entrati nell'App Store dal foglio): si rilegge. */
+export function dimenticaProdotti(): void {
+  prodottiInCache = null;
+}
+
+/** I prodotti gia in tasca, subito e senza promesse; null se non ancora arrivati. */
+export function prodottiInTasca(annualeAttivo: boolean): ProdottoNegozio[] | null {
+  if (!prodottiInCache) return null;
+  return filtra(prodottiInCache, annualeAttivo);
+}
+
+function filtra(lista: Omit<ProdottoNegozio, "chiave">[], annualeAttivo: boolean): ProdottoNegozio[] {
+  const ids: string[] = [PRODOTTI_IOS.mensile, ...(annualeAttivo ? [PRODOTTI_IOS.annuale] : [])];
+  const out: ProdottoNegozio[] = [];
+  for (const p of lista) {
+    const chiave = chiaveDi(p.id);
+    if (!chiave) continue;
+    if (chiave === "annuale" && !annualeAttivo) continue;
+    out.push({ ...p, chiave });
+  }
+  out.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+  return out;
+}
+
+/**
  * I prodotti da mostrare, nell'ordine delle schede: mensile e, SOLO se
  * l'interruttore del pannello lo dice, annuale. Un prodotto che Apple non
  * conosce (per esempio l'annuale non ancora creato su App Store Connect)
- * non compare, senza errori.
+ * non compare, senza errori. Dalla cache se c'e, altrimenti da Apple.
  */
 export async function prodottiPremium(annualeAttivo: boolean): Promise<ProdottoNegozio[]> {
-  const n = negozio();
-  if (!n) return [];
-  const ids: string[] = [PRODOTTI_IOS.mensile, ...(annualeAttivo ? [PRODOTTI_IOS.annuale] : [])];
-  try {
-    const { prodotti } = await n.prodotti({ ids });
-    const out: ProdottoNegozio[] = [];
-    for (const p of prodotti) {
-      const chiave = chiaveDi(p.id);
-      if (!chiave) continue;
-      if (chiave === "annuale" && !annualeAttivo) continue;
-      out.push({ ...p, chiave });
-    }
-    out.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
-    return out;
-  } catch {
-    return [];
-  }
+  if (!negozio()) return [];
+  const lista = prodottiInCache ?? (await caricaProdotti());
+  return filtra(lista, annualeAttivo);
 }
 
 export type EsitoAcquisto =
@@ -253,6 +303,7 @@ export function ascoltaTransazioni(): void {
   const n = negozio();
   if (!n) return;
   ascoltoAvviato = true;
+  precaricaProdotti();
   void n.addListener("transazione", (t) => {
     void consegnaAlServer(t);
   });
