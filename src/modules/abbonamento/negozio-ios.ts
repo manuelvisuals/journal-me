@@ -140,6 +140,22 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
   } catch {
     return { esito: "errore", messaggio: "Il server non risponde: riprova fra poco. L'acquisto e al sicuro presso Apple." };
   }
+  // Una risposta DEFINITIVA del server (l'ha guardata con Apple: vale,
+  // non vale piu, e di un altro, Apple non la trova) chiude la transazione
+  // presso Apple, qualunque sia il verdetto. Se resta aperta, StoreKit la
+  // ripropone a ogni avvio e, peggio, al prossimo acquisto dello stesso
+  // prodotto Apple RESTITUISCE QUELLA invece di venderne una nuova (5
+  // settembre 2026: la ricevuta scaduta del giorno prima tornava a ogni
+  // "Compra", e il server diceva giustamente "non attivo"). Restano aperte
+  // solo le transazioni che il server non ha potuto giudicare (5xx, rete).
+  const definitiva = resp.ok || resp.status === 404 || resp.status === 409;
+  if (definitiva) {
+    try {
+      await n?.finisci({ transactionId: t.transactionId });
+    } catch {
+      // la finiremo al prossimo avvio: Apple la ripropone
+    }
+  }
   if (resp.status === 401) {
     return { esito: "errore", messaggio: "Il server non ha riconosciuto questo telefono: riapri l'app e tocca Ripristina acquisti." };
   }
@@ -158,11 +174,6 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     return { esito: "errore", messaggio: m };
   }
   const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null; dove?: string };
-  try {
-    await n?.finisci({ transactionId: t.transactionId });
-  } catch {
-    // la finiremo al prossimo avvio: Apple la ripropone
-  }
   if (dati.plan === "premium") {
     if (dati.dove === "dispositivo") {
       // Comprato senza email (mockup premium-senza-password, B1): il
@@ -176,7 +187,7 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     }
     return { esito: "premium", expiresAt: dati.expiresAt ?? null };
   }
-  return { esito: "errore", messaggio: "Apple dice che l'abbonamento non e attivo." };
+  return { esito: "errore", messaggio: "Questo abbonamento e scaduto: puoi riattivarlo da qui." };
 }
 
 /** Compra (apre il foglio di Apple) e consegna al server. */
