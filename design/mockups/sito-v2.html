@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sito v2 - dayalogue</title>
+<style>
+@font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
+@font-face{font-family:"EB Garamond";src:url("../../src/fonts/eb-garamond-latin-wght-normal.woff2") format("woff2");font-weight:400 800;font-display:block}
+@font-face{font-family:"IBM Plex Mono";src:url("../../src/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:block}
+@font-face{font-family:"IBM Plex Mono";src:url("../../src/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:block}
+
+/* ============================================================
+   IL GUSCIO DEL MOCKUP (scuro, come gli altri mockup del repo)
+   ============================================================ */
+:root{
+  --pg:#0B0B0C;--pg-2:#141416;--pg-3:#1C1C1F;
+  --pg-ink:#F4E7DE;--pg-mut:#B9AEA8;--pg-faint:#867A74;
+  --pg-line:rgba(255,229,214,.10);--pg-line-2:rgba(255,229,214,.22);
+  --hot:#E3A15F;--ok:#A8C9B0;
+  --font:"Inter",system-ui,-apple-system,sans-serif;
+  --serif:"Newsreader",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--pg);color:var(--pg-ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+.page{max-width:1320px;margin:0 auto;padding:44px 28px 120px}
+.page-kick{font-size:11px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--pg-faint);margin-bottom:12px}
+.page h1{font-family:var(--serif);font-weight:400;font-size:44px;line-height:1.08;letter-spacing:-.02em}
+.page-sub{font-size:16px;line-height:1.6;color:var(--pg-mut);max-width:78ch;margin-top:14px}
+.page-sub b{color:var(--pg-ink);font-weight:600}
+.label{font-size:11px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--hot);margin:0 0 14px}
+.caption{font-size:14px;line-height:1.6;color:var(--pg-mut);max-width:80ch;margin-bottom:18px}
+.caption b{color:var(--pg-ink);font-weight:600}
+.divider{height:1px;background:var(--pg-line);margin:54px 0 40px}
+
+/* la barra dei comandi, appiccicata in alto */
+.cmd{position:sticky;top:0;z-index:20;background:rgba(11,11,12,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--pg-line);margin:28px -28px 34px;padding:12px 28px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.cmd .g{display:flex;align-items:center;gap:8px}
+.cmd .g .k{font-size:11px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--pg-faint);margin-right:2px}
+.cmd .sw{display:flex;background:var(--pg-2);border:1px solid var(--pg-line);border-radius:999px;padding:3px}
+.cmd .sw button{background:transparent;border:0;color:var(--pg-mut);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.cmd .sw button.on{background:var(--pg-ink);color:var(--pg);font-weight:600}
+.cmd .sw button:hover:not(.on){color:var(--pg-ink)}
+
+/* i due palchi: telefono e computer */
+.palchi{display:flex;gap:44px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+.palco{flex:0 0 auto}
+.palco .nome{font-size:12px;color:var(--pg-faint);letter-spacing:.14em;text-transform:uppercase;font-weight:650;margin-bottom:12px;text-align:center}
+body[data-vista="telefono"] .palco.computer{display:none}
+body[data-vista="computer"] .palco.telefono{display:none}
+
+.iphone{width:402px;height:846px;border-radius:52px;background:#0A0908;padding:6px;border:1px solid var(--pg-line-2);box-shadow:0 30px 80px rgba(0,0,0,.6);position:relative}
+.iphone .schermo{width:100%;height:100%;border-radius:46px;overflow:hidden;position:relative;background:#EDE6DA}
+.iphone .ora{position:absolute;left:0;right:0;top:0;height:54px;z-index:4;background:var(--tel-bg,#EDE6DA);display:flex;align-items:center;justify-content:space-between;padding:6px 34px 0 36px;font-size:15px;font-weight:600;color:#241C17;font-family:var(--font)}
+.iphone .ora .b{display:flex;gap:5px;align-items:center}
+.iphone .ora .b i{display:block;width:16px;height:9px;border:1px solid #241C17;border-radius:3px;position:relative}
+.iphone .ora .b i::after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:10px;background:#241C17;border-radius:1px}
+.iphone .scroll{padding-top:54px}
+.iphone .s .nav{top:0}
+.iphone .schermo{background:var(--tel-bg,#EDE6DA)}
+.iphone.scuro .schermo{background:#12100E}
+.iphone.scuro .ora{background:#12100E;color:#EFE7DA}
+.iphone.scuro .ora .b i{border-color:#EFE7DA}.iphone.scuro .ora .b i::after{background:#EFE7DA}
+.iphone .isola{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:110px;height:32px;border-radius:20px;background:#0A0908;z-index:5}
+.iphone .scroll{height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.iphone .scroll::-webkit-scrollbar{width:0}
+
+.mac{width:1180px;transform-origin:top left}
+.mac-cornice{border-radius:14px;overflow:hidden;border:1px solid var(--pg-line-2);box-shadow:0 30px 80px rgba(0,0,0,.6);background:#EDE6DA}
+.mac-barra{height:36px;background:#1C1B19;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid rgba(255,255,255,.06)}
+.mac-barra i{width:11px;height:11px;border-radius:50%;background:#3A3937;display:block}
+.mac-barra i:nth-child(1){background:#FF5F57}.mac-barra i:nth-child(2){background:#FEBC2E}.mac-barra i:nth-child(3){background:#28C840}
+.mac-barra .url{margin:0 auto;font-size:12px;color:#9A948B;background:#2A2926;border-radius:6px;padding:4px 40px;font-family:var(--mono)}
+.mac-scroll{height:900px;overflow-y:auto;overflow-x:hidden}
+.mac-scroll::-webkit-scrollbar{width:0}
+.mac-wrap{width:1180px;position:relative}
+
+/* ============================================================
+   IL SITO (identico dentro i due palchi; cambia con la larghezza
+   del contenitore, come fara in produzione)
+   ============================================================ */
+.s{
+  container-type:inline-size;container-name:sito;
+  --bg:#EDE6DA;--bg2:#F7F2E9;--carta:#FFFDF8;--carta2:#F2EADC;
+  --ink:#241C17;--mut:#55473D;--faint:#7B6C5F;
+  --acc:#A8542E;--acc-hi:#C4653A;--on-acc:#FFFDF8;
+  --ok:#3F6B4A;--no:#A63A3A;
+  --line:rgba(36,28,23,.10);--line2:rgba(36,28,23,.18);
+  --grain:rgba(36,28,23,.02);
+  background:var(--bg);color:var(--ink);font-family:var(--font);
+  font-size:16px;line-height:1.5;
+  min-height:100%;
+  background-image:radial-gradient(circle at 30% -6%,rgba(168,84,46,.05),transparent 40%);
+}
+.s[data-tema="scuro"]{
+  --bg:#12100E;--bg2:#1A1714;--carta:#221E1A;--carta2:#2A251F;
+  --ink:#EFE7DA;--mut:#C0B2A0;--faint:#968878;
+  --acc:#D08A5A;--acc-hi:#E2A275;--on-acc:#16120F;
+  --ok:#8FB79A;--no:#E07A7A;
+  --line:rgba(239,231,218,.10);--line2:rgba(239,231,218,.18);
+  background-image:radial-gradient(circle at 30% -6%,rgba(208,138,90,.05),transparent 40%);
+}
+.s a{color:inherit;text-decoration:none}
+.s .cont{max-width:1040px;margin:0 auto;padding:0 22px;width:100%}
+.s .kick{font-size:11px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);margin-bottom:12px}
+.s h1{font-family:var(--serif);font-weight:400;letter-spacing:-.02em;line-height:1.06;font-size:42px;text-wrap:balance}
+.s h2{font-family:var(--serif);font-weight:400;letter-spacing:-.018em;line-height:1.1;font-size:32px;text-wrap:balance}
+.s h3{font-size:16px;font-weight:650;letter-spacing:-.01em;line-height:1.3}
+.s p{color:var(--mut);font-size:16px;line-height:1.6;text-wrap:pretty}
+.s p.big{font-size:18px;line-height:1.55}
+.s p b{color:var(--ink);font-weight:600}
+.s .sez{padding:64px 0}
+.s .sez+.sez{border-top:1px solid var(--line)}
+.s .testa{max-width:56ch;margin-bottom:34px}
+.s .testa p{margin-top:12px}
+
+/* tasti */
+.s .btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 22px;border-radius:999px;background:var(--acc);color:var(--on-acc);font-weight:600;font-size:16px;letter-spacing:-.005em;white-space:nowrap}
+.s .btn:hover{background:var(--acc-hi)}
+.s .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line2)}
+.s .btn.sm{height:38px;padding:0 16px;font-size:14px}
+.s .link{color:var(--acc);font-weight:600;font-size:15px}
+.s .link::after{content:" \2192"}
+
+/* --------------------------------------------- barra alta */
+.s .nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.s .nav-in{max-width:1040px;margin:0 auto;padding:0 22px;height:60px;display:flex;align-items:center;gap:22px}
+.s .marchio{font-family:var(--serif);font-size:24px;letter-spacing:-.01em;font-weight:450;color:var(--ink);line-height:1}
+.s .nav-voci{display:none;gap:22px;font-size:15px;color:var(--mut);margin-left:6px}
+.s .nav-voci a:hover{color:var(--ink)}
+.s .nav-dx{margin-left:auto;display:flex;align-items:center;gap:18px}
+.s .nav-dx .accedi{font-size:15px;color:var(--faint);display:none}
+.s .nav-lingua{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:600;display:none}
+
+/* --------------------------------------------- eroe */
+.s .eroe{padding:56px 0 48px}
+.s .eroe-in{display:flex;flex-direction:column;gap:38px;align-items:flex-start}
+.s .eroe-testo{max-width:52ch}
+.s .eroe-testo p{margin-top:18px;font-size:17px}
+.s .eroe-azioni{display:flex;align-items:center;gap:16px;margin-top:26px;flex-wrap:wrap}
+.s .eroe-sotto{font-size:13.5px;color:var(--faint);margin-top:14px}
+.s .h-voce,.s .h-cassa{display:none}
+.s[data-eroe="voce"] .h-voce{display:block}
+.s[data-eroe="cassa"] .h-cassa{display:block}
+
+/* --------------------------------------------- lo schermo dell'app, riprodotto */
+.app{width:100%;max-width:360px;background:var(--bg2);border-radius:22px;border:1px solid var(--line);overflow:hidden;position:relative;font-size:14px;box-shadow:0 20px 50px rgba(107,90,72,.16)}
+.s[data-tema="scuro"] .app{box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.app .a-top{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 6px}
+.app .a-top .d{font-size:11px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.app .a-top .av{width:24px;height:24px;border-radius:50%;background:var(--carta2);border:1px solid var(--line)}
+.app .a-foglio{margin:8px 12px 0;background:var(--carta);border-radius:18px;border:1px solid var(--line);padding:18px 18px 16px}
+.app .a-tit{font-family:var(--serif);font-weight:600;font-size:23px;line-height:1.22;letter-spacing:-.012em;color:var(--ink)}
+.app .a-prosa{font-family:"EB Garamond",Georgia,serif;font-size:17.5px;line-height:1.5;color:var(--ink);margin-top:10px}
+.app .a-aree{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.app .a-area .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.app .a-area .t{font-size:13.5px;line-height:1.45;color:var(--mut);margin-top:2px}
+.app .a-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.app .chip{font-size:12px;padding:5px 10px;border-radius:999px;border:1px solid var(--line2);color:var(--ink);background:var(--carta)}
+.app .chip.acc{border-color:transparent;background:color-mix(in srgb,var(--acc) 12%,var(--carta));color:var(--acc);font-weight:600}
+.app .a-misure{display:flex;gap:8px;margin-top:14px}
+.app .a-mis{flex:1;background:var(--carta2);border-radius:12px;padding:10px 10px 8px}
+.app .a-mis .l{font-size:10px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.app .a-mis .v{font-family:var(--mono);font-weight:400;font-size:24px;line-height:1.1;color:var(--ink);margin-top:2px}
+.app .a-fondo{height:92px}
+.app .dock{position:absolute;left:14px;right:14px;bottom:14px;height:60px;border-radius:30px;
+  background:color-mix(in srgb,var(--carta) 78%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--line2);display:flex;align-items:center;justify-content:space-around;padding:0 8px;box-shadow:0 10px 30px rgba(36,28,23,.10)}
+.app .dock span{font-size:10.5px;font-weight:600;color:var(--faint);display:flex;flex-direction:column;align-items:center;gap:4px}
+.app .dock span.on{color:var(--ink)}
+.app .dock svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.app .mic{width:44px;height:44px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px color-mix(in srgb,var(--acc) 40%,transparent)}
+.app .mic svg{width:20px;height:20px;stroke:var(--on-acc);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* stati speciali degli schermi */
+.app .reg{margin:8px 12px 0;background:var(--carta);border-radius:18px;border:1px solid var(--line);padding:22px 18px;text-align:center}
+.app .reg .onda{display:flex;align-items:center;justify-content:center;gap:3px;height:56px}
+.app .reg .onda i{display:block;width:3px;border-radius:2px;background:var(--acc);height:14px;animation:onda 1.1s ease-in-out infinite}
+.app .reg .onda i:nth-child(2n){animation-delay:.15s}.app .reg .onda i:nth-child(3n){animation-delay:.3s}.app .reg .onda i:nth-child(5n){animation-delay:.45s}
+@keyframes onda{0%,100%{height:10px}50%{height:44px}}
+.app .reg .tempo{font-family:var(--mono);font-size:26px;color:var(--ink);margin-top:8px}
+.app .reg .stato{font-size:13px;color:var(--faint);margin-top:4px}
+.app .reg .parole{font-family:"EB Garamond",Georgia,serif;font-size:16.5px;line-height:1.45;color:var(--mut);margin-top:16px;text-align:left}
+.app .reg .parole b{color:var(--ink);font-weight:500}
+.app .mic.big{width:76px;height:76px;margin:22px auto 0}
+.app .mic.big svg{width:30px;height:30px}
+.app .reg .tieni{font-size:12px;color:var(--faint);margin-top:12px}
+.app .chiedi{margin:8px 12px 0;background:var(--carta);border-radius:18px;border:1px solid var(--line);padding:18px}
+.app .chiedi .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+.app .chiedi .q{font-family:var(--serif);font-weight:600;font-size:22px;line-height:1.2;margin-top:8px;color:var(--ink)}
+.app .chiedi .estratto{margin-top:12px;padding:10px 12px;border-left:2px solid var(--line2);font-family:"EB Garamond",Georgia,serif;font-size:16px;line-height:1.45;color:var(--mut);font-style:italic}
+.app .chiedi .risp{margin-top:12px;border:1px solid var(--line2);border-radius:12px;padding:11px 12px;font-size:14px;color:var(--ink)}
+.app .chiedi .risp span{color:var(--faint)}
+.app .chiedi .due{display:flex;gap:8px;margin-top:10px}
+.app .chiedi .due div{flex:1;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:600;border:1px solid var(--line2);color:var(--mut)}
+.app .chiedi .due div.p{background:var(--acc);color:var(--on-acc);border-color:transparent}
+.app .mese{margin:8px 12px 0;display:flex;flex-direction:column;gap:6px}
+.app .giorno{display:flex;gap:12px;align-items:flex-start;background:var(--carta);border:1px solid var(--line);border-radius:14px;padding:11px 12px}
+.app .giorno .n{font-family:var(--mono);font-size:15px;color:var(--faint);width:26px;flex:0 0 auto;padding-top:1px}
+.app .giorno .t{font-family:var(--serif);font-weight:600;font-size:15.5px;line-height:1.25;color:var(--ink)}
+.app .giorno .m{font-size:11.5px;color:var(--faint);margin-top:3px}
+.app .giorno.vuoto{background:transparent;border-style:dashed}
+.app .giorno.vuoto .t{color:var(--faint);font-weight:400;font-family:var(--font);font-size:13px}
+.app .recap{margin:8px 12px 0;background:var(--carta);border-radius:18px;border:1px solid var(--line);padding:20px 18px}
+.app .recap .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.app .recap .t{font-family:var(--serif);font-weight:600;font-size:24px;line-height:1.18;margin-top:8px;color:var(--ink)}
+.app .recap .p{font-family:"EB Garamond",Georgia,serif;font-size:17px;line-height:1.55;color:var(--ink);margin-top:12px}
+.app .recap .p+.p{margin-top:10px}
+.app .memo{margin:8px 12px 0;display:flex;flex-direction:column;gap:8px}
+.app .memo .grp{background:var(--carta);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.app .memo .grp .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.app .memo .grp .r{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink);padding:5px 0;border-top:1px solid var(--line)}
+.app .memo .grp .r:first-of-type{border-top:0}
+.app .memo .grp .r span{color:var(--faint);font-size:12px;white-space:nowrap}
+.app .memo .grp .r.fatto{color:var(--faint);text-decoration:line-through}
+
+/* --------------------------------------------- promesse */
+.s .promesse{display:grid;grid-template-columns:1fr;gap:14px}
+.s .promessa{background:var(--carta);border:1px solid var(--line);border-radius:18px;padding:22px 22px 24px}
+.s .promessa p{font-size:15px;margin-top:6px}
+.s .promessa svg{width:22px;height:22px;stroke:var(--acc);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:14px}
+
+/* --------------------------------------------- come funziona */
+.s .passi{display:flex;flex-direction:column;gap:40px}
+.s .passo{display:flex;flex-direction:column;gap:20px}
+.s .passo .num{font-family:var(--mono);font-size:13px;color:var(--acc);margin-bottom:8px}
+.s .passo p{margin-top:6px;max-width:40ch}
+.s .passo .app{max-width:320px}
+
+/* --------------------------------------------- cassaforte */
+.s .cassa{background:var(--ink);color:var(--bg)}
+.s .cassa .kick{color:var(--acc-hi)}
+.s .cassa h2{color:var(--bg);font-size:36px}
+.s .cassa p{color:color-mix(in srgb,var(--bg) 72%,transparent)}
+.s .cassa p b{color:var(--bg)}
+.s .cassa-viz{display:flex;flex-direction:column;gap:12px;margin:34px 0 38px}
+.s .cassa-box{flex:1;border-radius:18px;padding:18px;border:1px solid color-mix(in srgb,var(--bg) 14%,transparent);background:color-mix(in srgb,var(--bg) 5%,transparent)}
+.s .cassa-box .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in srgb,var(--bg) 55%,transparent);margin-bottom:12px;display:flex;justify-content:space-between}
+.s .cassa-box .l b{color:var(--acc-hi);font-weight:650}
+.s .cassa-box .chiaro{font-family:"EB Garamond",Georgia,serif;font-size:17px;line-height:1.45;color:var(--bg)}
+.s .cassa-box .chiaro b{font-family:var(--serif);font-weight:600;display:block;font-size:19px;margin-bottom:6px}
+.s .cassa-box .cifra{font-family:var(--mono);font-size:12.5px;line-height:1.6;color:color-mix(in srgb,var(--bg) 45%,transparent);word-break:break-all;letter-spacing:.02em}
+.s .cassa-freccia{display:flex;align-items:center;justify-content:center;color:color-mix(in srgb,var(--bg) 40%,transparent);font-size:13px;gap:8px}
+.s .cassa-freccia svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.s .cassa-punti{display:grid;grid-template-columns:1fr;gap:26px}
+.s .cassa-punti h3{color:var(--bg);margin-bottom:6px}
+.s .cassa-punti p{font-size:15px}
+.s .parole8{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.s .parole8 span{font-family:var(--mono);font-size:12.5px;padding:7px 4px;border-radius:8px;text-align:center;background:color-mix(in srgb,var(--bg) 8%,transparent);color:var(--bg);border:1px solid color-mix(in srgb,var(--bg) 12%,transparent)}
+
+/* --------------------------------------------- funzioni */
+.s .funz{display:flex;flex-direction:column;gap:56px}
+.s .fx{display:flex;flex-direction:column;gap:22px}
+.s .fx p{margin-top:8px;max-width:44ch}
+.s .fx .link{display:inline-block;margin-top:12px}
+.s .fx .app{max-width:340px}
+.s .lingue{display:grid;grid-template-columns:1fr;gap:14px;margin-top:56px}
+.s .lingue .promessa{display:flex;flex-direction:column}
+.s .temi{display:flex;gap:8px;margin-top:14px}
+.s .tema{width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);position:relative;overflow:hidden}
+.s .tema::after{content:"";position:absolute;inset:0;left:50%;background:var(--t2)}
+.s .tema{background:var(--t1)}
+.s .lingue .ital{font-family:var(--serif);font-size:22px;margin-top:12px;color:var(--ink);line-height:1.3}
+.s .lingue .ital span{color:var(--faint)}
+
+/* --------------------------------------------- le tre condizioni */
+.s .cond{display:grid;grid-template-columns:1fr;gap:14px}
+.s .cc{background:var(--carta);border:1px solid var(--line);border-radius:18px;padding:22px 22px 24px;display:flex;flex-direction:column}
+.s .cc .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+.s .cc.p .l{color:var(--acc)}
+.s .cc h3{font-family:var(--serif);font-weight:500;font-size:24px;letter-spacing:-.01em}
+.s .cc p{font-size:15px;margin-top:8px}
+.s .cc ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.s .cc li{font-size:14.5px;color:var(--mut);padding-left:18px;position:relative;line-height:1.45}
+.s .cc li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.s .cc li.presto::before{background:transparent;border:1px solid var(--faint)}
+.s .cc li.presto{color:var(--faint)}
+.s .cc li .tag{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:650;color:var(--faint);margin-left:6px}
+.s .cc .fine{margin-top:auto;padding-top:18px}
+.s .cond-nota{margin-top:22px;font-size:14.5px;color:var(--faint);max-width:70ch}
+
+/* --------------------------------------------- iPhone / App Store */
+.s .store{display:flex;flex-direction:column;gap:22px;background:var(--carta);border:1px solid var(--line);border-radius:22px;padding:28px 24px}
+.s .store p{margin-top:8px;max-width:52ch}
+.s .badge{display:inline-flex;align-items:center;gap:10px;height:48px;padding:0 16px 0 12px;border-radius:10px;background:var(--ink);color:var(--bg);text-decoration:none}
+.s .badge svg{width:22px;height:22px;fill:currentColor}
+.s .badge .bt{display:flex;flex-direction:column;line-height:1.05}
+.s .badge .bt small{font-size:9.5px;letter-spacing:.02em}
+.s .badge .bt b{font-size:16px;font-weight:600;letter-spacing:-.01em}
+.s .badge.spento{opacity:.38;filter:grayscale(1);pointer-events:none}
+.s .badge-riga{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.s .badge-nota{font-size:13px;color:var(--faint)}
+.s .st-arrivo,.s .st-pubb{display:none}
+.s[data-store="arrivo"] .st-arrivo{display:inline}
+.s[data-store="pubblicata"] .st-pubb{display:inline}
+.s[data-store="assente"] .st-arrivo{display:inline}
+.s[data-store="assente"] .badge-riga{display:none}
+.s[data-store="pubblicata"] .badge.spento{opacity:1;filter:none;pointer-events:auto}
+.s[data-store="pubblicata"] .badge-nota{display:none}
+.s .store-home{font-size:14.5px;color:var(--mut);margin-top:10px;display:flex;align-items:center;gap:8px}
+.s .store-home svg{width:16px;height:16px;stroke:var(--faint);fill:none;stroke-width:1.6}
+
+/* --------------------------------------------- domande */
+.s .faq{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.s .faq details{border-bottom:1px solid var(--line)}
+.s .faq summary{list-style:none;cursor:pointer;padding:18px 0;font-size:17px;font-weight:600;letter-spacing:-.01em;display:flex;justify-content:space-between;gap:16px;align-items:center;color:var(--ink)}
+.s .faq summary::-webkit-details-marker{display:none}
+.s .faq summary::after{content:"+";font-weight:400;color:var(--faint);font-size:22px;line-height:1;transition:transform .2s}
+.s .faq details[open] summary::after{transform:rotate(45deg)}
+.s .faq details p{padding:0 0 20px;max-width:64ch;font-size:15.5px}
+
+/* --------------------------------------------- chiusura e piede */
+.s .fine-sez{text-align:center;padding:72px 0}
+.s .fine-sez h2{font-size:40px}
+.s .fine-sez p{margin-top:12px}
+.s .fine-sez .btn{margin-top:26px}
+.s .piede{border-top:1px solid var(--line);padding:34px 0 44px;color:var(--faint);font-size:14px}
+.s .piede-min{display:flex;flex-direction:column;gap:12px}
+.s .piede-min .riga{display:flex;gap:18px;flex-wrap:wrap}
+.s .piede-min .riga a:hover{color:var(--ink)}
+.s .piede-comp{display:none;grid-template-columns:1fr 1fr;gap:28px}
+.s .piede-comp .col{display:flex;flex-direction:column;gap:9px}
+.s .piede-comp .col .l{font-size:10.5px;font-weight:650;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.s .piede-comp .col a{color:var(--mut)}
+.s .piede-comp .col a:hover{color:var(--ink)}
+.s .piede .frase{font-family:var(--serif);font-size:18px;color:var(--mut)}
+.s .piede .marchio{font-size:20px}
+.s[data-piede="completo"] .piede-min{display:none}
+.s[data-piede="completo"] .piede-comp{display:grid}
+.s .piede-comp .col.brand{grid-column:1/-1}
+
+/* --------------------------------------------- pagina corta */
+.s[data-lunga="no"] .solo-lunga{display:none !important}
+
+/* --------------------------------------------- assistenza */
+.s[data-pagina="supporto"] .pag-home,.s[data-pagina="supporto"] .nav-voci{display:none}
+.s[data-pagina="home"] .pag-supporto{display:none}
+.s .supp{max-width:560px;margin:0 auto;padding:48px 22px 80px}
+.s .supp h1{font-size:36px}
+.s .supp .intro{margin-top:12px}
+.s .campo{margin-top:22px}
+.s .campo label{display:block;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:7px}
+.s .campo .aiuto{font-size:13px;color:var(--faint);margin-top:6px}
+.s .campo .in{height:48px;border-radius:12px;border:1px solid var(--line2);background:var(--carta);padding:0 14px;display:flex;align-items:center;color:var(--faint);font-size:15px}
+.s .campo .in.area{height:auto;min-height:120px;align-items:flex-start;padding:12px 14px}
+.s .campo .in.pieno{color:var(--ink)}
+.s .campo .drop{border:1px dashed var(--line2);border-radius:12px;padding:18px;text-align:center;color:var(--faint);font-size:14px;background:var(--carta)}
+.s .campo .drop b{color:var(--acc);font-weight:600}
+.s .supp .azioni{display:flex;gap:12px;margin-top:28px;align-items:center}
+.s .supp .azioni .btn.ghost{margin-left:auto}
+.s .supp .azioni .btn.ghost{margin-left:0}
+.s .supp .torna{display:inline-block;margin-top:28px;font-size:14px;color:var(--faint)}
+
+/* ============================================================
+   COMPUTER: da 760px di contenitore in su
+   ============================================================ */
+@container sito (min-width: 760px){
+  .s .cont{padding:0 40px}
+  .s h1{font-size:64px}
+  .s h2{font-size:42px}
+  .s .sez{padding:96px 0}
+  .s .nav-in{padding:0 40px;height:66px;gap:34px}
+  .s .nav-voci{display:flex}
+  .s .nav-dx .accedi{display:inline}
+  .s .nav-lingua{display:inline}
+  .s .eroe{padding:88px 0 80px}
+  .s .eroe-in{flex-direction:row;align-items:center;gap:56px}
+  .s .eroe-testo{flex:1 1 0;max-width:none}
+  .s .eroe-testo p{font-size:19px;max-width:46ch}
+  .s .eroe-app{flex:0 0 380px;display:flex;justify-content:flex-end}
+  .s .promesse{grid-template-columns:repeat(3,1fr);gap:18px}
+  .s .passi{flex-direction:row;gap:28px;align-items:flex-start}
+  .s .passo{flex:1;gap:22px}
+  .s .cassa h2{font-size:52px;max-width:18ch}
+  .s .cassa-viz{flex-direction:row;align-items:stretch;gap:0;margin:48px 0 56px}
+  .s .cassa-box{padding:24px}
+  .s .cassa-freccia{flex:0 0 96px;flex-direction:column}
+  .s .cassa-punti{grid-template-columns:repeat(3,1fr);gap:36px}
+  .s .funz{gap:84px}
+  .s .fx{flex-direction:row;align-items:center;gap:64px}
+  .s .fx .fx-t{flex:1}
+  .s .fx .app{flex:0 0 360px;max-width:360px}
+  .s .fx.inv{flex-direction:row-reverse}
+  .s .lingue{grid-template-columns:1fr 1fr;gap:18px;margin-top:84px}
+  .s .cond{grid-template-columns:repeat(3,1fr);gap:18px}
+  .s .store{flex-direction:row;align-items:center;justify-content:space-between;gap:40px;padding:40px 44px}
+  .s .fine-sez{padding:120px 0}
+  .s .fine-sez h2{font-size:56px}
+  .s .piede-min{flex-direction:row;justify-content:space-between;align-items:center}
+  .s .piede-comp{grid-template-columns:2fr 1fr 1fr 1fr}
+  .s .piede-comp .col.brand{grid-column:auto}
+  .s .supp{padding:80px 40px 120px}
+  .s .supp h1{font-size:48px}
+}
+
+/* ============================================================
+   IL QUIZ
+   ============================================================ */
+.quiz{max-width:900px}
+.q{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.q .qt{font-size:15px;color:var(--pg-ink);font-weight:600;line-height:1.5}
+.q .qt i{font-style:normal;color:var(--hot);margin-right:10px;font-family:var(--mono)}
+.q .qp{font-size:13.5px;color:var(--pg-faint);margin-top:6px;line-height:1.6}
+.q .qp b{color:var(--pg-mut);font-weight:600}
+.q label{display:flex;gap:12px;align-items:flex-start;margin-top:10px;padding:10px 12px;border-radius:10px;border:1px solid var(--pg-line);cursor:pointer;font-size:14px;color:var(--pg-mut);line-height:1.5}
+.q label:has(input:checked){border-color:var(--ok);color:var(--pg-ink);background:rgba(168,201,176,.06)}
+.q input[type=radio]{margin-top:4px;accent-color:#A8C9B0}
+.q label b{color:var(--pg-ink);font-weight:600}
+.q label .n{color:var(--hot);font-weight:650;min-width:16px;font-family:var(--mono)}
+.q label .vedi{margin-left:auto;font-size:12px;color:var(--pg-faint);white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
+.q textarea{width:100%;margin-top:10px;background:var(--pg);border:1px solid var(--pg-line);border-radius:10px;color:var(--pg-ink);font:inherit;font-size:14px;padding:10px 12px;min-height:80px;resize:vertical}
+.esito{position:sticky;bottom:16px;background:var(--pg-ink);color:var(--pg);border-radius:16px;padding:16px 20px;margin-top:22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:900px}
+.esito .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:650;opacity:.6}
+.esito .c{font-family:var(--mono);font-size:18px;font-weight:500;flex:1;min-width:200px;word-break:break-word}
+.esito button{background:var(--pg);color:var(--pg-ink);border:0;border-radius:10px;padding:10px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+
+.nonpromesso{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;max-width:1000px}
+.nonpromesso div{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.55;color:var(--pg-mut)}
+.nonpromesso div b{color:var(--pg-ink);display:block;margin-bottom:4px}
+
+@media (max-width:1100px){.mac-scroll{height:760px}}
+@media (max-width:720px){
+  .page{padding:28px 16px 100px}
+  .page h1{font-size:34px}
+  .cmd{margin:22px -16px 26px;padding:10px 16px;gap:8px 14px}
+  .iphone{width:100%;max-width:402px;height:auto;aspect-ratio:402/846}
+}
+</style>
+</head>
+<body data-vista="entrambi">
+
+<!-- =====================================================================
+     IL SITO, scritto UNA volta. Lo script lo copia nei due palchi.
+     ===================================================================== -->
+<template id="sito">
+<div class="s" data-eroe="voce" data-tema="chiaro" data-lunga="si" data-store="arrivo" data-piede="minimo" data-pagina="home">
+
+  <header class="nav">
+    <div class="nav-in">
+      <a class="marchio" href="#">dayalogue</a>
+      <nav class="nav-voci">
+        <a href="#come">Come funziona</a>
+        <a href="#cassaforte">Cassaforte</a>
+        <a href="#domande">Domande</a>
+      </nav>
+      <div class="nav-dx">
+        <a class="nav-lingua" href="#">EN</a>
+        <a class="accedi" href="#">Accedi</a>
+        <a class="btn sm" href="#">Inizia ora</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="pag-home">
+
+  <!-- ------------------------------------------------ EROE -->
+  <section class="eroe">
+    <div class="cont eroe-in">
+      <div class="eroe-testo">
+        <div class="h-voce">
+          <h1>Racconta la giornata.<br>Il resto lo scrive lui.</h1>
+          <p>Due minuti a voce, la sera. dayalogue trascrive parola per parola, scrive titolo e sintesi, tiene in ordine persone e impegni. Mese dopo mese, ne esce un libro.</p>
+        </div>
+        <div class="h-cassa">
+          <h1>Un diario che si racconta a voce.<br>E che nessuno puo leggere. Nemmeno noi.</h1>
+          <p>Parli due minuti la sera e la giornata si scrive da sola. Poi viene chiusa a chiave sul tuo telefono, prima di partire: sul server arriva solo un blocco illeggibile.</p>
+        </div>
+        <div class="eroe-azioni">
+          <a class="btn" href="#">Inizia ora</a>
+          <a class="link" href="#come">Come funziona</a>
+        </div>
+        <div class="eroe-sotto">Si apre e basta. Niente account, niente carta, niente pubblicita.</div>
+      </div>
+      <div class="eroe-app">
+        <div class="app">
+          <div class="a-top"><span class="d">Giovedi 27 agosto</span><span class="av"></span></div>
+          <div class="a-foglio">
+            <div class="a-tit">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</div>
+            <div class="a-prosa">La giornata e cominciata storta e si e raddrizzata alle sei. Il lavoro e chiuso; quello che resta e quella telefonata.</div>
+            <div class="a-aree">
+              <div class="a-area"><div class="l">Lavoro</div><div class="t">Progetto consegnato, riunione spostata a lunedi.</div></div>
+              <div class="a-area"><div class="l">Relazioni</div><div class="t">Marco, dopo due anni. Richiamare.</div></div>
+              <div class="a-area"><div class="l">Corpo</div><div class="t">Poco sonno, mal di testa nel pomeriggio.</div></div>
+              <div class="a-area"><div class="l">Emozioni</div><div class="t">Sollievo, e un po' di nostalgia.</div></div>
+            </div>
+            <div class="a-chips"><span class="chip">Marco</span><span class="chip acc">Richiamare Marco</span></div>
+            <div class="a-misure">
+              <div class="a-mis"><div class="l">Umore</div><div class="v">4</div></div>
+              <div class="a-mis"><div class="l">Energia</div><div class="v">3</div></div>
+              <div class="a-mis"><div class="l">Peso</div><div class="v">81,4</div></div>
+            </div>
+          </div>
+          <div class="a-fondo"></div>
+          <div class="dock">
+            <span class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Oggi</span>
+            <span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Mese</span>
+            <span class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+            <span><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M9 12h6M9 16h6"/></svg>Memo</span>
+            <span><svg viewBox="0 0 24 24"><path d="M4 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4zM20 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></svg>Recap</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ TRE PROMESSE -->
+  <section class="sez" style="padding-top:0">
+    <div class="cont">
+      <div class="promesse">
+        <div class="promessa">
+          <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg>
+          <h3>Si parla, non si compila</h3>
+          <p>Tieni premuto e racconti. Nei silenzi non registra. Se preferisci scrivere, si scrive.</p>
+        </div>
+        <div class="promessa">
+          <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.2"/></svg>
+          <h3>Chiuso a chiave sul telefono</h3>
+          <p>Ogni giornata parte gia cifrata. Nessuno la puo leggere, nemmeno chi ha fatto l'app.</p>
+        </div>
+        <div class="promessa">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+          <h3>Si apre e basta</h3>
+          <p>Niente account, niente carta, niente pubblicita. L'AI e in regalo per dieci giornate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ COME FUNZIONA -->
+  <section class="sez" id="come">
+    <div class="cont">
+      <div class="testa">
+        <div class="kick">Come funziona</div>
+        <h2>Tre cose, e poi basta</h2>
+      </div>
+      <div class="passi">
+        <div class="passo">
+          <div>
+            <div class="num">01</div>
+            <h3>La sera, parli</h3>
+            <p>Due minuti tenendo premuto il microfono. Oppure scrivi, se e una di quelle sere.</p>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Giovedi 27 agosto</span><span class="av"></span></div>
+            <div class="reg">
+              <div class="onda"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="tempo">1:42</div>
+              <div class="stato">Sto ascoltando</div>
+              <div class="parole">...la riunione l'hanno spostata a lunedi, e va bene cosi. Poi stasera, verso le nove, <b>mi ha chiamato Marco. Due anni</b> che non ci sentivamo...</div>
+              <div class="mic big"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+              <div class="tieni">Tieni premuto. Lascia quando hai finito.</div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+        <div class="passo">
+          <div>
+            <div class="num">02</div>
+            <h3>Si scrive da sola</h3>
+            <p>Titolo, sintesi per aree, persone, misure, impegni. Se un nome non e chiaro, te lo chiede prima di salvare.</p>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Da chiarire &middot; 1 di 2</span><span class="av"></span></div>
+            <div class="chiedi">
+              <div class="l">Una domanda</div>
+              <div class="q">Chi e Marco?</div>
+              <div class="estratto">"...mi ha chiamato Marco. Due anni che non ci sentivamo..."</div>
+              <div class="risp">Un amico dell'universita <span>|</span></div>
+              <div class="due"><div>Salta</div><div class="p">Avanti</div></div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+        <div class="passo">
+          <div>
+            <div class="num">03</div>
+            <h3>Rileggi quando vuoi</h3>
+            <p>Il mese, la giornata singola, e i recap che arrivano da soli, scritti come un capitolo.</p>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Agosto 2026</span><span class="av"></span></div>
+            <div class="mese">
+              <div class="giorno"><div class="n">27</div><div><div class="t">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</div><div class="m">Lavoro, Relazioni, Corpo, Emozioni</div></div></div>
+              <div class="giorno"><div class="n">26</div><div><div class="t">Una giornata di attesa, e la corsa al fiume</div><div class="m">Lavoro, Corpo</div></div></div>
+              <div class="giorno vuoto"><div class="n">25</div><div><div class="t">Niente, e va bene cosi</div></div></div>
+              <div class="giorno"><div class="n">24</div><div><div class="t">Pranzo con mamma, e il progetto che non finisce</div><div class="m">Relazioni, Lavoro, Emozioni</div></div></div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ CASSAFORTE -->
+  <section class="sez cassa" id="cassaforte">
+    <div class="cont">
+      <div class="testa" style="max-width:none">
+        <div class="kick">La cassaforte</div>
+        <h2>Nemmeno noi possiamo leggere il tuo diario.</h2>
+        <p class="big" style="max-width:60ch">Ogni giornata viene chiusa a chiave sul dispositivo prima di partire, con la stessa serratura di Safari e Chrome (AES-256). Sul server arriva un blocco illeggibile: chi ha fatto l'app, con accesso completo al database, vede solo quello.</p>
+      </div>
+      <div class="cassa-viz">
+        <div class="cassa-box">
+          <div class="l"><span>Sul tuo telefono</span><b>leggibile</b></div>
+          <div class="chiaro"><b>Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</b>La giornata e cominciata storta e si e raddrizzata alle sei. Il lavoro e chiuso; quello che resta e quella telefonata.</div>
+        </div>
+        <div class="cassa-freccia"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>AES-256</span></div>
+        <div class="cassa-box">
+          <div class="l"><span>Sul server</span><b>illeggibile</b></div>
+          <div class="cifra">qN3f8Vb2xLm0pRt7Kc9ZwYh4Ej6Ga1sd5UoiIeWnBvA2lP0mQ7rT9yXz4kJ8cF3hG6bD1nS5vM0wE2uR7tY9iO4pL6aZ8xC3vB5nM1kJ7hG2fD4sA9qW0eR6tY3uI8oP5lK1jH7gF2dS4a6zX9cV0bN3m</div>
+        </div>
+      </div>
+      <div class="cassa-punti">
+        <div>
+          <h3>La chiave sono otto parole</h3>
+          <p>Le ricevi una volta, le tieni con uno screenshot. Viaggiano nel portachiavi di iCloud fra i tuoi dispositivi.</p>
+          <div class="parole8"><span>lampo</span><span>salice</span><span>brace</span><span>vento</span><span>rondine</span><span>argilla</span><span>fiume</span><span>ombra</span></div>
+        </div>
+        <div>
+          <h3>Nessun recupero</h3>
+          <p>Chi perde le parole e tutti i dispositivi perde il diario. Nessuno puo recuperarlo: e questo il punto.</p>
+        </div>
+        <div>
+          <h3>L'AI legge solo quando glielo chiedi</h3>
+          <p>Il testo esce dal dispositivo solo nel momento in cui chiedi all'AI di lavorarci, e solo per quello: passa dai modelli di OpenAI per essere trascritto e riassunto, non viene conservato ne usato per addestrare niente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ FUNZIONI (pagina lunga) -->
+  <section class="sez solo-lunga" id="funzioni">
+    <div class="cont">
+      <div class="testa">
+        <div class="kick">Cosa c'e dentro</div>
+        <h2>Quattro schermate, un libro</h2>
+      </div>
+      <div class="funz">
+        <div class="fx">
+          <div class="fx-t">
+            <h3>Oggi: la giornata, raccontata a voce</h3>
+            <p>Tieni premuto il microfono e parli. Alla fine correggi i nomi se serve, e la giornata e salva: titolo, sintesi, aree, persone, misure, obiettivi.</p>
+            <a class="link" href="#">Guarda com'e fatta</a>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Giovedi 27 agosto</span><span class="av"></span></div>
+            <div class="a-foglio">
+              <div class="a-tit">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</div>
+              <div class="a-prosa">La giornata e cominciata storta e si e raddrizzata alle sei. Il lavoro e chiuso; quello che resta e quella telefonata.</div>
+              <div class="a-aree">
+                <div class="a-area"><div class="l">Lavoro</div><div class="t">Progetto consegnato, riunione spostata a lunedi.</div></div>
+                <div class="a-area"><div class="l">Relazioni</div><div class="t">Marco, dopo due anni. Richiamare.</div></div>
+              </div>
+              <div class="a-misure">
+                <div class="a-mis"><div class="l">Umore</div><div class="v">4</div></div>
+                <div class="a-mis"><div class="l">Energia</div><div class="v">3</div></div>
+                <div class="a-mis"><div class="l">Peso</div><div class="v">81,4</div></div>
+              </div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+        <div class="fx inv">
+          <div class="fx-t">
+            <h3>Mese: una riga per giorno</h3>
+            <p>Sul telefono una riga per giorno, sul computer una scacchiera. I giorni pieni si aprono, quelli vuoti restano vuoti senza rimproverarti.</p>
+            <a class="link" href="#">Vai al mese</a>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Agosto 2026</span><span class="av"></span></div>
+            <div class="mese">
+              <div class="giorno"><div class="n">27</div><div><div class="t">Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</div><div class="m">Lavoro, Relazioni, Corpo, Emozioni</div></div></div>
+              <div class="giorno"><div class="n">26</div><div><div class="t">Una giornata di attesa, e la corsa al fiume</div><div class="m">Lavoro, Corpo</div></div></div>
+              <div class="giorno vuoto"><div class="n">25</div><div><div class="t">Niente, e va bene cosi</div></div></div>
+              <div class="giorno"><div class="n">24</div><div><div class="t">Pranzo con mamma, e il progetto che non finisce</div><div class="m">Relazioni, Lavoro, Emozioni</div></div></div>
+              <div class="giorno"><div class="n">23</div><div><div class="t">Domenica lenta, il libro finito sul divano</div><div class="m">Corpo, Emozioni</div></div></div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+        <div class="fx">
+          <div class="fx-t">
+            <h3>Memo: persone, impegni, luoghi, idee</h3>
+            <p>Le cose che nomini mentre racconti finiscono qui da sole. Le persone diventano anche il vocabolario della trascrizione: i nomi dei tuoi amici smettono di uscire storti.</p>
+            <a class="link" href="#">Apri Memo</a>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Memo</span><span class="av"></span></div>
+            <div class="memo">
+              <div class="grp"><div class="l">Persone</div><div class="r">Marco<span>amico dell'universita</span></div><div class="r">Mamma<span>pranzo la domenica</span></div><div class="r">Giulia<span>collega</span></div></div>
+              <div class="grp"><div class="l">Impegni</div><div class="r">Richiamare Marco<span>27 ago</span></div><div class="r">Riunione spostata<span>lun 31</span></div><div class="r fatto">Consegnare il progetto<span>27 ago</span></div></div>
+              <div class="grp"><div class="l">Idee</div><div class="r">Un weekend al lago, a settembre</div></div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+        <div class="fx inv">
+          <div class="fx-t">
+            <h3>Recap: il mese, scritto come un capitolo</h3>
+            <p>A fine mese, a fine semestre, a fine anno: un testo scritto per intero, non un elenco di statistiche. Serve a ricordare come stavi, non quante volte sei andato in palestra.</p>
+            <a class="link" href="#">Leggi un recap</a>
+          </div>
+          <div class="app">
+            <div class="a-top"><span class="d">Recap &middot; Agosto 2026</span><span class="av"></span></div>
+            <div class="recap">
+              <div class="l">Il mese</div>
+              <div class="t">Un agosto di consegne, e una telefonata che ha cambiato il tono</div>
+              <div class="p">E stato un mese tirato, con il progetto che ha preso quasi tutte le sere e il sonno che ne ha risentito. Eppure, rileggendo, quello che resta non e la fatica.</div>
+              <div class="p">Resta Marco che chiama dopo due anni, la corsa al fiume, i pranzi della domenica. Le cose piccole hanno tenuto insieme le grandi.</div>
+            </div>
+            <div class="a-fondo" style="height:24px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lingue">
+        <div class="promessa">
+          <h3>Cinque temi, chiaro e scuro</h3>
+          <p>Carta, Minimal, Macchina, Malva, Wine. Il sito segue il tema che hai scelto nell'app.</p>
+          <div class="temi">
+            <span class="tema" style="--t1:#FFFDF8;--t2:#A8542E" title="Carta"></span>
+            <span class="tema" style="--t1:#FFFFFF;--t2:#111111" title="Minimal"></span>
+            <span class="tema" style="--t1:#1B1D22;--t2:#7FB2FF" title="Macchina"></span>
+            <span class="tema" style="--t1:#F5EEF7;--t2:#7B5B9E" title="Malva"></span>
+            <span class="tema" style="--t1:#F7F0EC;--t2:#7A2E3B" title="Wine"></span>
+          </div>
+        </div>
+        <div class="promessa">
+          <h3>Italiano e inglese</h3>
+          <p>Anche in quello che scrive l'AI: titolo, sintesi, recap.</p>
+          <div class="ital">Com'e andata oggi? <span>How was your day?</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ LE TRE CONDIZIONI -->
+  <section class="sez" id="condizioni">
+    <div class="cont">
+      <div class="testa">
+        <div class="kick">Come si comincia</div>
+        <h2>Si apre e basta.</h2>
+        <p>Nessuna domanda al primo avvio. Quando vorrai ritrovare le giornate su un altro dispositivo, ti chiederemo una email. Niente password, mai.</p>
+      </div>
+      <div class="cond">
+        <div class="cc">
+          <div class="l">Ospite</div>
+          <h3>Apri e parli</h3>
+          <p>Nessun account, nessuna domanda.</p>
+          <ul>
+            <li>Le giornate stanno sul dispositivo</li>
+            <li>L'AI in regalo: dieci giornate</li>
+            <li>Scrivere e rileggere, per sempre</li>
+          </ul>
+          <div class="fine"><a class="btn ghost sm" href="#">Inizia ora</a></div>
+        </div>
+        <div class="cc">
+          <div class="l">Account</div>
+          <h3>Una email, un codice</h3>
+          <p>Te la chiediamo noi, dopo cinque giornate. Niente password.</p>
+          <ul>
+            <li>Sul dispositivo e sul server, chiuse a chiave</li>
+            <li>Le ritrovi su iPhone, iPad e computer</li>
+            <li>Lo stesso regalo di AI</li>
+          </ul>
+          <div class="fine"><span class="badge-nota">Si attiva dentro l'app</span></div>
+        </div>
+        <div class="cc p">
+          <div class="l">Premium</div>
+          <h3>Senza limiti</h3>
+          <p>Per chi racconta tutte le sere.</p>
+          <ul>
+            <li>AI senza limiti</li>
+            <li>I Recap del mese, del semestre, dell'anno</li>
+            <li class="presto">Backup automatico ogni notte<span class="tag">in arrivo</span></li>
+          </ul>
+          <div class="fine"><span class="badge-nota">Si attiva dall'app per iPhone, con un periodo di prova</span></div>
+        </div>
+      </div>
+      <p class="cond-nota">Quando il regalo finisce, finisce solo l'AI: scrivere, salvare e rileggere restano gratis, per sempre. Nessuna pubblicita, mai.</p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ iPHONE / APP STORE -->
+  <section class="sez" id="iphone">
+    <div class="cont">
+      <div class="store">
+        <div>
+          <div class="kick">dayalogue per iPhone e iPad</div>
+          <h2 style="font-size:28px">Sul telefono, come un'app.</h2>
+          <p>
+            <span class="st-arrivo">Oggi si usa dal browser e si installa sulla Home come un'app. L'app per iPhone e in arrivo sull'App Store.</span>
+            <span class="st-pubb">L'app per iPhone e sull'App Store. Dal computer si usa dal browser, con le stesse giornate.</span>
+          </p>
+          <div class="store-home"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Da Safari: Condividi, poi "Aggiungi alla schermata Home"</div>
+        </div>
+        <div class="badge-riga">
+          <a class="badge spento" href="#">
+            <svg viewBox="0 0 24 24"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.8 1.3 10.3.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.7-4.2zM13.9 5c.7-.9 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3 1.1.1 2.3-.5 3-1.3z"/></svg>
+            <span class="bt"><small><span class="st-arrivo">In arrivo su</span><span class="st-pubb">Scarica su</span></small><b>App Store</b></span>
+          </a>
+          <span class="badge-nota" style="font-style:italic">(nota del mockup: si accende da solo quando l'app e pubblicata)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ DOMANDE -->
+  <section class="sez" id="domande">
+    <div class="cont">
+      <div class="testa">
+        <div class="kick">Domande</div>
+        <h2>Quello che chiedono tutti</h2>
+      </div>
+      <div class="faq">
+        <details open><summary>dayalogue e gratis?</summary><p>Scrivere, salvare e rileggere e gratis per sempre, senza carta di credito e senza pubblicita. L'AI (trascrizione, titolo, sintesi) e in regalo per dieci giornate; poi, senza limiti, con premium.</p></details>
+        <details><summary>Dove finiscono le mie giornate?</summary><p>Sul tuo dispositivo. Con un account anche sul server, ma chiuse a chiave prima di partire: nessuno le puo leggere, nemmeno noi.</p></details>
+        <details><summary>Chi legge quello che racconto?</summary><p>Nessuna persona. Il testo esce dal dispositivo solo quando chiedi all'AI di lavorarci: passa dai modelli di OpenAI per essere trascritto e riassunto, non viene conservato ne usato per addestrare niente.</p></details>
+        <details><summary>E se perdo il telefono?</summary><p>Con un account ritrovi tutto su un altro dispositivo con le tue otto parole. Senza account, o senza le parole, il diario non si recupera: nessuno ha la chiave, ed e questo il punto.</p></details>
+        <details class="solo-lunga"><summary>Posso portarmi via i miei dati?</summary><p>Si, in qualsiasi momento: un file solo con tutte le giornate, gli obiettivi, i memo e i recap, che si reimporta dove vuoi. E l'account si cancella dall'app, senza scrivere a nessuno.</p></details>
+        <details><summary>C'e l'app per iPhone?</summary><p><span class="st-arrivo">Sta arrivando. Oggi dayalogue si usa dal browser e si installa sulla schermata Home come un'app.</span><span class="st-pubb">Si, sull'App Store. E si usa anche dal browser, sul computer, con le stesse giornate.</span></p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ CHIUSURA -->
+  <section class="fine-sez">
+    <div class="cont">
+      <h2>Com'e andata oggi?</h2>
+      <p>Provalo stasera. Ci vogliono due minuti.</p>
+      <a class="btn" href="#">Inizia ora</a>
+    </div>
+  </section>
+
+  </div><!-- /pag-home -->
+
+  <!-- ------------------------------------------------ ASSISTENZA -->
+  <div class="pag-supporto">
+    <div class="supp">
+      <div class="kick">Assistenza</div>
+      <h1>Qualcosa non va?</h1>
+      <p class="intro">Scrivimi. Rispondo a tutti, di solito entro un giorno.</p>
+      <div class="campo"><label>Cosa non va</label><div class="in pieno">Il microfono non parte su iPad</div></div>
+      <div class="campo"><label>Raccontamelo</label><div class="in area">Cosa hai fatto, cosa e successo, cosa ti aspettavi. Bastano due righe.</div></div>
+      <div class="campo"><label>Schermate</label><div class="drop"><b>Scegli le immagini</b> o trascinale qui. Fino a tre; le rimpiccioliamo noi.</div></div>
+      <div class="campo"><label>La tua email</label><div class="in">nome@esempio.it</div><div class="aiuto">Serve solo per risponderti.</div></div>
+      <div class="supp azioni" style="padding:0"><a class="btn" href="#">Invia</a><a class="btn ghost" href="#">Annulla</a></div>
+      <a class="torna" href="#">Torna a dayalogue</a>
+    </div>
+  </div>
+
+  <!-- ------------------------------------------------ PIEDE -->
+  <footer class="piede">
+    <div class="cont">
+      <div class="piede-min">
+        <div class="frase"><span class="marchio">dayalogue</span> &nbsp;&middot;&nbsp; Un diario che si racconta a voce.</div>
+        <div class="riga"><a href="#">Privacy</a><a href="#">Assistenza</a><a href="#">Accedi</a><a href="#">English</a></div>
+      </div>
+      <div class="piede-comp">
+        <div class="col brand"><span class="marchio">dayalogue</span><span class="frase" style="font-size:16px">Un diario che si racconta a voce.</span></div>
+        <div class="col"><span class="l">Prodotto</span><a href="#come">Come funziona</a><a href="#cassaforte">Cassaforte</a><a href="#domande">Domande</a><a href="#">Apri l'app</a></div>
+        <div class="col"><span class="l">Legale</span><a href="#">Privacy</a></div>
+        <div class="col"><span class="l">Account</span><a href="#">Accedi</a><a href="#">Assistenza</a><a href="#">English</a></div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</template>
+
+<!-- =====================================================================
+     LA PAGINA DEL MOCKUP
+     ===================================================================== -->
+<div class="page">
+  <div class="page-kick">dayalogue &middot; sito v2 &middot; mockup del 5 settembre 2026</div>
+  <h1>Il nuovo dayalogue.com</h1>
+  <p class="page-sub">Un file solo: il sito intero, <b>dentro un iPhone e dentro un Mac</b>, con gli interruttori qui sotto per vedere le varianti su cui devi decidere.
+    Le schermate dell'app sono riprodotte in HTML col tema Carta, con la giornata di esempio di Marco. Scorri dentro i due schermi.
+    In fondo c'e il <b>quiz</b>: rispondi con le lettere (per esempio <b>1A 2B 3A</b>).</p>
+
+  <div class="cmd" id="cmd">
+    <div class="g"><span class="k">Vista</span><div class="sw" data-k="vista"><button data-v="entrambi" class="on">Entrambi</button><button data-v="telefono">Telefono</button><button data-v="computer">Computer</button></div></div>
+    <div class="g"><span class="k">Eroe</span><div class="sw" data-k="eroe"><button data-v="voce" class="on">A &middot; Voce</button><button data-v="cassa">B &middot; Cassaforte</button></div></div>
+    <div class="g"><span class="k">Pagina</span><div class="sw" data-k="lunga"><button data-v="si" class="on">A &middot; Lunga</button><button data-v="no">B &middot; Corta</button></div></div>
+    <div class="g"><span class="k">Badge</span><div class="sw" data-k="store"><button data-v="arrivo" class="on">A &middot; Spento</button><button data-v="assente">B &middot; Assente</button><button data-v="pubblicata">Domani</button></div></div>
+    <div class="g"><span class="k">Piede</span><div class="sw" data-k="piede"><button data-v="minimo" class="on">A &middot; Minimo</button><button data-v="completo">B &middot; Completo</button></div></div>
+    <div class="g"><span class="k">Tema</span><div class="sw" data-k="tema"><button data-v="chiaro" class="on">Chiaro</button><button data-v="scuro">Scuro</button></div></div>
+    <div class="g"><span class="k">Schermata</span><div class="sw" data-k="pagina"><button data-v="home" class="on">Home</button><button data-v="supporto">Assistenza</button></div></div>
+  </div>
+
+  <div class="palchi">
+    <div class="palco telefono">
+      <div class="nome">iPhone &middot; 390 px</div>
+      <div class="iphone"><div class="schermo"><div class="isola"></div><div class="ora"><span>21:40</span><span class="b"><i></i></span></div><div class="scroll" id="palco-tel"></div></div></div>
+    </div>
+    <div class="palco computer">
+      <div class="nome">Mac &middot; 1180 px</div>
+      <div class="mac-scala" id="mac-scala">
+        <div class="mac" id="mac">
+          <div class="mac-cornice">
+            <div class="mac-barra"><i></i><i></i><i></i><span class="url">dayalogue.com</span></div>
+            <div class="mac-scroll"><div class="mac-wrap" id="palco-mac"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">Cosa e cambiato rispetto al sito di oggi</p>
+  <div class="nonpromesso">
+    <div><b>Si apre e basta</b>Via "al primo avvio scegli dove tenerle" e via il secondo tasto dell'eroe. Un tasto solo: Inizia ora.</div>
+    <div><b>La cassaforte al centro</b>Una sezione scura, con la giornata leggibile sul telefono e il blocco illeggibile sul server. Otto parole, nessun recupero, OpenAI detto con la frase esatta.</div>
+    <div><b>L'AI e in regalo</b>Dieci giornate per tutti; premium e "senza limiti piu i Recap". Il backup notturno c'e solo come "in arrivo".</div>
+    <div><b>Niente prezzo sul web</b>Nessun 4,99: si dice che premium si attiva dall'app per iPhone, con un periodo di prova.</div>
+    <div><b>Niente stelle, niente numeri</b>Nessuna recensione, nessun contatore di utenti. Il badge App Store e al suo posto ma spento: si accende da solo (interruttore "Domani").</div>
+    <div><b>Accedi resta, ma piccolo</b>In alto a destra sul computer, nel piede sul telefono. Niente password, e la gente non le vuole.</div>
+    <div><b>Piede senza termini di servizio</b>Solo Privacy, finche la pagina dei termini non esiste.</div>
+    <div><b>Assistenza nello stesso stile</b>Quattro campi, un tasto. Interruttore "Schermata" in alto per vederla.</div>
+  </div>
+
+  <div class="divider"></div>
+  <p class="label">Il quiz: rispondi con le lettere</p>
+  <p class="caption">Ogni domanda ha un interruttore in alto: <b>provala prima di rispondere</b>. Tocca una risposta; in fondo compare la riga con le tue scelte, copiala e incollamela in chat (o scrivimela a mano, va bene lo stesso).</p>
+  <div class="quiz-wrap"><div class="quiz" id="quiz">
+
+    <div class="q"><div class="qt"><i>1</i>L'eroe: cosa dice per primo?</div><div class="qp">La voce e il gesto (il microfono); la cassaforte e il motivo per cui non e "un'altra app con l'AI". In tutte e due le varianti l'altra cosa arriva subito dopo.</div>
+      <label><input type="radio" name="1" value="A" checked><span class="n">A</span><span><b>Voce</b>: "Racconta la giornata. Il resto lo scrive lui." La cassaforte e la seconda promessa e ha la sua sezione scura.</span><span class="vedi" data-k="eroe" data-v="voce">vedi</span></label>
+      <label><input type="radio" name="1" value="B"><span class="n">B</span><span><b>Cassaforte</b>: "Un diario che si racconta a voce. E che nessuno puo leggere. Nemmeno noi."</span><span class="vedi" data-k="eroe" data-v="cassa">vedi</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>2</i>Quanto e lunga la pagina?</div><div class="qp">Lunga: eroe, tre promesse, come funziona, cassaforte, le quattro schermate, temi e lingue, le tre condizioni, iPhone, domande, chiusura. Corta: senza la sezione delle quattro schermate e con una domanda in meno.</div>
+      <label><input type="radio" name="2" value="A" checked><span class="n">A</span><span><b>Lunga</b>: racconta tutto, e a Google piace.</span><span class="vedi" data-k="lunga" data-v="si">vedi</span></label>
+      <label><input type="radio" name="2" value="B"><span class="n">B</span><span><b>Corta</b>: tre schermate nel "come funziona" e basta; le altre si scoprono nell'app.</span><span class="vedi" data-k="lunga" data-v="no">vedi</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>3</i>Il badge App Store</div><div class="qp">In tutti i casi la riga "C'e l'app per iPhone?" e la frase della sezione iPhone cambiano da sole quando l'app e pubblicata (interruttore "Domani"), senza ridisegnare niente.</div>
+      <label><input type="radio" name="3" value="A" checked><span class="n">A</span><span><b>Disegnato e spento</b>, con la scritta "In arrivo su App Store": si vede gia dove andra.</span><span class="vedi" data-k="store" data-v="arrivo">vedi</span></label>
+      <label><input type="radio" name="3" value="B"><span class="n">B</span><span><b>Assente</b> finche non serve: solo la frase, il badge compare alla pubblicazione.</span><span class="vedi" data-k="store" data-v="assente">vedi</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>4</i>Le schermate dell'app dentro il sito</div><div class="qp">Oggi nel mockup sono riprodotte in HTML (tema Carta). In HTML restano nitide a ogni misura, cambiano col tema e con la lingua, e Google le legge come testo. Gli screenshot veri sono piu fedeli ma vanno rifatti a ogni cambio dell'app, e in due lingue.</div>
+      <label><input type="radio" name="4" value="A" checked><span class="n">A</span><span><b>Riprodotte in HTML</b>, fedeli, come nel mockup.</span></label>
+      <label><input type="radio" name="4" value="B"><span class="n">B</span><span><b>Screenshot veri</b> che fornisci tu (iPhone, tema Carta, chiaro e scuro, italiano e inglese).</span></label>
+      <label><input type="radio" name="4" value="C"><span class="n">C</span><span><b>Misto</b>: HTML nell'eroe e nel "come funziona", uno screenshot vero nella sezione iPhone.</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>5</i>Il piede</div>
+      <label><input type="radio" name="5" value="A" checked><span class="n">A</span><span><b>Minimo</b>: una riga, il marchio e quattro collegamenti (Privacy, Assistenza, Accedi, English).</span><span class="vedi" data-k="piede" data-v="minimo">vedi</span></label>
+      <label><input type="radio" name="5" value="B"><span class="n">B</span><span><b>Completo</b>: Prodotto, Legale, Account, come oggi.</span><span class="vedi" data-k="piede" data-v="completo">vedi</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>6</i>Il tema del sito</div><div class="qp">Oggi il sito eredita il tema e il chiaro/scuro scelti nell'app (chi ha Macchina scuro vede il sito Macchina scuro). Il mockup mostra Carta chiaro e Carta scuro.</div>
+      <label><input type="radio" name="6" value="A" checked><span class="n">A</span><span><b>Segue il visitatore</b>, come oggi: tema dell'app e chiaro/scuro del sistema.</span><span class="vedi" data-k="tema" data-v="scuro">vedi lo scuro</span></label>
+      <label><input type="radio" name="6" value="B"><span class="n">B</span><span><b>Sempre Carta</b>, chiaro di giorno e scuro di notte col sistema: il sito e la vetrina, il tema lo scegli dentro.</span></label>
+      <label><input type="radio" name="6" value="C"><span class="n">C</span><span><b>Sempre Carta chiaro</b>, punto.</span><span class="vedi" data-k="tema" data-v="chiaro">vedi</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>7</i>La sezione cassaforte: quanto pesa?</div><div class="qp">E la promessa piu importante e per questo e scura e grande. Ma e anche la sezione con piu parole della pagina.</div>
+      <label><input type="radio" name="7" value="A" checked><span class="n">A</span><span><b>Cosi</b>: titolo, spiegazione, le due caselle leggibile/illeggibile, i tre punti (otto parole, nessun recupero, OpenAI).</span></label>
+      <label><input type="radio" name="7" value="B"><span class="n">B</span><span><b>Piu corta</b>: titolo, le due caselle, e i tre punti vanno nelle Domande.</span></label>
+    </div>
+
+    <div class="q"><div class="qt"><i>8</i>Il mockup</div><div class="qp">Se approvi, la prossima chat (quella del modulo sito) parte col codice: pagine server, italiano e inglese, testi in testi.ts.</div>
+      <label><input type="radio" name="8" value="A" checked><span class="n">A</span><span><b>Approvato cosi</b>, con le scelte sopra: si passa al codice.</span></label>
+      <label><input type="radio" name="8" value="B"><span class="n">B</span><span><b>Approvato con le modifiche</b> che scrivo nelle note.</span></label>
+      <label><input type="radio" name="8" value="C"><span class="n">C</span><span><b>Rifallo</b>: scrivo nelle note cosa non va.</span></label>
+      <textarea id="note" placeholder="Note (facoltative): frasi da cambiare, cose che mancano, cose da togliere..."></textarea>
+    </div>
+
+  </div>
+  <div class="esito"><span class="k">Le tue risposte</span><span class="c" id="codice"></span><button id="copia">Copia</button></div>
+</div></div>
+
+<script>
+(function(){
+  var tpl = document.getElementById('sito');
+  var tel = document.getElementById('palco-tel');
+  var mac = document.getElementById('palco-mac');
+  tel.appendChild(tpl.content.cloneNode(true));
+  mac.appendChild(tpl.content.cloneNode(true));
+  var siti = document.querySelectorAll('.s');
+
+  // gli interruttori in alto (e i "vedi" del quiz)
+  var stato = {vista:'entrambi', eroe:'voce', lunga:'si', store:'arrivo', piede:'minimo', tema:'chiaro', pagina:'home'};
+  function applica(k, v){
+    stato[k] = v;
+    if (k === 'vista') document.body.setAttribute('data-vista', v);
+    else siti.forEach(function(s){ s.setAttribute('data-' + k, v); });
+    if (k === 'tema') document.querySelector('.iphone').classList.toggle('scuro', v === 'scuro');
+    document.querySelectorAll('.sw[data-k="' + k + '"] button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-v') === v); });
+    scala();
+  }
+  document.querySelectorAll('.sw button').forEach(function(b){
+    b.addEventListener('click', function(){ applica(b.parentNode.getAttribute('data-k'), b.getAttribute('data-v')); });
+  });
+  document.querySelectorAll('.vedi').forEach(function(v){
+    v.addEventListener('click', function(e){
+      e.preventDefault();
+      applica(v.getAttribute('data-k'), v.getAttribute('data-v'));
+      document.querySelector('.palchi').scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  // il Mac e largo 1180: lo rimpicciolisco per farlo stare nella pagina
+  var macEl = document.getElementById('mac'), scalaEl = document.getElementById('mac-scala');
+  function scala(){
+    if (document.body.getAttribute('data-vista') === 'telefono') return;
+    var page = document.querySelector('.page');
+    var disp = (page.clientWidth - 56) - (document.body.getAttribute('data-vista') === 'entrambi' && page.clientWidth > 900 ? 402 + 44 + 12 : 0);
+    var f = Math.min(1, disp / 1180);
+    macEl.style.transform = 'scale(' + f + ')';
+    scalaEl.style.width = (1180 * f) + 'px';
+    scalaEl.style.height = (macEl.offsetHeight * f) + 'px';
+  }
+  window.addEventListener('resize', scala);
+  scala(); setTimeout(scala, 300);
+
+  // il quiz
+  var codice = document.getElementById('codice');
+  function aggiorna(){
+    var parti = [];
+    document.querySelectorAll('#quiz .q').forEach(function(q){
+      var r = q.querySelector('input:checked');
+      if (r) parti.push(r.name + r.value);
+    });
+    var note = document.getElementById('note').value.trim();
+    codice.textContent = parti.join(' ') + (note ? ' -- ' + note : '');
+  }
+  document.querySelectorAll('#quiz input, #quiz textarea').forEach(function(el){ el.addEventListener('input', aggiorna); el.addEventListener('change', aggiorna); });
+  document.getElementById('copia').addEventListener('click', function(){
+    var t = codice.textContent, b = this;
+    var fatto = function(){ b.textContent = 'Copiato'; setTimeout(function(){ b.textContent = 'Copia'; }, 1500); };
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(fatto, function(){ b.textContent = 'Seleziona e copia a mano'; });
+    else b.textContent = 'Seleziona e copia a mano';
+  });
+  aggiorna();
+})();
+</script>
+</body>
+</html>
