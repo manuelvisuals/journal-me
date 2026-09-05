@@ -16,96 +16,208 @@
 .jm-theme-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: calc(12px * var(--jm-space));
+  gap: calc(14px * var(--jm-space));
 }
 
+/* =================================================================
+   LA SCHEDA DI UN TEMA (rifatta il 5 settembre 2026).
+   Mockup approvato: design/mockups/tema-schede-nuove.html, scelta
+   "A piu C" di Manuel; design/mockups/tema-schede-finale.html e la
+   resa esatta di questo CSS aperta in un browser.
+
+   PERCHE E STATA RIFATTA. La versione precedente metteva dentro
+   l'anteprima del TESTO VERO (un titolo e una frase) dentro un
+   riquadro alto 108px fissi. Quante righe diventa quel testo non lo
+   decide il CSS: lo decidono il font del tema (quattordici diversi,
+   fra cui un monospace e due garamond), la lingua (l'inglese e piu
+   lungo dell'italiano) e la larghezza della colonna. Su iPhone, in
+   inglese, in IBM Plex Mono, erano cinque righe: piu di 108px. Il
+   testo in eccesso non spariva, usciva dal riquadro e si stampava
+   sopra il nome del tema.
+
+   LA REGOLA NUOVA, che vale anche per chi tocchera questo file:
+   dentro l'anteprima non entra testo che possa andare a capo. Una
+   riga sola, tagliata coi puntini, e per il resto forme. Cosi
+   l'altezza la decide aspect-ratio e non il font di turno, e le
+   quattordici schede restano identiche in geometria - che poi e
+   l'unico modo di vedere la differenza fra i temi invece della
+   differenza fra le lunghezze delle frasi.
+   ================================================================= */
 .jm-theme-card {
   display: block;
+  /* SENZA QUESTO min-width la griglia sfonda (visto in prova il 5
+     settembre 2026): un figlio di grid ha min-width:auto, cioe non
+     puo diventare piu stretto del suo contenuto, e il nome dei font
+     e su una riga sola che non va a capo. "DM Sans + Cormorant
+     Garamond" allargava la colonna oltre il telefono invece di farsi
+     tagliare dai puntini. */
+  min-width: 0;
   text-align: left;
   padding: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-lg);
-  overflow: hidden;
+  background: transparent;
+  border: 0;
   cursor: pointer;
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
-  transition: border-color 120ms;
 }
 
-.jm-theme-card.on {
-  border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
-}
-
+/* La miniatura della schermata vera. Niente height: l'altezza viene
+   dalla larghezza della colonna. */
 .jm-theme-prev {
+  display: block;
+  /* 3:2 e non 4:3: con quattro-cinque righe di paragrafo e il tasto in
+     fondo, il quadrato lasciava un vuoto in mezzo che sembrava un
+     errore. Il rapporto lo decide il contenuto, non il contrario. */
+  aspect-ratio: 3 / 2;
+  padding: calc(9px * var(--jm-space));
+  border-radius: var(--jm-radius-lg);
+  /* Le variabili scoped della card (style inline) vincono su <html>. */
+  background: var(--jm-bg-app);
+  border: var(--jm-border-hairline) solid var(--jm-line);
+  transition:
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.jm-theme-card.on .jm-theme-prev {
+  box-shadow: 0 0 0 2px var(--jm-accent);
+}
+
+.jm-theme-card:active .jm-theme-prev {
+  transform: scale(var(--jm-press));
+}
+
+.jm-theme-mini {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 108px;
-  padding: 12px;
-  /* Le variabili scoped della card (style inline) vincono su <html>:
-     l'anteprima e VIVA, renderizza davvero il suo tema nel modo scelto. */
-  background: var(--jm-bg-app);
-  color: var(--jm-ink);
+  height: 100%;
+  padding: calc(8px * var(--jm-space)) calc(9px * var(--jm-space));
+  background: var(--jm-surface);
+  border: var(--jm-border-hairline) solid var(--jm-line);
+  border-radius: var(--jm-radius-md);
+  overflow: hidden;
 }
 
-.jm-theme-prev-t {
+/* L'unico testo dell'anteprima. Le tre righe qui sotto sono la
+   guardia: senza di loro torna il difetto di prima. */
+.jm-theme-mt {
+  display: block;
   font-family: var(--jm-font-serif);
-  font-size: calc(16px * var(--jm-ui-scale));
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.3;
   font-weight: var(--jm-weight-prose);
   letter-spacing: -0.01em;
   color: var(--jm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.jm-theme-prev-p {
-  font-family: var(--jm-font-sans);
-  font-size: calc(11px * var(--jm-ui-scale));
-  line-height: 1.45;
-  color: var(--jm-ink-muted);
-  margin-top: 5px;
+/* Le righe di prosa, ridotte a forma. Cinque, con l'ultima corta: e
+   il disegno di un paragrafo, e a 170px di larghezza si legge come
+   tale, dove il testo vero sarebbe illeggibile comunque. */
+.jm-theme-bar {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--jm-ink-muted) 42%, transparent);
+  margin-top: calc(9px * var(--jm-space));
 }
 
-.jm-theme-sw {
-  display: flex;
-  gap: 6px;
-  align-items: center;
+.jm-theme-bar.b1 { width: 100%; }
+.jm-theme-bar.b2 { width: 92%; }
+.jm-theme-bar.b3 { width: 97%; }
+.jm-theme-bar.b4 { width: 84%; }
+.jm-theme-bar.b5 { width: 52%; }
+
+.jm-theme-pill {
+  display: block;
   margin-top: auto;
+  width: calc(44px * var(--jm-ui-scale));
+  height: calc(13px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-pill);
+  background: var(--jm-accent);
 }
 
-.jm-theme-sw i {
-  width: 14px;
-  height: 14px;
-  border-radius: var(--jm-radius-circle);
-  display: block;
-  border: 1px solid var(--jm-line);
-}
-
-.jm-theme-sw .sw-accent { background: var(--jm-accent); }
-
-.jm-theme-sw .sw-surface { background: var(--jm-surface); }
-
-.jm-theme-sw .sw-ink { background: var(--jm-ink); }
-
-.jm-theme-sw .sw-faint { background: var(--jm-ink-faint); }
-
+/* La riga sotto: e INTERFACCIA, non tema. Colori dell'app e font di
+   sistema, come fa Apple in Sfondo e in Quadranti - il nome di un
+   tema non si legge dentro il tema. Del tema restano tre bande di
+   colore (--sw-*, passate a mano dal componente). */
 .jm-theme-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: calc(8px * var(--jm-space));
+  padding: calc(9px * var(--jm-space)) 2px 0;
+}
+
+/* Le tre bande del tema. L'anello serve davvero: in chiaro il fondo
+   del tema e quasi bianco come la pagina, e senza bordo la prima
+   banda sparisce e il quadratino sembra tagliato a meta. */
+.jm-theme-chip {
+  display: flex;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-ink) 22%, transparent);
+}
+
+.jm-theme-chip i {
   display: block;
-  padding: 10px 12px;
-  border-top: 1px solid var(--color-line);
+  flex: 1;
+}
+
+.jm-theme-chip .ch-acc {
+  background: var(--sw-acc);
+}
+
+.jm-theme-chip .ch-sur {
+  background: var(--sw-sur);
+}
+
+.jm-theme-chip .ch-bg {
+  background: var(--sw-bg);
+}
+
+.jm-theme-txt {
+  display: block;
+  flex: 1;
+  min-width: 0;
 }
 
 .jm-theme-name {
   display: block;
   font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
   font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .jm-theme-fonts {
   display: block;
   font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
   color: var(--color-ink-muted);
-  margin-top: 2px;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-theme-ok {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--sw-acc);
+  color: var(--sw-on);
 }
 
 .jm-theme-footnote {

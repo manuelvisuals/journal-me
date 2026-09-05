@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Schermata Tema - come dovrebbe essere</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:wght@400;600&family=Spectral:wght@300;400;600&family=EB+Garamond:wght@400;600&family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--pg:#0f1115;--pgs:#171a21;--pgi:#e8eaed;--pgm:#b3b8c2;--pgf:#8b929e;--pgl:rgba(255,255,255,.09);--pga:#2de1c2;--ok:#39c07a;--no:#f0736a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pg);color:var(--pgi);font:16px/1.55 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;padding:0 20px 90px}
+.wrap{max-width:1000px;margin:0 auto}
+h1{font-size:30px;letter-spacing:-.02em;margin:44px 0 6px}
+.sub{color:var(--pgf);margin:0 0 30px}
+h2{font-size:21px;letter-spacing:-.015em;margin:46px 0 8px;padding-top:24px;border-top:1px solid var(--pgl)}
+h3{font-size:16px;margin:26px 0 10px;color:var(--pgi)}
+p{color:var(--pgm);margin:0 0 14px}
+.big{background:var(--pgs);border:1px solid var(--pgl);border-radius:16px;padding:18px 20px;margin:0 0 12px}
+.big b{color:var(--pgi)}
+.big.no{border-left:3px solid var(--no)}
+.big.si{border-left:3px solid var(--ok)}
+code{font:13px ui-monospace,Menlo,monospace;color:var(--pga)}
+
+/* il telefono */
+.fila{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.tel{width:330px;flex:0 0 330px;background:#000;border-radius:38px;padding:10px;border:1px solid #26292f}
+.sch{border-radius:30px;overflow:hidden;padding:16px 14px 22px;min-height:520px}
+.sch.d{background:#1A1714;color:#F2EBE2}
+.sch.l{background:#F7F2E9;color:#241E19}
+.schtit{font-size:20px;font-weight:650;letter-spacing:-.02em;margin-bottom:4px}
+.schsub{font-size:12px;opacity:.6;margin-bottom:14px;line-height:1.45}
+.griglia{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.legenda{font-size:13px;color:var(--pgf);margin:10px 0 0}
+
+/* ---------- A: la pagina ---------- */
+.cA{all:unset;display:block;cursor:pointer;position:relative}
+.cA .tile{display:block;aspect-ratio:4/3;background:var(--bg);border-radius:14px;padding:9px;border:1px solid rgba(127,127,127,.18)}
+.cA.on .tile{box-shadow:0 0 0 2px var(--acc)}
+.cA .mini{display:flex;flex-direction:column;height:100%;background:var(--sur);border:1px solid var(--line);border-radius:9px;padding:8px 9px}
+.cA .mt{font-family:var(--fp);font-size:12.5px;line-height:1.25;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.cA .bar{display:block;height:3.5px;border-radius:2px;background:color-mix(in oklab,var(--muted) 55%,transparent);margin-top:7px}
+.cA .b1{width:100%}.cA .b2{width:56%}
+.cA .pill{display:block;margin-top:auto;width:44px;height:13px;border-radius:99px;background:var(--acc)}
+.cA .meta{display:block;padding:8px 2px 0}
+.cA .nome{display:block;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.cA .fonti{display:block;font-size:11px;opacity:.55;margin-top:1px;line-height:1.3}
+.spunta{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--acc);color:var(--onacc);display:flex;align-items:center;justify-content:center}
+
+/* ---------- B: Aa ---------- */
+.cB{all:unset;display:block;cursor:pointer;position:relative}
+.cB .tile{display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;background:var(--bg);border-radius:14px;border:1px solid rgba(127,127,127,.18);gap:2px}
+.cB.on .tile{box-shadow:0 0 0 2px var(--acc)}
+.cB .aa{font-family:var(--fp);font-size:34px;line-height:1;color:var(--ink)}
+.cB .aau{font-family:var(--fu);font-size:13px;color:var(--muted)}
+.cB .rigaacc{display:block;width:34px;height:4px;border-radius:99px;background:var(--acc);margin-top:8px}
+.cB .meta{display:block;padding:8px 2px 0}
+.cB .nome{display:block;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.cB .fonti{display:block;font-size:11px;opacity:.55;margin-top:1px;line-height:1.3}
+
+/* ---------- C: le righe ---------- */
+.elenco{display:block}
+.cC{all:unset;display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px 2px;border-bottom:1px solid rgba(127,127,127,.16);width:100%}
+.cC .quad{display:flex;width:40px;height:40px;border-radius:11px;overflow:hidden;flex:0 0 40px;border:1px solid rgba(127,127,127,.2)}
+.cC .quad i{flex:1}
+.cC .q1{background:var(--bg)}.cC .q2{background:var(--sur2)}.cC .q3{background:var(--acc)}
+.cC .meta{display:block;flex:1;min-width:0}
+.cC .nome{display:block;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.cC .fonti{display:block;font-size:11.5px;opacity:.55;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cC .ok{margin-left:auto}
+.cC .ok .spunta{position:static;background:var(--acc);color:var(--onacc)}
+
+/* ---------- com'e adesso ---------- */
+.cOld{all:unset;display:block;background:#171a21;border:1px solid var(--pgl);border-radius:16px;overflow:hidden}
+.oprev{display:flex;flex-direction:column;justify-content:space-between;height:108px;padding:12px;background:var(--bg);color:var(--ink)}
+.ot{font-family:var(--fp);font-size:16px;letter-spacing:-.01em}
+.op{font-family:var(--fu);font-size:11px;line-height:1.45;color:var(--muted);margin-top:5px}
+.osw{display:flex;gap:6px;margin-top:auto}
+.osw i{width:14px;height:14px;border-radius:50%;display:block;border:1px solid var(--line)}
+.ometa{display:block;padding:10px 12px;border-top:1px solid var(--pgl)}
+.ometa .nome{display:block;font-size:14px;font-weight:600}
+.ometa .fonti{display:block;font-size:12px;color:var(--pgm);margin-top:2px}
+
+.q{background:var(--pgs);border:1px solid var(--pgl);border-left:3px solid var(--pga);border-radius:14px;padding:18px 20px;margin:0 0 14px}
+.q h3{margin:0 0 6px;font-size:17px}
+.opt{display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--pgl)}
+.opt b{color:var(--pga);font:14px ui-monospace,Menlo,monospace;flex:0 0 26px}
+.opt span{color:var(--pgm);font-size:15px}
+.opt i{color:var(--pgf);font-style:normal}
+</style></head><body><div class="wrap">
+
+<h1>La schermata Tema, rifatta</h1>
+<p class="sub">Mockup del 5 settembre 2026 - da approvare prima di toccare il codice</p>
+
+<h2>Perche si rompe adesso</h2>
+<div class="big no"><b>Non e un problema di gusto, e di aritmetica.</b> Il riquadro dell anteprima ha un altezza fissa, <code>height: 108px</code>, e dentro ci sta del testo VERO: un titolo e una frase. Quel testo va a capo un numero di volte che dipende dal font del tema, dalla lingua e dalla larghezza dello schermo. In inglese, su iPhone, in Cormorant o in IBM Plex Mono, diventa quattro o cinque righe: piu di 108px. Il testo in piu non sparisce, esce dal riquadro e si stampa sopra il nome del tema. Alzare l altezza non risolve, sposta il problema al primo font un po piu largo.</div>
+<div class="big si"><b>La regola nuova, in una riga: dentro l anteprima non entra testo che possa andare a capo.</b> Una riga sola, tagliata con i puntini se non ci sta, e per il resto forme: barre, pillole, colore. Cosi l altezza e decisa da noi e non dal font di turno, e le quattordici schede sono tutte identiche in geometria - che poi e l unico modo di vedere davvero la differenza fra i temi.</div>
+<h3>Com e adesso (le prime quattro, com erano sul tuo telefono)</h3>
+<div class="griglia" style="max-width:420px"><button class="cOld" style="--bg:#0B0B0C;--sur:#161618;--sur2:#1F1F22;--ink:#F5F5F7;--muted:#B8B8BE;--faint:#86868B;--acc:#F5F5F7;--onacc:#1D1D1F;--line:rgba(255, 255, 255, 0.12);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="oprev"><span class="ot">the phone call put off</span><span class="op">Thirty-two minutes, and one sentence at the end.</span>
+  <span class="osw"><i style="background:var(--acc)"></i><i style="background:var(--sur)"></i><i style="background:var(--ink)"></i><i style="background:var(--faint)"></i></span></span>
+  <span class="ometa"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cOld" style="--bg:#0F0F0F;--sur:#161616;--sur2:#1C1C1C;--ink:#EDEDED;--muted:#B0B0B0;--faint:#828282;--acc:#EDEDED;--onacc:#0A0A0A;--line:rgba(237, 237, 237, 0.16);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="oprev"><span class="ot">the phone call put off</span><span class="op">Thirty-two minutes, and one sentence at the end.</span>
+  <span class="osw"><i style="background:var(--acc)"></i><i style="background:var(--sur)"></i><i style="background:var(--ink)"></i><i style="background:var(--faint)"></i></span></span>
+  <span class="ometa"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+</button><button class="cOld" style="--bg:#1B161A;--sur:#241E23;--sur2:#2D262C;--ink:#F0E7EA;--muted:#C9B6BE;--faint:#9E8C94;--acc:#D9A3B4;--onacc:#241118;--line:rgba(240, 231, 234, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="oprev"><span class="ot">the phone call put off</span><span class="op">Thirty-two minutes, and one sentence at the end.</span>
+  <span class="osw"><i style="background:var(--acc)"></i><i style="background:var(--sur)"></i><i style="background:var(--ink)"></i><i style="background:var(--faint)"></i></span></span>
+  <span class="ometa"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button><button class="cOld" style="--bg:#21222C;--sur:#282A36;--sur2:#343746;--ink:#F8F8F2;--muted:#BFC0CC;--faint:#9092A4;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="oprev"><span class="ot">the phone call put off</span><span class="op">Thirty-two minutes, and one sentence at the end.</span>
+  <span class="osw"><i style="background:var(--acc)"></i><i style="background:var(--sur)"></i><i style="background:var(--ink)"></i><i style="background:var(--faint)"></i></span></span>
+  <span class="ometa"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+</button></div>
+<p class="legenda">Guarda Macchina da scrivere: la frase esce dal riquadro grigio e finisce addosso al nome.</p>
+
+<h2>A - La pagina</h2>
+<p>Ogni tema e una miniatura della schermata vera: il fondo dell app, dentro una scheda col titolo di una giornata, due righe di testo ridotte a barre, e il tasto in accento. Il nome sta FUORI, sotto, nel font di sistema come fa Apple in Sfondo e in Quadranti. Selezione: anello in accento e spunta.</p>
+<div class="fila">
+  <div class="tel"><div class="sch d"><div class="schtit">Tema</div><div class="schsub">Cambia solo come si vede l app. Le tue giornate non le tocca nessuno.</div><div class="griglia"><button class="cA" style="--bg:#0B0B0C;--sur:#161618;--sur2:#1F1F22;--ink:#F5F5F7;--muted:#B8B8BE;--faint:#86868B;--acc:#F5F5F7;--onacc:#1D1D1F;--line:rgba(255, 255, 255, 0.12);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cA" style="--bg:#0F0F0F;--sur:#161616;--sur2:#1C1C1C;--ink:#EDEDED;--muted:#B0B0B0;--faint:#828282;--acc:#EDEDED;--onacc:#0A0A0A;--line:rgba(237, 237, 237, 0.16);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+</button><button class="cA" style="--bg:#1B161A;--sur:#241E23;--sur2:#2D262C;--ink:#F0E7EA;--muted:#C9B6BE;--faint:#9E8C94;--acc:#D9A3B4;--onacc:#241118;--line:rgba(240, 231, 234, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button><button class="cA on" style="--bg:#21222C;--sur:#282A36;--sur2:#343746;--ink:#F8F8F2;--muted:#BFC0CC;--faint:#9092A4;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="spunta" aria-hidden="true"><svg viewBox="0 0 20 20" width="13" height="13"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="meta"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cA" style="--bg:#1E1B1D;--sur:#262124;--sur2:#332C30;--ink:#F6EFEF;--muted:#CBBFC1;--faint:#94878B;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Korall</span><span class="fonti">DM Sans + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#1A1714;--sur:#221E1A;--sur2:#2A251F;--ink:#EFE7DA;--muted:#C0B2A0;--faint:#968878;--acc:#D08A5A;--onacc:#16120F;--line:rgba(239, 231, 218, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Carta</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#282828;--sur:#3C3836;--sur2:#504945;--ink:#FBF1C7;--muted:#D5C4A1;--faint:#B0A28B;--acc:#FE8019;--onacc:#2A1403;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Gruvbox</span><span class="fonti">IBM Plex Mono + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#0E0709;--sur:#1D1013;--sur2:#241418;--ink:#F4E7DE;--muted:#CDB7AE;--faint:#9A8279;--acc:#E3A15F;--onacc:#1A0E0F;--line:rgba(255, 229, 214, 0.075);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Wine premium</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cA" style="--bg:#1C1F26;--sur:#262B34;--sur2:#2E343E;--ink:#E8EAED;--muted:#BFC0CC;--faint:#8D949F;--acc:#2DE1C2;--onacc:#10221F;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Grafit</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cA" style="--bg:#2E3440;--sur:#3B4252;--sur2:#434C5E;--ink:#ECEFF4;--muted:#D8DEE9;--faint:#A7B0C0;--acc:#88C0D0;--onacc:#12222A;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Nord</span><span class="fonti">DM Sans + Newsreader</span></span>
+</button><button class="cA" style="--bg:#0F172A;--sur:#1B2438;--sur2:#273349;--ink:#E2E8F0;--muted:#C0CADB;--faint:#7F8DA7;--acc:#38BDF8;--onacc:#04202E;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Ocean</span><span class="fonti">DM Sans + Spectral</span></span>
+</button><button class="cA" style="--bg:#1A1B26;--sur:#24283B;--sur2:#2F3549;--ink:#C0CAF5;--muted:#A9B1D6;--faint:#888FB4;--acc:#7AA2F7;--onacc:#0B1220;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Tokyo Night</span><span class="fonti">IBM Plex Mono + Newsreader</span></span>
+</button><button class="cA" style="--bg:#282A36;--sur:#343746;--sur2:#414458;--ink:#F8F8F2;--muted:#C4C6D4;--faint:#9FA1B5;--acc:#BD93F9;--onacc:#17102A;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Ametista</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#24273A;--sur:#303446;--sur2:#3E4459;--ink:#CAD3F5;--muted:#B8C0E0;--faint:#989EB4;--acc:#C6A0F6;--onacc:#1B0F2B;--line:rgba(255, 255, 255, 0.07);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Catppuccin</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button></div></div></div>
+  <div class="tel"><div class="sch l"><div class="schtit">Tema</div><div class="schsub">Cambia solo come si vede l app. Le tue giornate non le tocca nessuno.</div><div class="griglia"><button class="cA" style="--bg:#FFFFFF;--sur:#F5F5F7;--sur2:#EBEBEF;--ink:#1D1D1F;--muted:#494950;--faint:#6E6E73;--acc:#1D1D1F;--onacc:#FFFFFF;--line:rgba(0, 0, 0, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cA" style="--bg:#FAFAFA;--sur:#FFFFFF;--sur2:#F0F0F0;--ink:#111111;--muted:#3D3D3D;--faint:#5F5F5F;--acc:#111111;--onacc:#FAFAFA;--line:rgba(17, 17, 17, 0.18);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+</button><button class="cA" style="--bg:#FAF6F5;--sur:#FFFFFF;--sur2:#F4EEEE;--ink:#2A2226;--muted:#5A4A52;--faint:#7B6670;--acc:#8A4A64;--onacc:#FFFFFF;--line:rgba(42, 34, 38, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button><button class="cA on" style="--bg:#F1F1F6;--sur:#FFFFFF;--sur2:#E7E8F0;--ink:#21222C;--muted:#4B4D5E;--faint:#6C6F84;--acc:#B0574F;--onacc:#FFFFFF;--line:rgba(33, 34, 44, 0.10);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="spunta" aria-hidden="true"><svg viewBox="0 0 20 20" width="13" height="13"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="meta"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cA" style="--bg:#FBF5F4;--sur:#FFFFFF;--sur2:#F3E9E7;--ink:#241D1F;--muted:#54464A;--faint:#7A6569;--acc:#B0574F;--onacc:#FFFFFF;--line:rgba(36, 29, 31, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Korall</span><span class="fonti">DM Sans + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#F7F2E9;--sur:#FFFDF8;--sur2:#F2EADC;--ink:#241C17;--muted:#55473D;--faint:#7B6C5F;--acc:#A8542E;--onacc:#FFFDF8;--line:rgba(36, 28, 23, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Carta</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#FBF1C7;--sur:#F9F5D7;--sur2:#EBDBB2;--ink:#282828;--muted:#504945;--faint:#665C54;--acc:#AF3A03;--onacc:#FBF1C7;--line:rgba(40, 40, 40, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Gruvbox</span><span class="fonti">IBM Plex Mono + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#FBF7F2;--sur:#FFFFFF;--sur2:#F4EBE2;--ink:#2B1A17;--muted:#5E463E;--faint:#82655A;--acc:#9A5A22;--onacc:#FFFDF9;--line:rgba(43, 26, 23, 0.10);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Wine premium</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cA" style="--bg:#F4F5F7;--sur:#FFFFFF;--sur2:#EBEDF1;--ink:#1C1F26;--muted:#454B55;--faint:#666D78;--acc:#0E7C6B;--onacc:#FFFFFF;--line:rgba(28, 31, 38, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Grafit</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cA" style="--bg:#ECEFF4;--sur:#FFFFFF;--sur2:#E5E9F0;--ink:#2E3440;--muted:#434C5E;--faint:#4C566A;--acc:#5477A3;--onacc:#FFFFFF;--line:rgba(46, 52, 64, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Nord</span><span class="fonti">DM Sans + Newsreader</span></span>
+</button><button class="cA" style="--bg:#EFF4F9;--sur:#FFFFFF;--sur2:#E6EDF5;--ink:#0F172A;--muted:#3C4A61;--faint:#5E6D84;--acc:#0369A1;--onacc:#FFFFFF;--line:rgba(15, 23, 42, 0.10);--fp:'Spectral',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Ocean</span><span class="fonti">DM Sans + Spectral</span></span>
+</button><button class="cA" style="--bg:#E1E2E7;--sur:#FFFFFF;--sur2:#D8DCEA;--ink:#3760BF;--muted:#4A5A9E;--faint:#68709A;--acc:#1A71E7;--onacc:#FFFFFF;--line:rgba(55, 96, 191, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Tokyo Night</span><span class="fonti">IBM Plex Mono + Newsreader</span></span>
+</button><button class="cA" style="--bg:#FFFBEB;--sur:#FFFFFF;--sur2:#F5F1E3;--ink:#1F1F1F;--muted:#4A4A4A;--faint:#6C664B;--acc:#644AC9;--onacc:#FFFFFF;--line:rgba(31, 31, 31, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Ametista</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cA" style="--bg:#EFF1F5;--sur:#FFFFFF;--sur2:#E6E9EF;--ink:#4C4F69;--muted:#5C5F77;--faint:#6C6F85;--acc:#8839EF;--onacc:#FFFFFF;--line:rgba(76, 79, 105, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="mini">
+      <span class="mt">la telefonata rimandata</span>
+      <span class="bar b1"></span><span class="bar b2"></span>
+      <span class="pill"></span>
+    </span>
+  </span><span class="meta"><span class="nome">Catppuccin</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button></div></div></div>
+</div>
+<p class="legenda">A sinistra in scuro, a destra in chiaro. Il titolo e l unica cosa scritta: una riga, tagliata coi puntini. Tutto il resto e forma, quindi l altezza non puo sfondare.</p>
+
+<h2>B - Aa</h2>
+<p>La differenza vera fra Korall e Korall ardesia non e il colore dell accento - e lo stesso - ma il font e la temperatura del fondo. Questa versione lo mette in prima fila: la lettera nel carattere della prosa, sotto la stessa nel carattere dell interfaccia, e una riga in accento. E il modo in cui Apple mostra i font.</p>
+<div class="fila">
+  <div class="tel"><div class="sch d"><div class="schtit">Tema</div><div class="schsub">Cambia solo come si vede l app.</div><div class="griglia"><button class="cB" style="--bg:#0B0B0C;--sur:#161618;--sur2:#1F1F22;--ink:#F5F5F7;--muted:#B8B8BE;--faint:#86868B;--acc:#F5F5F7;--onacc:#1D1D1F;--line:rgba(255, 255, 255, 0.12);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cB" style="--bg:#0F0F0F;--sur:#161616;--sur2:#1C1C1C;--ink:#EDEDED;--muted:#B0B0B0;--faint:#828282;--acc:#EDEDED;--onacc:#0A0A0A;--line:rgba(237, 237, 237, 0.16);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+</button><button class="cB" style="--bg:#1B161A;--sur:#241E23;--sur2:#2D262C;--ink:#F0E7EA;--muted:#C9B6BE;--faint:#9E8C94;--acc:#D9A3B4;--onacc:#241118;--line:rgba(240, 231, 234, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button><button class="cB on" style="--bg:#21222C;--sur:#282A36;--sur2:#343746;--ink:#F8F8F2;--muted:#BFC0CC;--faint:#9092A4;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="spunta" aria-hidden="true"><svg viewBox="0 0 20 20" width="13" height="13"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="meta"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cB" style="--bg:#1E1B1D;--sur:#262124;--sur2:#332C30;--ink:#F6EFEF;--muted:#CBBFC1;--faint:#94878B;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Korall</span><span class="fonti">DM Sans + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#1A1714;--sur:#221E1A;--sur2:#2A251F;--ink:#EFE7DA;--muted:#C0B2A0;--faint:#968878;--acc:#D08A5A;--onacc:#16120F;--line:rgba(239, 231, 218, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Carta</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#282828;--sur:#3C3836;--sur2:#504945;--ink:#FBF1C7;--muted:#D5C4A1;--faint:#B0A28B;--acc:#FE8019;--onacc:#2A1403;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Gruvbox</span><span class="fonti">IBM Plex Mono + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#0E0709;--sur:#1D1013;--sur2:#241418;--ink:#F4E7DE;--muted:#CDB7AE;--faint:#9A8279;--acc:#E3A15F;--onacc:#1A0E0F;--line:rgba(255, 229, 214, 0.075);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Wine premium</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cB" style="--bg:#1C1F26;--sur:#262B34;--sur2:#2E343E;--ink:#E8EAED;--muted:#BFC0CC;--faint:#8D949F;--acc:#2DE1C2;--onacc:#10221F;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Grafit</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cB" style="--bg:#2E3440;--sur:#3B4252;--sur2:#434C5E;--ink:#ECEFF4;--muted:#D8DEE9;--faint:#A7B0C0;--acc:#88C0D0;--onacc:#12222A;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Nord</span><span class="fonti">DM Sans + Newsreader</span></span>
+</button><button class="cB" style="--bg:#0F172A;--sur:#1B2438;--sur2:#273349;--ink:#E2E8F0;--muted:#C0CADB;--faint:#7F8DA7;--acc:#38BDF8;--onacc:#04202E;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Ocean</span><span class="fonti">DM Sans + Spectral</span></span>
+</button><button class="cB" style="--bg:#1A1B26;--sur:#24283B;--sur2:#2F3549;--ink:#C0CAF5;--muted:#A9B1D6;--faint:#888FB4;--acc:#7AA2F7;--onacc:#0B1220;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Tokyo Night</span><span class="fonti">IBM Plex Mono + Newsreader</span></span>
+</button><button class="cB" style="--bg:#282A36;--sur:#343746;--sur2:#414458;--ink:#F8F8F2;--muted:#C4C6D4;--faint:#9FA1B5;--acc:#BD93F9;--onacc:#17102A;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Ametista</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#24273A;--sur:#303446;--sur2:#3E4459;--ink:#CAD3F5;--muted:#B8C0E0;--faint:#989EB4;--acc:#C6A0F6;--onacc:#1B0F2B;--line:rgba(255, 255, 255, 0.07);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Catppuccin</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button></div></div></div>
+  <div class="tel"><div class="sch l"><div class="schtit">Tema</div><div class="schsub">Cambia solo come si vede l app.</div><div class="griglia"><button class="cB" style="--bg:#FFFFFF;--sur:#F5F5F7;--sur2:#EBEBEF;--ink:#1D1D1F;--muted:#494950;--faint:#6E6E73;--acc:#1D1D1F;--onacc:#FFFFFF;--line:rgba(0, 0, 0, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cB" style="--bg:#FAFAFA;--sur:#FFFFFF;--sur2:#F0F0F0;--ink:#111111;--muted:#3D3D3D;--faint:#5F5F5F;--acc:#111111;--onacc:#FAFAFA;--line:rgba(17, 17, 17, 0.18);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+</button><button class="cB" style="--bg:#FAF6F5;--sur:#FFFFFF;--sur2:#F4EEEE;--ink:#2A2226;--muted:#5A4A52;--faint:#7B6670;--acc:#8A4A64;--onacc:#FFFFFF;--line:rgba(42, 34, 38, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button><button class="cB on" style="--bg:#F1F1F6;--sur:#FFFFFF;--sur2:#E7E8F0;--ink:#21222C;--muted:#4B4D5E;--faint:#6C6F84;--acc:#B0574F;--onacc:#FFFFFF;--line:rgba(33, 34, 44, 0.10);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="spunta" aria-hidden="true"><svg viewBox="0 0 20 20" width="13" height="13"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="meta"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cB" style="--bg:#FBF5F4;--sur:#FFFFFF;--sur2:#F3E9E7;--ink:#241D1F;--muted:#54464A;--faint:#7A6569;--acc:#B0574F;--onacc:#FFFFFF;--line:rgba(36, 29, 31, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Korall</span><span class="fonti">DM Sans + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#F7F2E9;--sur:#FFFDF8;--sur2:#F2EADC;--ink:#241C17;--muted:#55473D;--faint:#7B6C5F;--acc:#A8542E;--onacc:#FFFDF8;--line:rgba(36, 28, 23, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Carta</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#FBF1C7;--sur:#F9F5D7;--sur2:#EBDBB2;--ink:#282828;--muted:#504945;--faint:#665C54;--acc:#AF3A03;--onacc:#FBF1C7;--line:rgba(40, 40, 40, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Gruvbox</span><span class="fonti">IBM Plex Mono + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#FBF7F2;--sur:#FFFFFF;--sur2:#F4EBE2;--ink:#2B1A17;--muted:#5E463E;--faint:#82655A;--acc:#9A5A22;--onacc:#FFFDF9;--line:rgba(43, 26, 23, 0.10);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Wine premium</span><span class="fonti">Inter + Spectral</span></span>
+</button><button class="cB" style="--bg:#F4F5F7;--sur:#FFFFFF;--sur2:#EBEDF1;--ink:#1C1F26;--muted:#454B55;--faint:#666D78;--acc:#0E7C6B;--onacc:#FFFFFF;--line:rgba(28, 31, 38, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Grafit</span><span class="fonti">Inter + Newsreader</span></span>
+</button><button class="cB" style="--bg:#ECEFF4;--sur:#FFFFFF;--sur2:#E5E9F0;--ink:#2E3440;--muted:#434C5E;--faint:#4C566A;--acc:#5477A3;--onacc:#FFFFFF;--line:rgba(46, 52, 64, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Nord</span><span class="fonti">DM Sans + Newsreader</span></span>
+</button><button class="cB" style="--bg:#EFF4F9;--sur:#FFFFFF;--sur2:#E6EDF5;--ink:#0F172A;--muted:#3C4A61;--faint:#5E6D84;--acc:#0369A1;--onacc:#FFFFFF;--line:rgba(15, 23, 42, 0.10);--fp:'Spectral',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Ocean</span><span class="fonti">DM Sans + Spectral</span></span>
+</button><button class="cB" style="--bg:#E1E2E7;--sur:#FFFFFF;--sur2:#D8DCEA;--ink:#3760BF;--muted:#4A5A9E;--faint:#68709A;--acc:#1A71E7;--onacc:#FFFFFF;--line:rgba(55, 96, 191, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Tokyo Night</span><span class="fonti">IBM Plex Mono + Newsreader</span></span>
+</button><button class="cB" style="--bg:#FFFBEB;--sur:#FFFFFF;--sur2:#F5F1E3;--ink:#1F1F1F;--muted:#4A4A4A;--faint:#6C664B;--acc:#644AC9;--onacc:#FFFFFF;--line:rgba(31, 31, 31, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Ametista</span><span class="fonti">Inter + EB Garamond</span></span>
+</button><button class="cB" style="--bg:#EFF1F5;--sur:#FFFFFF;--sur2:#E6E9EF;--ink:#4C4F69;--muted:#5C5F77;--faint:#6C6F85;--acc:#8839EF;--onacc:#FFFFFF;--line:rgba(76, 79, 105, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="tile">
+    <span class="aa">Aa</span>
+    <span class="aau">Aa</span>
+    <span class="rigaacc"></span>
+  </span><span class="meta"><span class="nome">Catppuccin</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+</button></div></div></div>
+</div>
+<p class="legenda">Si capisce al volo il carattere; si capisce meno come sara la schermata vera.</p>
+
+<h2>C - Le righe</h2>
+<p>Non una griglia ma un elenco, come le righe di Impostazioni. Quadratino coi tre colori (fondo, scheda, accento), nome, caratteri, spunta a destra. Quattordici righe si scorrono in un secondo.</p>
+<div class="fila">
+  <div class="tel"><div class="sch d"><div class="schtit">Tema</div><div class="schsub">Cambia solo come si vede l app.</div><div class="elenco"><button class="cC" style="--bg:#0B0B0C;--sur:#161618;--sur2:#1F1F22;--ink:#F5F5F7;--muted:#B8B8BE;--faint:#86868B;--acc:#F5F5F7;--onacc:#1D1D1F;--line:rgba(255, 255, 255, 0.12);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#0F0F0F;--sur:#161616;--sur2:#1C1C1C;--ink:#EDEDED;--muted:#B0B0B0;--faint:#828282;--acc:#EDEDED;--onacc:#0A0A0A;--line:rgba(237, 237, 237, 0.16);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+  
+</button><button class="cC" style="--bg:#1B161A;--sur:#241E23;--sur2:#2D262C;--ink:#F0E7EA;--muted:#C9B6BE;--faint:#9E8C94;--acc:#D9A3B4;--onacc:#241118;--line:rgba(240, 231, 234, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+  
+</button><button class="cC on" style="--bg:#21222C;--sur:#282A36;--sur2:#343746;--ink:#F8F8F2;--muted:#BFC0CC;--faint:#9092A4;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+  <span class="ok"><span class="spunta" aria-hidden="true"><svg viewBox="0 0 20 20" width="13" height="13"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+</button><button class="cC" style="--bg:#1E1B1D;--sur:#262124;--sur2:#332C30;--ink:#F6EFEF;--muted:#CBBFC1;--faint:#94878B;--acc:#FF8A8A;--onacc:#2B1214;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Korall</span><span class="fonti">DM Sans + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#1A1714;--sur:#221E1A;--sur2:#2A251F;--ink:#EFE7DA;--muted:#C0B2A0;--faint:#968878;--acc:#D08A5A;--onacc:#16120F;--line:rgba(239, 231, 218, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Carta</span><span class="fonti">Inter + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#282828;--sur:#3C3836;--sur2:#504945;--ink:#FBF1C7;--muted:#D5C4A1;--faint:#B0A28B;--acc:#FE8019;--onacc:#2A1403;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Gruvbox</span><span class="fonti">IBM Plex Mono + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#0E0709;--sur:#1D1013;--sur2:#241418;--ink:#F4E7DE;--muted:#CDB7AE;--faint:#9A8279;--acc:#E3A15F;--onacc:#1A0E0F;--line:rgba(255, 229, 214, 0.075);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Wine premium</span><span class="fonti">Inter + Spectral</span></span>
+  
+</button><button class="cC" style="--bg:#1C1F26;--sur:#262B34;--sur2:#2E343E;--ink:#E8EAED;--muted:#BFC0CC;--faint:#8D949F;--acc:#2DE1C2;--onacc:#10221F;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Grafit</span><span class="fonti">Inter + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#2E3440;--sur:#3B4252;--sur2:#434C5E;--ink:#ECEFF4;--muted:#D8DEE9;--faint:#A7B0C0;--acc:#88C0D0;--onacc:#12222A;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Nord</span><span class="fonti">DM Sans + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#0F172A;--sur:#1B2438;--sur2:#273349;--ink:#E2E8F0;--muted:#C0CADB;--faint:#7F8DA7;--acc:#38BDF8;--onacc:#04202E;--line:rgba(255, 255, 255, 0.07);--fp:'Spectral',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Ocean</span><span class="fonti">DM Sans + Spectral</span></span>
+  
+</button><button class="cC" style="--bg:#1A1B26;--sur:#24283B;--sur2:#2F3549;--ink:#C0CAF5;--muted:#A9B1D6;--faint:#888FB4;--acc:#7AA2F7;--onacc:#0B1220;--line:rgba(255, 255, 255, 0.07);--fp:'Newsreader',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Tokyo Night</span><span class="fonti">IBM Plex Mono + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#282A36;--sur:#343746;--sur2:#414458;--ink:#F8F8F2;--muted:#C4C6D4;--faint:#9FA1B5;--acc:#BD93F9;--onacc:#17102A;--line:rgba(255, 255, 255, 0.07);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Ametista</span><span class="fonti">Inter + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#24273A;--sur:#303446;--sur2:#3E4459;--ink:#CAD3F5;--muted:#B8C0E0;--faint:#989EB4;--acc:#C6A0F6;--onacc:#1B0F2B;--line:rgba(255, 255, 255, 0.07);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Catppuccin</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+  
+</button></div></div></div>
+  <div class="tel"><div class="sch l"><div class="schtit">Tema</div><div class="schsub">Cambia solo come si vede l app.</div><div class="elenco"><button class="cC" style="--bg:#FFFFFF;--sur:#F5F5F7;--sur2:#EBEBEF;--ink:#1D1D1F;--muted:#494950;--faint:#6E6E73;--acc:#1D1D1F;--onacc:#FFFFFF;--line:rgba(0, 0, 0, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Minimal</span><span class="fonti">Inter + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#FAFAFA;--sur:#FFFFFF;--sur2:#F0F0F0;--ink:#111111;--muted:#3D3D3D;--faint:#5F5F5F;--acc:#111111;--onacc:#FAFAFA;--line:rgba(17, 17, 17, 0.18);--fp:'IBM Plex Mono',ui-monospace,Menlo,monospace;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Macchina da scrivere</span><span class="fonti">IBM Plex Mono + IBM Plex Mono</span></span>
+  
+</button><button class="cC" style="--bg:#FAF6F5;--sur:#FFFFFF;--sur2:#F4EEEE;--ink:#2A2226;--muted:#5A4A52;--faint:#7B6670;--acc:#8A4A64;--onacc:#FFFFFF;--line:rgba(42, 34, 38, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Malva</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+  
+</button><button class="cC on" style="--bg:#F1F1F6;--sur:#FFFFFF;--sur2:#E7E8F0;--ink:#21222C;--muted:#4B4D5E;--faint:#6C6F84;--acc:#B0574F;--onacc:#FFFFFF;--line:rgba(33, 34, 44, 0.10);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Korall ardesia</span><span class="fonti">Inter + Spectral</span></span>
+  <span class="ok"><span class="spunta" aria-hidden="true"><svg viewBox="0 0 20 20" width="13" height="13"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+</button><button class="cC" style="--bg:#FBF5F4;--sur:#FFFFFF;--sur2:#F3E9E7;--ink:#241D1F;--muted:#54464A;--faint:#7A6569;--acc:#B0574F;--onacc:#FFFFFF;--line:rgba(36, 29, 31, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Korall</span><span class="fonti">DM Sans + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#F7F2E9;--sur:#FFFDF8;--sur2:#F2EADC;--ink:#241C17;--muted:#55473D;--faint:#7B6C5F;--acc:#A8542E;--onacc:#FFFDF8;--line:rgba(36, 28, 23, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Carta</span><span class="fonti">Inter + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#FBF1C7;--sur:#F9F5D7;--sur2:#EBDBB2;--ink:#282828;--muted:#504945;--faint:#665C54;--acc:#AF3A03;--onacc:#FBF1C7;--line:rgba(40, 40, 40, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Gruvbox</span><span class="fonti">IBM Plex Mono + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#FBF7F2;--sur:#FFFFFF;--sur2:#F4EBE2;--ink:#2B1A17;--muted:#5E463E;--faint:#82655A;--acc:#9A5A22;--onacc:#FFFDF9;--line:rgba(43, 26, 23, 0.10);--fp:'Spectral',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Wine premium</span><span class="fonti">Inter + Spectral</span></span>
+  
+</button><button class="cC" style="--bg:#F4F5F7;--sur:#FFFFFF;--sur2:#EBEDF1;--ink:#1C1F26;--muted:#454B55;--faint:#666D78;--acc:#0E7C6B;--onacc:#FFFFFF;--line:rgba(28, 31, 38, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Grafit</span><span class="fonti">Inter + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#ECEFF4;--sur:#FFFFFF;--sur2:#E5E9F0;--ink:#2E3440;--muted:#434C5E;--faint:#4C566A;--acc:#5477A3;--onacc:#FFFFFF;--line:rgba(46, 52, 64, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Nord</span><span class="fonti">DM Sans + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#EFF4F9;--sur:#FFFFFF;--sur2:#E6EDF5;--ink:#0F172A;--muted:#3C4A61;--faint:#5E6D84;--acc:#0369A1;--onacc:#FFFFFF;--line:rgba(15, 23, 42, 0.10);--fp:'Spectral',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Ocean</span><span class="fonti">DM Sans + Spectral</span></span>
+  
+</button><button class="cC" style="--bg:#E1E2E7;--sur:#FFFFFF;--sur2:#D8DCEA;--ink:#3760BF;--muted:#4A5A9E;--faint:#68709A;--acc:#1A71E7;--onacc:#FFFFFF;--line:rgba(55, 96, 191, 0.10);--fp:'Newsreader',Georgia,serif;--fu:'IBM Plex Mono',ui-monospace,Menlo,monospace">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Tokyo Night</span><span class="fonti">IBM Plex Mono + Newsreader</span></span>
+  
+</button><button class="cC" style="--bg:#FFFBEB;--sur:#FFFFFF;--sur2:#F5F1E3;--ink:#1F1F1F;--muted:#4A4A4A;--faint:#6C664B;--acc:#644AC9;--onacc:#FFFFFF;--line:rgba(31, 31, 31, 0.10);--fp:'EB Garamond',Georgia,serif;--fu:'Inter',-apple-system,system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Ametista</span><span class="fonti">Inter + EB Garamond</span></span>
+  
+</button><button class="cC" style="--bg:#EFF1F5;--sur:#FFFFFF;--sur2:#E6E9EF;--ink:#4C4F69;--muted:#5C5F77;--faint:#6C6F85;--acc:#8839EF;--onacc:#FFFFFF;--line:rgba(76, 79, 105, 0.10);--fp:'Cormorant Garamond',Georgia,serif;--fu:'DM Sans',system-ui,sans-serif">
+  <span class="quad"><i class="q1"></i><i class="q2"></i><i class="q3"></i></span>
+  <span class="meta"><span class="nome">Catppuccin</span><span class="fonti">DM Sans + Cormorant Garamond</span></span>
+  
+</button></div></div></div>
+</div>
+<p class="legenda">La piu veloce da scorrere e la piu difficile da sbagliare. Ma di un tema fa vedere tre colori, non l aria che avra la schermata.</p>
+
+<h2>Cosa scegli</h2>
+<div class="q">
+  <h3>F. Il disegno</h3>
+  <div class="opt"><b>F1</b><span>A - La pagina. <i>La consiglio: e l unica che risponde alla domanda vera, "come sara la mia app".</i></span></div>
+  <div class="opt"><b>F2</b><span>B - Aa.</span></div>
+  <div class="opt"><b>F3</b><span>C - Le righe.</span></div>
+  <div class="opt"><b>F4</b><span>A per la griglia, ma con dentro anche l Aa di B al posto del titolo.</span></div>
+</div>
+<div class="q">
+  <h3>G. Quante per riga sul telefono</h3>
+  <div class="opt"><b>G1</b><span>Due, come adesso. <i>Vale solo per A e B.</i></span></div>
+  <div class="opt"><b>G2</b><span>Tre, piu piccole: quattordici temi si vedono quasi tutti senza scorrere.</span></div>
+</div>
+<div class="q">
+  <h3>H. Chi lo scrive</h3>
+  <p>La schermata Tema sta in <code>src/modules/impostazioni/</code>: e un MODULO, non lo scheletro dei temi. Le regole del repo (AGENTS.md) dicono che una sessione scheletro non ci mette le mani da sola.</p>
+  <div class="opt"><b>H1</b><span>Fallo qui lo stesso: non c e nessun altra chat aperta su Impostazioni. <i>Piu veloce.</i></span></div>
+  <div class="opt"><b>H2</b><span>Apri una chat sul modulo Impostazioni e falla fare a lei, con questo mockup in mano.</span></div>
+</div>
+
+</div></body></html>

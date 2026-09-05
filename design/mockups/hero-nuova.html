@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>dayalogue - hero nuova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#F4EDE4; --muted:#D6C6B6; --faint:#A5947F;
+  --acc:#C0714B; --acc-hi:#D08A5A; --on-acc:#231409;
+  --scuro:#100B08;
+  --serif:'EB Garamond',Georgia,serif;
+  --sans:'Inter',-apple-system,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--scuro);color:var(--ink);font-family:var(--sans)}
+.eti{font:500 11px/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--faint);
+     padding:26px 24px 10px;max-width:1200px;margin:0 auto;display:block}
+
+/* ============================ comune ============================ */
+.eroe{position:relative;overflow:hidden;background:var(--scuro)}
+.foto{position:absolute;inset:0;background-image:url(../immagini/hero-camera.jpg);
+      background-size:cover;background-position:72% 50%}
+.velo{position:absolute;inset:0}
+.dentro{position:relative;max-width:1200px;margin:0 auto;padding:0 40px}
+h1{font-family:var(--serif);font-weight:400;letter-spacing:-.03em;line-height:1.02;margin:0;
+   font-size:clamp(44px,6.2vw,78px)}
+h1 span{display:block;color:var(--faint)}
+.righe{margin:26px 0 0;padding:0;list-style:none;max-width:440px}
+.righe li{font-size:15.5px;line-height:1.6;color:var(--muted);padding:9px 0 9px 20px;position:relative}
+.righe li::before{content:"";position:absolute;left:0;top:19px;width:7px;height:1.5px;background:var(--acc-hi)}
+.azioni{display:flex;align-items:center;gap:18px;margin-top:32px;flex-wrap:wrap}
+.b{display:inline-flex;align-items:center;gap:9px;background:var(--acc);color:var(--on-acc);
+   border-radius:999px;padding:14px 28px;font:600 15px/1 var(--sans);text-decoration:none;
+   letter-spacing:-.01em;box-shadow:0 12px 34px rgba(192,113,75,.28);transition:transform .16s,background .16s}
+.b:hover{background:var(--acc-hi);transform:translateY(-1px)}
+.b2{color:var(--muted);font:500 14.5px/1 var(--sans);text-decoration:none;border-bottom:1px solid rgba(214,198,182,.28);padding-bottom:3px}
+.nota{margin:18px 0 0;font-size:12.5px;color:var(--faint)}
+.tel{display:block}
+
+/* ============================ A ============================ */
+.A .foto{background-position:82% 50%}
+/* Il velo scurisce dove ci sono le parole e lascia respirare la stanza
+   dove c'e il telefono: la lampada accesa a destra e meta del motivo per
+   cui questa foto sta qui. */
+.A .velo{background:
+  linear-gradient(90deg, rgba(14,10,7,.95) 0%, rgba(14,10,7,.90) 27%, rgba(14,10,7,.66) 45%, rgba(14,10,7,.26) 66%, rgba(14,10,7,.48) 100%),
+  linear-gradient(180deg, rgba(14,10,7,.35), transparent 22%, transparent 78%, rgba(14,10,7,.5));}
+.A .dentro{display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:40px;
+           min-height:660px;padding-top:70px;padding-bottom:70px}
+.A .tel img{display:block;width:100%;max-width:390px;margin:0 auto;filter:drop-shadow(0 40px 70px rgba(0,0,0,.55))}
+
+/* ============================ B ============================ */
+.B{padding-top:76px}
+.B .foto{background-position:50% 58%}
+.B .velo{background:
+  linear-gradient(180deg, rgba(14,10,7,.90) 0%, rgba(14,10,7,.86) 34%, rgba(14,10,7,.58) 56%, rgba(14,10,7,.30) 72%, rgba(14,10,7,.62) 100%),
+  radial-gradient(70% 45% at 50% 26%, rgba(14,10,7,.55), transparent 70%)}
+.B .dentro{text-align:center;padding-bottom:0}
+.B h1{margin:0 auto}
+.B .righe{margin:26px auto 0;max-width:640px;display:grid;grid-template-columns:repeat(3,1fr);gap:0 26px;text-align:left}
+.B .righe li{font-size:14px;padding-left:0;padding-top:14px;border-top:1px solid rgba(214,198,182,.16)}
+.B .righe li::before{display:none}
+.B .azioni{justify-content:center}
+.B .tel{margin:44px auto -80px;max-width:340px}
+.B .tel img{display:block;width:100%;filter:drop-shadow(0 50px 80px rgba(0,0,0,.6))}
+
+@media (max-width:820px){
+  .dentro{padding:0 22px}
+  .A .dentro{grid-template-columns:1fr;min-height:0;padding-top:56px;padding-bottom:0;text-align:center}
+  .A .righe{margin-left:auto;margin-right:auto;text-align:left}
+  .A .azioni{justify-content:center}
+  .A .tel{margin:38px auto -60px;max-width:290px}
+  .B .righe{grid-template-columns:1fr}
+}
+
+.coda{max-width:820px;margin:0 auto;padding:70px 24px 120px}
+.coda h2{font-family:var(--serif);font-weight:400;font-size:30px;letter-spacing:-.02em;margin:46px 0 10px}
+.coda .pre{color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 14px}
+.coda code{font:13px ui-monospace,Menlo,monospace;color:var(--acc-hi)}
+.it{margin:0;padding-left:20px;color:var(--muted);font-size:15.5px;line-height:1.65}
+.it li{margin:8px 0}
+.q{background:rgba(255,255,255,.035);border:1px solid rgba(214,198,182,.14);border-left:3px solid var(--acc);border-radius:14px;padding:18px 20px;margin:0 0 14px}
+.q h3{margin:0 0 8px;font-size:17px;font-weight:600}
+.opt{display:flex;gap:11px;padding:9px 0;border-top:1px solid rgba(214,198,182,.12)}
+.opt b{color:var(--acc-hi);font:14px ui-monospace,Menlo,monospace;flex:0 0 26px}
+.opt span{color:var(--muted);font-size:15px}
+.opt i{color:var(--faint);font-style:normal}
+</style></head><body>
+
+<span class="eti">Variante A - foto piena, testo a sinistra, telefono a destra</span>
+<section class="eroe A">
+  <div class="foto"></div><div class="velo"></div>
+  <div class="dentro">
+    <div>
+      <h1>Tell your day.<span>It writes the rest.</span></h1>
+      <ul class="righe">
+        <li>Two minutes out loud, before you sleep. No blank page, no prompts.</li>
+        <li>It transcribes word for word, finds the headline, and keeps your people, plans and memories in order.</li>
+        <li>Month after month, it becomes a book you actually want to read.</li>
+      </ul>
+      <div class="azioni">
+        <a class="b" href="#">Get started</a>
+        <a class="b2" href="#">Keep it on this device only</a>
+      </div>
+      <p class="nota">Free to write and to read back. No card, no ads.</p>
+    </div>
+    <div class="tel"><img src="../immagini/hero-telefono.png" alt="dayalogue on iPhone"></div>
+  </div>
+</section>
+
+<span class="eti">Variante B - titolo al centro, telefono che entra nella pagina</span>
+<section class="eroe B">
+  <div class="foto"></div><div class="velo"></div>
+  <div class="dentro">
+    <h1>Tell your day.<span>It writes the rest.</span></h1>
+    <ul class="righe">
+      <li>Two minutes out loud, before you sleep. No blank page, no prompts.</li>
+      <li>It transcribes, finds the headline, and sorts people, plans and memories.</li>
+      <li>Month after month, it becomes a book you actually want to read.</li>
+    </ul>
+    <div class="azioni">
+      <a class="b" href="#">Get started</a>
+      <a class="b2" href="#">Keep it on this device only</a>
+    </div>
+    <p class="nota">Free to write and to read back. No card, no ads.</p>
+    <div class="tel"><img src="../immagini/hero-telefono.png" alt="dayalogue on iPhone"></div>
+  </div>
+</section>
+
+<div class="coda">
+  <h2>Le stesse parole in italiano</h2>
+  <p class="pre">Il sito e bilingue: ogni frase vive in due lingue dentro <code>testi.ts</code>. Se approvi le tre righe, queste sono le gemelle italiane.</p>
+  <ol class="it">
+    <li>Due minuti a voce, prima di dormire. Nessuna pagina bianca, nessuna domanda a cui rispondere.</li>
+    <li>Trascrive parola per parola, trova il titolo, e tiene in ordine persone, impegni e ricordi.</li>
+    <li>Mese dopo mese diventa un libro che hai voglia di rileggere.</li>
+  </ol>
+
+  <h2>Cosa scelgo</h2>
+  <div class="q">
+    <h3>I. Quale delle due</h3>
+    <div class="opt"><b>I1</b><span>A - foto piena, testo a sinistra, telefono a destra. <i>La consiglio: la lampada accesa dietro al telefono e meta del perche quella foto funziona, e in A si vede.</i></span></div>
+    <div class="opt"><b>I2</b><span>B - titolo al centro, telefono che entra nella pagina dal basso.</span></div>
+    <div class="opt"><b>I3</b><span>A, ma senza foto: solo fondo scuro e telefono.</span></div>
+  </div>
+  <div class="q">
+    <h3>L. Il tasto</h3>
+    <div class="opt"><b>L1</b><span>"Get started" / "Inizia ora", come adesso.</span></div>
+    <div class="opt"><b>L2</b><span>"Start tonight" / "Comincia stasera". <i>Dice quando, non solo cosa.</i></span></div>
+    <div class="opt"><b>L3</b><span>Dimmi tu.</span></div>
+  </div>
+  <div class="q">
+    <h3>M. Chi la scrive</h3>
+    <p class="pre">La home sta in <code>src/modules/sito/</code>: e un modulo, come Impostazioni. Le tre righe nuove toccano <code>testi.ts</code> in due lingue, <code>home.tsx</code> e <code>styles.css</code>, e le due immagini vanno in <code>public/</code>.</p>
+    <div class="opt"><b>M1</b><span>Falla qui, come hai fatto per la schermata Tema.</span></div>
+    <div class="opt"><b>M2</b><span>Chat dedicata al modulo sito.</span></div>
+  </div>
+</div>
+</body></html>
