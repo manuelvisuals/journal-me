@@ -5,13 +5,16 @@ import { prefisso, testiDi, type Testi } from "@/modules/sito/testi";
 import { NavSito, PiedeSito } from "@/modules/sito/components/guscio";
 
 /**
- * La home di dayalogue.com, VERSIONE 2.0 (dal 6 settembre 2026, su
- * istruzioni dirette di Manuel; la precedente, del 5 settembre, e
- * congelata in home-v1.tsx su /v1 finche questa non e approvata).
+ * LA HOME PRECEDENTE (5 settembre 2026), congelata su /v1 e /en/v1 mentre
+ * la 2.0 prende forma in home.tsx. E una copia tale e quale, raggiungibile
+ * dal link temporaneo nel piede: quando la 2.0 e approvata, si cancellano
+ * questo file, le due pagine src/app/v1 e src/app/en/v1, il link e la voce
+ * `piede.precedente` in testi.ts. Non e nella mappa del sito e chiede ai
+ * motori di non indicizzarla.
  *
- * Cosa cambia nella 2.0: l'eroe e chiaro, con la fotografia dell'iPhone
- * (public/sito/iphone-sera.webp, sfondo trasparente) al posto del salotto;
- * subito dopo, la giornata finita mostrata grande, con le foto.
+ * (Testo originale del file, per capire cosa faceva.)
+ * La home di dayalogue.com (mockup design/mockups/sito-v2.html, approvato
+ * da Manuel il 5 settembre 2026; il primo sito era del 31 agosto).
  *
  * COMPONENTE SERVER, senza nemmeno una riga di stato. E il punto di tutta
  * la faccenda: cio che il motore di ricerca scarica deve essere gia la
@@ -46,7 +49,7 @@ const APP_STORE_URL: string | null = null;
 
 /* -------------------------------------------------------------- foto */
 
-function Foto({ nome, className, eager = false }: { nome: string; className?: string; eager?: boolean }) {
+function Foto({ nome, className }: { nome: string; className?: string }) {
   // Fotografie statiche in public/sito, decorative: next/image non
   // aggiungerebbe niente a una pagina server con un'immagine per sezione.
   return (
@@ -56,7 +59,7 @@ function Foto({ nome, className, eager = false }: { nome: string; className?: st
       alt=""
       aria-hidden="true"
       draggable={false}
-      loading={eager ? "eager" : "lazy"}
+      loading="lazy"
       decoding="async"
       className={className}
     />
@@ -342,7 +345,7 @@ function Riquadro({ forma, t }: { forma: Testi["funzioni"]["voci"][number]["form
 
 /* ---------------------------------------------------------- la home */
 
-export function HomeSito({
+export function HomeSitoV1({
   lingua,
   altraLingua,
 }: {
@@ -359,59 +362,35 @@ export function HomeSito({
 
       <main>
         {/* ------------------------------------------------------ eroe */}
-        <section className="jm-sito2-eroe">
-          <div className="jm-sito-cont jm-sito2-eroe-in">
-            <div className="jm-sito2-eroe-t">
+        <section className="jm-sito-eroe">
+          <div className="jm-sito-cont jm-sito-eroe-in">
+            <div className="jm-sito-eroe-t">
               <h1 className="jm-sito-h1">
                 {t.eroe.titolo}
                 <br />
                 {t.eroe.titoloDue}
               </h1>
-              <p className="jm-sito2-sotto">{t.eroe.sotto}</p>
+              <p className="jm-sito-sotto">{t.eroe.sotto}</p>
               <div className="jm-sito-cta">
-                <Link href="/login" className="jm-sito-b p lg">
+                <Link href="/login" className="jm-sito-b chiaro lg">
                   {t.eroe.cta}
                 </Link>
-                <a href="#giornata" className="jm-sito-link">
+                <a href="#come" className="jm-sito-link">
                   {t.eroe.ctaSecondo}
                 </a>
               </div>
-              <p className="jm-sito2-sotto-cta">{t.eroe.sottoCta}</p>
+              <p className="jm-sito-sotto-cta">{t.eroe.sottoCta}</p>
             </div>
-            <div className="jm-sito2-eroe-foto">
-              {/* L'iPhone fotografato, con la schermata della sera. Sfondo
-                  trasparente: sta sulla carta del tema, non su un rettangolo. */}
-              <Foto nome="iphone-sera" className="telefono" eager />
-            </div>
-          </div>
-        </section>
-
-        {/* -------------------------------------------- la giornata */}
-        <section className="jm-sito2-giornata" id="giornata">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa centro">
-              <p className="jm-sito-kick">{t.giornata.etichetta}</p>
-              <h2 className="jm-sito-h2">{t.giornata.titolo}</h2>
-              <p>{t.giornata.testo}</p>
-            </div>
-            <div className="jm-sito2-giornata-dev">
-              <div className="jm-sito-dev grande">
+            <div className="jm-sito-eroe-app">
+              <div className="jm-sito-dev">
                 <SchermoOggi t={t} />
               </div>
-            </div>
-            <div className="jm-sito2-punti">
-              {t.giornata.punti.map((x) => (
-                <div key={x.titolo}>
-                  <h3>{x.titolo}</h3>
-                  <p>{x.testo}</p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
 
         {/* -------------------------------------------- tre promesse */}
-        <section className="jm-sito-promesse-sez piana">
+        <section className="jm-sito-promesse-sez">
           <div className="jm-sito-cont">
             <div className="jm-sito-promesse">
               {t.promesse.map((q) => (
@@ -698,7 +677,7 @@ export function HomeSito({
         </section>
       </main>
 
-      <PiedeSito lingua={lingua} altraLingua={altraLingua} />
+      <PiedeSito lingua={lingua} altraLingua={altraLingua} versione="v1" />
 
       {/*
         I dati strutturati: e cio che permette a Google di mostrare le
