@@ -170,8 +170,13 @@ dayalogue.
 
 ## Font
 
-I woff2 in `src/fonts/` (Inter, Newsreader, Spectral, EB Garamond, DM Sans,
-Cormorant Garamond, IBM Plex Mono) sono sotto SIL Open Font License 1.1. La
-OFL chiede che il testo della licenza viaggi insieme ai font: accanto ai woff2
-oggi NON c e, e va aggiunto. Un file `src/fonts/OFL.txt` con il testo della
-licenza e l elenco delle famiglie basta a mettere le cose a posto.
+I sette caratteri usati dai temi (Inter, Newsreader, Spectral, EB Garamond,
+DM Sans, Cormorant Garamond, IBM Plex Mono) sono sotto SIL Open Font License
+1.1. La OFL chiede che il testo della licenza e gli avvisi di copyright
+viaggino insieme ai file dei font: stanno in **`src/fonts/OFL.txt`**, accanto
+ai woff2, con il testo ufficiale del 26 febbraio 2007 copiato senza modifiche.
+
+Gli avvisi di copyright in quel file non sono trascritti a mano: sono stati
+letti dentro i woff2, dalla tabella dei nomi di ognuno. Se un giorno si
+aggiunge o si sostituisce un font, si rilegge il suo avviso dal file nuovo e
+lo si aggiunge li.

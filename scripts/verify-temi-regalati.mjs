@@ -22,7 +22,8 @@
 //  6. DEFAULT_THEME_ID non e cambiato: i temi regalati si aggiungono, non
 //     prendono il posto del tema di fabbrica;
 //  7. gli obblighi di licenza sono scritti: Apache 2.0 di Tokyo Night con le
-//     modifiche dichiarate, e la provenienza per esteso di Ametista.
+//     modifiche dichiarate, la provenienza per esteso di Ametista, e la OFL
+//     dei font col suo avviso di copyright accanto ai woff2.
 // Guardia PROVATA A MORDERE il 5 settembre 2026: riportato l'inkFaint scuro di
 // Nord al valore originale (#95A0B3, contrasto 3,81) il banco e uscito rosso su
 // due righe, contrasto e scostamento dalla spec; tolto "ocean" da THEMES, rosso
@@ -183,6 +184,15 @@ say(
 say(
   /Alucard/.test(lic) && /Dracula PRO/.test(lic) && /senza alcun file di licenza/.test(lic),
   "Ametista: la provenienza dei valori chiari e scritta per esteso",
+);
+
+const ofl = existsSync("src/fonts/OFL.txt") ? readFileSync("src/fonts/OFL.txt", "utf8") : "";
+const FAMIGLIE = ["Inter", "Newsreader", "Spectral", "EB Garamond", "DM Sans", "Cormorant Garamond", "IBM Plex Mono"];
+const senzaAvviso = FAMIGLIE.filter((f) => !ofl.includes(f));
+say(
+  /SIL OPEN FONT LICENSE Version 1\.1/.test(ofl) && senzaAvviso.length === 0,
+  "Font: la OFL e i sette avvisi di copyright viaggiano coi woff2 (src/fonts/OFL.txt)",
+  senzaAvviso.length ? `senza avviso: ${senzaAvviso.join(", ")}` : "",
 );
 
 console.log(`\n${pass}/${pass + fail} PASS${fail ? ` . ${fail} FAIL` : ""}`);
