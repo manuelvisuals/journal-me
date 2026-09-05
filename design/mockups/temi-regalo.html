@@ -77,7 +77,7 @@
   --c-success:#3F7355; --c-danger:#A83A3A; --c-line:rgba(36, 29, 31, 0.10);
   --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(176, 87, 79, 0.045), transparent 68%);
 }
-[data-theme="dracula"]{
+[data-theme="ametista"]{
   --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"EB Garamond",Georgia,"Times New Roman",serif;
   --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:21px;
   --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
@@ -86,14 +86,14 @@
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
   --space:1; --grain:0; --press:.94;
 }
-[data-theme="dracula"][data-mode="dark"]{
+[data-theme="ametista"][data-mode="dark"]{
   --c-bg:#21222C; --c-bg-app:#282A36; --c-surface:#343746; --c-surface-2:#414458;
   --c-ink:#F8F8F2; --c-ink-muted:#C4C6D4; --c-ink-faint:#9FA1B5;
   --c-accent:#BD93F9; --c-accent-pressed:#A681DB; --c-accent-hi:#D4A5FF; --c-on-accent:#17102A;
   --c-success:#BD93F9; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
   --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #BD93F947; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(189, 147, 249, 0.06), transparent 68%);
 }
-[data-theme="dracula"][data-mode="light"]{
+[data-theme="ametista"][data-mode="light"]{
   --c-bg:#F5F1E3; --c-bg-app:#FFFBEB; --c-surface:#FFFFFF; --c-surface-2:#F5F1E3;
   --c-ink:#1F1F1F; --c-ink-muted:#4A4A4A; --c-ink-faint:#6C664B;
   --c-accent:#644AC9; --c-accent-pressed:#5640AD; --c-accent-hi:#7657ED; --c-on-accent:#FFFFFF;
@@ -257,6 +257,8 @@ body{background:#050304;color:#F4E7DE;font-family:"Inter",system-ui,sans-serif;
 
 .wrap{max-width:1120px;margin:0 auto}
 section{scroll-margin-top:78px}
+#t01{opacity:.42}
+#t01:hover{opacity:1}
 h1{font-family:"Spectral",Georgia,serif;font-size:34px;font-weight:400;letter-spacing:-.02em;margin:44px 0 12px}
 .sommario{font-size:14px;color:#CDB7AE;line-height:1.7;max-width:760px}
 .sommario b{color:#F4E7DE;font-weight:600}
@@ -403,7 +405,7 @@ le schermate insieme.
 <div class="riquadro giallo">
   <h2>Da dove viene il tema chiaro</h2>
   <p>Cinque di queste palette hanno gia un chiaro <b>ufficiale</b>, fatto da chi le ha
-  disegnate. Li ho presi da li, non inventati: <b>Dracula</b> diventa Alucard,
+  disegnate. Li ho presi da li, non inventati: <b>Ametista</b> (ex Dracula) usa i valori di Alucard,
   <b>Tokyo Night</b> diventa Tokyo Night Day, <b>Gruvbox</b> ha il suo light da sempre,
   <b>Catppuccin</b> si chiama Latte, e <b>Nord</b> ha i due gruppi Snow Storm e Polar Night
   gia previsti nella palette. Sono i valori esatti presi dai repository ufficiali.</p>
@@ -450,7 +452,7 @@ le schermate insieme.
 
 <div class="divisore"></div>
 <section id="t01">
-  <div class="nomeTema"><span class="num">01</span>Vampire</div>
+  <div class="nomeTema"><span class="num">01</span>Vampire <span style="font-family:Inter,sans-serif;font-size:11px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:#F0736A;border:1px solid rgba(240,115,106,.4);border-radius:999px;padding:4px 11px;vertical-align:5px;margin-left:10px">Escluso da Manuel</span></div>
   <div class="scheda">
     <div><span class="et">Font</span> <b>Inter</b> per l interfaccia, <b>Spectral</b> per la prosa, a 18px</div>
     <div><span class="et">Set chiaro</span> disegnato qui</div>
@@ -723,13 +725,13 @@ le schermate insieme.
 </section>
 <div class="divisore"></div>
 <section id="t04">
-  <div class="nomeTema"><span class="num">04</span>Dracula</div>
+  <div class="nomeTema"><span class="num">04</span>Ametista</div>
   <div class="scheda">
     <div><span class="et">Font</span> <b>Inter</b> per l interfaccia, <b>EB Garamond</b> per la prosa, a 21px</div>
-    <div><span class="et">Set chiaro</span> Alucard, il chiaro ufficiale di Dracula (dracula-alucard.nvim)</div>
+    <div><span class="et">Set chiaro</span> valori di Alucard, il chiaro ufficiale di Dracula, che sta dentro Dracula PRO. Non e materiale libero: vedi SPEC-temi-regalati.md par. 4</div>
   </div>
-  <p class="intenz">EB Garamond sulla carta crema di Alucard: e il serif piu da libro dei sette, e il chiaro di Dracula e carta, non schermo. Inter tiene la UI fuori dai piedi.</p>
-  <div class="frame"><div class="win win-chiaro" data-theme="dracula" data-mode="light">
+  <p class="intenz">EB Garamond sulla carta crema: e il serif piu da libro dei sette, e il set chiaro di questo tema e carta, non schermo. Inter tiene la UI fuori dai piedi. <b>Rinominato Ametista</b> il 5 settembre 2026: la palette scura e Dracula, che e MIT e libera; quella chiara e Alucard, che libera non e, e il nome non poteva restare.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="ametista" data-mode="light">
   <div class="rail-l">
     <div class="brand">daya<span>logue</span></div>
     <div class="nav">
@@ -766,7 +768,7 @@ le schermate insieme.
     </div>
   </div>
 </div></div>
-  <div class="frame"><div class="win win-scuro" data-theme="dracula" data-mode="dark">
+  <div class="frame"><div class="win win-scuro" data-theme="ametista" data-mode="dark">
   <div class="rail-l">
     <div class="brand">daya<span>logue</span></div>
     <div class="nav">
@@ -1375,7 +1377,7 @@ le schermate insieme.
 <div class="domanda">
   <div class="q">2. Una cosa che va detta prima di scrivere il codice</div>
   <ol>
-    <li>Cinque di questi nomi - <b>Dracula</b>, <b>Tokyo Night</b>, <b>Nord</b>,
+    <li>Cinque di queste palette - <b>Ametista</b> (ex Dracula), <b>Tokyo Night</b>, <b>Nord</b>,
       <b>Gruvbox</b>, <b>Catppuccin</b> - non sono del tuo amico: sono palette pubbliche
       famose, con le loro licenze (quasi tutte MIT, cioe usabili anche in un prodotto a
       pagamento, di solito citando la licenza). Le posso verificare una per una e mettere la
