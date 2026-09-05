@@ -1298,6 +1298,10 @@ Le tre cose da ricordare:
    `.p8` (env `APPLE_IAP_KEY_ID`, `APPLE_IAP_ISSUER_ID`,
    `APPLE_IAP_PRIVATE_KEY`, messe su Vercel da Manuel con
    `chiave-apple-su-vercel.command`: il segreto non passa mai da Claude).
+   Sono in Production dal 5 settembre 2026 (la prima versione dello script
+   le "scriveva" a vuoto: `vercel env add` in background legge stdin da
+   /dev/null; ora lo script rilegge con `env ls`). Senza di esse il server
+   risponde 503 `apple_non_configurato`, mai "Apple non conosce".
 3. **I limiti del regalo e l'interruttore dell'Annuale si cambiano da
    /admin > Regalo AI**, senza deploy (tabella `regalo`, cache 30 s).
 
