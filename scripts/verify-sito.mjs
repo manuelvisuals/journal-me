@@ -1,6 +1,6 @@
 // IL SITO PUBBLICO su / e /support, e lo spostamento dell'app sotto /app
-// (mockup design/mockups/sito-seo.html, approvato da Manuel il 31 agosto
-// 2026) — porta 3100.
+// (mockup design/mockups/sito-v2.html, approvato da Manuel il 5 settembre
+// 2026; il primo, sito-seo.html, era del 31 agosto) — porta 3100.
 //
 // Cosa si prova, e perche proprio questo:
 //
@@ -28,7 +28,9 @@ import { readFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright-core";
 
-const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+// Il Chromium del sandbox; sul Mac di Manuel si passa il Chrome installato
+// con JM_CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome".
+const EXE = process.env.JM_CHROME ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = process.env.JM_BASE ?? "http://localhost:3100";
 
 const results = [];
@@ -52,7 +54,7 @@ check(
 );
 check(
   "/ ha il sottotitolo gia nell'HTML",
-  home.html.includes("Parli due minuti prima di dormire"),
+  home.html.includes("Due minuti a voce, la sera"),
 );
 check(
   "/ ha tutte e sei le domande nell'HTML",
@@ -60,8 +62,8 @@ check(
     "dayalogue e gratis?",
     "Dove finiscono le mie giornate?",
     "Chi legge quello che racconto?",
+    "E se perdo il telefono?",
     "Posso portarmi via i miei dati?",
-    "Serve internet?",
     "C'e l'app per iPhone?",
   ].every((d) => home.html.includes(d)),
 );

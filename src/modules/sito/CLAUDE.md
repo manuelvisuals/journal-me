@@ -8,7 +8,10 @@ Il sito pubblico su **dayalogue.com**: la home che spiega il prodotto e
 vive fuori dal guscio (niente splash, niente cancello, niente rail) e la
 sua unica ragione d'essere e farsi trovare e far entrare.
 
-Nato il 31 agosto 2026, mockup approvato: `design/mockups/sito-seo.html`.
+Nato il 31 agosto 2026 (mockup `design/mockups/sito-seo.html`); rifatto il
+5 settembre 2026 sul mockup `design/mockups/sito-v2.html`: si apre e basta,
+la cassaforte al centro, l'AI in regalo, le fotografie (`public/sito/`).
+Il badge App Store si accende con `APP_STORE_URL` in `components/home.tsx`.
 
 - Pagine di `src/app/` di questo modulo: `page.web.tsx`, `en/page.web.tsx`,
   `support/page.web.tsx`, `en/support/page.web.tsx`, piu `robots.ts`,

@@ -8,6 +8,11 @@ import { prefisso, testiDi } from "@/modules/sito/testi";
  * client" qui dentro e nessuno stato — quello che il motore di ricerca
  * riceve deve essere gia scritto nell'HTML, link compresi.
  *
+ * Il marchio e IL marchio dell'app (`Marchio`: il segno di public/logo.png
+ * sopra la parola in Newsreader), non una scritta a parte: il sito e la
+ * vetrina dello stesso prodotto, e chi passa da Google all'app deve
+ * riconoscere lo stesso segno.
+ *
  * Il selettore di lingua non e un menu a tendina ma due link veri, uno per
  * indirizzo: e cio che permette a Google di indicizzare le due versioni
  * come due pagine (con hreflang nei metadata) invece che come una pagina
@@ -35,8 +40,8 @@ export function NavSito({
         </Link>
         {ancore ? (
           <nav className="jm-sito-nav-l">
-            <a href="#prodotto">{t.nav.prodotto}</a>
-            <a href="#funzioni">{t.nav.funzioni}</a>
+            <a href="#come">{t.nav.come}</a>
+            <a href="#cassaforte">{t.nav.cassaforte}</a>
             <a href="#domande">{t.nav.domande}</a>
           </nav>
         ) : null}
@@ -66,7 +71,13 @@ export function NavSito({
   );
 }
 
-export function PiedeSito({ lingua }: { lingua: LinguaSito }) {
+export function PiedeSito({
+  lingua,
+  altraLingua,
+}: {
+  lingua: LinguaSito;
+  altraLingua: string;
+}) {
   const t = testiDi(lingua);
   const p = prefisso(lingua);
   return (
@@ -84,8 +95,10 @@ export function PiedeSito({ lingua }: { lingua: LinguaSito }) {
         </div>
         <div>
           <h4>{t.piede.prodotto}</h4>
-          <a href={`${p}/#funzioni`}>{t.piede.funzioni}</a>
-          <Link href={`${p}/support`}>{t.piede.assistenza}</Link>
+          <a href={`${p}/#come`}>{t.piede.come}</a>
+          <a href={`${p}/#cassaforte`}>{t.piede.cassaforte}</a>
+          <a href={`${p}/#domande`}>{t.piede.domande}</a>
+          <Link href="/app">{t.piede.apri}</Link>
         </div>
         <div>
           <h4>{t.piede.legale}</h4>
@@ -98,7 +111,8 @@ export function PiedeSito({ lingua }: { lingua: LinguaSito }) {
         <div>
           <h4>{t.piede.account}</h4>
           <Link href="/login">{t.piede.accedi}</Link>
-          <Link href="/app">{t.piede.apri}</Link>
+          <Link href={`${p}/support`}>{t.piede.assistenza}</Link>
+          <Link href={altraLingua}>{t.piede.lingua}</Link>
         </div>
       </div>
     </footer>
