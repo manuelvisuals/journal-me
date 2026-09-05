@@ -12,7 +12,9 @@
 //      server chiede ad APPLE (un App Store Server API finto che verifica il
 //      gettone ES256 firmato con la chiave di scripts/lib/apple-chiave-finta.txt)
 //      e SOLO allora il profilo diventa premium; la transazione si segna
-//      finita DOPO; compare il benvenuto premium;
+//      finita DOPO; compare il benvenuto premium; una ricevuta SCADUTA si
+//      finisce lo stesso (verdetto definitivo), altrimenti Apple la ripropone
+//      al posto di una vendita nuova;
 //   4. una ricevuta INVENTATA (transazione che Apple non conosce) NON accende
 //      premium; una transazione gia legata a un altro account risponde 409;
 //   5. il RIPRISTINO su un dispositivo nuovo riaccende premium;
@@ -67,7 +69,7 @@ const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbo
  * negozio finto. Il Supabase finto del BROWSER specchia i profili da quello
  * del SERVER: una verita sola.
  */
-async function dispositivo({ negozio = null, viewport = { width: 430, height: 900 }, seme = null } = {}) {
+async function dispositivo({ negozio = null, viewport = { width: 430, height: 900 }, seme = null, token = TOKEN } = {}) {
   const finto = new SupabaseFinto();
   finto.tabelle.profiles = [];
   const ctx = await browser.newContext({ viewport, locale: "it-IT" });
@@ -119,7 +121,7 @@ async function dispositivo({ negozio = null, viewport = { width: 430, height: 90
         ascolto.forEach((f) => f(t));
       },
     };
-  }, { negozio, token: TOKEN });
+  }, { negozio, token });
   const page = await ctx.newPage();
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error" && !/402 \(Payment Required\)|409 \(Conflict\)|404 \(Not Found\)/.test(m.text())) errors.push(m.text()); });
@@ -247,6 +249,38 @@ const NEGOZIO = {
   check("transazione di un altro account: 409 e il profilo resta free", r2.status === 409 && sb.tab("profiles").find((p) => p.user_id === ALTRO_UTENTE).plan === "free", `status ${r2.status}`);
   const r3 = await fetch(BASE + "/api/apple/verifica", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ transactionId: "2001" }) });
   check("senza account: 401 (premium e dell'account)", r3.status === 401, String(r3.status));
+}
+
+/* ================= 4b. Una ricevuta SCADUTA va chiusa lo stesso ================= */
+// 5 settembre 2026: la transazione del giorno prima, mai finita perche il
+// server aveva fallito, tornava a ogni "Compra" al posto di una vendita
+// nuova. Il verdetto definitivo del server (qui: "scaduta", plan free)
+// deve chiudere la transazione presso Apple, e il muro deve dirlo.
+{
+  apple.transazioni.set("2077", {
+    transactionId: "2077",
+    originalTransactionId: "2070",
+    productId: MENSILE,
+    bundleId: BUNDLE,
+    environment: "Sandbox",
+    purchaseDate: Date.now() - 2 * 24 * 3600 * 1000,
+    expiresDate: Date.now() - 24 * 3600 * 1000,
+    type: "Auto-Renewable Subscription",
+  });
+  sb.tab("profiles").find((p) => p.user_id === UTENTE_ID).plan = "free";
+  const SCADUTA = { jws: jwsFinto({ transactionId: "2077", originalTransactionId: "2070", productId: MENSILE, bundleId: BUNDLE }), transactionId: "2077", originalTransactionId: "2070", productId: MENSILE };
+  const { ctx, page } = await dispositivo({ negozio: { ...NEGOZIO, transazioni: [SCADUTA] } });
+  await entra(page);
+  await apriMuro(page);
+  await page.locator(".jm-wall .btn-primary").click();
+  await page.locator(".jm-wall-err, .jm-wall [role=alert]").first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+  await page.waitForTimeout(500);
+  const testo = await page.locator(".jm-wall").innerText();
+  const chiamate = await page.evaluate(() => window.__jmNegozioFinto.__chiamate);
+  check("scaduta: il muro dice che l'abbonamento e scaduto, niente benvenuto", /scaduto/i.test(testo) && (await page.locator(".jm-cong").count()) === 0, testo.slice(0, 120));
+  check("scaduta: la transazione viene FINITA lo stesso (verdetto definitivo)", chiamate.some((c) => c.m === "finisci" && c.transactionId === "2077"), JSON.stringify(chiamate.filter((c) => c.m === "finisci")));
+  check("scaduta: il piano in tasca resta free", (await page.evaluate(() => localStorage.getItem("jm.plan"))) !== "premium");
+  await ctx.close();
 }
 
 /* ================= 5. Il ripristino su un dispositivo nuovo ================= */
