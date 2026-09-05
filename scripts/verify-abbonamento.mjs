@@ -208,6 +208,33 @@ const NEGOZIO = {
   await ctx.close();
 }
 
+/* ================= 1b. Il muro e ISTANTANEO: non aspetta il server ================= */
+// 6 settembre 2026 (Manuel): la scheda restava "-,- EUR" anche 30 secondi
+// perche il muro chiedeva PRIMA /api/ospite/stato e POI i prodotti ad Apple.
+// Qui il server e lento di proposito (6 s): la scheda Mensile deve comparire
+// lo stesso entro un secondo e mezzo, dai prodotti precaricati all'avvio.
+{
+  const { ctx, page } = await dispositivo({ negozio: NEGOZIO });
+  await ctx.route("**/api/ospite/stato", async (route) => {
+    await new Promise((r) => setTimeout(r, 6000));
+    return route.continue();
+  });
+  await entra(page);
+  await page.goto(BASE + "/app/recap", { waitUntil: "domcontentloaded" });
+  const gen = page.locator(".jm-rec-vetrina .btn-primary, .jm-gen-btn").first();
+  await gen.waitFor({ state: "visible", timeout: 30_000 });
+  const chiamateAvvio = await page.evaluate(() => window.__jmNegozioFinto.__chiamate.filter((c) => c.m === "prodotti").length);
+  check("istantaneo: i prodotti sono stati chiesti ad Apple gia all'avvio, prima di aprire il muro", chiamateAvvio >= 1, String(chiamateAvvio));
+  const t0 = Date.now();
+  await gen.click();
+  await page.locator(".jm-wall-scheda[data-prodotto=mensile]").waitFor({ state: "visible", timeout: 5_000 });
+  const ms = Date.now() - t0;
+  check("istantaneo: la scheda Mensile compare senza aspettare il server lento (< 1500 ms)", ms < 1500, `${ms} ms`);
+  const testo = await page.locator(".jm-wall-scheda[data-prodotto=mensile]").innerText();
+  check("istantaneo: la scheda ha gia il prezzo vero, non il fantasma", /4,99/.test(testo) && !/—/.test(testo), testo.slice(0, 60));
+  await ctx.close();
+}
+
 /* ================= 2. Il guscio: il muro a schede ================= */
 {
   const { ctx, page, errors } = await dispositivo({ negozio: NEGOZIO });
