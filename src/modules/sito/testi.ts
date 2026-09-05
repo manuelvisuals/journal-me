@@ -146,7 +146,7 @@ const it: Testi = {
     titolo: "Racconta la giornata.",
     titoloDue: "Il resto lo scrive lui.",
     sotto:
-      "Due minuti a voce, la sera. dayalogue trascrive parola per parola, scrive titolo e sintesi, tiene in ordine persone e impegni. Mese dopo mese, ne esce un libro.",
+      "Parli due minuti. Diventa una giornata scritta, e mese dopo mese un libro.",
     cta: "Inizia ora",
     ctaSecondo: "Come funziona",
     sottoCta: "Si apre e basta. Niente account, niente carta, niente pubblicita.",
@@ -491,7 +491,7 @@ const en: Testi = {
     titolo: "Tell your day.",
     titoloDue: "It writes the rest.",
     sotto:
-      "Two minutes out loud, in the evening. dayalogue transcribes word for word, writes the headline and the summary, keeps people and tasks in order. Month after month, it becomes a book.",
+      "Talk for two minutes. It becomes a written day, and month after month a book.",
     cta: "Get started",
     ctaSecondo: "How it works",
     sottoCta: "Just open it. No account, no card, no ads.",
