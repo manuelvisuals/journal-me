@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cosa ho cambiato, esattamente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050304;color:#F4E7DE;font-family:"Inter",system-ui,sans-serif;
+  padding:0 24px 120px;-webkit-font-smoothing:antialiased}
+.testata{position:sticky;top:0;z-index:20;background:rgba(5,3,4,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,229,214,.09);margin:0 -24px 0;padding:12px 24px;
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.testata .tit{font-family:"Spectral",Georgia,serif;font-size:17px}
+.seg{display:inline-flex;gap:3px;background:#1D1013;border:1px solid rgba(255,229,214,.09);
+  border-radius:999px;padding:3px;margin-left:auto}
+.seg button{font:600 12px/1 "Inter",sans-serif;color:#8E7770;background:none;border:0;cursor:pointer;
+  height:28px;padding:0 14px;border-radius:999px}
+.seg button.on{background:rgba(227,161,95,.16);color:#E3A15F}
+.indice{font-size:12px;color:#CDB7AE}
+.indice a{color:#CDB7AE;text-decoration:none;padding:0 5px}
+.indice a:hover{color:#E3A15F}
+
+.wrap{max-width:1120px;margin:0 auto}
+section{scroll-margin-top:78px}
+h1{font-family:"Spectral",Georgia,serif;font-size:34px;font-weight:400;letter-spacing:-.02em;margin:44px 0 12px}
+.sommario{font-size:14px;color:#CDB7AE;line-height:1.7;max-width:760px}
+.sommario b{color:#F4E7DE;font-weight:600}
+.riquadro{border:1px solid rgba(255,229,214,.10);border-radius:16px;padding:20px 24px;margin:26px 0;background:#140C0E}
+.riquadro.giallo{border-color:rgba(227,161,95,.32);background:rgba(227,161,95,.06)}
+.riquadro h2{font-size:12px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:#E3A15F;margin-bottom:12px}
+.riquadro p{font-size:13.5px;color:#CDB7AE;line-height:1.75;max-width:820px}
+.riquadro p + p{margin-top:10px}
+.riquadro b{color:#F4E7DE;font-weight:600}
+.divisore{height:1px;background:rgba(255,229,214,.075);margin:46px 0}
+
+.label{font-size:11px;font-weight:650;color:#8E7770;letter-spacing:.22em;text-transform:uppercase;margin:0 0 8px}
+.nomeTema{font-family:"Spectral",Georgia,serif;font-size:26px;font-weight:400;margin-bottom:8px}
+.nomeTema .num{color:#E3A15F;font-size:15px;font-family:"Inter",sans-serif;font-weight:650;margin-right:10px;vertical-align:2px}
+.intenz{font-size:13.5px;color:#CDB7AE;line-height:1.7;max-width:820px;margin-bottom:18px}
+.intenz .no{color:#F0736A;font-weight:600}
+.frame{overflow-x:auto;padding-bottom:6px}
+.sottoschermo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;align-items:start}
+@media (max-width:900px){.sottoschermo{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{text-align:left;font-weight:400;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:#8E7770;padding:0 10px 8px 0}
+td{padding:6px 10px 6px 0;border-top:1px solid rgba(255,229,214,.075);vertical-align:middle}
+td.k{font-family:ui-monospace,Menlo,monospace;color:#CDB7AE;white-space:nowrap}
+td.v{font-family:ui-monospace,Menlo,monospace;white-space:nowrap;color:#F4E7DE}
+.quad{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,.14);
+  vertical-align:-3px;margin-right:8px}
+.ok{color:#8FCB9B}.ko{color:#F0736A}
+.freccia{color:#8E7770}
+ul{margin:8px 0 0 18px;font-size:13px;color:#CDB7AE;line-height:1.7}
+li{margin-bottom:5px}
+li b{color:#F4E7DE}
+.domanda{border-left:2px solid #E3A15F;padding:2px 0 2px 18px;margin:22px 0}
+.domanda .q{font-size:15px;color:#F4E7DE;font-weight:600;margin-bottom:10px}
+.domanda ol{margin-left:18px;font-size:13.5px;color:#CDB7AE;line-height:1.9}
+.domanda ol b{color:#F4E7DE}
+.chiusura{margin-top:40px;font-size:13.5px;color:#CDB7AE;line-height:1.75}
+
+
+.tab{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+.tab th{text-align:left;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8E7770;
+  font-weight:400;padding:0 14px 9px 0;border-bottom:1px solid rgba(255,229,214,.09)}
+.tab td{padding:11px 14px 11px 0;border-bottom:1px solid rgba(255,229,214,.06);vertical-align:top;color:#CDB7AE}
+.tab td b{color:#F4E7DE;font-weight:600}
+.si{color:#8FCB9B;font-weight:600}
+.no{color:#F0736A;font-weight:600}
+.sw{display:flex;gap:0;border-radius:8px;overflow:hidden;width:max-content;margin:10px 0 2px}
+.sw i{width:38px;height:26px;display:block}
+.scelti{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.chip{display:flex;align-items:center;gap:9px;border:1px solid rgba(255,229,214,.12);
+  border-radius:999px;padding:7px 14px 7px 8px;font-size:13px;color:#F4E7DE}
+.chip i{width:16px;height:16px;border-radius:50%;display:block}
+.chip.fuori{opacity:.4;text-decoration:line-through}
+.riquadro.rosso{border-color:rgba(240,115,106,.38);background:rgba(240,115,106,.07)}
+.riquadro.rosso h2{color:#F0736A}
+.fonti{font-size:12px;color:#8E7770;line-height:1.9;margin-top:8px}
+.fonti a{color:#CDB7AE}
+
+.add{color:#E3A15F;font-weight:600}
+.att{color:#E3A15F;font-weight:600}
+.grande{font-family:"Spectral",Georgia,serif;font-size:30px;line-height:1.35;margin:12px 0 8px;color:#F4E7DE}
+.grande b{color:#F0736A;font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Ho cambiato solo i font?</h1>
+<p class="grande"><b>No.</b> I font sono la modifica piu grossa, ma non l unica.</p>
+<p class="sommario">Ecco tutto, senza niente sotto il tappeto. Dei <b>diciotto valori</b> di ogni
+tema scuro: <b>tredici sono esattamente i suoi</b>, tre li ho cambiati, due non esistevano
+e li ho ricavati dal comportamento della sua app. Poi c e il set chiaro, che nel suo file non
+c era per niente, e la tipografia.</p>
+
+<table class="tab">
+  <tr><th>Valore</th><th>Esito</th><th>Cosa e successo</th></tr>
+  <tr><td class="k">bg</td><td class="si">Identico</td><td>Il suo <code>--panel</code></td></tr><tr><td class="k">bgApp</td><td class="si">Identico</td><td>Il suo <code>--bg</code></td></tr><tr><td class="k">surface</td><td class="si">Identico</td><td>Il suo <code>--card</code></td></tr><tr><td class="k">surface2</td><td class="si">Identico</td><td>Il suo <code>--card2</code></td></tr><tr><td class="k">ink</td><td class="si">Identico</td><td>Il suo <code>--tx</code></td></tr><tr><td class="k">inkMuted</td><td class="si">Identico</td><td>Il suo <code>--tx2</code></td></tr><tr><td class="k">inkFaint</td><td class="no">Cambiato</td><td>Alzato di due-tre punti di luminosita, tinta e saturazione ferme. Senza, tutti e dieci i temi restano fuori norma sulle didascalie</td></tr><tr><td class="k">accent</td><td class="si">Identico</td><td>Il suo <code>--neon</code></td></tr><tr><td class="k">onAccent</td><td class="si">Identico</td><td>Il suo <code>--on-neon</code></td></tr><tr><td class="k">danger</td><td class="si">Identico</td><td>Il suo <code>#F0736A</code>, uguale in tutti i temi</td></tr><tr><td class="k">line</td><td class="si">Identico</td><td>Il suo <code>rgba(255,255,255,0.07)</code></td></tr><tr><td class="k">glow</td><td class="si">Identico</td><td>L accento, come nel suo file</td></tr><tr><td class="k">warmth</td><td class="si">Identico</td><td>La sua formula, gia sviluppata da lui in rgba</td></tr><tr><td class="k">grain</td><td class="si">Identico</td><td>0, come lui</td></tr><tr><td class="k">shadow</td><td class="no">Cambiato</td><td>Lui <code>rgba(0,0,0,0.75)</code>, io <code>#000000</code>: in dayalogue shadow e un colore base e l opacita la mette il CSS. <b>Si puo rimettere il suo</b>, a schermo non cambia niente</td></tr><tr><td class="k">accentHi</td><td class="no">Cambiato</td><td>Lui: l accento al 10% di opacita. In dayalogue accentHi e il colore dei capolettera e degli stati attivi, e al 10% sarebbe invisibile. Io: l accento piu chiaro del 12%, che e esattamente il suo <code>brightness(1.12)</code> del passaggio col mouse</td></tr><tr><td class="k">accentPressed</td><td class="add">Aggiunto</td><td>Nel suo file non c e. Ricavato: accento piu scuro del 12%</td></tr><tr><td class="k">success</td><td class="add">Aggiunto</td><td>Nel suo file non c e. Nel suo codice la conferma e disegnata con l accento (<code>.ok{background:var(--neon)}</code>), quindi success = accento</td></tr>
+</table>
+
+<div class="riquadro giallo">
+  <h2>Il piu importante dei tre: inkFaint</h2>
+  <p>E il grigio delle didascalie: "218 parole", i nomi degli obiettivi spenti. Nel suo file
+  <b>tutti e dieci i temi</b> stavano sotto il minimo di legge su quel colore, fra 3,46 e 4,45
+  contro 4,50. Non e un suo errore: la sua app se la fa per se, dayalogue va sull App Store e
+  li quel numero e un requisito.</p>
+  <p>L ho alzato con una regola sola per tutti: <b>piu luminoso, stessa tinta, stessa
+  saturazione</b>, finche il numero passa. E la stessa correzione gia fatta al tema wine di
+  dayalogue. Guarda i due colori affiancati: la differenza e quasi invisibile, ed e tutta li.</p>
+  <table class="tab" style="margin-top:14px">
+    <tr><th>Tema</th><th>Suo</th><th>Mio</th></tr>
+    <tr><td>Vampire Korall</td><td class="v"><span class="quad" style="background:#8B8DA0"></span>#8B8DA0</td><td class="v"><span class="quad" style="background:#9092A4"></span>#9092A4</td></tr><tr><td>Korall</td><td class="v"><span class="quad" style="background:#8F8286"></span>#8F8286</td><td class="v"><span class="quad" style="background:#94878B"></span>#94878B</td></tr><tr><td>Dracula</td><td class="v"><span class="quad" style="background:#8E91A8"></span>#8E91A8</td><td class="v"><span class="quad" style="background:#9FA1B5"></span>#9FA1B5</td></tr><tr><td>Tokyo Night</td><td class="v"><span class="quad" style="background:#7A82AB"></span>#7A82AB</td><td class="v"><span class="quad" style="background:#888FB4"></span>#888FB4</td></tr><tr><td>Nord</td><td class="v"><span class="quad" style="background:#95A0B3"></span>#95A0B3</td><td class="v"><span class="quad" style="background:#A7B0C0"></span>#A7B0C0</td></tr><tr><td>Gruvbox</td><td class="v"><span class="quad" style="background:#A08F73"></span>#A08F73</td><td class="v"><span class="quad" style="background:#B0A28B"></span>#B0A28B</td></tr><tr><td>Catppuccin</td><td class="v"><span class="quad" style="background:#8087A2"></span>#8087A2</td><td class="v"><span class="quad" style="background:#989EB4"></span>#989EB4</td></tr><tr><td>Grafit</td><td class="v"><span class="quad" style="background:#7A828F"></span>#7A828F</td><td class="v"><span class="quad" style="background:#8D949F"></span>#8D949F</td></tr><tr><td>Ocean</td><td class="v"><span class="quad" style="background:#7C8AA5"></span>#7C8AA5</td><td class="v"><span class="quad" style="background:#7F8DA7"></span>#7F8DA7</td></tr>
+  </table>
+</div>
+
+<div class="riquadro">
+  <h2>La tipografia: quella si, rifatta da capo</h2>
+  <p>La sua app usa <b>San Francisco</b> per tutto, con corpi da scrivania densa: prosa a
+  12,5px, titoli a 13px. In dayalogue quei ruoli non scendono sotto 13, 15 e 14, e ogni tema
+  usa <b>un serif per il testo scritto</b>, perche una giornata la si rilegge. Nessuno dei suoi
+  valori tipografici era quindi utilizzabile: non e gusto mio, e che non entrano nei limiti.</p>
+  <p>Della sua tipografia ho tenuto intatti i <b>raggi degli angoli</b> (8, 12, 16, 18, pillola
+  99) e il <b>feedback al tocco</b> (0,94). Quelli sono suoi e sono passati come stavano.</p>
+</div>
+
+<div class="riquadro">
+  <h2>Il set chiaro: non e "cambiato", non esisteva</h2>
+  <p>Il suo file dice <code>light: null</code> per tutti e dieci, e lo dichiara apertamente.
+  I dieci set chiari sono tutti miei o presi dalle palette ufficiali: nessuno di quei valori
+  viene da lui, e nessuno e stato ricavato invertendo i suoi.</p>
+</div>
+
+<div class="divisore"></div>
+
+<h1>Alucard: cambiargli nome non risolve</h1>
+<div class="riquadro rosso">
+  <p>Mi hai detto di tenerlo e cambiargli nome. Devo dirti che <b>cosi non si risolve</b>, e
+  preferisco dirtelo adesso invece che dopo.</p>
+  <p>Il problema non e il nome "Alucard": e che <b>quei colori sono la merce</b> di un prodotto
+  che qualcuno vende. Cambiare l etichetta non cambia cosa c e nella scatola, la rende solo
+  piu difficile da riconoscere. Ed e la differenza fra "abbiamo usato una palette pubblica" e
+  "abbiamo preso una cosa a pagamento e le abbiamo tolto il nome".</p>
+  <p>Va detto anche il rovescio, perche il quadro sia onesto: <b>un elenco di numeri
+  esadecimali, di per se, quasi certamente non e coperto da copyright</b> - il copyright
+  protegge il codice, non la lista dei colori. Il rischio pratico e probabilmente piccolo.
+  Ma dayalogue va sull App Store a pagamento, e la domanda non e solo "posso": e anche "voglio
+  che il mio prodotto stia in piedi cosi". Non sono un avvocato, e questo e solo quello che
+  dicono i file di licenza, letti ieri.</p>
+  <p>Il tema <b>scuro</b> di Dracula e MIT ed e libero: quello resta in ogni caso. In
+  discussione c e solo la meta chiara.</p>
+</div>
+
+<div class="domanda">
+  <div class="q">Dimmi tu, ma adesso con questa informazione in piu</div>
+  <ol>
+    <li><b>Ti disegno il chiaro di Dracula</b> partendo dalla sua palette scura, che e libera,
+      come ho fatto per Korall, Grafit e Ocean. Mezz ora. Il tema resta, si chiama come vuoi
+      tu, e non c e piu niente di cui discutere.</li>
+    <li><b>Tengo Alucard e cambio nome</b>, come mi avevi detto. Lo faccio se me lo confermi
+      adesso che sai che il nome non era il problema.</li>
+    <li><b>Fuori Dracula</b>: restano otto temi.</li>
+  </ol>
+</div>
+
+<div class="divisore"></div>
+
+<h1>Tutti i nomi</h1>
+<p class="sommario">Se entrano tutti e nove, dayalogue passa da cinque a <b>quattordici temi</b>.</p>
+
+<div class="label" style="margin-top:24px">I cinque che hai gia</div>
+<table class="tab"><tr><th>id</th><th>Nome</th><th>Font</th><th>Da dove viene</th></tr><tr><td class="k">minimal</td><td><b>Minimal</b></td><td>Inter + Newsreader</td><td>tuo, gia nell app</td></tr><tr><td class="k">wine</td><td><b>Wine premium</b></td><td>Inter + Spectral</td><td>tuo, gia nell app</td></tr><tr><td class="k">carta</td><td><b>Carta</b></td><td>Inter + EB Garamond</td><td>tuo, gia nell app</td></tr><tr><td class="k">malva</td><td><b>Malva</b></td><td>DM Sans + Cormorant Garamond</td><td>tuo, gia nell app</td></tr><tr><td class="k">macchina</td><td><b>Macchina</b></td><td>IBM Plex Mono</td><td>tuo, gia nell app</td></tr></table>
+
+<div class="label" style="margin-top:32px">I nove nuovi</div>
+<table class="tab"><tr><th>id</th><th>Nome</th><th>Font</th><th>Note</th></tr><tr><td class="k">vampkor</td><td><span class="quad" style="background:#FF8A8A"></span><b>Vampire Korall</b></td><td>Inter + Spectral</td><td><span class='att'>nome da rivedere</span></td></tr><tr><td class="k">korall</td><td><span class="quad" style="background:#FF8A8A"></span><b>Korall</b></td><td>DM Sans + EB Garamond</td><td>regalo del tuo amico</td></tr><tr><td class="k">ametista</td><td><span class="quad" style="background:#BD93F9"></span><b>Ametista</b></td><td>Inter + EB Garamond</td><td><span class='att'>ex Dracula, rinominato</span></td></tr><tr><td class="k">tokyo</td><td><span class="quad" style="background:#7AA2F7"></span><b>Tokyo Night</b></td><td>IBM Plex Mono + Newsreader</td><td>regalo del tuo amico</td></tr><tr><td class="k">nord</td><td><span class="quad" style="background:#88C0D0"></span><b>Nord</b></td><td>DM Sans + Newsreader</td><td>regalo del tuo amico</td></tr><tr><td class="k">gruvbox</td><td><span class="quad" style="background:#FE8019"></span><b>Gruvbox</b></td><td>IBM Plex Mono + EB Garamond</td><td>regalo del tuo amico</td></tr><tr><td class="k">catppuccin</td><td><span class="quad" style="background:#C6A0F6"></span><b>Catppuccin</b></td><td>DM Sans + Cormorant Garamond</td><td>regalo del tuo amico</td></tr><tr><td class="k">grafit</td><td><span class="quad" style="background:#2DE1C2"></span><b>Grafit</b></td><td>Inter + Newsreader</td><td>regalo del tuo amico</td></tr><tr><td class="k">ocean</td><td><span class="quad" style="background:#38BDF8"></span><b>Ocean</b></td><td>DM Sans + Spectral</td><td>regalo del tuo amico</td></tr></table>
+
+<div class="riquadro" style="margin-top:28px">
+  <h2>Due nomi hanno una domanda aperta</h2>
+  <p><b>Dracula</b>: <b>chiuso.</b> Il 5 settembre 2026 hai scelto di tenere i valori di Alucard e rinominare: il tema si chiama <b>Ametista</b>. La provenienza e scritta per esteso in <code>SPEC-temi-regalati.md</code> paragrafo 4.</p>
+  <p><b>Vampire Korall</b>: il suo autore lo definisce come "Vampire con l accento ammorbidito",
+  e Vampire l hai escluso. Il tema funziona benissimo da solo, ma il nome indica un fratello che
+  non c e. Se vuoi, quando scriviamo il codice gli diamo un nome suo: e una riga.</p>
+</div>
+
+</div>
+</body>
+</html>

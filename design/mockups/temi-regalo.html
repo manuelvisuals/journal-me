@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>I dieci temi, chiaro e scuro, con la loro tipografia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=Spectral:wght@300;400;500;600&family=EB+Garamond:wght@400;500;600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Cormorant+Garamond:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+[data-theme="vampire"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Spectral",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:18px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="vampire"][data-mode="dark"]{
+  --c-bg:#191A21; --c-bg-app:#21222C; --c-surface:#282A36; --c-surface-2:#343746;
+  --c-ink:#F8F8F2; --c-ink-muted:#BFC0CC; --c-ink-faint:#9092A4;
+  --c-accent:#FF5555; --c-accent-pressed:#E04B4B; --c-accent-hi:#FF5F5F; --c-on-accent:#1A0E0E;
+  --c-success:#FF5555; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #FF555547; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(255, 85, 85, 0.06), transparent 68%);
+}
+[data-theme="vampire"][data-mode="light"]{
+  --c-bg:#DEDFE8; --c-bg-app:#F1F1F6; --c-surface:#FFFFFF; --c-surface-2:#E7E8F0;
+  --c-ink:#21222C; --c-ink-muted:#4B4D5E; --c-ink-faint:#6C6F84;
+  --c-accent:#C0392B; --c-accent-pressed:#A53125; --c-accent-hi:#E34333; --c-on-accent:#FFFFFF;
+  --c-success:#1F7A4C; --c-danger:#B3261E; --c-line:rgba(33, 34, 44, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(192, 57, 43, 0.045), transparent 68%);
+}
+[data-theme="vampkor"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Spectral",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:18px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="vampkor"][data-mode="dark"]{
+  --c-bg:#191A21; --c-bg-app:#21222C; --c-surface:#282A36; --c-surface-2:#343746;
+  --c-ink:#F8F8F2; --c-ink-muted:#BFC0CC; --c-ink-faint:#9092A4;
+  --c-accent:#FF8A8A; --c-accent-pressed:#E07979; --c-accent-hi:#FF9B9B; --c-on-accent:#2B1214;
+  --c-success:#FF8A8A; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #FF8A8A47; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(255, 138, 138, 0.06), transparent 68%);
+}
+[data-theme="vampkor"][data-mode="light"]{
+  --c-bg:#DEDFE8; --c-bg-app:#F1F1F6; --c-surface:#FFFFFF; --c-surface-2:#E7E8F0;
+  --c-ink:#21222C; --c-ink-muted:#4B4D5E; --c-ink-faint:#6C6F84;
+  --c-accent:#B0574F; --c-accent-pressed:#974B44; --c-accent-hi:#D0675D; --c-on-accent:#FFFFFF;
+  --c-success:#1F7A4C; --c-danger:#B3261E; --c-line:rgba(33, 34, 44, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(176, 87, 79, 0.045), transparent 68%);
+}
+[data-theme="korall"]{
+  --f-ui:"DM Sans",system-ui,-apple-system,sans-serif; --f-prose:"EB Garamond",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:21px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="korall"][data-mode="dark"]{
+  --c-bg:#171416; --c-bg-app:#1E1B1D; --c-surface:#262124; --c-surface-2:#332C30;
+  --c-ink:#F6EFEF; --c-ink-muted:#CBBFC1; --c-ink-faint:#94878B;
+  --c-accent:#FF8A8A; --c-accent-pressed:#E07979; --c-accent-hi:#FF9B9B; --c-on-accent:#2B1214;
+  --c-success:#FF8A8A; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #FF8A8A47; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(255, 138, 138, 0.06), transparent 68%);
+}
+[data-theme="korall"][data-mode="light"]{
+  --c-bg:#EEE3E1; --c-bg-app:#FBF5F4; --c-surface:#FFFFFF; --c-surface-2:#F3E9E7;
+  --c-ink:#241D1F; --c-ink-muted:#54464A; --c-ink-faint:#7A6569;
+  --c-accent:#B0574F; --c-accent-pressed:#974B44; --c-accent-hi:#D0675D; --c-on-accent:#FFFFFF;
+  --c-success:#3F7355; --c-danger:#A83A3A; --c-line:rgba(36, 29, 31, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(176, 87, 79, 0.045), transparent 68%);
+}
+[data-theme="ametista"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"EB Garamond",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:21px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="ametista"][data-mode="dark"]{
+  --c-bg:#21222C; --c-bg-app:#282A36; --c-surface:#343746; --c-surface-2:#414458;
+  --c-ink:#F8F8F2; --c-ink-muted:#C4C6D4; --c-ink-faint:#9FA1B5;
+  --c-accent:#BD93F9; --c-accent-pressed:#A681DB; --c-accent-hi:#D4A5FF; --c-on-accent:#17102A;
+  --c-success:#BD93F9; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #BD93F947; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(189, 147, 249, 0.06), transparent 68%);
+}
+[data-theme="ametista"][data-mode="light"]{
+  --c-bg:#F5F1E3; --c-bg-app:#FFFBEB; --c-surface:#FFFFFF; --c-surface-2:#F5F1E3;
+  --c-ink:#1F1F1F; --c-ink-muted:#4A4A4A; --c-ink-faint:#6C664B;
+  --c-accent:#644AC9; --c-accent-pressed:#5640AD; --c-accent-hi:#7657ED; --c-on-accent:#FFFFFF;
+  --c-success:#14710A; --c-danger:#CB3A2A; --c-line:rgba(31, 31, 31, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(100, 74, 201, 0.045), transparent 68%);
+}
+[data-theme="tokyo"]{
+  --f-ui:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace; --f-prose:"Newsreader",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.10em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="tokyo"][data-mode="dark"]{
+  --c-bg:#16161E; --c-bg-app:#1A1B26; --c-surface:#24283B; --c-surface-2:#2F3549;
+  --c-ink:#C0CAF5; --c-ink-muted:#A9B1D6; --c-ink-faint:#888FB4;
+  --c-accent:#7AA2F7; --c-accent-pressed:#6B8FD9; --c-accent-hi:#89B5FF; --c-on-accent:#0B1220;
+  --c-success:#7AA2F7; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #7AA2F747; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(122, 162, 247, 0.06), transparent 68%);
+}
+[data-theme="tokyo"][data-mode="light"]{
+  --c-bg:#D0D5E3; --c-bg-app:#E1E2E7; --c-surface:#FFFFFF; --c-surface-2:#D8DCEA;
+  --c-ink:#3760BF; --c-ink-muted:#4A5A9E; --c-ink-faint:#68709A;
+  --c-accent:#1A71E7; --c-accent-pressed:#1661C7; --c-accent-hi:#1F85FF; --c-on-accent:#FFFFFF;
+  --c-success:#587539; --c-danger:#C64343; --c-line:rgba(55, 96, 191, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(26, 113, 231, 0.045), transparent 68%);
+}
+[data-theme="nord"]{
+  --f-ui:"DM Sans",system-ui,-apple-system,sans-serif; --f-prose:"Newsreader",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="nord"][data-mode="dark"]{
+  --c-bg:#272C36; --c-bg-app:#2E3440; --c-surface:#3B4252; --c-surface-2:#434C5E;
+  --c-ink:#ECEFF4; --c-ink-muted:#D8DEE9; --c-ink-faint:#A7B0C0;
+  --c-accent:#88C0D0; --c-accent-pressed:#78A9B7; --c-accent-hi:#98D7E9; --c-on-accent:#12222A;
+  --c-success:#88C0D0; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #88C0D047; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(136, 192, 208, 0.06), transparent 68%);
+}
+[data-theme="nord"][data-mode="light"]{
+  --c-bg:#D8DEE9; --c-bg-app:#ECEFF4; --c-surface:#FFFFFF; --c-surface-2:#E5E9F0;
+  --c-ink:#2E3440; --c-ink-muted:#434C5E; --c-ink-faint:#4C566A;
+  --c-accent:#5477A3; --c-accent-pressed:#48668C; --c-accent-hi:#638CC0; --c-on-accent:#FFFFFF;
+  --c-success:#4A6E4F; --c-danger:#A5454E; --c-line:rgba(46, 52, 64, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(84, 119, 163, 0.045), transparent 68%);
+}
+[data-theme="gruvbox"]{
+  --f-ui:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace; --f-prose:"EB Garamond",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:21px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.10em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="gruvbox"][data-mode="dark"]{
+  --c-bg:#1F1F1F; --c-bg-app:#282828; --c-surface:#3C3836; --c-surface-2:#504945;
+  --c-ink:#FBF1C7; --c-ink-muted:#D5C4A1; --c-ink-faint:#B0A28B;
+  --c-accent:#FE8019; --c-accent-pressed:#E07116; --c-accent-hi:#FF8F1C; --c-on-accent:#2A1403;
+  --c-success:#FE8019; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #FE801947; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(254, 128, 25, 0.06), transparent 68%);
+}
+[data-theme="gruvbox"][data-mode="light"]{
+  --c-bg:#EBDBB2; --c-bg-app:#FBF1C7; --c-surface:#F9F5D7; --c-surface-2:#EBDBB2;
+  --c-ink:#282828; --c-ink-muted:#504945; --c-ink-faint:#665C54;
+  --c-accent:#AF3A03; --c-accent-pressed:#963203; --c-accent-hi:#CE4404; --c-on-accent:#FBF1C7;
+  --c-success:#427B58; --c-danger:#9D0006; --c-line:rgba(40, 40, 40, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(175, 58, 3, 0.045), transparent 68%);
+}
+[data-theme="catppuccin"]{
+  --f-ui:"DM Sans",system-ui,-apple-system,sans-serif; --f-prose:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:22px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:500;
+  --t-tracking-headline:-.022em; --t-tracking-label:.16em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="catppuccin"][data-mode="dark"]{
+  --c-bg:#1E2030; --c-bg-app:#24273A; --c-surface:#303446; --c-surface-2:#3E4459;
+  --c-ink:#CAD3F5; --c-ink-muted:#B8C0E0; --c-ink-faint:#989EB4;
+  --c-accent:#C6A0F6; --c-accent-pressed:#AE8DD8; --c-accent-hi:#DEB3FF; --c-on-accent:#1B0F2B;
+  --c-success:#C6A0F6; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #C6A0F647; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(198, 160, 246, 0.06), transparent 68%);
+}
+[data-theme="catppuccin"][data-mode="light"]{
+  --c-bg:#DCE0E8; --c-bg-app:#EFF1F5; --c-surface:#FFFFFF; --c-surface-2:#E6E9EF;
+  --c-ink:#4C4F69; --c-ink-muted:#5C5F77; --c-ink-faint:#6C6F85;
+  --c-accent:#8839EF; --c-accent-pressed:#7531CE; --c-accent-hi:#A043FF; --c-on-accent:#FFFFFF;
+  --c-success:#40A02B; --c-danger:#D20F39; --c-line:rgba(76, 79, 105, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(136, 57, 239, 0.045), transparent 68%);
+}
+[data-theme="grafit"]{
+  --f-ui:"Inter",-apple-system,system-ui,sans-serif; --f-prose:"Newsreader",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="grafit"][data-mode="dark"]{
+  --c-bg:#171A20; --c-bg-app:#1C1F26; --c-surface:#262B34; --c-surface-2:#2E343E;
+  --c-ink:#E8EAED; --c-ink-muted:#BFC0CC; --c-ink-faint:#8D949F;
+  --c-accent:#2DE1C2; --c-accent-pressed:#28C6AB; --c-accent-hi:#32FCD9; --c-on-accent:#10221F;
+  --c-success:#2DE1C2; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #2DE1C247; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(45, 225, 194, 0.06), transparent 68%);
+}
+[data-theme="grafit"][data-mode="light"]{
+  --c-bg:#E4E7EB; --c-bg-app:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF1;
+  --c-ink:#1C1F26; --c-ink-muted:#454B55; --c-ink-faint:#666D78;
+  --c-accent:#0E7C6B; --c-accent-pressed:#0C6B5C; --c-accent-hi:#11927E; --c-on-accent:#FFFFFF;
+  --c-success:#0E7C6B; --c-danger:#B3352F; --c-line:rgba(28, 31, 38, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(14, 124, 107, 0.045), transparent 68%);
+}
+[data-theme="ocean"]{
+  --f-ui:"DM Sans",system-ui,-apple-system,sans-serif; --f-prose:"Spectral",Georgia,"Times New Roman",serif;
+  --t-display:40px; --t-headline:26px; --t-title:21px; --t-prose:19px;
+  --t-body:14px; --t-meta:12px; --t-label:11px; --t-metric:32px;
+  --t-w-headline:600; --t-w-prose:400;
+  --t-tracking-headline:-.022em; --t-tracking-label:.06em; --t-lh-prose:1.6;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:99px; --r-circle:50%;
+  --space:1; --grain:0; --press:.94;
+}
+[data-theme="ocean"][data-mode="dark"]{
+  --c-bg:#0B1220; --c-bg-app:#0F172A; --c-surface:#1B2438; --c-surface-2:#273349;
+  --c-ink:#E2E8F0; --c-ink-muted:#C0CADB; --c-ink-faint:#7F8DA7;
+  --c-accent:#38BDF8; --c-accent-pressed:#31A6DA; --c-accent-hi:#3FD4FF; --c-on-accent:#04202E;
+  --c-success:#38BDF8; --c-danger:#F0736A; --c-line:rgba(255, 255, 255, 0.07);
+  --elev:0 12px 28px rgba(0,0,0,.45); --glow:0 0 22px #38BDF847; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(56, 189, 248, 0.06), transparent 68%);
+}
+[data-theme="ocean"][data-mode="light"]{
+  --c-bg:#DCE5EF; --c-bg-app:#EFF4F9; --c-surface:#FFFFFF; --c-surface-2:#E6EDF5;
+  --c-ink:#0F172A; --c-ink-muted:#3C4A61; --c-ink-faint:#5E6D84;
+  --c-accent:#0369A1; --c-accent-pressed:#035A8A; --c-accent-hi:#047CBE; --c-on-accent:#FFFFFF;
+  --c-success:#166534; --c-danger:#B3261E; --c-line:rgba(15, 23, 42, 0.10);
+  --elev:0 12px 28px rgba(60,50,45,.14); --glow:none; --warmth:radial-gradient(100% 60% at 18% -12%, rgba(3, 105, 161, 0.045), transparent 68%);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050304;color:#F4E7DE;font-family:"Inter",system-ui,sans-serif;
+  padding:0 24px 120px;-webkit-font-smoothing:antialiased}
+.testata{position:sticky;top:0;z-index:20;background:rgba(5,3,4,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,229,214,.09);margin:0 -24px 0;padding:12px 24px;
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.testata .tit{font-family:"Spectral",Georgia,serif;font-size:17px}
+.seg{display:inline-flex;gap:3px;background:#1D1013;border:1px solid rgba(255,229,214,.09);
+  border-radius:999px;padding:3px;margin-left:auto}
+.seg button{font:600 12px/1 "Inter",sans-serif;color:#8E7770;background:none;border:0;cursor:pointer;
+  height:28px;padding:0 14px;border-radius:999px}
+.seg button.on{background:rgba(227,161,95,.16);color:#E3A15F}
+.indice{font-size:12px;color:#CDB7AE}
+.indice a{color:#CDB7AE;text-decoration:none;padding:0 5px}
+.indice a:hover{color:#E3A15F}
+
+.wrap{max-width:1120px;margin:0 auto}
+section{scroll-margin-top:78px}
+#t01{opacity:.42}
+#t01:hover{opacity:1}
+h1{font-family:"Spectral",Georgia,serif;font-size:34px;font-weight:400;letter-spacing:-.02em;margin:44px 0 12px}
+.sommario{font-size:14px;color:#CDB7AE;line-height:1.7;max-width:760px}
+.sommario b{color:#F4E7DE;font-weight:600}
+.riquadro{border:1px solid rgba(255,229,214,.10);border-radius:16px;padding:20px 24px;margin:26px 0;background:#140C0E}
+.riquadro.giallo{border-color:rgba(227,161,95,.32);background:rgba(227,161,95,.06)}
+.riquadro h2{font-size:12px;font-weight:650;letter-spacing:.2em;text-transform:uppercase;color:#E3A15F;margin-bottom:12px}
+.riquadro p{font-size:13.5px;color:#CDB7AE;line-height:1.75;max-width:820px}
+.riquadro p + p{margin-top:10px}
+.riquadro b{color:#F4E7DE;font-weight:600}
+.divisore{height:1px;background:rgba(255,229,214,.075);margin:46px 0}
+
+.label{font-size:11px;font-weight:650;color:#8E7770;letter-spacing:.22em;text-transform:uppercase;margin:0 0 8px}
+.nomeTema{font-family:"Spectral",Georgia,serif;font-size:26px;font-weight:400;margin-bottom:8px}
+.nomeTema .num{color:#E3A15F;font-size:15px;font-family:"Inter",sans-serif;font-weight:650;margin-right:10px;vertical-align:2px}
+.intenz{font-size:13.5px;color:#CDB7AE;line-height:1.7;max-width:820px;margin-bottom:18px}
+.intenz .no{color:#F0736A;font-weight:600}
+.frame{overflow-x:auto;padding-bottom:6px}
+.sottoschermo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px;align-items:start}
+@media (max-width:900px){.sottoschermo{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{text-align:left;font-weight:400;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:#8E7770;padding:0 10px 8px 0}
+td{padding:6px 10px 6px 0;border-top:1px solid rgba(255,229,214,.075);vertical-align:middle}
+td.k{font-family:ui-monospace,Menlo,monospace;color:#CDB7AE;white-space:nowrap}
+td.v{font-family:ui-monospace,Menlo,monospace;white-space:nowrap;color:#F4E7DE}
+.quad{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,.14);
+  vertical-align:-3px;margin-right:8px}
+.ok{color:#8FCB9B}.ko{color:#F0736A}
+.freccia{color:#8E7770}
+ul{margin:8px 0 0 18px;font-size:13px;color:#CDB7AE;line-height:1.7}
+li{margin-bottom:5px}
+li b{color:#F4E7DE}
+.domanda{border-left:2px solid #E3A15F;padding:2px 0 2px 18px;margin:22px 0}
+.domanda .q{font-size:15px;color:#F4E7DE;font-weight:600;margin-bottom:10px}
+.domanda ol{margin-left:18px;font-size:13.5px;color:#CDB7AE;line-height:1.9}
+.domanda ol b{color:#F4E7DE}
+.chiusura{margin-top:40px;font-size:13.5px;color:#CDB7AE;line-height:1.75}
+
+/* ---------- finestra app (identica al mockup temi.html) ---------- */
+.win{position:relative;width:1120px;height:560px;margin:0 auto;
+  background:var(--c-bg-app);color:var(--c-ink);font-family:var(--f-ui);
+  border-radius:var(--r-md);overflow:hidden;display:flex;
+  box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.05)}
+.win::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background:var(--warmth)}
+.win > *{position:relative;z-index:1}
+.rail-l{width:222px;flex:0 0 222px;border-right:1px solid var(--c-line);
+  padding:calc(24px * var(--space)) 14px calc(18px * var(--space));display:flex;flex-direction:column}
+.brand{font-family:var(--f-prose);font-size:var(--t-title);font-weight:400;padding:0 10px calc(24px * var(--space))}
+.brand span{color:var(--c-accent)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:calc(10px * var(--space)) 12px;
+  border-radius:var(--r-sm);font-size:var(--t-body);font-weight:600;color:var(--c-ink-faint);border:1px solid transparent}
+.nav-i svg{width:18px;height:18px;flex:0 0 18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.nav-i.on{background:color-mix(in oklab,var(--c-accent) 12%,transparent);color:var(--c-accent);
+  border-color:color-mix(in oklab,var(--c-accent) 30%,transparent)}
+.nav-i.rec{color:var(--c-accent)}
+.nav-sep{height:1px;background:var(--c-line);margin:calc(16px * var(--space)) 12px}
+.rail-l-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid var(--c-line)}
+.acct{display:flex;align-items:center;gap:10px}
+.avatar{width:28px;height:28px;border-radius:var(--r-circle);flex:0 0 28px;background:var(--c-surface-2);
+  border:1px solid var(--c-line);display:flex;align-items:center;justify-content:center;
+  font-size:var(--t-meta);font-weight:600;color:var(--c-ink-muted)}
+.acct-nm{font-size:var(--t-meta);font-weight:600;color:var(--c-ink-muted)}
+.pillp{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:2px 8px;border-radius:var(--r-pill);background:color-mix(in oklab,var(--c-accent) 14%,transparent);
+  color:var(--c-accent);border:1px solid color-mix(in oklab,var(--c-accent) 28%,transparent)}
+.col-c{flex:1;min-width:0;display:flex;flex-direction:column}
+.col-head{height:calc(56px * var(--space));flex:0 0 calc(56px * var(--space));display:flex;align-items:center;
+  justify-content:space-between;padding:0 calc(28px * var(--space));border-bottom:1px solid var(--c-line)}
+.day-label{font-size:var(--t-label);font-weight:650;letter-spacing:var(--t-tracking-label);
+  text-transform:uppercase;color:var(--c-accent)}
+.meta{font-size:var(--t-meta);color:var(--c-ink-faint)}
+.editor-scroll{flex:1;overflow:hidden;display:flex;justify-content:center;padding:calc(40px * var(--space)) 28px 0}
+.editor{width:100%;max-width:620px}
+.editor p{font-family:var(--f-prose);font-size:var(--t-prose);font-weight:var(--t-w-prose);
+  line-height:var(--t-lh-prose);color:var(--c-ink);margin-bottom:1em}
+.caret{display:inline-block;width:2px;height:.95em;background:var(--c-accent);vertical-align:-3px;margin-left:1px}
+.col-foot{flex:0 0 calc(70px * var(--space));display:flex;align-items:center;justify-content:space-between;
+  padding:0 calc(28px * var(--space));border-top:1px solid var(--c-line)}
+.hint{font-size:var(--t-meta);color:var(--c-ink-muted)}
+.acts{display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-md);font-family:var(--f-ui);
+  font-size:var(--t-body);font-weight:650;letter-spacing:-.005em;
+  padding:calc(13px * var(--space)) calc(20px * var(--space));border:1px solid transparent}
+.btn-primary{background:var(--c-accent);color:var(--c-on-accent);
+  border-color:color-mix(in oklab,var(--c-on-accent) 12%,transparent);box-shadow:var(--glow),var(--elev)}
+.btn-ghost{background:transparent;color:var(--c-ink-muted);border-color:var(--c-line);
+  text-transform:uppercase;font-size:var(--t-meta);letter-spacing:.04em;font-weight:600}
+.rail-r{width:288px;flex:0 0 288px;border-left:1px solid var(--c-line);padding:calc(22px * var(--space)) 20px;overflow:hidden}
+.sec-l{font-size:var(--t-label);font-weight:650;letter-spacing:var(--t-tracking-label);
+  text-transform:uppercase;color:var(--c-accent);margin-bottom:14px}
+.sec{margin-bottom:calc(28px * var(--space))}
+.mrow{display:flex;align-items:baseline;justify-content:space-between;padding:calc(8px * var(--space)) 0;
+  border-bottom:1px solid var(--c-line)}
+.mrow:last-child{border-bottom:none}
+.mk{font-size:var(--t-meta);color:var(--c-ink-muted)}
+.mv{font-size:calc(var(--t-metric) * .6);font-weight:300;color:var(--c-ink);font-variant-numeric:tabular-nums}
+.mv small{font-size:var(--t-meta);color:var(--c-ink-faint);margin-left:3px}
+.goal{display:flex;align-items:center;gap:12px;padding:calc(7px * var(--space)) 0}
+.gdot{width:14px;height:14px;border-radius:var(--r-circle);
+  border:1.5px solid color-mix(in oklab,var(--c-ink) 18%,transparent);flex:0 0 14px}
+.gdot.on{background:var(--c-accent);border-color:var(--c-accent);box-shadow:var(--glow)}
+.gname{font-size:var(--t-body);color:var(--c-ink-faint)}
+.goal.on .gname{color:var(--c-ink)}
+.dang{font-size:var(--t-meta);color:var(--c-danger);margin-top:14px}
+
+/* ---- quale finestra si vede ---- */
+body.modo-scuro .win-chiaro{display:none}
+body.modo-chiaro .win-scuro{display:none}
+body.modo-affiancati .frame + .frame{margin-top:16px}
+.scheda{display:flex;gap:28px;flex-wrap:wrap;font-size:13px;color:#CDB7AE;margin-bottom:14px}
+.scheda b{color:#F4E7DE;font-weight:600}
+.scheda .et{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8E7770;margin-right:8px}
+td.min{color:#8E7770;font-family:ui-monospace,Menlo,monospace}
+ul.der{margin:8px 0 0 18px;font-size:12.5px;color:#CDB7AE;line-height:1.7}
+ul.der li{margin-bottom:6px}
+.riquadro code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#F4E7DE}
+.chiusura code{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#F4E7DE}
+
+</style>
+</head>
+<body class="modo-scuro">
+
+<div class="testata">
+  <div class="tit">Dieci temi, venti set</div>
+  <div class="indice"><a href="#t01">01</a> <a href="#t02">02</a> <a href="#t03">03</a> <a href="#t04">04</a> <a href="#t05">05</a> <a href="#t06">06</a> <a href="#t07">07</a> <a href="#t08">08</a> <a href="#t09">09</a> <a href="#t10">10</a></div>
+  <div class="seg" id="seg">
+    <button data-m="scuro" class="on">Scuro</button>
+    <button data-m="chiaro">Chiaro</button>
+    <button data-m="affiancati">Tutti e due</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<h1>I dieci temi, adesso completi</h1>
+<p class="sommario">
+Hai chiesto due cose: il tema chiaro per tutti e dieci, e la tipografia giusta per ognuno.
+Ci sono. <b>Venti set di colori</b> (dieci chiari + dieci scuri) e <b>dieci coppie di font</b>,
+ognuna scelta fra i sette che dayalogue ha gia nel bundle. L interruttore in alto cambia tutte
+le schermate insieme.
+</p>
+
+<div class="riquadro giallo">
+  <h2>Da dove viene il tema chiaro</h2>
+  <p>Cinque di queste palette hanno gia un chiaro <b>ufficiale</b>, fatto da chi le ha
+  disegnate. Li ho presi da li, non inventati: <b>Ametista</b> (ex Dracula) usa i valori di Alucard,
+  <b>Tokyo Night</b> diventa Tokyo Night Day, <b>Gruvbox</b> ha il suo light da sempre,
+  <b>Catppuccin</b> si chiama Latte, e <b>Nord</b> ha i due gruppi Snow Storm e Polar Night
+  gia previsti nella palette. Sono i valori esatti presi dai repository ufficiali.</p>
+  <p>Gli altri cinque - <b>Vampire</b>, <b>Vampire Korall</b>, <b>Korall</b>, <b>Grafit</b>,
+  <b>Ocean</b> - un chiaro ufficiale non ce l hanno, perche sono temi propri del tuo amico o
+  varianti sue. Quelli li ho disegnati io, partendo dall intenzione che lui stesso ha scritto:
+  Korall resta caldo anche in chiaro, Vampire resta freddo, Grafit resta neutro con un solo
+  accento vivo, Ocean resta il piu profondo. <b>Non ho invertito niente</b>: invertire la
+  luminosita di un tema scuro da sempre un risultato mediocre, ed e vietato dalla SPEC.</p>
+</div>
+
+<div class="riquadro">
+  <h2>La regola dell accento in chiaro</h2>
+  <p>Un accento nato per il buio non regge la luce: il testo bianco sopra un azzurro da
+  schermo scuro diventa illeggibile. Invece di sceglierne uno nuovo a occhio, ho applicato
+  una regola sola a tutti: <b>scurire l accento tenendo ferme tinta e saturazione</b>, un
+  passo alla volta, finche il testo del bottone raggiunge il minimo. Cosi il colore resta
+  riconoscibile come lo stesso colore.</p>
+  <p>Ha morso solo due volte, e di pochissimo: Tokyo Night da <code>#2E7DE9</code> a
+  <code>#1A71E7</code>, Nord da <code>#5E81AC</code> a <code>#5477A3</code>. Sotto ogni tema
+  trovi scritto cosa e stato toccato e di quanto.</p>
+</div>
+
+<div class="riquadro">
+  <h2>Le dieci coppie di font, e perche</h2>
+  <p>I font non sono liberi: dayalogue ne ha <b>sette</b> nel bundle, e un tema puo solo
+  sceglierne uno per la UI e uno per la prosa (non si scaricano font dalla rete, l app deve
+  funzionare offline). Con sette font e dieci temi qualche coppia si ripete, ed e giusto cosi.</p>
+  <p>L unica misura che cambia da tema a tema e <b>il corpo della prosa</b>, e non per gusto:
+  Cormorant Garamond sotto i 22px sparisce, EB Garamond vuole 21, Newsreader sta bene a 19,
+  Spectral a 18. E la regola scritta nella SPEC, applicata.</p>
+  <p>Vampire e Vampire Korall hanno <b>di proposito</b> la stessa tipografia: sono lo stesso
+  tema con l accento ammorbidito, e dargli font diversi ne farebbe due temi diversi.</p>
+</div>
+
+<div class="riquadro">
+  <h2>Il conto finale</h2>
+  <p><b>Venti set su venti passano tutte e sei le coppie di contrasto.</b> Il piu tirato di
+  tutti e Tokyo Night in chiaro, a 4,52 contro un minimo di 4,50 sulla coppia ink/bgApp: e
+  cosi perche quel testo blu su quel grigio e la palette ufficiale, e non l ho ritoccata per
+  guadagnare margine.</p>
+</div>
+
+
+<div class="divisore"></div>
+<section id="t01">
+  <div class="nomeTema"><span class="num">01</span>Vampire <span style="font-family:Inter,sans-serif;font-size:11px;font-weight:650;letter-spacing:.16em;text-transform:uppercase;color:#F0736A;border:1px solid rgba(240,115,106,.4);border-radius:999px;padding:4px 11px;vertical-align:5px;margin-left:10px">Escluso da Manuel</span></div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>Inter</b> per l interfaccia, <b>Spectral</b> per la prosa, a 18px</div>
+    <div><span class="et">Set chiaro</span> disegnato qui</div>
+  </div>
+  <p class="intenz">Inter e Spectral: un sans neutro e il serif del brandbook. Il tema e gia forte di suo, il rosso fa tutto il lavoro; una tipografia con carattere proprio litigherebbe.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="vampire" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="vampire" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#DEDFE8"></span>#DEDFE8</td><td class="v"><span class="quad" style="background:#191A21"></span>#191A21</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#F1F1F6"></span>#F1F1F6</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#282A36"></span>#282A36</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#E7E8F0"></span>#E7E8F0</td><td class="v"><span class="quad" style="background:#343746"></span>#343746</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td><td class="v"><span class="quad" style="background:#F8F8F2"></span>#F8F8F2</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#4B4D5E"></span>#4B4D5E</td><td class="v"><span class="quad" style="background:#BFC0CC"></span>#BFC0CC</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#6C6F84"></span>#6C6F84</td><td class="v"><span class="quad" style="background:#9092A4"></span>#9092A4</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#C0392B"></span>#C0392B</td><td class="v"><span class="quad" style="background:#FF5555"></span>#FF5555</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#E34333"></span>#E34333</td><td class="v"><span class="quad" style="background:#FF5F5F"></span>#FF5F5F</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#A53125"></span>#A53125</td><td class="v"><span class="quad" style="background:#E04B4B"></span>#E04B4B</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#1A0E0E"></span>#1A0E0E</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#1F7A4C"></span>#1F7A4C</td><td class="v"><span class="quad" style="background:#FF5555"></span>#FF5555</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#B3261E"></span>#B3261E</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(33, 34, 44, 0.10)"></span>rgba(33, 34, 44, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#353646"></span>#353646</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#FF5555"></span>#FF5555</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">14.03</td><td class="v ok">14.81</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">15.79</td><td class="v ok">13.36</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.33</td><td class="v ok">7.88</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">4.95</td><td class="v ok">4.63</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">5.44</td><td class="v ok">6.00</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">4.83</td><td class="v ok">5.03</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #8B8DA0 -> #9092A4 (alzata la luminosita a tinta e saturazione ferme: 4.35 -> 4.63 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t02">
+  <div class="nomeTema"><span class="num">02</span>Vampire Korall</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>Inter</b> per l interfaccia, <b>Spectral</b> per la prosa, a 18px</div>
+    <div><span class="et">Set chiaro</span> disegnato qui</div>
+  </div>
+  <p class="intenz">La stessa tipografia di Vampire, di proposito: e lo stesso tema con l accento ammorbidito. Cambiargli il font ne farebbe un tema diverso, che e esattamente cio che non deve essere.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="vampkor" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="vampkor" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#DEDFE8"></span>#DEDFE8</td><td class="v"><span class="quad" style="background:#191A21"></span>#191A21</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#F1F1F6"></span>#F1F1F6</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#282A36"></span>#282A36</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#E7E8F0"></span>#E7E8F0</td><td class="v"><span class="quad" style="background:#343746"></span>#343746</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td><td class="v"><span class="quad" style="background:#F8F8F2"></span>#F8F8F2</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#4B4D5E"></span>#4B4D5E</td><td class="v"><span class="quad" style="background:#BFC0CC"></span>#BFC0CC</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#6C6F84"></span>#6C6F84</td><td class="v"><span class="quad" style="background:#9092A4"></span>#9092A4</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#B0574F"></span>#B0574F</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#D0675D"></span>#D0675D</td><td class="v"><span class="quad" style="background:#FF9B9B"></span>#FF9B9B</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#974B44"></span>#974B44</td><td class="v"><span class="quad" style="background:#E07979"></span>#E07979</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#2B1214"></span>#2B1214</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#1F7A4C"></span>#1F7A4C</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#B3261E"></span>#B3261E</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(33, 34, 44, 0.10)"></span>rgba(33, 34, 44, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#353646"></span>#353646</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">14.03</td><td class="v ok">14.81</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">15.79</td><td class="v ok">13.36</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.33</td><td class="v ok">7.88</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">4.95</td><td class="v ok">4.63</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">4.86</td><td class="v ok">7.72</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">4.32</td><td class="v ok">6.96</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #8B8DA0 -> #9092A4 (alzata la luminosita a tinta e saturazione ferme: 4.35 -> 4.63 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t03">
+  <div class="nomeTema"><span class="num">03</span>Korall</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>DM Sans</b> per l interfaccia, <b>EB Garamond</b> per la prosa, a 21px</div>
+    <div><span class="et">Set chiaro</span> disegnato qui</div>
+  </div>
+  <p class="intenz">DM Sans e EB Garamond: le due forme piu calde dell elenco. E il tema che sposta tutto verso il caldo, fondo e testo compresi; la tipografia doveva seguire, non contrastare.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="korall" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="korall" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#EEE3E1"></span>#EEE3E1</td><td class="v"><span class="quad" style="background:#171416"></span>#171416</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#FBF5F4"></span>#FBF5F4</td><td class="v"><span class="quad" style="background:#1E1B1D"></span>#1E1B1D</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#262124"></span>#262124</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#F3E9E7"></span>#F3E9E7</td><td class="v"><span class="quad" style="background:#332C30"></span>#332C30</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#241D1F"></span>#241D1F</td><td class="v"><span class="quad" style="background:#F6EFEF"></span>#F6EFEF</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#54464A"></span>#54464A</td><td class="v"><span class="quad" style="background:#CBBFC1"></span>#CBBFC1</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#7A6569"></span>#7A6569</td><td class="v"><span class="quad" style="background:#94878B"></span>#94878B</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#B0574F"></span>#B0574F</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#D0675D"></span>#D0675D</td><td class="v"><span class="quad" style="background:#FF9B9B"></span>#FF9B9B</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#974B44"></span>#974B44</td><td class="v"><span class="quad" style="background:#E07979"></span>#E07979</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#2B1214"></span>#2B1214</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#3F7355"></span>#3F7355</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#A83A3A"></span>#A83A3A</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(36, 29, 31, 0.10)"></span>rgba(36, 29, 31, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#3A2E32"></span>#3A2E32</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#FF8A8A"></span>#FF8A8A</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">15.32</td><td class="v ok">15.05</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">16.53</td><td class="v ok">13.97</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.93</td><td class="v ok">8.87</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">5.39</td><td class="v ok">4.60</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">4.86</td><td class="v ok">7.72</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">4.50</td><td class="v ok">7.53</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #8F8286 -> #94878B (alzata la luminosita a tinta e saturazione ferme: 4.30 -> 4.60 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t04">
+  <div class="nomeTema"><span class="num">04</span>Ametista</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>Inter</b> per l interfaccia, <b>EB Garamond</b> per la prosa, a 21px</div>
+    <div><span class="et">Set chiaro</span> valori di Alucard, il chiaro ufficiale di Dracula, che sta dentro Dracula PRO. Non e materiale libero: vedi SPEC-temi-regalati.md par. 4</div>
+  </div>
+  <p class="intenz">EB Garamond sulla carta crema: e il serif piu da libro dei sette, e il set chiaro di questo tema e carta, non schermo. Inter tiene la UI fuori dai piedi. <b>Rinominato Ametista</b> il 5 settembre 2026: la palette scura e Dracula, che e MIT e libera; quella chiara e Alucard, che libera non e, e il nome non poteva restare.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="ametista" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="ametista" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#F5F1E3"></span>#F5F1E3</td><td class="v"><span class="quad" style="background:#21222C"></span>#21222C</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#FFFBEB"></span>#FFFBEB</td><td class="v"><span class="quad" style="background:#282A36"></span>#282A36</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#343746"></span>#343746</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#F5F1E3"></span>#F5F1E3</td><td class="v"><span class="quad" style="background:#414458"></span>#414458</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#1F1F1F"></span>#1F1F1F</td><td class="v"><span class="quad" style="background:#F8F8F2"></span>#F8F8F2</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#4A4A4A"></span>#4A4A4A</td><td class="v"><span class="quad" style="background:#C4C6D4"></span>#C4C6D4</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#6C664B"></span>#6C664B</td><td class="v"><span class="quad" style="background:#9FA1B5"></span>#9FA1B5</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#644AC9"></span>#644AC9</td><td class="v"><span class="quad" style="background:#BD93F9"></span>#BD93F9</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#7657ED"></span>#7657ED</td><td class="v"><span class="quad" style="background:#D4A5FF"></span>#D4A5FF</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#5640AD"></span>#5640AD</td><td class="v"><span class="quad" style="background:#A681DB"></span>#A681DB</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#17102A"></span>#17102A</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#14710A"></span>#14710A</td><td class="v"><span class="quad" style="background:#BD93F9"></span>#BD93F9</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#CB3A2A"></span>#CB3A2A</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(31, 31, 31, 0.10)"></span>rgba(31, 31, 31, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#323232"></span>#323232</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#BD93F9"></span>#BD93F9</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">15.89</td><td class="v ok">13.36</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">16.48</td><td class="v ok">11.06</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.86</td><td class="v ok">6.95</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">5.77</td><td class="v ok">4.63</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">6.24</td><td class="v ok">7.61</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">6.02</td><td class="v ok">5.90</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #8E91A8 -> #9FA1B5 (alzata la luminosita a tinta e saturazione ferme: 3.80 -> 4.63 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t05">
+  <div class="nomeTema"><span class="num">05</span>Tokyo Night</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>IBM Plex Mono</b> per l interfaccia, <b>Newsreader</b> per la prosa, a 19px</div>
+    <div><span class="et">Set chiaro</span> Tokyo Night Day, il chiaro ufficiale (tokyonight.nvim)</div>
+  </div>
+  <p class="intenz">IBM Plex Mono per la UI: questo tema nasce in un editor di codice e il mono e la sua lingua madre. La prosa pero resta in Newsreader, perche una giornata scritta in mono non si rilegge.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="tokyo" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="tokyo" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#D0D5E3"></span>#D0D5E3</td><td class="v"><span class="quad" style="background:#16161E"></span>#16161E</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#E1E2E7"></span>#E1E2E7</td><td class="v"><span class="quad" style="background:#1A1B26"></span>#1A1B26</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#24283B"></span>#24283B</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#D8DCEA"></span>#D8DCEA</td><td class="v"><span class="quad" style="background:#2F3549"></span>#2F3549</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#3760BF"></span>#3760BF</td><td class="v"><span class="quad" style="background:#C0CAF5"></span>#C0CAF5</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#4A5A9E"></span>#4A5A9E</td><td class="v"><span class="quad" style="background:#A9B1D6"></span>#A9B1D6</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#68709A"></span>#68709A</td><td class="v"><span class="quad" style="background:#888FB4"></span>#888FB4</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#1A71E7"></span>#1A71E7</td><td class="v"><span class="quad" style="background:#7AA2F7"></span>#7AA2F7</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#1F85FF"></span>#1F85FF</td><td class="v"><span class="quad" style="background:#89B5FF"></span>#89B5FF</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#1661C7"></span>#1661C7</td><td class="v"><span class="quad" style="background:#6B8FD9"></span>#6B8FD9</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#0B1220"></span>#0B1220</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#587539"></span>#587539</td><td class="v"><span class="quad" style="background:#7AA2F7"></span>#7AA2F7</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#C64343"></span>#C64343</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(55, 96, 191, 0.10)"></span>rgba(55, 96, 191, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#3760BF"></span>#3760BF</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#7AA2F7"></span>#7AA2F7</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">4.52</td><td class="v ok">10.59</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">5.85</td><td class="v ok">9.02</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">6.47</td><td class="v ok">6.90</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">4.80</td><td class="v ok">4.60</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">4.61</td><td class="v ok">7.43</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">3.56</td><td class="v ok">6.79</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #7A82AB -> #888FB4 (alzata la luminosita a tinta e saturazione ferme: 3.89 -> 4.60 su surface)</li><li>chiaro accent #2E7DE9 -> #1A71E7 (scurito a tinta ferma finche il testo del bottone passa: 4.02 -> 4.61)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t06">
+  <div class="nomeTema"><span class="num">06</span>Nord</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>DM Sans</b> per l interfaccia, <b>Newsreader</b> per la prosa, a 19px</div>
+    <div><span class="et">Set chiaro</span> Snow Storm + Polar Night, i due gruppi ufficiali della palette Nord</div>
+  </div>
+  <p class="intenz">DM Sans: geometrico e piatto come il design da cui Nord viene. Newsreader tiene la prosa leggibile senza alzare il contrasto, che in Nord e basso di proposito.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="nord" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="nord" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#D8DEE9"></span>#D8DEE9</td><td class="v"><span class="quad" style="background:#272C36"></span>#272C36</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#ECEFF4"></span>#ECEFF4</td><td class="v"><span class="quad" style="background:#2E3440"></span>#2E3440</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#3B4252"></span>#3B4252</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#E5E9F0"></span>#E5E9F0</td><td class="v"><span class="quad" style="background:#434C5E"></span>#434C5E</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#2E3440"></span>#2E3440</td><td class="v"><span class="quad" style="background:#ECEFF4"></span>#ECEFF4</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#434C5E"></span>#434C5E</td><td class="v"><span class="quad" style="background:#D8DEE9"></span>#D8DEE9</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#4C566A"></span>#4C566A</td><td class="v"><span class="quad" style="background:#A7B0C0"></span>#A7B0C0</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#5477A3"></span>#5477A3</td><td class="v"><span class="quad" style="background:#88C0D0"></span>#88C0D0</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#638CC0"></span>#638CC0</td><td class="v"><span class="quad" style="background:#98D7E9"></span>#98D7E9</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#48668C"></span>#48668C</td><td class="v"><span class="quad" style="background:#78A9B7"></span>#78A9B7</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#12222A"></span>#12222A</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#4A6E4F"></span>#4A6E4F</td><td class="v"><span class="quad" style="background:#88C0D0"></span>#88C0D0</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#A5454E"></span>#A5454E</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(46, 52, 64, 0.10)"></span>rgba(46, 52, 64, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#4A5366"></span>#4A5366</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#88C0D0"></span>#88C0D0</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">10.84</td><td class="v ok">10.84</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">12.49</td><td class="v ok">8.73</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.63</td><td class="v ok">7.45</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">7.38</td><td class="v ok">4.61</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">4.62</td><td class="v ok">8.15</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">4.01</td><td class="v ok">6.24</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #95A0B3 -> #A7B0C0 (alzata la luminosita a tinta e saturazione ferme: 3.81 -> 4.61 su surface)</li><li>chiaro accent #5E81AC -> #5477A3 (scurito a tinta ferma finche il testo del bottone passa: 4.03 -> 4.62)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t07">
+  <div class="nomeTema"><span class="num">07</span>Gruvbox</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>IBM Plex Mono</b> per l interfaccia, <b>EB Garamond</b> per la prosa, a 21px</div>
+    <div><span class="et">Set chiaro</span> Gruvbox light ufficiale (morhetz/gruvbox: light0-light2, dark0-dark3, faded_*)</div>
+  </div>
+  <p class="intenz">Mono per la UI, come il terminale da cui Gruvbox arriva; EB Garamond per la prosa, perche su carta crema il serif classico e a casa sua. E la coppia piu strana delle dieci, ed e anche la piu giusta.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="gruvbox" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="gruvbox" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#EBDBB2"></span>#EBDBB2</td><td class="v"><span class="quad" style="background:#1F1F1F"></span>#1F1F1F</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#FBF1C7"></span>#FBF1C7</td><td class="v"><span class="quad" style="background:#282828"></span>#282828</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#F9F5D7"></span>#F9F5D7</td><td class="v"><span class="quad" style="background:#3C3836"></span>#3C3836</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#EBDBB2"></span>#EBDBB2</td><td class="v"><span class="quad" style="background:#504945"></span>#504945</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#282828"></span>#282828</td><td class="v"><span class="quad" style="background:#FBF1C7"></span>#FBF1C7</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#504945"></span>#504945</td><td class="v"><span class="quad" style="background:#D5C4A1"></span>#D5C4A1</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#665C54"></span>#665C54</td><td class="v"><span class="quad" style="background:#B0A28B"></span>#B0A28B</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#AF3A03"></span>#AF3A03</td><td class="v"><span class="quad" style="background:#FE8019"></span>#FE8019</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#CE4404"></span>#CE4404</td><td class="v"><span class="quad" style="background:#FF8F1C"></span>#FF8F1C</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#963203"></span>#963203</td><td class="v"><span class="quad" style="background:#E07116"></span>#E07116</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FBF1C7"></span>#FBF1C7</td><td class="v"><span class="quad" style="background:#2A1403"></span>#2A1403</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#427B58"></span>#427B58</td><td class="v"><span class="quad" style="background:#FE8019"></span>#FE8019</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#9D0006"></span>#9D0006</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(40, 40, 40, 0.10)"></span>rgba(40, 40, 40, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#404040"></span>#404040</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#FE8019"></span>#FE8019</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">12.99</td><td class="v ok">12.99</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">13.39</td><td class="v ok">10.22</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.01</td><td class="v ok">6.76</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">5.92</td><td class="v ok">4.63</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">5.40</td><td class="v ok">6.93</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">5.40</td><td class="v ok">5.84</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #A08F73 -> #B0A28B (alzata la luminosita a tinta e saturazione ferme: 3.68 -> 4.63 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t08">
+  <div class="nomeTema"><span class="num">08</span>Catppuccin</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>DM Sans</b> per l interfaccia, <b>Cormorant Garamond</b> per la prosa, a 22px</div>
+    <div><span class="et">Set chiaro</span> Catppuccin Latte, il chiaro ufficiale (catppuccin/palette)</div>
+  </div>
+  <p class="intenz">Cormorant Garamond: grazie sottilissime, contrasto alto. E il tema che vive di differenze piccole, e questo e il font che le sa reggere. Va a 22px, sotto sparisce.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="catppuccin" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="catppuccin" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#DCE0E8"></span>#DCE0E8</td><td class="v"><span class="quad" style="background:#1E2030"></span>#1E2030</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#EFF1F5"></span>#EFF1F5</td><td class="v"><span class="quad" style="background:#24273A"></span>#24273A</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#303446"></span>#303446</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#E6E9EF"></span>#E6E9EF</td><td class="v"><span class="quad" style="background:#3E4459"></span>#3E4459</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#4C4F69"></span>#4C4F69</td><td class="v"><span class="quad" style="background:#CAD3F5"></span>#CAD3F5</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#5C5F77"></span>#5C5F77</td><td class="v"><span class="quad" style="background:#B8C0E0"></span>#B8C0E0</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#6C6F85"></span>#6C6F85</td><td class="v"><span class="quad" style="background:#989EB4"></span>#989EB4</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#8839EF"></span>#8839EF</td><td class="v"><span class="quad" style="background:#C6A0F6"></span>#C6A0F6</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#A043FF"></span>#A043FF</td><td class="v"><span class="quad" style="background:#DEB3FF"></span>#DEB3FF</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#7531CE"></span>#7531CE</td><td class="v"><span class="quad" style="background:#AE8DD8"></span>#AE8DD8</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#1B0F2B"></span>#1B0F2B</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#40A02B"></span>#40A02B</td><td class="v"><span class="quad" style="background:#C6A0F6"></span>#C6A0F6</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#D20F39"></span>#D20F39</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(76, 79, 105, 0.10)"></span>rgba(76, 79, 105, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#4C4F69"></span>#4C4F69</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#C6A0F6"></span>#C6A0F6</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">7.06</td><td class="v ok">9.92</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">7.99</td><td class="v ok">8.30</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">6.25</td><td class="v ok">6.83</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">4.94</td><td class="v ok">4.62</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">5.41</td><td class="v ok">8.49</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">4.79</td><td class="v ok">6.84</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #8087A2 -> #989EB4 (alzata la luminosita a tinta e saturazione ferme: 3.46 -> 4.62 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t09">
+  <div class="nomeTema"><span class="num">09</span>Grafit</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>Inter</b> per l interfaccia, <b>Newsreader</b> per la prosa, a 19px</div>
+    <div><span class="et">Set chiaro</span> disegnato qui</div>
+  </div>
+  <p class="intenz">Inter e Newsreader, la coppia piu neutra dei sette. Il tema e gia tutto nel salto fra un fondo spento e un accento vivo: qualunque font con carattere proprio sarebbe un terzo protagonista di troppo.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="grafit" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="grafit" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#E4E7EB"></span>#E4E7EB</td><td class="v"><span class="quad" style="background:#171A20"></span>#171A20</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#F4F5F7"></span>#F4F5F7</td><td class="v"><span class="quad" style="background:#1C1F26"></span>#1C1F26</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#262B34"></span>#262B34</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#EBEDF1"></span>#EBEDF1</td><td class="v"><span class="quad" style="background:#2E343E"></span>#2E343E</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#1C1F26"></span>#1C1F26</td><td class="v"><span class="quad" style="background:#E8EAED"></span>#E8EAED</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#454B55"></span>#454B55</td><td class="v"><span class="quad" style="background:#BFC0CC"></span>#BFC0CC</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#666D78"></span>#666D78</td><td class="v"><span class="quad" style="background:#8D949F"></span>#8D949F</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#0E7C6B"></span>#0E7C6B</td><td class="v"><span class="quad" style="background:#2DE1C2"></span>#2DE1C2</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#11927E"></span>#11927E</td><td class="v"><span class="quad" style="background:#32FCD9"></span>#32FCD9</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#0C6B5C"></span>#0C6B5C</td><td class="v"><span class="quad" style="background:#28C6AB"></span>#28C6AB</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#10221F"></span>#10221F</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#0E7C6B"></span>#0E7C6B</td><td class="v"><span class="quad" style="background:#2DE1C2"></span>#2DE1C2</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#B3352F"></span>#B3352F</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(28, 31, 38, 0.10)"></span>rgba(28, 31, 38, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#2D323D"></span>#2D323D</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#2DE1C2"></span>#2DE1C2</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">15.12</td><td class="v ok">13.68</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">16.49</td><td class="v ok">11.79</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.78</td><td class="v ok">7.87</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">5.22</td><td class="v ok">4.65</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">5.10</td><td class="v ok">9.96</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">4.68</td><td class="v ok">9.94</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #7A828F -> #8D949F (alzata la luminosita a tinta e saturazione ferme: 3.67 -> 4.65 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+<div class="divisore"></div>
+<section id="t10">
+  <div class="nomeTema"><span class="num">10</span>Ocean</div>
+  <div class="scheda">
+    <div><span class="et">Font</span> <b>DM Sans</b> per l interfaccia, <b>Spectral</b> per la prosa, a 19px</div>
+    <div><span class="et">Set chiaro</span> disegnato qui</div>
+  </div>
+  <p class="intenz">DM Sans e Spectral. Spectral e il serif del brandbook di dayalogue: su un fondo blu notte tiene la pagina calma senza spegnerla, che e esattamente cio che questo tema chiede.</p>
+  <div class="frame"><div class="win win-chiaro" data-theme="ocean" data-mode="light">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="frame"><div class="win win-scuro" data-theme="ocean" data-mode="dark">
+  <div class="rail-l">
+    <div class="brand">daya<span>logue</span></div>
+    <div class="nav">
+      <div class="nav-i on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/></svg>Oggi</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>Mese</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>Ricorda</div>
+      <div class="nav-i"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Altro</div>
+      <div class="nav-sep"></div>
+      <div class="nav-i rec"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Racconta a voce</div>
+    </div>
+    <div class="rail-l-foot"><div class="acct"><div class="avatar">M</div><div><div class="acct-nm">manuel</div><span class="pillp">Premium</span></div></div></div>
+  </div>
+  <div class="col-c">
+    <div class="col-head"><div class="day-label">Sabato 5 settembre</div><div class="meta">218 parole . salvata ora</div></div>
+    <div class="editor-scroll"><div class="editor">
+      <p>Oggi ho fatto una cosa che rimandavo da tre settimane: ho chiamato mio padre. Trentadue minuti, e per venti di quelli abbiamo parlato del tempo e di una pianta sul balcone.</p>
+      <p>Poi verso la fine mi ha detto una cosa che non gli avevo mai sentito dire, e non so ancora dove metterla<span class="caret"></span></p>
+    </div></div>
+    <div class="col-foot">
+      <div class="hint">Bozza salvata in automatico</div>
+      <div class="acts"><div class="btn btn-ghost">salva e basta</div><div class="btn btn-primary">chiudi la giornata</div></div>
+    </div>
+  </div>
+  <div class="rail-r">
+    <div class="sec"><div class="sec-l">La giornata</div>
+      <div class="mrow"><span class="mk">Peso</span><span class="mv">78,2<small>kg</small></span></div>
+      <div class="mrow"><span class="mk">Sonno</span><span class="mv">7<small>h</small> 20<small>m</small></span></div>
+    </div>
+    <div class="sec"><div class="sec-l">Obiettivi</div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">camminato</span></div>
+      <div class="goal on"><span class="gdot on"></span><span class="gname">no alcol</span></div>
+      <div class="goal"><span class="gdot"></span><span class="gname">visto sunset</span></div>
+      <div class="dang">elimina la giornata</div>
+    </div>
+  </div>
+</div></div>
+  <div class="sottoschermo">
+    <div><div class="label">I diciotto valori</div><table><tr><th>Chiave</th><th>Chiaro</th><th>Scuro</th></tr><tr><td class="k">bg</td><td class="v"><span class="quad" style="background:#DCE5EF"></span>#DCE5EF</td><td class="v"><span class="quad" style="background:#0B1220"></span>#0B1220</td></tr><tr><td class="k">bgApp</td><td class="v"><span class="quad" style="background:#EFF4F9"></span>#EFF4F9</td><td class="v"><span class="quad" style="background:#0F172A"></span>#0F172A</td></tr><tr><td class="k">surface</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#1B2438"></span>#1B2438</td></tr><tr><td class="k">surface2</td><td class="v"><span class="quad" style="background:#E6EDF5"></span>#E6EDF5</td><td class="v"><span class="quad" style="background:#273349"></span>#273349</td></tr><tr><td class="k">ink</td><td class="v"><span class="quad" style="background:#0F172A"></span>#0F172A</td><td class="v"><span class="quad" style="background:#E2E8F0"></span>#E2E8F0</td></tr><tr><td class="k">inkMuted</td><td class="v"><span class="quad" style="background:#3C4A61"></span>#3C4A61</td><td class="v"><span class="quad" style="background:#C0CADB"></span>#C0CADB</td></tr><tr><td class="k">inkFaint</td><td class="v"><span class="quad" style="background:#5E6D84"></span>#5E6D84</td><td class="v"><span class="quad" style="background:#7F8DA7"></span>#7F8DA7</td></tr><tr><td class="k">accent</td><td class="v"><span class="quad" style="background:#0369A1"></span>#0369A1</td><td class="v"><span class="quad" style="background:#38BDF8"></span>#38BDF8</td></tr><tr><td class="k">accentHi</td><td class="v"><span class="quad" style="background:#047CBE"></span>#047CBE</td><td class="v"><span class="quad" style="background:#3FD4FF"></span>#3FD4FF</td></tr><tr><td class="k">accentPressed</td><td class="v"><span class="quad" style="background:#035A8A"></span>#035A8A</td><td class="v"><span class="quad" style="background:#31A6DA"></span>#31A6DA</td></tr><tr><td class="k">onAccent</td><td class="v"><span class="quad" style="background:#FFFFFF"></span>#FFFFFF</td><td class="v"><span class="quad" style="background:#04202E"></span>#04202E</td></tr><tr><td class="k">success</td><td class="v"><span class="quad" style="background:#166534"></span>#166534</td><td class="v"><span class="quad" style="background:#38BDF8"></span>#38BDF8</td></tr><tr><td class="k">danger</td><td class="v"><span class="quad" style="background:#B3261E"></span>#B3261E</td><td class="v"><span class="quad" style="background:#F0736A"></span>#F0736A</td></tr><tr><td class="k">line</td><td class="v"><span class="quad" style="background:rgba(15, 23, 42, 0.10)"></span>rgba(15, 23, 42, 0.10)</td><td class="v"><span class="quad" style="background:rgba(255, 255, 255, 0.07)"></span>rgba(255, 255, 255, 0.07)</td></tr><tr><td class="k">shadow</td><td class="v"><span class="quad" style="background:#182543"></span>#182543</td><td class="v"><span class="quad" style="background:#000000"></span>#000000</td></tr><tr><td class="k">glow</td><td class="v">transparent</td><td class="v"><span class="quad" style="background:#38BDF8"></span>#38BDF8</td></tr><tr><td class="k">grain</td><td class="v">0</td><td class="v">0</td></tr></table></div>
+    <div>
+      <div class="label">Contrasto, misurato adesso</div><table><tr><th>Coppia</th><th>Chiaro</th><th>Scuro</th><th>Minimo</th></tr><tr><td class="k">ink / bgApp</td><td class="v ok">16.13</td><td class="v ok">14.48</td><td class="min">4.5</td></tr><tr><td class="k">ink / surface</td><td class="v ok">17.85</td><td class="v ok">12.56</td><td class="min">4.5</td></tr><tr><td class="k">inkMuted / surface</td><td class="v ok">8.96</td><td class="v ok">9.37</td><td class="min">4.5</td></tr><tr><td class="k">inkFaint / surface</td><td class="v ok">5.25</td><td class="v ok">4.62</td><td class="min">4.5</td></tr><tr><td class="k">onAccent / accent</td><td class="v ok">5.93</td><td class="v ok">7.83</td><td class="min">4.5</td></tr><tr><td class="k">accent / bgApp</td><td class="v ok">5.36</td><td class="v ok">8.33</td><td class="min">3.0</td></tr></table>
+      <div class="label" style="margin-top:20px">Cosa ho corretto</div>
+      <ul class="der"><li>scuro inkFaint #7C8AA5 -> #7F8DA7 (alzata la luminosita a tinta e saturazione ferme: 4.45 -> 4.62 su surface)</li></ul>
+    </div>
+  </div>
+</section>
+
+<div class="divisore"></div>
+
+<h1>Cosa resta da decidere</h1>
+
+<div class="domanda">
+  <div class="q">1. Quali entrano in dayalogue?</div>
+  <ol>
+    <li>Scrivimi i numeri, per esempio <b>"2, 5, 9"</b>.</li>
+    <li>Oppure <b>"tutti"</b>: diventerebbero quindici temi in tutto, cinque tuoi e dieci suoi.
+      Molti, ma il selettore li regge e non costano niente a nessuno.</li>
+  </ol>
+</div>
+
+<div class="domanda">
+  <div class="q">2. Una cosa che va detta prima di scrivere il codice</div>
+  <ol>
+    <li>Cinque di queste palette - <b>Ametista</b> (ex Dracula), <b>Tokyo Night</b>, <b>Nord</b>,
+      <b>Gruvbox</b>, <b>Catppuccin</b> - non sono del tuo amico: sono palette pubbliche
+      famose, con le loro licenze (quasi tutte MIT, cioe usabili anche in un prodotto a
+      pagamento, di solito citando la licenza). Le posso verificare una per una e mettere la
+      citazione dove va.</li>
+    <li>Oppure li rinominiamo e li teniamo come colori senza il marchio. Piu libero,
+      ma un tema che si chiama Gruvbox e mezzo del suo fascino.</li>
+  </ol>
+</div>
+
+<p class="chiusura">
+Quando mi dici quali, il passo dopo e codice: un file <code>.ts</code> per tema in
+<code>src/themes/</code>, il registro in <code>index.ts</code>, e il validatore di contrasto
+che gira su tutti e conferma questi numeri dentro l app invece che dentro una pagina di prova.
+E lavoro sullo scheletro, quindi va fatto in una sessione dedicata e senza altre chat aperte
+sul CSS.
+</p>
+
+</div>
+
+<script>
+document.getElementById('seg').addEventListener('click', function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  [].forEach.call(this.querySelectorAll('button'), function(x){ x.classList.remove('on'); });
+  b.classList.add('on');
+  document.body.className = 'modo-' + b.getAttribute('data-m');
+});
+</script>
+</body>
+</html>
