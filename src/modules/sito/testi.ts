@@ -15,48 +15,79 @@
  * (AGENTS.md §4) non si applica, ed e scritto anche nel CLAUDE.md del
  * modulo.
  *
- * COSA NON C'E, E PERCHE. Nessun prezzo: il pagamento e spento per scelta
- * di Manuel e una pagina che dice "4,99 al mese" davanti a un tasto che
- * risponde "non ancora" e la stessa bugia del "primo mese incluso" tolto
- * il 20 agosto. Nessuna recensione e nessun numero (utenti, giornate
- * scritte): non ce ne sono. Nessuna promessa sull'App Store finche l'app
- * non c'e.
+ * VERSIONE 2 (mockup design/mockups/sito-v2.html, approvato da Manuel il
+ * 5 settembre 2026). Cosa e cambiato rispetto al 31 agosto: si apre e
+ * basta (ospite), la cassaforte al centro, l'AI in regalo per dieci
+ * giornate, le fotografie.
+ *
+ * COSA NON C'E, E PERCHE. Nessun prezzo: sul web non si paga, chi vuole
+ * premium viene mandato all'app per iPhone, e un prezzo davanti a un tasto
+ * che non c'e e la stessa bugia del "primo mese incluso" tolto il 20
+ * agosto. Nessuna recensione e nessun numero (utenti, giornate scritte):
+ * non ce ne sono. Il badge App Store e disegnato ma spento finche l'app
+ * non e pubblicata (vedi APP_STORE_URL in home.tsx).
  */
 
 import type { LinguaSito } from "@/modules/sito/seo";
 
 export type Testi = {
-  nav: { prodotto: string; funzioni: string; domande: string; accedi: string; inizia: string };
+  nav: { come: string; cassaforte: string; domande: string; accedi: string; inizia: string };
   eroe: {
     titolo: string;
     titoloDue: string;
     sotto: string;
-    ctaPrimo: string;
+    cta: string;
     ctaSecondo: string;
     sottoCta: string;
   };
-  /** La finestra col prodotto dentro l'eroe: un giorno finto, ma verosimile. */
+  /** La giornata finta, ma verosimile, che compare in tutte le schermate. */
   esempio: {
     data: string;
     titolo: string;
     prosa: string;
     aree: { nome: string; testo: string }[];
+    persona: string;
+    impegno: string;
+    foto: string;
     metriche: { nome: string; valore: string }[];
-    obiettivi: string;
+    dock: string[];
+    registrazione: { tempo: string; stato: string; prima: string; forte: string; dopo: string; tieni: string };
+    chiedi: { etichetta: string; contatore: string; domanda: string; estratto: string; risposta: string; salta: string; avanti: string };
+    mese: string;
+    giorni: { n: string; titolo: string; aree?: string }[];
+    memo: { titolo: string; gruppi: { nome: string; righe: { t: string; m?: string; fatto?: boolean }[] }[] };
+    recap: { etichetta: string; sezione: string; titolo: string; paragrafi: string[] };
   };
-  promesse: { titolo: string; testo: string }[];
-  /** Le due caselle del riquadro "dove tengo le mie giornate". */
-  modalita: { titolo: string; testo: string }[];
-  prodotto: { etichetta: string; titolo: string; testo: string };
-  funzioni: {
+  promesse: { titolo: string; testo: string; icona: "voce" | "chiave" | "apri" }[];
+  sera: { titolo: string; testo: string };
+  passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
+  mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
+  cassaforte: {
+    etichetta: string;
     titolo: string;
     testo: string;
-    link: string;
-    href: string;
-    /** Il riquadro accanto: etichetta e righe finte, cambia per funzione. */
-    forma: "oggi" | "mese" | "recap" | "ricorda" | "modalita";
-  }[];
-  passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
+    telefono: string;
+    server: string;
+    leggibile: string;
+    illeggibile: string;
+    punti: { titolo: string; testo: string }[];
+  };
+  funzioni: {
+    etichetta: string;
+    titolo: string;
+    voci: { titolo: string; testo: string; link: string; href: string; forma: "oggi" | "mese" | "memo" | "recap" }[];
+  };
+  temi: { titolo: string; testo: string };
+  lingue: { titolo: string; testo: string; frase: string; fraseAltra: string };
+  condizioni: {
+    etichetta: string;
+    titolo: string;
+    testo: string;
+    carte: { nome: string; titolo: string; testo: string; voci: { testo: string; presto?: boolean }[]; fine: string; premium?: boolean }[];
+    inArrivo: string;
+    nota: string;
+  };
+  iphone: { etichetta: string; titolo: string; testo: string; home: string; badgeSopra: string; badgeNome: string };
   domande: { etichetta: string; titolo: string; voci: { d: string; r: string }[] };
   fine: { titolo: string; testo: string; cta: string };
   piede: {
@@ -64,11 +95,14 @@ export type Testi = {
     prodotto: string;
     legale: string;
     account: string;
-    funzioni: string;
-    assistenza: string;
+    come: string;
+    cassaforte: string;
+    domande: string;
+    apri: string;
     privacy: string;
     accedi: string;
-    apri: string;
+    assistenza: string;
+    lingua: string;
   };
   supporto: {
     titolo: string;
@@ -97,8 +131,8 @@ export type Testi = {
 
 const it: Testi = {
   nav: {
-    prodotto: "Prodotto",
-    funzioni: "Funzioni",
+    come: "Come funziona",
+    cassaforte: "Cassaforte",
     domande: "Domande",
     accedi: "Accedi",
     inizia: "Inizia ora",
@@ -107,10 +141,10 @@ const it: Testi = {
     titolo: "Racconta la giornata.",
     titoloDue: "Il resto lo scrive lui.",
     sotto:
-      "Parli due minuti prima di dormire. dayalogue trascrive parola per parola, ne ricava un titolo e una sintesi per aree, e tiene in ordine persone, impegni e ricordi. Mese dopo mese, ne esce un libro.",
-    ctaPrimo: "Inizia ora",
-    ctaSecondo: "Tienilo solo sul mio dispositivo",
-    sottoCta: "Gratis per scrivere e rileggere. Nessuna carta, nessuna pubblicita.",
+      "Due minuti a voce, la sera. dayalogue trascrive parola per parola, scrive titolo e sintesi, tiene in ordine persone e impegni. Mese dopo mese, ne esce un libro.",
+    cta: "Inizia ora",
+    ctaSecondo: "Come funziona",
+    sottoCta: "Si apre e basta. Niente account, niente carta, niente pubblicita.",
   },
   esempio: {
     data: "Giovedi 27 agosto",
@@ -123,101 +157,235 @@ const it: Testi = {
       { nome: "Corpo", testo: "Poco sonno, mal di testa nel pomeriggio." },
       { nome: "Emozioni", testo: "Sollievo, e un po' di nostalgia." },
     ],
+    persona: "Marco",
+    impegno: "Richiamare Marco",
+    foto: "Foto",
     metriche: [
       { nome: "Umore", valore: "4" },
       { nome: "Energia", valore: "3" },
       { nome: "Peso", valore: "81,4" },
     ],
-    obiettivi: "Obiettivi",
+    dock: ["Oggi", "Mese", "Memo", "Recap"],
+    registrazione: {
+      tempo: "1:42",
+      stato: "Sto ascoltando",
+      prima: "...la riunione l'hanno spostata a lunedi, e va bene cosi. Poi stasera, verso le nove, ",
+      forte: "mi ha chiamato Marco. Due anni",
+      dopo: " che non ci sentivamo...",
+      tieni: "Tieni premuto. Lascia quando hai finito.",
+    },
+    chiedi: {
+      etichetta: "Da chiarire",
+      contatore: "1 di 2",
+      domanda: "Chi e Marco?",
+      estratto: "\"...mi ha chiamato Marco. Due anni che non ci sentivamo...\"",
+      risposta: "Un amico dell'universita",
+      salta: "Salta",
+      avanti: "Avanti",
+    },
+    mese: "Agosto 2026",
+    giorni: [
+      { n: "27", titolo: "Consegnato il progetto, e la sera Marco ha chiamato dopo due anni", aree: "Lavoro, Relazioni, Corpo, Emozioni" },
+      { n: "26", titolo: "Una giornata di attesa, e la corsa al fiume", aree: "Lavoro, Corpo" },
+      { n: "25", titolo: "Niente, e va bene cosi" },
+      { n: "24", titolo: "Pranzo con mamma, e il progetto che non finisce", aree: "Relazioni, Lavoro, Emozioni" },
+      { n: "23", titolo: "Domenica lenta, il libro finito sul divano", aree: "Corpo, Emozioni" },
+    ],
+    memo: {
+      titolo: "Memo",
+      gruppi: [
+        {
+          nome: "Persone",
+          righe: [
+            { t: "Marco", m: "amico dell'universita" },
+            { t: "Mamma", m: "pranzo la domenica" },
+            { t: "Giulia", m: "collega" },
+          ],
+        },
+        {
+          nome: "Impegni",
+          righe: [
+            { t: "Richiamare Marco", m: "27 ago" },
+            { t: "Riunione spostata", m: "lun 31" },
+            { t: "Consegnare il progetto", m: "27 ago", fatto: true },
+          ],
+        },
+        { nome: "Idee", righe: [{ t: "Un weekend al lago, a settembre" }] },
+      ],
+    },
+    recap: {
+      etichetta: "Recap",
+      sezione: "Il mese",
+      titolo: "Un agosto di consegne, e una telefonata che ha cambiato il tono",
+      paragrafi: [
+        "E stato un mese tirato, con il progetto che ha preso quasi tutte le sere e il sonno che ne ha risentito. Eppure, rileggendo, quello che resta non e la fatica.",
+        "Resta Marco che chiama dopo due anni, la corsa al fiume, i pranzi della domenica. Le cose piccole hanno tenuto insieme le grandi.",
+      ],
+    },
   },
   promesse: [
     {
-      titolo: "Resta dove vuoi tu",
-      testo: "Tutto sul dispositivo, senza account: nemmeno una richiesta di rete.",
-    },
-    {
       titolo: "Si parla, non si compila",
-      testo: "Tieni premuto e racconti. Il testo e la fonte, l'audio si butta.",
+      testo: "Tieni premuto e racconti. Nei silenzi non registra. Se preferisci scrivere, si scrive.",
+      icona: "voce",
     },
     {
-      titolo: "Si comincia gratis",
-      testo: "Scrivere e rileggere non costa niente. Nessuna pubblicita, mai.",
+      titolo: "Chiuso a chiave sul telefono",
+      testo: "Ogni giornata parte gia cifrata. Nessuno la puo leggere, nemmeno chi ha fatto l'app.",
+      icona: "chiave",
     },
     {
-      titolo: "Italiano e inglese",
-      testo: "Anche quello che scrive l'intelligenza artificiale.",
+      titolo: "Si apre e basta",
+      testo: "Niente account, niente carta, niente pubblicita. L'AI e in regalo per dieci giornate.",
+      icona: "apri",
     },
   ],
-  modalita: [
-    { titolo: "Solo qui", testo: "Nessun account. Zero rete. Le giornate stanno nel telefono." },
-    { titolo: "Nel cloud", testo: "Su tutti i tuoi dispositivi, con titoli e recap scritti dall'AI." },
-  ],
-  prodotto: {
-    etichetta: "Prodotto",
-    titolo: "Tenere un diario e facile per tre giorni",
-    testo:
-      "Poi arriva la sera in cui sei stanco e la pagina bianca vince. dayalogue toglie la pagina bianca: parli come parleresti a un amico, e la giornata si scrive da sola. Quello che rileggi a fine mese sono parole tue, non un riassunto di qualcun altro.",
+  sera: {
+    titolo: "Due minuti, prima di dormire.",
+    testo: "Non serve la penna, non serve la pagina bianca. Serve solo dire com'e andata.",
   },
-  funzioni: [
-    {
-      titolo: "La giornata, raccontata a voce",
-      testo:
-        "Tieni premuto il microfono e parli. Nei silenzi non registra, quindi le voci intorno non entrano. Alla fine correggi i nomi propri se serve, e la giornata e salva: titolo, sintesi, aree. Se preferisci scrivere, si scrive.",
-      link: "Guarda com'e fatta",
-      href: "/app",
-      forma: "oggi",
-    },
-    {
-      titolo: "Il mese in una schermata",
-      testo:
-        "Una riga per giorno sul telefono, una scacchiera sul computer. I giorni pieni si aprono, quelli vuoti restano vuoti senza rimproverarti. In fondo, quante giornate hai scritto e cosa ricorre.",
-      link: "Vai al mese",
-      href: "/app/mese",
-      forma: "mese",
-    },
-    {
-      titolo: "Recap che si leggono come un libro",
-      testo:
-        "A fine mese, a fine semestre, a fine anno: un testo scritto per intero, non un elenco di statistiche. Serve a ricordare come stavi, non quante volte sei andato in palestra.",
-      link: "Leggi un recap",
-      href: "/app/recap",
-      forma: "recap",
-    },
-    {
-      titolo: "Ricorda: persone, impegni, luoghi, idee",
-      testo:
-        "Le cose che nomini mentre racconti finiscono qui da sole, e puoi aggiungerne a mano in due secondi. Le persone diventano anche il vocabolario della trascrizione: i nomi dei tuoi amici smettono di uscire storti.",
-      link: "Apri Ricorda",
-      href: "/app/remember",
-      forma: "ricorda",
-    },
-    {
-      titolo: "Sul tuo dispositivo, oppure nel cloud",
-      testo:
-        "Al primo avvio scegli tu. In locale le giornate non escono dal telefono e l'app non fa nemmeno una richiesta di rete: niente account, niente server. Nel cloud le ritrovi ovunque, e si accendono le funzioni con l'intelligenza artificiale. Si esporta e si reimporta tutto, quando vuoi.",
-      link: "Come funziona",
-      href: "/app/benvenuto",
-      forma: "modalita",
-    },
-  ],
   passi: {
-    etichetta: "Come si usa",
+    etichetta: "Come funziona",
     titolo: "Tre cose, e poi basta",
     voci: [
+      { titolo: "La sera, parli", testo: "Due minuti tenendo premuto il microfono. Oppure scrivi, se e una di quelle sere." },
+      { titolo: "Si scrive da sola", testo: "Titolo, sintesi per aree, persone, misure, impegni. Se un nome non e chiaro, te lo chiede prima di salvare." },
+      { titolo: "Rileggi quando vuoi", testo: "Il mese, la giornata singola, e i recap che arrivano da soli, scritti come un capitolo." },
+    ],
+  },
+  mentre: {
+    etichetta: "Mentre fai altro",
+    titolo: "Non e un compito. E una chiacchiera.",
+    testo: "Mentre ti fai la barba, mentre ti strucchi, mentre aspetti che l'acqua bolla. Parli, e la giornata e scritta.",
+    didascalie: [
+      "\"...e la riunione l'hanno spostata a lunedi, va bene cosi...\"",
+      "\"...e poi stasera mi ha chiamato Marco. Due anni.\"",
+    ],
+  },
+  cassaforte: {
+    etichetta: "La cassaforte",
+    titolo: "Nemmeno noi possiamo leggere il tuo diario.",
+    testo:
+      "Ogni giornata viene chiusa a chiave sul dispositivo prima di partire, con la stessa serratura di Safari e Chrome (AES-256). Sul server arriva un blocco illeggibile: chi ha fatto l'app, con accesso completo al database, vede solo quello.",
+    telefono: "Sul tuo telefono",
+    server: "Sul server",
+    leggibile: "leggibile",
+    illeggibile: "illeggibile",
+    punti: [
       {
-        titolo: "Scegli dove tenerle",
+        titolo: "La chiave sono otto parole",
+        testo: "Le ricevi una volta, le tieni con uno screenshot. Viaggiano nel portachiavi di iCloud fra i tuoi dispositivi.",
+      },
+      {
+        titolo: "Nessun recupero",
+        testo: "Chi perde le parole e tutti i dispositivi perde il diario. Nessuno puo recuperarlo: e questo il punto.",
+      },
+      {
+        titolo: "L'AI legge solo quando glielo chiedi",
         testo:
-          "Solo su questo dispositivo, oppure nel cloud con un codice via email. Niente password.",
-      },
-      {
-        titolo: "La sera, parli",
-        testo: "Due minuti tenendo premuto. Oppure scrivi, se e una di quelle sere.",
-      },
-      {
-        titolo: "Rileggi quando vuoi",
-        testo: "Il mese, la giornata singola, e i recap che arrivano da soli.",
+          "Il testo esce dal dispositivo solo nel momento in cui chiedi all'AI di lavorarci, e solo per quello: passa dai modelli di OpenAI per essere trascritto e riassunto, non viene conservato ne usato per addestrare niente.",
       },
     ],
+  },
+  funzioni: {
+    etichetta: "Cosa c'e dentro",
+    titolo: "Quattro schermate, un libro",
+    voci: [
+      {
+        titolo: "Oggi: la giornata, raccontata a voce",
+        testo:
+          "Tieni premuto il microfono e parli. Alla fine correggi i nomi se serve, e la giornata e salva: titolo, sintesi, aree, persone, misure, obiettivi. E le foto del giorno, dal rullino.",
+        link: "Guarda com'e fatta",
+        href: "/app",
+        forma: "oggi",
+      },
+      {
+        titolo: "Mese: una riga per giorno",
+        testo:
+          "Sul telefono una riga per giorno, sul computer una scacchiera. I giorni pieni si aprono, quelli vuoti restano vuoti senza rimproverarti.",
+        link: "Vai al mese",
+        href: "/app/mese",
+        forma: "mese",
+      },
+      {
+        titolo: "Memo: persone, impegni, luoghi, idee",
+        testo:
+          "Le cose che nomini mentre racconti finiscono qui da sole. Le persone diventano anche il vocabolario della trascrizione: i nomi dei tuoi amici smettono di uscire storti.",
+        link: "Apri Memo",
+        href: "/app/remember",
+        forma: "memo",
+      },
+      {
+        titolo: "Recap: il mese, scritto come un capitolo",
+        testo:
+          "A fine mese, a fine semestre, a fine anno: un testo scritto per intero, non un elenco di statistiche. Serve a ricordare come stavi, non quante volte sei andato in palestra.",
+        link: "Leggi un recap",
+        href: "/app/recap",
+        forma: "recap",
+      },
+    ],
+  },
+  temi: {
+    titolo: "Cinque temi, chiaro e scuro",
+    testo: "Carta, Minimal, Macchina, Malva, Wine. Il sito segue il tema che hai scelto nell'app.",
+  },
+  lingue: {
+    titolo: "Italiano e inglese",
+    testo: "Anche in quello che scrive l'AI: titolo, sintesi, recap.",
+    frase: "Com'e andata oggi?",
+    fraseAltra: "How was your day?",
+  },
+  condizioni: {
+    etichetta: "Come si comincia",
+    titolo: "Si apre e basta.",
+    testo:
+      "Nessuna domanda al primo avvio. Quando vorrai ritrovare le giornate su un altro dispositivo, ti chiederemo una email. Niente password, mai.",
+    carte: [
+      {
+        nome: "Ospite",
+        titolo: "Apri e parli",
+        testo: "Nessun account, nessuna domanda.",
+        voci: [
+          { testo: "Le giornate stanno sul dispositivo" },
+          { testo: "L'AI in regalo: dieci giornate" },
+          { testo: "Scrivere e rileggere, per sempre" },
+        ],
+        fine: "Inizia ora",
+      },
+      {
+        nome: "Account",
+        titolo: "Una email, un codice",
+        testo: "Te la chiediamo noi, dopo cinque giornate. Niente password.",
+        voci: [
+          { testo: "Sul dispositivo e sul server, chiuse a chiave" },
+          { testo: "Le ritrovi su iPhone, iPad e computer" },
+          { testo: "Lo stesso regalo di AI" },
+        ],
+        fine: "Si attiva dentro l'app",
+      },
+      {
+        nome: "Premium",
+        titolo: "Senza limiti",
+        testo: "Per chi racconta tutte le sere.",
+        voci: [
+          { testo: "AI senza limiti" },
+          { testo: "I Recap del mese, del semestre, dell'anno" },
+          { testo: "Backup automatico ogni notte", presto: true },
+        ],
+        fine: "Si attiva dall'app per iPhone, con un periodo di prova",
+        premium: true,
+      },
+    ],
+    inArrivo: "in arrivo",
+    nota: "Quando il regalo finisce, finisce solo l'AI: scrivere, salvare e rileggere restano gratis, per sempre. Nessuna pubblicita, mai.",
+  },
+  iphone: {
+    etichetta: "dayalogue per iPhone e iPad",
+    titolo: "Sul telefono, come un'app.",
+    testo: "Oggi si usa dal browser e si installa sulla Home come un'app. L'app per iPhone e in arrivo sull'App Store.",
+    home: "Da Safari: Condividi, poi \"Aggiungi alla schermata Home\"",
+    badgeSopra: "In arrivo su",
+    badgeNome: "App Store",
   },
   domande: {
     etichetta: "Domande",
@@ -225,23 +393,23 @@ const it: Testi = {
     voci: [
       {
         d: "dayalogue e gratis?",
-        r: "Scrivere le giornate, rileggerle e portarti via tutto e gratis, senza carta di credito e senza pubblicita. Le funzioni che usano l'intelligenza artificiale - la trascrizione della voce, il titolo, la sintesi per aree, i recap - sono la parte premium.",
+        r: "Scrivere, salvare e rileggere e gratis per sempre, senza carta di credito e senza pubblicita. L'AI (trascrizione, titolo, sintesi) e in regalo per dieci giornate; poi, senza limiti, con premium.",
       },
       {
         d: "Dove finiscono le mie giornate?",
-        r: "Dove decidi tu al primo avvio. In modalita locale restano dentro il dispositivo e l'app non contatta nessuno. Nel cloud stanno su un database europeo, dietro il tuo account, e le vedi solo tu.",
+        r: "Sul tuo dispositivo. Con un account anche sul server, ma chiuse a chiave prima di partire: nessuno le puo leggere, nemmeno noi.",
       },
       {
         d: "Chi legge quello che racconto?",
-        r: "Nessuna persona. In modalita cloud il testo passa dai modelli di OpenAI per essere riassunto, e basta: non viene usato per addestrare niente e non viene venduto a nessuno.",
+        r: "Nessuna persona. Il testo esce dal dispositivo solo quando chiedi all'AI di lavorarci: passa dai modelli di OpenAI per essere trascritto e riassunto, non viene conservato ne usato per addestrare niente.",
+      },
+      {
+        d: "E se perdo il telefono?",
+        r: "Con un account ritrovi tutto su un altro dispositivo con le tue otto parole. Senza account, o senza le parole, il diario non si recupera: nessuno ha la chiave, ed e questo il punto.",
       },
       {
         d: "Posso portarmi via i miei dati?",
-        r: "Si, in qualsiasi momento: un file solo con tutte le giornate, gli obiettivi, i ricordi e i recap, che si reimporta dove vuoi. E l'account si cancella dall'app, senza scrivere a nessuno.",
-      },
-      {
-        d: "Serve internet?",
-        r: "In modalita locale no, mai. Nel cloud serve per salvare e per le funzioni con l'intelligenza artificiale.",
+        r: "Si, in qualsiasi momento: un file solo con tutte le giornate, gli obiettivi, i memo e i recap, che si reimporta dove vuoi. E l'account si cancella dall'app, senza scrivere a nessuno.",
       },
       {
         d: "C'e l'app per iPhone?",
@@ -259,11 +427,14 @@ const it: Testi = {
     prodotto: "Prodotto",
     legale: "Legale",
     account: "Account",
-    funzioni: "Funzioni",
-    assistenza: "Assistenza",
+    come: "Come funziona",
+    cassaforte: "Cassaforte",
+    domande: "Domande",
+    apri: "Apri l'app",
     privacy: "Informativa privacy",
     accedi: "Accedi",
-    apri: "Apri l'app",
+    assistenza: "Assistenza",
+    lingua: "English",
   },
   supporto: {
     titolo: "Assistenza",
@@ -293,8 +464,8 @@ const it: Testi = {
 
 const en: Testi = {
   nav: {
-    prodotto: "Product",
-    funzioni: "Features",
+    come: "How it works",
+    cassaforte: "The vault",
     domande: "Questions",
     accedi: "Log in",
     inizia: "Get started",
@@ -303,10 +474,10 @@ const en: Testi = {
     titolo: "Tell your day.",
     titoloDue: "It writes the rest.",
     sotto:
-      "Talk for two minutes before bed. dayalogue transcribes it word for word, pulls out a headline and a summary by area, and keeps your people, tasks and memories in order. Month after month, it becomes a book.",
-    ctaPrimo: "Get started",
-    ctaSecondo: "Keep it on this device only",
-    sottoCta: "Free to write and to read back. No card, no ads.",
+      "Two minutes out loud, in the evening. dayalogue transcribes word for word, writes the headline and the summary, keeps people and tasks in order. Month after month, it becomes a book.",
+    cta: "Get started",
+    ctaSecondo: "How it works",
+    sottoCta: "Just open it. No account, no card, no ads.",
   },
   esempio: {
     data: "Thursday 27 August",
@@ -319,100 +490,235 @@ const en: Testi = {
       { nome: "Body", testo: "Little sleep, headache in the afternoon." },
       { nome: "Emotions", testo: "Relief, and a bit of nostalgia." },
     ],
+    persona: "Marco",
+    impegno: "Call Marco back",
+    foto: "Photos",
     metriche: [
       { nome: "Mood", valore: "4" },
       { nome: "Energy", valore: "3" },
       { nome: "Weight", valore: "81.4" },
     ],
-    obiettivi: "Goals",
+    dock: ["Today", "Month", "Memo", "Recap"],
+    registrazione: {
+      tempo: "1:42",
+      stato: "Listening",
+      prima: "...they moved the meeting to Monday, which is fine. Then tonight, around nine, ",
+      forte: "Marco called. Two years",
+      dopo: " since we last spoke...",
+      tieni: "Hold. Let go when you are done.",
+    },
+    chiedi: {
+      etichetta: "To clarify",
+      contatore: "1 of 2",
+      domanda: "Who is Marco?",
+      estratto: "\"...Marco called. Two years since we last spoke...\"",
+      risposta: "A friend from university",
+      salta: "Skip",
+      avanti: "Next",
+    },
+    mese: "August 2026",
+    giorni: [
+      { n: "27", titolo: "Shipped the project, and Marco called after two years", aree: "Work, Relationships, Body, Emotions" },
+      { n: "26", titolo: "A day of waiting, and the run by the river", aree: "Work, Body" },
+      { n: "25", titolo: "Nothing, and that is fine" },
+      { n: "24", titolo: "Lunch with mum, and the project that never ends", aree: "Relationships, Work, Emotions" },
+      { n: "23", titolo: "Slow Sunday, the book finished on the sofa", aree: "Body, Emotions" },
+    ],
+    memo: {
+      titolo: "Memo",
+      gruppi: [
+        {
+          nome: "People",
+          righe: [
+            { t: "Marco", m: "friend from university" },
+            { t: "Mum", m: "Sunday lunch" },
+            { t: "Giulia", m: "colleague" },
+          ],
+        },
+        {
+          nome: "Tasks",
+          righe: [
+            { t: "Call Marco back", m: "27 Aug" },
+            { t: "Meeting moved", m: "Mon 31" },
+            { t: "Ship the project", m: "27 Aug", fatto: true },
+          ],
+        },
+        { nome: "Ideas", righe: [{ t: "A weekend at the lake, in September" }] },
+      ],
+    },
+    recap: {
+      etichetta: "Recap",
+      sezione: "The month",
+      titolo: "An August of deadlines, and a phone call that changed the tone",
+      paragrafi: [
+        "It was a tight month, with the project taking almost every evening and sleep paying for it. And yet, reading it back, what stays is not the effort.",
+        "What stays is Marco calling after two years, the run by the river, the Sunday lunches. The small things held the big ones together.",
+      ],
+    },
   },
   promesse: [
     {
-      titolo: "It stays where you want",
-      testo: "All on your device, no account: not a single network request.",
-    },
-    {
       titolo: "You talk, you don't fill in forms",
-      testo: "Hold and speak. The text is the source; the audio is thrown away.",
+      testo: "Hold the button and tell it. Silence is not recorded. If you would rather write, you write.",
+      icona: "voce",
     },
     {
-      titolo: "Free to start",
-      testo: "Writing and reading back costs nothing. No ads, ever.",
+      titolo: "Locked on your phone",
+      testo: "Every day leaves already encrypted. Nobody can read it, not even the people who made the app.",
+      icona: "chiave",
     },
     {
-      titolo: "Italian and English",
-      testo: "Including what the AI writes.",
+      titolo: "Just open it",
+      testo: "No account, no card, no ads. The AI is a gift for ten days.",
+      icona: "apri",
     },
   ],
-  modalita: [
-    { titolo: "Only here", testo: "No account. No network. Your days stay in the phone." },
-    { titolo: "In the cloud", testo: "On all your devices, with headlines and recaps written by the AI." },
-  ],
-  prodotto: {
-    etichetta: "Product",
-    titolo: "Keeping a journal is easy for three days",
-    testo:
-      "Then comes the evening when you are tired and the blank page wins. dayalogue removes the blank page: you talk the way you would talk to a friend, and the day writes itself. What you read back at the end of the month is your own words, not somebody else's summary.",
+  sera: {
+    titolo: "Two minutes, before sleep.",
+    testo: "No pen, no blank page. Just say how it went.",
   },
-  funzioni: [
-    {
-      titolo: "Your day, told out loud",
-      testo:
-        "Hold the microphone and talk. It does not record the silences, so the voices around you never get in. At the end you fix the names if you need to, and the day is saved: headline, summary, areas. If you would rather type, you can type.",
-      link: "See how it works",
-      href: "/app",
-      forma: "oggi",
-    },
-    {
-      titolo: "The whole month on one screen",
-      testo:
-        "One line per day on the phone, a grid on the computer. Full days open up; empty ones stay empty without telling you off. At the bottom: how many days you wrote, and what keeps coming back.",
-      link: "Go to the month",
-      href: "/app/mese",
-      forma: "mese",
-    },
-    {
-      titolo: "Recaps that read like a book",
-      testo:
-        "End of month, end of half-year, end of year: a written text, not a list of statistics. It is there to remind you how you were, not how many times you went to the gym.",
-      link: "Read a recap",
-      href: "/app/recap",
-      forma: "recap",
-    },
-    {
-      titolo: "Remember: people, tasks, places, ideas",
-      testo:
-        "The things you mention while talking end up here by themselves, and you can add more by hand in two seconds. People also become the vocabulary of the transcription: your friends' names stop coming out wrong.",
-      link: "Open Remember",
-      href: "/app/remember",
-      forma: "ricorda",
-    },
-    {
-      titolo: "On your device, or in the cloud",
-      testo:
-        "You choose the first time you open it. Locally, your days never leave the phone and the app makes not a single network request: no account, no server. In the cloud you find them on every device, and the AI features switch on. You can export and re-import everything, whenever you want.",
-      link: "How it works",
-      href: "/app/benvenuto",
-      forma: "modalita",
-    },
-  ],
   passi: {
-    etichetta: "How to use it",
+    etichetta: "How it works",
     titolo: "Three things, and that is it",
     voci: [
+      { titolo: "In the evening, you talk", testo: "Two minutes holding the microphone. Or you write, if it is one of those evenings." },
+      { titolo: "It writes itself", testo: "Headline, summary by area, people, measures, tasks. If a name is unclear, it asks before saving." },
+      { titolo: "Read back whenever", testo: "The month, a single day, and the recaps that arrive on their own, written like a chapter." },
+    ],
+  },
+  mentre: {
+    etichetta: "While you do something else",
+    titolo: "It is not a chore. It is a chat.",
+    testo: "While you shave, while you take your make-up off, while you wait for the water to boil. You talk, and the day is written.",
+    didascalie: [
+      "\"...and they moved the meeting to Monday, which is fine...\"",
+      "\"...and then tonight Marco called. Two years.\"",
+    ],
+  },
+  cassaforte: {
+    etichetta: "The vault",
+    titolo: "Not even we can read your journal.",
+    testo:
+      "Every day is locked on your device before it leaves, with the same lock Safari and Chrome use (AES-256). What reaches the server is an unreadable block: the people who made the app, with full access to the database, see only that.",
+    telefono: "On your phone",
+    server: "On the server",
+    leggibile: "readable",
+    illeggibile: "unreadable",
+    punti: [
       {
-        titolo: "Choose where they live",
-        testo: "This device only, or in the cloud with a code sent by email. No passwords.",
+        titolo: "The key is eight words",
+        testo: "You receive them once and keep them with a screenshot. They travel in your iCloud Keychain between your devices.",
       },
       {
-        titolo: "In the evening, you talk",
-        testo: "Two minutes, holding the button. Or you write, if it is one of those evenings.",
+        titolo: "No recovery",
+        testo: "Lose the words and all your devices, and the journal is gone. Nobody can recover it: that is the point.",
       },
       {
-        titolo: "Read back whenever",
-        testo: "The month, a single day, and the recaps that arrive on their own.",
+        titolo: "The AI reads only when you ask",
+        testo:
+          "The text leaves the device only when you ask the AI to work on it, and only for that: it goes through OpenAI's models to be transcribed and summarised, it is not stored and it is not used to train anything.",
       },
     ],
+  },
+  funzioni: {
+    etichetta: "What is inside",
+    titolo: "Four screens, one book",
+    voci: [
+      {
+        titolo: "Today: your day, told out loud",
+        testo:
+          "Hold the microphone and talk. At the end you fix names if needed, and the day is saved: headline, summary, areas, people, measures, goals. And the day's photos, from your camera roll.",
+        link: "See what it looks like",
+        href: "/app",
+        forma: "oggi",
+      },
+      {
+        titolo: "Month: one line per day",
+        testo:
+          "One line per day on the phone, a grid on the computer. Full days open up, empty days stay empty without telling you off.",
+        link: "Go to the month",
+        href: "/app/mese",
+        forma: "mese",
+      },
+      {
+        titolo: "Memo: people, tasks, places, ideas",
+        testo:
+          "The things you mention while talking end up here by themselves. People also become the vocabulary of the transcription: your friends' names stop coming out wrong.",
+        link: "Open Memo",
+        href: "/app/remember",
+        forma: "memo",
+      },
+      {
+        titolo: "Recap: the month, written like a chapter",
+        testo:
+          "End of month, end of half-year, end of year: a written text, not a list of statistics. It is there to remind you how you were, not how many times you went to the gym.",
+        link: "Read a recap",
+        href: "/app/recap",
+        forma: "recap",
+      },
+    ],
+  },
+  temi: {
+    titolo: "Five themes, light and dark",
+    testo: "Carta, Minimal, Macchina, Malva, Wine. The site follows the theme you chose in the app.",
+  },
+  lingue: {
+    titolo: "Italian and English",
+    testo: "Also in what the AI writes: headline, summary, recaps.",
+    frase: "How was your day?",
+    fraseAltra: "Com'e andata oggi?",
+  },
+  condizioni: {
+    etichetta: "How you start",
+    titolo: "Just open it.",
+    testo:
+      "No questions the first time. When you want to find your days on another device, we will ask for an email. No passwords, ever.",
+    carte: [
+      {
+        nome: "Guest",
+        titolo: "Open and talk",
+        testo: "No account, no questions.",
+        voci: [
+          { testo: "Your days stay on the device" },
+          { testo: "The AI as a gift: ten days" },
+          { testo: "Write and read back, forever" },
+        ],
+        fine: "Get started",
+      },
+      {
+        nome: "Account",
+        titolo: "An email, a code",
+        testo: "We ask you, after five days. No password.",
+        voci: [
+          { testo: "On the device and on the server, locked" },
+          { testo: "Find them on iPhone, iPad and computer" },
+          { testo: "The same AI gift" },
+        ],
+        fine: "Switched on inside the app",
+      },
+      {
+        nome: "Premium",
+        titolo: "No limits",
+        testo: "For those who tell every evening.",
+        voci: [
+          { testo: "Unlimited AI" },
+          { testo: "The month, half-year and year Recaps" },
+          { testo: "Automatic backup every night", presto: true },
+        ],
+        fine: "Switched on from the iPhone app, with a trial period",
+        premium: true,
+      },
+    ],
+    inArrivo: "coming",
+    nota: "When the gift ends, only the AI ends: writing, saving and reading back stay free, forever. No ads, ever.",
+  },
+  iphone: {
+    etichetta: "dayalogue for iPhone and iPad",
+    titolo: "On your phone, like an app.",
+    testo: "Today it runs in the browser and installs on your Home screen like an app. The iPhone app is coming to the App Store.",
+    home: "From Safari: Share, then \"Add to Home Screen\"",
+    badgeSopra: "Coming to the",
+    badgeNome: "App Store",
   },
   domande: {
     etichetta: "Questions",
@@ -420,23 +726,23 @@ const en: Testi = {
     voci: [
       {
         d: "Is dayalogue free?",
-        r: "Writing your days, reading them back and taking everything with you is free, with no credit card and no ads. The features that use artificial intelligence - voice transcription, the headline, the summary by area, the recaps - are the premium part.",
+        r: "Writing, saving and reading back is free forever, with no credit card and no ads. The AI (transcription, headline, summary) is a gift for ten days; after that, unlimited, with premium.",
       },
       {
         d: "Where do my days end up?",
-        r: "Where you decide the first time you open it. In local mode they stay inside the device and the app contacts nobody. In the cloud they sit in a European database, behind your account, and only you can see them.",
+        r: "On your device. With an account also on the server, but locked before they leave: nobody can read them, not even us.",
       },
       {
         d: "Who reads what I say?",
-        r: "No person. In cloud mode the text goes to OpenAI's models to be summarised, and that is all: it is not used to train anything and it is not sold to anyone.",
+        r: "No person. The text leaves the device only when you ask the AI to work on it: it goes through OpenAI's models to be transcribed and summarised, it is not stored and it is not used to train anything.",
+      },
+      {
+        d: "What if I lose my phone?",
+        r: "With an account you get everything back on another device with your eight words. Without an account, or without the words, the journal cannot be recovered: nobody has the key, and that is the point.",
       },
       {
         d: "Can I take my data with me?",
-        r: "Yes, at any time: a single file with all your days, goals, notes and recaps, which you can re-import anywhere. And you can delete your account from inside the app, without writing to anyone.",
-      },
-      {
-        d: "Do I need the internet?",
-        r: "In local mode, never. In the cloud you need it to save and for the AI features.",
+        r: "Yes, at any time: a single file with all your days, goals, memos and recaps, which you can re-import anywhere. And you can delete your account from inside the app, without writing to anyone.",
       },
       {
         d: "Is there an iPhone app?",
@@ -454,11 +760,14 @@ const en: Testi = {
     prodotto: "Product",
     legale: "Legal",
     account: "Account",
-    funzioni: "Features",
-    assistenza: "Support",
+    come: "How it works",
+    cassaforte: "The vault",
+    domande: "Questions",
+    apri: "Open the app",
     privacy: "Privacy policy",
     accedi: "Log in",
-    apri: "Open the app",
+    assistenza: "Support",
+    lingua: "Italiano",
   },
   supporto: {
     titolo: "Support",
