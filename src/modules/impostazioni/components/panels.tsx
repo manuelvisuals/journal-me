@@ -175,7 +175,24 @@ export function ThemePanel() {
       <div className="jm-theme-grid">
         {THEMES.map((th) => {
           const active = th.id === themeId;
-          const vars = cssVarsFor(th, mode) as CSSProperties;
+          // L'anteprima e VIVA: le variabili del tema, scoped qui, vincono
+          // su quelle di <html>, quindi ogni scheda disegna davvero il suo
+          // tema nel modo (chiaro/scuro) scelto adesso.
+          const v = cssVarsFor(th, mode);
+          // La riga sotto la miniatura NON e nel tema: e interfaccia, e usa
+          // i colori dell'app. Le uniche quattro tinte del tema che le
+          // servono si passano a mano, cosi le --jm-* non colano fuori
+          // dall'anteprima e non riscrivono --color-* (che da esse dipende).
+          const swatch = {
+            "--sw-bg": v["--jm-bg-app"],
+            "--sw-sur": v["--jm-surface-2"],
+            "--sw-acc": v["--jm-accent"],
+            "--sw-on": v["--jm-on-accent"],
+          } as CSSProperties;
+          const fonts =
+            th.typography.fontUi === th.typography.fontProse
+              ? FONTS[th.typography.fontUi].name
+              : `${FONTS[th.typography.fontUi].name} + ${FONTS[th.typography.fontProse].name}`;
           return (
             <button
               key={th.id}
@@ -184,28 +201,45 @@ export function ThemePanel() {
               onClick={() => setTheme(th.id)}
               aria-pressed={active}
             >
-              <span className="jm-theme-prev" style={vars}>
-                <span className="jm-theme-prev-t">
-                  {t("la telefonata rimandata")}
-                </span>
-                <span className="jm-theme-prev-p">
-                  {t("Trentadue minuti, e una frase alla fine.")}
-                </span>
-                <span className="jm-theme-sw" aria-hidden="true">
-                  <i className="sw-accent" />
-                  <i className="sw-surface" />
-                  <i className="sw-ink" />
-                  <i className="sw-faint" />
+              <span className="jm-theme-prev" style={v as CSSProperties}>
+                <span className="jm-theme-mini">
+                  {/* L'UNICA cosa scritta qui dentro, e su UNA riga sola.
+                      Il resto sono forme: e questo che impedisce al testo di
+                      un font largo, o di una lingua piu lunga, di sfondare
+                      la miniatura e finire sopra il nome. */}
+                  <span className="jm-theme-mt">{t("la telefonata rimandata")}</span>
+                  <span className="jm-theme-bar b1" aria-hidden="true" />
+                  <span className="jm-theme-bar b2" aria-hidden="true" />
+                  <span className="jm-theme-bar b3" aria-hidden="true" />
+                  <span className="jm-theme-bar b4" aria-hidden="true" />
+                  <span className="jm-theme-bar b5" aria-hidden="true" />
+                  <span className="jm-theme-pill" aria-hidden="true" />
                 </span>
               </span>
-              <span className="jm-theme-meta">
-                <span className="jm-theme-name">{th.name}</span>
-                <span className="jm-theme-fonts">
-                  {th.typography.fontUi === th.typography.fontProse
-                    ? FONTS[th.typography.fontUi].name
-                    : `${FONTS[th.typography.fontUi].name} + ${FONTS[th.typography.fontProse].name}`}
-                  {active ? ` . ${t("attivo")}` : ""}
+              <span className="jm-theme-meta" style={swatch}>
+                <span className="jm-theme-chip" aria-hidden="true">
+                  <i className="ch-acc" />
+                  <i className="ch-sur" />
+                  <i className="ch-bg" />
                 </span>
+                <span className="jm-theme-txt">
+                  <span className="jm-theme-name">{th.name}</span>
+                  <span className="jm-theme-fonts">{fonts}</span>
+                </span>
+                {active ? (
+                  <span className="jm-theme-ok" role="img" aria-label={t("attivo")}>
+                    <svg viewBox="0 0 20 20" width="12" height="12" aria-hidden="true">
+                      <path
+                        d="M4 10.5l4 4 8-9"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                ) : null}
               </span>
             </button>
           );

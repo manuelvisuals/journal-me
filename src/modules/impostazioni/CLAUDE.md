@@ -24,6 +24,28 @@ con la barra della quota. Pagina: `src/app/(app)/app/settings/`.
   `delete-account.ts`, `avatar.ts`, `nome.ts`; le rotte in `src/app/api/`
   sono gusci.
 
+## Le schede dei temi (5 settembre 2026)
+
+Mockup approvato: `design/mockups/tema-schede-nuove.html` (scelta "A piu C"
+di Manuel); `design/mockups/tema-schede-finale.html` e la resa esatta del
+CSS che sta in `styles.css`, aperta in un browser.
+
+La versione precedente metteva TESTO VERO dentro un riquadro alto 108px
+fissi. Quante righe diventa quel testo non lo decide il CSS: lo decidono il
+font del tema (quattordici, fra cui un monospace e due garamond), la lingua
+e la larghezza della colonna. Su iPhone, in inglese, in IBM Plex Mono erano
+cinque righe: il testo usciva dal riquadro e si stampava sopra il nome.
+
+Due regole da non togliere, se qualcuno rimette le mani qui:
+
+1. **Dentro l'anteprima non entra testo che possa andare a capo.** Una riga
+   sola con `white-space: nowrap` e i puntini; il resto sono forme (barre,
+   pillola). L'altezza viene da `aspect-ratio`, non da un numero.
+2. **`min-width: 0` su `.jm-theme-card` e `.jm-theme-meta`.** Un figlio di
+   grid non puo farsi piu stretto del suo contenuto: senza quella riga il
+   nome dei font su riga unica allarga la colonna oltre il telefono invece
+   di farsi tagliare.
+
 ## Il profilo: foto e nome (28 agosto 2026)
 
 Mockup approvati: `design/mockups/foto-profilo-flusso.html` (la foto) e

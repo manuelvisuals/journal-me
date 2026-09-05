@@ -1,0 +1,530 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:wght@400&family=Spectral:wght@300;400&family=EB+Garamond:wght@400&family=DM+Sans:wght@400;500&family=Cormorant+Garamond:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font:16px -apple-system,system-ui,sans-serif;display:flex;align-items:flex-start}
+.tel{flex:0 0 422px}
+.tel{width:390px;padding:18px 16px;min-height:100vh}
+.tel.d{--color-ink:#F2EBE2;--color-ink-muted:#C6B7A8;--color-line:rgba(255,255,255,.10);--font-sans:'Inter',system-ui,sans-serif;background:#1A1714;color:#F2EBE2}
+.tel.l{--color-ink:#241E19;--color-ink-muted:#5B4B3E;--color-line:rgba(0,0,0,.10);--font-sans:'Inter',system-ui,sans-serif;background:#F7F2E9;color:#241E19}
+h1{font-size:22px;letter-spacing:-.02em;margin:0 0 4px}
+.lede{font-size:12.5px;opacity:.6;margin:0 0 16px;line-height:1.45}
+button{all:unset}
+.jm-theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(14px * var(--jm-space));
+}
+
+/* =================================================================
+   LA SCHEDA DI UN TEMA (rifatta il 5 settembre 2026).
+   Mockup approvato: design/mockups/tema-schede-nuove.html, scelta
+   "A piu C" di Manuel.
+
+   PERCHE E STATA RIFATTA. La versione precedente metteva dentro
+   l'anteprima del TESTO VERO (un titolo e una frase) dentro un
+   riquadro alto 108px fissi. Quante righe diventi quel testo non lo
+   decide il CSS: lo decidono il font del tema (quattordici diversi,
+   fra cui un monospace e due garamond), la lingua (l'inglese e piu
+   lungo dell'italiano) e la larghezza della colonna. Su iPhone, in
+   inglese, in IBM Plex Mono, erano cinque righe: piu di 108px. Il
+   testo in eccesso non spariva, usciva dal riquadro e si stampava
+   sopra il nome del tema.
+
+   LA REGOLA NUOVA, che vale anche per chi tocchera questo file:
+   dentro l'anteprima non entra testo che possa andare a capo. Una
+   riga sola, tagliata coi puntini, e per il resto forme. Cosi
+   l'altezza la decide aspect-ratio e non il font di turno, e le
+   quattordici schede restano identiche in geometria - che poi e
+   l'unico modo di vedere la differenza fra i temi invece della
+   differenza fra le lunghezze delle frasi.
+   ================================================================= */
+.jm-theme-card {
+  display: block;
+  /* SENZA QUESTO min-width la griglia sfonda (visto in prova il 5
+     settembre 2026): un figlio di grid ha min-width:auto, cioe non
+     puo diventare piu stretto del suo contenuto, e il nome dei font
+     e su una riga sola che non va a capo. "DM Sans + Cormorant
+     Garamond" allargava la colonna oltre il telefono invece di farsi
+     tagliare dai puntini. */
+  min-width: 0;
+  text-align: left;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* La miniatura della schermata vera. Niente height: l'altezza viene
+   dalla larghezza della colonna. */
+.jm-theme-prev {
+  display: block;
+  /* 3:2 e non 4:3: con quattro-cinque righe di paragrafo e il tasto in
+     fondo, il quadrato lasciava un vuoto in mezzo che sembrava un
+     errore. Il rapporto lo decide il contenuto, non il contrario. */
+  aspect-ratio: 3 / 2;
+  padding: calc(9px * var(--jm-space));
+  border-radius: var(--jm-radius-lg);
+  /* Le variabili scoped della card (style inline) vincono su <html>. */
+  background: var(--jm-bg-app);
+  border: var(--jm-border-hairline) solid var(--jm-line);
+  transition:
+    box-shadow 140ms ease,
+    transform 140ms ease;
+}
+
+.jm-theme-card.on .jm-theme-prev {
+  box-shadow: 0 0 0 2px var(--jm-accent);
+}
+
+.jm-theme-card:active .jm-theme-prev {
+  transform: scale(var(--jm-press));
+}
+
+.jm-theme-mini {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: calc(8px * var(--jm-space)) calc(9px * var(--jm-space));
+  background: var(--jm-surface);
+  border: var(--jm-border-hairline) solid var(--jm-line);
+  border-radius: var(--jm-radius-md);
+  overflow: hidden;
+}
+
+/* L'unico testo dell'anteprima. Le tre righe qui sotto sono la
+   guardia: senza di loro torna il difetto di prima. */
+.jm-theme-mt {
+  display: block;
+  font-family: var(--jm-font-serif);
+  font-size: calc(13px * var(--jm-ui-scale));
+  line-height: 1.3;
+  font-weight: var(--jm-weight-prose);
+  letter-spacing: -0.01em;
+  color: var(--jm-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Le righe di prosa, ridotte a forma. Cinque, con l'ultima corta: e
+   il disegno di un paragrafo, e a 170px di larghezza si legge come
+   tale, dove il testo vero sarebbe illeggibile comunque. */
+.jm-theme-bar {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--jm-ink-muted) 42%, transparent);
+  margin-top: calc(9px * var(--jm-space));
+}
+
+.jm-theme-bar.b1 { width: 100%; }
+.jm-theme-bar.b2 { width: 92%; }
+.jm-theme-bar.b3 { width: 97%; }
+.jm-theme-bar.b4 { width: 84%; }
+.jm-theme-bar.b5 { width: 52%; }
+
+.jm-theme-pill {
+  display: block;
+  margin-top: auto;
+  width: calc(44px * var(--jm-ui-scale));
+  height: calc(13px * var(--jm-ui-scale));
+  border-radius: var(--jm-radius-pill);
+  background: var(--jm-accent);
+}
+
+/* La riga sotto: e INTERFACCIA, non tema. Colori dell'app e font di
+   sistema, come fa Apple in Sfondo e in Quadranti - il nome di un
+   tema non si legge dentro il tema. Del tema restano tre bande di
+   colore (--sw-*, passate a mano dal componente). */
+.jm-theme-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: calc(8px * var(--jm-space));
+  padding: calc(9px * var(--jm-space)) 2px 0;
+}
+
+/* Le tre bande del tema. L'anello serve davvero: in chiaro il fondo
+   del tema e quasi bianco come la pagina, e senza bordo la prima
+   banda sparisce e il quadratino sembra tagliato a meta. */
+.jm-theme-chip {
+  display: flex;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-ink) 22%, transparent);
+}
+
+.jm-theme-chip i {
+  display: block;
+  flex: 1;
+}
+
+.jm-theme-chip .ch-acc {
+  background: var(--sw-acc);
+}
+
+.jm-theme-chip .ch-sur {
+  background: var(--sw-sur);
+}
+
+.jm-theme-chip .ch-bg {
+  background: var(--sw-bg);
+}
+
+.jm-theme-txt {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+
+.jm-theme-name {
+  display: block;
+  font-size: calc(var(--jm-text-body) * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-theme-fonts {
+  display: block;
+  font-size: calc(var(--jm-text-meta) * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-theme-ok {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--jm-radius-circle);
+  background: var(--sw-acc);
+  color: var(--sw-on);
+}
+
+
+</style></head><body>
+<div class="tel d"><h1>Tema</h1><p class="lede">Il tema cambia solo come si vede l'app. Le tue giornate non le tocca nessuno.</p><div class="jm-theme-grid"><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#0B0B0C;--jm-surface:#161618;--jm-ink:#F5F5F7;--jm-ink-muted:#B8B8BE;--jm-accent:#F5F5F7;--jm-line:rgba(255, 255, 255, 0.12);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#0B0B0C;--sw-sur:#1F1F22;--sw-acc:#F5F5F7;--sw-on:#1D1D1F">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Minimal</span><span class="jm-theme-fonts">Inter + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#0F0F0F;--jm-surface:#161616;--jm-ink:#EDEDED;--jm-ink-muted:#B0B0B0;--jm-accent:#EDEDED;--jm-line:rgba(237, 237, 237, 0.16);--jm-font-serif:'IBM Plex Mono',ui-monospace,monospace;--jm-weight-prose:400;--jm-radius-lg:0px;--jm-radius-md:0px;--jm-radius-pill:0px;--jm-border-hairline:1px;--jm-press:1;--jm-space:0.88;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#0F0F0F;--sw-sur:#1C1C1C;--sw-acc:#EDEDED;--sw-on:#0A0A0A">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Macchina da scrivere</span><span class="jm-theme-fonts">IBM Plex Mono</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#1B161A;--jm-surface:#241E23;--jm-ink:#F0E7EA;--jm-ink-muted:#C9B6BE;--jm-accent:#D9A3B4;--jm-line:rgba(240, 231, 234, 0.10);--jm-font-serif:'Cormorant Garamond',Georgia,serif;--jm-weight-prose:500;--jm-radius-lg:22px;--jm-radius-md:16px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1.06;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#1B161A;--sw-sur:#2D262C;--sw-acc:#D9A3B4;--sw-on:#241118">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Malva</span><span class="jm-theme-fonts">DM Sans + Cormorant Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card on">
+   <span class="jm-theme-prev" style="--jm-bg-app:#21222C;--jm-surface:#282A36;--jm-ink:#F8F8F2;--jm-ink-muted:#BFC0CC;--jm-accent:#FF8A8A;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'Spectral',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#21222C;--sw-sur:#343746;--sw-acc:#FF8A8A;--sw-on:#2B1214">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Korall ardesia</span><span class="jm-theme-fonts">Inter + Spectral</span></span>
+     <span class="jm-theme-ok"><svg viewBox="0 0 20 20" width="12" height="12"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#1E1B1D;--jm-surface:#262124;--jm-ink:#F6EFEF;--jm-ink-muted:#CBBFC1;--jm-accent:#FF8A8A;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#1E1B1D;--sw-sur:#332C30;--sw-acc:#FF8A8A;--sw-on:#2B1214">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Korall</span><span class="jm-theme-fonts">DM Sans + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#1A1714;--jm-surface:#221E1A;--jm-ink:#EFE7DA;--jm-ink-muted:#C0B2A0;--jm-accent:#D08A5A;--jm-line:rgba(239, 231, 218, 0.10);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:18px;--jm-radius-md:14px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1.08;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#1A1714;--sw-sur:#2A251F;--sw-acc:#D08A5A;--sw-on:#16120F">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Carta</span><span class="jm-theme-fonts">Inter + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#282828;--jm-surface:#3C3836;--jm-ink:#FBF1C7;--jm-ink-muted:#D5C4A1;--jm-accent:#FE8019;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#282828;--sw-sur:#504945;--sw-acc:#FE8019;--sw-on:#2A1403">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Gruvbox</span><span class="jm-theme-fonts">IBM Plex Mono + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#0E0709;--jm-surface:#1D1013;--jm-ink:#F4E7DE;--jm-ink-muted:#CDB7AE;--jm-accent:#E3A15F;--jm-line:rgba(255, 229, 214, 0.075);--jm-font-serif:'Spectral',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:18px;--jm-radius-md:14px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#0E0709;--sw-sur:#241418;--sw-acc:#E3A15F;--sw-on:#1A0E0F">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Wine premium</span><span class="jm-theme-fonts">Inter + Spectral</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#1C1F26;--jm-surface:#262B34;--jm-ink:#E8EAED;--jm-ink-muted:#BFC0CC;--jm-accent:#2DE1C2;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#1C1F26;--sw-sur:#2E343E;--sw-acc:#2DE1C2;--sw-on:#10221F">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Grafit</span><span class="jm-theme-fonts">Inter + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#2E3440;--jm-surface:#3B4252;--jm-ink:#ECEFF4;--jm-ink-muted:#D8DEE9;--jm-accent:#88C0D0;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#2E3440;--sw-sur:#434C5E;--sw-acc:#88C0D0;--sw-on:#12222A">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Nord</span><span class="jm-theme-fonts">DM Sans + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#0F172A;--jm-surface:#1B2438;--jm-ink:#E2E8F0;--jm-ink-muted:#C0CADB;--jm-accent:#38BDF8;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'Spectral',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#0F172A;--sw-sur:#273349;--sw-acc:#38BDF8;--sw-on:#04202E">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Ocean</span><span class="jm-theme-fonts">DM Sans + Spectral</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#1A1B26;--jm-surface:#24283B;--jm-ink:#C0CAF5;--jm-ink-muted:#A9B1D6;--jm-accent:#7AA2F7;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#1A1B26;--sw-sur:#2F3549;--sw-acc:#7AA2F7;--sw-on:#0B1220">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Tokyo Night</span><span class="jm-theme-fonts">IBM Plex Mono + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#282A36;--jm-surface:#343746;--jm-ink:#F8F8F2;--jm-ink-muted:#C4C6D4;--jm-accent:#BD93F9;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#282A36;--sw-sur:#414458;--sw-acc:#BD93F9;--sw-on:#17102A">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Ametista</span><span class="jm-theme-fonts">Inter + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#24273A;--jm-surface:#303446;--jm-ink:#CAD3F5;--jm-ink-muted:#B8C0E0;--jm-accent:#C6A0F6;--jm-line:rgba(255, 255, 255, 0.07);--jm-font-serif:'Cormorant Garamond',Georgia,serif;--jm-weight-prose:500;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#24273A;--sw-sur:#3E4459;--sw-acc:#C6A0F6;--sw-on:#1B0F2B">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Catppuccin</span><span class="jm-theme-fonts">DM Sans + Cormorant Garamond</span></span>
+     
+   </span>
+ </button></div></div>
+<div class="tel l"><h1>Tema</h1><p class="lede">Il tema cambia solo come si vede l'app. Le tue giornate non le tocca nessuno.</p><div class="jm-theme-grid"><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FFFFFF;--jm-surface:#F5F5F7;--jm-ink:#1D1D1F;--jm-ink-muted:#494950;--jm-accent:#1D1D1F;--jm-line:rgba(0, 0, 0, 0.10);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FFFFFF;--sw-sur:#EBEBEF;--sw-acc:#1D1D1F;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Minimal</span><span class="jm-theme-fonts">Inter + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FAFAFA;--jm-surface:#FFFFFF;--jm-ink:#111111;--jm-ink-muted:#3D3D3D;--jm-accent:#111111;--jm-line:rgba(17, 17, 17, 0.18);--jm-font-serif:'IBM Plex Mono',ui-monospace,monospace;--jm-weight-prose:400;--jm-radius-lg:0px;--jm-radius-md:0px;--jm-radius-pill:0px;--jm-border-hairline:1px;--jm-press:1;--jm-space:0.88;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FAFAFA;--sw-sur:#F0F0F0;--sw-acc:#111111;--sw-on:#FAFAFA">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Macchina da scrivere</span><span class="jm-theme-fonts">IBM Plex Mono</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FAF6F5;--jm-surface:#FFFFFF;--jm-ink:#2A2226;--jm-ink-muted:#5A4A52;--jm-accent:#8A4A64;--jm-line:rgba(42, 34, 38, 0.10);--jm-font-serif:'Cormorant Garamond',Georgia,serif;--jm-weight-prose:500;--jm-radius-lg:22px;--jm-radius-md:16px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1.06;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FAF6F5;--sw-sur:#F4EEEE;--sw-acc:#8A4A64;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Malva</span><span class="jm-theme-fonts">DM Sans + Cormorant Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card on">
+   <span class="jm-theme-prev" style="--jm-bg-app:#F1F1F6;--jm-surface:#FFFFFF;--jm-ink:#21222C;--jm-ink-muted:#4B4D5E;--jm-accent:#B0574F;--jm-line:rgba(33, 34, 44, 0.10);--jm-font-serif:'Spectral',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#F1F1F6;--sw-sur:#E7E8F0;--sw-acc:#B0574F;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Korall ardesia</span><span class="jm-theme-fonts">Inter + Spectral</span></span>
+     <span class="jm-theme-ok"><svg viewBox="0 0 20 20" width="12" height="12"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FBF5F4;--jm-surface:#FFFFFF;--jm-ink:#241D1F;--jm-ink-muted:#54464A;--jm-accent:#B0574F;--jm-line:rgba(36, 29, 31, 0.10);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FBF5F4;--sw-sur:#F3E9E7;--sw-acc:#B0574F;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Korall</span><span class="jm-theme-fonts">DM Sans + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#F7F2E9;--jm-surface:#FFFDF8;--jm-ink:#241C17;--jm-ink-muted:#55473D;--jm-accent:#A8542E;--jm-line:rgba(36, 28, 23, 0.10);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:18px;--jm-radius-md:14px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1.08;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#F7F2E9;--sw-sur:#F2EADC;--sw-acc:#A8542E;--sw-on:#FFFDF8">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Carta</span><span class="jm-theme-fonts">Inter + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FBF1C7;--jm-surface:#F9F5D7;--jm-ink:#282828;--jm-ink-muted:#504945;--jm-accent:#AF3A03;--jm-line:rgba(40, 40, 40, 0.10);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FBF1C7;--sw-sur:#EBDBB2;--sw-acc:#AF3A03;--sw-on:#FBF1C7">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Gruvbox</span><span class="jm-theme-fonts">IBM Plex Mono + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FBF7F2;--jm-surface:#FFFFFF;--jm-ink:#2B1A17;--jm-ink-muted:#5E463E;--jm-accent:#9A5A22;--jm-line:rgba(43, 26, 23, 0.10);--jm-font-serif:'Spectral',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:18px;--jm-radius-md:14px;--jm-radius-pill:999px;--jm-border-hairline:1px;--jm-press:0.97;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FBF7F2;--sw-sur:#F4EBE2;--sw-acc:#9A5A22;--sw-on:#FFFDF9">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Wine premium</span><span class="jm-theme-fonts">Inter + Spectral</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#F4F5F7;--jm-surface:#FFFFFF;--jm-ink:#1C1F26;--jm-ink-muted:#454B55;--jm-accent:#0E7C6B;--jm-line:rgba(28, 31, 38, 0.10);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#F4F5F7;--sw-sur:#EBEDF1;--sw-acc:#0E7C6B;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Grafit</span><span class="jm-theme-fonts">Inter + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#ECEFF4;--jm-surface:#FFFFFF;--jm-ink:#2E3440;--jm-ink-muted:#434C5E;--jm-accent:#5477A3;--jm-line:rgba(46, 52, 64, 0.10);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#ECEFF4;--sw-sur:#E5E9F0;--sw-acc:#5477A3;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Nord</span><span class="jm-theme-fonts">DM Sans + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#EFF4F9;--jm-surface:#FFFFFF;--jm-ink:#0F172A;--jm-ink-muted:#3C4A61;--jm-accent:#0369A1;--jm-line:rgba(15, 23, 42, 0.10);--jm-font-serif:'Spectral',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#EFF4F9;--sw-sur:#E6EDF5;--sw-acc:#0369A1;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Ocean</span><span class="jm-theme-fonts">DM Sans + Spectral</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#E1E2E7;--jm-surface:#FFFFFF;--jm-ink:#3760BF;--jm-ink-muted:#4A5A9E;--jm-accent:#1A71E7;--jm-line:rgba(55, 96, 191, 0.10);--jm-font-serif:'Newsreader',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#E1E2E7;--sw-sur:#D8DCEA;--sw-acc:#1A71E7;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Tokyo Night</span><span class="jm-theme-fonts">IBM Plex Mono + Newsreader</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#FFFBEB;--jm-surface:#FFFFFF;--jm-ink:#1F1F1F;--jm-ink-muted:#4A4A4A;--jm-accent:#644AC9;--jm-line:rgba(31, 31, 31, 0.10);--jm-font-serif:'EB Garamond',Georgia,serif;--jm-weight-prose:400;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#FFFBEB;--sw-sur:#F5F1E3;--sw-acc:#644AC9;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Ametista</span><span class="jm-theme-fonts">Inter + EB Garamond</span></span>
+     
+   </span>
+ </button><button class="jm-theme-card">
+   <span class="jm-theme-prev" style="--jm-bg-app:#EFF1F5;--jm-surface:#FFFFFF;--jm-ink:#4C4F69;--jm-ink-muted:#5C5F77;--jm-accent:#8839EF;--jm-line:rgba(76, 79, 105, 0.10);--jm-font-serif:'Cormorant Garamond',Georgia,serif;--jm-weight-prose:500;--jm-radius-lg:16px;--jm-radius-md:12px;--jm-radius-pill:99px;--jm-border-hairline:1px;--jm-press:0.94;--jm-space:1;--jm-ui-scale:1"><span class="jm-theme-mini">
+     <span class="jm-theme-mt">the phone call put off</span>
+     <span class="jm-theme-bar b1"></span><span class="jm-theme-bar b2"></span><span class="jm-theme-bar b3"></span><span class="jm-theme-bar b4"></span><span class="jm-theme-bar b5"></span>
+     <span class="jm-theme-pill"></span>
+   </span></span>
+   <span class="jm-theme-meta" style="--sw-bg:#EFF1F5;--sw-sur:#E6E9EF;--sw-acc:#8839EF;--sw-on:#FFFFFF">
+     <span class="jm-theme-chip"><i class="ch-acc"></i><i class="ch-sur"></i><i class="ch-bg"></i></span>
+     <span class="jm-theme-txt"><span class="jm-theme-name">Catppuccin</span><span class="jm-theme-fonts">DM Sans + Cormorant Garamond</span></span>
+     
+   </span>
+ </button></div></div>
+</body></html>
