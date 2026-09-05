@@ -147,7 +147,7 @@ const it: Testi = {
     titolo: "Racconta la giornata.",
     titoloDue: "Il resto lo scrive lui.",
     sotto:
-      "Due minuti a voce, la sera. dayalogue trascrive parola per parola, scrive titolo e sintesi, tiene in ordine persone e impegni. Mese dopo mese, ne esce un libro.",
+      "Due minuti a voce, la sera. La mattina dopo la giornata e scritta. Mese dopo mese, ne esce un libro.",
     cta: "Inizia ora",
     ctaSecondo: "Come funziona",
     sottoCta: "Si apre e basta. Niente account, niente carta, niente pubblicita.",
@@ -249,7 +249,7 @@ const it: Testi = {
   giornata: {
     etichetta: "La giornata",
     titolo: "Parli tu. Scrive lui.",
-    testo: "Alla fine dei due minuti la giornata e gia una pagina: titolo, sintesi, aree, persone, le foto del giorno, le misure. Parole tue, messe in ordine.",
+    testo: "Alla fine dei due minuti la giornata e gia una pagina. Parole tue, messe in ordine.",
     punti: [
       { titolo: "Titolo e sintesi", testo: "Un titolo che ricorda, due righe che raccontano." },
       { titolo: "Le foto del giorno", testo: "Dal rullino, in miniatura, accanto alle parole." },
@@ -264,15 +264,15 @@ const it: Testi = {
     etichetta: "Come funziona",
     titolo: "Tre cose, e poi basta",
     voci: [
-      { titolo: "La sera, parli", testo: "Due minuti tenendo premuto il microfono. Oppure scrivi, se e una di quelle sere." },
-      { titolo: "Si scrive da sola", testo: "Titolo, sintesi per aree, persone, misure, impegni. Se un nome non e chiaro, te lo chiede prima di salvare." },
-      { titolo: "Rileggi quando vuoi", testo: "Il mese, la giornata singola, e i recap che arrivano da soli, scritti come un capitolo." },
+      { titolo: "La sera, parli", testo: "Due minuti col microfono premuto. O scrivi, se e una di quelle sere." },
+      { titolo: "Si scrive da sola", testo: "Titolo, sintesi, persone, impegni. Se un nome non e chiaro, te lo chiede." },
+      { titolo: "Rileggi quando vuoi", testo: "Il mese, una giornata sola, o il recap che arriva da se." },
     ],
   },
   mentre: {
     etichetta: "Mentre fai altro",
     titolo: "Non e un compito. E una chiacchiera.",
-    testo: "Mentre ti fai la barba, mentre ti strucchi, mentre aspetti che l'acqua bolla. Parli, e la giornata e scritta.",
+    testo: "Mentre ti fai la barba, mentre aspetti che l'acqua bolla. Parli, ed e scritta.",
     didascalie: [
       "\"...e la riunione l'hanno spostata a lunedi, va bene cosi...\"",
       "\"...e poi stasera mi ha chiamato Marco. Due anni.\"",
@@ -282,7 +282,7 @@ const it: Testi = {
     etichetta: "La cassaforte",
     titolo: "Nemmeno noi possiamo leggere il tuo diario.",
     testo:
-      "Ogni giornata viene chiusa a chiave sul dispositivo prima di partire, con la stessa serratura di Safari e Chrome (AES-256). Sul server arriva un blocco illeggibile: chi ha fatto l'app, con accesso completo al database, vede solo quello.",
+      "Ogni giornata si chiude a chiave sul dispositivo, con la serratura di Safari e Chrome. Sul server arriva un blocco illeggibile: anche noi vediamo solo quello.",
     telefono: "Sul tuo telefono",
     server: "Sul server",
     leggibile: "leggibile",
@@ -290,11 +290,11 @@ const it: Testi = {
     punti: [
       {
         titolo: "La chiave sono otto parole",
-        testo: "Le ricevi una volta, le tieni con uno screenshot. Viaggiano nel portachiavi di iCloud fra i tuoi dispositivi.",
+        testo: "Le ricevi una volta e le tieni con uno screenshot. Viaggiano nel portachiavi di iCloud.",
       },
       {
         titolo: "Nessun recupero",
-        testo: "Chi perde le parole e tutti i dispositivi perde il diario. Nessuno puo recuperarlo: e questo il punto.",
+        testo: "Chi perde le parole e i dispositivi perde il diario. Nessuno puo recuperarlo: e il punto.",
       },
       {
         titolo: "L'AI legge solo quando glielo chiedi",
@@ -409,7 +409,7 @@ const it: Testi = {
     voci: [
       {
         d: "dayalogue e gratis?",
-        r: "Scrivere, salvare e rileggere e gratis per sempre, senza carta di credito e senza pubblicita. L'AI (trascrizione, titolo, sintesi) e in regalo per dieci giornate; poi, senza limiti, con premium.",
+        r: "Scrivere, salvare e rileggere e gratis per sempre. L'AI e in regalo per dieci giornate, poi senza limiti con premium.",
       },
       {
         d: "Dove finiscono le mie giornate?",
@@ -421,11 +421,11 @@ const it: Testi = {
       },
       {
         d: "E se perdo il telefono?",
-        r: "Con un account ritrovi tutto su un altro dispositivo con le tue otto parole. Senza account, o senza le parole, il diario non si recupera: nessuno ha la chiave, ed e questo il punto.",
+        r: "Con un account e le tue otto parole ritrovi tutto altrove. Senza, il diario non si recupera: nessuno ha la chiave.",
       },
       {
         d: "Posso portarmi via i miei dati?",
-        r: "Si, in qualsiasi momento: un file solo con tutte le giornate, gli obiettivi, i memo e i recap, che si reimporta dove vuoi. E l'account si cancella dall'app, senza scrivere a nessuno.",
+        r: "Si, quando vuoi: un file solo con tutto, che si reimporta dove vuoi. E l'account si cancella dall'app.",
       },
       {
         d: "C'e l'app per iPhone?",
@@ -493,7 +493,7 @@ const en: Testi = {
     titolo: "Tell your day.",
     titoloDue: "It writes the rest.",
     sotto:
-      "Two minutes out loud, in the evening. dayalogue transcribes word for word, writes the headline and the summary, keeps people and tasks in order. Month after month, it becomes a book.",
+      "Two minutes out loud, in the evening. By morning the day is written. Month after month, it becomes a book.",
     cta: "Get started",
     ctaSecondo: "How it works",
     sottoCta: "Just open it. No account, no card, no ads.",
@@ -595,7 +595,7 @@ const en: Testi = {
   giornata: {
     etichetta: "Your day",
     titolo: "You talk. It writes.",
-    testo: "When the two minutes are over your day is already a page: headline, summary, areas, people, the day's photos, the measures. Your words, put in order.",
+    testo: "When the two minutes are over, the day is already a page. Your words, put in order.",
     punti: [
       { titolo: "Headline and summary", testo: "A headline that remembers, two lines that tell." },
       { titolo: "The day's photos", testo: "From your camera roll, as thumbnails, next to the words." },
@@ -610,15 +610,15 @@ const en: Testi = {
     etichetta: "How it works",
     titolo: "Three things, and that is it",
     voci: [
-      { titolo: "In the evening, you talk", testo: "Two minutes holding the microphone. Or you write, if it is one of those evenings." },
-      { titolo: "It writes itself", testo: "Headline, summary by area, people, measures, tasks. If a name is unclear, it asks before saving." },
-      { titolo: "Read back whenever", testo: "The month, a single day, and the recaps that arrive on their own, written like a chapter." },
+      { titolo: "In the evening, you talk", testo: "Two minutes with the microphone held down. Or you write, if it is one of those evenings." },
+      { titolo: "It writes itself", testo: "Headline, summary, people, tasks. If a name is unclear, it asks." },
+      { titolo: "Read back whenever", testo: "The month, a single day, or the recap that arrives on its own." },
     ],
   },
   mentre: {
     etichetta: "While you do something else",
     titolo: "It is not a chore. It is a chat.",
-    testo: "While you shave, while you take your make-up off, while you wait for the water to boil. You talk, and the day is written.",
+    testo: "While you shave, while you wait for the water to boil. You talk, and it is written.",
     didascalie: [
       "\"...and they moved the meeting to Monday, which is fine...\"",
       "\"...and then tonight Marco called. Two years.\"",
@@ -628,7 +628,7 @@ const en: Testi = {
     etichetta: "The vault",
     titolo: "Not even we can read your journal.",
     testo:
-      "Every day is locked on your device before it leaves, with the same lock Safari and Chrome use (AES-256). What reaches the server is an unreadable block: the people who made the app, with full access to the database, see only that.",
+      "Every day is locked on your device, with the lock Safari and Chrome use. What reaches the server is an unreadable block: that is all we see too.",
     telefono: "On your phone",
     server: "On the server",
     leggibile: "readable",
@@ -636,11 +636,11 @@ const en: Testi = {
     punti: [
       {
         titolo: "The key is eight words",
-        testo: "You receive them once and keep them with a screenshot. They travel in your iCloud Keychain between your devices.",
+        testo: "You get them once and keep them with a screenshot. They travel in your iCloud Keychain.",
       },
       {
         titolo: "No recovery",
-        testo: "Lose the words and all your devices, and the journal is gone. Nobody can recover it: that is the point.",
+        testo: "Lose the words and every device, and the journal is gone. Nobody can recover it: that is the point.",
       },
       {
         titolo: "The AI reads only when you ask",
@@ -755,7 +755,7 @@ const en: Testi = {
     voci: [
       {
         d: "Is dayalogue free?",
-        r: "Writing, saving and reading back is free forever, with no credit card and no ads. The AI (transcription, headline, summary) is a gift for ten days; after that, unlimited, with premium.",
+        r: "Writing, saving and reading back is free forever. The AI is a gift for ten days, then unlimited with premium.",
       },
       {
         d: "Where do my days end up?",
@@ -767,11 +767,11 @@ const en: Testi = {
       },
       {
         d: "What if I lose my phone?",
-        r: "With an account you get everything back on another device with your eight words. Without an account, or without the words, the journal cannot be recovered: nobody has the key, and that is the point.",
+        r: "With an account and your eight words you get everything back elsewhere. Without them, it cannot be recovered: nobody has the key.",
       },
       {
         d: "Can I take my data with me?",
-        r: "Yes, at any time: a single file with all your days, goals, memos and recaps, which you can re-import anywhere. And you can delete your account from inside the app, without writing to anyone.",
+        r: "Yes, whenever: one file with everything, which you can re-import anywhere. And the account deletes from inside the app.",
       },
       {
         d: "Is there an iPhone app?",
