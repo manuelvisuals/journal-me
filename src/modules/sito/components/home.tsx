@@ -381,7 +381,7 @@ export function HomeSito({
             <div className="jm-sito2-eroe-foto">
               {/* L'iPhone fotografato, con la schermata della sera. Sfondo
                   trasparente: sta sulla carta del tema, non su un rettangolo. */}
-              <Foto nome="iphone-sera" className="telefono" eager />
+              <Foto nome="iphone-giornata" className="telefono" eager />
             </div>
           </div>
         </section>
@@ -656,9 +656,12 @@ export function HomeSito({
                 )}
               </div>
               <div className="jm-sito-store-dev">
-                <div className="jm-sito-dev piccolo">
-                  <SchermoOggi t={t} tutte={false} dock={false} />
-                </div>
+                {/* L'iPhone fotografato con la schermata della sera. Stava
+                    nell'eroe fino al 5 settembre 2026; li adesso c'e la
+                    giornata scritta, e questa foto e finita dove parla
+                    davvero di iPhone. Sfondo trasparente: sta sulla carta
+                    del tema, non su un rettangolo. */}
+                <Foto nome="iphone-sera" className="jm-sito-store-foto" />
               </div>
             </div>
           </div>

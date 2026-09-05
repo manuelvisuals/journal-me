@@ -1756,19 +1756,31 @@
   position: relative;
   overflow: hidden;
   padding: 56px 0 0;
-  background: var(--jm-bg);
+  /* La fotografia (public/sito/salotto-voce.webp): lei che parla al
+     telefono, di giorno, in casa. Il colore sotto e la carta del tema,
+     per chi la sta ancora scaricando. */
+  background: var(--jm-bg-app) url("/sito/salotto-voce.webp") 62% 18% / cover no-repeat;
 }
-/* La luce calda dietro il telefono: e il tramonto del tema, non una foto. */
+/* IL VELO, e perche cambia direzione col telefono.
+   Su schermo largo il testo sta a sinistra e la foto respira a destra:
+   il velo va da sinistra a destra. Su un telefono la colonna e UNA, il
+   testo finirebbe sopra la faccia e diventerebbe illeggibile - provato
+   il 5 settembre 2026. Quindi sotto i 768px il velo si gira di novanta
+   gradi: quasi pieno in alto dove ci sono le parole, aperto in basso
+   dove c'e il telefono. */
 .jm-sito2-eroe::before {
   content: "";
   position: absolute;
-  right: -20%;
-  top: 0;
-  width: 80%;
-  height: 100%;
+  inset: 0;
   pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--jm-accent) 18%, transparent), transparent 72%);
-  filter: blur(20px);
+  background: linear-gradient(
+    180deg,
+    var(--jm-bg-app) 0%,
+    color-mix(in srgb, var(--jm-bg-app) 96%, transparent) 40%,
+    color-mix(in srgb, var(--jm-bg-app) 62%, transparent) 58%,
+    color-mix(in srgb, var(--jm-bg-app) 10%, transparent) 82%,
+    transparent 100%
+  );
 }
 .jm-sito2-eroe-in {
   position: relative;
@@ -1779,7 +1791,9 @@
   text-align: center;
 }
 .jm-sito2-eroe-t {
-  max-width: 52ch;
+  /* min() e non 52ch secco: su un telefono stretto 52ch sono piu larghi
+     dello schermo e le righe uscivano dal bordo destro. */
+  max-width: min(52ch, 100%);
 }
 .jm-sito2-sotto {
   margin-top: 18px;
@@ -1812,6 +1826,26 @@
   .jm-sito2-eroe {
     padding: 72px 0 0;
     min-height: 720px;
+    display: flex;
+    align-items: center;
+  }
+  .jm-sito2-eroe::before {
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--jm-bg-app) 97%, transparent) 0%,
+        color-mix(in srgb, var(--jm-bg-app) 93%, transparent) 30%,
+        color-mix(in srgb, var(--jm-bg-app) 62%, transparent) 48%,
+        color-mix(in srgb, var(--jm-bg-app) 12%, transparent) 68%,
+        transparent 100%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--jm-bg-app) 35%, transparent),
+        transparent 26%,
+        transparent 76%,
+        color-mix(in srgb, var(--jm-bg-app) 55%, transparent)
+      );
   }
   .jm-sito2-eroe-in {
     flex-direction: row;
@@ -1832,14 +1866,34 @@
     justify-content: flex-start;
   }
   .jm-sito2-eroe-foto {
-    flex: 0 0 46%;
+    /* Il telefono sta alla sua spalla, non sulla sua faccia: e la
+       ragione per cui e stretto e schiacciato in basso a destra. */
+    /* width: auto annulla il width:100% della regola base: senza, il
+       riquadro del telefono resta largo quanto tutta la colonna e
+       schiaccia il testo a un terzo (visto in prova il 5 settembre). */
+    width: auto;
+    flex: 0 0 auto;
     justify-content: flex-end;
-    margin-bottom: -9%;
+    align-items: flex-end;
+    align-self: stretch;
+    margin-bottom: -7%;
+    margin-right: -2%;
   }
   .jm-sito2-eroe-foto .telefono {
-    width: 100%;
-    max-width: 520px;
+    width: min(30vw, 300px);
+    max-width: none;
   }
+}
+
+/* La foto dell'iPhone nella sezione App Store: e una fotografia con lo
+   sfondo trasparente, non un rettangolo, quindi niente cornice e niente
+   fondo - solo l'ombra che la stacca dalla carta. */
+.jm-sito-store-foto {
+  display: block;
+  width: min(78%, 260px);
+  height: auto;
+  margin: 0 auto;
+  filter: drop-shadow(0 30px 50px color-mix(in oklab, var(--jm-shadow) 26%, transparent));
 }
 
 /* -------------------------------------------------------- la giornata */
