@@ -120,6 +120,12 @@ export async function transazioneDaApple(transactionId: string): Promise<Transaz
     }
     // 4040010 = TransactionIdNotFoundError: si prova l'altro ambiente.
     if (status === 404) continue;
+    // Finche l'app non e pubblicata sull'App Store, il server di PRODUZIONE
+    // di Apple risponde 401 anche a una chiave buona (visto il 5 settembre
+    // 2026: la stessa chiave in sandbox dava 404, cioe valida). Un 401 in
+    // produzione dice quindi "prova in sandbox", non "chiave sbagliata";
+    // e la sandbox a dire l'ultima parola.
+    if (status === 401 && base === PRODUZIONE) continue;
     if (status === 401) throw new Error("Apple: chiave o issuer non validi (401)");
     throw new Error(`Apple: risposta ${status}`);
   }
