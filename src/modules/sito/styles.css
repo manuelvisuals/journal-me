@@ -1757,11 +1757,8 @@
   overflow: hidden;
   padding: 56px 0 0;
   /* La fotografia (public/sito/salotto-voce.webp): lei che parla al
-     telefono, di giorno, in casa. E SPECCHIATA apposta: il telefono sta
-     a sinistra e il testo a destra (scelta di Manuel del 5 settembre
-     2026), e con l'originale lei finiva proprio sotto le parole. Girata,
-     sta a sinistra vicino al telefono e guarda verso il titolo. Il
-     colore sotto e la carta del tema, per chi la sta scaricando. */
+     telefono, di giorno, in casa. Il colore sotto e la carta del tema,
+     per chi la sta ancora scaricando. */
   background: var(--jm-bg-app) url("/sito/salotto-voce.webp") 62% 18% / cover no-repeat;
 }
 /* IL VELO, e perche cambia direzione col telefono.
@@ -1835,11 +1832,11 @@
   .jm-sito2-eroe::before {
     background:
       linear-gradient(
-        270deg,
+        90deg,
         color-mix(in srgb, var(--jm-bg-app) 97%, transparent) 0%,
-        color-mix(in srgb, var(--jm-bg-app) 95%, transparent) 40%,
-        color-mix(in srgb, var(--jm-bg-app) 80%, transparent) 58%,
-        color-mix(in srgb, var(--jm-bg-app) 25%, transparent) 76%,
+        color-mix(in srgb, var(--jm-bg-app) 93%, transparent) 30%,
+        color-mix(in srgb, var(--jm-bg-app) 62%, transparent) 48%,
+        color-mix(in srgb, var(--jm-bg-app) 12%, transparent) 68%,
         transparent 100%
       ),
       linear-gradient(
@@ -1851,10 +1848,7 @@
       );
   }
   .jm-sito2-eroe-in {
-    /* row-reverse e non row: nell'HTML il testo viene prima (conta per
-       chi legge e per chi indicizza), a schermo il telefono sta a
-       sinistra. */
-    flex-direction: row-reverse;
+    flex-direction: row;
     align-items: center;
     gap: 40px;
     text-align: left;
@@ -1879,14 +1873,14 @@
        schiaccia il testo a un terzo (visto in prova il 5 settembre). */
     width: auto;
     flex: 0 0 auto;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: flex-end;
     align-self: stretch;
-    margin-bottom: -10%;
-    margin-left: -5%;
+    margin-bottom: -7%;
+    margin-right: -2%;
   }
   .jm-sito2-eroe-foto .telefono {
-    width: min(27vw, 275px);
+    width: min(30vw, 300px);
     max-width: none;
   }
 }
