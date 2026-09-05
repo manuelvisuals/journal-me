@@ -1785,11 +1785,6 @@
     transparent 100%
   );
 }
-/* Sotto i 768px la foto resta lo sfondo della sezione: c'e una colonna
-   sola, e affiancare non si puo. */
-.jm-sito2-eroe-sfondo {
-  display: none;
-}
 .jm-sito2-eroe-in {
   position: relative;
   display: flex;
@@ -1832,37 +1827,10 @@
 }
 @media (min-width: 768px) {
   .jm-sito2-eroe {
-    /* Il respiro in alto passa al contenuto: se resta sulla sezione, la
-       colonna della foto comincia 72px piu sotto e si vede la riga. */
-    padding: 0;
+    padding: 72px 0 0;
     min-height: 720px;
-    /* TRE ZONE AFFIANCATE (scelta di Manuel, 5 settembre 2026): telefono
-       a sinistra sulla carta pulita, parole al centro, lei a destra. La
-       foto smette di stare DIETRO a tutto - era quello a farle finire il
-       telefono addosso - e diventa una colonna sua che arriva al bordo
-       destro della finestra. */
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(300px, 32%, 560px);
+    display: flex;
     align-items: center;
-    background-image: none;
-  }
-  /* Niente velo: dietro le parole adesso c'e carta, non una fotografia. */
-  .jm-sito2-eroe::before {
-    display: none;
-  }
-  .jm-sito2-eroe-sfondo {
-    display: block;
-    grid-column: 2;
-    align-self: stretch;
-    background: url("/sito/salotto-voce.webp") 62% 30% / cover no-repeat;
-    /* Il bordo sinistro non e un taglio netto: sfuma nella carta. */
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%);
-    mask-image: linear-gradient(90deg, transparent 0%, #000 22%);
-  }
-  .jm-sito2-eroe .jm-sito-h1 {
-    /* Il titolo divide la riga con altre due cose: sotto i 60px ci sta
-       su due righe come e scritto. */
-    font-size: clamp(38px, 4.4vw, 60px);
   }
   .jm-sito2-eroe::before {
     background:
@@ -1886,11 +1854,9 @@
     /* row-reverse e non row: nell'HTML il testo viene prima (conta per
        chi legge e per chi indicizza), a schermo il telefono sta a
        sinistra. */
-    grid-column: 1;
-    padding-top: 72px;
     flex-direction: row-reverse;
     align-items: center;
-    gap: 32px;
+    gap: 40px;
     text-align: left;
   }
   .jm-sito2-eroe-t {
@@ -1916,10 +1882,11 @@
     justify-content: flex-start;
     align-items: flex-end;
     align-self: stretch;
-    margin-bottom: -8%;
+    margin-bottom: -10%;
+    margin-left: -5%;
   }
   .jm-sito2-eroe-foto .telefono {
-    width: clamp(190px, 17vw, 250px);
+    width: min(27vw, 275px);
     max-width: none;
   }
 }

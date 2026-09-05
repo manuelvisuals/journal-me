@@ -384,11 +384,6 @@ export function HomeSito({
               <Foto nome="iphone-giornata" className="telefono" eager />
             </div>
           </div>
-          {/* La terza colonna: lei che parla. Su schermo largo e una
-              colonna sua a destra, cosi il telefono a sinistra non le
-              finisce piu addosso; sotto i 768px torna a essere lo sfondo
-              della sezione. */}
-          <div className="jm-sito2-eroe-sfondo" aria-hidden="true" />
         </section>
 
         {/* -------------------------------------------- la giornata */}
