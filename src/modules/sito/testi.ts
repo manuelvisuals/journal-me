@@ -74,6 +74,7 @@ export type Testi = {
     etichetta: string;
     titolo: string;
     testo: string;
+    soloTu: string;
     telefono: string;
     server: string;
     leggibile: string;
@@ -303,6 +304,7 @@ const it: Testi = {
     titolo: "Nemmeno noi possiamo leggere il tuo diario.",
     testo:
       "Ogni giornata si chiude a chiave sul dispositivo, con la serratura di Safari e Chrome. Sul server arriva un blocco illeggibile: anche noi vediamo solo quello.",
+    soloTu: "Solo tu hai la chiave.",
     telefono: "Sul tuo telefono",
     server: "Sul server",
     leggibile: "leggibile",
@@ -425,7 +427,7 @@ const it: Testi = {
   },
   domande: {
     etichetta: "Domande",
-    titolo: "Quello che chiedono tutti",
+    titolo: "Domande Frequenti",
     voci: [
       {
         d: "dayalogue e gratis?",
@@ -663,6 +665,7 @@ const en: Testi = {
     titolo: "Not even we can read your journal.",
     testo:
       "Every day is locked on your device, with the lock Safari and Chrome use. What reaches the server is an unreadable block: that is all we see too.",
+    soloTu: "Only you hold the key.",
     telefono: "On your phone",
     server: "On the server",
     leggibile: "readable",
@@ -785,7 +788,7 @@ const en: Testi = {
   },
   domande: {
     etichetta: "Questions",
-    titolo: "What everybody asks",
+    titolo: "Frequently asked questions",
     voci: [
       {
         d: "Is dayalogue free?",

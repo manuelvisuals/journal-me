@@ -516,6 +516,7 @@ export function HomeSito({
               <p className="jm-sito-kick">{t.cassaforte.etichetta}</p>
               <h2 className="jm-sito-h2">{t.cassaforte.titolo}</h2>
               <p className="big">{t.cassaforte.testo}</p>
+              <p className="jm-sito4-solo-tu">{t.cassaforte.soloTu}</p>
             </div>
             <div className="jm-sito-cassa-viz">
               <div className="jm-sito-cassa-box">
@@ -643,37 +644,21 @@ export function HomeSito({
         {/* ------------------------------------------- iPhone / App Store */}
         <section className="jm-sito-sez" id="iphone">
           <div className="jm-sito-cont">
-            <div className="jm-sito-store">
-              <div className="jm-sito-store-t">
+            <div className="jm-sito4-store-banner">
+              <div>
                 <p className="jm-sito-kick">{t.iphone.etichetta}</p>
                 <h2 className="jm-sito-h2 piccolo">{t.iphone.titolo}</h2>
                 <p>{t.iphone.testo}</p>
-                <p className="jm-sito-store-home">
-                  <Icona nome="condividi" />
-                  {t.iphone.home}
-                </p>
-                {/* Il badge: disegnato al suo posto, spento finche l'app non
-                    e pubblicata (regola del progetto: nessuna schermata
-                    promette cio che non esiste). Con APP_STORE_URL diventa
-                    un link vero, senza toccare il resto. */}
-                {APP_STORE_URL ? (
-                  <a href={APP_STORE_URL} className="jm-sito-badge">
-                    <BadgeDentro sopra={t.iphone.badgeSopra} nome={t.iphone.badgeNome} />
-                  </a>
-                ) : (
-                  <span className="jm-sito-badge spento" aria-label={`${t.iphone.badgeSopra} ${t.iphone.badgeNome}`}>
-                    <BadgeDentro sopra={t.iphone.badgeSopra} nome={t.iphone.badgeNome} />
-                  </span>
-                )}
               </div>
-              <div className="jm-sito-store-dev">
-                {/* L'iPhone fotografato con la schermata della sera. Stava
-                    nell'eroe fino al 5 settembre 2026; li adesso c'e la
-                    giornata scritta, e questa foto e finita dove parla
-                    davvero di iPhone. Sfondo trasparente: sta sulla carta
-                    del tema, non su un rettangolo. */}
-                <Foto nome="iphone-sera" className="jm-sito-store-foto" />
-              </div>
+              {APP_STORE_URL ? (
+                <a href={APP_STORE_URL} className="jm-sito-badge">
+                  <BadgeDentro sopra={t.iphone.badgeSopra} nome={t.iphone.badgeNome} />
+                </a>
+              ) : (
+                <span className="jm-sito-badge spento" aria-label={`${t.iphone.badgeSopra} ${t.iphone.badgeNome}`}>
+                  <BadgeDentro sopra={t.iphone.badgeSopra} nome={t.iphone.badgeNome} />
+                </span>
+              )}
             </div>
           </div>
         </section>

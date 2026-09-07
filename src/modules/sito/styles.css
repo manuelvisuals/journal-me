@@ -2146,8 +2146,7 @@
    versioni congelate e il loro codice continua a fare da archivio. */
 .jm-sito4 .jm-sito-promesse-sez,
 .jm-sito4 #funzioni,
-.jm-sito4 #condizioni,
-.jm-sito4 #iphone {
+.jm-sito4 #condizioni {
   display: none;
 }
 
@@ -2167,6 +2166,63 @@
 }
 .jm-sito4-giornata-foto {
   margin-top: 54px;
+}
+.jm-sito4-solo-tu {
+  margin-top: 22px;
+  color: var(--jm-sito-su-foto);
+  font-family: var(--jm-font-marchio);
+  font-size: calc(30px * var(--jm-ui-scale));
+  line-height: 1.15;
+}
+.jm-sito4 #iphone {
+  padding-block: 36px;
+}
+.jm-sito4 #iphone .jm-sito-cont {
+  max-width: none;
+  padding-inline: 20px;
+}
+.jm-sito4-store-banner {
+  position: relative;
+  isolation: isolate;
+  min-height: 270px;
+  overflow: hidden;
+  padding: 42px clamp(28px, 6vw, 92px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  border-radius: var(--jm-radius-xl);
+  color: var(--jm-sito-su-foto);
+  background: url("/sito/comodino.webp") center 58% / cover no-repeat;
+}
+.jm-sito4-store-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(var(--jm-sito-velo), .9), rgba(var(--jm-sito-velo), .38));
+}
+.jm-sito4-store-banner .jm-sito-kick,
+.jm-sito4-store-banner .jm-sito-h2,
+.jm-sito4-store-banner p {
+  color: inherit;
+}
+.jm-sito4-store-banner > div > p:last-child {
+  max-width: 54ch;
+  margin-top: 10px;
+  line-height: 1.55;
+  opacity: .82;
+}
+.jm-sito4-store-banner .jm-sito-badge {
+  flex: 0 0 auto;
+}
+@media (max-width: 700px) {
+  .jm-sito4-store-banner {
+    min-height: 330px;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+  }
 }
 .jm-sito4 .jm-sito-dev.grande {
   max-width: 430px;
