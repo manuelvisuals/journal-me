@@ -417,6 +417,25 @@ export function HomeSito({
           </div>
         </section>
 
+        {/* ------------------------------------------ mentre fai altro */}
+        <section className="jm-sito-sez mentre" id="mentre">
+          <div className="jm-sito-cont">
+            <div className="jm-sito-testa">
+              <p className="jm-sito-kick">{t.mentre.etichetta}</p>
+              <h2 className="jm-sito-h2">{t.mentre.titolo}</h2>
+              <p>{t.mentre.testo}</p>
+            </div>
+            <div className="jm-sito-duo">
+              {(["barba", "skincare"] as const).map((f, i) => (
+                <figure key={f}>
+                  <Foto nome={f} />
+                  <figcaption>{t.mentre.didascalie[i]}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">
           <div className="jm-sito-cont">
@@ -486,24 +505,6 @@ export function HomeSito({
           </div>
         </section>
 
-        {/* ------------------------------------------ mentre fai altro */}
-        <section className="jm-sito-sez mentre" id="mentre">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa">
-              <p className="jm-sito-kick">{t.mentre.etichetta}</p>
-              <h2 className="jm-sito-h2">{t.mentre.titolo}</h2>
-              <p>{t.mentre.testo}</p>
-            </div>
-            <div className="jm-sito-duo">
-              {(["barba", "skincare"] as const).map((f, i) => (
-                <figure key={f}>
-                  <Foto nome={f} />
-                  <figcaption>{t.mentre.didascalie[i]}</figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* --------------------------------------------- la cassaforte */}
         <section className="jm-sito-sez jm-sito-cassa" id="cassaforte">
