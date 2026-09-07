@@ -114,13 +114,20 @@
   align-items: center;
   line-height: 1;
 }
+/* La misura NON si scrive qui: overrides.css raccoglie in un posto solo
+   le taglie del marchio in tutte le sue case (rail, splash, admin, sito,
+   piede) e viene caricato dopo, quindi vinceva lui. Per mesi questa riga
+   ha detto 20px e a schermo ne uscivano 15: due file che si
+   contraddicevano, con il perdente proprio nel modulo che dovrebbe
+   possedere la sua barra. Tolta. */
 .jm-sito-marchio .jm-marchio {
   flex-direction: row;
-  gap: 0.4em;
-  font-size: calc(20px * var(--jm-ui-scale));
+  gap: 0.38em;
 }
 .jm-sito-marchio .jm-marchio .jm-logo {
-  height: 1.5em;
+  /* Piu basso di 1.5em: col marchio cresciuto, il segno a 1,5 diventava
+     piu alto della parola e il lockup si sbilanciava sul simbolo. */
+  height: 1.3em;
 }
 .jm-sito-nav-l {
   display: none;

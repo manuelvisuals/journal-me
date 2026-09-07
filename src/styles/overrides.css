@@ -317,7 +317,13 @@
 .jm-splash-mark .jm-marchio { font-size: calc(34px * var(--jm-ui-scale)); }
 .jm-benv-sal-marchio .jm-marchio { font-size: calc(25px * var(--jm-ui-scale)); }
 .jm-adm-brand .jm-marchio { font-size: calc(17px * var(--jm-ui-scale)); }
-.jm-sito-marchio .jm-marchio { font-size: calc(15px * var(--jm-ui-scale)); }
+/* Il marchio nella barra del sito. Era 15px: misurato accanto al menu
+   (16px, semigrassetto, sans) risultava la cosa PIU PICCOLA e piu chiara
+   della barra - il nome del prodotto sussurrato fra due voci piu forti.
+   In una barra il marchio e l'ancora, non una voce fra le altre: 21px in
+   serif leggero sta a 16px in sans medio come 1,3 a 1 di misura e alla
+   pari di peso ottico. */
+.jm-sito-marchio .jm-marchio { font-size: calc(21px * var(--jm-ui-scale)); }
 .jm-sito-piede-marchio .jm-marchio { font-size: calc(20px * var(--jm-ui-scale)); }
 /* Login, sblocco e privacy non hanno una classe propria: la misura la
    porta il marchio stesso, con questa classe accanto. */
