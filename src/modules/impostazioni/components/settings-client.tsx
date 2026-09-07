@@ -46,6 +46,7 @@ import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga
 import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
 import { ospiteAttivo } from "@/lib/ospite/flag";
 import { premiumDispositivoFino, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
+import { useRegaloInGioco } from "@/lib/capabilities";
 import { useNomeMostrato, useProfilo, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
 import {
@@ -142,7 +143,10 @@ export function SettingsClient({
   // vero (dove sono le giornate, quanto regalo resta, la porta per chi ha
   // un account) invece della parola "Locale".
   const ospite = isLocal && ospiteAttivo();
-  const statoOspite = useStatoOspite(ospite);
+  // Il regalo segue la persona (7 settembre 2026): la riga "AI in regalo"
+  // c'e anche con un account non premium, sullo stesso braccialetto.
+  const regaloInGioco = useRegaloInGioco();
+  const statoOspite = useStatoOspite(regaloInGioco);
   // Il premium comprato senza email (mockup premium-senza-password, B1):
   // vive sul telefono; la riga Piano lo dice, e "Backup ogni notte" e la
   // porta all'email (C1).
@@ -752,6 +756,13 @@ export function SettingsClient({
                           : t("Gratis")
                       }
                     />
+                    {regaloInGioco && (
+                      <SetRow
+                        title={t("AI in regalo")}
+                        value={valoreRegalo(t, statoOspite)}
+                        onClick={() => setPanel("regalo")}
+                      />
+                    )}
                     {/* L'abbonamento di Apple (mockup abbonamento-iphone.html
                         v3, 02): si cambia o si disdice dalla pagina di Apple,
                         non da noi. "Ripristina acquisti" c'e sempre dentro il
@@ -890,7 +901,7 @@ export function SettingsClient({
               </span>
             </div>
           )}
-          {ospite && !premiumSulDispositivo && (
+          {regaloInGioco && (
             <button type="button" className="jm-st-rrow jm-st-rrow-btn" onClick={() => setPanel("regalo")}>
               <span className="k">{t("AI in regalo")}</span>
               <span className="v">{valoreRegalo(t, statoOspite) ?? "…"}</span>

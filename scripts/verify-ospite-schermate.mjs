@@ -390,6 +390,42 @@ let semeA = null;
   await page.locator(".jm-fv-h, .jm-ed-ta").first().waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
   const dopo = await page.locator("main").innerText().catch(() => "");
   check("06 la giornata scritta da ospite si vede anche da account", /Giornata scritta da ospite/.test(dopo), dopo.replace(/\s+/g, " ").slice(0, 100));
+
+  // IL REGALO SEGUE LA PERSONA (deciso da Manuel il 7 settembre 2026): con
+  // l'account free la voce non sparisce, e le giornate AI si contano sullo
+  // stesso braccialetto. Un altro giorno (ieri): il tastone c'e, la riga
+  // "AI in regalo" c'e in Impostazioni, e l'AI lavora senza premium.
+  {
+    const ieri = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+    await page.goto(BASE + "/app/giorno?d=" + ieri, { waitUntil: "domcontentloaded" });
+    const voce = page.getByRole("button", { name: /Racconta a voce/ });
+    await voce.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
+    check("06 regalo: con l'account free il tasto 'Racconta a voce' c'e ancora", (await voce.count()) >= 1);
+    // Sul SERVER finto questo utente era premium (sezione 05): qui e free,
+    // come nel browser, altrimenti il regalo non si vedrebbe mai.
+    const profServer = sb.tab("profiles").find((p) => p.user_id === UTENTE_ID);
+    if (profServer) Object.assign(profServer, { plan: "free", plan_source: null, current_period_end: null });
+    // Il server tiene i limiti del regalo in memoria 30 s: la sezione prima
+    // li aveva cambiati, si aspetta che rilegga quelli veri.
+    await aspettaRegalo((r) => r.attivo === true && r.max === 10 && r.sopraIlTetto === false);
+    const usateDiPrima = sb.tab("braccialetto_giornate").filter((g) => g.braccialetto_id === brA.id).length;
+    // La chiamata AI come la fa il telefono: gettone dell'account E
+    // braccialetto (apiFetch li mette tutti e due). Il server la conta sul
+    // braccialetto della persona, non chiede premium.
+    const rAI = await fetch(BASE + "/api/process-entry", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}`, "x-jm-braccialetto": adotta[0].braccialetto, "x-jm-giorno": ieri },
+      body: JSON.stringify({ transcript: "Giornata con l'account e il regalo: ho camminato e letto." }),
+    });
+    const usateDopo = sb.tab("braccialetto_giornate").filter((g) => g.braccialetto_id === brA.id).length;
+    check("06 regalo: l'AI lavora per l'account free (200) e la giornata e contata sul SUO braccialetto", rAI.status === 200 && usateDopo === usateDiPrima + 1, `status ${rAI.status} ${(await rAI.text()).slice(0, 160)}, ${usateDiPrima} -> ${usateDopo}, regalo=${JSON.stringify(sb.tab("regalo")[0] ?? null)}`);
+    await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+    const rigaRegalo = page.getByRole("button", { name: /AI in regalo/ }).locator("visible=true").first();
+    await rigaRegalo.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
+    // Il conto arriva dal server (/api/ospite/stato): si aspetta che compaia.
+    await page.waitForFunction(() => /giornate su|finito|in pausa/.test(document.body.innerText), null, { timeout: 15_000 }).catch(() => {});
+    check("06 regalo: Impostazioni mostra 'AI in regalo' anche con l'account, con il conto", (await rigaRegalo.count()) >= 1 && /giornate su/.test(await rigaRegalo.innerText().catch(() => "")), await rigaRegalo.innerText().catch(() => "assente"));
+  }
   check("06 zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 }

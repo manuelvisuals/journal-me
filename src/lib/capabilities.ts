@@ -42,12 +42,35 @@ function dispositivoPremiumPuo(c: Capability): boolean {
 
 export type Capability = "voice" | "aiSummary" | "recap" | "patterns" | "sync";
 
+/**
+ * IL REGALO SEGUE LA PERSONA (deciso da Manuel il 7 settembre 2026): chi
+ * mette l'email non perde le giornate AI in regalo che aveva da ospite. Con
+ * un account NON premium valgono le stesse regole dell'ospite: voce e AI
+ * "si possono provare", e il server conta le giornate sul braccialetto del
+ * dispositivo (requireOspiteOPremium accetta gettone + braccialetto).
+ * Il 402 a regalo finito porta al muro premium, come da ospite.
+ */
+function regaloConAccountPuo(c: Capability, plan: string | null | undefined): boolean {
+  return plan !== "premium" && ospitePuo(c);
+}
+
 export function can(c: Capability): boolean {
   if (getStore().mode !== "cloud") {
     return getStore().mode === "local" && (ospitePuo(c) || dispositivoPremiumPuo(c));
   }
   if (c === "sync") return true;
-  return getPlanSync() === "premium";
+  return getPlanSync() === "premium" || regaloConAccountPuo(c, getPlanSync());
+}
+
+/** Reattivo: il regalo delle giornate AI e in gioco per chi guarda (ospite o account non premium). */
+export function useRegaloInGioco(): boolean {
+  const plan = usePlan();
+  const mode = useStorageMode();
+  const premiumSulDispositivo = usePremiumDispositivo();
+  if (!ospiteAttivo()) return false;
+  if (mode === "local") return !premiumSulDispositivo;
+  if (mode === "cloud") return plan !== "premium";
+  return false;
 }
 
 /**
@@ -62,5 +85,5 @@ export function useCan(c: Capability): boolean {
   // il ramo cloud (le schermate dati stanno comunque dietro AuthGate).
   if (mode === "local") return ospitePuo(c) || (c !== "sync" && premiumSulDispositivo);
   if (c === "sync") return true;
-  return plan === "premium";
+  return plan === "premium" || regaloConAccountPuo(c, plan);
 }

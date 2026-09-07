@@ -21,7 +21,7 @@ import { AvvisoRegalo } from "@/modules/oggi/components/avviso-regalo";
 import { FocusToggle, setFocusMode } from "@/components/desktop/focus-toggle";
 import { useIsDesktop } from "@/components/desktop/use-is-desktop";
 import { openPremiumWall } from "@/modules/abbonamento";
-import { useCan } from "@/lib/capabilities";
+import { useCan, useRegaloInGioco } from "@/lib/capabilities";
 import { clearDraft, loadDraft } from "@/lib/data/drafts";
 import { formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
@@ -163,8 +163,11 @@ export function TodayClient({
   // salvata senza sintesi (e la vista gratis, o l'AI non l'ha vista?). Aprire l'app con niente sotto non chiama nessuna route
   // (R1, verify-ospite); dopo una chiusura con l'AI si rilegge da sola.
   const senzaSintesi = !!entry && (entry.snippet ?? "").trim().length === 0;
-  const statoOspite = useStatoOspite(isLocalMode && senzaSintesi);
-  const regaloEsaurito = isLocalMode && regaloFinito(statoOspite);
+  // Il regalo segue la persona (7 settembre 2026): vale da ospite E con un
+  // account non premium, sullo stesso braccialetto.
+  const regaloInGioco = useRegaloInGioco();
+  const statoOspite = useStatoOspite(regaloInGioco && senzaSintesi);
+  const regaloEsaurito = regaloInGioco && regaloFinito(statoOspite);
   const optimisticGoals = useOptimisticGoals();
   const [view, setView] = useState<View>(
     autoRecord
@@ -475,7 +478,7 @@ export function TodayClient({
         },
       });
       // L'AI ha lavorato per l'ospite: la quota in tasca e vecchia (R3).
-      if (isLocalMode && opts.withAI) {
+      if (regaloInGioco && opts.withAI) {
         void aggiornaStatoOspite();
         // La PRIMA giornata chiusa dall'AI: il regalo si presenta, una volta
         // per dispositivo (mockup premium-senza-password, decisione A2).
@@ -1081,8 +1084,8 @@ export function TodayClient({
               : undefined
           }
           avvisoSlot={
-            entry && isLocalMode && savedDates.includes(entry.entryDate) ? (
-              <AvvisoRegalo date={entry.entryDate} vivo={isLocalMode} />
+            entry && regaloInGioco && savedDates.includes(entry.entryDate) ? (
+              <AvvisoRegalo date={entry.entryDate} vivo={regaloInGioco} />
             ) : null
           }
           onSeePremium={() =>

@@ -121,7 +121,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       if (ospiteAttivo()) void assicuraBraccialetto();
       return;
     }
-    if (auth === "in" && userId) void risolviCassaforte(userId).catch(() => undefined);
+    if (auth === "in" && userId) {
+      void risolviCassaforte(userId).catch(() => undefined);
+      // Il regalo segue la persona (7 settembre 2026): anche con l'account
+      // le giornate AI in regalo si contano sul braccialetto del
+      // dispositivo, quindi il braccialetto deve esserci e viaggiare
+      // nelle chiamate (apiFetch lo mette da solo se esiste).
+      if (ospiteAttivo()) void assicuraBraccialetto();
+    }
   }, [mode, auth, userId]);
   const settledOut = mode !== "resolving" && mode !== "local" && auth === "out";
 

@@ -72,6 +72,13 @@ scritta bene: torna qui e riscrivila prima di implementarla.
   ha gia' scritto, e senza rifare la quota da capo.
 - Verificabile: un ospite consuma la quota, l'app viene disinstallata e
   reinstallata, la quota resta consumata.
+- **Il regalo segue la persona (deciso da Manuel il 7 settembre 2026).** Chi
+  mette l'email non perde le giornate che gli restano: con un account NON
+  premium voce e AI restano accese e il server conta sullo stesso
+  braccialetto (gettone + braccialetto nella chiamata, `requireOspiteOPremium`).
+  Il client lo sa (`useRegaloInGioco`, `can()` in cloud non premium = regole
+  dell'ospite); la riga "AI in regalo" c'e anche con l'account. Verificabile:
+  `verify-ospite-schermate` 06 (tasto voce, chiamata AI contata, riga).
 
 ### R3 - Quando la quota finisce, finisce solo l'AI (CODICE FATTO: 402 `regalo_finito` distinto dal premium, la giornata si salva comunque come giornata gratis (titolo = prima riga); il muro del regalo (4 settembre, branch `abbonamento-iap`) e l'avviso discreto a 3 giornate (4 settembre, branch `ospite-schermate`, `src/modules/oggi/components/avviso-regalo.tsx`))
 
