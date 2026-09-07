@@ -282,7 +282,7 @@ const it: Testi = {
   },
   passi: {
     etichetta: "Come funziona",
-    titolo: "Tre cose, e poi basta",
+    titolo: "Come funziona?",
     voci: [
       { titolo: "La sera, parli", testo: "Due minuti col microfono premuto. O scrivi, se e una di quelle sere." },
       { titolo: "Si scrive da sola", testo: "Titolo, sintesi, persone, impegni. Se un nome non e chiaro, te lo chiede." },
@@ -642,7 +642,7 @@ const en: Testi = {
   },
   passi: {
     etichetta: "How it works",
-    titolo: "Three things, and that is it",
+    titolo: "How does it work?",
     voci: [
       { titolo: "In the evening, you talk", testo: "Two minutes with the microphone held down. Or you write, if it is one of those evenings." },
       { titolo: "It writes itself", testo: "Headline, summary, people, tasks. If a name is unclear, it asks." },

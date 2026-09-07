@@ -498,7 +498,6 @@ export function HomeSito({
               {t.passi.voci.map((v, i) => (
                 <div key={v.titolo} className="jm-sito-passo">
                   <div>
-                    <p className="num">0{i + 1}</p>
                     <h3>{v.titolo}</h3>
                     <p>{v.testo}</p>
                   </div>
