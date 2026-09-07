@@ -392,13 +392,7 @@ export function HomeSito({
               su certi schermi il telefono finiva sulla sua bocca. */}
           <div className="jm-sito2-eroe-media">
             <Foto nome="salotto-voce" className="scena" eager />
-            <div className="jm-sito4-telefono" aria-label={t.giornata.titolo}>
-              <span className="jm-sito4-isola" aria-hidden="true" />
-              <SchermoOggi t={t} tutte={false} dock={false} />
-              <span className="jm-sito4-mic" aria-hidden="true">
-                <Icona nome="mic" />
-              </span>
-            </div>
+            <Foto nome="iphone-giornata" className="jm-sito4-telefono jm-sito4-telefono-foto" eager />
           </div>
         </section>
 

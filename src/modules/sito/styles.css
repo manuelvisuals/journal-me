@@ -2290,7 +2290,7 @@
   }
   .jm-sito4 .jm-sito2-eroe .jm-sito-h1 {
     max-width: none;
-    font-size: calc(88px * var(--jm-ui-scale));
+    font-size: calc(76px * var(--jm-ui-scale));
     line-height: 1.07;
     letter-spacing: -0.044em;
   }
@@ -2341,6 +2341,19 @@
     box-shadow:
       0 38px 70px color-mix(in oklab, var(--jm-shadow) 48%, transparent),
       inset 0 0 0 2px var(--jm-ink-faint);
+  }
+  .jm-sito4 .jm-sito4-telefono-foto {
+    left: 50%;
+    width: 310px;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    transform: translateX(-50%);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    filter: drop-shadow(0 34px 52px color-mix(in oklab, var(--jm-shadow) 42%, transparent));
   }
   .jm-sito4-telefono .jm-sito-app {
     width: 100%;
@@ -2468,6 +2481,17 @@
     border-radius: 36px;
     background: var(--jm-bg-app);
     box-shadow: 0 28px 50px color-mix(in oklab, var(--jm-shadow) 42%, transparent);
+  }
+  .jm-sito4 .jm-sito4-telefono-foto {
+    width: 220px;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    object-fit: contain;
   }
   .jm-sito4-telefono .jm-sito-app {
     width: 278px;
