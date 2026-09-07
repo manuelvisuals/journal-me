@@ -378,11 +378,18 @@ export function HomeSito({
               </div>
               <p className="jm-sito2-sotto-cta">{t.eroe.sottoCta}</p>
             </div>
-            <div className="jm-sito2-eroe-foto">
-              {/* L'iPhone fotografato, con la schermata della sera. Sfondo
-                  trasparente: sta sulla carta del tema, non su un rettangolo. */}
-              <Foto nome="iphone-giornata" className="telefono" eager />
-            </div>
+          </div>
+          {/* LA SCENA. La fotografia e il telefono stanno nello STESSO
+              riquadro, non uno sopra l'altro nella pagina: il telefono e
+              posizionato in percentuale dentro la scena, quindi qualunque
+              cosa faccia la finestra, resta sempre nello stesso punto
+              rispetto a lei. Prima la foto era un background cover (il
+              ritaglio cambia con la finestra) e il telefono era piazzato
+              rispetto alla pagina: le due cose scorrevano una sull'altra e
+              su certi schermi il telefono finiva sulla sua bocca. */}
+          <div className="jm-sito2-eroe-media">
+            <Foto nome="salotto-voce" className="scena" eager />
+            <Foto nome="iphone-giornata" className="telefono" eager />
           </div>
         </section>
 
