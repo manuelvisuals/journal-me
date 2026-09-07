@@ -2092,6 +2092,9 @@
 .jm-sito4 .jm-sito-cont {
   max-width: 1200px;
 }
+.jm-sito4 .jm-sito-nav-r > .jm-sito-b {
+  display: none;
+}
 .jm-sito4-eyebrow {
   margin-bottom: 24px;
   color: var(--jm-accent);
@@ -2135,9 +2138,7 @@
 
 /* Togliamo i capitoli ridondanti dalla home viva. Restano nel DOM delle
    versioni congelate e il loro codice continua a fare da archivio. */
-.jm-sito4 .jm-sito-sez.mentre,
 .jm-sito4 .jm-sito-promesse-sez,
-.jm-sito4 .jm-sito-foto-sez,
 .jm-sito4 #funzioni,
 .jm-sito4 #condizioni,
 .jm-sito4 #iphone {
@@ -2265,7 +2266,7 @@
     display: none;
   }
   .jm-sito4 .jm-sito-nav-r {
-    visibility: hidden;
+    visibility: visible;
   }
   .jm-sito4 .jm-sito2-eroe {
     height: 800px;
@@ -2312,13 +2313,15 @@
     margin-top: 52px;
   }
   .jm-sito4 .jm-sito2-eroe-media {
-    inset: 0 0 0 auto;
-    width: 43.5%;
+    inset: 0;
+    width: 100%;
     overflow: visible;
     z-index: 0;
   }
   .jm-sito4 .jm-sito2-eroe-media .scena {
-    object-position: 62% center;
+    object-position: 72% 22%;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .08) 28%, #000 59%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, .08) 28%, #000 59%);
   }
   .jm-sito4 .jm-sito2-eroe::before {
     display: none;
@@ -2326,7 +2329,7 @@
   .jm-sito4-telefono {
     position: absolute;
     z-index: 2;
-    left: -148px;
+    left: calc(56.5% - 148px);
     top: 120px;
     width: 310px;
     height: 636px;
@@ -2503,6 +2506,31 @@
   }
   .jm-sito4-rituale-voci > div:last-child {
     border-bottom: 0;
+  }
+}
+
+/* /v4 e /en/v4: fotografia della tavola approvata e sezioni esattamente
+   come al momento del congelamento. Le correzioni della home viva sopra
+   non devono riscrivere retroattivamente l'archivio. */
+.jm-sito4-archivio .jm-sito-sez.mentre,
+.jm-sito4-archivio .jm-sito-foto-sez {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .jm-sito4-archivio .jm-sito-nav-r {
+    visibility: hidden;
+  }
+  .jm-sito4-archivio .jm-sito2-eroe-media {
+    inset: 0 0 0 auto;
+    width: 43.5%;
+  }
+  .jm-sito4-archivio .jm-sito2-eroe-media .scena {
+    object-position: 62% center;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .jm-sito4-archivio .jm-sito4-telefono {
+    left: -148px;
   }
 }
 

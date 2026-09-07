@@ -342,7 +342,7 @@ function Riquadro({ forma, t }: { forma: Testi["funzioni"]["voci"][number]["form
 
 /* ---------------------------------------------------------- la home */
 
-export function HomeSito({
+export function HomeSitoV4({
   lingua,
   altraLingua,
 }: {
@@ -354,7 +354,7 @@ export function HomeSito({
   const temi = ["carta", "minimal", "macchina", "malva", "wine"];
 
   return (
-    <div className="jm-sito jm-sito4">
+    <div className="jm-sito jm-sito4 jm-sito4-archivio">
       <NavSito lingua={lingua} altraLingua={altraLingua} v4 />
 
       <main>
@@ -391,7 +391,7 @@ export function HomeSito({
               rispetto alla pagina: le due cose scorrevano una sull'altra e
               su certi schermi il telefono finiva sulla sua bocca. */}
           <div className="jm-sito2-eroe-media">
-            <Foto nome="salotto-voce" className="scena" eager />
+            <Foto nome="hero-editoriale-v4.png" className="scena" eager />
             <div className="jm-sito4-telefono" aria-label={t.giornata.titolo}>
               <span className="jm-sito4-isola" aria-hidden="true" />
               <SchermoOggi t={t} tutte={false} dock={false} />
@@ -734,7 +734,7 @@ export function HomeSito({
         </section>
       </main>
 
-      <PiedeSito lingua={lingua} altraLingua={altraLingua} />
+      <PiedeSito lingua={lingua} altraLingua={altraLingua} versione="v4" />
 
       {/*
         I dati strutturati: e cio che permette a Google di mostrare le
