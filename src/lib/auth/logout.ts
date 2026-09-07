@@ -18,7 +18,9 @@
  *     (vietato da SPEC-v2 §3.3);
  *  3. dimenticaScansione — il prossimo account ha un altro diario, e il
  *     browser non deve credere di averlo gia letto (scan-archivio.ts);
- *  4. il cookie della demo, azzerato.
+ *  4. svuotaProfilo — nome e foto in jm.profilo sono della persona che
+ *     esce, non del browser (7 settembre 2026);
+ *  5. il cookie della demo, azzerato.
  *
  * Cosa NON si tocca, di proposito: il benvenuto post-accesso
  * (src/lib/welcome.ts) sopravvive al logout dal 27 agosto — cancellarlo
@@ -30,12 +32,16 @@
 
 import { clearPlanCache } from "@/lib/plan";
 import { dimenticaScansione } from "@/lib/actions/scan-archivio";
+import { svuotaProfilo } from "@/modules/impostazioni";
 
 export async function eseguiLogout(): Promise<void> {
   const { createClient } = await import("@/lib/supabase/client");
   await createClient().auth.signOut();
   clearPlanCache();
   dimenticaScansione();
+  // Nome e foto (jm.profilo): il prossimo account, o il prossimo ospite, e
+  // un'altra persona.
+  svuotaProfilo();
   try {
     document.cookie =
       "journalme-demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";

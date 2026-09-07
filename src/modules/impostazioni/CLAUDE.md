@@ -17,9 +17,10 @@ con la barra della quota. Pagina: `src/app/(app)/app/settings/`.
   (scheletro).
 - Banchi prima del push: `verify-impostazioni`, `verify-lingua`,
   `verify-parole-misure`, `verify-checkout-obiettivi`, `verify-consumi`,
-  `verify-foto-profilo`, `verify-nome-profilo` (piu tsc, eslint,
-  verify-i18n). I due banchi del profilo si eseguono con
-  `node --experimental-strip-types`: leggono un contratto `.ts`.
+  `verify-foto-profilo`, `verify-nome-profilo`, `verify-profilo-ovunque`
+  (piu tsc, eslint, verify-i18n). Foto e nome si eseguono con
+  `node --experimental-strip-types`: leggono un contratto `.ts`;
+  `verify-profilo-ovunque` apre il browser sul dev server :3100 coi finti.
 - Le API del modulo (passo E): `src/modules/impostazioni/server/usage.ts`,
   `delete-account.ts`, `avatar.ts`, `nome.ts`; le rotte in `src/app/api/`
   sono gusci.
@@ -58,16 +59,27 @@ scelto nessuno, era la sua email tagliata alla chiocciola.
 **Chi la mostra non e chi la cambia.** Il pallino vive nello SCHELETRO
 (`src/components/ui/account-menu.tsx`, intestazione del telefono e rail del
 computer). Il modo di cambiarla vive qui. Il ponte e la porta:
-`index.ts` esporta `useProfilo`, `useNomeMostrato` e `apriPannelloNome`, e
+`index.ts` esporta `useProfilo`, `useNomeMostrato`, `apriPannelloNome` e
+`svuotaProfilo` (per il logout), e
 lo scheletro importa `@/modules/impostazioni`, come gia fa con il muro
 premium di abbonamento. **I salvataggi NON escono dalla porta**: leggere il
 profilo lo puo fare chiunque, cambiarlo solo questo modulo.
 
 I pezzi:
 
-- `profilo.ts` — lo store: nome e foto da UNA lettura sola (nessuna
-  richiesta in piu per il nome), anche con cinque pallini montati, e il
-  ritorno indietro se il salvataggio fallisce.
+- `profilo.ts` — lo store. **Dal 7 settembre 2026 nome e foto valgono per
+  tutti, anche da ospite, e la fonte e locale**: localStorage `jm.profilo`
+  = `{ nome, foto, daOspite }`, letto in modo sincrono al primo snapshot
+  (niente lampeggio). Da ospite si legge e scrive solo li (`daOspite:
+  true`). Con l'account: salvare = locale + `/api/account/nome` e
+  `/avatar` (errore a schermo se fallisce, e si torna indietro); leggere =
+  locale subito, poi UNA volta per apertura `profiles`: se il locale porta
+  `daOspite: true` sale sul server e il segno si toglie, altrimenti il
+  server vince e aggiorna il locale, anche vuoto (cancellare dal Mac vale
+  ovunque). `svuotaProfilo()` al logout e alla cancellazione dell'account.
+  Niente migration, niente busta (deciso da Manuel). Le righe Foto profilo
+  e Nome compaiono in ogni modalita; nel menu e nella rail il nome scelto
+  sostituisce "Questo dispositivo". Banco: `verify-profilo-ovunque`.
 - `profilo-contract.ts` — **senza nessun import, di proposito**: l'aritmetica
   del ritaglio, la convalida del formato, e le regole del nome
   (`normalizzaNome`, `nomeMostrato`). Sono le cose che sbagliano in silenzio

@@ -111,9 +111,14 @@ check("il tetto e 30, come il vincolo nella migration 017", NOME_MAX === 30);
   check("telefono (strada A): la pennina e nella testata del menu",
     /jm-acct-penna/.test(menu));
   check("...e NON modifica li: porta alla schermata del nome",
-    /apriPannelloNome\(\);[\s\S]{0,60}router\.push\("\/settings"\)/.test(menu));
-  check("...e non compare in modalita locale (non c'e nessun account)",
-    /\{!locale && \([\s\S]{0,200}jm-acct-penna/.test(menu));
+    /apriPannelloNome\(\);[\s\S]{0,60}router\.push\("\/app\/settings"\)/.test(menu));
+  // 7 settembre 2026: nome e foto valgono anche da ospite. La pennina c'e
+  // in ogni modalita, e in locale il nome scelto sostituisce "Questo
+  // dispositivo".
+  check("...e compare anche in modalita locale (nome e foto per tutti)",
+    !/\{!locale && \([\s\S]{0,200}jm-acct-penna/.test(menu) && /jm-acct-penna/.test(menu));
+  check("in locale il nome scelto sostituisce 'Questo dispositivo'",
+    /nomeScelto \?\? t\("Questo dispositivo"\)/.test(menu));
 
   check("computer: la pennina sta accanto al nome nella rail",
     /<NomeRiga\s+mostrato=/.test(client));
@@ -125,8 +130,8 @@ check("il tetto e 30, come il vincolo nella migration 017", NOME_MAX === 30);
   check("il campo si ferma a NOME_MAX", (riga.match(/maxLength=\{NOME_MAX\}/g) ?? []).length === 2);
   check("svuotando il campo, la schermata dice su cosa si ricade",
     /Senza nome l'app ti chiama \{n\}/.test(riga));
-  check("in locale il nome non e modificabile (non c'e un account)",
-    /isLocal \? \([\s\S]{0,120}jm-st-nm/.test(client));
+  check("in locale nome e foto si cambiano come con l'account (rail senza bivio)",
+    !/isLocal \? \([\s\S]{0,120}jm-st-nm/.test(client) && /<FotoProfiloRow\s+variant="avatar"/.test(client));
 }
 
 /* =====================================================================
@@ -139,7 +144,7 @@ check("il tetto e 30, come il vincolo nella migration 017", NOME_MAX === 30);
   check("una lettura sola anche con cinque pallini montati",
     /if \(lettura\) return lettura;/.test(store));
   check("se il salvataggio del nome fallisce, il nome torna com'era",
-    /salvaNomeProfilo[\s\S]{0,400}catch \(err\) \{[\s\S]{0,80}profilo = prima;/.test(store));
+    /async function salva\([\s\S]{0,700}catch \(err\) \{[\s\S]{0,80}profilo = prima;/.test(store));
   check("si salva il nome NORMALIZZATO, non quello grezzo",
     /const pulito = normalizzaNome\(nuovo\)/.test(store));
   check("la richiesta di aprire il pannello e un contatore, non un booleano",
