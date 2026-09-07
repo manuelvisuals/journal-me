@@ -31,7 +31,7 @@
 import type { LinguaSito } from "@/modules/sito/seo";
 
 export type Testi = {
-  nav: { come: string; cassaforte: string; domande: string; accedi: string; inizia: string };
+  nav: { come: string; cassaforte: string; domande: string; privacy: string; diario: string; accedi: string; inizia: string };
   eroe: {
     etichetta: string;
     titolo: string;
@@ -40,6 +40,11 @@ export type Testi = {
     cta: string;
     ctaSecondo: string;
     sottoCta: string;
+  };
+  rituale: {
+    etichetta: string;
+    titolo: string;
+    voci: { titolo: string; testo: string; icona: "voce" | "apri" | "recap" }[];
   };
   /** La giornata finta, ma verosimile, che compare in tutte le schermate. */
   esempio: {
@@ -142,6 +147,8 @@ const it: Testi = {
     come: "Come funziona",
     cassaforte: "Cassaforte",
     domande: "Domande",
+    privacy: "Privacy",
+    diario: "Diario",
     accedi: "Accedi",
     inizia: "Inizia ora",
   },
@@ -154,6 +161,15 @@ const it: Testi = {
     cta: "Inizia stasera",
     ctaSecondo: "Come funziona",
     sottoCta: "Nessun account per iniziare · Cifrato sul tuo dispositivo",
+  },
+  rituale: {
+    etichetta: "Un piccolo rituale",
+    titolo: "Parla. Ricorda. Ritorna.",
+    voci: [
+      { titolo: "Parla", testo: "Due minuti, a voce.", icona: "voce" },
+      { titolo: "Ricorda", testo: "Il giorno diventa una pagina.", icona: "apri" },
+      { titolo: "Ritorna", testo: "La tua vita, pronta da rileggere.", icona: "recap" },
+    ],
   },
   esempio: {
     data: "Giovedi 27 agosto",
@@ -490,6 +506,8 @@ const en: Testi = {
     come: "How it works",
     cassaforte: "The vault",
     domande: "Questions",
+    privacy: "Privacy",
+    diario: "Journal",
     accedi: "Log in",
     inizia: "Get started",
   },
@@ -502,6 +520,15 @@ const en: Testi = {
     cta: "Start tonight",
     ctaSecondo: "How it works",
     sottoCta: "No account to begin · Encrypted on your device",
+  },
+  rituale: {
+    etichetta: "A small ritual",
+    titolo: "Speak. Remember. Return.",
+    voci: [
+      { titolo: "Speak", testo: "Two minutes, out loud.", icona: "voce" },
+      { titolo: "Remember", testo: "The day becomes a page.", icona: "apri" },
+      { titolo: "Return", testo: "Your life, ready to revisit.", icona: "recap" },
+    ],
   },
   esempio: {
     data: "Thursday 27 August",

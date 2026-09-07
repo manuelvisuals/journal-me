@@ -2241,6 +2241,271 @@
   }
 }
 
+/* -------------------------------------------------------- mockup esatto
+   Calibrato sulla tavola approvata 1536 x 1024. Fotografia a destra,
+   telefono HTML sovrapposto e pannello del rituale a quota 800px. */
+@media (min-width: 1100px) {
+  .jm-sito4 {
+    --jm-sito-nav-h: 86px;
+  }
+  .jm-sito4 .jm-sito-nav {
+    position: absolute;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .jm-sito4 .jm-sito-nav-in {
+    max-width: 1416px;
+    height: 86px;
+    padding-inline: 24px;
+  }
+  .jm-sito4 .jm-sito-marchio .jm-logo {
+    display: none;
+  }
+  .jm-sito4 .jm-sito-nav-r {
+    visibility: hidden;
+  }
+  .jm-sito4 .jm-sito2-eroe {
+    height: 800px;
+    min-height: 800px;
+    margin-top: 0;
+    padding: 0;
+    align-items: stretch;
+    background:
+      radial-gradient(circle at 18% 32%, var(--jm-surface) 0, transparent 32%),
+      var(--jm-bg-app);
+  }
+  .jm-sito4 .jm-sito2-eroe-in {
+    max-width: 1416px;
+    min-height: 800px;
+    justify-content: flex-start;
+    padding-top: 194px;
+    padding-inline: 36px;
+  }
+  .jm-sito4 .jm-sito2-eroe-t {
+    max-width: 570px;
+  }
+  .jm-sito4 .jm-sito2-eroe .jm-sito-h1 {
+    max-width: none;
+    font-size: calc(88px * var(--jm-ui-scale));
+    line-height: 1.07;
+    letter-spacing: -0.044em;
+  }
+  .jm-sito4 .jm-sito2-sotto {
+    max-width: 440px;
+    margin-top: 28px;
+    font-size: calc(20px * var(--jm-ui-scale));
+    line-height: 1.35;
+  }
+  .jm-sito4 .jm-sito2-eroe .jm-sito-cta {
+    margin-top: 38px;
+    gap: 50px;
+  }
+  .jm-sito4 .jm-sito2-eroe .jm-sito-b {
+    min-width: 232px;
+    min-height: 66px;
+    font-size: calc(18px * var(--jm-ui-scale));
+  }
+  .jm-sito4 .jm-sito2-sotto-cta {
+    margin-top: 52px;
+  }
+  .jm-sito4 .jm-sito2-eroe-media {
+    inset: 0 0 0 auto;
+    width: 43.5%;
+    overflow: visible;
+    z-index: 0;
+  }
+  .jm-sito4 .jm-sito2-eroe-media .scena {
+    object-position: 62% center;
+  }
+  .jm-sito4 .jm-sito2-eroe::before {
+    display: none;
+  }
+  .jm-sito4-telefono {
+    position: absolute;
+    z-index: 2;
+    left: -148px;
+    top: 120px;
+    width: 310px;
+    height: 636px;
+    padding: 13px;
+    overflow: hidden;
+    border: 4px solid var(--jm-ink);
+    border-radius: 48px;
+    background: var(--jm-bg-app);
+    box-shadow:
+      0 38px 70px color-mix(in oklab, var(--jm-shadow) 48%, transparent),
+      inset 0 0 0 2px var(--jm-ink-faint);
+  }
+  .jm-sito4-telefono .jm-sito-app {
+    width: 100%;
+    min-height: 100%;
+    border: 0;
+    border-radius: 36px;
+    box-shadow: none;
+    padding-top: 24px;
+  }
+  .jm-sito4-telefono .jm-sito-app-top {
+    padding-top: 22px;
+  }
+  .jm-sito4-telefono .jm-sito-foglio {
+    padding-inline: 17px;
+  }
+  .jm-sito4-telefono .jm-sito-foglio .tit {
+    font-size: calc(25px * var(--jm-ui-scale));
+    line-height: 1.05;
+  }
+  .jm-sito4-telefono .jm-sito-foglio .prosa,
+  .jm-sito4-telefono .jm-sito-area .t {
+    font-size: calc(12px * var(--jm-ui-scale));
+    line-height: 1.35;
+  }
+  .jm-sito4-telefono .jm-sito-aree {
+    display: none;
+  }
+  .jm-sito4-isola {
+    position: absolute;
+    z-index: 5;
+    top: 18px;
+    left: 50%;
+    width: 84px;
+    height: 24px;
+    transform: translateX(-50%);
+    border-radius: var(--jm-radius-pill);
+    background: var(--jm-ink);
+  }
+  .jm-sito4-mic {
+    position: absolute;
+    z-index: 4;
+    bottom: 38px;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    transform: translateX(-50%);
+    border-radius: var(--jm-radius-circle);
+    color: var(--jm-on-accent);
+    background: var(--jm-accent);
+    box-shadow: 0 10px 24px color-mix(in oklab, var(--jm-accent) 32%, transparent);
+  }
+}
+
+.jm-sito4-rituale {
+  position: relative;
+  z-index: 3;
+  margin: 0 20px;
+  padding: 40px 7% 56px;
+  text-align: center;
+  border-radius: var(--jm-radius-xl) var(--jm-radius-xl) 0 0;
+  background: var(--jm-surface);
+  box-shadow: 0 -8px 30px color-mix(in oklab, var(--jm-shadow) 8%, transparent);
+}
+.jm-sito4-rituale .jm-sito4-eyebrow {
+  margin-bottom: 14px;
+}
+.jm-sito4-rituale > h2 {
+  font-family: var(--jm-font-marchio);
+  font-size: clamp(calc(42px * var(--jm-ui-scale)), 4vw, calc(58px * var(--jm-ui-scale)));
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+.jm-sito4-rituale-voci {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 44px;
+}
+.jm-sito4-rituale-voci > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  min-height: 84px;
+  border-right: 1px solid var(--jm-line);
+  text-align: left;
+}
+.jm-sito4-rituale-voci > div:last-child {
+  border-right: 0;
+}
+.jm-sito4-rituale-voci > div > span {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--jm-radius-circle);
+  color: var(--jm-ink);
+  background: var(--jm-bg);
+}
+.jm-sito4-rituale-voci h3 {
+  font-size: calc(18px * var(--jm-ui-scale));
+}
+.jm-sito4-rituale-voci p {
+  margin-top: 4px;
+  color: var(--jm-ink-muted);
+  font-size: calc(13px * var(--jm-ui-scale));
+}
+
+@media (max-width: 1099px) {
+  .jm-sito4 .jm-sito2-eroe {
+    padding-bottom: 132%;
+  }
+  .jm-sito4-telefono {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    width: 220px;
+    height: 450px;
+    padding: 9px;
+    overflow: hidden;
+    transform: translateX(-50%);
+    border: 3px solid var(--jm-ink);
+    border-radius: 36px;
+    background: var(--jm-bg-app);
+    box-shadow: 0 28px 50px color-mix(in oklab, var(--jm-shadow) 42%, transparent);
+  }
+  .jm-sito4-telefono .jm-sito-app {
+    width: 278px;
+    min-height: 100%;
+    transform: scale(.72);
+    transform-origin: top left;
+  }
+  .jm-sito4-telefono .jm-sito-app-fondo {
+    display: none;
+  }
+  .jm-sito4-isola {
+    position: absolute;
+    z-index: 5;
+    top: 12px;
+    left: 50%;
+    width: 60px;
+    height: 18px;
+    transform: translateX(-50%);
+    border-radius: var(--jm-radius-pill);
+    background: var(--jm-ink);
+  }
+  .jm-sito4-mic {
+    display: none;
+  }
+  .jm-sito4-rituale {
+    margin-inline: 10px;
+    padding-inline: 22px;
+  }
+  .jm-sito4-rituale-voci {
+    grid-template-columns: 1fr;
+  }
+  .jm-sito4-rituale-voci > div {
+    justify-content: flex-start;
+    border-right: 0;
+    border-bottom: 1px solid var(--jm-line);
+  }
+  .jm-sito4-rituale-voci > div:last-child {
+    border-bottom: 0;
+  }
+}
+
 /* --------------------------------------------------------- assistenza */
 .jm-sito-sup {
   max-width: 640px;

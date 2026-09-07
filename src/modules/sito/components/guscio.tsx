@@ -23,12 +23,15 @@ export function NavSito({
   lingua,
   altraLingua,
   ancore = true,
+  v4 = false,
 }: {
   lingua: LinguaSito;
   /** L'indirizzo della stessa pagina nell'altra lingua. */
   altraLingua: string;
   /** Su /support non ci sono sezioni a cui saltare. */
   ancore?: boolean;
+  /** La home editoriale usa le tre etichette corte della tavola approvata. */
+  v4?: boolean;
 }) {
   const t = testiDi(lingua);
   const p = prefisso(lingua);
@@ -41,8 +44,8 @@ export function NavSito({
         {ancore ? (
           <nav className="jm-sito-nav-l">
             <a href="#come">{t.nav.come}</a>
-            <a href="#cassaforte">{t.nav.cassaforte}</a>
-            <a href="#domande">{t.nav.domande}</a>
+            <a href="#cassaforte">{v4 ? t.nav.privacy : t.nav.cassaforte}</a>
+            <a href="#giornata">{v4 ? t.nav.diario : t.nav.domande}</a>
           </nav>
         ) : null}
         <div className="jm-sito-nav-r">

@@ -52,7 +52,7 @@ function Foto({ nome, className, eager = false }: { nome: string; className?: st
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`/sito/${nome}.webp`}
+      src={`/sito/${nome.includes(".") ? nome : `${nome}.webp`}`}
       alt=""
       aria-hidden="true"
       draggable={false}
@@ -355,7 +355,7 @@ export function HomeSito({
 
   return (
     <div className="jm-sito jm-sito4">
-      <NavSito lingua={lingua} altraLingua={altraLingua} />
+      <NavSito lingua={lingua} altraLingua={altraLingua} v4 />
 
       <main>
         {/* ------------------------------------------------------ eroe */}
@@ -391,8 +391,30 @@ export function HomeSito({
               rispetto alla pagina: le due cose scorrevano una sull'altra e
               su certi schermi il telefono finiva sulla sua bocca. */}
           <div className="jm-sito2-eroe-media">
-            <Foto nome="salotto-voce" className="scena" eager />
-            <Foto nome="iphone-giornata" className="telefono" eager />
+            <Foto nome="hero-editoriale-v4.png" className="scena" eager />
+            <div className="jm-sito4-telefono" aria-label={t.giornata.titolo}>
+              <span className="jm-sito4-isola" aria-hidden="true" />
+              <SchermoOggi t={t} tutte={false} dock={false} />
+              <span className="jm-sito4-mic" aria-hidden="true">
+                <Icona nome="mic" />
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section className="jm-sito4-rituale" id="rituale">
+          <p className="jm-sito4-eyebrow">{t.rituale.etichetta}</p>
+          <h2>{t.rituale.titolo}</h2>
+          <div className="jm-sito4-rituale-voci">
+            {t.rituale.voci.map((voce) => (
+              <div key={voce.titolo}>
+                <span><Icona nome={voce.icona} /></span>
+                <div>
+                  <h3>{voce.titolo}</h3>
+                  <p>{voce.testo}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
