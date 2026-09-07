@@ -354,7 +354,7 @@ export function HomeSito({
   const temi = ["carta", "minimal", "macchina", "malva", "wine"];
 
   return (
-    <div className="jm-sito">
+    <div className="jm-sito jm-sito4">
       <NavSito lingua={lingua} altraLingua={altraLingua} />
 
       <main>
@@ -362,6 +362,9 @@ export function HomeSito({
         <section className="jm-sito2-eroe">
           <div className="jm-sito-cont jm-sito2-eroe-in">
             <div className="jm-sito2-eroe-t">
+              <p className="jm-sito4-eyebrow">
+                {t.eroe.etichetta}
+              </p>
               <h1 className="jm-sito-h1">
                 {t.eroe.titolo}
                 <br />

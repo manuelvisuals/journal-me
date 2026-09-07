@@ -33,6 +33,7 @@ import type { LinguaSito } from "@/modules/sito/seo";
 export type Testi = {
   nav: { come: string; cassaforte: string; domande: string; accedi: string; inizia: string };
   eroe: {
+    etichetta: string;
     titolo: string;
     titoloDue: string;
     sotto: string;
@@ -145,13 +146,14 @@ const it: Testi = {
     inizia: "Inizia ora",
   },
   eroe: {
-    titolo: "Racconta la giornata.",
-    titoloDue: "Il resto lo scrive lui.",
+    etichetta: "Un diario privato, raccontato",
+    titolo: "Racconta il giorno.",
+    titoloDue: "Conserva la vita.",
     sotto:
-      "Due minuti a voce, la sera. La mattina dopo la giornata e scritta. Mese dopo mese, ne esce un libro.",
-    cta: "Inizia ora",
+      "Due minuti a voce. La mattina, il tuo giorno e scritto — privato, limpido, pronto per essere ritrovato.",
+    cta: "Inizia stasera",
     ctaSecondo: "Come funziona",
-    sottoCta: "Si apre e basta. Niente account, niente carta, niente pubblicita.",
+    sottoCta: "Nessun account per iniziare · Cifrato sul tuo dispositivo",
   },
   esempio: {
     data: "Giovedi 27 agosto",
@@ -492,13 +494,14 @@ const en: Testi = {
     inizia: "Get started",
   },
   eroe: {
-    titolo: "Tell your day.",
-    titoloDue: "It writes the rest.",
+    etichetta: "A private journal, spoken",
+    titolo: "Tell the day.",
+    titoloDue: "Keep the life.",
     sotto:
-      "Two minutes out loud, in the evening. By morning the day is written. Month after month, it becomes a book.",
-    cta: "Get started",
+      "Two minutes out loud. By morning, your day is written — private, clear, and yours to return to.",
+    cta: "Start tonight",
     ctaSecondo: "How it works",
-    sottoCta: "Just open it. No account, no card, no ads.",
+    sottoCta: "No account to begin · Encrypted on your device",
   },
   esempio: {
     data: "Thursday 27 August",

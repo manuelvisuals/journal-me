@@ -2085,6 +2085,162 @@
   margin-top: 10px;
 }
 
+/* ================================================================ 4.0
+   Direzione editoriale: meno capitoli, una scena sola nell'eroe e tre
+   prove forti (rituale, prodotto, cassaforte). Le versioni congelate non
+   montano .jm-sito4 e restano quindi identiche. */
+.jm-sito4 .jm-sito-cont {
+  max-width: 1200px;
+}
+.jm-sito4-eyebrow {
+  margin-bottom: 24px;
+  color: var(--jm-accent);
+  font-size: calc(11px * var(--jm-ui-scale));
+  font-weight: var(--jm-weight-label);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.jm-sito4 .jm-sito2-eroe {
+  min-height: calc(100svh - var(--jm-sito-nav-h));
+  background: var(--jm-bg-app);
+}
+.jm-sito4 .jm-sito2-eroe .jm-sito-h1 {
+  font-size: clamp(calc(52px * var(--jm-ui-scale)), 6.2vw, calc(92px * var(--jm-ui-scale)));
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  max-width: 8.5em;
+}
+.jm-sito4 .jm-sito2-sotto {
+  margin-top: 30px;
+  max-width: 34ch;
+  line-height: 1.55;
+}
+.jm-sito4 .jm-sito2-eroe .jm-sito-b {
+  border-radius: var(--jm-radius-md);
+  padding-inline: 28px;
+}
+.jm-sito4 .jm-sito2-sotto-cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.jm-sito4 .jm-sito2-sotto-cta::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 1px solid currentColor;
+  border-radius: var(--jm-radius-sm);
+  opacity: 0.72;
+}
+
+/* Togliamo i capitoli ridondanti dalla home viva. Restano nel DOM delle
+   versioni congelate e il loro codice continua a fare da archivio. */
+.jm-sito4 .jm-sito-sez.mentre,
+.jm-sito4 .jm-sito-promesse-sez,
+.jm-sito4 .jm-sito-foto-sez,
+.jm-sito4 #funzioni,
+.jm-sito4 #condizioni,
+.jm-sito4 #iphone {
+  display: none;
+}
+
+.jm-sito4 .jm-sito2-giornata {
+  padding-block: 124px 112px;
+  background: var(--jm-surface);
+  border: 0;
+}
+.jm-sito4 .jm-sito2-giornata .jm-sito-testa {
+  max-width: 720px;
+}
+.jm-sito4 .jm-sito2-giornata .jm-sito-h2 {
+  font-size: clamp(calc(44px * var(--jm-ui-scale)), 5vw, calc(70px * var(--jm-ui-scale)));
+}
+.jm-sito4 .jm-sito2-giornata-dev {
+  margin-top: 54px;
+}
+.jm-sito4 .jm-sito-dev.grande {
+  max-width: 430px;
+  transform: rotate(-1.2deg);
+}
+.jm-sito4 #come {
+  padding-block: 132px;
+}
+.jm-sito4 #come .jm-sito-testa {
+  margin-bottom: 72px;
+}
+.jm-sito4 .jm-sito-passo {
+  padding-block: 56px;
+}
+.jm-sito4 .jm-sito-cassa {
+  padding-block: 132px;
+}
+.jm-sito4 #domande {
+  padding-block: 112px;
+}
+.jm-sito4 .jm-sito-fine {
+  padding-block: 136px;
+}
+.jm-sito4 .jm-sito-fine h2 {
+  font-size: clamp(calc(48px * var(--jm-ui-scale)), 6vw, calc(78px * var(--jm-ui-scale)));
+}
+
+@media (min-width: 768px) {
+  .jm-sito4 .jm-sito2-eroe {
+    padding-block: calc(var(--jm-sito-nav-h) + 54px) 54px;
+  }
+  .jm-sito4 .jm-sito2-eroe-in {
+    min-height: calc(100svh - var(--jm-sito-nav-h) - 108px);
+    justify-content: center;
+  }
+  .jm-sito4 .jm-sito2-eroe-t {
+    max-width: 48%;
+  }
+  .jm-sito4 .jm-sito2-eroe-media {
+    inset: 0 0 0 auto;
+    width: 56%;
+    overflow: hidden;
+  }
+  .jm-sito4 .jm-sito2-eroe-media .scena {
+    object-position: 67% 42%;
+  }
+  .jm-sito4 .jm-sito2-eroe-media .telefono {
+    left: 1%;
+    bottom: 4%;
+    width: 42%;
+    filter: drop-shadow(0 34px 52px color-mix(in oklab, var(--jm-shadow) 42%, transparent));
+  }
+  .jm-sito4 .jm-sito2-eroe::before {
+    background: linear-gradient(
+      90deg,
+      var(--jm-bg-app) 0%,
+      var(--jm-bg-app) 39%,
+      color-mix(in srgb, var(--jm-bg-app) 78%, transparent) 46%,
+      transparent 55%
+    );
+  }
+}
+
+@media (max-width: 767px) {
+  .jm-sito4 .jm-sito2-eroe {
+    padding-bottom: 84%;
+  }
+  .jm-sito4 .jm-sito2-eroe .jm-sito-h1 {
+    font-size: clamp(calc(48px * var(--jm-ui-scale)), 15vw, calc(68px * var(--jm-ui-scale)));
+  }
+  .jm-sito4 .jm-sito2-eroe-media .telefono {
+    left: 50%;
+    width: 48%;
+    transform: translateX(-50%);
+  }
+  .jm-sito4 .jm-sito2-giornata,
+  .jm-sito4 #come,
+  .jm-sito4 .jm-sito-cassa,
+  .jm-sito4 #domande,
+  .jm-sito4 .jm-sito-fine {
+    padding-block: 82px;
+  }
+}
+
 /* --------------------------------------------------------- assistenza */
 .jm-sito-sup {
   max-width: 640px;
