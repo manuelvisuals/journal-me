@@ -194,6 +194,9 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Senza nome l'app ti chiama {n}, come la tua email.":
     "With no name the app calls you {n}, after your email.",
   "Adesso ti chiami {n}.": "You are now {n}.",
+  "Nome tolto.": "Name removed.",
+  "Come vuoi essere chiamato dentro l'app.": "What the app should call you.",
+  "Senza nome l'app dice {n}.": "Without a name the app says {n}.",
   "Nome tolto. Torna quello della tua email.":
     "Name removed. The one from your email is back.",
   "ospite": "guest",

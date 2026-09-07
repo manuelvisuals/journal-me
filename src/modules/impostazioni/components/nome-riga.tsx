@@ -45,7 +45,7 @@ type Comuni = {
  * schermata del telefono, che ha lo spazio per spiegarlo; qui il campo e
  * largo tre centimetri e una frase in piu non ci sta.
  */
-export function NomeRiga({ mostrato, onNota }: Omit<Comuni, "email">) {
+export function NomeRiga({ mostrato, onNota, email = null }: Omit<Comuni, "email"> & { email?: string | null }) {
   const t = useT();
   const [aperto, setAperto] = useState(false);
   const [testo, setTesto] = useState("");
@@ -78,7 +78,9 @@ export function NomeRiga({ mostrato, onNota }: Omit<Comuni, "email">) {
       await salvaNomeProfilo(pulito);
       onNota?.(
         pulito === null
-          ? t("Nome tolto. Torna quello della tua email.")
+          ? email
+            ? t("Nome tolto. Torna quello della tua email.")
+            : t("Nome tolto.")
           : t("Adesso ti chiami {n}.", { n: pulito }),
       );
     } catch (err) {
@@ -162,7 +164,8 @@ export function NomePanel({
   const scelto = profilo?.nome ?? null;
   // Il fondo su cui si ricade: si mostra in chiaro, cosi svuotare il campo
   // non e un salto nel buio.
-  const ripiego = email && email.includes("@") ? email.split("@")[0] : t("ospite");
+  // Senza email (ospite, o locale) si ricade su "Questo dispositivo".
+  const ripiego = email && email.includes("@") ? email.split("@")[0] : t("Questo dispositivo");
 
   const salva = async () => {
     if (salvo) return;
@@ -171,7 +174,9 @@ export function NomePanel({
       await salvaNomeProfilo(pulito);
       onNota?.(
         pulito === null
-          ? t("Nome tolto. Torna quello della tua email.")
+          ? email
+            ? t("Nome tolto. Torna quello della tua email.")
+            : t("Nome tolto.")
           : t("Adesso ti chiami {n}.", { n: pulito }),
       );
       onFatto();
@@ -188,7 +193,9 @@ export function NomePanel({
   return (
     <>
       <p className="jm-st-lede">
-        {t("Come vuoi essere chiamato dentro l'app. L'email non cambia.")}
+        {email
+          ? t("Come vuoi essere chiamato dentro l'app. L'email non cambia.")
+          : t("Come vuoi essere chiamato dentro l'app.")}
       </p>
 
       <input
@@ -210,7 +217,9 @@ export function NomePanel({
           invece di lasciare indovinare. */}
       {pulito === null && (
         <p className="jm-nome-avviso">
-          {t("Senza nome l'app ti chiama {n}, come la tua email.", { n: ripiego })}
+          {email
+            ? t("Senza nome l'app ti chiama {n}, come la tua email.", { n: ripiego })
+            : t("Senza nome l'app dice {n}.", { n: ripiego })}
         </p>
       )}
 

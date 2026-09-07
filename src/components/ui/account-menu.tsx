@@ -16,8 +16,8 @@
  *    il menu e il foglio dal basso (la primitiva Sheet), chiuso dal velo.
  *
  * Le voci, dal contratto §03 — e quando compare ciascuna:
- *  - testata: nome ed email; in locale "Questo dispositivo" e "Le
- *    giornate non escono di qui";
+ *  - testata: nome ed email; in locale il nome scelto (o "Questo
+ *    dispositivo") e "Le giornate non escono di qui" / il regalo che resta;
  *  - Impostazioni -> /settings, sempre;
  *  - Passa a Premium -> openPremiumWall("aiSummary"), solo cloud non
  *    premium; nel guscio iOS l'etichetta e "Scopri Premium" e non si
@@ -148,7 +148,10 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const native = isNative();
   const suSettings = pathname.startsWith("/app/settings");
   const nome = useNomeMostrato(account?.email, t("ospite"));
-  const mostrato = locale ? t("Questo dispositivo") : nome;
+  // Nome e foto valgono anche da ospite (7 settembre 2026): il nome scelto
+  // sostituisce "Questo dispositivo", con sotto le giornate AI che restano.
+  const nomeScelto = useProfilo()?.nome ?? null;
+  const mostrato = locale ? (nomeScelto ?? t("Questo dispositivo")) : nome;
   // L'iniziale segue il NOME mostrato, non l'email: chi si chiama Manuel
   // vede una M perche si chiama Manuel, non per come e fatto il suo
   // indirizzo.
@@ -282,8 +285,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
                       modifica qui — porta alla schermata del nome, che vive
                       nelle Impostazioni. Un menu apre le cose, non le
                       contiene. */}
-                  {!locale && (
-                    <button
+                  <button
                       type="button"
                       className="jm-acct-penna"
                       aria-label={t("Cambia il tuo nome")}
@@ -299,7 +301,6 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
                         <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
                       </svg>
                     </button>
-                  )}
                 </span>
                 <span className="e">
                   {locale ? sottotitoloLocale : (account?.email ?? "")}

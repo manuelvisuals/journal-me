@@ -46,7 +46,7 @@ import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga
 import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
 import { ospiteAttivo } from "@/lib/ospite/flag";
 import { premiumDispositivoFino, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
-import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
+import { useNomeMostrato, useProfilo, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
 import {
   ConsumiPanel,
@@ -390,7 +390,10 @@ export function SettingsClient({
   // raggiungesse un solo dei due avrebbe mostrato due nomi diversi nella
   // stessa schermata.
   const nomeCloud = useNomeMostrato(email, t("Ospite"));
-  const accountName = isLocal ? "Questo dispositivo" : nomeCloud;
+  // Nome e foto valgono per tutti, anche da ospite (7 settembre 2026): in
+  // locale il nome scelto sostituisce "Questo dispositivo".
+  const nomeScelto = useProfilo()?.nome ?? null;
+  const accountName = isLocal ? (nomeScelto ?? t("Questo dispositivo")) : nomeCloud;
 
   return (
     <main
@@ -620,6 +623,15 @@ export function SettingsClient({
               <SetGroup label={t("Account")}>
                 {ospite ? (
                   <>
+                    <FotoProfiloRow
+                      iniziale={accountName.slice(0, 1).toUpperCase()}
+                      onNota={say}
+                    />
+                    <SetRow
+                      title={t("Nome")}
+                      value={accountName}
+                      onClick={() => setPanel("nome")}
+                    />
                     {premiumSulDispositivo ? (
                       <SetRow
                         title={t("Piano")}
@@ -681,6 +693,15 @@ export function SettingsClient({
                   </>
                 ) : isLocal ? (
                   <>
+                    <FotoProfiloRow
+                      iniziale={accountName.slice(0, 1).toUpperCase()}
+                      onNota={say}
+                    />
+                    <SetRow
+                      title={t("Nome")}
+                      value={accountName}
+                      onClick={() => setPanel("nome")}
+                    />
                     <SetRow
                       title={t("Dove")}
                       value={t("Solo su questo dispositivo")}
@@ -830,26 +851,16 @@ export function SettingsClient({
           {/* L'iniziale viene dal NOME mostrato, non dall'email: in locale
               l'email non esiste e l'avatar diventava un punto interrogativo
               accanto a "Questo dispositivo".
-              In cloud il ritratto e la PORTA alla foto profilo: sul computer
-              non esiste il gruppo Account del telefono, e senza questo non
-              ci sarebbe nessun modo di cambiarla. In locale resta un
-              disegno: senza account non c'e nessuna foto da tenere. */}
-          {isLocal ? (
-            <div className="jm-st-av" aria-hidden="true">
-              {accountName.slice(0, 1).toUpperCase()}
-            </div>
-          ) : (
-            <FotoProfiloRow
-              variant="avatar"
-              iniziale={accountName.slice(0, 1).toUpperCase()}
-              onNota={say}
-            />
-          )}
-          {isLocal ? (
-            <div className="jm-st-nm">{t(accountName)}</div>
-          ) : (
-            <NomeRiga mostrato={accountName} onNota={say} />
-          )}
+              Il ritratto e la PORTA alla foto profilo, in ogni modalita
+              (7 settembre 2026): sul computer non esiste il gruppo Account
+              del telefono, e senza questo non ci sarebbe nessun modo di
+              cambiarla. */}
+          <FotoProfiloRow
+            variant="avatar"
+            iniziale={accountName.slice(0, 1).toUpperCase()}
+            onNota={say}
+          />
+          <NomeRiga mostrato={accountName} onNota={say} email={email} />
           {!isLocal && email && <div className="jm-st-em">{email}</div>}
           {ospite ? null : isLocal ? (
             <span className="jm-st-pill">{t("Locale")}</span>

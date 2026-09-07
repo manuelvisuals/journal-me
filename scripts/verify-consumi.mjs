@@ -1,4 +1,5 @@
-// Verifica della schermata "Consumi AI" (ramo consumi-ai) — locale, porta 3200.
+// Verifica della schermata "Consumi AI" (ramo consumi-ai). Dev server su
+// :3100 con i finti (JM_BASE per cambiarlo), progetto Supabase sbfinto.
 //
 // Cosa prova, in ordine di importanza:
 //
@@ -20,7 +21,7 @@
 import { chromium } from "playwright-core";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const BASE = "http://localhost:3200";
+const BASE = process.env.JM_BASE ?? "http://localhost:3100";
 
 const results = [];
 function check(name, ok, extra = "") {
@@ -92,8 +93,8 @@ async function open(opts) {
           window.localStorage.removeItem("jm.mode");
           window.localStorage.setItem("jm.saluto.silenzio", "usr:00000000-0000-4000-8000-000000000001#v1");
           // La chiave la deriva supabase-js dall'host del progetto:
-          // https://example.supabase.co -> sb-example-auth-token.
-          window.localStorage.setItem("sb-example-auth-token", sess);
+          // https://sbfinto.supabase.co -> sb-sbfinto-auth-token.
+          window.localStorage.setItem("sb-sbfinto-auth-token", sess);
         }
       } catch {}
     },
@@ -115,7 +116,7 @@ async function open(opts) {
   });
 
   // Supabase: mai davvero in rete. In locale non deve nemmeno servire.
-  await page.route("**example.supabase.co/**", async (route) => {
+  await page.route("**sbfinto.supabase.co/**", async (route) => {
     const url = route.request().url();
     if (url.includes("/auth/v1/user")) {
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(FAKE_SESSION.user) });
@@ -142,6 +143,20 @@ async function open(opts) {
   });
 
   await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
+  // Con l'account c'e il cancello della cassaforte (le otto parole, dal 3
+  // settembre 2026): si passa come farebbe la persona, e si torna qui.
+  if (opts.mode === "cloud") {
+    const parole = page.locator(".jm-login-cassa-check input");
+    try {
+      await parole.waitFor({ state: "visible", timeout: 15_000 });
+      await parole.check();
+      await page.locator("button.btn-primary").click();
+      await page.waitForTimeout(1500);
+      if (!page.url().includes("/app/settings")) await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
+    } catch {
+      // gia dentro
+    }
+  }
   await page.waitForTimeout(1200);
   return { ctx, page, errors, external, apiUsage };
 }
@@ -206,7 +221,7 @@ for (const [w, h, dove] of [[1440, 900, "desktop"], [390, 780, "telefono"]]) {
         "Trascrizione della voce",
         "Recap del mese",
         "Titoli e sintesi delle giornate",
-        "Persone, date e note di Ricorda",
+        "Persone, date e note di Memo",
       ]),
     JSON.stringify(titles),
   );
