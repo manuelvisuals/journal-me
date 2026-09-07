@@ -2092,6 +2092,12 @@
 .jm-sito4 .jm-sito-cont {
   max-width: 1200px;
 }
+.jm-sito4:not(.jm-sito4-archivio) .jm-sito2-eroe-in {
+  z-index: 2;
+}
+.jm-sito4:not(.jm-sito4-archivio) .jm-sito2-eroe-media {
+  pointer-events: none;
+}
 .jm-sito4 .jm-sito-nav-r > .jm-sito-b {
   display: none;
 }
@@ -2344,7 +2350,8 @@
   }
   .jm-sito4 .jm-sito4-telefono-foto {
     left: 50%;
-    width: 310px;
+    top: 230px;
+    width: 440px;
     height: auto;
     padding: 0;
     overflow: visible;
