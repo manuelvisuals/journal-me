@@ -158,7 +158,7 @@ const it: Testi = {
     titolo: "Racconta il giorno.",
     titoloDue: "Conserva la vita.",
     sotto:
-      "Due minuti a voce. La mattina, il tuo giorno e scritto — privato, limpido, pronto per essere ritrovato.",
+      "Due minuti a voce. La mattina, il tuo giorno e scritto, privato, limpido, pronto per essere ritrovato.",
     cta: "Inizia stasera",
     ctaSecondo: "Come funziona",
     sottoCta: "Nessun account per iniziare · Cifrato sul tuo dispositivo",
@@ -518,7 +518,7 @@ const en: Testi = {
     titolo: "Tell the day.",
     titoloDue: "Keep the life.",
     sotto:
-      "Two minutes out loud. By morning, your day is written — private, clear, and yours to return to.",
+      "Two minutes out loud. By morning, your day is written, private, clear, and yours to return to.",
     cta: "Start tonight",
     ctaSecondo: "How it works",
     sottoCta: "No account to begin · Encrypted on your device",

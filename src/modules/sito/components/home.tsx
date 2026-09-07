@@ -394,22 +394,21 @@ export function HomeSito({
             <Foto nome="salotto-voce" className="scena" eager />
             <Foto nome="iphone-giornata" className="jm-sito4-telefono jm-sito4-telefono-foto" eager />
           </div>
-        </section>
-
-        <section className="jm-sito4-rituale" id="rituale">
-          <p className="jm-sito4-eyebrow">{t.rituale.etichetta}</p>
-          <h2>{t.rituale.titolo}</h2>
-          <div className="jm-sito4-rituale-voci">
-            {t.rituale.voci.map((voce) => (
-              <div key={voce.titolo}>
-                <span><Icona nome={voce.icona} /></span>
-                <div>
-                  <h3>{voce.titolo}</h3>
-                  <p>{voce.testo}</p>
+          <section className="jm-sito4-rituale" id="rituale">
+            <p className="jm-sito4-eyebrow">{t.rituale.etichetta}</p>
+            <h2>{t.rituale.titolo}</h2>
+            <div className="jm-sito4-rituale-voci">
+              {t.rituale.voci.map((voce) => (
+                <div key={voce.titolo}>
+                  <span><Icona nome={voce.icona} /></span>
+                  <div>
+                    <h3>{voce.titolo}</h3>
+                    <p>{voce.testo}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
         </section>
 
         {/* -------------------------------------------- la giornata */}

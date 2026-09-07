@@ -2269,8 +2269,8 @@
     visibility: visible;
   }
   .jm-sito4 .jm-sito2-eroe {
-    height: 800px;
-    min-height: 800px;
+    height: 100svh;
+    min-height: 100svh;
     margin-top: 0;
     padding: 0;
     align-items: stretch;
@@ -2280,7 +2280,7 @@
   }
   .jm-sito4 .jm-sito2-eroe-in {
     max-width: 1416px;
-    min-height: 800px;
+    min-height: 100svh;
     justify-content: flex-start;
     padding-top: 194px;
     padding-inline: 36px;
@@ -2409,6 +2409,39 @@
   }
 }
 
+@media (min-width: 1100px) {
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    left: 20px;
+    z-index: 4;
+    margin: 0;
+    padding: 18px 6% 22px;
+    border-radius: var(--jm-radius-xl);
+    background: color-mix(in srgb, var(--jm-surface) 93%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.08);
+    backdrop-filter: blur(14px) saturate(1.08);
+    box-shadow: 0 12px 36px color-mix(in oklab, var(--jm-shadow) 14%, transparent);
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale .jm-sito4-eyebrow {
+    margin-bottom: 8px;
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale > h2 {
+    font-size: calc(42px * var(--jm-ui-scale));
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale-voci {
+    margin-top: 14px;
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale-voci > div {
+    min-height: 56px;
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale-voci > div > span {
+    width: 48px;
+    height: 48px;
+  }
+}
+
 .jm-sito4-rituale {
   position: relative;
   z-index: 3;
@@ -2467,6 +2500,12 @@
 @media (max-width: 1099px) {
   .jm-sito4 .jm-sito2-eroe {
     padding-bottom: 132%;
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito2-eroe {
+    display: block;
+  }
+  .jm-sito4:not(.jm-sito4-archivio) .jm-sito4-rituale {
+    margin-top: 500px;
   }
   .jm-sito4-telefono {
     position: absolute;
@@ -2541,6 +2580,11 @@
   display: none;
 }
 @media (min-width: 1100px) {
+  .jm-sito4-archivio .jm-sito2-eroe,
+  .jm-sito4-archivio .jm-sito2-eroe-in {
+    height: 800px;
+    min-height: 800px;
+  }
   .jm-sito4-archivio .jm-sito-nav-r {
     visibility: hidden;
   }
