@@ -18,9 +18,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // /v1 e /v2 sono home congelate per confronto: non sono pagine
+        // /v1, /v2 e /v3 sono home congelate per confronto: non sono pagine
         // da trovare, e sparira con la 2.0 approvata.
-        disallow: ["/app", "/app/", "/login", "/auth", "/admin", "/api", "/v1", "/en/v1", "/v2", "/en/v2"],
+        disallow: ["/app", "/app/", "/login", "/auth", "/admin", "/api", "/v1", "/en/v1", "/v2", "/en/v2", "/v3", "/en/v3"],
       },
     ],
     sitemap: `${SITO}/sitemap.xml`,
