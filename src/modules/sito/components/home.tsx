@@ -419,10 +419,15 @@ export function HomeSito({
               <h2 className="jm-sito-h2">{t.giornata.titolo}</h2>
               <p>{t.giornata.testo}</p>
             </div>
-            <div className="jm-sito2-giornata-dev">
-              <div className="jm-sito-dev grande">
-                <SchermoOggi t={t} />
-              </div>
+            <div className="jm-sito-duo jm-sito4-giornata-foto">
+              <figure>
+                <Foto nome="skincare" />
+                <figcaption>{t.mentre.didascalie[1]}</figcaption>
+              </figure>
+              <figure>
+                <Foto nome="barba" />
+                <figcaption>{t.mentre.didascalie[0]}</figcaption>
+              </figure>
             </div>
             <div className="jm-sito2-punti">
               {t.giornata.punti.map((x) => (
@@ -430,25 +435,6 @@ export function HomeSito({
                   <h3>{x.titolo}</h3>
                   <p>{x.testo}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ------------------------------------------ mentre fai altro */}
-        <section className="jm-sito-sez mentre" id="mentre">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa">
-              <p className="jm-sito-kick">{t.mentre.etichetta}</p>
-              <h2 className="jm-sito-h2">{t.mentre.titolo}</h2>
-              <p>{t.mentre.testo}</p>
-            </div>
-            <div className="jm-sito-duo">
-              {(["barba", "skincare"] as const).map((f, i) => (
-                <figure key={f}>
-                  <Foto nome={f} />
-                  <figcaption>{t.mentre.didascalie[i]}</figcaption>
-                </figure>
               ))}
             </div>
           </div>
