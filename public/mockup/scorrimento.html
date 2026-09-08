@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>dayalogue — mockup scorrimento</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F2E9; --bg2: #EDE6DA; --surface: #FFFDF8; --ink: #241C17; --muted: #55473D;
+    --acc: #A8542E; --line: rgba(36,28,23,.1); --shadow: rgba(60,40,25,.28);
+    --serif: "Newsreader", Georgia, serif; --sans: "Inter", -apple-system, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); scroll-behavior: auto; }
+  body { margin: 0; color: var(--ink); font-family: var(--sans); background: var(--bg); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  img { display: block; max-width: 100%; }
+  h1,h2,h3 { margin: 0; font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; }
+  p { margin: 0; }
+  .kick { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--acc); font-weight: 600; }
+  .cont { padding: 0 24px; max-width: 520px; margin: 0 auto; }
+
+  /* --------------------------------------------------- barra di scelta */
+  .bar { position: fixed; left: 12px; right: 12px; top: calc(env(safe-area-inset-top, 0px) + 10px); z-index: 50;
+    display: flex; gap: 4px; padding: 4px; border-radius: 999px;
+    background: rgba(255,253,248,.55); border: 1px solid rgba(255,253,248,.7);
+    -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4);
+    box-shadow: 0 10px 30px rgba(60,40,25,.14); }
+  .bar button { flex: 1; border: 0; background: transparent; font: 600 12px/1 var(--sans); color: var(--muted);
+    padding: 10px 0; border-radius: 999px; }
+  .bar button b { display: block; font-size: 10px; font-weight: 500; margin-top: 3px; opacity: .7; }
+  .bar button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .bar button[aria-pressed="true"] b { opacity: .75; }
+
+  /* --------------------------------------------------- eroe (breve, fermo) */
+  .eroe { position: relative; height: 78svh; min-height: 540px; overflow: hidden; background: var(--bg); }
+  .eroe img.scena { position: absolute; bottom: 0; left: calc(83% - 467px); height: 380px; width: auto; max-width: none;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%); mask-image: linear-gradient(180deg, transparent 0, #000 14%); }
+  .eroe::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(180deg, var(--bg) 0, rgba(247,242,233,.92) 22%, rgba(247,242,233,.45) 30%, transparent 40%),
+                linear-gradient(90deg, rgba(247,242,233,.92) 0, rgba(247,242,233,.8) 32%, rgba(247,242,233,.24) 48%, transparent 58%); }
+  .eroe .in { position: relative; z-index: 2; padding: 110px 27px 0; }
+  .eroe .logo { position: absolute; top: 78px; left: 27px; font-family: var(--serif); font-size: 28px; letter-spacing: -.02em; }
+  .eroe .logo b { font-weight: 600; }
+  .eroe h1 { font-size: 38px; line-height: 1; margin-top: 14px; }
+  .eroe .sotto { max-width: 180px; margin-top: 14px; color: var(--muted); font-size: 14px; line-height: 1.38; }
+  .eroe .cta { margin-top: 16px; display: inline-block; background: var(--acc); color: #fff; font-weight: 600; font-size: 14px; padding: 15px 0; width: 164px; text-align: center; border-radius: 9px; }
+  .eroe .hint { position: absolute; z-index: 3; left: 0; right: 0; bottom: 18px; text-align: center; font-size: 12px; color: var(--muted); }
+  .eroe .hint i { display: block; width: 10px; height: 10px; margin: 6px auto 0; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: rotate(45deg); animation: giu 1.6s ease-in-out infinite; }
+  @keyframes giu { 0%,100% { transform: translateY(0) rotate(45deg); opacity: .5 } 50% { transform: translateY(5px) rotate(45deg); opacity: 1 } }
+
+  /* --------------------------------------------------- sezioni */
+  .sez { padding: 84px 0; }
+  .testa { text-align: center; }
+  .testa h2 { font-size: 34px; line-height: 1.05; margin-top: 12px; }
+  .testa p.t { color: var(--muted); font-size: 16px; line-height: 1.45; margin: 14px auto 0; max-width: 32ch; }
+
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 36px; }
+  .duo figure { margin: 0; }
+  .duo .fr { overflow: hidden; border-radius: 18px; aspect-ratio: 3/4; }
+  .duo img { width: 100%; height: 100%; object-fit: cover; }
+  .duo figcaption { margin-top: 10px; font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .punti { margin-top: 36px; display: grid; gap: 18px; }
+  .punti div { padding-left: 16px; border-left: 2px solid var(--acc); }
+  .punti h3 { font-family: var(--sans); font-weight: 600; font-size: 15px; }
+  .punti p { color: var(--muted); font-size: 14px; margin-top: 4px; line-height: 1.4; }
+
+  /* scena voce → pagina */
+  .scena-sez { padding: 84px 0 40px; }
+  .track { position: relative; }
+  .pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; place-items: center; }
+  .stage { position: relative; width: min(100vw, 520px); height: 520px; }
+  .ritratto { position: absolute; top: 40px; width: 150px; aspect-ratio: 3/4; border-radius: 18px; overflow: hidden; box-shadow: 0 24px 50px var(--shadow); }
+  .ritratto img { width: 100%; height: 100%; object-fit: cover; }
+  .ritratto.donna { left: 22px; } .ritratto.uomo { right: 22px; top: 96px; }
+  .fumetto { position: absolute; background: var(--surface); border-radius: 14px; padding: 10px 12px; font-family: var(--serif); font-size: 15px; line-height: 1.3; box-shadow: 0 10px 26px rgba(60,40,25,.14); max-width: 170px; }
+  .fumetto small { display: block; margin-top: 6px; font: 600 10px/1 var(--sans); color: var(--acc); letter-spacing: .1em; text-transform: uppercase; }
+  .fumetto.donna { left: 60px; top: 232px; } .fumetto.uomo { right: 26px; top: 300px; }
+  .onda { display: flex; gap: 2px; height: 12px; align-items: center; margin-top: 6px; }
+  .onda i { width: 2px; background: var(--acc); border-radius: 2px; height: 30%; animation: onda .9s ease-in-out infinite; }
+  .onda i:nth-child(2n) { animation-delay: .15s; height: 80%; } .onda i:nth-child(3n) { animation-delay: .3s; height: 55%; }
+  @keyframes onda { 50% { transform: scaleY(.35) } }
+  .pagina { position: absolute; left: 50%; bottom: 0; width: 300px; transform: translateX(-50%); background: var(--surface); border-radius: 22px; padding: 20px 20px 18px; box-shadow: 0 30px 60px var(--shadow); }
+  .pagina header { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+  .pagina header b { font-family: var(--serif); font-size: 15px; color: var(--ink); font-weight: 600; }
+  .pagina h3 { font-size: 20px; line-height: 1.15; margin-top: 10px; }
+  .pagina p { font-family: var(--serif); font-size: 15px; line-height: 1.4; color: var(--muted); margin-top: 8px; }
+  .pagina .mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 12px; }
+  .pagina .mini img { aspect-ratio: 1; object-fit: cover; border-radius: 8px; width: 100%; }
+  .chiusura { text-align: center; font-family: var(--serif); font-size: 22px; margin-top: 28px; color: var(--muted); }
+
+  .promesse { display: grid; gap: 12px; margin-top: 6px; }
+  .promessa { background: var(--surface); border-radius: 18px; padding: 20px; border: 1px solid var(--line); }
+  .promessa span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--bg2); color: var(--ink); font-size: 16px; }
+  .promessa h3 { font-family: var(--sans); font-weight: 600; font-size: 16px; margin-top: 14px; }
+  .promessa p { color: var(--muted); font-size: 14px; line-height: 1.45; margin-top: 6px; }
+
+  .foto-sez { position: relative; height: 78svh; min-height: 520px; overflow: hidden; }
+  .foto-sez img { position: absolute; inset: -14% 0; width: 100%; height: 128%; object-fit: cover; }
+  .foto-sez .txt { position: absolute; left: 24px; right: 24px; bottom: 44px; color: #fff; text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+  .foto-sez h2 { font-size: 34px; line-height: 1.05; }
+  .foto-sez p { margin-top: 10px; font-size: 15px; line-height: 1.4; opacity: .9; }
+
+  .passi { margin-top: 34px; display: grid; gap: 14px; }
+  .passo { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; }
+  .passo i { font: 600 15px/40px var(--serif); font-style: normal; width: 40px; height: 40px; border-radius: 50%; text-align: center; background: var(--ink); color: #fff; }
+  .passo h3 { font-family: var(--sans); font-weight: 600; font-size: 16px; }
+  .passo p { color: var(--muted); font-size: 14px; line-height: 1.45; margin-top: 4px; }
+
+  .fine { text-align: center; padding: 60px 24px 80px; background: var(--bg2); }
+  .fine h2 { font-size: 34px; line-height: 1.05; }
+  .fine .cta { display: inline-block; margin-top: 22px; background: var(--acc); color: #fff; font-weight: 600; padding: 15px 28px; border-radius: 9px; }
+
+  /* --------------------------------------------------- quiz */
+  .quiz { background: var(--ink); color: #F7F2E9; padding: 44px 24px 70px; }
+  .quiz .kick { color: #E0A27F; }
+  .quiz h2 { font-size: 28px; line-height: 1.1; margin-top: 10px; }
+  .quiz ol { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 10px; }
+  .quiz li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 14px; }
+  .quiz li b { width: 34px; height: 34px; border-radius: 50%; background: #F7F2E9; color: var(--ink); display: grid; place-items: center; font-family: var(--serif); font-size: 17px; }
+  .quiz li strong { display: block; font-size: 15px; }
+  .quiz li span { display: block; font-size: 13px; opacity: .75; margin-top: 3px; line-height: 1.4; }
+  .quiz p.n { margin-top: 20px; font-size: 13px; opacity: .7; line-height: 1.45; }
+
+  /* =================================================== EFFETTI
+     JS scrive su ogni [data-fx]:
+       --p  0→1  progresso nella finestra (0: bordo alto entra dal basso; 1: bordo basso esce in alto)
+       --v  0→1  "visto": scatta una volta quando l'elemento entra per l'80%, e resta
+     e su .track: --s 0→1 progresso della scena fissata.
+     Le modalita si scelgono con body[data-mode]. */
+  [data-fx] { --p: 0; --v: 0; will-change: transform, opacity; }
+
+  /* A — RIVELA: entra salendo, una volta. */
+  body[data-mode="a"] [data-fx], body[data-mode="d"] [data-fx] {
+    opacity: var(--v); transform: translateY(calc((1 - var(--v)) * 28px));
+    transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  body[data-mode="a"] [data-fx="foto"] img, body[data-mode="d"] [data-fx="foto"] img {
+    transform: scale(calc(1.08 - var(--v) * .08)); transition: transform 1.1s cubic-bezier(.2,.7,.2,1);
+  }
+
+  /* B — PARALLASSE: le foto scorrono piu lente del testo, sempre. */
+  body[data-mode="b"] [data-fx="foto"] img, body[data-mode="d"] [data-fx="foto"] img {
+    transform: translateY(calc((var(--p) - .5) * -36px)) scale(1.1);
+  }
+  body[data-mode="d"] [data-fx="foto"] img { transform: translateY(calc((var(--p) - .5) * -36px)) scale(calc(1.18 - var(--v) * .08)); }
+  body[data-mode="b"] [data-fx="testo"], body[data-mode="d"] [data-fx="testo"] { --sh: calc((var(--p) - .5) * 14px); }
+  body[data-mode="b"] [data-fx="testo"] { transform: translateY(var(--sh)); }
+  body[data-mode="d"] [data-fx="testo"] { transform: translateY(calc((1 - var(--v)) * 28px + var(--sh))); }
+  body[data-mode="b"] .foto-sez img, body[data-mode="d"] .foto-sez img { transform: translateY(calc((var(--p) - .5) * -90px)); }
+  body[data-mode="b"] .foto-sez .txt, body[data-mode="d"] .foto-sez .txt { transform: translateY(calc((var(--p) - .5) * 30px)); opacity: calc(1.6 - var(--p) * 1.4); }
+
+  /* C — SCENA: la sezione voce → pagina resta ferma e si compone scorrendo. */
+  body[data-mode="c"] .track, body[data-mode="d"] .track { height: 260svh; }
+  body[data-mode="c"] .ritratto.donna, body[data-mode="d"] .ritratto.donna {
+    transform: translateX(calc((1 - min(1, var(--s) * 2.8)) * -130%)) scale(calc(1 - max(0, var(--s) - .55) * .5)) ;
+    opacity: calc(1 - max(0, var(--s) - .7) * 3.3);
+  }
+  body[data-mode="c"] .ritratto.uomo, body[data-mode="d"] .ritratto.uomo {
+    transform: translateX(calc((1 - min(1, var(--s) * 2.8)) * 130%)) scale(calc(1 - max(0, var(--s) - .55) * .5));
+    opacity: calc(1 - max(0, var(--s) - .7) * 3.3);
+  }
+  body[data-mode="c"] .fumetto, body[data-mode="d"] .fumetto {
+    opacity: calc(min(1, max(0, var(--s) - .22) * 6) * (1 - max(0, var(--s) - .55) * 5));
+    transform: translateY(calc((1 - min(1, max(0, var(--s) - .22) * 6)) * 12px));
+  }
+  body[data-mode="c"] .pagina, body[data-mode="d"] .pagina {
+    transform: translate(-50%, calc((1 - min(1, max(0, var(--s) - .5) * 2.5)) * 110%)) scale(calc(.9 + min(1, max(0, var(--s) - .5) * 2.5) * .1));
+    opacity: min(1, max(0, var(--s) - .45) * 3);
+  }
+  body[data-mode="c"] .chiusura, body[data-mode="d"] .chiusura { opacity: min(1, max(0, var(--s) - .8) * 6); }
+  /* in A e B la scena e statica: tutto al suo posto */
+  body[data-mode="a"] .ritratto, body[data-mode="b"] .ritratto, body[data-mode="a"] .fumetto, body[data-mode="b"] .fumetto { transform: none; opacity: 1; }
+  body[data-mode="a"] .pagina, body[data-mode="b"] .pagina { transform: translateX(-50%) translateY(0); opacity: 1; }
+  body[data-mode="a"] .ritratto.uomo, body[data-mode="b"] .ritratto.uomo { top: 28px; right: 22px; }
+  body[data-mode="a"] .ritratto.donna, body[data-mode="b"] .ritratto.donna { top: 0; }
+  body[data-mode="a"] .pin, body[data-mode="b"] .pin { position: static; height: auto; padding-bottom: 20px; }
+  body[data-mode="a"] .stage, body[data-mode="b"] .stage { height: 690px; }
+  body[data-mode="a"] .fumetto.donna, body[data-mode="b"] .fumetto.donna { top: 172px; }
+  body[data-mode="a"] .fumetto.uomo, body[data-mode="b"] .fumetto.uomo { top: 236px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-fx], [data-fx] img, .ritratto, .fumetto, .pagina, .foto-sez img, .foto-sez .txt { transform: none !important; opacity: 1 !important; transition: none !important; }
+    .track { height: auto !important; } .pin { position: static !important; height: auto !important; }
+  }
+</style>
+</head>
+<body data-mode="a">
+
+<nav class="bar" aria-label="Stile di scorrimento">
+  <button data-set="a" aria-pressed="true">1 · Rivela<b>appare salendo</b></button>
+  <button data-set="b" aria-pressed="false">2 · Parallasse<b>foto piu lente</b></button>
+  <button data-set="c" aria-pressed="false">3 · Scena<b>si ferma e si compone</b></button>
+  <button data-set="d" aria-pressed="false">4 · Tutto<b>1 + 2 + 3</b></button>
+</nav>
+
+<section class="eroe">
+  <div class="logo"><b>day</b>alogue</div>
+  <img class="scena" src="/sito/salotto-voce.webp" alt="">
+  <div class="in">
+    <p class="kick">Un diario privato, raccontato</p>
+    <h1>Racconta il giorno.<br>Conserva la vita.</h1>
+    <p class="sotto">Due minuti a voce. La mattina, il tuo giorno e scritto, privato, limpido, pronto per essere ritrovato.</p>
+    <span class="cta">Inizia stasera</span>
+  </div>
+  <p class="hint">L'eroe resta com'e. Scorri<i></i></p>
+</section>
+
+<!-- ------------------------------------------------ la giornata -->
+<section class="sez">
+  <div class="cont">
+    <div class="testa" data-fx="testo">
+      <p class="kick">La giornata</p>
+      <h2>Parli tu. Scrive lui.</h2>
+      <p class="t">Alla fine dei due minuti la giornata e gia una pagina. Parole tue, messe in ordine.</p>
+    </div>
+    <div class="duo">
+      <figure data-fx="foto" style="--i:0"><div class="fr"><img src="/sito/skincare.webp" alt=""></div><figcaption>Mentre ti prepari, alla sera.</figcaption></figure>
+      <figure data-fx="foto" style="--i:1"><div class="fr"><img src="/sito/barba.webp" alt=""></div><figcaption>Mentre ti fai la barba.</figcaption></figure>
+    </div>
+    <div class="punti">
+      <div data-fx="testo" style="--i:0"><h3>Titolo e sintesi</h3><p>Un titolo che ricorda, due righe che raccontano.</p></div>
+      <div data-fx="testo" style="--i:1"><h3>Le foto del giorno</h3><p>Dal rullino, in miniatura, accanto alle parole.</p></div>
+      <div data-fx="testo" style="--i:2"><h3>Umore, energia, peso</h3><p>I numeri che dici a voce finiscono nelle caselle.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------ voce → pagina -->
+<section class="scena-sez">
+  <div class="cont testa" data-fx="testo">
+    <p class="kick">La tua giornata, scritta</p>
+    <h2>Parli tu. Dayalogue la scrive.</h2>
+    <p class="t">Due minuti di parole diventano una pagina chiara, intima e pronta da ritrovare.</p>
+  </div>
+  <div class="track" id="track">
+    <div class="pin">
+      <div class="stage">
+        <div class="ritratto donna"><img src="/sito/skincare.webp" alt=""></div>
+        <div class="ritratto uomo"><img src="/sito/barba.webp" alt=""></div>
+        <div class="fumetto donna">...poi mi ha chiamato Marco. Dopo due anni.<small>Sto ascoltando</small><span class="onda"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+        <div class="fumetto uomo">...oggi finalmente abbiamo chiuso il progetto.<small>Sto ascoltando</small><span class="onda"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+        <article class="pagina">
+          <header><span>Giovedi 27 agosto</span><b>dayalogue</b></header>
+          <h3>Consegnato il progetto, e la sera Marco ha chiamato dopo due anni</h3>
+          <p>La giornata e cominciata storta e si e raddrizzata alle sei. Il lavoro e chiuso; quello che resta e quella telefonata.</p>
+          <div class="mini"><img src="/sito/salotto-voce.webp" alt=""><img src="/sito/comodino.webp" alt=""><img src="/sito/divano-notte.webp" alt=""></div>
+        </article>
+      </div>
+    </div>
+  </div>
+  <p class="chiusura cont">Le tue parole. Una vita più tua.</p>
+</section>
+
+<!-- ------------------------------------------------ promesse -->
+<section class="sez">
+  <div class="cont">
+    <div class="promesse">
+      <div class="promessa" data-fx="testo" style="--i:0"><span>&#127908;</span><h3>Si parla, non si compila</h3><p>Tieni premuto e racconti. Nei silenzi non registra. Se preferisci scrivere, si scrive.</p></div>
+      <div class="promessa" data-fx="testo" style="--i:1"><span>&#128273;</span><h3>Chiuso a chiave sul telefono</h3><p>Ogni giornata parte gia cifrata. Nessuno la puo leggere, nemmeno chi ha fatto l'app.</p></div>
+      <div class="promessa" data-fx="testo" style="--i:2"><span>&#10010;</span><h3>Si apre e basta</h3><p>Niente account, niente carta, niente pubblicita. L'AI e in regalo per dieci giornate.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ------------------------------------------------ sera -->
+<section class="foto-sez" data-fx="sfondo">
+  <img src="/sito/divano-notte.webp" alt="">
+  <div class="txt">
+    <h2>Due minuti, prima di dormire.</h2>
+    <p>Non serve la penna, non serve la pagina bianca. Serve solo dire com'e andata.</p>
+  </div>
+</section>
+
+<!-- ------------------------------------------------ come funziona -->
+<section class="sez">
+  <div class="cont">
+    <div class="testa" data-fx="testo"><p class="kick">Come funziona</p><h2>Come funziona?</h2></div>
+    <div class="passi">
+      <div class="passo" data-fx="testo" style="--i:0"><i>1</i><div><h3>La sera, parli</h3><p>Due minuti col microfono premuto. O scrivi, se e una di quelle sere.</p></div></div>
+      <div class="passo" data-fx="testo" style="--i:1"><i>2</i><div><h3>Si scrive da sola</h3><p>Titolo, sintesi, persone, impegni. Se un nome non e chiaro, te lo chiede.</p></div></div>
+      <div class="passo" data-fx="testo" style="--i:2"><i>3</i><div><h3>Rileggi quando vuoi</h3><p>Il mese, una giornata sola, o il recap che arriva da se.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="fine">
+  <div data-fx="testo"><h2>Stasera, due minuti.</h2><span class="cta">Inizia stasera</span></div>
+</section>
+
+<!-- ------------------------------------------------ quiz -->
+<section class="quiz">
+  <p class="kick">Domanda 1 di 1</p>
+  <h2>Quale stile porto sul sito?</h2>
+  <ol>
+    <li><b>1</b><div><strong>Rivela</strong><span>Ogni blocco appare salendo di poco, una volta sola; le foto entrano con un leggero zoom-out. Il piu sobrio, quello delle pagine prodotto Apple.</span></div></li>
+    <li><b>2</b><div><strong>Parallasse</strong><span>Le foto scorrono piu lente del testo e la foto grande della sera si muove sotto la scritta. Niente entrate: la pagina e sempre tutta visibile.</span></div></li>
+    <li><b>3</b><div><strong>Scena</strong><span>La sezione "voce → pagina" si ferma sullo schermo e si compone mentre scorri: arrivano i due ritratti, parlano, poi sale la pagina scritta. Il resto della pagina come 1.</span></div></li>
+    <li><b>4</b><div><strong>Tutto</strong><span>1 + 2 + 3 insieme. Il piu "App Store", ma anche il piu carico.</span></div></li>
+    <li><b>5</b><div><strong>Nessuno</strong><span>Lasciamo il sito fermo com'e.</span></div></li>
+  </ol>
+  <p class="n">Rispondi in chat col numero. Se ti piace uno stile ma vuoi meno (o piu) movimento, scrivilo accanto al numero: la seconda domanda sara sull'intensita.</p>
+</section>
+
+<script>
+(function () {
+  var body = document.body;
+  var fx = Array.prototype.slice.call(document.querySelectorAll('[data-fx]'));
+  var track = document.getElementById('track');
+  var raf = 0;
+
+  function misura() {
+    raf = 0;
+    var H = window.innerHeight;
+    for (var i = 0; i < fx.length; i++) {
+      var el = fx[i], r = el.getBoundingClientRect();
+      var p = (H - r.top) / (H + r.height);          // 0 entra dal basso, 1 uscito in alto
+      p = p < 0 ? 0 : p > 1 ? 1 : p;
+      el.style.setProperty('--p', p.toFixed(4));
+      if (el.__v !== 1 && r.top < H * 0.86) { el.__v = 1; el.style.setProperty('--v', '1'); }
+    }
+    if (track) {
+      var t = track.getBoundingClientRect();
+      var s = -t.top / (t.height - H);
+      s = s < 0 ? 0 : s > 1 ? 1 : s;
+      track.style.setProperty('--s', s.toFixed(4));
+    }
+  }
+  function chiedi() { if (!raf) raf = requestAnimationFrame(misura); }
+  window.addEventListener('scroll', chiedi, { passive: true });
+  window.addEventListener('resize', chiedi);
+
+  function modo(m) {
+    body.setAttribute('data-mode', m);
+    var bs = document.querySelectorAll('.bar button');
+    for (var i = 0; i < bs.length; i++) bs[i].setAttribute('aria-pressed', String(bs[i].getAttribute('data-set') === m));
+    // Rivela riparte da zero, cosi si vede l'entrata anche cambiando stile a meta pagina.
+    for (var j = 0; j < fx.length; j++) { fx[j].__v = 0; fx[j].style.setProperty('--v', '0'); }
+    misura();
+  }
+  document.querySelector('.bar').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) modo(b.getAttribute('data-set'));
+  });
+  misura();
+})();
+</script>
+</body>
+</html>
