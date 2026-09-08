@@ -80,9 +80,20 @@ export async function caricaDemo({
   };
 
   /* 1. Accesso col codice fisso (review-login.ts). */
-  if (!saltaAccesso) {
+  // Se il profilo di Chrome ha gia una sessione (secondo giro), /app resta
+  // /app: niente login. Se no, il cancello rimbalza su /login.
+  let serveLogin = !saltaAccesso;
+  if (serveLogin) {
+    await page.goto(base + "/app", { waitUntil: "domcontentloaded" });
+    await page.locator(".jm-splash").waitFor({ state: "hidden", timeout: 30_000 }).catch(() => undefined);
+    await attesa(2500);
+    serveLogin = /\/login/.test(page.url());
+    if (!serveLogin) log("sessione gia presente nel profilo: salto il login");
+  }
+  if (serveLogin) {
     log("accesso: " + email);
-    await page.goto(base + "/login", { waitUntil: "domcontentloaded" });
+    if (!/\/login/.test(page.url())) await page.goto(base + "/login", { waitUntil: "domcontentloaded" });
+    await page.locator(".jm-splash").waitFor({ state: "hidden", timeout: 30_000 }).catch(() => undefined);
     await page.locator("input[type=email]").fill(email);
     await page.locator("button[type=submit]").click();
     const codiceCampo = page.locator("input[inputmode=numeric]");
@@ -100,7 +111,7 @@ export async function caricaDemo({
       const testo = (await page.evaluate(() => document.body.innerText).catch(() => "")).replace(/\s+/g, " ").trim().slice(0, 500);
       throw new Error("login non riuscito. Sullo schermo: " + page.url() + " -- " + testo);
     }
-  } else {
+  } else if (saltaAccesso) {
     await page.goto(base + "/app", { waitUntil: "domcontentloaded" });
   }
 
