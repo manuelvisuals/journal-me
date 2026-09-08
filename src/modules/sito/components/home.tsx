@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import type { LinguaSito } from "@/modules/sito/seo";
 import { prefisso, testiDi, type Testi } from "@/modules/sito/testi";
 import { NavSito, PiedeSito } from "@/modules/sito/components/guscio";
-import { DebugHero } from "@/modules/sito/components/debug-hero";
 
 /**
  * La home di dayalogue.com, VERSIONE 2.0 (dal 6 settembre 2026, su
@@ -346,11 +345,9 @@ function Riquadro({ forma, t }: { forma: Testi["funzioni"]["voci"][number]["form
 export function HomeSito({
   lingua,
   altraLingua,
-  debugHero = false,
 }: {
   lingua: LinguaSito;
   altraLingua: string;
-  debugHero?: boolean;
 }) {
   const t = testiDi(lingua);
   const p = prefisso(lingua);
@@ -701,8 +698,6 @@ export function HomeSito({
       </main>
 
       <PiedeSito lingua={lingua} altraLingua={altraLingua} />
-
-      {debugHero ? <DebugHero /> : null}
 
       {/*
         I dati strutturati: e cio che permette a Google di mostrare le

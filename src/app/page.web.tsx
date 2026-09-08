@@ -18,11 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return metadataSito("home", "it");
 }
 
-export default async function Pagina({
-  searchParams,
-}: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const parametri = await searchParams;
-  return <HomeSito lingua="it" altraLingua="/en" debugHero={parametri.debugHero === "1"} />;
+export default function Pagina() {
+  return <HomeSito lingua="it" altraLingua="/en" />;
 }
