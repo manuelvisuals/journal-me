@@ -89,15 +89,16 @@ export async function caricaDemo({
     await codiceCampo.waitFor({ state: "visible", timeout: 30_000 });
     await codiceCampo.fill(codice);
     await page.locator("button[type=submit]").click();
-    await page.waitForFunction(
-      () => document.querySelector(".jm-login-cassa-h1") || location.pathname.startsWith("/app"),
-      null,
-      { timeout: 60_000 },
-    );
-    const errore = page.locator(".jm-login-err, [role=alert]");
-    if ((await errore.count()) > 0 && !(await page.locator(".jm-login-cassa-h1").count())) {
-      const t = (await errore.first().innerText().catch(() => "")).trim();
-      if (t) throw new Error("login: " + t);
+    try {
+      await page.waitForFunction(
+        () => document.querySelector(".jm-login-cassa-h1") || location.pathname.startsWith("/app"),
+        null,
+        { timeout: 60_000 },
+      );
+    } catch {
+      // Non si e entrati: si dice COSA c'e sullo schermo, non solo "timeout".
+      const testo = (await page.evaluate(() => document.body.innerText).catch(() => "")).replace(/\s+/g, " ").trim().slice(0, 500);
+      throw new Error("login non riuscito. Sullo schermo: " + page.url() + " -- " + testo);
     }
   } else {
     await page.goto(base + "/app", { waitUntil: "domcontentloaded" });
@@ -492,6 +493,7 @@ if (eMain) {
       errori: [e instanceof Error ? e.message : String(e)],
     };
     console.error("INTERROTTO: " + referto.errori[0]);
+    await page.screenshot({ path: refertoPath.replace(/\.html$/, "-schermata.png"), fullPage: true }).catch(() => undefined);
   }
   if (referto.parole?.length === 8) writeFileSync(paroleFile, referto.parole.join(" ") + "\n");
   writeFileSync(refertoPath, refertoHtml(referto, { email, base }));
