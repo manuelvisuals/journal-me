@@ -5,14 +5,14 @@
 // sarebbe la prima schermata che vede chi apre l'app sul telefono.
 import type { Metadata } from "next";
 import { HomeSito } from "@/modules/sito/components/home";
-import { metadataSito, viewportSito } from "@/modules/sito/metadata";
+import { metadataSito, viewportSitoHome } from "@/modules/sito/metadata";
 
 // Ogni visita rilegge i testi dal pannello: cambi il titolo in /admin,
 // ricarichi, ed e cambiato. Senza questo il titolo si congelerebbe al
 // momento del deploy e il pannello sarebbe un giocattolo.
 export const dynamic = "force-dynamic";
 
-export const viewport = viewportSito;
+export const viewport = viewportSitoHome;
 
 export async function generateMetadata(): Promise<Metadata> {
   return metadataSito("home", "it");

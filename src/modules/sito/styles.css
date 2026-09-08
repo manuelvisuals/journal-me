@@ -799,6 +799,15 @@
    La home viva ricostruisce la composizione approvata per telefono.
    /v5 conserva invece la resa precedente per un confronto reversibile. */
 @media (max-width: 767px) {
+  /* Safari su iPhone colora la fascia dell'ora campionando il fondo di
+     <html>/<body> (--jm-bg): sopra l'eroe (--jm-bg-app) usciva una banda
+     piu scura (8 settembre 2026). Sulla home viva il fondo di pagina e lo
+     stesso dell'eroe; il meta theme-color (viewportSitoHome) dice la
+     stessa cosa a chi lo legge. */
+  html:has(.jm-sito4:not(.jm-sito4-archivio-v5)),
+  html:has(.jm-sito4:not(.jm-sito4-archivio-v5)) body {
+    background: var(--jm-bg-app);
+  }
   .jm-sito4:not(.jm-sito4-archivio-v5) {
     --jm-sito-nav-h: 76px;
   }

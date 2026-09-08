@@ -42,6 +42,21 @@ export const viewportSito: Viewport = {
   viewportFit: "cover",
 };
 
+/**
+ * Solo per la home viva (/ e /en), dove la barra e trasparente sull'eroe.
+ * Senza questo meta Safari su iPhone colora la fascia dell'ora campionando
+ * il fondo di <html> (--jm-bg), piu scuro dell'eroe (--jm-bg-app): si
+ * vedeva una banda beige sopra la pagina (8 settembre 2026). Il valore e
+ * il bgApp del tema di fabbrica; lo script di boot dei temi lo riscrive
+ * col --jm-bg-app del tema e della modalita reali. Le pagine archiviate
+ * (/v1../v5) e /support tengono la barra piena color --jm-bg, quindi per
+ * loro il campionamento di Safari e gia giusto.
+ */
+export const viewportSitoHome: Viewport = {
+  ...viewportSito,
+  themeColor: "#FBF7F2",
+};
+
 export async function metadataSito(
   pagina: PaginaSito,
   lingua: LinguaSito,
