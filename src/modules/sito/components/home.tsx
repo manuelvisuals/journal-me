@@ -1,8 +1,9 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { LinguaSito } from "@/modules/sito/seo";
 import { prefisso, testiDi, type Testi } from "@/modules/sito/testi";
 import { NavSito, PiedeSito } from "@/modules/sito/components/guscio";
+import { Scorrimento } from "@/modules/sito/components/scorrimento";
 import { WordmarkSito } from "@/modules/sito/components/wordmark";
 
 /**
@@ -363,7 +364,10 @@ export function HomeSito({
   const temi = ["carta", "minimal", "macchina", "malva", "wine"];
 
   return (
-    <div className={`jm-sito jm-sito4${archivioV5 ? " jm-sito4-archivio-v5" : ""}`}>
+    <div className={`jm-sito jm-sito4${archivioV5 ? " jm-sito4-archivio-v5" : " jm-sito7"}`}>
+      {/* Le animazioni di scorrimento (solo la home viva: la v5 congelata
+          non ha la classe jm-sito7 e resta ferma). */}
+      {archivioV5 ? null : <Scorrimento />}
       <NavSito lingua={lingua} altraLingua={altraLingua} v4 />
 
       <main>
@@ -424,24 +428,24 @@ export function HomeSito({
         {/* -------------------------------------------- la giornata */}
         <section className="jm-sito2-giornata" id="giornata">
           <div className="jm-sito-cont">
-            <div className="jm-sito-testa centro">
+            <div className="jm-sito-testa centro" data-fx="testo">
               <p className="jm-sito-kick">{t.giornata.etichetta}</p>
               <h2 className="jm-sito-h2">{t.giornata.titolo}</h2>
               <p>{t.giornata.testo}</p>
             </div>
             <div className="jm-sito-duo jm-sito4-giornata-foto">
-              <figure>
+              <figure data-fx="foto">
                 <Foto nome="skincare" />
                 <figcaption>{t.mentre.didascalie[1]}</figcaption>
               </figure>
-              <figure>
+              <figure data-fx="foto" style={{ "--i": 1 } as CSSProperties}>
                 <Foto nome="barba" />
                 <figcaption>{t.mentre.didascalie[0]}</figcaption>
               </figure>
             </div>
             <div className="jm-sito2-punti">
-              {t.giornata.punti.map((x) => (
-                <div key={x.titolo}>
+              {t.giornata.punti.map((x, i) => (
+                <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
                   <h3>{x.titolo}</h3>
                   <p>{x.testo}</p>
                 </div>
@@ -455,14 +459,14 @@ export function HomeSito({
             esplicita (microfono, stato, onda e parole pronunciate) e si
             ricompone nella pagina al centro. */}
         <section className="jm-sito5-voce-pagina" aria-labelledby="jm-sito5-titolo">
-          <div className="jm-sito5-testa">
+          <div className="jm-sito5-testa" data-fx="testo">
             <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
             <h2 id="jm-sito5-titolo">{t.vocePagina.titolo}</h2>
             <p>{t.vocePagina.testo}</p>
           </div>
 
           <div className="jm-sito5-scena">
-            <figure className="jm-sito5-persona donna">
+            <figure className="jm-sito5-persona donna" data-fx="foto">
               <Foto nome="skincare" />
               <figcaption>
                 <span className="jm-sito5-rec"><i /> {t.vocePagina.stato}</span>
@@ -473,7 +477,7 @@ export function HomeSito({
               </figcaption>
             </figure>
 
-            <article className="jm-sito5-pagina" aria-label={t.esempio.titolo}>
+            <article className="jm-sito5-pagina" aria-label={t.esempio.titolo} data-fx="testo" style={{ "--i": 1 } as CSSProperties}>
               <header>
                 <span>{t.esempio.data}</span>
                 <b>dayalogue</b>
@@ -491,7 +495,7 @@ export function HomeSito({
               </div>
             </article>
 
-            <figure className="jm-sito5-persona uomo">
+            <figure className="jm-sito5-persona uomo" data-fx="foto" style={{ "--i": 2 } as CSSProperties}>
               <Foto nome="barba" />
               <figcaption>
                 <span className="jm-sito5-rec"><i /> {t.vocePagina.stato}</span>
@@ -502,14 +506,14 @@ export function HomeSito({
               </figcaption>
             </figure>
           </div>
-          <p className="jm-sito5-chiusura">{t.vocePagina.chiusura}</p>
+          <p className="jm-sito5-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
         </section>
 
         {/* Terza versione: fedele alla tavola approvata. Le fotografie non
             contengono parole; titolo, trascrizioni e pagina sono markup
             vivo, quindi / e /en restano due traduzioni reali. */}
         <section className="jm-sito6-voce-pagina" aria-labelledby="jm-sito6-titolo">
-          <div className="jm-sito6-testa">
+          <div className="jm-sito6-testa" data-fx="testo">
             <p className="jm-sito-kick">{t.vocePaginaTre.etichetta}</p>
             <h2 id="jm-sito6-titolo">
               <span>{t.vocePaginaTre.titoloPrima}</span>
@@ -519,6 +523,9 @@ export function HomeSito({
             <p>{t.vocePaginaTre.testo}</p>
           </div>
 
+          {/* La pista: alta piu di uno schermo, la scena ci sta ferma dentro
+              (sticky) e si compone col progresso --s. Solo con jm-sito7. */}
+          <div className="jm-sito7-pista" data-pista>
           <div className="jm-sito6-scena">
             <div className="jm-sito6-foto donna"><Foto nome="skincare" /></div>
             <div className="jm-sito6-foto uomo"><Foto nome="barba" /></div>
@@ -557,15 +564,16 @@ export function HomeSito({
               <footer><span>{t.esempio.data}</span><span>{t.esempio.persona}</span></footer>
             </article>
           </div>
-          <p className="jm-sito6-chiusura">{t.vocePaginaTre.chiusura}</p>
+          </div>
+          <p className="jm-sito6-chiusura" data-fx="testo">{t.vocePaginaTre.chiusura}</p>
         </section>
 
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">
           <div className="jm-sito-cont">
             <div className="jm-sito-promesse">
-              {t.promesse.map((q) => (
-                <div key={q.titolo} className="jm-sito-promessa">
+              {t.promesse.map((q, i) => (
+                <div key={q.titolo} className="jm-sito-promessa" data-fx="testo" style={{ "--i": i } as CSSProperties}>
                   <Icona nome={q.icona} />
                   <h3>{q.titolo}</h3>
                   <p>{q.testo}</p>
@@ -578,9 +586,9 @@ export function HomeSito({
         {/* ------------------------------------------------- la sera */}
         <section className="jm-sito-foto-sez">
           <div className="jm-sito-cont">
-            <div className="jm-sito-banda">
+            <div className="jm-sito-banda" data-fx="sfondo">
               <Foto nome="divano-notte" className="arte" />
-              <div className="ft">
+              <div className="ft" data-fx="testo">
                 <h2>{t.sera.titolo}</h2>
                 <p>{t.sera.testo}</p>
               </div>
@@ -591,7 +599,7 @@ export function HomeSito({
         {/* -------------------------------------------- come funziona */}
         <section className="jm-sito-sez" id="come">
           <div className="jm-sito-cont">
-            <div className="jm-sito-testa">
+            <div className="jm-sito-testa" data-fx="testo">
               <p className="jm-sito-kick">{t.passi.etichetta}</p>
               <svg className="jm-sito-voce-testo" viewBox="0 0 320 90" aria-hidden="true">
                 <g className="onda">
@@ -616,7 +624,7 @@ export function HomeSito({
             </div>
             <div className="jm-sito-passi">
               {t.passi.voci.map((v, i) => (
-                <div key={v.titolo} className="jm-sito-passo">
+                <div key={v.titolo} className="jm-sito-passo" data-fx="testo">
                   <div>
                     <h3>{v.titolo}</h3>
                     <p>{v.testo}</p>
@@ -632,13 +640,13 @@ export function HomeSito({
         {/* --------------------------------------------- la cassaforte */}
         <section className="jm-sito-sez jm-sito-cassa" id="cassaforte">
           <div className="jm-sito-cont">
-            <div className="jm-sito-testa larga">
+            <div className="jm-sito-testa larga" data-fx="testo">
               <p className="jm-sito-kick">{t.cassaforte.etichetta}</p>
               <h2 className="jm-sito-h2">{t.cassaforte.titolo}</h2>
               <p className="big">{t.cassaforte.testo}</p>
               <p className="jm-sito4-solo-tu">{t.cassaforte.soloTu}</p>
             </div>
-            <div className="jm-sito-cassa-viz">
+            <div className="jm-sito-cassa-viz" data-fx="testo">
               <div className="jm-sito-cassa-box">
                 <p className="l">
                   <span>{t.cassaforte.telefono}</span>
@@ -664,12 +672,12 @@ export function HomeSito({
               </div>
             </div>
             <div className="jm-sito-cassa-griglia">
-              <figure className="jm-sito-cassa-chiave">
+              <figure className="jm-sito-cassa-chiave" data-fx="foto">
                 <Foto nome="chiave" />
               </figure>
               <div className="jm-sito-cassa-punti">
-                {t.cassaforte.punti.map((x) => (
-                  <div key={x.titolo}>
+                {t.cassaforte.punti.map((x, i) => (
+                  <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
                     <h3>{x.titolo}</h3>
                     <p>{x.testo}</p>
                   </div>
@@ -764,7 +772,7 @@ export function HomeSito({
         {/* ------------------------------------------- iPhone / App Store */}
         <section className="jm-sito-sez" id="iphone">
           <div className="jm-sito-cont">
-            <div className="jm-sito4-store-banner">
+            <div className="jm-sito4-store-banner" data-fx="testo">
               <div>
                 <p className="jm-sito-kick">{t.iphone.etichetta}</p>
                 <h2 className="jm-sito-h2 piccolo">{t.iphone.titolo}</h2>
@@ -786,11 +794,11 @@ export function HomeSito({
         {/* ------------------------------------------------- domande */}
         <section className="jm-sito-sez" id="domande">
           <div className="jm-sito-cont">
-            <div className="jm-sito-testa">
+            <div className="jm-sito-testa" data-fx="testo">
               <p className="jm-sito-kick">{t.domande.etichetta}</p>
               <h2 className="jm-sito-h2">{t.domande.titolo}</h2>
             </div>
-            <div className="jm-sito-faq">
+            <div className="jm-sito-faq" data-fx="testo" style={{ "--i": 1 } as CSSProperties}>
               {t.domande.voci.map((v, i) => (
                 // <details> senza JavaScript: si apre e si chiude da solo, e
                 // il testo della risposta e comunque nell'HTML per Google.
@@ -805,7 +813,7 @@ export function HomeSito({
 
         {/* -------------------------------------------------- chiusura */}
         <section className="jm-sito-fine">
-          <div className="jm-sito-cont">
+          <div className="jm-sito-cont" data-fx="testo">
             <h2>{t.fine.titolo}</h2>
             <p>{t.fine.testo}</p>
             <div className="jm-sito-cta centro">
