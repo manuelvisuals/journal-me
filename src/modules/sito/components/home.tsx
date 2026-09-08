@@ -346,16 +346,18 @@ function Riquadro({ forma, t }: { forma: Testi["funzioni"]["voci"][number]["form
 export function HomeSito({
   lingua,
   altraLingua,
+  archivioV5 = false,
 }: {
   lingua: LinguaSito;
   altraLingua: string;
+  archivioV5?: boolean;
 }) {
   const t = testiDi(lingua);
   const p = prefisso(lingua);
   const temi = ["carta", "minimal", "macchina", "malva", "wine"];
 
   return (
-    <div className="jm-sito jm-sito4">
+    <div className={`jm-sito jm-sito4${archivioV5 ? " jm-sito4-archivio-v5" : ""}`}>
       <NavSito lingua={lingua} altraLingua={altraLingua} v4 />
 
       <main>
@@ -808,7 +810,7 @@ export function HomeSito({
         </section>
       </main>
 
-      <PiedeSito lingua={lingua} altraLingua={altraLingua} />
+      <PiedeSito lingua={lingua} altraLingua={altraLingua} versione={archivioV5 ? "v5" : "2"} />
 
       {/*
         I dati strutturati: e cio che permette a Google di mostrare le
