@@ -1,0 +1,204 @@
+{
+  "persona": {
+    "nome": "Giulia Ferrando",
+    "eta": 34,
+    "citta": "Genova, Albaro",
+    "lavoro": "fisioterapista, studio in via Corsica con la socia Elena",
+    "persone": ["Marco", "Elena", "mamma (Anna)", "Sara", "il signor Bruno", "Luca", "Piero", "la signora Parodi", "Davide"],
+    "luoghi": ["lo studio", "Nervi", "Boccadasse", "Camogli", "il bar di Piero", "casa", "La Spezia", "San Fruttuoso", "il Righi", "la piscina"]
+  },
+  "mese": "2026-08",
+  "giornate": [
+    {
+      "data": "2026-08-01", "giorno": "Sabato",
+      "titolo_atteso": "mercato, sei chilometri a Nervi e l'ultima cena prima della trasferta",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Sabato. Sveglia alle sette senza sveglia, dormito sette ore, umore buono. Mercato di piazza Palermo con Marco, abbiamo comprato le pesche e un chilo di pomodori che finiranno in una settimana. Poi corsa a Nervi, sei chilometri, il mare mosso, c'era vento da sud. A pranzo focaccia da Piero, la solita. Il pomeriggio Marco ha preparato la valigia per La Spezia, parte lunedì per tre settimane e ogni volta è come se partisse per sei mesi. Non gliel'ho detto. Cena in casa, pasta con i pomodori del mercato, bicchiere di vermentino sul terrazzino. Ho pensato ai conti dello studio mentre lui parlava del cantiere. Devo smetterla di fare i conti a tavola."
+    },
+    {
+      "data": "2026-08-02", "giorno": "Domenica",
+      "titolo_atteso": "pranzo a Camogli, la mamma che parla di Luca",
+      "obiettivi": ["aria", "sonno", "gente", "letto"],
+      "testo": "Domenica a Camogli dalla mamma. Dormito otto ore, quasi un record. Treno delle nove e mezza, lei era già sul molo con la borsa della spesa, come sempre. Pranzo: trofie al pesto, le sue, e le acciughe ripiene. Ha parlato di Luca per metà del pranzo, che non chiama, che a Berlino fa freddo anche ad agosto, che chissà se torna per il suo compleanno. Le ho detto che gli scrivo io. Pomeriggio sulla spiaggia dei sassi, ho letto trenta pagine e mi sono addormentata. Bagno alle sei, l'acqua era perfetta. Treno di ritorno alle otto, Marco a casa aveva già cenato. Mi sono accorta che stare con mia madre mi stanca e mi fa bene nella stessa misura."
+    },
+    {
+      "data": "2026-08-03", "giorno": "Lunedì",
+      "titolo_atteso": "ultima settimana di studio, Marco parte per La Spezia",
+      "obiettivi": ["corpo", "gente"],
+      "testo": "Ultima settimana prima della chiusura. Sveglia alle sei, dormito sei ore e mezza, Marco è partito alle sette con il caffè in mano e la faccia di chi non vuole partire. Studio dalle otto e mezza: nove pazienti, tutti quelli che vogliono finire il ciclo prima delle ferie. Il signor Bruno alle undici, terza settimana dopo la protesi, ha fatto le scale con il corrimano e mi ha detto che sua moglie non ci crede. Elena era in ritardo e nervosa, ha una cosa in testa ma non me la dice. Pranzo in piedi, un'insalata. Il pomeriggio la signora del quarto piano con la cervicale, che parla più di quanto respira. Sera: niente corsa, troppo stanca, doccia e divano. Marco ha scritto che il cantiere è un forno."
+    },
+    {
+      "data": "2026-08-04", "giorno": "Martedì",
+      "titolo_atteso": "Bruno fa il corridoio senza bastone, sei chilometri a Nervi",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Oggi Bruno ha fatto il corridoio intero senza bastone. Tre metri più di ieri. Lui ha fatto finta di niente, io pure, poi ci siamo guardati e abbiamo riso. Studio fino alle sette, poi corsa a Nervi, sei chilometri lenti, il mare piatto come un tavolo. Marco ha chiamato dal cantiere, stanco, ha detto tutto bene nel modo in cui lo dice quando non è vero. Cena: pesto avanzato, va bene così. Dormito sei ore stanotte, devo smettere col telefono a letto. Umore buono comunque, di quelli che ti restano addosso per una cosa piccola successa a qualcun altro."
+    },
+    {
+      "data": "2026-08-05", "giorno": "Mercoledì",
+      "titolo_atteso": "la signora Parodi e il locale accanto che si libera",
+      "obiettivi": ["gente"],
+      "testo": "Giornata piena, undici pazienti, e alle cinque è passata la signora Parodi, la proprietaria del locale accanto allo studio. Diceva di essere venuta per la spalla, invece è venuta per dirmi che il tabaccaio se ne va a fine settembre e il locale si libera. Quarantacinque metri, due finestre sulla strada. Ha detto: prima lo dico a voi, poi lo metto in giro. Ho detto grazie, ci pensiamo, con la voce più normale che avevo. Poi ho fatto altri quattro pazienti senza sentire niente di quello che dicevano. La sera l'ho detto a Elena per messaggio, ha risposto con tre puntini e basta. Niente corsa. Cena: un uovo. Non ho dormito, saranno state cinque ore, e la testa faceva i conti da sola."
+    },
+    {
+      "data": "2026-08-06", "giorno": "Giovedì",
+      "titolo_atteso": "caffè con Elena da Piero, i pasticcini di Bruno",
+      "obiettivi": ["gente", "corpo"],
+      "testo": "Alle otto io ed Elena da Piero, prima di aprire, per parlare del locale. Lei ha paura. Non l'ha detto così, ha detto che i tempi non sono maturi, che c'è il mutuo, che abbiamo appena cambiato i lettini. Tutto vero. Io ho detto che i tempi non sono mai maturi e che il locale accanto non si libera due volte. Non abbiamo deciso niente, però abbiamo finito il caffè. Bruno ha portato i pasticcini per tutto lo studio, ha detto che dalla settimana prossima cammina fino al bar da solo, e io gli ho detto che lo controllo. Pomeriggio normale. Nuoto la sera, quaranta minuti in piscina, l'acqua mi ha rimesso a posto. Dormito sette ore, la sera prima ero cotta."
+    },
+    {
+      "data": "2026-08-07", "giorno": "Venerdì",
+      "titolo_atteso": "lo studio chiude per due settimane, pizza con Elena e i numeri sul tavolo",
+      "obiettivi": ["gente", "me"],
+      "testo": "Ultimo giorno. Abbiamo chiuso lo studio alle sei, ho spento la luce del corridoio e mi è venuta una specie di tenerezza per quel posto. Due settimane di chiusura, la prima vera da Pasqua. Pesata stamattina per la prima volta da mesi: 58,6. Dormito sei ore. Pizza con Elena da Gino, quella con il pesto e le patate, e per la prima volta abbiamo messo i numeri sul tavolo, sul tovagliolo di carta letteralmente. Affitto del locale, i lavori, un lettino in più, forse una collaboratrice. Lei ha detto vediamo, che per Elena è quasi un sì. Sono tornata a piedi da Carignano, mezz'ora, con la città vuota e calda. Umore strano, tra contenta e spaventata."
+    },
+    {
+      "data": "2026-08-08", "giorno": "Sabato",
+      "titolo_atteso": "primo giorno di vacanza: casa pulita, dieci chilometri e Sara al telefono",
+      "obiettivi": ["corpo", "aria", "me", "gente"],
+      "testo": "Primo giorno di vacanza e non sapevo cosa fare di me. Ho pulito casa per tre ore, compresi i vetri, che è il segno che qualcosa non va. Poi corsa lunga, dieci chilometri fino a Quinto e ritorno, lenta, il caldo alle undici era già cattivo. Dormito sette ore, umore così così. Nel pomeriggio ha chiamato Sara da Milano, un'ora al telefono, le ho raccontato del locale e lei ha detto la cosa giusta: se non lo prendi, tra un anno ti chiederai perché. Sara fa sempre così, in tre frasi ti mette in ordine. Cena sul terrazzino, insalata di riso avanzata, le piante annaffiate. Marco ha mandato una foto della nave, sembra piccolo lui e enorme la nave."
+    },
+    {
+      "data": "2026-08-09", "giorno": "Domenica", "vuota": true
+    },
+    {
+      "data": "2026-08-10", "giorno": "Lunedì",
+      "titolo_atteso": "sveglia alle cinque, Boccadasse all'alba e una tabella dei costi",
+      "obiettivi": ["corpo", "aria", "me"],
+      "testo": "Sveglia alle cinque, occhi aperti e basta, dormito cinque ore e mezza. Invece di girarmi nel letto sono uscita: corsa fino a Boccadasse, cinque chilometri, c'era solo un signore con il cane e il mare color latte. Ho fatto una foto che non renderà mai. Colazione al ritorno, yogurt e le pesche di sabato scorso, ormai troppo mature. Poi ho fatto la cosa che rimandavo: la tabella dei costi del locale, con le colonne, il foglio di calcolo vero. Affitto, lavori, arredi, la collaboratrice per sei mesi. Non è poco, ma non è impossibile, e vederlo scritto fa meno paura che tenerlo in testa. Pranzo da sola, pomodori e mozzarella. Pomeriggio letto un po', dormito sul divano. Umore: buono, con una vena di ansia sotto."
+    },
+    {
+      "data": "2026-08-11", "giorno": "Martedì",
+      "titolo_atteso": "videochiamata con Marco, e il locale che non gli ho detto",
+      "obiettivi": ["corpo", "gente"],
+      "testo": "Videochiamata con Marco stasera, mezz'ora, lui dal container del cantiere con il ventilatore che faceva più rumore di lui. Mi ha raccontato di una lamiera storta, di un collega di Taranto simpatico, di quanto dorme male. Io gli ho raccontato di Sara, della corsa, delle piante. Non gli ho detto del locale. Me ne sono accorta dopo aver chiuso, e mi sono chiesta perché. Forse perché se glielo dico diventa vero, forse perché so già cosa dirà. Nuoto nel pomeriggio, cinquanta minuti, la piscina mezza vuota. Dormito sette ore. Pranzo da Piero, la focaccia con la cipolla. Umore normale."
+    },
+    {
+      "data": "2026-08-12", "giorno": "Mercoledì",
+      "titolo_atteso": "Camogli, il giardino della mamma e una frase su papà",
+      "obiettivi": ["aria", "gente", "sonno"],
+      "testo": "Giornata a Camogli. Dormito otto ore, umore sereno. La mamma mi ha messo a potare il gelsomino e a portare su la terra per i vasi, che per lei è vacanza. Pranzo veloce, pomodori e formaggetta. Alle quattro, all'ombra, gliel'ho detto: il locale, Elena, i soldi. Lei ha ascoltato tutto senza interrompere, che non le succede mai, poi ha detto: tuo padre avrebbe detto di sì, e poi avrebbe avuto paura per un anno. Ho riso e mi è venuto da piangere insieme. Bagno alle sei, l'acqua fredda in punta, poi buona. Treno di ritorno, le luci del porto. A casa Marco ha mandato la buonanotte con la foto di un tramonto arancione da La Spezia."
+    },
+    {
+      "data": "2026-08-13", "giorno": "Giovedì",
+      "titolo_atteso": "dentro il locale: quarantacinque metri, due finestre, il pavimento da rifare",
+      "obiettivi": ["gente", "corpo"],
+      "testo": "Alle dieci con la signora Parodi dentro il locale del tabaccaio. Odore di carta e di chiuso, quarantacinque metri, due finestre grandi sulla strada, il pavimento da rifare tutto, un bagno piccolo ma esiste. Ho camminato avanti e indietro contando i passi e vedevo già i lettini. Lei ha detto una cifra per l'affitto, ragionevole, e ha detto che ci aspetta fino a fine mese. Ho chiamato Davide, il commercialista, dalla macchina: mi fa un preventivo dei lavori con il suo cognato che fa il muratore e mi dice quanto possiamo permetterci. Il pomeriggio corsa breve, quattro chilometri, con l'aria pesante. Dormito sei ore e mezza, umore buono, di quello che fa fare le cose. Cena con Elena a casa mia, le ho fatto vedere le foto del locale, ha detto: le finestre sono belle. È un inizio."
+    },
+    {
+      "data": "2026-08-14", "giorno": "Venerdì",
+      "titolo_atteso": "Marco torna, cena a Boccadasse e la litigata sui soldi",
+      "obiettivi": ["gente", "aria"],
+      "testo": "Marco è tornato alle sei, abbronzato e con la barba, e per un'ora è stato tutto perfetto. Cena a Boccadasse, il tavolo fuori, le acciughe fritte. Gliel'ho detto lì, tra il primo e il secondo. Lui ha detto: e i soldi? Poi ha detto che è una follia farlo adesso, che il mutuo, che lui è via metà dell'anno. Io ho detto che non gli avevo chiesto un permesso. Abbiamo mangiato il resto in silenzio, cosa che non ci succede mai. A casa ognuno nella sua stanza, lui il divano, io il letto. Dormito male, sei ore a pezzi. Umore giù. Non è che ha torto sui soldi. È che non era la prima cosa che volevo sentire."
+    },
+    {
+      "data": "2026-08-15", "giorno": "Sabato",
+      "titolo_atteso": "Ferragosto a Camogli, Luca in video da Berlino e la pace sul molo",
+      "obiettivi": ["aria", "gente", "corpo"],
+      "testo": "Ferragosto. Siamo andati a Camogli in due, in treno, senza parlarci molto. Dalla mamma c'erano le zie, i cugini, il tavolo in giardino, il pesce al forno. Luca ha chiamato in video da Berlino a metà pranzo, tutti che urlavano al telefonino. La mamma ha guardato Marco, ha guardato me, e non ha detto niente, che è il suo modo di dire tutto. Bagno alle quattro, bello. La sera io e Marco sul molo, seduti sui bordi, e lui ha detto: scusa, mi sono spaventato per te, non contro di te. Io ho detto: lo so. Poi abbiamo parlato dei numeri, quelli veri, e lui ha fatto domande giuste. Dormito sette ore, la prima notte bene. Umore: tornato."
+    },
+    {
+      "data": "2026-08-16", "giorno": "Domenica",
+      "titolo_atteso": "San Fruttuoso in barca con Marco, bruciati e felici",
+      "obiettivi": ["aria", "gente", "corpo", "sonno"],
+      "testo": "Giornata in barca a San Fruttuoso con Marco, la barca del suo amico Tommaso. Partiti alle nove da Camogli, il mare come l'olio, l'abbazia che spunta dalla baia e sembra sempre la prima volta. Bagno lungo, ho nuotato fino alle boe. Focaccia e pesche sulla barca, un bicchiere di bianco. Siamo tornati alle sei bruciati come due turisti, lui sulle spalle io sul naso, e abbiamo dormito un'ora sul divano senza accorgercene. Cena: un'insalata e basta, il sole ci ha tolto la fame. Dormito nove ore, umore alla grande. Del locale oggi non abbiamo parlato, e ci voleva."
+    },
+    {
+      "data": "2026-08-17", "giorno": "Lunedì",
+      "titolo_atteso": "i conti veri con Elena: i numeri reggono, la paura no",
+      "obiettivi": ["gente", "me"],
+      "testo": "Elena è venuta a casa alle dieci con il computer e i cornetti. Abbiamo fatto i conti veri, quelli con il preventivo di Davide, per quattro ore. Affitto, pavimento, impianto, due lettini, una collaboratrice part time per sei mesi, la pubblicità che non facciamo mai. Alla fine i numeri reggono: stretti il primo anno, poi respirano. Elena l'ha detto lei: i numeri reggono, la paura no. Le ho detto che la paura la teniamo, ma non la facciamo decidere. Ha riso. Pesata: 58,2. Dormito sette ore. Pranzo insieme, pasta fredda. Il pomeriggio ho dormito venti minuti e poi ho scritto alla signora Parodi che abbiamo quasi deciso. Marco ha cucinato lui la sera, il risotto, e non ha chiesto niente. Umore buono, stanca bene."
+    },
+    {
+      "data": "2026-08-18", "giorno": "Martedì",
+      "titolo_atteso": "Sara in città, aperitivo al Righi e risate fino a tardi",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Corsa alle sette, sei chilometri a Nervi, dormito sette ore e mezza, umore ottimo. Sara è arrivata da Milano all'una, non la vedevo da aprile. Pranzo da Piero, poi in casa a chiacchierare con il ventilatore. La sera aperitivo al Righi con la funicolare, la città sotto tutta accesa, lei che raccontava del nuovo capo e io del locale, e a un certo punto ridevamo così tanto che il cameriere ci ha portato le patatine gratis. Sara ha detto che tra un anno viene a fare la paziente nel locale nuovo. Marco è venuto a prenderci alle undici. Cena: le focaccine dell'aperitivo, tutto lì. Sara dorme sul divano, sento che russa piano."
+    },
+    {
+      "data": "2026-08-19", "giorno": "Mercoledì", "vuota": true
+    },
+    {
+      "data": "2026-08-20", "giorno": "Giovedì",
+      "titolo_atteso": "Marco riparte, un libro finito e il minestrone della mamma",
+      "obiettivi": ["me", "letto", "sonno"],
+      "testo": "Marco è ripartito alle sei per La Spezia, dieci giorni, poi torna per la fine del mese. Stavolta l'ho salutato con meno peso. Dormito otto ore. Giornata lenta, di quelle che alle undici non hai ancora fatto niente e va bene. Ho finito il libro che leggevo da giugno, Il mare non bagna Napoli, l'ultimo racconto mi ha lasciata seduta sul divano per dieci minuti. Nel pomeriggio ho fatto il minestrone della mamma, quello con il pesto alla fine, ne è venuta una pentola per una settimana. Ho comprato il regalo per i suoi sessantacinque anni, la macchina fotografica piccola che voleva. Niente corsa, gambe pesanti. Umore tranquillo. La sera ho scritto a Luca: vieni sabato?"
+    },
+    {
+      "data": "2026-08-21", "giorno": "Venerdì",
+      "titolo_atteso": "la Parodi ci aspetta fino a fine mese, arriva il preventivo di Davide",
+      "obiettivi": ["corpo", "gente"],
+      "testo": "Ho chiamato la signora Parodi alle nove: le ho detto che vogliamo il locale e che firmiamo entro la fine del mese, se il preventivo dei lavori sta nei conti. Lei ha detto: lo sapevo, con la voce di una che ha vinto una scommessa con se stessa. A mezzogiorno Davide ha mandato il preventivo: un po' sopra, ma dentro. Ho girato tutto a Elena, che ha risposto con un cuore, e per Elena un cuore è una firma. Nuoto nel pomeriggio, quaranta minuti. Dormito sette ore, umore buono. Cena minestrone, giorno due. Luca ha risposto: forse. Che per Luca è già un sì."
+    },
+    {
+      "data": "2026-08-22", "giorno": "Sabato",
+      "titolo_suo": "Mamma, sessantacinque",
+      "titolo_atteso": "Mamma, sessantacinque (titolo scritto da lei)",
+      "obiettivi": ["aria", "gente", "corpo"],
+      "testo": "I sessantacinque anni della mamma. Siamo arrivati a Camogli alle undici e alle dodici ha suonato il campanello e c'era Luca, da Berlino, con lo zaino e la faccia di chi non dorme da due giorni. La mamma ha pianto un minuto intero, poi gli ha detto che era troppo magro. Pranzo lungo in giardino, le zie, la torta con le fragole che fa la Rina, la macchina fotografica scartata e provata subito su tutti. Il pomeriggio siamo scesi al mare in tre, come quando eravamo piccoli, Luca ha fatto il tuffo dalla roccia e la mamma ha urlato dalla spiaggia. Tornati a Genova alle nove con Luca che dorme da me. Dormito sette ore. Umore: pieno. Di quelle giornate che ricorderò con le date."
+    },
+    {
+      "data": "2026-08-23", "giorno": "Domenica",
+      "titolo_atteso": "colazione da Piero con Luca, e tre chilometri che lo hanno steso",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Luca a Genova per un giorno. Colazione da Piero, che l'ha riconosciuto dopo quattro anni e gli ha fatto il cappuccino con il cuore. Poi l'ho portato a correre a Nervi, perché dice che a Berlino corre: dopo tre chilometri era seduto su una panchina a dire che l'aria di qui è diversa. Sette chilometri per me, dormito sette ore, umore buono. Pranzo a casa, il minestrone, giorno quattro, lui ne ha fatti due piatti. Abbiamo parlato del locale e mi ha detto una cosa bella: che papà aveva aperto l'officina a trentacinque anni con un prestito e la paura, e che a me me lo dice lui, visto che papà non può. Ripartito alle sette con il treno per Milano. Casa vuota. Sera sul terrazzino con le piante."
+    },
+    {
+      "data": "2026-08-24", "giorno": "Lunedì",
+      "titolo_atteso": "riapre lo studio, Bruno cammina fino al bar",
+      "obiettivi": ["gente", "corpo"],
+      "testo": "Riapertura. Sveglia alle sei, dormito sei ore e mezza, umore buono. I pazienti sono tornati abbronzati e con le stesse schiene di prima, ma di buon umore. Dieci sedute. Bruno alle undici: è arrivato a piedi dal bar, da solo, con il bastone in mano ma non appoggiato, come un ombrello. Ha detto: te l'avevo detto. Elena aveva già stampato la bozza del contratto della signora Parodi e l'ha lasciata sulla mia scrivania senza commenti, con una penna sopra. Pranzo in piedi, insalata. Sera niente corsa, gambe da studio, dieci ore in piedi. Cena da Piero con la focaccia, ho portato il minestrone anche a lui, giorno cinque, l'ultimo. Stanchezza buona, di quelle che ti fanno dormire."
+    },
+    {
+      "data": "2026-08-25", "giorno": "Martedì",
+      "titolo_atteso": "una giornata storta: il paziente che non viene ed Elena nervosa",
+      "obiettivi": ["gente"],
+      "testo": "Giornata storta. Dormito sei ore, umore basso già dalla sveglia. Il paziente delle nove non si è presentato e non ha avvisato, un'ora buttata. Elena era nervosa per una cosa sua e mi ha risposto male su una cosa da niente, la lavatrice degli asciugamani, e io ho risposto peggio. Silenzio per tutta la mattina, con i pazienti in mezzo che facevano finta di niente. Pomeriggio meglio, un ragazzo con la spalla che sta tornando a nuotare, e quello mi ha rimessa un po' in piedi. La sera le ho scritto: scusa per stamattina. Lei: scusa tu, ho un pensiero a casa. Le ho detto che ne parliamo domani da Piero. Cena: pane e formaggio. Niente corsa. Marco ha chiamato e gli ho detto la verità, giornata storta, e lui ha detto: domani no."
+    },
+    {
+      "data": "2026-08-26", "giorno": "Mercoledì",
+      "titolo_atteso": "Elena da Piero, e Marco al telefono che dice: fallo",
+      "obiettivi": ["gente", "corpo", "me"],
+      "testo": "Alle otto con Elena da Piero, il caffè della pace. Il pensiero a casa era suo padre, un esame da fare, niente di grave ma lei si spaventa presto. Le ho detto che se in questi giorni ha bisogno vado io dai suoi pazienti. Ha detto: firmiamo venerdì? Ho detto sì. Studio pieno, nove sedute, dormito sette ore, umore buono. Corsa la sera, cinque chilometri a Nervi con il tramonto lungo di fine agosto. Poi Marco al telefono, un'ora, e a un certo punto ha detto: fallo. Non ho capito subito. Ha detto: il locale, fallo, io ci sono. Il primo sì vero, e pesava. Cena tardi, uova e pomodori. Sono andata a letto con quella parola addosso."
+    },
+    {
+      "data": "2026-08-27", "giorno": "Giovedì",
+      "titolo_atteso": "il contratto riletto con Davide, otto chilometri per pensare",
+      "obiettivi": ["corpo", "aria", "gente", "sonno"],
+      "testo": "Domani si firma. Dormito otto ore, non me l'aspettavo, umore buono. Alle otto con Davide al telefono per rileggere il contratto: due righe da cambiare sulla durata e sui lavori, la signora Parodi ha detto va bene su tutto. Studio normale, otto sedute, Bruno che ormai viene per chiacchierare. La sera corsa lunga, otto chilometri, Nervi e ritorno, per pensare: e invece non ho pensato a niente, ho guardato il mare e contato i passi. Pesata: 58,3. Cena sul terrazzino, pasta al pomodoro, un bicchiere. Ho preparato la penna, quella di papà, che non uso mai. Elena ha scritto: a domani, socia. Con la maiuscola non ci arriva, ma il cuore sì."
+    },
+    {
+      "data": "2026-08-28", "giorno": "Venerdì",
+      "titolo_suo": "Firmato",
+      "titolo_atteso": "Firmato (titolo scritto da lei)",
+      "obiettivi": ["gente", "me", "aria"],
+      "testo": "Abbiamo firmato. Alle dieci nel salotto della signora Parodi, con il centrino sul tavolo e il caffè nelle tazzine buone. La mano mi tremava sulla seconda pagina, Elena l'ha visto e mi ha messo la sua sopra un secondo. La signora ci ha dato le chiavi subito, ha detto: tanto il tabaccaio ha già portato via tutto. Siamo entrate nel locale vuoto e abbiamo riso come due scemi, poi abbiamo misurato le finestre. Alle sei prosecco da Piero, che ha offerto lui e ha detto che dal prossimo anno mi manda i clienti con la schiena. Marco ha chiamato in video dal cantiere e ha fatto il brindisi con la bottiglietta d'acqua. Dormito sette ore, umore: non lo so, alto, spaventato, contento. Firmato."
+    },
+    {
+      "data": "2026-08-29", "giorno": "Sabato",
+      "titolo_atteso": "Marco torna e misura il locale vuoto, cena fuori a Boccadasse",
+      "obiettivi": ["gente", "aria", "corpo"],
+      "testo": "Marco è tornato a mezzogiorno e la prima cosa che ha chiesto è stata: mi fai vedere il locale? Ci siamo andati a piedi, l'ho aperto con le chiavi nuove, e lui ha tirato fuori il metro dalla tasca, che se l'era portato apposta. Ha misurato tutto, ha detto che il muro tra le due stanze si può aprire, ha disegnato su un foglio dove vanno i lettini e la finestra della stanza di Elena. Vederlo lì dentro a progettare mi ha fatto più effetto della firma. Corsa la mattina prima che arrivasse, sei chilometri, dormito sette ore e mezza, umore ottimo. Cena a Boccadasse, lo stesso tavolo del quattordici, e stavolta le acciughe le abbiamo finite. Lui ha detto: scusa ancora per quella sera. Io: era già passata."
+    },
+    {
+      "data": "2026-08-30", "giorno": "Domenica", "vuota": true
+    },
+    {
+      "data": "2026-08-31", "giorno": "Lunedì",
+      "titolo_atteso": "un mese che doveva essere vuoto, e non lo è stato",
+      "obiettivi": ["corpo", "gente", "me", "letto"],
+      "testo": "Ultimo giorno di agosto. Studio pieno, dieci sedute, dormito sette ore, umore buono. Bruno ha portato la moglie a conoscermi, lei mi ha stretto la mano con tutte e due le sue. Elena ha appeso in corridoio la foto del locale vuoto con scritto sotto: gennaio. Corsa la sera, cinque chilometri, l'aria che comincia a girare verso settembre. Cena con Marco, riparte domani per l'ultima settimana e poi basta trasferte fino a novembre. Ho riaperto il diario di carta per la prima volta da quando parlo qui, ho letto la pagina del primo agosto: dicevo che sarebbe stato un mese vuoto, da riposare. Un mese che doveva essere vuoto, e non lo è stato. Meglio così."
+    }
+  ],
+  "memo": [
+    {"tipo": "todo", "testo": "Chiamare Davide per il preventivo dei lavori", "fatto": true, "nato": "2026-08-13"},
+    {"tipo": "todo", "testo": "Regalo per i 65 anni di mamma: la macchina fotografica piccola", "fatto": true, "nato": "2026-08-12"},
+    {"tipo": "todo", "testo": "Rinnovare l'assicurazione dello studio entro il 15 settembre", "fatto": false, "nato": "2026-08-17"},
+    {"tipo": "todo", "testo": "Prenotare il pavimentista (il cognato di Davide) per la seconda settimana di settembre", "fatto": false, "nato": "2026-08-28"},
+    {"tipo": "todo", "testo": "Chiedere alla signora Parodi il codice del portone", "fatto": false, "nato": "2026-08-29"},
+    {"tipo": "nota", "testo": "Bruno: controllo dal fisiatra il 10 settembre, portare la relazione delle sedute", "fatto": false, "nato": "2026-08-24"},
+    {"tipo": "nota", "testo": "Il mare non bagna Napoli, finito il 20 agosto. L'ultimo racconto.", "fatto": false, "nato": "2026-08-20"},
+    {"tipo": "idea", "testo": "Una stanza per la riabilitazione del pavimento pelvico: in zona non la fa nessuno", "fatto": false, "nato": "2026-08-13"},
+    {"tipo": "idea", "testo": "Corso di gruppo per la schiena il sabato mattina, sei persone, nel locale nuovo", "fatto": false, "nato": "2026-08-27"},
+    {"tipo": "idea", "testo": "Un cane. Marco dice no. Marco dirà sì.", "fatto": false, "nato": "2026-08-16"}
+  ]
+}

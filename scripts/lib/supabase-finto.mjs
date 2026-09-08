@@ -127,7 +127,12 @@ export class SupabaseFinto {
     const corpo = req.postData() ?? null;
     const voce = { metodo, url: url.pathname + url.search, corpo, risposta: null };
     this.registro.push(voce);
+    // `.single()` di supabase-js chiede un OGGETTO (Accept: vnd.pgrst.object):
+    // PostgREST risponde con la riga sola, non con una lista di una riga.
+    // Senza questo, addGoal leggeva `data.label` da un array e mostrava ''.
+    const vuoleOggetto = /vnd\.pgrst\.object/.test(req.headers()["accept"] ?? "");
     const rispondi = (status, body, headers = {}) => {
+      if (vuoleOggetto && Array.isArray(body)) body = body[0] ?? null;
       voce.risposta = { status, body };
       return route.fulfill({
         status,

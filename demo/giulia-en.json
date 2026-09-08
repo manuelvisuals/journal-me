@@ -1,0 +1,203 @@
+{
+  "persona": {
+    "nome": "Giulia Ferrando",
+    "eta": 34,
+    "citta": "Genoa, Albaro",
+    "lavoro": "physiotherapist, practice on via Corsica with her partner Elena"
+  },
+  "mese": "2026-08",
+  "lingua": "en",
+  "giornate": [
+    {
+      "data": "2026-08-01", "giorno": "Saturday",
+      "titolo_atteso": "market, six kilometres at Nervi and the last dinner before he leaves",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Saturday. Woke up at seven without an alarm, slept seven hours, mood good. Market at piazza Palermo with Marco, we bought peaches and a kilo of tomatoes that will be gone in a week. Then a run at Nervi, six kilometres, the sea rough, wind from the south. Focaccia at Piero's for lunch, the usual. In the afternoon Marco packed for La Spezia, he leaves Monday for three weeks and every time it feels like six months. I didn't tell him that. Dinner at home, pasta with the market tomatoes, a glass of vermentino on the little terrace. I was doing the practice's accounts in my head while he talked about the shipyard. I have to stop doing accounts at the table."
+    },
+    {
+      "data": "2026-08-02", "giorno": "Sunday",
+      "titolo_atteso": "lunch in Camogli, mum talking about Luca",
+      "obiettivi": ["aria", "sonno", "gente", "letto"],
+      "testo": "Sunday in Camogli at mum's. Slept eight hours, almost a record. The nine thirty train, she was already on the pier with her shopping bag, as always. Lunch: trofie with pesto, hers, and stuffed anchovies. She talked about Luca for half the meal, that he doesn't call, that Berlin is cold even in August, that who knows if he'll come for her birthday. I told her I'd write to him. Afternoon on the pebble beach, I read thirty pages and fell asleep. A swim at six, the water was perfect. Train back at eight, Marco had already eaten. I noticed that being with my mother tires me out and does me good in exactly the same measure."
+    },
+    {
+      "data": "2026-08-03", "giorno": "Monday",
+      "titolo_atteso": "last week at the practice, Marco leaves for La Spezia",
+      "obiettivi": ["corpo", "gente"],
+      "testo": "Last week before we close. Up at six, slept six and a half hours, Marco left at seven with his coffee in his hand and the face of someone who doesn't want to go. Practice from eight thirty: nine patients, all the ones who want to finish their cycle before the holidays. Mr Bruno at eleven, third week after the hip replacement, he did the stairs with the handrail and told me his wife doesn't believe it. Elena was late and edgy, she has something on her mind but won't tell me. Lunch standing up, a salad. In the afternoon the lady from the fourth floor with her neck, who talks more than she breathes. Evening: no run, too tired, shower and sofa. Marco wrote that the shipyard is an oven."
+    },
+    {
+      "data": "2026-08-04", "giorno": "Tuesday",
+      "titolo_atteso": "Bruno walks the corridor without his cane, six kilometres at Nervi",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Today Bruno walked the whole corridor without his cane. Three metres more than yesterday. He pretended it was nothing, so did I, then we looked at each other and laughed. Practice until seven, then a run at Nervi, six slow kilometres, the sea flat as a table. Marco called from the shipyard, tired, said everything's fine the way he says it when it isn't. Dinner: leftover pesto, that's fine. Slept six hours last night, I have to stop taking the phone to bed. Mood good anyway, the kind that stays on you because of a small thing that happened to someone else."
+    },
+    {
+      "data": "2026-08-05", "giorno": "Wednesday",
+      "titolo_atteso": "Mrs Parodi and the shop next door that's coming free",
+      "obiettivi": ["gente"],
+      "testo": "Full day, eleven patients, and at five Mrs Parodi came by, the owner of the shop next to the practice. She said she'd come about her shoulder, but really she came to tell me the tobacconist is leaving at the end of September and the place is coming free. Forty-five square metres, two windows onto the street. She said: I'm telling you first, then I'll put the word out. I said thank you, we'll think about it, in the most normal voice I had. Then I did four more patients without hearing a word they said. In the evening I told Elena by message, she answered with three dots and nothing else. No run. Dinner: an egg. I didn't sleep, maybe five hours, and my head was doing the sums on its own."
+    },
+    {
+      "data": "2026-08-06", "giorno": "Thursday",
+      "titolo_atteso": "coffee with Elena at Piero's, Bruno's pastries",
+      "obiettivi": ["gente", "corpo"],
+      "testo": "At eight Elena and I at Piero's, before opening, to talk about the shop. She's scared. She didn't say it like that, she said the timing isn't right, there's the mortgage, we just replaced the treatment tables. All true. I said the timing is never right and the place next door doesn't come free twice. We didn't decide anything, but we finished our coffee. Bruno brought pastries for the whole practice, said that from next week he'll walk to the bar on his own, and I told him I'll be checking. Normal afternoon. Swimming in the evening, forty minutes in the pool, the water put me back together. Slept seven hours, the night before I was wrecked."
+    },
+    {
+      "data": "2026-08-07", "giorno": "Friday",
+      "titolo_atteso": "the practice closes for two weeks, pizza with Elena and the numbers on the table",
+      "obiettivi": ["gente", "me"],
+      "testo": "Last day. We closed the practice at six, I switched off the corridor light and felt a kind of tenderness for the place. Two weeks closed, the first real ones since Easter. Weighed myself this morning for the first time in months: 58.6. Slept six hours. Pizza with Elena at Gino's, the one with pesto and potatoes, and for the first time we put the numbers on the table, literally on the paper napkin. Rent for the shop, the works, one more table, maybe an assistant. She said let's see, which for Elena is almost a yes. I walked home from Carignano, half an hour, the city empty and warm. Mood strange, between happy and scared."
+    },
+    {
+      "data": "2026-08-08", "giorno": "Saturday",
+      "titolo_atteso": "first day of holiday: clean house, ten kilometres and Sara on the phone",
+      "obiettivi": ["corpo", "aria", "me", "gente"],
+      "testo": "First day of holiday and I didn't know what to do with myself. I cleaned the house for three hours, windows included, which is the sign that something's off. Then a long run, ten kilometres to Quinto and back, slow, the heat at eleven was already nasty. Slept seven hours, mood so-so. In the afternoon Sara called from Milan, an hour on the phone, I told her about the shop and she said the right thing: if you don't take it, in a year you'll be asking yourself why. Sara always does that, three sentences and you're sorted. Dinner on the terrace, leftover rice salad, the plants watered. Marco sent a photo of the ship, he looks tiny and the ship looks enormous."
+    },
+    {
+      "data": "2026-08-09", "giorno": "Sunday", "vuota": true
+    },
+    {
+      "data": "2026-08-10", "giorno": "Monday",
+      "titolo_atteso": "awake at five, Boccadasse at dawn and a spreadsheet of costs",
+      "obiettivi": ["corpo", "aria", "me"],
+      "testo": "Awake at five, eyes open and that was it, slept five and a half hours. Instead of turning over in bed I went out: a run to Boccadasse, five kilometres, only a man with his dog and the sea the colour of milk. I took a photo that will never do it justice. Breakfast when I got back, yoghurt and last Saturday's peaches, too ripe by now. Then I did the thing I'd been putting off: the spreadsheet of costs for the shop, with columns, a real one. Rent, works, furniture, an assistant for six months. It's not small, but it's not impossible, and seeing it written down is less scary than carrying it in my head. Lunch alone, tomatoes and mozzarella. Read a bit in the afternoon, slept on the sofa. Mood: good, with a vein of anxiety underneath."
+    },
+    {
+      "data": "2026-08-11", "giorno": "Tuesday",
+      "titolo_atteso": "video call with Marco, and the shop I didn't tell him about",
+      "obiettivi": ["corpo", "gente"],
+      "testo": "Video call with Marco tonight, half an hour, him from the container at the shipyard with the fan making more noise than he did. He told me about a bent steel plate, a nice colleague from Taranto, how badly he sleeps. I told him about Sara, the run, the plants. I didn't tell him about the shop. I noticed only after hanging up, and asked myself why. Maybe because if I tell him it becomes real, maybe because I already know what he'll say. Swimming in the afternoon, fifty minutes, the pool half empty. Slept seven hours. Lunch at Piero's, the onion focaccia. Mood normal."
+    },
+    {
+      "data": "2026-08-12", "giorno": "Wednesday",
+      "titolo_atteso": "Camogli, mum's garden and one sentence about dad",
+      "obiettivi": ["aria", "gente", "sonno"],
+      "testo": "A day in Camogli. Slept eight hours, mood calm. Mum put me to work pruning the jasmine and carrying soil up for the pots, which for her is a holiday. Quick lunch, tomatoes and formaggetta. At four, in the shade, I told her: the shop, Elena, the money. She listened to all of it without interrupting, which never happens, then said: your father would have said yes, and then been scared for a year. I laughed and felt like crying at the same time. A swim at six, the water cold going in, then good. Train back, the lights of the harbour. At home Marco had sent goodnight with a photo of an orange sunset from La Spezia."
+    },
+    {
+      "data": "2026-08-13", "giorno": "Thursday",
+      "titolo_atteso": "inside the shop: forty-five square metres, two windows, a floor to redo",
+      "obiettivi": ["gente", "corpo"],
+      "testo": "At ten with Mrs Parodi inside the tobacconist's shop. A smell of paper and closed rooms, forty-five square metres, two big windows onto the street, the whole floor to redo, a small bathroom but it exists. I walked up and down counting my steps and I could already see the treatment tables. She named a figure for the rent, reasonable, and said she'll wait for us until the end of the month. I called Davide, the accountant, from the car: he'll get me a quote for the works from his brother-in-law the builder and tell me how much we can afford. In the afternoon a short run, four kilometres, the air heavy. Slept six and a half hours, mood good, the kind that gets things done. Dinner with Elena at my place, I showed her the photos of the shop, she said: the windows are nice. It's a start."
+    },
+    {
+      "data": "2026-08-14", "giorno": "Friday",
+      "titolo_atteso": "Marco comes back, dinner in Boccadasse and the fight about money",
+      "obiettivi": ["gente", "aria"],
+      "testo": "Marco got back at six, tanned and bearded, and for an hour everything was perfect. Dinner in Boccadasse, the table outside, fried anchovies. I told him there, between the first course and the second. He said: and the money? Then he said it's madness to do it now, that there's the mortgage, that he's away half the year. I said I hadn't asked him for permission. We ate the rest in silence, which never happens to us. At home each in our own room, him the sofa, me the bed. Slept badly, six hours in pieces. Mood low. It's not that he's wrong about the money. It's that it wasn't the first thing I wanted to hear."
+    },
+    {
+      "data": "2026-08-15", "giorno": "Saturday",
+      "titolo_atteso": "Ferragosto in Camogli, Luca on video from Berlin and peace on the pier",
+      "obiettivi": ["aria", "gente", "corpo"],
+      "testo": "Ferragosto. We went to Camogli, the two of us, by train, without saying much. At mum's there were the aunts, the cousins, the table in the garden, baked fish. Luca called on video from Berlin halfway through lunch, everyone shouting at the phone. Mum looked at Marco, looked at me, and said nothing, which is her way of saying everything. A swim at four, lovely. In the evening Marco and I on the pier, sitting on the edge, and he said: sorry, I got scared for you, not against you. I said: I know. Then we talked about the numbers, the real ones, and he asked the right questions. Slept seven hours, the first good night. Mood: back."
+    },
+    {
+      "data": "2026-08-16", "giorno": "Sunday",
+      "titolo_atteso": "San Fruttuoso by boat with Marco, sunburnt and happy",
+      "obiettivi": ["aria", "gente", "corpo", "sonno"],
+      "testo": "A day by boat to San Fruttuoso with Marco, his friend Tommaso's boat. Left Camogli at nine, the sea like oil, the abbey appearing from the bay and it always feels like the first time. A long swim, I went out to the buoys. Focaccia and peaches on the boat, a glass of white. We came back at six burnt like two tourists, him on the shoulders me on the nose, and slept an hour on the sofa without noticing. Dinner: a salad and that's all, the sun took our appetite. Slept nine hours, mood great. We didn't talk about the shop today, and we needed that."
+    },
+    {
+      "data": "2026-08-17", "giorno": "Monday",
+      "titolo_atteso": "the real numbers with Elena: the numbers hold, the fear doesn't",
+      "obiettivi": ["gente", "me"],
+      "testo": "Elena came over at ten with her laptop and croissants. We did the real numbers, the ones with Davide's quote, for four hours. Rent, floor, wiring, two tables, a part-time assistant for six months, the advertising we never do. In the end the numbers hold: tight the first year, then they breathe. Elena said it herself: the numbers hold, the fear doesn't. I told her we keep the fear, we just don't let it decide. She laughed. Weighed myself: 58.2. Slept seven hours. Lunch together, cold pasta. In the afternoon I slept twenty minutes and then wrote to Mrs Parodi that we've almost decided. Marco cooked in the evening, risotto, and didn't ask anything. Mood good, tired in the right way."
+    },
+    {
+      "data": "2026-08-18", "giorno": "Tuesday",
+      "titolo_atteso": "Sara in town, drinks at the Righi and laughing until late",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Run at seven, six kilometres at Nervi, slept seven and a half hours, mood excellent. Sara arrived from Milan at one, I hadn't seen her since April. Lunch at Piero's, then at home chatting with the fan on. In the evening drinks up at the Righi, the funicular, the whole city lit up below, her telling me about her new boss and me about the shop, and at some point we were laughing so hard the waiter brought us free crisps. Sara said that in a year she's coming to be a patient in the new place. Marco came to pick us up at eleven. Dinner: the little focaccias from the aperitivo, that was it. Sara is sleeping on the sofa, I can hear her snoring softly."
+    },
+    {
+      "data": "2026-08-19", "giorno": "Wednesday", "vuota": true
+    },
+    {
+      "data": "2026-08-20", "giorno": "Thursday",
+      "titolo_atteso": "Marco leaves again, a book finished and mum's minestrone",
+      "obiettivi": ["me", "letto", "sonno"],
+      "testo": "Marco left at six for La Spezia, ten days, then back for the end of the month. This time I said goodbye with less weight. Slept eight hours. A slow day, the kind where at eleven you still haven't done anything and that's fine. I finished the book I'd been reading since June, The Bay Is Not Naples, the last story left me sitting on the sofa for ten minutes. In the afternoon I made mum's minestrone, the one with pesto at the end, enough for a week. I bought the present for her sixty-fifth, the small camera she wanted. No run, heavy legs. Mood quiet. In the evening I wrote to Luca: are you coming on Saturday?"
+    },
+    {
+      "data": "2026-08-21", "giorno": "Friday",
+      "titolo_atteso": "Mrs Parodi waits until the end of the month, Davide's quote arrives",
+      "obiettivi": ["corpo", "gente"],
+      "testo": "I called Mrs Parodi at nine: I told her we want the shop and we'll sign by the end of the month, if the quote for the works fits the numbers. She said: I knew it, in the voice of someone who's won a bet with herself. At noon Davide sent the quote: a bit over, but inside. I forwarded everything to Elena, who answered with a heart, and for Elena a heart is a signature. Swimming in the afternoon, forty minutes. Slept seven hours, mood good. Dinner minestrone, day two. Luca answered: maybe. Which for Luca is already a yes."
+    },
+    {
+      "data": "2026-08-22", "giorno": "Saturday",
+      "titolo_suo": "Mum, sixty-five",
+      "titolo_atteso": "Mum, sixty-five (her own title)",
+      "obiettivi": ["aria", "gente", "corpo"],
+      "testo": "Mum's sixty-fifth birthday. We got to Camogli at eleven and at twelve the doorbell rang and there was Luca, from Berlin, with his backpack and the face of someone who hasn't slept in two days. Mum cried for a full minute, then told him he was too thin. A long lunch in the garden, the aunts, the strawberry cake that Rina makes, the camera unwrapped and tried out on everyone straight away. In the afternoon the three of us went down to the sea, like when we were small, Luca dived off the rock and mum screamed from the beach. Back in Genoa at nine with Luca sleeping at mine. Slept seven hours. Mood: full. One of those days I'll remember with the date."
+    },
+    {
+      "data": "2026-08-23", "giorno": "Sunday",
+      "titolo_atteso": "breakfast at Piero's with Luca, and three kilometres that finished him",
+      "obiettivi": ["corpo", "aria", "gente"],
+      "testo": "Luca in Genoa for a day. Breakfast at Piero's, who recognised him after four years and made him a cappuccino with a heart on it. Then I took him running at Nervi, because he says he runs in Berlin: after three kilometres he was sitting on a bench saying the air here is different. Seven kilometres for me, slept seven hours, mood good. Lunch at home, the minestrone, day four, he had two bowls. We talked about the shop and he told me something lovely: that dad opened the workshop at thirty-five with a loan and the fear, and that he's the one telling me, since dad can't. He left at seven on the train to Milan. Empty house. Evening on the terrace with the plants."
+    },
+    {
+      "data": "2026-08-24", "giorno": "Monday",
+      "titolo_atteso": "the practice reopens, Bruno walks to the bar",
+      "obiettivi": ["gente", "corpo"],
+      "testo": "Reopening. Up at six, slept six and a half hours, mood good. The patients came back tanned and with the same backs as before, but in a good mood. Ten sessions. Bruno at eleven: he arrived on foot from the bar, alone, cane in hand but not leaning on it, like an umbrella. He said: told you. Elena had already printed the draft of Mrs Parodi's contract and left it on my desk without a word, with a pen on top. Lunch standing up, salad. Evening no run, practice legs, ten hours on my feet. Dinner at Piero's with focaccia, I brought him some minestrone too, day five, the last. Good tiredness, the kind that makes you sleep."
+    },
+    {
+      "data": "2026-08-25", "giorno": "Tuesday",
+      "titolo_atteso": "a bad day: the patient who doesn't show and Elena on edge",
+      "obiettivi": ["gente"],
+      "testo": "A bad day. Slept six hours, mood low from the moment I woke up. The nine o'clock patient didn't show and didn't call, an hour thrown away. Elena was on edge about something of her own and snapped at me over nothing, the towels in the washing machine, and I snapped back worse. Silence all morning, with the patients in between pretending not to notice. Afternoon better, a boy with a shoulder who's getting back to swimming, and that put me back on my feet a bit. In the evening I wrote to her: sorry about this morning. Her: you sorry, I've got a worry at home. I told her we'd talk tomorrow at Piero's. Dinner: bread and cheese. No run. Marco called and I told him the truth, bad day, and he said: tomorrow won't be."
+    },
+    {
+      "data": "2026-08-26", "giorno": "Wednesday",
+      "titolo_atteso": "Elena at Piero's, and Marco on the phone saying: do it",
+      "obiettivi": ["gente", "corpo", "me"],
+      "testo": "At eight with Elena at Piero's, the peace coffee. The worry at home was her father, a test to have done, nothing serious but she scares easily. I told her that if she needs it these days I'll cover her patients. She said: do we sign on Friday? I said yes. Full practice, nine sessions, slept seven hours, mood good. Run in the evening, five kilometres at Nervi with the long late-August sunset. Then Marco on the phone, an hour, and at some point he said: do it. I didn't understand at first. He said: the shop, do it, I'm here. The first real yes, and it had weight. Late dinner, eggs and tomatoes. I went to bed with that word on me."
+    },
+    {
+      "data": "2026-08-27", "giorno": "Thursday",
+      "titolo_atteso": "the contract reread with Davide, eight kilometres to think",
+      "obiettivi": ["corpo", "aria", "gente", "sonno"],
+      "testo": "Tomorrow we sign. Slept eight hours, didn't expect that, mood good. At eight on the phone with Davide to reread the contract: two lines to change on the duration and the works, Mrs Parodi said fine to everything. Normal practice, eight sessions, Bruno who by now comes to chat. In the evening a long run, eight kilometres, Nervi and back, to think: and instead I didn't think about anything, I watched the sea and counted my steps. Weighed myself: 58.3. Dinner on the terrace, pasta with tomato, a glass. I got the pen ready, dad's, the one I never use. Elena wrote: see you tomorrow, partner. She can't manage a capital letter, but she can manage a heart."
+    },
+    {
+      "data": "2026-08-28", "giorno": "Friday",
+      "titolo_suo": "Signed",
+      "titolo_atteso": "Signed (her own title)",
+      "obiettivi": ["gente", "me", "aria"],
+      "testo": "We signed. At ten in Mrs Parodi's living room, with the doily on the table and coffee in the good cups. My hand was shaking on the second page, Elena saw it and put hers on top for a second. Mrs Parodi gave us the keys straight away, she said: the tobacconist has already taken everything anyway. We went into the empty shop and laughed like two idiots, then we measured the windows. At six prosecco at Piero's, his treat, and he said that from next year he's sending me his customers with bad backs. Marco called on video from the shipyard and toasted with his water bottle. Slept seven hours, mood: I don't know, high, scared, happy. Signed."
+    },
+    {
+      "data": "2026-08-29", "giorno": "Saturday",
+      "titolo_atteso": "Marco comes back and measures the empty shop, dinner out in Boccadasse",
+      "obiettivi": ["gente", "aria", "corpo"],
+      "testo": "Marco got back at noon and the first thing he asked was: will you show me the shop? We walked there, I opened it with the new keys, and he pulled a tape measure out of his pocket, he'd brought it on purpose. He measured everything, said the wall between the two rooms can be opened, drew on a sheet of paper where the tables go and the window of Elena's room. Seeing him in there planning did more to me than the signature. A run in the morning before he arrived, six kilometres, slept seven and a half hours, mood excellent. Dinner in Boccadasse, the same table as the fourteenth, and this time we finished the anchovies. He said: sorry again for that evening. Me: it was already gone."
+    },
+    {
+      "data": "2026-08-30", "giorno": "Sunday", "vuota": true
+    },
+    {
+      "data": "2026-08-31", "giorno": "Monday",
+      "titolo_atteso": "a month that was supposed to be empty, and wasn't",
+      "obiettivi": ["corpo", "gente", "me", "letto"],
+      "testo": "Last day of August. Full practice, ten sessions, slept seven hours, mood good. Bruno brought his wife to meet me, she shook my hand with both of hers. Elena hung the photo of the empty shop in the corridor with the word January written under it. Run in the evening, five kilometres, the air starting to turn towards September. Dinner with Marco, he leaves tomorrow for the last week and then no more trips until November. I opened the paper diary for the first time since I started talking here, I read the page from the first of August: I said it would be an empty month, for resting. A month that was supposed to be empty, and wasn't. Better this way."
+    }
+  ],
+  "memo": [
+    {"tipo": "todo", "testo": "Call Davide about the quote for the works"},
+    {"tipo": "todo", "testo": "Present for mum's sixty-fifth: the small camera"},
+    {"tipo": "todo", "testo": "Renew the practice insurance by 15 September"},
+    {"tipo": "todo", "testo": "Book the floor guy (Davide's brother-in-law) for the second week of September"},
+    {"tipo": "todo", "testo": "Ask Mrs Parodi for the front door code"},
+    {"tipo": "nota", "testo": "Bruno: check-up with the physiatrist on 10 September, bring the session report"},
+    {"tipo": "nota", "testo": "The Bay Is Not Naples, finished 20 August. The last story."},
+    {"tipo": "idea", "testo": "A room for pelvic floor rehab: nobody around here does it"},
+    {"tipo": "idea", "testo": "Group back class on Saturday mornings, six people, in the new place"},
+    {"tipo": "idea", "testo": "A dog. Marco says no. Marco will say yes."}
+  ]
+}
