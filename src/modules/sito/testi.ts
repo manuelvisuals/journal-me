@@ -138,6 +138,7 @@ export type Testi = {
     congelata3: string;
     congelata4: string;
     congelata5: string;
+    congelata6: string;
     nuovo: string;
   };
   supporto: {
@@ -519,6 +520,7 @@ const it: Testi = {
     congelata3: "Sito del 7 settembre (v3)",
     congelata4: "Sito editoriale approvato (v4)",
     congelata5: "Sito prima della versione mobile (v5)",
+    congelata6: "Sito prima delle animazioni (v6)",
     nuovo: "Sito nuovo (2.0)",
   },
   supporto: {
@@ -901,6 +903,7 @@ const en: Testi = {
     congelata3: "Site of 7 September (v3)",
     congelata4: "Approved editorial site (v4)",
     congelata5: "Site before the mobile edition (v5)",
+    congelata6: "Site before the scroll animations (v6)",
     nuovo: "New site (2.0)",
   },
   supporto: {

@@ -96,7 +96,7 @@ export function PiedeSito({
   /** TEMPORANEO: "v1" e "v2" sulle home congelate, "2" sulla viva. Serve
       solo ai link di confronto in fondo, che spariranno quando il sito
       sara fermo. */
-  versione?: "v1" | "v2" | "v3" | "v4" | "v5" | "2";
+  versione?: "v1" | "v2" | "v3" | "v4" | "v5" | "v6" | "2";
 }) {
   const t = testiDi(lingua);
   const p = prefisso(lingua);
@@ -135,6 +135,7 @@ export function PiedeSito({
           <Link href={altraLingua}>{t.piede.lingua}</Link>
           {versione === "2" ? (
             <>
+              <Link href={`${p}/v6`} className="jm-sito-piede-versione">{t.piede.congelata6}</Link>
               <Link href={`${p}/v5`} className="jm-sito-piede-versione">{t.piede.congelata5}</Link>
               <Link href={`${p}/v4`} className="jm-sito-piede-versione">{t.piede.congelata4}</Link>
               <Link href={`${p}/v3`} className="jm-sito-piede-versione">{t.piede.congelata3}</Link>
