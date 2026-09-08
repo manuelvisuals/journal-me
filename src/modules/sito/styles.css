@@ -905,7 +905,7 @@
     position: relative;
     z-index: 4;
     display: block;
-    padding: 118px 27px 0;
+    padding: 88px 27px 0;
     text-align: left;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe-t {
@@ -913,20 +913,22 @@
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-eyebrow {
     max-width: 25ch;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     font-size: calc(10px * var(--jm-ui-scale));
     line-height: 1.55;
     letter-spacing: .22em;
   }
+  /* Due righe come nel mockup ("Racconta il giorno." tutta su una riga):
+     per questo il titolo non ha un tetto in em ma la larghezza del testo. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-h1 {
-    max-width: 6.3em;
-    font-size: calc(41px * var(--jm-ui-scale));
-    line-height: .98;
+    max-width: none;
+    font-size: calc(38px * var(--jm-ui-scale));
+    line-height: 1;
     letter-spacing: -.045em;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-sotto {
-    max-width: 19ch;
-    margin-top: 18px;
+    max-width: 180px; /* in px, non in ch: finisce dove iniziano i capelli */
+    margin-top: 14px;
     color: var(--jm-ink-muted);
     font-size: calc(14px * var(--jm-ui-scale));
     line-height: 1.38;
@@ -934,8 +936,8 @@
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-cta {
     align-items: flex-start;
     flex-direction: column;
-    gap: 13px;
-    margin-top: 18px;
+    gap: 12px;
+    margin-top: 16px;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-b {
     min-width: 0;
@@ -952,38 +954,46 @@
     content: " →";
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-sotto-cta { display: none; }
+  /* Niente z-index qui: il contenitore NON deve fare da contesto, altrimenti
+     il velo (::before, livello 1) finirebbe sopra anche al telefono. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe-media {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: auto;
     overflow: hidden;
   }
+  /* Lei sta a destra, nitida, col viso al 78% della larghezza (nel
+     mockup il paragrafo finisce dove iniziano i capelli): la posizione
+     e in percentuale della larghezza, cosi regge anche i telefoni larghi. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe-media .scena {
     position: absolute;
-    bottom: 0;
-    left: calc(50% - 620px);
+    z-index: 0;
+    bottom: 140px; /* il bordo tagliato della foto finisce dietro il pannello */
+    left: calc(83% - 467px);
     width: auto;
-    height: 540px;
+    height: 380px;
     max-width: none;
     object-fit: contain;
-    -webkit-mask-image: none;
-    mask-image: none;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 14%);
   }
+  /* Il velo copre solo la fascia del testo (in alto e a sinistra); sul
+     viso arriva a zero, altrimenti lei sbiadisce come su una tenda. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe::before {
     z-index: 1;
     background:
-      linear-gradient(180deg, var(--jm-bg-app) 0, color-mix(in srgb, var(--jm-bg-app) 94%, transparent) 33%, color-mix(in srgb, var(--jm-bg-app) 28%, transparent) 57%, transparent 73%),
-      linear-gradient(90deg, color-mix(in srgb, var(--jm-bg-app) 86%, transparent) 0, color-mix(in srgb, var(--jm-bg-app) 56%, transparent) 42%, transparent 76%);
+      linear-gradient(180deg, var(--jm-bg-app) 0, color-mix(in srgb, var(--jm-bg-app) 92%, transparent) 22%, color-mix(in srgb, var(--jm-bg-app) 45%, transparent) 30%, transparent 40%),
+      linear-gradient(90deg, color-mix(in srgb, var(--jm-bg-app) 92%, transparent) 0, color-mix(in srgb, var(--jm-bg-app) 80%, transparent) 32%, color-mix(in srgb, var(--jm-bg-app) 24%, transparent) 48%, transparent 58%);
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-telefono-foto {
     position: absolute;
     z-index: 3;
-    bottom: 118px;
-    left: 66px;
-    width: 184px;
+    top: 458px; /* sotto "Come funziona"; su schermi alti mostra piu telefono */
+    left: 44px;
+    width: 206px;
     height: auto;
     max-width: none;
-    transform: rotate(-5deg);
+    transform: rotate(-6deg);
     filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--jm-shadow) 34%, transparent));
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
@@ -995,7 +1005,7 @@
     margin: 0;
     min-width: 0;
     overflow: hidden;
-    padding: 22px 10px 18px;
+    padding: 18px 10px 14px;
     border: 1px solid color-mix(in srgb, var(--jm-surface) 76%, transparent);
     border-radius: 26px 26px 0 0;
     background: color-mix(in srgb, var(--jm-surface) 90%, transparent);
@@ -1011,13 +1021,13 @@
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale-voci {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-top: 18px;
+    margin-top: 14px;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale-voci > div {
     display: flex;
     min-width: 0;
-    min-height: 108px;
-    padding: 0 8px;
+    min-height: 92px;
+    padding: 0 4px;
     flex-direction: column;
     justify-content: flex-start;
     gap: 8px;
@@ -1035,7 +1045,7 @@
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale-voci p {
     margin-top: 4px;
-    font-size: calc(11px * var(--jm-ui-scale));
+    font-size: calc(10.5px * var(--jm-ui-scale));
     line-height: 1.35;
   }
 }

@@ -44,7 +44,7 @@ export type Testi = {
   rituale: {
     etichetta: string;
     titolo: string;
-    voci: { titolo: string; testo: string; icona: "voce" | "apri" | "recap" }[];
+    voci: { titolo: string; testo: string; icona: "voce" | "apri" | "scintilla" | "recap" }[];
   };
   /** La giornata finta, ma verosimile, che compare in tutte le schermate. */
   esempio: {
@@ -190,7 +190,7 @@ const it: Testi = {
     titolo: "Parla. Ricorda. Ritorna.",
     voci: [
       { titolo: "Parla", testo: "Due minuti, a voce.", icona: "voce" },
-      { titolo: "Ricorda", testo: "Il giorno diventa una pagina.", icona: "apri" },
+      { titolo: "Ricorda", testo: "Il giorno diventa una pagina.", icona: "scintilla" },
       { titolo: "Ritorna", testo: "La tua vita, pronta da rileggere.", icona: "recap" },
     ],
   },
@@ -572,7 +572,7 @@ const en: Testi = {
     titolo: "Speak. Remember. Return.",
     voci: [
       { titolo: "Speak", testo: "Two minutes, out loud.", icona: "voce" },
-      { titolo: "Remember", testo: "The day becomes a page.", icona: "apri" },
+      { titolo: "Remember", testo: "The day becomes a page.", icona: "scintilla" },
       { titolo: "Return", testo: "Your life, ready to revisit.", icona: "recap" },
     ],
   },

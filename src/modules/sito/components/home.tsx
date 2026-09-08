@@ -66,7 +66,7 @@ function Foto({ nome, className, eager = false }: { nome: string; className?: st
 
 /* --------------------------------------------- icone (tratto, 24px) */
 
-function Icona({ nome }: { nome: "voce" | "chiave" | "apri" | "oggi" | "mese" | "memo" | "recap" | "mic" | "condividi" | "lucchetto" }) {
+function Icona({ nome }: { nome: "voce" | "chiave" | "apri" | "scintilla" | "oggi" | "mese" | "memo" | "recap" | "mic" | "condividi" | "lucchetto" }) {
   const d: Record<typeof nome, ReactNode> = {
     voce: (
       <>
@@ -97,6 +97,12 @@ function Icona({ nome }: { nome: "voce" | "chiave" | "apri" | "oggi" | "mese" | 
       <>
         <circle cx="12" cy="12" r="9" />
         <path d="M8 12h8M12 8v8" />
+      </>
+    ),
+    scintilla: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7.5c.5 2.6 1.9 4 4.5 4.5-2.6.5-4 1.9-4.5 4.5-.5-2.6-1.9-4-4.5-4.5 2.6-.5 4-1.9 4.5-4.5z" />
       </>
     ),
     oggi: (
@@ -403,7 +409,8 @@ export function HomeSito({
             <div className="jm-sito4-rituale-voci">
               {t.rituale.voci.map((voce) => (
                 <div key={voce.titolo}>
-                  <span><Icona nome={voce.icona} /></span>
+                  {/* Il v5 archiviato tiene la sua icona di allora. */}
+                  <span><Icona nome={archivioV5 && voce.icona === "scintilla" ? "apri" : voce.icona} /></span>
                   <div>
                     <h3>{voce.titolo}</h3>
                     <p>{voce.testo}</p>

@@ -408,7 +408,8 @@ export function HomeSitoV4({
           <div className="jm-sito4-rituale-voci">
             {t.rituale.voci.map((voce) => (
               <div key={voce.titolo}>
-                <span><Icona nome={voce.icona} /></span>
+                {/* Archivio v4: tiene l'icona di allora. */}
+                <span><Icona nome={voce.icona === "scintilla" ? "apri" : voce.icona} /></span>
                 <div>
                   <h3>{voce.titolo}</h3>
                   <p>{voce.testo}</p>
