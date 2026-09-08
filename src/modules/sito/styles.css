@@ -808,6 +808,15 @@
   html:has(.jm-sito4:not(.jm-sito4-archivio-v5)) body {
     background: var(--jm-bg-app);
   }
+  /* Safari 26 non legge piu theme-color: prende il colore dal primo
+     elemento fixed/sticky in cima, altrimenti da body. In cima ci sono
+     i veli fissi di base.css (body::before calore, body::after grana),
+     coperti dal fondo pieno di .jm-sito e quindi invisibili: dare al
+     primo il colore dell'eroe non cambia un pixel della pagina ma da a
+     Safari il colore giusto da campionare. */
+  html:has(.jm-sito4:not(.jm-sito4-archivio-v5)) body::before {
+    background-color: var(--jm-bg-app);
+  }
   .jm-sito4:not(.jm-sito4-archivio-v5) {
     --jm-sito-nav-h: 76px;
   }
