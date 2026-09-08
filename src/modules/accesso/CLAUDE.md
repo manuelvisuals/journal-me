@@ -98,3 +98,15 @@ sposta il premium comprato senza email sul profilo, funzione SQL
 `CloudStore.importAll()`: le giornate del telefono salgono gia chiuse a
 chiave. Le giornate locali non si cancellano. Banco:
 `scripts/verify-ospite-schermate.mjs` sezione 06.
+
+## Il saluto dopo il logout (8 settembre 2026)
+
+Chi preme "Esci dall'account" torna ospite in modalita locale senza
+ricaricare: per il saluto era un primo avvio, e la lettera si apriva
+prima della schermata di login. Ora il logout scrive `jm.saluto.uscito`
+(`segnaUscita`, dalla vedetta onAuthStateChange su SIGNED_OUT); in
+modalita locale con quella memoria il saluto non si apre, e sulle pagine
+pubbliche il velo non si disegna. La memoria cade al prossimo accesso
+vero (`dimenticaUscita` dentro `identita()`): "logout riporta alla prima
+visualizzazione" vale per chi rientra. Un dispositivo davvero nuovo lo
+vede ancora. Banco: `verify-saluto-logout` (10 controlli, morso provato).

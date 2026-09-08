@@ -59,9 +59,11 @@ import {
   azzeraApertura,
   chiediSilenzio,
   contaApertura,
+  dopoUscita,
   giaMostratoInQuestaApertura,
   identita,
   segnaMostrato,
+  segnaUscita,
   silenzioScritto,
   silenzioVale,
 } from "@/modules/accesso/saluto-stato";
@@ -89,7 +91,10 @@ function accendiVedetta(): void {
   if (vedettaAccesa) return;
   vedettaAccesa = true;
   void import("@/lib/supabase/client").then(({ createClient }) => {
-    createClient().auth.onAuthStateChange((_evento, sessione) => {
+    createClient().auth.onAuthStateChange((evento, sessione) => {
+      // "Esci": l'ospite che resta su questo dispositivo non e un primo
+      // avvio, e il saluto non deve aprirsi prima del prossimo login.
+      if (evento === "SIGNED_OUT") segnaUscita();
       if (!sessione) azzeraApertura();
     });
   });
@@ -112,7 +117,7 @@ export function SalutoAvvio() {
      di Manuel del 1 settembre 2026): sotto una lettera di benvenuto la
      navigazione non serve, e nel guscio iOS la lastra nativa starebbe
      comunque sopra il velo. Torna da solo quando il riquadro si chiude. */
-  useRitiraDock(aperto);
+  useRitiraDock(aperto && !pubblica);
   const [casella, setCasella] = useState<boolean>(false);
   const [spuntato, setSpuntato] = useState<boolean>(false);
 
@@ -173,6 +178,7 @@ export function SalutoAvvio() {
   useEffettoPrimaDelPaint(() => {
     if (pubblica || mode === "resolving") return;
     if (chiusoPerSempre.current) return;
+    if (mode === "local" && dopoUscita()) return;
     if (giaMostratoInQuestaApertura()) return;
     // Se un silenzio esiste, si aspetta la strada lenta: potrebbe essere di
     // un login morto, e in quel caso il messaggio va aperto lo stesso.
@@ -190,6 +196,10 @@ export function SalutoAvvio() {
     void (async () => {
       const id = await identita(mode);
       if (!vivo || chiusoPerSempre.current) return;
+      if (mode === "local" && dopoUscita()) {
+        setAperto(false);
+        return;
+      }
       if (!id) {
         // Nessuno dentro: niente messaggio e niente da contare.
         setAperto(false);
@@ -327,7 +337,10 @@ export function SalutoAvvio() {
     reteDiSicurezza.current = window.setTimeout(() => setAperto(false), 900);
   }, [mode, spuntato, benvenuto.versione]);
 
-  if (!aperto) return null;
+  // Sulle pagine pubbliche (login in testa) il saluto non ha posto: se e
+  // rimasto aperto da prima — il logout naviga a /login SENZA ricaricare —
+  // sparisce qui, nel render, senza uno stato in piu da tenere allineato.
+  if (!aperto || pubblica) return null;
 
   const paragrafiTesto = paragrafi(testi.testo);
   // La riga in fondo compare solo se ha una frase E un indirizzo: un invito

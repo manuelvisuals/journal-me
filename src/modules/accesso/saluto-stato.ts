@@ -39,6 +39,7 @@ export const APRI_CASELLA_DALLA = 3;
 const K_CONTEGGIO = "jm.saluto.conteggio";
 const K_SILENZIO = "jm.saluto.silenzio";
 const K_DISPOSITIVO = "jm.saluto.dispositivo";
+const K_USCITO = "jm.saluto.uscito";
 
 /* ---------- 1. una volta per apertura ---------- */
 
@@ -65,6 +66,29 @@ export function segnaMostrato(): void {
  */
 export function azzeraApertura(): void {
   mostratoInQuestaApertura = false;
+}
+
+/* ---------- 1-bis. dopo un logout, niente saluto all'ospite ---------- */
+
+/**
+ * Chi esce dall'account torna ospite in modalita locale (AuthGate,
+ * chooseLocalMode) e questo dispositivo ha di nuovo un'identita: la sua.
+ * Senza questa memoria il saluto si aprirebbe subito dopo "Esci", prima
+ * ancora della schermata di login, come a un primo avvio (bug segnalato da
+ * Manuel l'8 settembre 2026). L'uscita si scrive qui e si dimentica al
+ * prossimo accesso vero: "logout riporta alla prima visualizzazione" vale
+ * per chi rientra, non per la schermata di mezzo.
+ */
+export function segnaUscita(): void {
+  scrivi(K_USCITO, "1");
+}
+
+export function dopoUscita(): boolean {
+  return leggi(K_USCITO) !== null;
+}
+
+export function dimenticaUscita(): void {
+  cancella(K_USCITO);
 }
 
 /* ---------- lettura veloce, senza rete ---------- */
@@ -135,6 +159,9 @@ export async function identita(mode: ResolvedMode): Promise<string | null> {
   const { data } = await createClient().auth.getSession();
   const sessione = data.session;
   if (!sessione) return null;
+  // Un accesso vero cancella la memoria del logout: da qui il saluto
+  // riparte dalla prima visualizzazione, come vuole la specifica.
+  dimenticaUscita();
   const p = payloadJwt(sessione.access_token);
   const sid = typeof p?.session_id === "string" ? p.session_id : null;
   // Ultima spiaggia: l'utente. Peggio del session_id (non distingue due
