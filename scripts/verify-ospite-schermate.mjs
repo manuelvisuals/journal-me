@@ -193,7 +193,7 @@ let semeA = null;
   await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   const avvisoPrima = await page.locator(".jm-avviso-regalo").count();
   const t1 = await scriviEChiudi(page, "Oggi ho chiuso una giornata con l'AI e ne restano poche.", { conAI: true });
-  check("02 la giornata e chiusa dall'AI (titolo del modello finto)", /giornata da ospite/.test(t1), t1);
+  check("02 la giornata e chiusa dall'AI (titolo del modello finto)", /giornata da ospite/i.test(t1), t1);
   // A2 (mockup premium-senza-password): la PRIMA giornata chiusa dall'AI su
   // questo dispositivo apre il foglio "L'AI ha chiuso questa giornata per
   // te", una volta sola, con la scheda e "non ora".

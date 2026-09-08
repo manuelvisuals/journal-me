@@ -98,7 +98,7 @@ check("giornate: una voce per giornata non vuota", referto.giornate.length === p
 check("giornate: nessun errore", referto.giornate.every((g) => g.stato !== "errore") && referto.errori.length === 0, referto.errori.join(" | "));
 const cassettine = finto.tab("cassettine");
 check("cassettine: una per data, nessuna per il giorno saltato", piene.every((g) => cassettine.some((c) => c.giorno === g.data)) && !cassettine.some((c) => c.giorno === "2026-08-02"), cassettine.map((c) => c.giorno).join(","));
-check("titolo dell'AI finta sulle giornate senza lucchetto", referto.giornate.filter((g) => !g.tuo).every((g) => /giornata da ospite/.test(g.titolo)), referto.giornate.map((g) => g.titolo).join(" | "));
+check("titolo dell'AI finta sulle giornate senza lucchetto", referto.giornate.filter((g) => !g.tuo).every((g) => /giornata da ospite/i.test(g.titolo)), referto.giornate.map((g) => g.titolo).join(" | "));
 check("lucchetto: il 4 ha il titolo di lei", referto.giornate.find((g) => g.data === "2026-08-04")?.tuo === true && referto.giornate.find((g) => g.data === "2026-08-04")?.titolo === "Signed");
 check("obiettivi accesi come nel json", referto.giornate.every((g) => g.obiettivi.length === (piene.find((p) => p.data === g.data)?.obiettivi.length ?? 0)));
 
