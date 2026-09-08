@@ -152,11 +152,20 @@ export async function caricaDemo({
   if (page.url().includes("/app/benvenuto")) {
     await page.goto(base + "/app", { waitUntil: "domcontentloaded" });
   }
-  const saluto = page.locator(".jm-benv-sal-b");
-  if (await saluto.waitFor({ state: "visible", timeout: 4000 }).then(() => true, () => false)) {
-    await saluto.click();
+  // Il saluto di benvenuto (saluto-avvio.tsx) e un velo modale: finche e
+  // aperto intercetta ogni clic. Puo comparire su qualunque pagina, anche
+  // dopo: si chiude qui e prima di ogni passo, con la spunta "non mostrare
+  // piu" quando c'e.
+  const chiudiSaluto = async (attesaMs = 4000) => {
+    const velo = page.locator(".jm-benv-sal");
+    if (!(await velo.waitFor({ state: "visible", timeout: attesaMs }).then(() => true, () => false))) return;
+    const spunta = page.locator(".jm-benv-sal-c input");
+    if (await spunta.count()) await spunta.check().catch(() => undefined);
+    await page.locator(".jm-benv-sal-b").click();
+    await velo.waitFor({ state: "hidden", timeout: 10_000 }).catch(() => undefined);
     log("saluto: chiuso");
-  }
+  };
+  await chiudiSaluto();
 
   /* 4. Chi sono e che piano ho. */
   const sessione = await page.evaluate(() => {
@@ -189,6 +198,7 @@ export async function caricaDemo({
   try {
     await page.goto(base + "/app/settings", { waitUntil: "domcontentloaded" });
     await page.locator(".jm-st-row").first().waitFor({ state: "visible", timeout: 30_000 });
+    await chiudiSaluto(2500);
     // Sul telefono il nome si cambia dalla pennina del menu dell'account
     // (account-menu.tsx), che apre la schermata del nome nelle Impostazioni.
     await page.locator(".jm-hd-av").first().click();
@@ -231,6 +241,7 @@ export async function caricaDemo({
     await page.goto(base + "/app/settings", { waitUntil: "domcontentloaded" });
     const riga = page.locator(".jm-st-row", { has: page.locator(".jm-st-t", { hasText: /^(Obiettivi|Goals)$/ }) });
     await riga.first().waitFor({ state: "visible", timeout: 30_000 });
+    await chiudiSaluto(1500);
     await riga.first().click();
     await page.locator("form.jm-st-add input").waitFor({ state: "visible", timeout: 15_000 });
     const etichette = async () =>
@@ -276,6 +287,7 @@ export async function caricaDemo({
     referto.giornate.push(voce);
     try {
       await page.goto(base + "/app/giorno?d=" + g.data, { waitUntil: "domcontentloaded" });
+      await chiudiSaluto(1500);
       await page.waitForFunction(
         () => document.querySelector(".jm-fv-h") || document.querySelector(".btn-ghost"),
         null,
@@ -353,6 +365,7 @@ export async function caricaDemo({
     await page.goto(base + "/app/remember", { waitUntil: "domcontentloaded" });
     const campo = page.locator("form.jm-qc-card input[type=text]");
     await campo.waitFor({ state: "visible", timeout: 30_000 });
+    await chiudiSaluto(1500);
     for (const m of dati.memo ?? []) {
       await page.locator(".jm-qc-kind").click();
       await page.locator(".jm-qc-kind-pop .row").nth(KIND_INDICE[m.tipo] ?? 0).click();
@@ -370,6 +383,7 @@ export async function caricaDemo({
   /* 9. Il recap del mese scorso, col bottone dell'app. */
   try {
     await page.goto(base + "/app/recap", { waitUntil: "domcontentloaded" });
+    await chiudiSaluto(1500);
     const gen = page.locator(".jm-gen-btn");
     if (await gen.waitFor({ state: "visible", timeout: 20_000 }).then(() => true, () => false)) {
       await gen.click();
