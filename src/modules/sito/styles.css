@@ -116,7 +116,7 @@
 }
 .jm-sito-wordmark {
   display: block;
-  width: calc(166px * var(--jm-ui-scale));
+  width: calc(86px * var(--jm-ui-scale));
   height: auto;
 }
 /* La misura NON si scrive qui: overrides.css raccoglie in un posto solo
