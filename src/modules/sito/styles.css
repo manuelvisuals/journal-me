@@ -4002,3 +4002,21 @@ textarea.jm-sito-in {
   .jm-sito7[data-js] .jm-sito6-foto.donna { transform: translateX(calc((1 - min(1, var(--s) * 3.3)) * -40%)); }
   .jm-sito7[data-js] .jm-sito6-foto.uomo { transform: translateX(calc((1 - min(1, var(--s) * 3.3)) * 40%)); }
 }
+/* Sul telefono la scena e a tutto schermo e parte senza preambolo: niente
+   titolo sopra (Manuel, 8 settembre 2026, sera), niente bordi, e il filo
+   di luce della fusione non c'e (con le foto una sopra l'altra non ha
+   piu niente da fondere e sembrava uno squarcio nel buio). */
+@media (max-width: 1000px) {
+  .jm-sito7 .jm-sito6-voce-pagina { padding: 0 0 56px; }
+  .jm-sito7 .jm-sito6-testa { display: none; }
+  .jm-sito7 .jm-sito6-fusione::after { display: none; }
+  .jm-sito7 .jm-sito7-pista { margin: 0; }
+  .jm-sito7[data-js] .jm-sito6-scena {
+    top: 0;
+    height: 100svh;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .jm-sito7 .jm-sito6-chiusura { margin-top: 44px; }
+}
