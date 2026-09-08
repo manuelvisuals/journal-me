@@ -235,6 +235,24 @@ const NEGOZIO = {
   await ctx.close();
 }
 
+/* ================= 1c. Account free senza regalo: il microfono resta, e apre il muro ================= */
+// Manuel, 8 settembre 2026: il tasto del microfono resta anche con un
+// account free; toccarlo apre il muro premium, che spiega perche.
+{
+  const { ctx, page } = await dispositivo({ negozio: NEGOZIO });
+  await page.addInitScript(() => { try { localStorage.setItem("jm.ospite", "0"); localStorage.setItem("jm.plan", "free"); } catch {} });
+  sb.tab("profiles").find((p) => p.user_id === UTENTE_ID).plan = "free";
+  await entra(page);
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+  const voce = page.getByRole("button", { name: /Racconta a voce/ });
+  await voce.waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
+  check("free senza regalo: il tasto 'Racconta a voce' c'e lo stesso", (await voce.count()) === 1);
+  await voce.click();
+  await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+  check("free senza regalo: toccarlo apre il muro premium", (await page.locator(".jm-wall").count()) === 1);
+  await ctx.close();
+}
+
 /* ================= 2. Il guscio: il muro a schede ================= */
 {
   const { ctx, page, errors } = await dispositivo({ negozio: NEGOZIO });
