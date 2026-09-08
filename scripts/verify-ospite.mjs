@@ -210,7 +210,7 @@ let segretoA = null;
 
   /* ================= R2: la quota scende sul server ================= */
   const titolo = await scriviEChiudi(page, "Oggi ho provato l'app come ospite e ho chiuso la giornata con l'AI.", { conAI: true });
-  check("R2 AI: la giornata e chiusa dal modello (titolo dell'OpenAI finto)", /giornata da ospite/.test(titolo), titolo);
+  check("R2 AI: la giornata e chiusa dal modello (titolo dell'OpenAI finto)", /giornata da ospite/i.test(titolo), titolo);
   check("R2 server: ha registrato il braccialetto come hash, non il segreto", sb.tab("braccialetti").length === 1 && !JSON.stringify(sb.tab("braccialetti")).includes(segretoA ?? "???"));
   check("R2 server: una riga in braccialetto_giornate", sb.tab("braccialetto_giornate").length === 1, String(sb.tab("braccialetto_giornate").length));
   const usi = sb.tab("ai_usage");
@@ -352,7 +352,7 @@ let segretoA = null;
   const a = await dispositivo({ seme: semeA });
   await a.page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
   const tA = await scriviEChiudi(a.page, "Ospite a meta giornata sopra il tetto: la finisce.", { conAI: true });
-  check("R4 tetto: chi ha gia iniziato la giornata la finisce con l'AI", /giornata da ospite/.test(tA), tA);
+  check("R4 tetto: chi ha gia iniziato la giornata la finisce con l'AI", /giornata da ospite/i.test(tA), tA);
   await a.ctx.close();
 
   // Regalo spento dal pannello: come il tetto.

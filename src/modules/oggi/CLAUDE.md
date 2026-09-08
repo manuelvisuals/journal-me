@@ -73,7 +73,7 @@ nella nota di consegna, non dimenticarlo quando si tocca il backup.
   `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,
-  `verify-nav-giorno`, `verify-barra-alto` (piu tsc, eslint,
+  `verify-nav-giorno`, `verify-barra-alto`, `verify-titolo-maiuscola` (piu tsc, eslint,
   verify-i18n).
   Attenzione: `verify-icone-aree` e `verify-giornata-larghezze` hanno la
   porta 3200 scritta dentro, gli altri usano la 3100 (JM_BASE).
@@ -245,3 +245,14 @@ giornata per te" (`openPremiumWall("presentazione")`), una volta per
 dispositivo (`src/lib/ospite/presentazione.ts`, localStorage
 `jm.premium.presentato`). Si apre quando la giornata e a schermo (view
 "filled"), mai sopra le domande o la rubrica.
+
+## Il titolo dell'AI e in Sentence case (9 settembre 2026)
+
+Prima il prompt chiedeva il titolo "in minuscolo tranne nomi propri" e il
+modello scriveva minuscoli anche i nomi ("marco measures shop"). Manuel,
+guardando l'account demo sul telefono, ha scelto la maiuscola iniziale come
+una frase normale, nomi propri sempre maiuscoli, niente punto finale. La
+maiuscola iniziale non si affida al modello: la mette il codice
+(`titoloInSentenceCase` in `server/process-entry.ts`), anche sul titolo di
+ripiego. Il titolo del recap (modulo recap) resta minuscolo: non e stato
+toccato. Banco: `verify-titolo-maiuscola`.

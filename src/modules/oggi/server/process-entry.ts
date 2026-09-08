@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
   // Venti caratteri: sotto, non c'e abbastanza per un titolo comunque.
   if (transcript.length < 20) {
     return NextResponse.json({
-      headline: langOf(req) === "en" ? "day told" : "giornata raccontata",
+      headline: langOf(req) === "en" ? "Day told" : "Giornata raccontata",
       snippet: transcript.slice(0, 240),
       areas: [],
       metrics: { weightKg: null, sleepHours: null, mood: null },
@@ -157,7 +157,13 @@ export async function POST(req: NextRequest) {
     `Sei l'assistente di un diario personale. L'utente scrive in ${lingua} e tutto cio che produci va scritto in ${lingua}.`,
     "Ricevi il transcript di una persona che racconta la sua giornata a voce libera.",
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
-    `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}, in minuscolo tranne nomi propri. Cattura il tema dominante della giornata.`,
+    // Sentence case, non tutto minuscolo (decisione di Manuel del 9
+    // settembre 2026, guardando l'account demo sul telefono): con "in
+    // minuscolo tranne nomi propri" il modello scriveva anche i nomi
+    // propri in minuscolo ("marco measures shop"), e accanto ai titoli
+    // scritti a mano sembrava un refuso. La maiuscola iniziale e comunque
+    // garantita dal codice, sotto (titoloInSentenceCase).
+    `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}. Maiuscola iniziale come una frase normale, poi minuscolo tranne i nomi propri (persone, luoghi), che vanno SEMPRE con la maiuscola. Niente punto finale. Cattura il tema dominante della giornata.`,
     regolaSnippet,
     "  - metrics: le misure del risveglio, SOLO se dette esplicitamente nel testo. weightKg: il peso corporeo in kg (numero, es. 83.3), se l'utente dice quanto pesava. sleepHours: le ore di sonno in ore frazionarie (8, 7.5), SOLO se dice un numero esatto di ore dormite: 'ho dormito poco' NON e un numero e resta null. mood: l'umore al risveglio o dell'inizio giornata, mappato su uno di 'great' (fantastico, euforico, alla grande), 'good' (bene, sereno, tranquillo), 'neutral' (normale, cosi cosi), 'low' (giu, stanco, triste), 'bad' (malissimo, pessimo). Esempio: 'mi sono svegliato alle 10, dopo 8 ore di sonno, pesavo 83.3kg e di mood sereno' -> weightKg 83.3, sleepHours 8, mood 'good'. Ogni campo che il testo non dice esplicitamente e null: qui NON SI INDOVINA MAI, un dato inventato in un diario e un danno.",
     `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e NON si traducono MAI, nemmeno se scrivi in ${lingua}, perche sono valori salvati a database: ${elencoChiavi}. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
@@ -305,5 +311,17 @@ export async function POST(req: NextRequest) {
     if (secondo.ok && secondo.value.areas.length > 0) parsed = secondo.value;
   }
 
+  parsed.headline = titoloInSentenceCase(parsed.headline);
   return NextResponse.json(parsed);
+}
+
+/**
+ * La maiuscola iniziale del titolo non si affida al modello: la mette il
+ * codice. Solo la prima lettera; il resto resta com'e (i nomi propri li
+ * conosce il modello, non noi). Il punto finale, se scappa, cade.
+ */
+export function titoloInSentenceCase(titolo: string): string {
+  const t = (titolo ?? "").trim().replace(/[.]+$/, "");
+  if (t === "") return t;
+  return t.charAt(0).toLocaleUpperCase() + t.slice(1);
 }
