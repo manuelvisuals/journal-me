@@ -76,6 +76,17 @@ export type Testi = {
     stato: string;
     chiusura: string;
   };
+  vocePaginaTre: {
+    etichetta: string;
+    titoloPrima: string;
+    titoloDopo: string;
+    testo: string;
+    donna: string;
+    uomo: string;
+    stato: string;
+    nota: string;
+    chiusura: string;
+  };
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
@@ -293,6 +304,17 @@ const it: Testi = {
     donna: "...oggi finalmente abbiamo chiuso il progetto.",
     uomo: "...poi mi ha chiamato Marco. Dopo due anni.",
     stato: "Sto ascoltando",
+    chiusura: "Le tue parole. Una vita più tua.",
+  },
+  vocePaginaTre: {
+    etichetta: "La tua giornata, scritta",
+    titoloPrima: "Parli tu.",
+    titoloDopo: "la scrive.",
+    testo: "Due minuti di parole diventano una pagina chiara, intima e pronta da ritrovare.",
+    donna: "...poi mi ha chiamato Marco. Dopo due anni.",
+    uomo: "...oggi finalmente abbiamo chiuso il progetto.",
+    stato: "Sto ascoltando",
+    nota: "Le cose importanti trovano sempre il modo.",
     chiusura: "Le tue parole. Una vita più tua.",
   },
   sera: {
@@ -663,6 +685,17 @@ const en: Testi = {
     donna: "...today we finally finished the project.",
     uomo: "...then Marco called me. After two years.",
     stato: "Listening",
+    chiusura: "Your words. A life that feels more yours.",
+  },
+  vocePaginaTre: {
+    etichetta: "Your day, written",
+    titoloPrima: "You talk.",
+    titoloDopo: "writes it.",
+    testo: "Two minutes of words become a clear, intimate page, ready to return to.",
+    donna: "...then Marco called me. After two years.",
+    uomo: "...today we finally finished the project.",
+    stato: "Listening",
+    nota: "The important things always find a way.",
     chiusura: "Your words. A life that feels more yours.",
   },
   sera: {

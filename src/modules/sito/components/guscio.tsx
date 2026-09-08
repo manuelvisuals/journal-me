@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Marchio } from "@/components/brand/marchio";
 import type { LinguaSito } from "@/modules/sito/seo";
 import { prefisso, testiDi } from "@/modules/sito/testi";
+import { WordmarkSito } from "@/modules/sito/components/wordmark";
 
 /**
  * La barra in alto e il piede del sito. Componenti SERVER: nessun "use
@@ -39,7 +40,7 @@ export function NavSito({
     <header className="jm-sito-nav">
       <div className="jm-sito-nav-in">
         <Link href={`${p}/`} className="jm-sito-marchio">
-          <Marchio />
+          {v4 ? <WordmarkSito /> : <Marchio />}
         </Link>
         {ancore ? (
           <nav className="jm-sito-nav-l">
