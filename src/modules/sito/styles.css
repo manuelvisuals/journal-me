@@ -2504,9 +2504,9 @@
   letter-spacing: -.045em;
 }
 .jm-sito6-testa .jm-sito-wordmark.nel-titolo {
-  width: 3.82em;
-  height: auto;
-  transform: translateY(.08em);
+  width: auto;
+  height: .76em;
+  transform: translateY(-.015em);
 }
 .jm-sito6-testa > p:last-child {
   margin-top: 20px;
