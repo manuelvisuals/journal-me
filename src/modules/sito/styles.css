@@ -118,14 +118,6 @@
   display: block;
   width: calc(166px * var(--jm-ui-scale));
   height: auto;
-  overflow: visible;
-  color: var(--jm-ink);
-  fill: currentColor;
-  font-family: var(--jm-font-marchio);
-  font-size: 34px;
-}
-.jm-sito-wordmark text {
-  text-transform: none;
 }
 /* La misura NON si scrive qui: overrides.css raccoglie in un posto solo
    le taglie del marchio in tutte le sue case (rail, splash, admin, sito,
@@ -2513,9 +2505,8 @@
 }
 .jm-sito6-testa .jm-sito-wordmark.nel-titolo {
   width: 3.82em;
-  height: .9em;
+  height: auto;
   transform: translateY(.08em);
-  font-size: 1em;
 }
 .jm-sito6-testa > p:last-child {
   margin-top: 20px;

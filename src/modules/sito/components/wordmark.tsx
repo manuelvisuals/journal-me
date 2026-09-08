@@ -1,17 +1,12 @@
-/** Wordmark vettoriale del sito: stessi carattere e pesi del Marchio. */
+/** Wordmark definitivo convertito in tracciati, fornito da Manuel. */
 export function WordmarkSito({ className }: { className?: string }) {
   return (
-    <svg
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/sito/dayalogue.svg"
       className={className ? `jm-sito-wordmark ${className}` : "jm-sito-wordmark"}
-      viewBox="0 0 166 42"
-      role="img"
-      aria-label="dayalogue"
-    >
-      <title>dayalogue</title>
-      <text x="1" y="32" fontSize="34">
-        <tspan fontWeight="600">day</tspan>
-        <tspan fontWeight="400">alogue</tspan>
-      </text>
-    </svg>
+      alt="dayalogue"
+      draggable={false}
+    />
   );
 }
