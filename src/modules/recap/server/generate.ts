@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { openaiUrl } from "@/lib/server/openai";
 import { requirePremium } from "@/lib/server/entitlement";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
 import { langName, langOf } from "@/lib/server/lang";
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
     })
     .join("\n\n");
 
-  const completion = await fetch("https://api.openai.com/v1/chat/completions", {
+  const completion = await fetch(openaiUrl("/v1/chat/completions"), {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,

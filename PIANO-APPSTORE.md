@@ -134,3 +134,29 @@ mai attiva per il pubblico. Le credenziali si scrivono nelle Review Notes.
 Ogni punto: un branch, verifiche, merge — come da WORKERS.md. I punti 1-3 sono
 lavoro dei moduli abbonamento/impostazioni/accesso: possono andare in parallelo
 con tre worker, i recinti esistono apposta.
+
+## 4. L'account demo (8 settembre 2026, branch `account-demo`)
+
+Decisioni di Manuel (quiz `account-demo-chi-e-lei.html` e
+`account-demo-agosto-di-giulia.html`, nella sua cartella): la persona e
+**Giulia Ferrando**, 34 anni, fisioterapista a Genova; il mese e **agosto 2026**
+intero (28 giornate, 3 saltate); **un account solo, in inglese**, su
+`appreview@dayalogue.com` (gia in `JM_REVIEW_EMAILS`); titoli, sintesi, aree e
+fatti li scrive l'AI vera dell'app (solo il 22 e il 28 hanno il titolo di lei,
+col lucchetto); il recap di agosto lo genera l'app.
+
+- I testi: `demo/giulia-en.json` (quelli che si caricano) e `demo/giulia-it.json`
+  (l'originale approvato). La foto profilo: `demo/giulia-profilo.jpg` (generata).
+- Il caricatore: `scripts/carica-account-demo.mjs`, che guida l'app vera col
+  Chrome del Mac (il sandbox non raggiunge dayalogue.com). Si lancia con
+  `carica-account-demo.command`. Due giri: il primo crea l'account e la
+  cassaforte (le otto parole finiscono nel referto) e si ferma se il piano non e
+  premium; Claude rende premium l'account (`profiles.plan`); il secondo carica
+  giornate, memo e recap. Il referto: `Documenti/Claude/Projects/03 Journal.me/
+  referto-account-demo.html`.
+- Il banco: `scripts/verify-account-demo.mjs` (18 controlli coi finti, morso
+  provato). Per farlo girare, il Supabase finto ora onora `.single()` e
+  l'OpenAI finto risponde anche al recap; e la route del recap passa da
+  `openaiUrl()` come le altre (prima chiamava api.openai.com a mano).
+- Il recap dall'app si genera solo per il mese precedente: va fatto entro
+  settembre.
