@@ -160,3 +160,8 @@ col lucchetto); il recap di agosto lo genera l'app.
   `openaiUrl()` come le altre (prima chiamava api.openai.com a mano).
 - Il recap dall'app si genera solo per il mese precedente: va fatto entro
   settembre.
+- I titoli (9 settembre): l'AI li aveva scritti tutti minuscoli; Manuel ha
+  scelto il Sentence case (PR #88 per le giornate nuove). Per le 28 della demo
+  ci sono `demo/giulia-titoli-en.json` (i titoli scritti a mano) e
+  `scripts/ritocca-titoli-demo.mjs`, che li mette col lucchetto dal Chrome del
+  Mac (`ritocca-titoli-demo.command`). Banco: `scripts/verify-titoli-demo.mjs`.
