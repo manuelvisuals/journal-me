@@ -16,7 +16,8 @@ import { useEffect } from "react";
  *   --v  0 | 1  "visto": scatta quando il blocco entra per l'86% e resta
  *
  * e sulla pista della scena (`data-pista`) il progresso `--s` 0 → 1 mentre
- * la scena sta ferma. Il resto — quanto sale, quanto sfuma, il parallasse
+ * la scena sta ferma; sulla radice, `data-scorso` quando la pagina non e
+ * piu in cima (la barra diventa di vetro). Il resto — quanto sale, quanto sfuma, il parallasse
  * delle foto — e tutto CSS sotto `.jm-sito7[data-js]` in styles.css.
  *
  * Senza JavaScript non succede niente: `data-js` non arriva e la pagina
@@ -36,6 +37,8 @@ export function Scorrimento() {
     const misura = () => {
       quadro = 0;
       const H = window.innerHeight;
+      // La barra in cima si fa di vetro solo quando la pagina e scesa.
+      radice.toggleAttribute("data-scorso", window.scrollY > 24);
       for (const el of blocchi) {
         const r = el.getBoundingClientRect();
         let p = (H - r.top) / (H + r.height);
