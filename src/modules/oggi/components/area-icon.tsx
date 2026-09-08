@@ -94,6 +94,25 @@ ICONS.luoghi = (
   </svg>
 );
 
+/** Crescita (disegno di Manuel, 8 settembre 2026): il germoglio, stessa famiglia delle cinque. */
+ICONS.crescita = (
+  <svg className="jm-area-ic" viewBox="0 0 256 256">
+    <defs>
+      <filter id="f-crescita" x="-8%" y="-8%" width="116%" height="116%">
+        <feTurbulence type="fractalNoise" baseFrequency=".017 .052" numOctaves="2" seed="83" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="1.8" />
+      </filter>
+    </defs>
+    <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" filter="url(#f-crescita)">
+      <path d="M128 207 C126 176 128 143 130 103" strokeWidth="13" />
+      <path d="M129 145 C103 145 83 132 72 106 C99 102 120 116 129 145Z" strokeWidth="11" />
+      <path d="M130 109 C136 79 156 61 187 56 C182 87 160 106 130 109Z" strokeWidth="11" />
+      <path d="M65 209 C84 194 105 188 128 188 C151 188 172 194 191 209" strokeWidth="10" />
+    </g>
+    <circle cx="129" cy="145" r="9" fill="var(--jm-area-dot)" />
+  </svg>
+);
+
 export function AreaIcon({ icona }: { icona: string | null }) {
   const icon = icona ? ICONS[icona] : undefined;
   if (!icon) return null;
