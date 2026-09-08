@@ -29,12 +29,12 @@ export type Area = {
   /** Finisce parola per parola nelle istruzioni del modello. */
   cosaCiVa: string;
   ordine: number;
-  /** Il nome del disegno, o niente: Corpo non ha mai avuto un'icona. */
+  /** Il nome del disegno, o niente (un'area nuova senza disegno). */
   icona: string | null;
   attiva: boolean;
 };
 
-/** Le sei di sempre. Copia esatta del seed della migration 015. */
+/** Le sei di sempre. Seed della migration 015, piu l'icona di Corpo (migration 026). */
 export const AREE_DI_FABBRICA: Area[] = [
   {
     chiave: "Lavoro",
@@ -82,7 +82,7 @@ export const AREE_DI_FABBRICA: Area[] = [
     cosaCiVa:
       "Il resto del corpo che non e ne cibo ne movimento: sonno, stanchezza, dolori, malattie, peso.",
     ordine: 50,
-    icona: null,
+    icona: "corpo",
     attiva: true,
   },
   {

@@ -22,9 +22,10 @@
  * originali, cinque icone nella stessa pagina si riferirebbero tutte al
  * primo filtro: gli id di un SVG inline sono globali al documento.
  *
- * CORPO NON HA ICONA. Le aree sono sei e i disegni cinque. La riga si
- * disegna senza, e la scheda resta valida: meglio un posto vuoto che un
- * simbolo preso in prestito da un'altra area.
+ * CORPO HA LA SUA ICONA DALL'8 SETTEMBRE 2026 (disegno di Manuel), come
+ * Persone e Luoghi sotto la giornata. Un'area nuova senza disegno resta
+ * valida: la riga si disegna senza, meglio un posto vuoto che un simbolo
+ * preso in prestito da un'altra area.
  */
 
 import type { ReactElement } from "react";
@@ -52,6 +53,46 @@ const ICONS: Record<string, ReactElement> = {
     <svg className="jm-area-ic" viewBox="0 0 256 256">  <defs><filter id="f-emozioni" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency=".015 .047" numOctaves="2" seed="59" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.8"/></filter></defs> <g fill="none" stroke="currentColor" strokeLinecap="round" filter="url(#f-emozioni)">  <path d="M128 41 C178 40 214 78 214 126 C214 178 178 214 128 215 C80 216 42 181 42 132 C42 93 63 66 91 53" strokeWidth="13"/>  <path d="M128 72 C163 70 184 95 183 127 C182 159 161 184 128 184 C95 184 72 162 73 130 C74 105 88 87 108 78" strokeWidth="11"/>  <path d="M129 102 C147 101 157 113 157 129 C157 146 145 156 129 156 C112 156 101 145 101 130 C101 118 108 108 117 104" strokeWidth="9"/> </g> <circle cx="129" cy="129" r="9" fill="var(--jm-area-dot)"/></svg>
   ),
 };
+
+/**
+ * Le tre icone arrivate da Manuel l'8 settembre 2026 (journalmemissingiconssvg):
+ * Corpo (l'area che non ne aveva), Persone e Luoghi (le due righe sotto la
+ * giornata che non ne avevano). Sono disegni 24x24 a tratto 1.7: alla
+ * misura delle altre (1.82em) il tratto pesa come i loro 13-17/256. Il
+ * punto terracotta e sulla testa e sul segnaposto, per restare in famiglia.
+ */
+ICONS.corpo = (
+  <svg className="jm-area-ic" viewBox="0 0 24 24" fill="none">
+    <g stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="4.15" r="1.85" fill="var(--jm-area-dot)" stroke="none" />
+      <path d="M9.25 8.1c.86.7 1.78 1.05 2.75 1.05s1.89-.35 2.75-1.05" />
+      <path d="M9.35 8.45c-.72 2.2-.64 4.22.25 5.85.66 1.2.78 3.04.42 5.35" />
+      <path d="M14.65 8.45c.72 2.2.64 4.22-.25 5.85-.66 1.2-.78 3.04-.42 5.35" />
+      <path d="M9.65 14.15c1.4.7 3.3.7 4.7 0" />
+    </g>
+  </svg>
+);
+ICONS.persone = (
+  <svg className="jm-area-ic" viewBox="0 0 24 24" fill="none">
+    <g stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="8.2" cy="8" r="2.35" />
+      <circle cx="15.8" cy="8" r="2.35" />
+      <path d="M3.75 18.3c.28-3.08 1.92-4.72 4.45-4.72 1.54 0 2.74.61 3.48 1.79" />
+      <path d="M20.25 18.3c-.28-3.08-1.92-4.72-4.45-4.72-1.54 0-2.74.61-3.48 1.79" />
+      <path d="M9.6 18.3c.36-1.36 1.16-2.06 2.4-2.06s2.04.7 2.4 2.06" />
+    </g>
+    <circle cx="12" cy="13.2" r="1.15" fill="var(--jm-area-dot)" />
+  </svg>
+);
+ICONS.luoghi = (
+  <svg className="jm-area-ic" viewBox="0 0 24 24" fill="none">
+    <g stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.6 9.15c0 4.02-5.6 9.3-5.6 9.3s-5.6-5.28-5.6-9.3a5.6 5.6 0 0 1 11.2 0Z" />
+      <path d="M8.65 18.15c-2.34.27-3.65.86-3.65 1.55 0 .96 3.13 1.74 7 1.74s7-.78 7-1.74c0-.69-1.31-1.28-3.65-1.55" />
+    </g>
+    <circle cx="12" cy="9.15" r="1.75" fill="var(--jm-area-dot)" />
+  </svg>
+);
 
 export function AreaIcon({ icona }: { icona: string | null }) {
   const icon = icona ? ICONS[icona] : undefined;

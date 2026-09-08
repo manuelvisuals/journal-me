@@ -761,6 +761,9 @@
    a nominarla. Vedi supabase/migrations/013_day_exclusions.sql.
    ============================================================= */
 .jm-fv-social-l {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: calc(10px * var(--jm-ui-scale));
   font-weight: 650;
   color: var(--color-accent);

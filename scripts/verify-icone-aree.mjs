@@ -1,5 +1,5 @@
 // Verifica delle icone delle aree (mockup icone-aree.html §01).
-// Locale, porta 3200. Serve una giornata con delle aree: la suite ne
+// Locale, dev server :3100 (JM_BASE per cambiarlo). Serve una giornata con delle aree: la suite ne
 // scrive una a mano in modalita locale, cosi non dipende da nessun dato.
 //
 // Le due cose che contano davvero: che i CINQUE filtri a pennello siano
@@ -10,7 +10,7 @@
 import { chromium } from "playwright-core";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
-const BASE = "http://localhost:3200";
+const BASE = process.env.JM_BASE ?? "http://localhost:3100";
 const results = [];
 function check(name, ok, extra = "") {
   results.push({ name, ok });
@@ -42,7 +42,7 @@ async function open({ width = 1440, height = 950, appearance = "light", theme = 
   // prova che si rompe da sola sei mesi dopo.
   await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
   await page.waitForTimeout(1400);
-  await page.locator('input[type="file"]').setInputFiles(FIXTURE);
+  await page.locator('input[type="file"][accept*="json"]').setInputFiles(FIXTURE);
   await page.waitForTimeout(2600);
 
   await page.goto(BASE + "/app/giorno?d=" + DATA, { waitUntil: "networkidle" });
@@ -56,19 +56,21 @@ async function open({ width = 1440, height = 950, appearance = "light", theme = 
   const cards = await page.locator(".jm-fv-area").count();
   check("la giornata di prova mostra sei aree", cards === 6, String(cards));
 
+  // Dall'8 settembre 2026 anche Corpo ha il suo disegno (di Manuel).
   const icons = await page.locator(".jm-fv-area .l svg.jm-area-ic").count();
-  check("cinque icone su sei aree: Corpo resta senza", icons === 5, String(icons));
+  check("sei icone su sei aree: anche Corpo", icons === 6, String(icons));
 
   const corpo = await page.locator(".jm-fv-area").filter({ hasText: "CORPO" }).locator("svg.jm-area-ic").count();
-  check("ed e proprio Corpo quella senza", corpo === 0, String(corpo));
+  check("ed e proprio Corpo ad averla", corpo === 1, String(corpo));
 
-  /* Il punto vero: cinque filtri distinti, non cinque riferimenti al primo. */
+  /* Il punto vero: cinque filtri distinti, non cinque riferimenti al primo
+     (Corpo e un disegno 24x24 senza filtro a pennello). */
   const ids = await page.locator(".jm-fv-area .l svg.jm-area-ic filter").evaluateAll((els) =>
     [...new Set(els.map((e) => e.id))]);
   check("i cinque filtri a pennello hanno cinque id diversi", ids.length === 5, ids.join(" "));
 
   const usati = await page.locator(".jm-fv-area .l svg.jm-area-ic g").evaluateAll((els) =>
-    [...new Set(els.map((e) => e.getAttribute("filter")))]);
+    [...new Set(els.map((e) => e.getAttribute("filter")).filter(Boolean))]);
   check("e ogni disegno usa il suo", usati.length === 5, usati.join(" "));
 
   /* Misura e posizione */
