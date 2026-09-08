@@ -978,7 +978,11 @@ export function TodayClient({
         >
           <EmptyState
             date={todayISO()}
-            writeFirst={!canVoice}
+            // Il microfono resta anche con un account free (Manuel, 8
+            // settembre 2026): toccarlo apre il muro premium, che spiega
+            // perche. Un tasto solo resta nel locale puro, dove non c'e
+            // nessun server a cui chiedere e il muro non avrebbe senso.
+            writeFirst={!canVoice && isLocalMode}
             onStartRecording={handleStartRecording}
             onWriteManually={handleWriteManually}
             fotoSlot={<FotoGiorno date={todayISO()} />}
