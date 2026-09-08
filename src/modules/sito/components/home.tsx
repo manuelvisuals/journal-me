@@ -425,6 +425,66 @@ export function HomeSito({
           </section>
         </section>
 
+        {/* --- voce → pagina: subito dopo l'eroe, per volere di Manuel (8 settembre 2026) --- */}
+        {/* Terza versione: fedele alla tavola approvata. Le fotografie non
+            contengono parole; titolo, trascrizioni e pagina sono markup
+            vivo, quindi / e /en restano due traduzioni reali. */}
+        <section className="jm-sito6-voce-pagina" aria-labelledby="jm-sito6-titolo">
+          <div className="jm-sito6-testa" data-fx="testo">
+            <p className="jm-sito-kick">{t.vocePaginaTre.etichetta}</p>
+            <h2 id="jm-sito6-titolo">
+              <span>{t.vocePaginaTre.titoloPrima}</span>
+              <WordmarkSito className="nel-titolo" />
+              <span>{t.vocePaginaTre.titoloDopo}</span>
+            </h2>
+            <p>{t.vocePaginaTre.testo}</p>
+          </div>
+
+          {/* La pista: alta piu di uno schermo, la scena ci sta ferma dentro
+              (sticky) e si compone col progresso --s. Solo con jm-sito7. */}
+          <div className="jm-sito7-pista" data-pista>
+          <div className="jm-sito6-scena">
+            <div className="jm-sito6-foto donna"><Foto nome="skincare" /></div>
+            <div className="jm-sito6-foto uomo"><Foto nome="barba" /></div>
+            <div className="jm-sito6-fusione" aria-hidden="true" />
+
+            <div className="jm-sito6-voce donna">
+              <q>{t.vocePaginaTre.donna}</q>
+              <span className="jm-sito6-onda" aria-hidden="true">
+                {Array.from({ length: 17 }, (_, i) => <i key={i} />)}
+              </span>
+            </div>
+            <div className="jm-sito6-ascolto">
+              <span className="jm-sito6-mic"><Icona nome="mic" /></span>
+              <span><b>01:42</b>{t.vocePaginaTre.stato}</span>
+              <span className="jm-sito6-onda" aria-hidden="true">
+                {Array.from({ length: 21 }, (_, i) => <i key={i} />)}
+              </span>
+            </div>
+            <div className="jm-sito6-voce uomo">
+              <q>{t.vocePaginaTre.uomo}</q>
+              <span className="jm-sito6-onda" aria-hidden="true">
+                {Array.from({ length: 17 }, (_, i) => <i key={i} />)}
+              </span>
+            </div>
+
+            <article className="jm-sito6-pagina" aria-label={t.esempio.titolo}>
+              <header><span>{t.esempio.data}</span><WordmarkSito /></header>
+              <h3>{t.esempio.titolo}</h3>
+              <p>{t.esempio.prosa}</p>
+              <div className="jm-sito6-miniature" aria-hidden="true">
+                <Foto nome="salotto-voce" />
+                <Foto nome="comodino" />
+                <Foto nome="divano-notte" />
+              </div>
+              <p className="jm-sito6-nota">{t.vocePaginaTre.nota}</p>
+              <footer><span>{t.esempio.data}</span><span>{t.esempio.persona}</span></footer>
+            </article>
+          </div>
+          </div>
+          <p className="jm-sito6-chiusura" data-fx="testo">{t.vocePaginaTre.chiusura}</p>
+        </section>
+
         {/* -------------------------------------------- la giornata */}
         <section className="jm-sito2-giornata" id="giornata">
           <div className="jm-sito-cont">
@@ -509,64 +569,6 @@ export function HomeSito({
           <p className="jm-sito5-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
         </section>
 
-        {/* Terza versione: fedele alla tavola approvata. Le fotografie non
-            contengono parole; titolo, trascrizioni e pagina sono markup
-            vivo, quindi / e /en restano due traduzioni reali. */}
-        <section className="jm-sito6-voce-pagina" aria-labelledby="jm-sito6-titolo">
-          <div className="jm-sito6-testa" data-fx="testo">
-            <p className="jm-sito-kick">{t.vocePaginaTre.etichetta}</p>
-            <h2 id="jm-sito6-titolo">
-              <span>{t.vocePaginaTre.titoloPrima}</span>
-              <WordmarkSito className="nel-titolo" />
-              <span>{t.vocePaginaTre.titoloDopo}</span>
-            </h2>
-            <p>{t.vocePaginaTre.testo}</p>
-          </div>
-
-          {/* La pista: alta piu di uno schermo, la scena ci sta ferma dentro
-              (sticky) e si compone col progresso --s. Solo con jm-sito7. */}
-          <div className="jm-sito7-pista" data-pista>
-          <div className="jm-sito6-scena">
-            <div className="jm-sito6-foto donna"><Foto nome="skincare" /></div>
-            <div className="jm-sito6-foto uomo"><Foto nome="barba" /></div>
-            <div className="jm-sito6-fusione" aria-hidden="true" />
-
-            <div className="jm-sito6-voce donna">
-              <q>{t.vocePaginaTre.donna}</q>
-              <span className="jm-sito6-onda" aria-hidden="true">
-                {Array.from({ length: 17 }, (_, i) => <i key={i} />)}
-              </span>
-            </div>
-            <div className="jm-sito6-ascolto">
-              <span className="jm-sito6-mic"><Icona nome="mic" /></span>
-              <span><b>01:42</b>{t.vocePaginaTre.stato}</span>
-              <span className="jm-sito6-onda" aria-hidden="true">
-                {Array.from({ length: 21 }, (_, i) => <i key={i} />)}
-              </span>
-            </div>
-            <div className="jm-sito6-voce uomo">
-              <q>{t.vocePaginaTre.uomo}</q>
-              <span className="jm-sito6-onda" aria-hidden="true">
-                {Array.from({ length: 17 }, (_, i) => <i key={i} />)}
-              </span>
-            </div>
-
-            <article className="jm-sito6-pagina" aria-label={t.esempio.titolo}>
-              <header><span>{t.esempio.data}</span><WordmarkSito /></header>
-              <h3>{t.esempio.titolo}</h3>
-              <p>{t.esempio.prosa}</p>
-              <div className="jm-sito6-miniature" aria-hidden="true">
-                <Foto nome="salotto-voce" />
-                <Foto nome="comodino" />
-                <Foto nome="divano-notte" />
-              </div>
-              <p className="jm-sito6-nota">{t.vocePaginaTre.nota}</p>
-              <footer><span>{t.esempio.data}</span><span>{t.esempio.persona}</span></footer>
-            </article>
-          </div>
-          </div>
-          <p className="jm-sito6-chiusura" data-fx="testo">{t.vocePaginaTre.chiusura}</p>
-        </section>
 
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">
