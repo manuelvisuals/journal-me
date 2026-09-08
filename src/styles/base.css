@@ -1603,6 +1603,9 @@ summary:active {
 }
 
 .jm-railr-l {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: calc(var(--jm-text-label) * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: var(--jm-tracking-label);

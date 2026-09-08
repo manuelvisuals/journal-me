@@ -212,7 +212,7 @@ export function FilledView({
       <div className="lg:hidden">
         {peopleList.length > 0 && (
           <div style={{ padding: "14px 0" }}>
-            <div className="jm-fv-social-l">{t("Persone incontrate")}</div>
+            <div className="jm-fv-social-l"><AreaIcon icona="persone" />{t("Persone incontrate")}</div>
             <PillRow
               nomi={peopleList}
               kind="persona"
@@ -230,7 +230,7 @@ export function FilledView({
             className="jm-places"
             style={{ padding: peopleList.length > 0 ? "0 0 14px" : "14px 0" }}
           >
-            <div className="jm-fv-social-l">{t("Luoghi visitati")}</div>
+            <div className="jm-fv-social-l"><AreaIcon icona="luoghi" />{t("Luoghi visitati")}</div>
             <PillRow
               nomi={placeList}
               kind="luogo"

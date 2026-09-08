@@ -16,6 +16,7 @@ import { RailMetrics } from "@/modules/oggi/components/rail-metrics";
 import { RailRight } from "@/components/desktop/rail-right";
 import { PillRow } from "@/modules/oggi/components/pill-row";
 import { formatNumber } from "@/lib/format";
+import { AreaIcon } from "@/modules/oggi/components/area-icon";
 import { useT } from "@/lib/i18n";
 import type { EntryMetrics, FactKind, GoalDot } from "@/lib/types";
 
@@ -89,7 +90,7 @@ export function RailToday({
 
       {peopleList.length > 0 && (
         <div className="jm-railr-sec">
-          <div className="jm-railr-l">{t("Persone incontrate")}</div>
+          <div className="jm-railr-l"><AreaIcon icona="persone" />{t("Persone incontrate")}</div>
           <PillRow
             nomi={peopleList}
             kind="persona"
@@ -107,7 +108,7 @@ export function RailToday({
           scheda esiste, diventano bottoni come sopra. */}
       {placeList.length > 0 && (
         <div className="jm-railr-sec jm-places">
-          <div className="jm-railr-l">{t("Luoghi visitati")}</div>
+          <div className="jm-railr-l"><AreaIcon icona="luoghi" />{t("Luoghi visitati")}</div>
           <PillRow
             nomi={placeList}
             kind="luogo"
