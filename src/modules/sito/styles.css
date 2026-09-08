@@ -836,6 +836,10 @@
     height: 38px;
     cursor: pointer;
     list-style: none;
+    background:
+      linear-gradient(var(--jm-ink), var(--jm-ink)) right 2px top 10px / 26px 1.5px no-repeat,
+      linear-gradient(var(--jm-ink), var(--jm-ink)) right 2px top 18px / 26px 1.5px no-repeat,
+      linear-gradient(var(--jm-ink), var(--jm-ink)) right 2px top 26px / 26px 1.5px no-repeat;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito-menu-mobile summary::-webkit-details-marker {
     display: none;
