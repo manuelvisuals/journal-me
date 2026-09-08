@@ -440,6 +440,61 @@ export function HomeSito({
           </div>
         </section>
 
+        {/* Nuova lettura premium della stessa promessa. La sezione sopra
+            resta intatta finche questa non viene approvata: qui la voce e
+            esplicita (microfono, stato, onda e parole pronunciate) e si
+            ricompone nella pagina al centro. */}
+        <section className="jm-sito5-voce-pagina" aria-labelledby="jm-sito5-titolo">
+          <div className="jm-sito5-testa">
+            <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
+            <h2 id="jm-sito5-titolo">{t.vocePagina.titolo}</h2>
+            <p>{t.vocePagina.testo}</p>
+          </div>
+
+          <div className="jm-sito5-scena">
+            <figure className="jm-sito5-persona donna">
+              <Foto nome="skincare" />
+              <figcaption>
+                <span className="jm-sito5-rec"><i /> {t.vocePagina.stato}</span>
+                <q>{t.vocePagina.donna}</q>
+                <span className="jm-sito5-onda" aria-hidden="true">
+                  {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
+                </span>
+              </figcaption>
+            </figure>
+
+            <article className="jm-sito5-pagina" aria-label={t.esempio.titolo}>
+              <header>
+                <span>{t.esempio.data}</span>
+                <b>dayalogue</b>
+              </header>
+              <h3>{t.esempio.titolo}</h3>
+              <p>{t.esempio.prosa}</p>
+              <div className="jm-sito5-miniature" aria-hidden="true">
+                <Foto nome="salotto-voce" />
+                <Foto nome="comodino" />
+                <Foto nome="divano-notte" />
+              </div>
+              <div className="jm-sito5-pagina-fondo">
+                <span>{t.esempio.persona}</span>
+                <span>{t.esempio.metriche[0].nome} · {t.esempio.metriche[0].valore}</span>
+              </div>
+            </article>
+
+            <figure className="jm-sito5-persona uomo">
+              <Foto nome="barba" />
+              <figcaption>
+                <span className="jm-sito5-rec"><i /> {t.vocePagina.stato}</span>
+                <q>{t.vocePagina.uomo}</q>
+                <span className="jm-sito5-onda" aria-hidden="true">
+                  {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
+                </span>
+              </figcaption>
+            </figure>
+          </div>
+          <p className="jm-sito5-chiusura">{t.vocePagina.chiusura}</p>
+        </section>
+
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">
           <div className="jm-sito-cont">

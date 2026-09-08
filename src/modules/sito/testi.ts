@@ -67,6 +67,15 @@ export type Testi = {
   promesse: { titolo: string; testo: string; icona: "voce" | "chiave" | "apri" }[];
   /** Il blocco dopo l'eroe: la giornata finita, mostrata grande. */
   giornata: { etichetta: string; titolo: string; testo: string; punti: { titolo: string; testo: string }[] };
+  vocePagina: {
+    etichetta: string;
+    titolo: string;
+    testo: string;
+    donna: string;
+    uomo: string;
+    stato: string;
+    chiusura: string;
+  };
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
@@ -276,6 +285,15 @@ const it: Testi = {
       { titolo: "Le foto del giorno", testo: "Dal rullino, in miniatura, accanto alle parole." },
       { titolo: "Umore, energia, peso", testo: "I numeri che dici a voce finiscono nelle caselle." },
     ],
+  },
+  vocePagina: {
+    etichetta: "La tua giornata, scritta",
+    titolo: "Parli tu. Dayalogue la scrive.",
+    testo: "Due minuti di parole diventano una pagina chiara, intima e pronta da ritrovare.",
+    donna: "...oggi finalmente abbiamo chiuso il progetto.",
+    uomo: "...poi mi ha chiamato Marco. Dopo due anni.",
+    stato: "Sto ascoltando",
+    chiusura: "Le tue parole. Una vita più tua.",
   },
   sera: {
     titolo: "Due minuti, prima di dormire.",
@@ -637,6 +655,15 @@ const en: Testi = {
       { titolo: "The day's photos", testo: "From your camera roll, as thumbnails, next to the words." },
       { titolo: "Mood, energy, weight", testo: "The numbers you say out loud land in their boxes." },
     ],
+  },
+  vocePagina: {
+    etichetta: "Your day, written",
+    titolo: "You talk. Dayalogue writes it.",
+    testo: "Two minutes of words become a clear, intimate page, ready to return to.",
+    donna: "...today we finally finished the project.",
+    uomo: "...then Marco called me. After two years.",
+    stato: "Listening",
+    chiusura: "Your words. A life that feels more yours.",
   },
   sera: {
     titolo: "Two minutes, before sleep.",
