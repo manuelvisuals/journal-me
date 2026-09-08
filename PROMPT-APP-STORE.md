@@ -72,6 +72,21 @@ Store Connect quando serve la mia identita).
   io strada facendo e te le mando come SVG; tu le inserisci nel codice (in
   admin non si caricano, per scelta: gli SVG inline prendono il colore del
   tema). Non e un blocco per la sottomissione.
+- **App Store Connect, gia compilato l'8 settembre** (dal Chrome di Manuel,
+  API iris, tutto riletto): descrizione, parole chiave, testo promozionale,
+  URL supporto/marketing in italiano (locale `it`) e inglese (`en-US`);
+  sottotitolo ("Il diario che ascolta" / "The diary that listens") e URL
+  privacy in tutte e due le lingue; categorie Lifestyle + Salute e
+  benessere; copyright "2026 Manuel Poncia"; informazioni per la revisione
+  (contatto Manuel Poncia, telefono, madh52@gmail.com, demoAccountRequired
+  true, note in inglese con i SEGNAPOSTO [email] e [code] da sostituire con
+  l'account demo); abbonamento con localizzazione inglese di gruppo e
+  prodotto. I testi approvati stanno in
+  `src/modules/abbonamento/APPSTORE-testi-scheda.html` (scelte: A2 B1 C1 E1).
+  NON rifare queste parti: leggile dall'API e cambia solo cio che serve.
+  Mancano ancora: build, screenshot, account demo nelle note, nota e
+  screenshot per il revisore dell'abbonamento (stato "Missing Metadata"),
+  disponibilita per paese, etichette App Privacy.
 - Sito: dayalogue.com (modulo `sito`), con /privacy. `APP_STORE_URL` in
   `src/lib/pricing.ts` e vuoto: va riempito con l'indirizzo dell'App Store
   appena esiste.
@@ -95,12 +110,11 @@ Store Connect quando serve la mia identita).
 2. **Gli screenshot** dell'App Store (6.7" e 6.5", piu iPad se lo
    richiede) presi dall'account demo, con i testi in italiano e in inglese;
    e il video di anteprima solo se costa poco.
-3. **La scheda in App Store Connect**: nome, sottotitolo, descrizione,
-   parole chiave, categoria, classificazione eta, URL privacy e supporto,
-   etichette App Privacy coerenti con /privacy, informazioni per la
-   revisione dell'abbonamento (screenshot del muro premium), Review Notes
-   con email demo + codice fisso e la spiegazione della modalita locale e
-   del microfono. I testi li scrivi tu e me li fai approvare in un HTML.
+3. **La scheda in App Store Connect**: i testi ci sono gia (vedi sopra).
+   Restano: i segnaposto [email] e [code] nelle Review Notes da sostituire
+   con l'account demo; le etichette App Privacy coerenti con /privacy
+   (prepara le risposte, Manuel conferma); la nota e lo screenshot del muro
+   premium per il revisore dell'abbonamento; la disponibilita per paese.
 4. **La build**: alzare versione e build, archiviare da Xcode (io), caricare
    su TestFlight, provare l'app da TestFlight sul mio telefono (acquisto
    sandbox compreso), poi inviare in revisione.
