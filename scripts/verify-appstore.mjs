@@ -184,26 +184,27 @@ async function open({ native = false, mode = "local" } = {}) {
   await ctx.close();
 }
 
-/* -- 5. guscio iOS, /benvenuto post-login: la card Premium ha il tasto -- */
-// Il bug del 27 agosto: su iOS la card Premium era rimasta SENZA nessun
-// tasto (si nascondeva "prova premium" e basta). Adesso il tasto c'e,
-// dice solo "inizia premium" (niente prezzo, niente lessico da acquisto:
-// App Store 3.1.1) e attiva il premium gratis della v1 (premium-v1.ts).
+/* -- 5. guscio iOS, /benvenuto post-login: il tasto premium e il prezzo -- */
+// Il bivio corto (9 settembre 2026): i due tasti stanno in fondo alla
+// pagina e il primario dice "Inizia con premium". Il prezzo sotto il tasto
+// dentro il guscio lo detta APPLE (StoreKit, negozio-ios.ts): finche il
+// negozio non ha risposto non si scrive nessuna cifra, e non si inventa
+// mai il listino del web.
 {
   const { ctx, page } = await open({ native: true, mode: "cloud" });
   await page.goto(BASE + "/app/benvenuto", { waitUntil: "domcontentloaded" });
   await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
   await page.waitForTimeout(600);
   const main = await page.locator(".jm-benv").innerText();
-  check("guscio iOS: /benvenuto senza prezzo", !main.includes("4,99"));
-  check(
-    "guscio iOS: /benvenuto senza 'prova premium'",
-    !main.toLowerCase().includes("prova premium"),
-  );
+  check("guscio iOS: /benvenuto senza il listino del web", !main.includes("4,99"));
   const tastoPremium = await page
-    .locator(".jm-benv-card .btn-primary", { hasText: "inizia premium" })
+    .locator(".jm-benv-scelte .btn-primary", { hasText: "Inizia con premium" })
     .count();
-  check("guscio iOS: la card Premium ha il tasto 'inizia premium'", tastoPremium >= 1);
+  check("guscio iOS: il tasto 'Inizia con premium' c'e", tastoPremium >= 1);
+  const senzaAccount = await page
+    .locator(".jm-benv-scelte .btn-ghost")
+    .count();
+  check("guscio iOS: l'uscita gratuita c'e", senzaAccount >= 1);
   await ctx.close();
 }
 
@@ -216,8 +217,14 @@ async function open({ native = false, mode = "local" } = {}) {
   const main = await page.locator(".jm-benv").innerText();
   check("browser: /benvenuto ha il prezzo", main.includes("4,99"));
   check(
-    "browser: /benvenuto ha 'prova premium'",
-    main.toLowerCase().includes("prova premium"),
+    "browser: /benvenuto ha il tasto 'Inizia con premium'",
+    main.includes("Inizia con premium"),
+  );
+  // Sul web la prova non esiste (PREMIUM_HAS_FREE_TRIAL = false): la riga
+  // sotto il tasto dice il prezzo e basta, mai "giorni gratis".
+  check(
+    "browser: /benvenuto non promette nessuna prova gratis",
+    !main.toLowerCase().includes("giorni gratis"),
   );
   await ctx.close();
 }

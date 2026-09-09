@@ -1,4 +1,8 @@
-// Il tasto "prova premium" di /app/benvenuto APRE il muro (9 settembre 2026).
+// Il tasto premium di /app/benvenuto APRE il muro (9 settembre 2026).
+//
+// Dal bivio corto (9 settembre, sera) i due tasti stanno in fondo alla
+// pagina, in .jm-benv-scelte, e non piu dentro le card: il primario dice
+// "Inizia con premium".
 //
 // Trovato da Manuel sul telefono, appena reinstallata l'app: dopo il login
 // con l'email compare la scelta "gratis o premium" e il tasto premium non
@@ -62,11 +66,11 @@ async function dispositivo({ negozio = false } = {}) {
 
 async function tastoPremium(page) {
   await page.goto(BASE + "/app/benvenuto", { waitUntil: "domcontentloaded" });
-  const tasto = page.locator(".jm-benv-card.pick button.btn-primary");
+  const tasto = page.locator(".jm-benv-scelte button.btn-primary");
   await tasto.waitFor({ state: "visible", timeout: 30_000 });
   // La pagina abilita i tasti solo quando la modalita e risolta.
   await page.waitForFunction(() => {
-    const b = document.querySelector(".jm-benv-card.pick button.btn-primary");
+    const b = document.querySelector(".jm-benv-scelte button.btn-primary");
     return b && !b.disabled;
   }, null, { timeout: 30_000 });
   return tasto;
@@ -83,7 +87,7 @@ async function tastoPremium(page) {
   } catch {
     aperto = false;
   }
-  check("guscio: il tasto 'prova premium' apre il muro", aperto);
+  check("guscio: il tasto 'Inizia con premium' apre il muro", aperto);
   if (aperto) {
     let schede = true;
     try {
@@ -120,7 +124,7 @@ async function tastoPremium(page) {
   } catch {
     aperto = false;
   }
-  check("web: il tasto 'prova premium' apre il muro", aperto);
+  check("web: il tasto 'Inizia con premium' apre il muro", aperto);
   if (aperto) {
     const testo = await page.locator(".jm-wall").innerText();
     check("web: il muro rimanda all'App Store", /Scarica dayalogue per iPhone/.test(testo), testo.slice(0, 80));

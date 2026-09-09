@@ -17,3 +17,12 @@ export {
   negozioDisponibile,
   ripristinaAcquisti,
 } from "@/modules/abbonamento/negozio-ios";
+// La vetrina, per chi deve solo DIRE il prezzo senza vendere: il bivio di
+// /benvenuto scrive la riga sotto il tasto con quello che dice Apple
+// (prezzo gia nella valuta della persona, prova solo se le spetta davvero).
+export {
+  precaricaProdotti,
+  prodottiInTasca,
+  prodottiPremium,
+  type ProdottoNegozio,
+} from "@/modules/abbonamento/negozio-ios";
