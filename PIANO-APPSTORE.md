@@ -21,6 +21,17 @@ mostra nessuna richiesta di permesso: passa dal selettore privato di iOS, che da
 all'app SOLO le foto scelte — e cosi che Apple lo vuole. La fotocamera chiede il
 permesso al primo "Scatta una foto", con la frase di Info.plist.
 
+Il 9 settembre Manuel ha chiesto di nuovo ("le foto non chiedono il permesso,
+Apple ci boccia"): la risposta e la stessa, il selettore privato NON chiede
+niente per scelta di Apple (scelta A1, confermata). Face ID resta come e (C1).
+Le NOTIFICHE invece chiedevano il permesso nel primo secondo del primo avvio
+(l'ospite di fabbrica entra subito): dal 9 settembre la richiesta arriva DOPO
+la prima giornata salvata (`save-recording.ts` -> `proponiPromemoriaSerale`),
+e all'avvio si risincronizza soltanto se il permesso c'e gia
+(`sincronizzaPromemoriaSerale`, zero finestre). Il banco `verify-permessi-ios`
+difende anche questo. Per rivedere le finestre sul telefono l'app va
+cancellata: iOS ricorda i permessi tra una rebuild e l'altra.
+
 ## 1. I tre blocchi da risolvere PRIMA di sottomettere — FATTI il 23 agosto
 
 Decisione di Manuel: **v1 senza acquisto su iOS**. Implementati tutti e tre nello

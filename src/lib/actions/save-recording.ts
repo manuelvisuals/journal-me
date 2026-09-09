@@ -24,6 +24,7 @@ import { can } from "@/lib/capabilities";
 import { getStore } from "@/lib/data/store";
 import { invalidateAll } from "@/lib/data/cache";
 import { analyzeDay, localFields } from "@/lib/actions/analyze-day";
+import { proponiPromemoriaSerale } from "@/lib/native/reminders";
 import type { AreaSummary, Entry } from "@/lib/types";
 
 export type RecordingInput = {
@@ -191,6 +192,11 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
   // La cache delle letture non sa niente di questa scrittura: senza,
   // tornando su Mese si vedrebbe ancora il mese di prima.
   invalidateAll();
+  // Il permesso per la notifica serale si chiede QUI, a giornata salvata
+  // (9 settembre 2026, scelta di Manuel): "com'e andata oggi?" alle 21:30
+  // ha senso solo per chi una giornata l'ha gia raccontata. Non si aspetta:
+  // la finestra di iOS non deve tenere fermo il salvataggio.
+  if (saved.length > 0) void proponiPromemoriaSerale();
   return saved;
 }
 

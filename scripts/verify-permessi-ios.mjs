@@ -69,6 +69,22 @@ check(
   conCapture.join(", "),
 );
 
+/* LE NOTIFICHE (9 settembre 2026, scelta di Manuel: B1). Il permesso si
+   chiede DOPO la prima giornata salvata, mai all'avvio: all'avvio si
+   risincronizza soltanto (zero finestre). Se qualcuno rimette la richiesta
+   nel cancello, o la toglie dal salvataggio, questo banco esce rosso. */
+const reminders = readFileSync("src/lib/native/reminders.ts", "utf8");
+const proponi = reminders.slice(reminders.indexOf("export async function proponiPromemoriaSerale"), reminders.indexOf("export async function sincronizzaPromemoriaSerale"));
+const sincronizza = reminders.slice(reminders.indexOf("export async function sincronizzaPromemoriaSerale"));
+check("reminders: proponi chiede il permesso (requestPermissions)", /requestPermissions/.test(proponi));
+check("reminders: sincronizza NON chiede mai il permesso", proponi.length > 0 && sincronizza.length > 0 && !/requestPermissions/.test(sincronizza));
+const gate = readFileSync("src/components/auth-gate.tsx", "utf8");
+check("il cancello all'avvio risincronizza soltanto", /sincronizzaPromemoriaSerale\(\)/.test(gate) && !/proponiPromemoriaSerale|ensureEveningReminder/.test(gate));
+const salva = readFileSync("src/lib/actions/save-recording.ts", "utf8");
+check("il salvataggio della giornata propone la notifica (saved.length > 0)", /if \(saved\.length > 0\) void proponiPromemoriaSerale\(\)/.test(salva));
+const chiedono = tsx("src").filter((f) => /proponiPromemoriaSerale/.test(readFileSync(f, "utf8")));
+check("nessun componente .tsx chiede il permesso notifiche da solo", chiedono.length === 0, chiedono.join(", "));
+
 const passati = results.filter((r) => r.ok).length;
 console.log(`\n${passati}/${results.length} PASS`);
 process.exit(passati === results.length ? 0 : 1);
