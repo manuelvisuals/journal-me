@@ -18,7 +18,7 @@ con la barra della quota. Pagina: `src/app/(app)/app/settings/`.
 - Banchi prima del push: `verify-impostazioni`, `verify-lingua`,
   `verify-parole-misure`, `verify-checkout-obiettivi`, `verify-consumi`,
   `verify-foto-profilo`, `verify-nome-profilo`, `verify-profilo-ovunque`,
-  `verify-profilo-dopo-login`
+  `verify-profilo-dopo-login`, `verify-foto-profilo-vivo`
   (piu tsc, eslint, verify-i18n). Foto e nome si eseguono con
   `node --experimental-strip-types`: leggono un contratto `.ts`;
   `verify-profilo-ovunque` apre il browser sul dev server :3100 coi finti.
@@ -199,3 +199,13 @@ utente ancora, errore di rete): nessuno rileggeva piu. Ora le uscite
 anticipate azzerano la memoria, e una vedetta su SIGNED_IN rilegge subito
 al login nuovo. Banco: `verify-profilo-dopo-login` (7 controlli, morso
 provato: col vecchio codice 4 rossi).
+
+## La foto profilo, provata dal vivo (9 settembre 2026)
+
+`verify-foto-profilo` prova il ritaglio e i contratti senza browser;
+`verify-foto-profilo-vivo` apre il browser sui finti e fa le tre cose come
+una persona (carica, cambia, toglie), controllando pallino, riga di
+Impostazioni, riga `profiles` sul server finto e la tenuta dopo un
+ricaricamento (17 controlli, morso provato). `scripts/prova-foto-profilo.mjs`
+fa lo stesso su dayalogue.com dal Chrome del Mac con l'account demo, e
+rimette la foto di Giulia alla fine.
