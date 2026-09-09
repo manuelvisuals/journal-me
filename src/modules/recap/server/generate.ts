@@ -85,7 +85,10 @@ export async function POST(req: NextRequest) {
     `Lunghezza body: ${targetWords} parole.`,
     "",
     "OUTPUT JSON con questi campi:",
-    "  - title: 1 frase 8-18 parole, evocativa, in minuscolo tranne nomi propri, tono da titolo di romanzo breve.",
+    // Sentence case, come i titoli delle giornate (decisione di Manuel del 9
+    // settembre 2026, PR #88): maiuscola iniziale, nomi propri maiuscoli,
+    // il resto minuscolo. La maiuscola iniziale la mette anche il codice.
+    "  - title: 1 frase 8-18 parole, evocativa, tono da titolo di romanzo breve. Maiuscola iniziale come una frase normale, poi minuscolo tranne i nomi propri, che vanno SEMPRE con la maiuscola. Niente punto finale.",
     "  - snippet: 2-3 frasi (max 50 parole) che riassumono il mese in 1 sola immagine + 1 fatto concreto.",
     "  - body: la prosa narrativa completa, paragrafi separati da '\\n\\n'. Usa al massimo 1 citazione letterale presa dai transcript dell'utente, inserita come paragrafo a se' tra virgolette dritte (esempio: 'devo ricordarmi che la nuova ragazza di Gabriele si chiama Francesca').",
   ].join("\n");
@@ -162,5 +165,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  parsed.title = titoloInSentenceCase(parsed.title);
   return NextResponse.json(parsed);
+}
+
+/** La maiuscola iniziale non si affida al modello: solo la prima lettera, e via il punto finale. */
+export function titoloInSentenceCase(titolo: string): string {
+  const t = (titolo ?? "").trim().replace(/[.]+$/, "");
+  if (t === "") return t;
+  return t.charAt(0).toLocaleUpperCase() + t.slice(1);
 }

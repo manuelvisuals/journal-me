@@ -305,7 +305,7 @@ export class OpenAIFinto {
       case "remember_classification":
         return { kind: "nota", title: String(ultimo).slice(0, 40) };
       case "recap":
-        return { title: "Un mese finto", snippet: "Tre righe di prova.", body: "Il mese riletto dal finto: niente di vero, ma la forma e quella." };
+        return { title: "un mese finto", snippet: "Tre righe di prova.", body: "Il mese riletto dal finto: niente di vero, ma la forma e quella." };
       default:
         return {};
     }

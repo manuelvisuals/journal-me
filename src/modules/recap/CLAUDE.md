@@ -29,3 +29,10 @@ Chi non e premium e non ha recap vede `Vetrina` in `recap-client.tsx`:
 tag Premium, "Il mese, riletto per te.", due righe, "Prova gratis 14
 giorni" che apre il muro `recap`. Prezzo e prova da `src/lib/pricing.ts`.
 Classe `jm-rec-vetrina`. Banchi: verify-pr10, verify-abbonamento.
+
+## Il titolo del recap e in Sentence case (9 settembre 2026)
+
+Come i titoli delle giornate (PR #88): il prompt di `server/generate.ts`
+chiede maiuscola iniziale e nomi propri maiuscoli, e la maiuscola iniziale
+la mette anche il codice (`titoloInSentenceCase`). L'OpenAI finto risponde
+apposta in minuscolo ("un mese finto"). Banco: `verify-recap-maiuscola`.
