@@ -4026,12 +4026,16 @@ textarea.jm-sito-in {
    pagina e trasparente, senza riga, identica al mockup approvato.
    (Manuel, 8 settembre 2026, sera.) */
 @media (max-width: 767px) {
+  /* FIXED, non sticky: su iOS una sticky col vetro (backdrop-filter)
+     trema di un pixel a ogni frame, perche lo sfondo sfocato viene
+     ricalcolato un frame dopo lo spostamento. La fixed sta su un livello
+     suo e non si muove mai. (Manuel, 9 settembre 2026: "trema".) */
   .jm-sito4.jm-sito7 > .jm-sito-nav {
-    position: sticky;
-    inset: auto; /* prima di top: azzera l'inset del blocco sopra */
-    top: 0;
+    position: fixed;
+    inset: 0 0 auto;
     height: 0;
     overflow: visible;
+    transform: translateZ(0);
   }
   .jm-sito4.jm-sito7 > .jm-sito-nav .jm-sito-nav-in {
     background: transparent;
