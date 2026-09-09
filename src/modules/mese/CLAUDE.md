@@ -18,9 +18,22 @@ Le scambia l'icona nell'intestazione; la scelta vive in `vista.ts`
 
 - Prefissi CSS (misurati): `jm-mese`, `jm-month`, `jm-dots`, `jm-picker`.
 - Banchi prima del push: `verify-pr9`, `verify-mese-nav`,
-  `verify-barra-alto` (piu tsc, eslint, verify-i18n).
+  `verify-barra-alto`, `verify-mese-riprova` (piu tsc, eslint, verify-i18n).
 
 La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
 pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
 in `src/components/ui/app-bar.tsx`, montata una volta sola dal guscio. Non
 rimontare `AccountMenu` qui: `verify-barra-alto` diventa rosso.
+
+## Il mese che non arrivava (9 settembre 2026)
+
+Sul telefono agosto restava sui tre puntini per sempre; settembre (vuoto)
+arrivava subito. La causa in `mese-client.tsx`: il mese vicino si precarica
+al montaggio, e chi sfogliava mentre quella lettura era in volo faceva
+scattare il `cancelled` dell'effetto, che buttava via la risposta MA
+lasciava il mese fra i "gia chiesti": nessuno lo richiedeva piu. Ora la
+lettura arrivata si registra sempre (solo lo smontaggio la butta via), una
+lettura fallita si ritenta una volta e poi mostra "Riprova" al posto dei
+puntini, e il mese fallito esce dai "gia chiesti". Banco:
+`verify-mese-riprova` (10 controlli, morso provato: col vecchio codice 4
+rossi, compreso lo sfoglia-mentre-arriva).

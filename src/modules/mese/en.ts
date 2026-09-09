@@ -7,6 +7,7 @@
  * "chiave": "valore", — verify-i18n legge questo formato.
  */
 export const MESE: Record<string, string> = {
+  "Non riesco a leggere questo mese.": "I can't read this month.",
   "premium": "premium",
   "— giornata vuota —": "— empty day —",
   "Seleziona mese": "Select month",

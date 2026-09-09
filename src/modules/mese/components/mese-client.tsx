@@ -81,6 +81,26 @@ export function MeseClient({ mode, initialMonth }: Props) {
   const [deskCache, setDeskCache] = useState<Record<string, Entry[]>>({
     [`${initialMonth.year}-${initialMonth.month}`]: initialMonth.entries,
   });
+  /* I mesi la cui lettura e fallita due volte: si disegna "Riprova" al
+     posto dei tre puntini. Bug segnalato da Manuel il 9 settembre 2026:
+     agosto restava sui puntini all'infinito, perche una lettura fallita
+     (rete, sessione, cassaforte non ancora aperta) lasciava il mese in
+     `chiesti` e nessuno lo richiedeva piu. */
+  const [falliti, setFalliti] = useState<Record<string, true>>({});
+  const [ritenta, setRitenta] = useState<number>(0);
+  /* Montato o no: e l'UNICA cosa che puo buttare via una lettura arrivata.
+     Il vecchio `cancelled` dell'effetto la buttava via anche quando si
+     cambiava mese mentre era in volo — e quel mese restava in `chiesti`
+     senza mai arrivare: i tre puntini eterni di agosto (9 settembre 2026).
+     Sfogliare mentre il vicino sta arrivando e il caso NORMALE sul
+     telefono, non un'eccezione. */
+  const montato = useRef<boolean>(true);
+  useEffect(() => {
+    montato.current = true;
+    return () => {
+      montato.current = false;
+    };
+  }, []);
   /* I mesi gia chiesti (non ancora per forza arrivati): vedi leggi(). */
   const chiesti = useRef<Set<string>>(
     new Set([`${initialMonth.year}-${initialMonth.month}`]),
@@ -108,8 +128,34 @@ export function MeseClient({ mode, initialMonth }: Props) {
          dipendenze, cioe rifare il giro a ogni mese che arriva. */
       if (chiesti.current.has(k)) return;
       chiesti.current.add(k);
-      const entries = await loadMonthEntries(mode, m.year, m.month);
-      if (cancelled) return;
+      /* Due tentativi, poi si dice. Se la lettura fallisce il mese ESCE
+         da `chiesti`: al prossimo giro (cambio mese, "Riprova") si
+         richiede davvero, invece di restare sui puntini per sempre. */
+      let entries: Entry[] | null = null;
+      for (let tentativo = 0; tentativo < 2 && entries === null; tentativo++) {
+        try {
+          entries = await loadMonthEntries(mode, m.year, m.month);
+        } catch {
+          await new Promise((r) => setTimeout(r, 1200));
+        }
+      }
+      /* Da qui in poi NON si guarda `cancelled`: la lettura e arrivata (o
+         fallita) e va registrata anche se nel frattempo si e sfogliato
+         altrove. Solo lo smontaggio la butta via. */
+      if (!montato.current) {
+        chiesti.current.delete(k);
+        return;
+      }
+      if (entries === null) {
+        chiesti.current.delete(k);
+        setFalliti((prev) => ({ ...prev, [k]: true }));
+        return;
+      }
+      setFalliti((prev) => {
+        if (!prev[k]) return prev;
+        const { [k]: _via, ...resto } = prev;
+        return resto;
+      });
       setDeskCache((prev) =>
         prev[k] !== undefined ? prev : { ...prev, [k]: entries },
       );
@@ -131,7 +177,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDesktop, griglia, deskKey]);
+  }, [isDesktop, griglia, deskKey, ritenta]);
 
   // initialMonth.entries is always populated server-side now.
 
@@ -420,6 +466,16 @@ export function MeseClient({ mode, initialMonth }: Props) {
             muroDopo={meseCorrente}
           >
             {deskEntries === undefined ? (
+              falliti[deskKey] ? (
+                /* La lettura e fallita due volte: si dice, e si lascia un
+                   tasto. Meglio di tre puntini che non finiscono mai. */
+                <div className="jm-mese-attesa jm-mese-errore">
+                  <p>{t("Non riesco a leggere questo mese.")}</p>
+                  <button type="button" className="btn-ghost" onClick={() => setRitenta((n) => n + 1)}>
+                    {t("Riprova")}
+                  </button>
+                </div>
+              ) : (
               /* Un attimo di attesa, non un mese vuoto: disegnare trentun
                  quadratini spenti mentre li stiamo ancora leggendo direbbe
                  "non hai raccontato niente", che e falso. */
@@ -430,6 +486,7 @@ export function MeseClient({ mode, initialMonth }: Props) {
                   <i />
                 </span>
               </div>
+              )
             ) : (
               <MeseMini
                 /* Cambiando mese il quadratino scelto non ha piu senso:
