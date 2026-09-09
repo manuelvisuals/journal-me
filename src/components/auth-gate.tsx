@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { chooseLocalMode, useStorageMode } from "@/lib/data/store";
 import { ospiteAttivo } from "@/lib/ospite/flag";
 import { assicuraBraccialetto } from "@/lib/ospite/braccialetto";
-import { ensureEveningReminder } from "@/lib/native/reminders";
+import { sincronizzaPromemoriaSerale } from "@/lib/native/reminders";
 import {
   ascoltaCassaforte,
   cancelloDaMostrare,
@@ -132,11 +132,13 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   }, [mode, auth, userId]);
   const settledOut = mode !== "resolving" && mode !== "local" && auth === "out";
 
-  // Ask for the notification permission once inside, never on the login
-  // screen: a permission sheet in front of a stranger gets denied. Vale
-  // anche in locale: le notifiche sono locali, zero rete.
+  // La notifica serale si RIMETTE IN CODA all'avvio solo se il permesso
+  // c'e gia: qui non si apre nessuna finestra di iOS. La richiesta vera
+  // arriva dopo la prima giornata salvata (save-recording.ts, 9 settembre
+  // 2026): prima partiva da qui, cioe nel primo secondo del primo avvio.
+  // Vale anche in locale: le notifiche sono locali, zero rete.
   useEffect(() => {
-    if (entered) void ensureEveningReminder();
+    if (entered) void sincronizzaPromemoriaSerale();
   }, [entered]);
 
   useEffect(() => {
