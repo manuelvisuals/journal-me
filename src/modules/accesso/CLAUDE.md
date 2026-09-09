@@ -110,3 +110,12 @@ pubbliche il velo non si disegna. La memoria cade al prossimo accesso
 vero (`dimenticaUscita` dentro `identita()`): "logout riporta alla prima
 visualizzazione" vale per chi rientra. Un dispositivo davvero nuovo lo
 vede ancora. Banco: `verify-saluto-logout` (10 controlli, morso provato).
+
+## La linguetta Feedback non c'e per il revisore (9 settembre 2026)
+
+Sull'account di revisione Apple (email che inizia per `appreview@`) la
+linguetta sul bordo destro non si monta: `revisore.ts` (`useRevisore`,
+legge la sessione in tasca, niente rete; da ospite e sempre falso) e una
+riga in `components/linguetta.tsx`. Il saluto senza bersaglio ha gia la
+chiusura secca. Banco: `verify-linguetta-revisore` (6 controlli, morso
+provato).
