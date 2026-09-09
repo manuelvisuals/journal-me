@@ -10,7 +10,6 @@
 export const COMUNE: Record<string, string> = {
   "Solo su questo dispositivo": "Only on this device",
   "Premium": "Premium",
-  "prova premium": "try premium",
   "Caricamento": "Loading",
   "Indietro": "Back",
   "Annulla": "Cancel",
