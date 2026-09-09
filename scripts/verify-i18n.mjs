@@ -37,6 +37,17 @@ const DINAMICHE = {
     "Obiettivi", "Tema", "Dove sono le mie giornate", "Lingua",
     "Questo dispositivo",
   ],
+  "modules/accesso/components/differenze.tsx (RIGHE_DIFFERENZE: il foglio 'vedi tutte le differenze')": [
+    "Scrivi la tua giornata",
+    "Obiettivi, peso, sonno, umore",
+    "Mese e Memo",
+    "Backup su file che puoi esportare",
+    "Racconti a voce, si trascrive da solo",
+    "Titolo, sintesi e aree della giornata",
+    "Recap del mese, del semestre, dell'anno",
+    "Copia criptata nel cloud, si aggiorna da sola",
+    "Su tutti i tuoi dispositivi, con la tua chiave",
+  ],
   "modules/abbonamento/components/premium-wall.tsx (TITLES, FEATURES, PERIODI)": [
     "Per raccontare a voce\nserve premium",
     "Per il titolo e la sintesi\nserve premium",
@@ -181,6 +192,8 @@ const UGUALI_OK = new Set([
   "Face ID",
   // Nome del prodotto: si scrive uguale nelle due lingue.
   "dayalogue\nPremium",
+  // I nomi dei due piani, sulla schermata del bivio: uguali nelle due lingue.
+  "Free",
 ]);
 const sospette = [...CATALOG.entries()].filter(
   ([it, en]) => it === en && !UGUALI_OK.has(it),
