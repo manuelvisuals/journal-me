@@ -37,8 +37,18 @@ export function DesktopShell({ children }: { children: React.ReactNode }) {
 
   // Le pagine pubbliche (login, benvenuto) restano una colonna centrata
   // anche su desktop: niente rail attorno a una schermata d'ingresso.
+  // Il muro premium va montato ANCHE qui (9 settembre 2026, trovato da
+  // Manuel sul telefono): /app/benvenuto e una pagina bare, e il suo tasto
+  // "prova premium" chiama openPremiumWall(), che accende uno stato che
+  // nessuno disegnava: il tocco non faceva niente. Il muro resta montato
+  // una volta sola: i due rami di questo if non convivono mai.
   if (isBareLayout(pathname)) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        <PremiumWall />
+      </>
+    );
   }
 
   // La barra in alto del telefono (mockup pallino-ovunque, strada B): la
