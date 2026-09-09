@@ -76,6 +76,11 @@ export type Testi = {
     stato: string;
     chiusura: string;
   };
+  /** Le due giornate scritte che entrano dai lati nella sezione "La giornata". */
+  giornate: {
+    lei: { data: string; titolo: string; prosa: string; area: string; umore: string };
+    lui: { data: string; titolo: string; prosa: string; area: string; umore: string };
+  };
   vocePaginaTre: {
     etichetta: string;
     titoloPrima: string;
@@ -307,6 +312,24 @@ const it: Testi = {
     uomo: "...poi mi ha chiamato Marco. Dopo due anni.",
     stato: "Sto ascoltando",
     chiusura: "Le tue parole. Una vita più tua.",
+  },
+  giornate: {
+    lei: {
+      data: "Giovedi 27 agosto",
+      titolo: "Abbiamo chiuso il progetto, e per la prima volta ho cenato senza pensarci",
+      prosa:
+        "Giornata storta fino alle sei, poi la firma e il silenzio buono che viene dopo. Stasera niente schermi.",
+      area: "Lavoro",
+      umore: "Umore \u00b7 4",
+    },
+    lui: {
+      data: "Martedi 2 settembre",
+      titolo: "Mi ha chiamato Marco, dopo due anni",
+      prosa:
+        "Stavo per andare a dormire. Quarantatre minuti al telefono, come se non fosse passato niente. Domani lo richiamo io.",
+      area: "Marco",
+      umore: "Umore \u00b7 5",
+    },
   },
   vocePaginaTre: {
     etichetta: "La tua giornata, scritta",
@@ -690,6 +713,24 @@ const en: Testi = {
     uomo: "...then Marco called me. After two years.",
     stato: "Listening",
     chiusura: "Your words. A life that feels more yours.",
+  },
+  giornate: {
+    lei: {
+      data: "Thursday 27 August",
+      titolo: "We closed the project, and for once I had dinner without thinking about it",
+      prosa:
+        "The day went sideways until six, then the signature and the good quiet that follows. No screens tonight.",
+      area: "Work",
+      umore: "Mood \u00b7 4",
+    },
+    lui: {
+      data: "Tuesday 2 September",
+      titolo: "Marco called me, after two years",
+      prosa:
+        "I was about to go to bed. Forty-three minutes on the phone, as if no time had passed. Tomorrow I call him.",
+      area: "Marco",
+      umore: "Mood \u00b7 5",
+    },
   },
   vocePaginaTre: {
     etichetta: "Your day, written",
