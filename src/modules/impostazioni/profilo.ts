@@ -116,22 +116,38 @@ function stesso(a: Profilo, b: Profilo): boolean {
  */
 function leggi(): Promise<void> {
   if (lettura) return lettura;
+  vedetta();
   lettura = (async () => {
     try {
       snapshot();
-      if ((await resolveStorageMode()) === "local") return;
+      /* Le uscite anticipate NON si ricordano (bug del 9 settembre 2026:
+         sul telefono, dopo logout e login, la foto restava sparita per
+         minuti). Una lettura che non ha letto niente — modalita locale,
+         nessun utente ancora, rete storta — non e "fatta": il prossimo
+         componente che monta deve poter riprovare. Solo la riga di
+         `profiles` letta davvero chiude la partita per questa apertura. */
+      if ((await resolveStorageMode()) === "local") {
+        lettura = null;
+        return;
+      }
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        lettura = null;
+        return;
+      }
       const { data, error } = await supabase
         .from("profiles")
         .select("display_name, avatar_data")
         .eq("user_id", user.id)
         .maybeSingle();
-      if (error) return;
+      if (error) {
+        lettura = null;
+        return;
+      }
       const server: Profilo = {
         nome: normalizzaNome(data?.display_name),
         foto: (data?.avatar_data as string | null | undefined) ?? null,
@@ -157,12 +173,33 @@ function leggi(): Promise<void> {
       if (!profilo || !stesso(profilo, server)) profilo = server;
       scriviLocale({ ...server, daOspite: false });
     } catch {
-      // Rete assente, sessione scaduta, colonne mancanti: resta il locale.
+      // Rete assente, sessione scaduta, colonne mancanti: resta il locale,
+      // e si riprovera al prossimo montaggio.
+      lettura = null;
     } finally {
       emetti();
     }
   })();
   return lettura;
+}
+
+/**
+ * La vedetta sull'accesso: a un login nuovo (SIGNED_IN) la lettura di
+ * questa apertura non vale piu — e di un'altra persona, o di nessuno — e
+ * si rifa subito. Il logout la azzera gia da solo (svuotaProfilo). Una
+ * volta per pagina.
+ */
+let vedettaAccesa = false;
+function vedetta(): void {
+  if (vedettaAccesa || typeof window === "undefined") return;
+  vedettaAccesa = true;
+  void import("@/lib/supabase/client").then(({ createClient }) => {
+    createClient().auth.onAuthStateChange((evento) => {
+      if (evento !== "SIGNED_IN") return;
+      lettura = null;
+      void leggi();
+    });
+  });
 }
 
 /** Nome scelto e foto. Chi li usa non deve sapere da dove arrivano. */

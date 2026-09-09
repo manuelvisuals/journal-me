@@ -17,7 +17,8 @@ con la barra della quota. Pagina: `src/app/(app)/app/settings/`.
   (scheletro).
 - Banchi prima del push: `verify-impostazioni`, `verify-lingua`,
   `verify-parole-misure`, `verify-checkout-obiettivi`, `verify-consumi`,
-  `verify-foto-profilo`, `verify-nome-profilo`, `verify-profilo-ovunque`
+  `verify-foto-profilo`, `verify-nome-profilo`, `verify-profilo-ovunque`,
+  `verify-profilo-dopo-login`
   (piu tsc, eslint, verify-i18n). Foto e nome si eseguono con
   `node --experimental-strip-types`: leggono un contratto `.ts`;
   `verify-profilo-ovunque` apre il browser sul dev server :3100 coi finti.
@@ -188,3 +189,13 @@ Moduli il primo acceso porta il **dock in miniatura** (`DockGlyph`,
 accendi (`.jm-st-row.nel-dock`): il posto nel dock si capisce guardando,
 non leggendo. Testi ridotti: "Accendi quello che vuoi. L'ultimo acceso va
 nel dock." / "Spegnere non cancella niente." Banco: verify-persona-moduli.
+
+## Il profilo che non si rileggeva (9 settembre 2026)
+
+Dal telefono, dopo logout e login, la foto restava sparita per minuti. In
+`profilo.ts` la lettura di `profiles` si ricorda una volta per apertura, ma
+si ricordava anche quando usciva PRIMA di leggere (modalita locale, nessun
+utente ancora, errore di rete): nessuno rileggeva piu. Ora le uscite
+anticipate azzerano la memoria, e una vedetta su SIGNED_IN rilegge subito
+al login nuovo. Banco: `verify-profilo-dopo-login` (7 controlli, morso
+provato: col vecchio codice 4 rossi).
