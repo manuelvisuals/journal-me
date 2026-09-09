@@ -2640,6 +2640,16 @@
 .jm-sito5-onda i:nth-child(3n) { height: 78%; animation-delay: -.3s; }
 .jm-sito5-onda i:nth-child(4n) { height: 100%; animation-delay: -.6s; }
 .jm-sito5-onda i:nth-child(5n) { height: 52%; animation-delay: -.8s; }
+/* La pagina che galleggia fra i due ritratti.
+   ATTENZIONE, ed e il motivo per cui non usa piu `transform`: la card e un
+   blocco `data-fx="testo"`, e la regia dello scorrimento
+   (.jm-sito7[data-js] [data-fx="testo"]) le riscrive `transform` con la sua
+   translateY. Finche la centratura stava dentro `transform`, quella regola
+   la cancellava e la card finiva mezza fuori dalla scena (sul telefono
+   tagliata dal bordo destro). Ora centratura e inclinazione stanno nelle
+   proprieta INDIVIDUALI `translate` e `rotate`, che il browser applica
+   PRIMA di `transform` e compone con esso: l'animazione fa il suo lavoro e
+   la card resta al centro. (Manuel, 9 settembre 2026: "sta messa a cazzo".) */
 .jm-sito5-pagina {
   position: absolute;
   z-index: 5;
@@ -2648,7 +2658,8 @@
   width: 340px;
   min-height: 470px;
   padding: 34px 32px 27px;
-  transform: translate(-50%, -50%) rotate(1.4deg);
+  translate: -50% -50%;
+  rotate: 1.4deg;
   border: 1px solid color-mix(in srgb, var(--jm-ink) 9%, transparent);
   border-radius: var(--jm-radius-sm);
   color: var(--jm-ink);
@@ -2719,8 +2730,58 @@
   padding-top: 13px;
   border-top: 1px solid var(--jm-line);
 }
+/* I tre punti sotto la scena (arrivati il 9 settembre 2026 dalla sezione
+   "La giornata", tolta). Tre colonne separate da un filo, come il pannello
+   del rituale nell'eroe: stessa grammatica, cosi la pagina non inventa un
+   secondo modo di elencare tre cose. */
+.jm-sito5-punti {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 1490px;
+  margin: 40px auto 0;
+}
+.jm-sito5-punti > div {
+  padding: 22px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--jm-line);
+}
+.jm-sito5-punti > div:last-child {
+  border-bottom: 0;
+}
+.jm-sito5-punti h3 {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+.jm-sito5-punti p {
+  margin-top: 6px;
+  color: var(--jm-ink-muted);
+  font-size: calc(14px * var(--jm-ui-scale));
+  line-height: 1.5;
+}
+@media (min-width: 901px) {
+  .jm-sito5-punti {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 56px;
+  }
+  .jm-sito5-punti > div {
+    padding: 6px 34px;
+    border-bottom: 0;
+    border-right: 1px solid var(--jm-line);
+  }
+  .jm-sito5-punti > div:last-child {
+    border-right: 0;
+  }
+  .jm-sito5-punti h3 {
+    font-size: calc(19px * var(--jm-ui-scale));
+  }
+  .jm-sito5-punti p {
+    margin-top: 9px;
+    font-size: calc(15px * var(--jm-ui-scale));
+  }
+}
 .jm-sito5-chiusura {
-  margin-top: 32px;
+  margin-top: 40px;
   text-align: center;
   color: var(--jm-accent);
   font-size: calc(10px * var(--jm-ui-scale));
@@ -2739,7 +2800,7 @@
   .jm-sito5-testa { padding-inline: 12px; }
   .jm-sito5-scena {
     display: block;
-    min-height: 980px;
+    min-height: 1040px;
   }
   .jm-sito5-persona {
     position: absolute;
@@ -2750,10 +2811,14 @@
   .jm-sito5-persona.uomo { bottom: 0; }
   .jm-sito5-persona > img { min-height: 100%; }
   .jm-sito5-persona figcaption {
-    bottom: 36px;
+    bottom: 28px;
     width: min(260px, calc(100% - 32px));
   }
-  .jm-sito5-persona.donna figcaption { left: 16px; }
+  /* In colonna le due fotografie stanno una sopra l'altra e la pagina sta
+     al centro, sulla giuntura: la frase di lei va in ALTO nella sua meta,
+     altrimenti la card gliela copre. Si legge dall'alto in basso: lei
+     parla, la pagina si scrive, lui parla. */
+  .jm-sito5-persona.donna figcaption { left: 16px; top: 26px; bottom: auto; }
   .jm-sito5-persona.uomo figcaption { right: 16px; }
   .jm-sito5-pagina {
     top: 50%;

@@ -428,40 +428,12 @@ export function HomeSito({
             rimossa dalla home viva (Manuel, 9 settembre 2026): resta intatta
             su /v6, insieme al suo CSS (.jm-sito6-*) e ai testi vocePaginaTre. */}
 
-        {/* -------------------------------------------- la giornata */}
-        <section className="jm-sito2-giornata" id="giornata">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa centro" data-fx="testo">
-              <p className="jm-sito-kick">{t.giornata.etichetta}</p>
-              <h2 className="jm-sito-h2">{t.giornata.titolo}</h2>
-              <p>{t.giornata.testo}</p>
-            </div>
-            <div className="jm-sito-duo jm-sito4-giornata-foto">
-              <figure data-fx="foto">
-                <Foto nome="skincare" />
-                <figcaption>{t.mentre.didascalie[1]}</figcaption>
-              </figure>
-              <figure data-fx="foto" style={{ "--i": 1 } as CSSProperties}>
-                <Foto nome="barba" />
-                <figcaption>{t.mentre.didascalie[0]}</figcaption>
-              </figure>
-            </div>
-            <div className="jm-sito2-punti">
-              {t.giornata.punti.map((x, i) => (
-                <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
-                  <h3>{x.titolo}</h3>
-                  <p>{x.testo}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Nuova lettura premium della stessa promessa. La sezione sopra
-            resta intatta finche questa non viene approvata: qui la voce e
-            esplicita (microfono, stato, onda e parole pronunciate) e si
-            ricompone nella pagina al centro. */}
-        <section className="jm-sito5-voce-pagina" aria-labelledby="jm-sito5-titolo">
+        {/* LA GIORNATA (dal 9 settembre 2026 e questa, e si tiene l'ancora
+            #giornata a cui puntano il menu e il link dell'eroe). La sezione
+            "jm-sito2-giornata" che stava qui sopra e uscita: diceva la stessa
+            cosa una seconda volta. Di quella restano solo i tre punti, che
+            adesso stanno sotto le fotografie. */}
+        <section className="jm-sito5-voce-pagina" id="giornata" aria-labelledby="jm-sito5-titolo">
           <div className="jm-sito5-testa" data-fx="testo">
             <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
             <h2 id="jm-sito5-titolo">{t.vocePagina.titolo}</h2>
@@ -509,6 +481,19 @@ export function HomeSito({
               </figcaption>
             </figure>
           </div>
+
+          {/* I tre punti che stavano nella sezione "La giornata" (tolta il 9
+              settembre 2026): la promessa la fa la scena qui sopra, questi
+              dicono cosa resta scritto. */}
+          <div className="jm-sito5-punti">
+            {t.giornata.punti.map((x, i) => (
+              <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
+                <h3>{x.titolo}</h3>
+                <p>{x.testo}</p>
+              </div>
+            ))}
+          </div>
+
           <p className="jm-sito5-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
         </section>
 
