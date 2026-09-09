@@ -315,6 +315,7 @@ export class CloudStore implements JournalStore {
       goals: buildGoals(goalDefs, c.goalsOn),
       people: c.people,
       headlineLocked: c.headlineLocked,
+      snippetLocked: c.snippetLocked === true,
       createdAt: c.createdAt,
     };
   }
@@ -492,7 +493,7 @@ export class CloudStore implements JournalStore {
     const e = await this.modificaGiornata(dateISO, (c) => ({
       ...c,
       transcript,
-      snippet: ai.snippet,
+      snippet: c.snippetLocked ? c.snippet : ai.snippet,
       areas: ai.areas,
       headline: c.headlineLocked ? c.headline : ai.headline,
       people: ai.people ?? c.people,
@@ -506,6 +507,14 @@ export class CloudStore implements JournalStore {
       ...c,
       headline: headline.trim(),
       headlineLocked: true,
+    }));
+  }
+
+  async saveSnippet(dateISO: string, snippet: string): Promise<Entry> {
+    return this.modificaGiornata(dateISO, (c) => ({
+      ...c,
+      snippet: snippet.trim(),
+      snippetLocked: true,
     }));
   }
 

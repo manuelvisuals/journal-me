@@ -486,6 +486,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
             dateISO: date,
             mode,
             locked: entry.headlineLocked === true,
+            snippetLocked: entry.snippetLocked === true,
             onSaved: (e) => setEntry(e),
             onError: setSaveError,
           }}

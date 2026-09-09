@@ -5,6 +5,7 @@ import { MetricCards } from "@/modules/oggi/components/metric-cards";
 import { GoalList } from "@/modules/oggi/components/goal-list";
 import { RailToday } from "@/modules/oggi/components/rail-today";
 import { HeadlineEditable } from "@/modules/oggi/components/headline-editable";
+import { SnippetEditable } from "@/modules/oggi/components/snippet-editable";
 import { PillRow } from "@/modules/oggi/components/pill-row";
 import type {
   AreaSummary,
@@ -41,6 +42,8 @@ type Props = {
     dateISO: string;
     mode: DataMode;
     locked: boolean;
+    /** La sintesi gia riscritta a mano (9 settembre 2026): targhetta, non matita. */
+    snippetLocked?: boolean;
     onSaved: (entry: Entry) => void;
     onError?: (message: string) => void;
   } | null;
@@ -54,10 +57,11 @@ type Props = {
   freeProse?: { transcript: string; createdAt: string; spoken: boolean } | null;
   onSeePremium?: () => void;
   /**
-   * Slot in fondo alla colonna, sotto metriche e obiettivi. Lo usa la
-   * schermata della giornata per il tasto "aggiungi" (mockup
-   * testo-e-giorno.html §03). Uno slot e non un bottone fisso perche su
-   * Oggi quel tasto non serve: stai gia scrivendo.
+   * Il tasto "aggiungi a questa giornata". Dal 9 settembre 2026 (Manuel,
+   * dal telefono) sta SUBITO SOTTO LA SINTESI, non in fondo dopo gli
+   * obiettivi: in fondo bisognava scorrere tutta la giornata per trovarlo.
+   * Uno slot e non un bottone fisso perche solo il chiamante sa la data e
+   * la modalita.
    */
   footer?: React.ReactNode;
   /**
@@ -175,7 +179,29 @@ export function FilledView({
         </>
       ) : (
         <>
-          {hasSnippet && <p className="jm-fv-sn">{snippet}</p>}
+          {editHeadline ? (
+            <SnippetEditable
+              snippet={snippet}
+              locked={editHeadline.snippetLocked === true}
+              dateISO={editHeadline.dateISO}
+              mode={editHeadline.mode}
+              onSaved={editHeadline.onSaved}
+              onError={editHeadline.onError}
+            />
+          ) : (
+            hasSnippet && (
+              <p className="jm-fv-sn">
+                <svg className="jm-fv-ai" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+                  <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" />
+                  <path d="M5 2l.6 1.4L7 4l-1.4.6L5 6l-.6-1.4L3 4l1.4-.6z" />
+                </svg>
+                {snippet}
+              </p>
+            )
+          )}
+
+          {footer}
 
           {fotoSlot}
 
@@ -247,8 +273,6 @@ export function FilledView({
         <MetricCards metrics={metrics} onChange={onMetricChange} />
         <GoalList goals={goals} onToggle={onGoalToggle} />
       </div>
-
-      {footer}
 
       <RailToday
         metrics={metrics}

@@ -270,6 +270,26 @@ export function ChiarimentiScreen({
               <div className="jm-ch-hint">
                 {t("Da adesso lo riconosco con questo nome in tutto il diario.")}
               </div>
+              {/* LA STRADA PER NON DIRLO (9 settembre 2026, Manuel dal
+                  telefono): "il mio primo cliente" puo restare "il mio primo
+                  cliente", per riservatezza o perche va bene cosi. E una
+                  risposta vera: il ruolo diventa il suo nome nel diario e la
+                  domanda non torna piu. Prima, senza rubrica, la casella era
+                  l'unica strada e "non adesso" la ripresentava in eterno. */}
+              {d.azione === "persona" && (
+                <button
+                  type="button"
+                  className="jm-ch-opt ghost jm-ch-lascia"
+                  disabled={saving}
+                  onClick={() => avanti([d.soggetto])}
+                >
+                  <Casella multi={false} />
+                  <span className="jm-ch-lab">
+                    {t("Lascialo cosi")}
+                    <span className="sub">{t("resta \"{nome}\" e non me lo chiedi piu", { nome: d.soggetto })}</span>
+                  </span>
+                </button>
+              )}
             </div>
           ) : (
             <div className="jm-ch-opts">
@@ -335,6 +355,23 @@ export function ChiarimentiScreen({
                   <span className="jm-ch-lab">
                     {t("Non c'entra con nessuna sfera")}
                     <span className="sub">{t("era solo una cosa da fare")}</span>
+                  </span>
+                </button>
+              )}
+
+              {/* Lascialo cosi, anche quando ci sono nomi da scegliere:
+                  la riservatezza non dipende dalla rubrica. */}
+              {d.azione === "persona" && (
+                <button
+                  type="button"
+                  className="jm-ch-opt ghost jm-ch-lascia"
+                  disabled={saving}
+                  onClick={() => avanti([d.soggetto])}
+                >
+                  <Casella multi={multi} />
+                  <span className="jm-ch-lab">
+                    {t("Lascialo cosi")}
+                    <span className="sub">{t("resta \"{nome}\" e non me lo chiedi piu", { nome: d.soggetto })}</span>
                   </span>
                 </button>
               )}

@@ -58,6 +58,7 @@ type LocalEntryRecord = {
   snippet: string | null;
   areas: AreaSummary[];
   headlineLocked?: boolean;
+  snippetLocked?: boolean;
   metrics: EntryMetrics;
   /** Le etichette accese; i GoalDot completi si costruiscono in lettura. */
   goalsOn: string[];
@@ -315,6 +316,7 @@ export class LocalStore implements JournalStore {
       })),
       people: rec.people,
       headlineLocked: rec.headlineLocked === true,
+      snippetLocked: rec.snippetLocked === true,
       createdAt: rec.createdAt,
     };
   }
@@ -535,7 +537,8 @@ export class LocalStore implements JournalStore {
       transcript,
       // Titolo bloccato = scritto a mano: nessuna rilettura lo tocca.
       ...(existing?.headlineLocked ? {} : { headline: ai.headline }),
-      snippet: ai.snippet,
+      // Idem per la sintesi (9 settembre 2026).
+      ...(existing?.snippetLocked ? {} : { snippet: ai.snippet }),
       areas: ai.areas,
       // Assente = non toccare (vedi AIFields): senza questo ramo, una
       // lettura vuota cancellerebbe i nomi gia salvati.
@@ -553,6 +556,18 @@ export class LocalStore implements JournalStore {
       ...(existing ?? this.blankRecord(dateISO)),
       headline: headline.trim(),
       headlineLocked: true,
+    };
+    await db.put("entries", rec);
+    return this.recordToEntry(rec);
+  }
+
+  async saveSnippet(dateISO: string, snippet: string): Promise<Entry> {
+    const db = await this.db();
+    const existing = await db.get("entries", dateISO);
+    const rec: LocalEntryRecord = {
+      ...(existing ?? this.blankRecord(dateISO)),
+      snippet: snippet.trim(),
+      snippetLocked: true,
     };
     await db.put("entries", rec);
     return this.recordToEntry(rec);

@@ -118,6 +118,16 @@ export async function saveHeadline(
   return getStore().saveHeadline(dateISO, headline);
 }
 
+/** La sintesi riscritta a mano: stessa regola del titolo, tua per sempre. */
+export async function saveSnippet(
+  _mode: DataMode,
+  dateISO: string,
+  snippet: string,
+): Promise<Entry> {
+  invalidateAll();
+  return getStore().saveSnippet(dateISO, snippet);
+}
+
 /**
  * Riscrive solo le aree di una giornata. La usano le risposte ai chiarimenti:
  * vedi il contratto in src/lib/data/store/types.ts per il perche non si
