@@ -45,6 +45,8 @@ export type Contenuto = {
   metrics: EntryMetrics;
   goalsOn: string[];
   headlineLocked: boolean;
+  /** Assente nelle buste vecchie = false. Si aggiunge, non si rinomina. */
+  snippetLocked?: boolean;
   durationSeconds: number;
   facts: FattoChiuso[];
   createdAt: string;

@@ -96,6 +96,8 @@ export interface JournalStore {
    * rielaborazione AI lo sovrascrive (vedi Entry.headlineLocked).
    */
   saveHeadline(dateISO: string, headline: string): Promise<Entry>;
+  /** Riscrive a mano la sintesi e la blocca: da li l'AI non la tocca piu. */
+  saveSnippet(dateISO: string, snippet: string): Promise<Entry>;
 
   /**
    * Riscrive SOLO le aree di una giornata, senza rileggere il testo.

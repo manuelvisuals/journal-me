@@ -18,6 +18,14 @@ type Props = {
   onContinue: (text: string) => void;
   onCancel: () => void;
   /**
+   * SCARTARE LA BOZZA (9 settembre 2026, Manuel dal telefono). Una bozza
+   * recuperata torna a ogni apertura di Oggi finche non la salvi: senza una
+   * via d'uscita e una domanda ripetuta all'infinito. Presente = compare il
+   * tasto (solo con una bozza recuperata); prima di scartare si chiede
+   * conferma, in riga, senza finestre di sistema.
+   */
+  onDiscard?: () => void;
+  /**
    * IL GIORNO SI SCEGLIE DENTRO L'ATTO (controaudit del mockup
    * una-giornata-sola, 2 settembre 2026, punto a): la chip della data
    * sta qui come sta nell'ascolto, cosi dal dock si scrive di ieri senza
@@ -43,6 +51,7 @@ export function ManualWrite({
   notice,
   onContinue,
   onCancel,
+  onDiscard,
   onTargetDateChange,
 }: Props) {
   const t = useT();
@@ -56,6 +65,17 @@ export function ManualWrite({
   const dirtyRef = useRef<boolean>(false);
   const isEmpty = value.trim().length === 0;
   const [calendario, setCalendario] = useState<boolean>(false);
+  const [confermaScarto, setConfermaScarto] = useState<boolean>(false);
+
+  const scarta = () => {
+    // La bozza in sospeso non deve risalvarsi allo smontaggio.
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    timerRef.current = null;
+    dirtyRef.current = false;
+    latestRef.current = "";
+    void clearDraft(targetDate);
+    onDiscard?.();
+  };
 
   const handleChange = (text: string) => {
     setValue(text);
@@ -144,16 +164,32 @@ export function ManualWrite({
         </div>
 
         {notice && (
-          <div
-            style={{
-              fontFamily: "var(--font-serif)",
-              fontStyle: "italic",
-              fontSize: "calc(12.5px * var(--jm-ui-scale))",
-              color: "var(--color-accent)",
-              padding: "8px 0 0",
-            }}
-          >
-            {notice}
+          <div className="jm-editor-notice">
+            <span className="jm-editor-notice-t">{notice}</span>
+            {onDiscard && !confermaScarto && (
+              <button
+                type="button"
+                className="jm-editor-scarta"
+                onClick={() => setConfermaScarto(true)}
+              >
+                {t("scarta la bozza")}
+              </button>
+            )}
+            {onDiscard && confermaScarto && (
+              <span className="jm-editor-scarta-conf" role="alert">
+                <span>{t("Sicuro? Il testo va perso.")}</span>
+                <button type="button" className="jm-editor-scarta si" onClick={scarta}>
+                  {t("Si, scarta")}
+                </button>
+                <button
+                  type="button"
+                  className="jm-editor-scarta"
+                  onClick={() => setConfermaScarto(false)}
+                >
+                  {t("No, tienila")}
+                </button>
+              </span>
+            )}
           </div>
         )}
 

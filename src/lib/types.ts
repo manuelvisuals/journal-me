@@ -51,6 +51,12 @@ export type Entry = {
    * scrivi, e tuo.
    */
   headlineLocked?: boolean;
+  /**
+   * La sintesi l'ha riscritta l'utente (9 settembre 2026, richiesta di
+   * Manuel dal telefono): come il titolo, da quel momento e sua e l'AI
+   * non la tocca piu.
+   */
+  snippetLocked?: boolean;
   /** ISO timestamp of when the entry was saved. */
   createdAt: string;
 };

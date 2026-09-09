@@ -250,6 +250,21 @@ export function TodayClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * La bozza recuperata, scartata (9 settembre 2026): si cancella su disco
+   * (per la data della bozza e per oggi, che e la chiave con cui e stata
+   * ripescata) e l'editor si chiude sulla vista di prima. Senza, al
+   * prossimo mount di Oggi tornerebbe identica.
+   */
+  const handleDiscardDraft = () => {
+    void clearDraft(dataRacconto);
+    void clearDraft(todayISO());
+    setDraftInitial("");
+    setDraftNotice(null);
+    setEditorKey((k) => k + 1);
+    setView(entry ? "filled" : "empty");
+  };
+
   // Prewarm the transcription path the moment Today loads, so the mic feels
   // instant when the user records. Best-effort, never touches the mic. SOLO
   // con la capability voce: in gratis non si scalda niente (e un 402 di
@@ -1062,6 +1077,7 @@ export function TodayClient({
                   dateISO: entry.entryDate,
                   mode,
                   locked: entry.headlineLocked === true,
+                  snippetLocked: entry.snippetLocked === true,
                   onSaved: (e) => setEntry(e),
                   onError: setSaveError,
                 }
@@ -1136,6 +1152,7 @@ export function TodayClient({
           notice={draftNotice}
           onContinue={handleManualContinue}
           onCancel={() => setView(entry ? "filled" : "empty")}
+          onDiscard={draftNotice ? handleDiscardDraft : undefined}
           onTargetDateChange={setDataRacconto}
         />
       )}

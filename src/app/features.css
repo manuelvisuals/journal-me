@@ -676,6 +676,14 @@
   margin-top: 8px;
   line-height: 1.5;
 }
+/* "Lascialo cosi" sotto la casella del nome: staccato dal campo, perche e
+   l'alternativa a scrivere, non parte del campo. */
+.jm-ch-field + .jm-ch-hint + .jm-ch-lascia {
+  margin-top: 16px;
+}
+.jm-ch-opt:disabled {
+  opacity: 0.5;
+}
 /* Due righe, non tre bottoni in fila. Con l'arretrato di un mese la fila
    diventava "basta per adesso | Non adesso | Avanti" tutti appiccicati, e i
    tre pesi non sono uguali: due sono uscite, uno e la strada. */
