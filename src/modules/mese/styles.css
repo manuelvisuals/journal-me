@@ -723,6 +723,15 @@
   min-height: calc(220px * var(--jm-space));
 }
 
+/* La lettura fallita: una riga e il tasto, al posto dei puntini. */
+.jm-mese-errore {
+  flex-direction: column;
+  gap: calc(12px * var(--jm-space));
+  color: var(--color-ink-muted);
+  font-size: calc(14px * var(--jm-ui-scale));
+  text-align: center;
+}
+
 .jm-mese-solo .jm-mese-mini {
   flex: 1;
   min-height: 0;
