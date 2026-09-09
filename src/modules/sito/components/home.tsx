@@ -443,7 +443,7 @@ export function HomeSito({
           {/* La pista: alta piu di uno schermo, la scena ci sta ferma dentro
               (sticky) e si compone col progresso --s. Solo con jm-sito7. */}
           <div className="jm-sito7-pista" data-pista>
-          <div className="jm-sito6-scena">
+          <div className="jm-sito6-scena" data-fx="scena">
             <div className="jm-sito6-foto donna"><Foto nome="skincare" /></div>
             <div className="jm-sito6-foto uomo"><Foto nome="barba" /></div>
             <div className="jm-sito6-fusione" aria-hidden="true" />

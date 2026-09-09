@@ -1037,9 +1037,9 @@
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
-      background: linear-gradient(145deg, color-mix(in srgb, var(--jm-surface) 62%, transparent), color-mix(in srgb, var(--jm-surface) 34%, transparent));
-      -webkit-backdrop-filter: blur(28px) saturate(1.42);
-      backdrop-filter: blur(28px) saturate(1.42);
+      background: linear-gradient(145deg, color-mix(in srgb, var(--jm-surface) 86%, transparent), color-mix(in srgb, var(--jm-surface) 74%, transparent));
+      -webkit-backdrop-filter: blur(30px) saturate(1.3);
+      backdrop-filter: blur(30px) saturate(1.3);
       box-shadow:
         inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 95%, transparent),
         0 -18px 48px color-mix(in oklab, var(--jm-shadow) 16%, transparent);
@@ -3904,8 +3904,8 @@ textarea.jm-sito-in {
    sola curva (ease-out lunga), scarti piccoli, la foto e sempre un po'
    piu lenta del testo che le sta accanto.
    ===================================================================== */
-.jm-sito7 [data-fx],
-.jm-sito7 [data-pista] { --p: 0; --v: 0; --s: 0; }
+.jm-sito7 [data-fx] { --p: 0; --v: 0; }
+.jm-sito7 [data-pista] { --s: 0; } /* NON su [data-fx]: la scena e un data-fx dentro la pista e azzererebbe --s */
 .jm-sito7[data-js] [data-fx="testo"],
 .jm-sito7[data-js] [data-fx="foto"] {
   opacity: var(--v);
@@ -3945,27 +3945,31 @@ textarea.jm-sito-in {
     height: calc(100svh - 24px);
   }
 }
-/* Atto 1 (0 → .3): le due fotografie arrivano, lei dall'alto, lui dal basso. */
-.jm-sito7[data-js] .jm-sito6-foto.donna {
-  transform: translateY(calc((1 - min(1, var(--s) * 3.3)) * -45%));
-  opacity: min(1, var(--s) * 3.3);
+/* Atto 1: la scena arriva gia composta (le due fotografie al loro posto)
+   e sfuma dentro come ogni altro blocco (data-fx="scena"): mai uno
+   schermo nero vuoto ad aspettare che si scorra (9 settembre 2026).
+   Le foto respirano appena, un lento avvicinamento. */
+.jm-sito7[data-js] [data-fx="scena"] {
+  opacity: var(--v);
+  transform: translateY(calc((1 - var(--v)) * 18px));
+  transition: opacity 1s cubic-bezier(.16, 1, .3, 1), transform 1s cubic-bezier(.16, 1, .3, 1);
 }
-.jm-sito7[data-js] .jm-sito6-foto.uomo {
-  transform: translateY(calc((1 - min(1, var(--s) * 3.3)) * 45%));
-  opacity: min(1, var(--s) * 3.3);
+.jm-sito7[data-js] .jm-sito6-foto img {
+  transform: scale(calc(1.06 - var(--s) * .06));
+  transform-origin: 50% 40%;
 }
-/* Atto 2 (.25 → .6): le voci, una alla volta, poi il microfono che ascolta. */
+/* Atto 2 (.1 → .5): le voci, una alla volta, poi il microfono che ascolta. */
 .jm-sito7[data-js] .jm-sito6-voce.donna {
-  opacity: calc(min(1, max(0, var(--s) - .25) * 7) * (1 - max(0, var(--s) - .72) * 2.4));
-  transform: translateY(calc((1 - min(1, max(0, var(--s) - .25) * 7)) * 14px));
+  opacity: calc(min(1, max(0, var(--s) - .1) * 7) * (1 - max(0, var(--s) - .72) * 2.4));
+  transform: translateY(calc((1 - min(1, max(0, var(--s) - .1) * 7)) * 14px));
 }
 .jm-sito7[data-js] .jm-sito6-ascolto {
-  opacity: calc(min(1, max(0, var(--s) - .36) * 7) * (1 - max(0, var(--s) - .72) * 2.4));
-  transform: translateY(calc((1 - min(1, max(0, var(--s) - .36) * 7)) * 14px));
+  opacity: calc(min(1, max(0, var(--s) - .24) * 7) * (1 - max(0, var(--s) - .72) * 2.4));
+  transform: translateY(calc((1 - min(1, max(0, var(--s) - .24) * 7)) * 14px));
 }
 .jm-sito7[data-js] .jm-sito6-voce.uomo {
-  opacity: calc(min(1, max(0, var(--s) - .47) * 7) * (1 - max(0, var(--s) - .72) * 2.4));
-  transform: translateY(calc((1 - min(1, max(0, var(--s) - .47) * 7)) * 14px));
+  opacity: calc(min(1, max(0, var(--s) - .38) * 7) * (1 - max(0, var(--s) - .72) * 2.4));
+  transform: translateY(calc((1 - min(1, max(0, var(--s) - .38) * 7)) * 14px));
 }
 /* Atto 3 (.58 → .9): la pagina sale dal basso e prende il centro; le voci
    si ritirano (sopra), la scena si scurisce appena. */
@@ -3976,6 +3980,7 @@ textarea.jm-sito-in {
 }
 .jm-sito7[data-js] .jm-sito6-foto img {
   filter: saturate(.83) contrast(1.04) brightness(calc(.82 - max(0, var(--s) - .6) * .5));
+  will-change: transform, filter;
 }
 .jm-sito7[data-js] .jm-sito6-foto,
 .jm-sito7[data-js] .jm-sito6-voce,
@@ -3987,6 +3992,7 @@ textarea.jm-sito-in {
   .jm-sito7[data-js] [data-fx] > img,
   .jm-sito7[data-js] [data-fx="sfondo"] img.arte,
   .jm-sito7[data-js] .jm-sito6-foto,
+  .jm-sito7[data-js] .jm-sito6-foto img,
   .jm-sito7[data-js] .jm-sito6-voce,
   .jm-sito7[data-js] .jm-sito6-ascolto { opacity: 1; transform: none; transition: none; }
   .jm-sito7[data-js] .jm-sito6-pagina { opacity: 1; transform: translate(-50%, -50%) rotate(3deg); }
@@ -3997,11 +4003,6 @@ textarea.jm-sito-in {
    un antenato con overflow hidden diventa il contenitore di scorrimento
    e la sticky non aggancia piu. `clip` taglia uguale senza farlo. */
 .jm-sito7 .jm-sito6-voce-pagina { overflow: clip; }
-/* Da 1001px le due fotografie stanno fianco a fianco: entrano dai lati. */
-@media (min-width: 1001px) {
-  .jm-sito7[data-js] .jm-sito6-foto.donna { transform: translateX(calc((1 - min(1, var(--s) * 3.3)) * -40%)); }
-  .jm-sito7[data-js] .jm-sito6-foto.uomo { transform: translateX(calc((1 - min(1, var(--s) * 3.3)) * 40%)); }
-}
 /* Sul telefono la scena e a tutto schermo e parte senza preambolo: niente
    titolo sopra (Manuel, 8 settembre 2026, sera), niente bordi, e il filo
    di luce della fusione non c'e (con le foto una sopra l'altra non ha
@@ -4048,12 +4049,14 @@ textarea.jm-sito-in {
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4.jm-sito7 > .jm-sito-nav .jm-sito-nav-in {
-      -webkit-backdrop-filter: blur(22px) saturate(1.35);
-      backdrop-filter: blur(22px) saturate(1.35);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      backdrop-filter: blur(18px) saturate(1.2);
     }
     .jm-sito4.jm-sito7[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-      background: color-mix(in srgb, var(--jm-bg-app) 68%, transparent);
-      box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--jm-surface) 40%, transparent);
+      /* Quasi pieno: sotto passa di tutto (capelli scuri, la scena nera)
+         e il logo deve restare fermo su un fondo calmo. */
+      background: color-mix(in srgb, var(--jm-bg-app) 84%, transparent);
+      border-bottom-color: transparent;
     }
   }
 }
