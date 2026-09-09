@@ -23,6 +23,7 @@
 import { useT } from "@/lib/i18n";
 import { contattoUrlNoto } from "@/lib/benvenuto-client";
 import { useDentroApp } from "@/components/ui/tab-bar";
+import { useRevisore } from "@/modules/accesso/revisore";
 
 export const SELETTORE_LINGUETTA = ".jm-benv-ling";
 
@@ -36,7 +37,12 @@ export function Linguetta() {
   // Il saluto non si rompe quando manca: ha gia la chiusura secca di
   // ripiego (saluto-avvio.tsx), e comunque compare solo da dentro.
   const dentro = useDentroApp();
-  if (!dentro) return null;
+  // Sull'account di revisione Apple (appreview@...) la linguetta non c'e:
+  // decisione di Manuel del 9 settembre 2026, per gli screenshot dello
+  // store e per non mettere un bottone in piu sotto gli occhi del revisore.
+  // Il saluto non ne soffre: senza bersaglio ha la chiusura secca.
+  const revisore = useRevisore();
+  if (!dentro || revisore) return null;
   // LA DESTINAZIONE ARRIVA DAL PANNELLO ADMIN, non dal codice: e il campo
   // "Indirizzo della riga in fondo" del Messaggio di benvenuto. Finche e
   // vuoto la linguetta resta un bottone che non apre nulla, esattamente
