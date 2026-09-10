@@ -88,6 +88,20 @@ async function ai(seg) {
   check("2 il server ha chiesto ad Apple (query_two_bits) e non ha scritto bit", dc.registro.some((x) => x.path === "/v1/query_two_bits") && !dc.registro.some((x) => x.path === "/v1/update_two_bits"));
 }
 
+/* 2-bis. la CHIAVE del server sbagliata: e un guasto nostro, non del token */
+{
+  dc.chiaveRotta = true;
+  const seg = segreto();
+  const r = await registra(seg, "dc-dispositivo-vero");
+  check("2-bis chiave del server sbagliata (401 da Apple): 503 devicecheck_non_disponibile, NON token_non_valido", r.status === 503 && r.j.error === "devicecheck_non_disponibile", JSON.stringify(r.j));
+  check("2-bis nessuna riga nasce e nessun bit viene scritto", sb.tab("braccialetti").length === 0 && dc.bit.size === 0);
+  // La differenza che conta: con la chiave buona lo STESSO token inventato
+  // da 403. E cosi che si verifica dall'esterno se la chiave su Vercel vale.
+  dc.chiaveRotta = false;
+  const r2 = await registra(segreto(), "non-un-token-apple");
+  check("2-bis con la chiave buona un token inventato da 403 token_non_valido (il probe della produzione)", r2.status === 403 && r2.j.error === "token_non_valido", JSON.stringify(r2.j));
+}
+
 /* 3. token buono, bit spento: nasce */
 const tokenA = "dc-dispositivo-A";
 const segA = segreto();

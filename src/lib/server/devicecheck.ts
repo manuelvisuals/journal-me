@@ -121,8 +121,22 @@ async function chiama(base: string, percorso: string, corpo: Record<string, unkn
  * Chiede ad Apple i due bit del dispositivo. Apple risponde 200 con un JSON
  * {bit0, bit1, last_update_time} se i bit sono mai stati scritti, e 200 con
  * il testo "Failed to find bit state" se il dispositivo e nuovo per noi
- * (documentato cosi: non e un errore). 400 "Missing or incorrectly formatted
- * device token" o 401 e un token che non vale.
+ * (documentato cosi: non e un errore).
+ *
+ * 400 e 401 NON sono la stessa cosa, e confonderli costava il regalo a tutti
+ * (trovato il 10 settembre 2026, provando la chiave in produzione):
+ *   400 "Missing or incorrectly formatted device token" -> colpa di CHI
+ *       CHIAMA: il token e finto, o e dell'altro ambiente. Si prova l'altro
+ *       ambiente e poi si rifiuta.
+ *   401 "Unable to verify authorization token" -> colpa NOSTRA: il gettone
+ *       che il server firma non vale (Key ID sbagliato, Team ID sbagliato,
+ *       .p8 incollata male, chiave revocata). Con questo scambiato per un
+ *       token finto, OGNI iPhone vero avrebbe ricevuto 403 e nessun regalo,
+ *       in silenzio e per sempre. E un guasto nostro: `non_disponibile`,
+ *       cioe 503 e riprova, mai una porta chiusa in faccia alla persona.
+ * Da fuori i due casi adesso si distinguono, ed e cosi che si verifica che
+ * la chiave su Vercel sia quella giusta: un token inventato deve dare 403
+ * token_non_valido; se da 503, la chiave non va.
  */
 export async function interrogaDispositivo(deviceToken: string): Promise<EsitoDeviceCheck> {
   if (!configurato()) return { esito: "non_disponibile", motivo: "DeviceCheck non configurato" };
@@ -147,8 +161,13 @@ export async function interrogaDispositivo(deviceToken: string): Promise<EsitoDe
         return { esito: "libero", ambiente: base };
       }
     }
-    if (r.status === 400 || r.status === 401) {
-      // Non valido QUI: forse e un token dell'altro ambiente, si prova il prossimo.
+    if (r.status === 401) {
+      // La NOSTRA chiave: inutile provare l'altro ambiente, la firma e la
+      // stessa. Si esce subito dicendo che e un guasto nostro.
+      return { esito: "non_disponibile", motivo: "Apple non riconosce la chiave DeviceCheck del server (401)" };
+    }
+    if (r.status === 400) {
+      // Il token: non valido QUI, forse e dell'altro ambiente. Si prova.
       ultimo = { esito: "token_non_valido" };
       continue;
     }

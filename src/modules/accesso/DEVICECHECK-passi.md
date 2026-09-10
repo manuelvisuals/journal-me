@@ -48,11 +48,23 @@ variabili all'avvio.
 - Il simulatore non ha DeviceCheck (`isSupported` falso): li il regalo non
   parte. Si prova sul telefono.
 
-## 4. Come si verifica che e acceso
+## 4. Come si verifica che e acceso, e che la chiave e QUELLA GIUSTA
 
 Da un browser qualunque: `curl -s -X POST https://dayalogue.com/api/ospite/braccialetto -H "x-jm-braccialetto: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" -H "content-type: application/json" -d '{}'`
 deve rispondere `403 {"error":"solo_app", ...}`. Finche risponde
 `200 {"esito":"nato"...}`, DeviceCheck e spento e il buco e aperto.
+
+E la chiave? Si prova con un token INVENTATO (stessa riga, ma
+`-d '{"token":"xxxxx"}'`):
+
+- `403 {"error":"token_non_valido"}` -> **la chiave vale**: Apple ci ha
+  riconosciuti e ha rifiutato il token, che infatti era finto.
+- `503 {"error":"devicecheck_non_disponibile"}` -> **la chiave NON vale**
+  (Key ID, Team ID o .p8 sbagliati, o chiave revocata): Apple risponde 401
+  alla nostra firma. Da controllare subito, perche nessun iPhone riceverebbe
+  il regalo. Il server risponde 503 e non spegne niente proprio per questo:
+  un guasto nostro non deve diventare una porta chiusa in faccia alla
+  persona.
 
 Banco: `scripts/verify-devicecheck.mjs` (19 controlli, con un Apple
 DeviceCheck finto).

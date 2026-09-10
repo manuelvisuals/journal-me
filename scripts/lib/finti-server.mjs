@@ -483,6 +483,8 @@ export class DeviceCheckFinto {
     this.registro = [];
     this.server = null;
     this.porta = 0;
+    /** Acceso: Apple risponde 401 a tutto, come con una chiave sbagliata. */
+    this.chiaveRotta = false;
   }
 
   async avvia(porta = 0) {
@@ -495,6 +497,9 @@ export class DeviceCheckFinto {
         res.writeHead(status, { "Content-Type": "application/json" });
         res.end(testo);
       };
+      // La chiave del SERVER (il gettone in Authorization): sbagliata = 401
+      // su tutto, e non dipende dal token del dispositivo.
+      if (this.chiaveRotta) return rispondi(401, "Unable to verify authorization token");
       const token = typeof j.device_token === "string" ? j.device_token : "";
       if (!token.startsWith("dc-")) return rispondi(400, "Missing or incorrectly formatted device token");
       if (req.url === "/v1/query_two_bits") {
