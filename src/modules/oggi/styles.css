@@ -282,6 +282,9 @@
 .jm-ruota {
   height: 100%;
   overflow-y: scroll;
+  /* Il gesto verticale e della ruota, non della pagina: senza questo iOS
+     puo decidere a meta corsa di passare il dito allo sfondo. */
+  touch-action: pan-y;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
   padding: calc(var(--jm-ruota-riga) * 2) 0;
@@ -311,7 +314,11 @@
 .jm-ruota-dec { width: calc(56px * var(--jm-ui-scale)); }
 .jm-ruota-h { width: calc(70px * var(--jm-ui-scale)); }
 .jm-ruota-m { width: calc(84px * var(--jm-ui-scale)); }
-.jm-ruota-mood { width: min(100%, 260px); }
+/* La ruota del mood si prende TUTTA la larghezza del foglio: prima era
+   larga 260px e centrata, e ai suoi lati restavano due strisce morte dove
+   il dito non trovava la ruota (segnalato da Manuel il 10 settembre). Il
+   contenuto resta centrato: cambia il bersaglio, non il disegno. */
+.jm-ruota-mood { width: 100%; }
 .jm-ruota-mood .jm-ruota-v {
   display: flex;
   align-items: center;
@@ -370,11 +377,45 @@
   color: var(--color-accent);
 }
 
+/* Il conteggio si stacca a destra e la matita gli sta accanto: la testata
+   ha tre pezzi, non piu due, e space-between li spargerebbe. */
 .jm-goals-head .c {
+  margin-left: auto;
   font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   font-variant-numeric: tabular-nums;
 }
+
+.jm-goals-edit {
+  flex: 0 0 auto;
+  width: calc(30px * var(--jm-ui-scale));
+  height: calc(30px * var(--jm-ui-scale));
+  margin: calc(-6px * var(--jm-ui-scale)) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-ink-faint);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-goals-edit svg {
+  width: calc(15px * var(--jm-ui-scale));
+  height: calc(15px * var(--jm-ui-scale));
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.jm-goals-edit:active {
+  color: var(--color-accent);
+}
+
 
 .jm-goals-list {
   border-top: 1px solid var(--color-line);

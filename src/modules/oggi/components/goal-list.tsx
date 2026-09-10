@@ -24,8 +24,16 @@
  *
  * In alto quanti ne hai fatti. E l'unica cifra che conta ed e cio che i
  * pallini, a rigore, mostravano gia: solo che per leggerla dovevi contare.
+ *
+ * LA MATITA (Manuel, 10 settembre 2026). Gli obiettivi si cambiano nelle
+ * Impostazioni, e da qui non c'era nessuna strada: si scendeva a Impost.,
+ * si cercava la voce, si tornava indietro. Adesso accanto al conteggio c'e
+ * la matita e porta DRITTO al pannello degli obiettivi
+ * (/app/settings?panel=goals): la scorciatoia sta dove nasce il bisogno,
+ * cioe guardando l'elenco.
  */
 
+import { useRouter } from "next/navigation";
 import { formatNumber } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import type { GoalDot } from "@/lib/types";
@@ -37,6 +45,7 @@ type Props = {
 
 export function GoalList({ goals, onToggle }: Props) {
   const t = useT();
+  const router = useRouter();
   if (goals.length === 0) return null;
   const done = goals.filter((g) => g.on).length;
 
@@ -50,6 +59,18 @@ export function GoalList({ goals, onToggle }: Props) {
             totali: formatNumber(goals.length),
           })}
         </span>
+        <button
+          type="button"
+          className="jm-goals-edit"
+          onClick={() => router.push("/app/settings?panel=goals")}
+          aria-label={t("Cambia gli obiettivi")}
+          title={t("Cambia gli obiettivi")}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+        </button>
       </div>
       <div className="jm-goals-list">
         {goals.map((g) => (
