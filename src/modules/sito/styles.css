@@ -5645,18 +5645,35 @@ textarea.jm-sito-in {
   font-size: clamp(32px, 5.6vw, 58px);
   opacity: var(--fine);
 }
-/* la carta: sale dal basso, sfuma in entrata e in uscita */
+/* LA CARTA: sale dal basso, sfuma in entrata e in uscita.
+
+   LA MISURA (11 settembre 2026, Manuel: "su desktop questi fumetti falli il
+   doppio piu grandi"). Erano larghi 600px fissi: su una finestra da 1440
+   sono il 42% dello schermo, ma su un 27 pollici diventano un terzo, e in
+   mezzo a una scena grande come tutta la finestra sembravano un cartellino.
+   Adesso il tetto e 1000px e il vincolo vero e il 62% della finestra, cosi
+   la carta cresce insieme allo schermo invece di rimpicciolirsi. Con lo
+   schermo dell'app dentro portato da .475 a .86 e il testo da 15 a 19, e
+   circa il doppio in ogni direzione.
+
+   LA CORSA E STATA RIFATTA PER FORZA. Piu grande vuol dire anche piu alta
+   (380px invece di 190), e una carta alta il doppio arriva sotto il titolo
+   con meta corsa d'anticipo: saliva fino all'8% dell'altezza e ci finiva
+   addosso. Adesso si ferma al 32% e la dissolvenza in uscita si chiude al
+   58-80% della sua finestra, cioe quando il suo bordo alto e ancora sotto il
+   cartiglio. Sono gli stessi numeri del telefono, quindi la regola e una
+   sola per tutti e due. */
 .jm-sito7[data-js] .jm-sito12-carta {
   position: absolute;
   z-index: 4;
   left: 62%;
   translate: -50% -50%;
-  top: calc(112% - 104% * var(--u, 0));
-  width: min(600px, 52vw);
+  top: calc(108% - 76% * var(--u, 0));
+  width: min(1000px, 62vw);
   max-width: none;
   margin: 0;
-  padding: 18px 22px;
-  border-radius: 24px;
+  padding: 26px 30px;
+  border-radius: 30px;
   border: 1px solid var(--jm-line);
   background: color-mix(in srgb, var(--jm-surface) 88%, transparent);
   -webkit-backdrop-filter: blur(22px) saturate(1.3);
@@ -5665,9 +5682,12 @@ textarea.jm-sito-in {
   pointer-events: none;
   opacity: min(
     clamp(0, calc(var(--u, 0) * 4.5455), 1),
-    calc(1 - clamp(0, calc((var(--u, 0) - .58) * 5), 1))
+    calc(1 - clamp(0, calc((var(--u, 0) - .58) * 4.5455), 1))
   );
 }
+.jm-sito7[data-js] .jm-sito12-schermo { --scala: .86; }
+.jm-sito7[data-js] .jm-sito12-carta > p { font-size: calc(19px * var(--jm-ui-scale)); line-height: 1.5; }
+.jm-sito7[data-js] .jm-sito12-carta { gap: 34px; }
 /* il telefono: fermo mezzo fuori, poi al centro */
 .jm-sito7[data-js] .jm-sito12-telefono {
   position: absolute;
@@ -5703,19 +5723,13 @@ textarea.jm-sito-in {
     gap: 12px;
     padding: 15px 16px 16px;
     border-radius: 20px;
-    /* La corsa si accorcia: dal 112% al 30% invece che all'8%. Salendo fino
-       all'8% la carta finiva addosso al titolo, che qui e piu in basso che
-       sul desktop perche sotto c'e la barra fissa. E la dissolvenza in uscita
-       si chiude prima (0.58 -> 0.80), quando il bordo alto della carta e
-       ancora sotto il cartiglio. */
-    top: calc(112% - 82% * var(--u, 0));
-    opacity: min(
-      clamp(0, calc(var(--u, 0) * 4.5455), 1),
-      calc(1 - clamp(0, calc((var(--u, 0) - .58) * 4.5455), 1))
-    );
+    /* Corsa e dissolvenza sono quelle della regola grande: la carta qui e piu
+       bassa, quindi con gli stessi numeri sta ancora piu larga dal titolo.
+       Non si ripetono. */
   }
-  .jm-sito12-schermo { --scala: .40; }
-  .jm-sito12-carta > p { font-size: calc(13.5px * var(--jm-ui-scale)); line-height: 1.45; }
+  .jm-sito7[data-js] .jm-sito12-schermo { --scala: .40; }
+  .jm-sito7[data-js] .jm-sito12-carta > p { font-size: calc(13.5px * var(--jm-ui-scale)); line-height: 1.45; }
+  .jm-sito7[data-js] .jm-sito12-carta { gap: 12px; }
   /* IL TELEFONO PIU PICCOLO E PIU IN BASSO. A 102vw era alto 567px e il suo
      bordo alto arrivava a 169px, cioe dentro la fascia del titolo (126-205):
      "Si scrive da sola" si leggeva sopra una scocca nera. A 72vw e alto
