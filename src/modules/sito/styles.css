@@ -5289,4 +5289,28 @@ textarea.jm-sito-in {
     align-items: center;
     padding-bottom: 230px;
   }
+  /* IL MARCHIO IN COLONNA CON L'EROE. La barra rientra di 24px (riga 3262),
+     la colonna dell'eroe di 36px (riga 3283): il marchio stava dodici pixel
+     piu a sinistra dell'occhiello e del titolo, e su una pagina fatta di una
+     sola colonna di testo quello scarto si vede tutto. Stessa misura per
+     tutti e due. Le due regole d'origine restano come sono, che valgono
+     anche per gli archivi. */
+  .jm-sito4.jm-sito7 .jm-sito-nav-in { padding-inline: 36px; }
+  /* IL SALTO IN APERTURA. I due tasti stavano in 570px per il rotto della
+     cuffia: con il carattere vero misurano 232 + 50 di spazio + 284 = 566
+     su 570, quattro pixel di margine. Prima che Inter arrivi il ripiego di
+     sistema e piu largo (240 + 50 + 320 = 610), i tasti vanno a capo, la
+     riga passa da 66 a 182 pixel e — siccome la colonna e centrata in
+     verticale — TUTTO l'eroe si alza di 116 pixel. Poi il carattere arriva e
+     torna giu: e quello il salto che si vede aprendo la pagina.
+     Si toglie dando aria, non bloccando il ritorno a capo: lo spazio fra i
+     tasti scende da 50 a 18 (cinquanta li faceva sembrare due cose diverse)
+     e la colonna sale a 640. Cosi anche con il carattere di ripiego i tasti
+     stanno su una riga sola — 578 su 640 — e non c'e niente da riassestare. */
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-t { max-width: 640px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { gap: 18px; }
+}
+@media (max-width: 767px) {
+  /* Stessa cosa sul telefono: la barra rientrava di 26px e l'eroe di 24. */
+  .jm-sito4.jm-sito7 .jm-sito-nav-in { padding-inline: 24px; }
 }
