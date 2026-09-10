@@ -12,9 +12,15 @@
  * pannello suo.
  *
  * Su desktop l'identita passa nella rail destra: chi sei e contesto, non
- * un'impostazione, e la colonna centrale resta solo impostazioni. La card
- * Recap sparisce da qui su desktop perche Recap e gia nella rail sinistra;
- * sul telefono resta, perche li la tab bar non ha uno slot per Recap.
+ * un'impostazione, e la colonna centrale resta solo impostazioni.
+ *
+ * 10 settembre 2026 (Manuel, guardando le Impostazioni sul telefono): via
+ * la card Recap e via la riga Memo. Tutte e due erano gia nel dock, e una
+ * seconda porta per la stessa stanza dentro un elenco di impostazioni fa
+ * solo lista. ATTENZIONE: quando un modulo e acceso, sul telefono prende il
+ * posto di Ricorda nella barra in basso, e quella riga era la strada che
+ * restava a Memo. Se questo torna a dare fastidio, la risposta e nella
+ * barra, non qui.
  *
  * UNA RIGA DEL MOCKUP NON E QUI, di proposito: "Promemoria della sera".
  * L'app non ha nessun sistema di notifiche, e una riga che mostra "21:30"
@@ -23,9 +29,9 @@
  * momento in cui esistono le notifiche.
  */
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { AlertIos } from "@/components/ui/alert-ios";
 import { TabBar } from "@/components/ui/tab-bar";
 import { RailRight } from "@/components/desktop/rail-right";
 import { PanelHead, SetGroup, SetRow } from "@/modules/impostazioni/components/rows";
@@ -101,7 +107,6 @@ type Props = {
   email: string | null;
   isAnonymous: boolean;
   initialGoals: GoalDef[];
-  latestRecap: { title: string; periodLabel: string } | null;
 };
 
 /**
@@ -162,7 +167,6 @@ export function SettingsClient({
   email,
   isAnonymous,
   initialGoals,
-  latestRecap,
 }: Props) {
   const router = useRouter();
   const storageMode = useStorageMode();
@@ -398,8 +402,12 @@ export function SettingsClient({
   };
 
   /**
-   * Cancellazione dell'ACCOUNT (App Store 5.1.1(v), PIANO-APPSTORE §1b):
-   * due tocchi come la zona pericolosa locale, poi la route autenticata
+   * Cancellazione dell'ACCOUNT (App Store 5.1.1(v), PIANO-APPSTORE §1b).
+   * Dal 10 settembre 2026 non e piu un secondo tocco su "si, elimina":
+   * Manuel lo ha visto sul telefono e aveva ragione, un tasto che compare
+   * dove prima c'era la riga si preme per sbaglio. Ora c'e un avviso che
+   * chiede di SCRIVERE la parola (ELIMINA / DELETE, tradotta): il tasto
+   * rosso resta spento finche non e quella. Poi la route autenticata
    * elimina l'utente Supabase e la cascata porta via tutte le sue righe.
    * Dopo, questo browser torna vergine: via la sessione, la cache del
    * piano, la memoria della scansione e la scelta della modalita — il
@@ -407,10 +415,7 @@ export function SettingsClient({
    */
   const handleDeleteAccount = async () => {
     if (busy !== "idle") return;
-    if (!deleteArmed) {
-      setDeleteArmed(true);
-      return;
-    }
+    setDeleteArmed(false);
     setBusy("deleteAccount");
     say("");
     try {
@@ -426,7 +431,6 @@ export function SettingsClient({
       } catch {}
       router.push("/app");
     } catch (err) {
-      setDeleteArmed(false);
       say(
         err instanceof Error ? err.message : t("Cancellazione non riuscita."),
         true,
@@ -511,177 +515,10 @@ export function SettingsClient({
                 dire che il diario esiste in un posto solo (SPEC-v2 §4.4). */}
             <BackupBanner />
 
-            {/* Recap solo sul telefono: su desktop e gia nella rail sinistra. */}
-            <Link
-              href="/app/recap"
-              className="jm-st-recap jm-st-phoneonly"
-              aria-label={t("Apri Recap")}
-            >
-              <span className="meta">Recap</span>
-              <span className="title">{t("Le tue giornate, raccontate.")}</span>
-              <span className="sub">
-                {t(
-                  "Mensili, semestrali, annuali. Una prosa narrativa che rilegge i tuoi mesi senza giudizio.",
-                )}
-              </span>
-              <span className="last">
-                {latestRecap
-                  ? `${latestRecap.periodLabel} . ${latestRecap.title}`
-                  : t("Nessun recap generato ancora")}
-              </span>
-            </Link>
-
-            <SetGroup label={t("Il diario")}>
-              <SetRow
-                title={t("Obiettivi")}
-                desc={t("Le caselle che accendi ogni giorno.")}
-                value={`${formatNumber(goals.length)} ${goals.length === 1 ? t("attivo") : t("attivi")}`}
-                onClick={() => setPanel("goals")}
-              />
-              <SetRow
-                title={t("Moduli")}
-                desc={t("Sezioni in piu: palestra, cibo, sonno.")}
-                value={
-                  moduliAttivi.length === 0
-                    ? t("nessuno")
-                    : moduliAttivi.map((m) => t(m.label)).join(" . ")
-                }
-                onClick={() => setPanel("moduli")}
-              />
-              {/* Sul telefono un modulo acceso prende il posto di Ricorda
-                  nella barra in basso: questa riga e la strada che gli
-                  resta, e per questo non e nascosta dietro il modulo. */}
-              <SetRow
-                title={t("Memo")}
-                desc={t("Persone, posti e idee salvate al volo.")}
-                onClick={() => router.push("/app/remember")}
-                chevron
-              />
-            </SetGroup>
-
-            <SetGroup label={t("Lingua e aspetto")}>
-              <SetRow
-                title={t("Lingua")}
-                desc={t("Al primo avvio segue la lingua del dispositivo.")}
-                value={
-                  langPref === "system"
-                    ? `${LANG_NAMES[lang]} . ${t("automatica")}`
-                    : LANG_NAMES[lang]
-                }
-                onClick={() => setPanel("language")}
-              />
-              <SetRow
-                title={t("Tema")}
-                desc={t("{n} temi inclusi, tutti in chiaro e in scuro.", {
-                  n: formatNumber(THEMES.length),
-                })}
-                value={themeName}
-                onClick={() => setPanel("theme")}
-              />
-              <SetRow
-                title={t("Dimensione del testo")}
-                desc={t("Ingrandisce tutta l'app, non solo le scritte.")}
-                value={t(UI_SCALE_LABELS[String(uiScale)])}
-                onClick={() => setPanel("textsize")}
-              />
-              <SetRow
-                title={t("Chiaro o scuro")}
-                desc={t("Vale per qualsiasi tema. Con Sistema segue il dispositivo.")}
-                control={
-                  <span
-                    className="jm-st-seg"
-                    role="radiogroup"
-                    aria-label={t("Chiaro o scuro")}
-                  >
-                    {APPEARANCE_OPTIONS.map((o) => (
-                      <button
-                        key={o.value}
-                        type="button"
-                        role="radio"
-                        aria-checked={appearance === o.value}
-                        aria-label={t(o.label)}
-                        className={appearance === o.value ? "on" : undefined}
-                        onClick={() => setAppearance(o.value)}
-                      >
-                        <span className="lg">{t(o.label)}</span>
-                        <span className="sm">{t(o.short)}</span>
-                      </button>
-                    ))}
-                  </span>
-                }
-              />
-            </SetGroup>
-
-            <SetGroup label={t("I tuoi dati")}>
-              <SetRow
-                title={t("Esporta un backup")}
-                desc={t(
-                  "Un solo file con tutto: giornate, obiettivi, metriche, Memo.",
-                )}
-                value={
-                  busy === "export"
-                    ? t("esporto...")
-                    : entryCount == null
-                      ? undefined
-                      : `${formatNumber(entryCount)} ${entryCount === 1 ? t("giornata") : t("giornate")}`
-                }
-                onClick={() => void handleExport()}
-                disabled={busy !== "idle"}
-              />
-              <SetRow
-                title={t("Importa un backup")}
-                desc={t(
-                  "Aggiunge le giornate che mancano. Quelle che hai gia non le tocca.",
-                )}
-                value={busy === "import" ? t("importo...") : undefined}
-                onClick={() => fileRef.current?.click()}
-                disabled={busy !== "idle"}
-              />
-              {!ospite && (
-                <SetRow
-                  title={t("Dove sono le mie giornate")}
-                  desc={t("Cosa esce da questo dispositivo, e cosa no.")}
-                  onClick={() => setPanel("where")}
-                />
-              )}
-              {!isLocal && (
-                <SetRow
-                  title={t("Cassaforte")}
-                  desc={t("Chiusa a chiave sul dispositivo: nessuno legge il tuo diario, noi compresi.")}
-                  value={cassaforteValore}
-                  onClick={() => setPanel("cassaforte")}
-                />
-              )}
-              {faceIdRow && (
-                <SetRow
-                  title={t("Face ID")}
-                  desc={t("Il volto al posto del codice, quando apri l'app.")}
-                  control={
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={faceIdOn}
-                      aria-label={t("Face ID")}
-                      className={`jm-sw${faceIdOn ? " on" : ""}`}
-                      onClick={toggleFaceId}
-                      disabled={faceIdBusy}
-                    >
-                      <i aria-hidden="true" />
-                    </button>
-                  }
-                />
-              )}
-            </SetGroup>
-
-            <input
-              ref={fileRef}
-              type="file"
-              accept="application/json,.json"
-              className="hidden"
-              onChange={(e) => void handleImportFile(e.target.files?.[0] ?? null)}
-            />
-
-            {/* L'account sul telefono: su desktop vive nella rail destra. */}
+            {/* L'account sul telefono: su desktop vive nella rail destra.
+                E il PRIMO blocco (Manuel, 10 settembre 2026): chi apre le
+                Impostazioni cerca quasi sempre se stesso — la foto, l'email,
+                il piano, cosa ha speso — non il tema. */}
             <div className="jm-st-phoneonly">
               {!isLocal && plan !== "premium" && <PremiumInvite />}
               <SetGroup label={t("Account")}>
@@ -826,6 +663,14 @@ export function SettingsClient({
                     <ConsumiRow onOpen={() => setPanel("consumi")} />
                   </>
                 )}
+              </SetGroup>
+
+              {/* APP, non Account (10 settembre 2026, Manuel): la versione,
+                  il pacchetto e l'uscita non dicono CHI SEI, dicono che cosa
+                  hai installato. Stavano nello stesso gruppo del piano e
+                  della foto e facevano sembrare il logout una riga di
+                  profilo. */}
+              <SetGroup label={t("App")}>
                 <SetRow title={t("Versione")} value={APP_VERSION} />
                 {/* La riga che risponde a "quale codice ho davvero addosso":
                     il commit da cui e nato questo pacchetto. */}
@@ -843,30 +688,175 @@ export function SettingsClient({
               </SetGroup>
             </div>
 
+            <SetGroup label={t("Il diario")}>
+              <SetRow
+                title={t("Obiettivi")}
+                desc={t("Le caselle che accendi ogni giorno.")}
+                value={`${formatNumber(goals.length)} ${goals.length === 1 ? t("attivo") : t("attivi")}`}
+                onClick={() => setPanel("goals")}
+              />
+              <SetRow
+                title={t("Moduli")}
+                desc={t("Sezioni in piu: palestra, cibo, sonno.")}
+                value={
+                  moduliAttivi.length === 0
+                    ? t("nessuno")
+                    : moduliAttivi.map((m) => t(m.label)).join(" . ")
+                }
+                onClick={() => setPanel("moduli")}
+              />
+            </SetGroup>
+
+            <SetGroup label={t("Lingua e aspetto")}>
+              <SetRow
+                title={t("Lingua")}
+                desc={t("Al primo avvio segue la lingua del dispositivo.")}
+                value={
+                  langPref === "system"
+                    ? `${LANG_NAMES[lang]} . ${t("automatica")}`
+                    : LANG_NAMES[lang]
+                }
+                onClick={() => setPanel("language")}
+              />
+              <SetRow
+                title={t("Tema")}
+                desc={t("{n} temi inclusi, tutti in chiaro e in scuro.", {
+                  n: formatNumber(THEMES.length),
+                })}
+                value={themeName}
+                onClick={() => setPanel("theme")}
+              />
+              <SetRow
+                title={t("Dimensione del testo")}
+                desc={t("Ingrandisce tutta l'app, non solo le scritte.")}
+                value={t(UI_SCALE_LABELS[String(uiScale)])}
+                onClick={() => setPanel("textsize")}
+              />
+              <SetRow
+                title={t("Chiaro o scuro")}
+                desc={t("Vale per qualsiasi tema. Con Sistema segue il dispositivo.")}
+                control={
+                  <span
+                    className="jm-st-seg"
+                    role="radiogroup"
+                    aria-label={t("Chiaro o scuro")}
+                  >
+                    {APPEARANCE_OPTIONS.map((o) => (
+                      <button
+                        key={o.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={appearance === o.value}
+                        aria-label={t(o.label)}
+                        className={appearance === o.value ? "on" : undefined}
+                        onClick={() => setAppearance(o.value)}
+                      >
+                        <span className="lg">{t(o.label)}</span>
+                        <span className="sm">{t(o.short)}</span>
+                      </button>
+                    ))}
+                  </span>
+                }
+              />
+            </SetGroup>
+
+            <SetGroup label={t("I tuoi dati")}>
+              <SetRow
+                title={t("Esporta un backup")}
+                desc={t(
+                  "Un solo file con tutto: giornate, obiettivi, metriche, Memo.",
+                )}
+                value={
+                  busy === "export"
+                    ? t("esporto...")
+                    : entryCount == null
+                      ? undefined
+                      : `${formatNumber(entryCount)} ${entryCount === 1 ? t("giornata") : t("giornate")}`
+                }
+                onClick={() => void handleExport()}
+                disabled={busy !== "idle"}
+              />
+              <SetRow
+                title={t("Importa un backup")}
+                desc={t(
+                  "Aggiunge le giornate che mancano. Quelle che hai gia non le tocca.",
+                )}
+                value={busy === "import" ? t("importo...") : undefined}
+                onClick={() => fileRef.current?.click()}
+                disabled={busy !== "idle"}
+              />
+              {!ospite && (
+                <SetRow
+                  title={t("Dove sono le mie giornate")}
+                  desc={t("Cosa esce da questo dispositivo, e cosa no.")}
+                  onClick={() => setPanel("where")}
+                />
+              )}
+              {!isLocal && (
+                <SetRow
+                  title={t("Cassaforte")}
+                  desc={t("Chiusa a chiave sul dispositivo: nessuno legge il tuo diario, noi compresi.")}
+                  value={cassaforteValore}
+                  onClick={() => setPanel("cassaforte")}
+                />
+              )}
+              {faceIdRow && (
+                <SetRow
+                  title={t("Face ID")}
+                  desc={t("Il volto al posto del codice, quando apri l'app.")}
+                  control={
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={faceIdOn}
+                      aria-label={t("Face ID")}
+                      className={`jm-sw${faceIdOn ? " on" : ""}`}
+                      onClick={toggleFaceId}
+                      disabled={faceIdBusy}
+                    >
+                      <i aria-hidden="true" />
+                    </button>
+                  }
+                />
+              )}
+            </SetGroup>
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => void handleImportFile(e.target.files?.[0] ?? null)}
+            />
+
+
             {!isLocal && (
               <SetGroup label={t("Zona pericolosa")}>
                 <SetRow
                   title={t("Elimina l'account")}
-                  desc={
-                    deleteArmed
-                      ? t(
-                          "Sicuro? Account e giornate spariscono anche dal cloud. Non si torna indietro.",
-                        )
-                      : t("Cancella l'account e tutte le giornate dal cloud.")
-                  }
-                  value={
-                    busy === "deleteAccount"
-                      ? t("elimino...")
-                      : deleteArmed
-                        ? t("si, elimina")
-                        : undefined
-                  }
+                  desc={t("Cancella l'account e tutte le giornate dal cloud.")}
+                  value={busy === "deleteAccount" ? t("elimino...") : undefined}
                   danger
-                  chevron={!deleteArmed}
-                  onClick={() => void handleDeleteAccount()}
+                  onClick={() => setDeleteArmed(true)}
                   disabled={busy !== "idle"}
                 />
               </SetGroup>
+            )}
+
+            {deleteArmed && (
+              <AlertIos
+                titolo={t("Eliminare l'account?")}
+                testo={t(
+                  "Account e giornate spariscono anche dal cloud. Non si torna indietro. Scrivi {parola} qui sotto per confermare.",
+                  { parola: t("ELIMINA") },
+                )}
+                parolaDaScrivere={t("ELIMINA")}
+                conferma={t("Elimina")}
+                distruttivo
+                annulla={t("Annulla")}
+                onConferma={() => void handleDeleteAccount()}
+                onAnnulla={() => setDeleteArmed(false)}
+              />
             )}
 
             {isLocal && (

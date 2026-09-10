@@ -5,16 +5,13 @@ import { SettingsClient } from "@/modules/impostazioni/components/settings-clien
 import SettingsLoading from "./loading";
 import { resolveStorageMode } from "@/lib/data/store";
 import { loadGoalDefs } from "@/lib/data/goals";
-import { loadRecaps } from "@/lib/data/recaps";
 import { signalReady } from "@/lib/app-ready";
-import { recapPeriodLabel } from "@/lib/recap-labels";
 import type { GoalDef } from "@/lib/types";
 
 type Boot = {
   email: string | null;
   isAnonymous: boolean;
   goals: GoalDef[];
-  latestRecap: { title: string; periodLabel: string } | null;
 };
 
 export default function SettingsPage() {
@@ -32,27 +29,14 @@ export default function SettingsPage() {
         const { data } = await createClient().auth.getUser();
         user = data.user;
       }
-      const [goals, recaps] = await Promise.all([
-        loadGoalDefs(),
-        loadRecaps("auth"),
-      ]);
+      const goals = await loadGoalDefs();
       if (!alive) return;
-      // The newest recap across all periods, as the teaser inside the Recap card.
-      const newest = [...recaps].sort((a, b) =>
-        b.generatedAt.localeCompare(a.generatedAt),
-      )[0];
 
       setBoot({
         email: user?.email ?? null,
         // Anonymous Supabase users have no email; that is a distinct label.
         isAnonymous: !!user && !user.email,
         goals,
-        latestRecap: newest
-          ? {
-              title: newest.title,
-              periodLabel: recapPeriodLabel(newest.periodType, newest.periodStart),
-            }
-          : null,
       });
       signalReady();
     })();
@@ -69,7 +53,6 @@ export default function SettingsPage() {
       email={boot.email}
       isAnonymous={boot.isAnonymous}
       initialGoals={boot.goals}
-      latestRecap={boot.latestRecap}
     />
   );
 }

@@ -682,12 +682,6 @@ export function CassafortePanel() {
           disabled={paroleBusy}
         />
       </SetGroup>
-      <SetGroup label={t("Cosa vede il server")}>
-        <SetRow
-          title={t("Di chi e ogni giornata, che giorno e, la versione, quando e stata scritta e quanto pesa.")}
-          desc={t("Il testo, il titolo, la sintesi, le aree, i fatti, i memo e i recap: no.")}
-        />
-      </SetGroup>
     </>
   );
 }

@@ -911,6 +911,32 @@
   line-height: 1.45;
   color: var(--color-ink-muted);
 }
+/* Il campo della parola da scrivere: c'e solo quando la conferma non basta
+   (elimina l'account). Stessa aria dei campi di iOS, dai token del tema. */
+.jm-alert-campo {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in oklab, var(--color-ink) 16%, transparent);
+  background: color-mix(in oklab, var(--color-ink) 4%, transparent);
+  color: var(--color-ink);
+  font-family: inherit;
+  font-size: calc(16px * var(--jm-ui-scale));
+  text-align: center;
+  letter-spacing: 0.04em;
+  outline: none;
+}
+.jm-alert-campo:focus {
+  border-color: var(--color-accent);
+}
+
+.jm-alert-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .jm-alert-btns {
   display: flex;
   flex-direction: column;

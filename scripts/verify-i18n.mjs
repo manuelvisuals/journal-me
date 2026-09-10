@@ -194,6 +194,9 @@ const UGUALI_OK = new Set([
   "dayalogue\nPremium",
   // I nomi dei due piani, sulla schermata del bivio: uguali nelle due lingue.
   "Free",
+  // Il gruppo "App" delle Impostazioni (10 settembre 2026): uguale nelle due
+  // lingue.
+  "App",
 ]);
 const sospette = [...CATALOG.entries()].filter(
   ([it, en]) => it === en && !UGUALI_OK.has(it),

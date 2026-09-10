@@ -14,8 +14,10 @@
 //    Apple sotto la porta dell'email (3A), e "Ho gia un abbonamento" e il
 //    ripristino di chi non ha ancora l'account.
 // 3. Browser: nessun tasto d'acquisto, si rimanda all'app (niente Stripe).
-// 4. Cloud: "Elimina l'account" a due tocchi, il primo non chiama API
-//    (5.1.1(v)).
+// 4. Cloud: "Elimina l'account" apre un avviso che chiede di SCRIVERE la
+//    parola (ELIMINA / DELETE); finche non e quella il tasto rosso e spento
+//    e nessuna API viene chiamata (5.1.1(v), e Manuel il 10 settembre 2026:
+//    un secondo tocco dove prima c'era la riga si preme per sbaglio).
 // 5. /api/review-login senza le variabili risponde {review:false}.
 // 6. /app/benvenuto non e piu un bivio: porta dentro.
 import { chromium } from "playwright-core";
@@ -207,7 +209,7 @@ async function passaCancello(page) {
   await ctx.close();
 }
 
-/* ------- 4. cloud: Elimina l'account, due tocchi, zero chiamate ------- */
+/* --- 4. cloud: Elimina l'account, si scrive la parola, zero chiamate --- */
 {
   const { ctx, page } = await open({ native: false, mode: "cloud" });
   const chiamate = [];
@@ -228,10 +230,20 @@ async function passaCancello(page) {
   );
   const row = page.locator(".jm-st-row", { hasText: "Elimina l'account" }).first();
   await row.click();
-  await page.waitForTimeout(400);
-  const armed = await row.innerText();
-  check("cloud: il primo tocco arma e chiede conferma", armed.includes("Sicuro?"));
-  check("cloud: il primo tocco non chiama nessuna API", chiamate.length === 0);
+  await page.waitForSelector(".jm-alert", { timeout: 5000 });
+  const avviso = (await page.locator(".jm-alert").innerText()).replace(/\s+/g, " ");
+  check("cloud: il tocco apre l'avviso che chiede di scrivere ELIMINA", /ELIMINA/.test(avviso), avviso.slice(0, 90));
+  const rosso = page.locator(".jm-alert-btn.rosso");
+  check("cloud: con il campo vuoto il tasto rosso e spento", await rosso.isDisabled());
+  await page.locator(".jm-alert-campo").fill("qualcosa");
+  check("cloud: con la parola sbagliata resta spento", await rosso.isDisabled());
+  check("cloud: fin qui nessuna API chiamata", chiamate.length === 0);
+  await page.locator(".jm-alert-campo").fill("elimina");
+  check("cloud: con la parola giusta (anche minuscola) il tasto si accende", !(await rosso.isDisabled()));
+  // Annulla: l'avviso sparisce e non e successo niente.
+  await page.locator(".jm-alert-btn.forte").click();
+  await page.waitForTimeout(300);
+  check("cloud: Annulla chiude l'avviso senza chiamare niente", (await page.locator(".jm-alert").count()) === 0 && chiamate.length === 0);
   await ctx.close();
 }
 
