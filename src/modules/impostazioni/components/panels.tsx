@@ -12,6 +12,7 @@
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import { contaCassaforte, portaNellaCassaforte, type StatoGiornate } from "@/lib/data/cassaforte";
 import { paroleCorrenti } from "@/lib/cassaforte";
 import { sedeDellaChiave } from "@/lib/cassaforte/chiave";
@@ -56,8 +57,11 @@ export function GoalsPanel({
   const t = useT();
   const [draft, setDraft] = useState<string>("");
   const [busy, setBusy] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
+  // Gli esiti passano dal TOASTER dell'app (10 settembre 2026, come il
+  // resto delle Impostazioni): un errore scritto in una riga in fondo
+  // all'elenco degli obiettivi, con la tastiera aperta e la lista che
+  // scorre, lo si vede solo per caso.
   const handleAdd = async () => {
     // `label` e non `t`: `t` e la funzione di traduzione.
     const label = draft.trim();
@@ -67,13 +71,12 @@ export function GoalsPanel({
       return;
     }
     setBusy(true);
-    setError(null);
     try {
       const created = await addGoal(mode, label);
       setGoals((prev) => [...prev, created]);
       setDraft("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("Errore nel salvataggio"));
+      toast.error(err instanceof Error ? err.message : t("Errore nel salvataggio"));
     } finally {
       setBusy(false);
     }
@@ -85,12 +88,11 @@ export function GoalsPanel({
       snapshot = prev;
       return prev.filter((x) => x.id !== id);
     });
-    setError(null);
     try {
       await removeGoal(mode, id);
     } catch (err) {
       setGoals(() => snapshot);
-      setError(err instanceof Error ? err.message : t("Errore nella rimozione"));
+      toast.error(err instanceof Error ? err.message : t("Errore nella rimozione"));
     }
   };
 
@@ -125,12 +127,6 @@ export function GoalsPanel({
           </div>
         ))}
       </SetGroup>
-
-      {error && (
-        <div role="alert" className="jm-st-note err">
-          {error}
-        </div>
-      )}
 
       <form
         className="jm-st-add"

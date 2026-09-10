@@ -12,7 +12,9 @@
 //  6. la rail destra tiene l'identita e non sborda a nessuna larghezza;
 //  7. sul telefono la card Recap c'e, su desktop no (li Recap e nella rail
 //     sinistra) — e viceversa per l'identita;
-//  8. "Zona pericolosa" esiste solo in modalita locale.
+//  8. "Zona pericolosa" esiste solo in modalita locale;
+//  9. l'ESITO di un'azione esce nel toaster dell'app e sparisce da solo, non
+//     in una riga incastrata fra le impostazioni (10 settembre 2026).
 //
 // Serve il dev server su :3100.
 import { chromium } from "playwright-core";
@@ -284,6 +286,43 @@ for (const w of [1280, 1440, 1728, 2600]) {
     "zona pericolosa: il primo tocco chiede conferma",
     (await row.innerText()).includes("Sicuro?") && (await row.innerText()).includes("si, cancella"),
     (await row.innerText()).replace(/\n/g, " "),
+  );
+
+  /* L'ESITO STA NEL TOASTER (10 settembre 2026, segnalato da Manuel con lo
+     screenshot: "Foto profilo aggiornata." compariva come riga grigia
+     incastrata sotto Face ID, lontana dalla riga toccata). La cancellazione
+     locale e l'esito piu facile da far succedere davvero in un banco: niente
+     rete, niente file. Quello che si misura vale per tutti, perche tutte le
+     Impostazioni passano dalla stessa `say()`. */
+  const main = page.locator("main");
+  const primaNote = await main.locator(".jm-st-note").count();
+  await row.click();
+  await page.locator(".jm-toast").waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
+  const toastTesto = await page.locator(".jm-toast").innerText().catch(() => "");
+  check(
+    "esito: la conferma esce nel toaster dell'app, non in una riga",
+    /non contiene piu nessuna giornata/.test(toastTesto),
+    toastTesto.replace(/\n/g, " "),
+  );
+  check(
+    "esito: il toaster e quello 'ok' (spunta), non un errore",
+    (await page.locator(".jm-toast.ok").count()) === 1 && (await page.locator(".jm-toast.error").count()) === 0,
+  );
+  check(
+    "esito: nessuna riga di nota nuova e comparsa nell'elenco",
+    (await main.locator(".jm-st-note").count()) === primaNote,
+    `prima ${primaNote}, dopo ${await main.locator(".jm-st-note").count()}`,
+  );
+  check(
+    "esito: il toaster sta sopra la pagina, non dentro l'elenco",
+    (await page.locator("main .jm-toast").count()) === 0 && (await page.locator(".jm-toast-wrap").count()) === 1,
+  );
+  // `ok` dura 2,5 secondi e poi se ne va da solo: un esito non resta a
+  // schermo a dire una cosa vecchia (era il difetto della riga).
+  await page.waitForTimeout(3200);
+  check(
+    "esito: dopo qualche secondo il toaster sparisce da solo",
+    (await page.locator(".jm-toast").count()) === 0,
   );
   await ctx.close();
 }

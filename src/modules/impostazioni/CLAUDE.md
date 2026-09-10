@@ -218,3 +218,32 @@ Impostazioni, riga `profiles` sul server finto e la tenuta dopo un
 ricaricamento (17 controlli, morso provato). `scripts/prova-foto-profilo.mjs`
 fa lo stesso su dayalogue.com dal Chrome del Mac con l'account demo, e
 rimette la foto di Giulia alla fine.
+
+## Gli esiti passano dal toaster, non da una riga (10 settembre 2026)
+
+Segnalato da Manuel con lo screenshot: dopo aver cambiato la foto del
+profilo, "Foto profilo aggiornata." compariva come riga grigia incastrata
+fra Face ID e il gruppo Account — a meta schermata, lontana dalla riga che
+aveva toccato, in mezzo a impostazioni che non c'entravano. Un esito e un
+avviso di passaggio, non una riga di impostazione.
+
+- `say(testo, errore?)` in `settings-client.tsx` NON tiene piu uno stato:
+  chiama il TOASTER dell'app (`src/components/ui/toast.tsx`, lo stesso di
+  "Premium ripristinato." e del salvataggio di una giornata). `say("")`
+  non e un messaggio vuoto ma un "azzera", e diventa `toast.hide()`.
+  Passano da qui: foto profilo, nome, export, import, cancellazione
+  locale, Face ID, cancellazione dell'account.
+- Stessa cosa per gli errori del pannello Obiettivi (`panels.tsx`), che
+  erano un `.jm-st-note err` in fondo all'elenco: con la tastiera aperta e
+  la lista che scorre li vedevi solo per caso.
+- `.jm-st-note` RESTA, ma adesso e solo la nota STATICA di un pannello (la
+  frase che spiega e resta li, tipo "Spegnere non cancella niente."). Se un
+  domani ci rimetti dentro un esito, il banco diventa rosso.
+- NON convertito: l'errore del pannello Cassaforte
+  (`jm-st-cassa-errore`), che vive dentro un flusso a passi con la sua
+  barra di avanzamento e resta accanto al tasto che ha fallito. E una
+  scelta, non una dimenticanza.
+- Banco: `verify-impostazioni` (60 controlli; i cinque nuovi guidano la
+  cancellazione locale fino in fondo e pretendono il toaster 'ok' sopra la
+  pagina, nessuna riga nuova nell'elenco, e la sparizione da sola dopo
+  2,5s). Provato a mordere: rimettendo la riga vecchia escono 4 rossi.
