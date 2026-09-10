@@ -457,7 +457,7 @@ export function HomeSito({
                 </Link>
                 {/* Secondaria per davvero: un tasto di contorno, non un link
                     nudo. Resta accessibile, ma il gesto dominante e uno solo. */}
-                <a href="#giornata" className="jm-sito-b jm-sito10-secondo">
+                <a href="#come" className="jm-sito-b jm-sito10-secondo">
                   {t.eroeVivo.ctaSecondo}
                 </a>
               </div>
@@ -523,55 +523,6 @@ export function HomeSito({
             rimossa dalla home viva (Manuel, 9 settembre 2026): resta intatta
             su /v6, insieme al suo CSS (.jm-sito6-*) e ai testi vocePaginaTre. */}
 
-        {/* LA GIORNATA (dal 9 settembre 2026 e questa, e si tiene l'ancora
-            #giornata a cui puntano il menu e il link dell'eroe). La sezione
-            "jm-sito2-giornata" che stava qui sopra e uscita: diceva la stessa
-            cosa una seconda volta. Di quella restano solo i tre punti, che
-            adesso stanno sotto le fotografie. */}
-        <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
-          <div className="jm-sito8-testa" data-fx="testo">
-            <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
-            <h2 id="jm-sito8-titolo">{t.vocePagina.titolo}</h2>
-            <p>{t.vocePagina.testo}</p>
-          </div>
-
-          {/* La pista e alta piu di quattro schermate: la scena ci sta ferma
-              dentro (sticky) e scorrerla muove --s da 0 a 1. Due atti in fila,
-              i tempi stanno in styles.css sotto .jm-sito8-scena. */}
-          <div className="jm-sito8-pista" data-pista>
-            <div className="jm-sito8-scena">
-              <Ritratto
-                lato="donna"
-                foto="skincare"
-                voce={t.vocePagina.donna}
-                stato={t.vocePagina.stato}
-                g={t.giornate.lei}
-              />
-              <Ritratto
-                lato="uomo"
-                foto="barba"
-                voce={t.vocePagina.uomo}
-                stato={t.vocePagina.stato}
-                g={t.giornate.lui}
-              />
-            </div>
-          </div>
-
-          {/* I tre punti che stavano nella sezione "La giornata" (tolta il 9
-              settembre 2026): la promessa la fa la scena qui sopra, questi
-              dicono cosa resta scritto. */}
-          <div className="jm-sito8-punti">
-            {t.giornata.punti.map((x, i) => (
-              <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
-                <h3>{x.titolo}</h3>
-                <p>{x.testo}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="jm-sito8-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
-        </section>
-
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">
           <div className="jm-sito-cont">
@@ -600,64 +551,47 @@ export function HomeSito({
           </div>
         </section>
 
-        {/* -------------------------------------------- come funziona */}
-        <section className="jm-sito-sez" id="come">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa" data-fx="testo">
-              <p className="jm-sito-kick">{t.passi.etichetta}</p>
-              <svg className="jm-sito-voce-testo" viewBox="0 0 320 90" aria-hidden="true">
-                <g className="onda">
-                  <line x1="8" y1="40" x2="8" y2="50" />
-                  <line x1="20" y1="30" x2="20" y2="60" />
-                  <line x1="32" y1="22" x2="32" y2="68" />
-                  <line x1="44" y1="34" x2="44" y2="56" />
-                  <line x1="56" y1="18" x2="56" y2="72" />
-                  <line x1="68" y1="30" x2="68" y2="60" />
-                  <line x1="80" y1="38" x2="80" y2="52" />
-                  <line x1="92" y1="26" x2="92" y2="64" />
-                  <line x1="104" y1="36" x2="104" y2="54" />
-                </g>
-                <path className="filo" d="M118 45 C 140 45, 140 45, 158 45" />
-                <g className="righe">
-                  <rect x="172" y="26" width="120" height="7" rx="3.5" />
-                  <rect x="172" y="41" width="140" height="7" rx="3.5" opacity=".55" />
-                  <rect x="172" y="56" width="96" height="7" rx="3.5" opacity=".55" />
-                </g>
-              </svg>
-              <h2 className="jm-sito-h2">{t.passi.titolo}</h2>
-            </div>
-            <div className="jm-sito-passi">
+        {/* --------------------------------- come funziona (scena bloccata) */}
+        {/* LA SCENA (jm-sito12, 11 settembre 2026, mockup approvato da Manuel).
+            Prende il posto di DUE sezioni: i tre passi in colonna e la
+            fotografia dello schermo, che erano la stessa cosa detta due volte
+            a trenta pixel di distanza — i passi come disegni, il telefono come
+            oggetto — e chi scorreva vedeva le stesse tre schermate di fila.
+
+            Adesso e un racconto solo. Il telefono e gia mezzo fuori dal bordo
+            sinistro quando la scena si incolla: non entra, c'e. Le tre carte
+            salgono dal basso una alla volta, in dissolvenza dal basso e in
+            dissolvenza verso l'alto, e il titolo in cima cambia con loro.
+            Quando l'ultima e sparita il telefono scivola al centro e resta una
+            frase sola.
+
+            L'ancora #come resta qui: a lei puntano la barra in alto e il
+            piede. Il titolo della sezione, per chi legge con lo schermo o
+            senza JavaScript, e la frase finale (aria-labelledby). Senza
+            JavaScript la scena non si incolla e diventa una colonna normale:
+            titolo, carta, titolo, carta, e in fondo il telefono. */}
+        <section className="jm-sito12" id="come" aria-labelledby="jm-sito12-fine">
+          <div className="jm-sito12-pista" data-pista="avanti">
+            <div className="jm-sito12-scena">
+              <p className="jm-sito-kick jm-sito12-occhio">{t.passi.etichetta}</p>
               {t.passi.voci.map((v, i) => (
-                <div key={v.titolo} className="jm-sito-passo" data-fx="testo">
-                  <div>
-                    <h3>{v.titolo}</h3>
+                <div className="jm-sito12-passo" key={v.titolo}>
+                  <h2 className="jm-sito12-titolo">{v.titolo}</h2>
+                  <div className="jm-sito12-carta">
+                    <div className="jm-sito12-schermo">
+                      {i === 0 ? <SchermoRegistra t={t} /> : i === 1 ? <SchermoChiedi t={t} /> : <SchermoMese t={t} />}
+                    </div>
                     <p>{v.testo}</p>
                   </div>
-                  {i === 0 ? <SchermoRegistra t={t} /> : i === 1 ? <SchermoChiedi t={t} /> : <SchermoMese t={t} />}
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-
-        {/* -------------------------------------------------- la prova */}
-        {/* LA FOTOGRAFIA DELLO SCHERMO VERO (11 settembre 2026, scelta di
-            Manuel sul mockup "dove va il telefono", opzione 1). Stava
-            nell'eroe e li era una scheda tecnica: raccontava l'interfaccia
-            prima ancora di aver detto a cosa serve. Qui invece arriva dopo i
-            tre passi, che sono disegni astratti — onde, righe, icone — nel
-            punto esatto in cui chi legge si chiede "si, ma com'e fatto
-            davvero?". Un oggetto solo, grande, dritto, su un fondo vuoto:
-            niente inclinazioni, niente card intorno, niente didascalie. */}
-        <section className="jm-sito11-prova" aria-labelledby="jm-sito11-titolo">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa" data-fx="testo">
-              <p className="jm-sito-kick">{t.prova.etichetta}</p>
-              <h2 className="jm-sito-h2" id="jm-sito11-titolo">{t.prova.titolo}</h2>
-            </div>
-            <div className="jm-sito11-scena" data-fx="testo">
-              <Foto nome="iphone-giornata" className="jm-sito11-telefono" />
+              <h2 className="jm-sito12-titolo fine" id="jm-sito12-fine">{t.prova.finale}</h2>
+              {/* Il telefono sta in fondo nel documento, non in cima: nella
+                  scena e posizionato in assoluto e l'ordine non conta (lo
+                  decide lo z-index), ma senza JavaScript la sezione si legge
+                  nell'ordine in cui e scritta — e li l'oggetto va DOPO la
+                  frase che chiude, non prima dei tre passi. */}
+              <Foto nome="iphone-giornata" className="jm-sito12-telefono" />
             </div>
           </div>
         </section>
@@ -733,6 +667,62 @@ export function HomeSito({
               ))}
             </div>
           </div>
+        </section>
+
+        {/* LA GIORNATA. Dall'11 settembre 2026 sta QUI, dopo la cassaforte
+            (Manuel). Prima veniva subito dopo l'eroe, cioe prima ancora di
+            aver detto come funziona e a chi resta la chiave: due ritratti e
+            due pagine private in faccia a chi era arrivato da trenta secondi.
+            Nell'ordine di adesso il visitatore sa gia il gesto (l'eroe), il
+            meccanismo (la scena bloccata) e chi puo leggere (la cassaforte);
+            queste due giornate sono la conseguenza, e si leggono come tali.
+
+            L'ancora #giornata resta la sua: la usa il menu del telefono negli
+            archivi. Il tasto di contorno dell'eroe invece adesso punta a
+            #come, che e la risposta vera a "guarda come funziona" — e che
+            resta dov'era, poco sotto. */}
+        <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
+          <div className="jm-sito8-testa" data-fx="testo">
+            <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
+            <h2 id="jm-sito8-titolo">{t.vocePagina.titolo}</h2>
+            <p>{t.vocePagina.testo}</p>
+          </div>
+
+          {/* La pista e alta piu di quattro schermate: la scena ci sta ferma
+              dentro (sticky) e scorrerla muove --s da 0 a 1. Due atti in fila,
+              i tempi stanno in styles.css sotto .jm-sito8-scena. */}
+          <div className="jm-sito8-pista" data-pista>
+            <div className="jm-sito8-scena">
+              <Ritratto
+                lato="donna"
+                foto="skincare"
+                voce={t.vocePagina.donna}
+                stato={t.vocePagina.stato}
+                g={t.giornate.lei}
+              />
+              <Ritratto
+                lato="uomo"
+                foto="barba"
+                voce={t.vocePagina.uomo}
+                stato={t.vocePagina.stato}
+                g={t.giornate.lui}
+              />
+            </div>
+          </div>
+
+          {/* I tre punti che stavano nella sezione "La giornata" (tolta il 9
+              settembre 2026): la promessa la fa la scena qui sopra, questi
+              dicono cosa resta scritto. */}
+          <div className="jm-sito8-punti">
+            {t.giornata.punti.map((x, i) => (
+              <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
+                <h3>{x.titolo}</h3>
+                <p>{x.testo}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="jm-sito8-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
         </section>
 
         {/* ------------------------------------------------- funzioni */}

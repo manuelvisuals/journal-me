@@ -4543,18 +4543,122 @@ textarea.jm-sito-in {
   opacity: var(--e2);
   --dx: calc((1 - var(--e2)) * var(--fuori));
 }
+/* SUL TELEFONO, UNO ALLA VOLTA (11 settembre 2026, Manuel: "questa sezione
+   su iPhone non si vede bene").
+
+   Il difetto. Sul desktop i due ritratti stanno affiancati, meta schermo
+   ciascuno, e ognuno e una figura intera. Sul telefono la stessa idea era
+   stata girata di novanta gradi: due ritratti impilati, alti meta schermo,
+   cioe due riquadri da 393x414. In un riquadro cosi una persona in piedi non
+   ci sta: si vedeva il mento della donna e la fronte dell'uomo, tagliati
+   tutti e due, con la giuntura fra le due fotografie proprio in mezzo alla
+   scena. E le due card si contendevano lo stesso schermo.
+
+   La correzione. I due ritratti restano DUE, ma non convivono: ognuno prende
+   tutta la scena e si danno il cambio a meta pista. Quindi la fotografia e
+   alta 828px invece di 414 e la figura ci sta dentro intera, la card sta al
+   centro dello schermo con la persona dietro, e il vetro attraversa tutta
+   l'inquadratura invece di mezza.
+
+   I tempi non sono gli stessi del desktop, e non potevano esserlo: li i due
+   ritratti si vedono insieme e fra un atto e l'altro basta una pausa di sei
+   centesimi, qui uno deve USCIRE e l'altro ENTRARE. Gli atti si stringono e
+   la pausa si allarga; i numeri esatti stanno nel commento dentro la regola,
+   accanto alle variabili che li scrivono.
+
+   LA VELOCITA DEL VETRO va rimisurata ogni volta che si toccano quei numeri:
+   la corsa e sempre il 102% della fotografia, ma la fotografia adesso e alta
+   il doppio (845px invece di 422), quindi con la stessa finestra di
+   scorrimento il vetro andrebbe al doppio della velocita. Il conto e (corsa
+   del vetro) / (pixel di scorrimento della finestra) e deve restare sotto 1,
+   cioe piu lento del dito: e la condizione per riuscire a leggerlo.
+
+   Il desktop non si tocca: tutto questo vive dentro max-width: 900px. */
 @media (max-width: 900px) {
-  .jm-sito7[data-js] .jm-sito8-pista { height: 460svh; }
+  /* L'ATTO DELL'UOMO NON C'E (11 settembre 2026, Manuel: "e uguale a quella
+     con la donna e diventa noioso vederne due di fila"). Sul desktop i due
+     ritratti si vedono INSIEME e il confronto e il senso della sezione: due
+     giornate diverse, stessa app. Sul telefono, uno dopo l'altro, il
+     confronto non si vede — si vede solo la stessa cosa due volte, e la
+     seconda dura quanto la prima. Quindi qui si racconta una giornata sola.
+     Il ritratto dell'uomo resta nell'HTML (lo legge chi arriva da una
+     ricerca, e sul desktop c'e): sparisce solo dallo schermo stretto. */
+  .jm-sito8-persona.uomo { display: none; }
+  /* Con un atto solo la pista si accorcia quasi della meta: quello che prima
+     era scorrimento per il secondo atto sarebbe diventato scorrimento a
+     vuoto. */
+  .jm-sito7[data-js] .jm-sito8-pista { height: 210svh; }
   .jm-sito7[data-js] .jm-sito8-scena {
     top: 12px;
     height: calc(100svh - 24px);
     --fuori: 420px;
+    /* UN ATTO SOLO:
+
+         vetro   0   -> .72       (esce dallo schermo gia a .37)
+         card   .40  -> .72       (entra mentre il vetro sta uscendo)
+         la card resta ferma      .72 -> 1
+
+       Le due finestre si sovrappongono APPOSTA. Il vetro impiega .72 di pista
+       a completare la sua corsa, ma dallo schermo se ne va molto prima — a
+       .37, cioe quando ha fatto il 51% del cammino: il resto lo fa fuori dal
+       ritaglio. Facendo partire la card alla fine di quel viaggio ci sarebbero
+       stati trecento pixel di scorrimento con la sola fotografia ferma. Cosi
+       invece una cosa esce mentre l'altra entra.
+
+       LA VELOCITA DEL VETRO e (corsa) / (pixel di scorrimento della sua
+       finestra) e deve restare sotto 1, cioe piu lento del dito: e la
+       condizione per riuscire a leggerlo mentre passa. Qui la corsa e il 102%
+       di una fotografia alta 828px (845px) e la finestra e .72 di 1406px di
+       scorrimento (1012px): viene 0,83. Sotto lo 0,88 del desktop, che Manuel
+       ha gia approvato. Il conto torna uguale sull'iPhone SE, perche tutte e
+       due le misure sono in svh. Chi tocca la pista o questi numeri lo
+       rifaccia.
+
+       L'ultimo quarto e la card ferma al centro: serve per leggerla prima che
+       la scena si stacchi. */
+    --g1: clamp(0, calc(var(--s) / .72), 1);
+    --e1: clamp(0, calc((var(--s) - .40) / .32), 1);
+    /* Non c'e piu nessun cambio della guardia: la card di lei non deve
+       sparire, resta lei fino alla fine. */
+    --cambio: 0;
   }
-  .jm-sito7[data-js] .jm-sito8-persona { position: absolute; inset-inline: 0; height: 50%; }
-  .jm-sito7[data-js] .jm-sito8-persona.donna { top: 0; }
-  .jm-sito7[data-js] .jm-sito8-persona.uomo { bottom: 0; }
+  /* `isolation` non e un vezzo: la card ha z-index 2 e la fotografia 0, e
+     finche i due ritratti non fanno contesto per conto loro quei numeri si
+     confrontano fra ritratti diversi — cioe la card di LEI restava appesa
+     sopra la fotografia di LUI anche a cambio finito. Con `isolate` ogni
+     ritratto e un pacchetto, e i pacchetti si coprono nell'ordine in cui
+     stanno scritti. */
+  .jm-sito7[data-js] .jm-sito8-persona {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    isolation: isolate;
+  }
+  /* Sale solo LUI. Se si spegnesse anche lei, a meta del cambio si vedrebbe
+     il fondo scuro fra le due fotografie: un lampo nero in mezzo alla scena.
+     Cosi invece e una fotografia che ne copre un'altra. */
+  .jm-sito7[data-js] .jm-sito8-persona.uomo { opacity: var(--cambio); }
+  /* La card di LEI esce col cambio: quello che si dissolve dev'essere una
+     fotografia dentro un'altra fotografia, non un foglio bianco sopra una
+     faccia. */
+  .jm-sito7[data-js] .jm-sito8-persona.donna .jm-sito8-pagina {
+    opacity: calc(var(--e1) * (1 - var(--cambio)));
+  }
   .jm-sito7[data-js] .jm-sito8-persona.donna .jm-sito8-vetro { left: 16px; }
   .jm-sito7[data-js] .jm-sito8-persona.uomo .jm-sito8-vetro { right: 16px; }
+  /* Adesso che la card ha tutto lo schermo invece di meta, puo tornare alla
+     misura in cui si legge senza strizzare gli occhi. */
+  .jm-sito7[data-js] .jm-sito8-pagina {
+    width: min(304px, 84%);
+    padding: 19px 20px 16px;
+  }
+  .jm-sito7[data-js] .jm-sito8-pagina header,
+  .jm-sito7[data-js] .jm-sito8-pagina-fondo { font-size: calc(9.5px * var(--jm-ui-scale)); }
+  .jm-sito7[data-js] .jm-sito8-pagina header b { font-size: calc(14px * var(--jm-ui-scale)); }
+  .jm-sito7[data-js] .jm-sito8-pagina h3 { font-size: calc(20px * var(--jm-ui-scale)); }
+  .jm-sito7[data-js] .jm-sito8-pagina > p { font-size: calc(12.5px * var(--jm-ui-scale)); line-height: 1.45; }
+  .jm-sito7[data-js] .jm-sito8-miniature img { height: 42px; }
+  .jm-sito7[data-js] .jm-sito8-vetro { width: min(286px, 78%); }
 }
 
 
@@ -5365,52 +5469,291 @@ textarea.jm-sito-in {
   .jm-sito4.jm-sito7 .jm-sito-nav-in { padding-inline: 24px; }
 }
 
+
 /* =====================================================================
-   LA PROVA (jm-sito11) — 11 settembre 2026.
+   COME FUNZIONA, SCENA BLOCCATA (jm-sito12) — 11 settembre 2026.
+   Mockup approvato da Manuel ("scena-carte").
 
-   La fotografia dello schermo vero. Stava nell'eroe e li era una scheda
-   tecnica: mostrava l'interfaccia prima ancora di aver detto a cosa serve,
-   ed e per questo che l'audit del revisore l'aveva fatta togliere. Qui
-   arriva dopo i tre passi — che sono disegni astratti, onde e righe — nel
-   punto in cui chi legge si chiede "si, ma com'e fatto davvero?". Una
-   fotografia messa in cima e una presentazione; la stessa messa qui e una
-   prova.
+   Prende il posto di DUE sezioni: i tre passi in colonna e la fotografia
+   dello schermo. Erano la stessa cosa detta due volte a trenta pixel di
+   distanza — i passi come disegni, il telefono come oggetto — e chi
+   scorreva vedeva le stesse tre schermate di fila.
 
-   Le regole del posto, tutte per sottrazione: un oggetto solo, dritto (mai
-   inclinato: l'inclinazione e un trucco da mockup e si vede), su un fondo
-   piu profondo di quello della pagina, senza card ne didascalie ne frecce
-   intorno. L'unica cosa che lo tiene a terra e un'ombra bassa e larga, del
-   colore dell'inchiostro, non nera.
+   Il racconto: il telefono e GIA mezzo fuori dal bordo sinistro quando la
+   scena si incolla (non entra, c'e); le tre carte salgono dal basso una
+   alla volta, in dissolvenza dal basso e in dissolvenza verso l'alto; il
+   titolo in cima cambia con loro; quando l'ultima e sparita il telefono
+   scivola al centro e resta la frase.
 
-   Il fondo e --jm-bg (piu scuro di --jm-bg-app di un soffio): fa da palco
-   senza diventare una sezione colorata, e prepara il salto al buio della
-   cassaforte che viene subito dopo.
+   TUTTO E UNA FUNZIONE DI --s, niente JavaScript oltre a quello che
+   scrive --s (scorrimento.tsx). Vuol dire che scorrendo all'indietro la
+   scena si smonta da sola, esattamente al contrario, senza una riga in
+   piu — e che se lo script non parte non si rompe niente: senza
+   `[data-js]` la pista non si incolla e la sezione e una colonna
+   normale, titolo, carta, titolo, carta, col telefono in fondo.
+
+   I NUMERI. Le tre carte occupano da --s 0.04 a 0.74, una finestra di
+   0.2333 ciascuna (1/0.2333 = 4.2857, il fattore che si vede nei calc).
+   Dentro la finestra la carta va dal 112% all'8% dell'altezza della
+   scena. La dissolvenza in uscita FINISCE al 62-84% della finestra, cioe
+   quando la carta e ancora a un quarto d'altezza: se la si lasciava
+   svanire sul bordo alto passava sopra il titolo e per mezzo secondo si
+   leggevano due frasi sovrapposte. Il ritorno al centro del telefono va
+   da 0.76 a 0.93, il cambio di titolo da 0.76 a 0.86.
    ===================================================================== */
-.jm-sito11-prova {
-  padding: clamp(64px, 7vw, 100px) 0 clamp(56px, 6vw, 88px);
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 62%, color-mix(in srgb, var(--jm-surface) 62%, transparent), transparent 70%),
-    var(--jm-bg);
+.jm-sito12 {
+  position: relative;
 }
-.jm-sito11-scena {
+/* SENZA JAVASCRIPT: colonna normale. Le regole della scena stanno tutte
+   sotto [data-js], quindi qui non c'e niente da disfare. */
+.jm-sito12-scena {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: clamp(64px, 8vw, 110px) 22px;
+  text-align: center;
+}
+.jm-sito12-occhio {
+  margin-bottom: 18px;
+}
+.jm-sito12-titolo {
+  font-family: var(--jm-font-marchio);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.06;
+  font-size: calc(34px * var(--jm-ui-scale));
+  margin: 0 0 18px;
+  text-wrap: balance;
+}
+.jm-sito12-carta {
   display: flex;
+  gap: 22px;
+  align-items: center;
   justify-content: center;
+  margin: 0 auto clamp(40px, 5vw, 64px);
+  max-width: 600px;
+  text-align: left;
 }
-.jm-sito11-telefono {
+.jm-sito12-carta > p {
+  margin: 0;
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.55;
+  color: var(--jm-ink-muted);
+}
+/* Lo schermo dell'app in piccolo. Non si rimpicciolisce con la larghezza —
+   dentro .jm-sito-app le spaziature e i corpi sono in pixel, quindi a 150px
+   di larghezza uscirebbe un accrocco compresso invece di una schermata
+   piccola. Si disegna alla misura vera e si scala: --scala e l'unico numero
+   da toccare. */
+.jm-sito12-schermo {
+  --scala: .475;
+  flex: 0 0 auto;
+  width: calc(320px * var(--scala));
+  height: calc(380px * var(--scala));
+}
+.jm-sito12-schermo .jm-sito-app {
+  width: 320px;
+  max-width: none;
+  height: 380px;
+  overflow: hidden;
+  transform: scale(var(--scala));
+  transform-origin: top left;
+  box-shadow: 0 8px 22px color-mix(in oklab, var(--jm-shadow) 14%, transparent);
+  -webkit-mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
+}
+.jm-sito12-telefono {
   display: block;
   width: min(320px, 76vw);
   height: auto;
-  /* La misura vera del file (919x1300). Senza, il browser non sa quanto e
-     alta la fotografia finche non l'ha scaricata e la pagina sotto sobbalza
-     quando arriva: e lo stesso salto che abbiamo appena tolto dall'eroe. */
   aspect-ratio: 919 / 1300;
-  /* L'ombra e in oklab sull'inchiostro della tavolozza: un'ombra nera su un
-     fondo caldo vira al grigio e stacca l'oggetto dalla pagina invece di
-     appoggiarcelo. */
+  margin: 0 auto;
   filter:
     drop-shadow(0 2px 3px color-mix(in oklab, var(--jm-ink) 16%, transparent))
-    drop-shadow(0 26px 44px color-mix(in oklab, var(--jm-ink) 26%, transparent));
+    drop-shadow(0 26px 46px color-mix(in oklab, var(--jm-ink) 26%, transparent));
 }
-@media (min-width: 768px) {
-  .jm-sito11-telefono { width: 380px; }
+
+/* --------------------------------------------------- CON JAVASCRIPT */
+.jm-sito7[data-js] .jm-sito12-pista {
+  position: relative;
+  height: 420svh;
+  background: var(--jm-bg);
+}
+.jm-sito7[data-js] .jm-sito12-scena {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  max-width: none;
+  padding: 0;
+  overflow: clip;
+  background:
+    radial-gradient(ellipse 62% 54% at 30% 58%, color-mix(in srgb, var(--jm-surface) 62%, transparent), transparent 72%),
+    var(--jm-bg);
+  /* i pezzi della scena */
+  --fine: clamp(0, calc((var(--s, 0) - .76) * 10), 1);
+  --centro: clamp(0, calc((var(--s, 0) - .76) * 5.8824), 1);
+  --corsa: clamp(0, calc((var(--s, 0) - .04) * 1.4286), 1);
+}
+.jm-sito7[data-js] .jm-sito12-passo {
+  display: contents;
+}
+/* il cartiglio in cima: occhiello e titoli, uno sopra l'altro, fermi */
+.jm-sito7[data-js] .jm-sito12-occhio {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  translate: -50% 0;
+  top: clamp(40px, 6.5svh, 80px);
+  width: min(620px, 88vw);
+  margin: 0;
+  text-align: center;
+  opacity: calc(1 - var(--fine));
+}
+.jm-sito7[data-js] .jm-sito12-titolo {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  translate: -50% 0;
+  top: calc(clamp(40px, 6.5svh, 80px) + 30px);
+  width: min(620px, 88vw);
+  margin: 0;
+  text-align: center;
+  font-size: clamp(30px, 5vw, 50px);
+  pointer-events: none;
+  /* --u e la stessa corsa della carta gemella: titolo e carta vivono e
+     muoiono insieme, con l'incrocio piu corto (12% invece di 22%) perche
+     due frasi sovrapposte si leggono peggio di due immagini. */
+  opacity: calc(
+    min(
+      clamp(0, calc(var(--u, 0) * 8.3333), 1),
+      calc(1 - clamp(0, calc((var(--u, 0) - .88) * 8.3333), 1))
+    ) * (1 - var(--fine))
+  );
+}
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-titolo,
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-carta { --u: clamp(0, calc((var(--s, 0) - .04) * 4.2857), 1); }
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(2) .jm-sito12-titolo,
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(2) .jm-sito12-carta { --u: clamp(0, calc((var(--s, 0) - .2733) * 4.2857), 1); }
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-titolo,
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-carta { --u: clamp(0, calc((var(--s, 0) - .5067) * 4.2857), 1); }
+/* Il PRIMO titolo non ha dissolvenza in entrata: quando la scena si incolla
+   deve essere gia li. Con l'entrata degli altri restava un dito di scorrimento
+   con il cartiglio vuoto, e una scena che si apre vuota sembra rotta. */
+.jm-sito7[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-titolo {
+  opacity: calc((1 - clamp(0, calc((var(--u, 0) - .88) * 8.3333), 1)) * (1 - var(--fine)));
+}
+.jm-sito7[data-js] .jm-sito12-titolo.fine {
+  font-size: clamp(32px, 5.6vw, 58px);
+  opacity: var(--fine);
+}
+/* la carta: sale dal basso, sfuma in entrata e in uscita */
+.jm-sito7[data-js] .jm-sito12-carta {
+  position: absolute;
+  z-index: 4;
+  left: 62%;
+  translate: -50% -50%;
+  top: calc(112% - 104% * var(--u, 0));
+  width: min(600px, 52vw);
+  max-width: none;
+  margin: 0;
+  padding: 18px 22px;
+  border-radius: 24px;
+  border: 1px solid var(--jm-line);
+  background: color-mix(in srgb, var(--jm-surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  backdrop-filter: blur(22px) saturate(1.3);
+  box-shadow: 0 22px 60px color-mix(in oklab, var(--jm-shadow) 18%, transparent);
+  pointer-events: none;
+  opacity: min(
+    clamp(0, calc(var(--u, 0) * 4.5455), 1),
+    calc(1 - clamp(0, calc((var(--u, 0) - .58) * 5), 1))
+  );
+}
+/* il telefono: fermo mezzo fuori, poi al centro */
+.jm-sito7[data-js] .jm-sito12-telefono {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  --fuori: min(720px, 60svh);
+  --dentro: min(420px, calc((100svh - 250px) * .7069));
+  width: calc(var(--fuori) + (var(--dentro) - var(--fuori)) * var(--centro));
+  left: calc(2% + 48% * var(--centro));
+  /* Una deriva di tre punti e mezzo mentre le carte salgono: senza, il
+     telefono sembra un'immagine incollata dietro invece di un oggetto nella
+     stessa stanza. Si sente, non si vede. */
+  top: calc(50% + 3.5% * var(--corsa) + 4.5% * var(--centro));
+  translate: -50% -50%;
+}
+@media (max-width: 900px) {
+  .jm-sito7[data-js] .jm-sito12-pista { height: 440svh; }
+  /* La barra in cima e fissa e alta 76px: il cartiglio partiva a 55 e ci
+     finiva sotto. Qui si parte DA la barra, non da un numero a caso. */
+  .jm-sito7[data-js] .jm-sito12-occhio { top: calc(var(--jm-sito-nav-h) + 20px); }
+  .jm-sito7[data-js] .jm-sito12-titolo { top: calc(var(--jm-sito-nav-h) + 50px); }
+  /* LA CARTA, SUL TELEFONO, E QUADRATA (11 settembre 2026, Manuel: "le pill
+     piu quadrate cosi ci sta tutto senza sovrapporsi al telefono").
+     Era larga e bassa — schermo a sinistra, testo a destra — e a 92vw
+     copriva il telefono per intero. Girata in colonna diventa quasi un
+     quadrato (228x250 circa) e ci sta nella meta destra, di fianco alla
+     parte di telefono che si vede, non sopra. */
+  .jm-sito7[data-js] .jm-sito12-carta {
+    left: 68%;
+    flex-direction: column;
+    align-items: flex-start;
+    width: min(58vw, 252px);
+    gap: 12px;
+    padding: 15px 16px 16px;
+    border-radius: 20px;
+    /* La corsa si accorcia: dal 112% al 30% invece che all'8%. Salendo fino
+       all'8% la carta finiva addosso al titolo, che qui e piu in basso che
+       sul desktop perche sotto c'e la barra fissa. E la dissolvenza in uscita
+       si chiude prima (0.58 -> 0.80), quando il bordo alto della carta e
+       ancora sotto il cartiglio. */
+    top: calc(112% - 82% * var(--u, 0));
+    opacity: min(
+      clamp(0, calc(var(--u, 0) * 4.5455), 1),
+      calc(1 - clamp(0, calc((var(--u, 0) - .58) * 4.5455), 1))
+    );
+  }
+  .jm-sito12-schermo { --scala: .40; }
+  .jm-sito12-carta > p { font-size: calc(13.5px * var(--jm-ui-scale)); line-height: 1.45; }
+  /* IL TELEFONO PIU PICCOLO E PIU IN BASSO. A 102vw era alto 567px e il suo
+     bordo alto arrivava a 169px, cioe dentro la fascia del titolo (126-205):
+     "Si scrive da sola" si leggeva sopra una scocca nera. A 72vw e alto
+     400px, e portandolo al 58% dell'altezza il bordo alto scende a 294. Se
+     ne vede anche meno — 141px invece di 200 — ed e quello che libera la
+     meta destra per la carta. */
+  .jm-sito7[data-js] .jm-sito12-telefono {
+    --fuori: 72vw;
+    --dentro: min(66vw, calc((100svh - 210px) * .7069));
+    left: calc(0% + 50% * var(--centro));
+    top: calc(58% + 3.5% * var(--corsa) - 0.5% * var(--centro));
+  }
+}
+/* Chi ha chiesto meno movimento vede la scena ferma sull'ultimo quadro:
+   telefono al centro e la frase, cioe cio che la scena voleva dire. */
+@media (prefers-reduced-motion: reduce) {
+  .jm-sito7[data-js] .jm-sito12-pista { height: auto; }
+  .jm-sito7[data-js] .jm-sito12-scena {
+    position: static;
+    height: auto;
+    max-width: 1080px;
+    padding: clamp(64px, 8vw, 110px) 22px;
+  }
+  .jm-sito7[data-js] .jm-sito12-passo { display: block; }
+  .jm-sito7[data-js] .jm-sito12-occhio,
+  .jm-sito7[data-js] .jm-sito12-titolo,
+  .jm-sito7[data-js] .jm-sito12-carta,
+  .jm-sito7[data-js] .jm-sito12-telefono {
+    position: static;
+    translate: none;
+    width: auto;
+    opacity: 1;
+  }
+  .jm-sito7[data-js] .jm-sito12-titolo { font-size: calc(34px * var(--jm-ui-scale)); }
+  .jm-sito7[data-js] .jm-sito12-carta {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto clamp(40px, 5vw, 64px);
+  }
+  .jm-sito7[data-js] .jm-sito12-telefono { width: min(320px, 76vw); margin: 0 auto; }
 }
