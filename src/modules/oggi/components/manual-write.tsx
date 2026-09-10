@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
+import { AlertIos } from "@/components/ui/alert-ios";
 import { clearDraft, saveDraft } from "@/lib/data/drafts";
 import { useT } from "@/lib/i18n";
 import { compactDayDate, parseISODate, relativeDayLabel, todayISO } from "@/lib/format";
@@ -166,31 +167,30 @@ export function ManualWrite({
         {notice && (
           <div className="jm-editor-notice">
             <span className="jm-editor-notice-t">{notice}</span>
-            {onDiscard && !confermaScarto && (
+            {onDiscard && (
               <button
                 type="button"
                 className="jm-editor-scarta"
                 onClick={() => setConfermaScarto(true)}
               >
-                {t("scarta la bozza")}
+                {t("scarta")}
               </button>
             )}
-            {onDiscard && confermaScarto && (
-              <span className="jm-editor-scarta-conf" role="alert">
-                <span>{t("Sicuro? Il testo va perso.")}</span>
-                <button type="button" className="jm-editor-scarta si" onClick={scarta}>
-                  {t("Si, scarta")}
-                </button>
-                <button
-                  type="button"
-                  className="jm-editor-scarta"
-                  onClick={() => setConfermaScarto(false)}
-                >
-                  {t("No, tienila")}
-                </button>
-              </span>
-            )}
           </div>
+        )}
+
+        {/* "Sei sicuro?" alla maniera di iOS (10 settembre 2026): un avviso
+            al centro, non due bottoni infilati nella riga. */}
+        {confermaScarto && (
+          <AlertIos
+            titolo={t("Scartare la bozza?")}
+            testo={t("Il testo scritto finora va perso.")}
+            conferma={t("Scarta")}
+            distruttivo
+            annulla={t("Tienila")}
+            onConferma={scarta}
+            onAnnulla={() => setConfermaScarto(false)}
+          />
         )}
 
         <textarea

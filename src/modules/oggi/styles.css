@@ -613,14 +613,14 @@
   width: 100%;
 }
 
-/* L'avviso della bozza recuperata, col tasto per scartarla (9 settembre
-   2026): la scritta in corsivo com'era, e a destra l'uscita. La conferma
-   prende il posto del tasto, in riga: niente finestre di sistema. */
+/* L'avviso della bozza recuperata e, a destra, la via per scartarla (10
+   settembre 2026): una parola sola, nel colore del testo attenuato, senza
+   bordi. La domanda "sei sicuro?" e un avviso iOS (alert-ios.tsx), non due
+   bottoni in riga. */
 .jm-editor-notice {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 12px;
+  align-items: baseline;
+  gap: 12px;
   padding: 8px calc(20px * var(--jm-space)) 0;
   font-family: var(--font-serif);
   font-style: italic;
@@ -633,35 +633,20 @@
 }
 
 .jm-editor-scarta {
-  font-family: var(--font-sans);
-  font-style: normal;
-  font-size: calc(12px * var(--jm-ui-scale));
-  font-weight: 600;
-  color: var(--color-ink-muted);
-  background: transparent;
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-pill);
-  padding: 5px 11px;
-  min-height: 30px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.jm-editor-scarta.si {
-  color: var(--color-on-accent);
-  background: var(--color-danger);
-  border-color: transparent;
-}
-
-.jm-editor-scarta-conf {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex: 0 0 auto;
   font-family: var(--font-sans);
   font-style: normal;
   font-size: calc(12.5px * var(--jm-ui-scale));
-  color: var(--color-ink);
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  background: transparent;
+  border: 0;
+  padding: 6px 0;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-ink-muted) 45%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .jm-editor-hint {
@@ -1512,17 +1497,21 @@
   stroke-linejoin: round;
 }
 
-/* La sintesi dell'AI (9 settembre 2026, Manuel dal telefono): in corsivo
-   serif e con le stelline davanti, cosi si legge a colpo d'occhio che l'ha
-   scritta l'AI e non tu. Toccandola si riscrive, come il titolo: stessa
-   matita, stessa targhetta "tuo" quando e diventata tua. */
+/* La sintesi dell'AI (9-10 settembre 2026, Manuel dal telefono). Secondo
+   giro: il serif corsivo piccolo "si fa fatica a leggerlo" -> font sans del
+   tema, in corsivo (e la voce dell'AI), nel colore pieno del testo e un
+   pelo piu grande. Le stelline nel colore del testo: nere in chiaro,
+   chiare in scuro, perche escono dallo stesso token (--color-ink), non da
+   un nero fisso che sparirebbe sul tema scuro. Toccandola si riscrive,
+   come il titolo: stessa matita, stessa targhetta "tuo". */
 .jm-fv-sn {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-style: italic;
-  font-size: calc(15.5px * var(--jm-ui-scale));
-  font-weight: 400;
-  color: var(--color-ink-muted);
-  line-height: 1.55;
+  font-size: calc(16.5px * var(--jm-ui-scale));
+  font-weight: 450;
+  color: var(--color-ink);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
   margin-bottom: 18px;
 }
 
@@ -1534,9 +1523,9 @@
 }
 
 .jm-fv-ai {
-  width: calc(15px * var(--jm-ui-scale));
-  height: calc(15px * var(--jm-ui-scale));
-  fill: var(--color-accent);
+  width: calc(16px * var(--jm-ui-scale));
+  height: calc(16px * var(--jm-ui-scale));
+  fill: var(--color-ink);
   stroke: none;
   vertical-align: -2px;
   margin-right: 7px;
@@ -1632,10 +1621,10 @@
     margin: 4px 0 14px;
   }
   .jm-fv-sn {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: calc(17px * var(--jm-ui-scale));
-    line-height: 1.6;
+    /* Stessa voce del telefono (10 settembre 2026): il serif e restato al
+       titolo delle pagine, la sintesi si legge in sans. */
+    font-size: calc(17.5px * var(--jm-ui-scale));
+    line-height: 1.55;
     margin-bottom: 30px;
   }
   .jm-fv-sep {
