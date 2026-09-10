@@ -5146,7 +5146,7 @@ textarea.jm-sito-in {
      rituale, subito sotto, dice gia il gesto) e la colonna si stringe,
      altrimenti le garanzie finiscono sotto la pilla. */
   .jm-sito10-rituale-vivo { display: none; }
-  .jm-sito4.jm-sito7 .jm-sito2-eroe-in { padding-top: 68px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-in { padding-top: 80px; }
   .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-h1 { font-size: calc(34px * var(--jm-ui-scale)); }
   .jm-sito4.jm-sito7 .jm-sito2-sotto { margin-top: 10px; font-size: calc(13px * var(--jm-ui-scale)); }
   .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { margin-top: 14px; gap: 8px; }
@@ -5281,13 +5281,30 @@ textarea.jm-sito-in {
 }
 
 @media (min-width: 1100px) {
-  /* La pilla del rituale sta appoggiata in fondo all'eroe (position:
-     absolute, alta ~190px). La colonna del testo e centrata sull'intera
-     altezza, quindi con il micro-lettore in piu ci finiva sotto: il padding
-     in fondo le ridà il centro nello spazio LIBERO, sopra la pilla. */
+  /* L'ALTEZZA DELL'EROE, FATTA COME SI DEVE. Prima reggeva per caso: la
+     colonna partiva da un padding-top fisso di 194px dentro un blocco alto
+     100svh che sbordava dal genitore, e il risultato buono a 900px di
+     finestra era la somma di due errori. Su uno schermo piu basso — un
+     portatile da 1512x780, che e la misura piu comune che esista — la
+     colonna finiva sotto la barra in cima E sopra la pilla del rituale.
+     Adesso lo spazio si dichiara: si tolgono l'altezza della barra in alto
+     e quella della pilla in basso, e cio che avanza si centra da solo. */
   .jm-sito4.jm-sito7 .jm-sito2-eroe {
-    align-items: center;
-    padding-bottom: 230px;
+    align-items: stretch;
+    padding-bottom: 0;
+    /* `height: 100svh` secco (riga 3277) e una promessa che su uno schermo
+       basso non si puo mantenere: o il testo sborda o si taglia. `min-height`
+       la trasforma in "almeno una schermata": quando ci sta, l'eroe e alto
+       esattamente una schermata come prima; quando non ci sta, cresce e si
+       scorre di poco invece di accavallare barra, testo e pilla. */
+    height: auto;
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-in {
+    justify-content: center;
+    padding-top: calc(var(--jm-sito-nav-h) + 24px);
+    /* La pilla e alta 189-197px e sta a 18 dal fondo: 232 sono quelli piu un
+       filo d'aria. Misurato, non stimato. */
+    padding-bottom: 232px;
   }
   /* IL MARCHIO IN COLONNA CON L'EROE. La barra rientra di 24px (riga 3262),
      la colonna dell'eroe di 36px (riga 3283): il marchio stava dodici pixel
@@ -5309,6 +5326,39 @@ textarea.jm-sito-in {
      stanno su una riga sola — 578 su 640 — e non c'e niente da riassestare. */
   .jm-sito4.jm-sito7 .jm-sito2-eroe-t { max-width: 640px; }
   .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { gap: 18px; }
+}
+/* SCHERMI LARGHI MA BASSI. La colonna dell'eroe misura 591px: con la barra
+   (86) e la pilla (189) servono 866px di finestra perche ci stia tutto, e
+   un portatile ne offre 700-780. Invece di lasciarla sbordare, si stringe —
+   stessa cosa che si fa gia sull'iPhone SE, solo dall'altra parte. */
+@media (min-width: 1100px) and (max-height: 930px) {
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito4-eyebrow { margin-bottom: 16px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-h1 { font-size: calc(54px * var(--jm-ui-scale)); }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito2-sotto {
+    margin-top: 20px;
+    font-size: calc(17px * var(--jm-ui-scale));
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { margin-top: 24px; }
+  .jm-sito4.jm-sito7 .jm-sito10-garanzie { margin-top: 16px; }
+  .jm-sito4.jm-sito7 .jm-sito10-rituale-vivo {
+    margin-top: 18px;
+    padding: 10px 20px 10px 10px;
+  }
+  .jm-sito4.jm-sito7 .jm-sito10-rituale-vivo .tondo {
+    width: calc(40px * var(--jm-ui-scale));
+    height: calc(40px * var(--jm-ui-scale));
+  }
+}
+/* Ancora piu bassi. Qui il micro-lettore esce (la pilla sotto dice gia lo
+   stesso gesto) e la pilla si stringe. La soglia e bassa apposta: fra i 700
+   e i 930 pixel preferisco che l'eroe cresca di qualche decina di pixel e
+   la pilla scenda un po' sotto il bordo, piuttosto che togliere il rituale
+   dalla prima schermata — e la cosa che il revisore chiedeva di far vedere. */
+@media (min-width: 1100px) and (max-height: 700px) {
+  .jm-sito4.jm-sito7 .jm-sito10-rituale-vivo { display: none; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-in { padding-bottom: 220px; }
+  .jm-sito4.jm-sito7 .jm-sito4-rituale { padding: 22px 26px; }
+  .jm-sito4.jm-sito7 .jm-sito4-rituale > h2 { font-size: calc(26px * var(--jm-ui-scale)); }
 }
 @media (max-width: 767px) {
   /* Stessa cosa sul telefono: la barra rientrava di 26px e l'eroe di 24. */
