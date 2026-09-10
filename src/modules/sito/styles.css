@@ -1017,6 +1017,22 @@
         color-mix(in srgb, var(--jm-bg-app) 18%, transparent) 58%,
         transparent 66%);
   }
+  /* LA GIUNTURA COL BLOCCO SOTTO. L'eroe ha overflow: hidden, quindi tutto
+     quello che arriva al suo bordo basso viene tranciato di netto: l'ombra
+     della pilla e il fondo della fotografia. Sotto comincia una sezione
+     dello stesso colore, percio si vedeva solo la riga del taglio. Questa
+     fascia porta l'eroe al colore esatto del blocco successivo prima che il
+     taglio arrivi, e la cucitura sparisce. Sta sotto la pilla (livello 6) e
+     sopra fotografia, velo e telefono. */
+  .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 5;
+    height: 110px;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 0, var(--jm-bg-app) 72%);
+  }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-telefono-foto {
     position: absolute;
     z-index: 3;
@@ -1031,7 +1047,7 @@
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
     position: absolute;
     right: 10px;
-    bottom: 14px;
+    bottom: 22px;
     left: 10px;
     z-index: 6;
     margin: 0;
@@ -1046,7 +1062,7 @@
        Manuel dell'8 settembre 2026. Dove backdrop-filter manca resta il
        fondo pieno di prima, sennò il testo si legge sopra la foto. */
     background: color-mix(in srgb, var(--jm-surface) 90%, transparent);
-    box-shadow: 0 14px 34px color-mix(in srgb, var(--jm-shadow) 16%, transparent);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--jm-shadow) 14%, transparent);
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
@@ -1063,7 +1079,9 @@
       box-shadow:
         inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 92%, transparent),
         inset 0 -1px 0 color-mix(in srgb, var(--jm-surface) 42%, transparent),
-        0 16px 40px color-mix(in oklab, var(--jm-shadow) 20%, transparent);
+        /* corta apposta: l'eroe taglia a 22px sotto la pilla, e un'ombra
+           lunga finirebbe tranciata di netto proprio sulla giuntura */
+        0 6px 18px color-mix(in oklab, var(--jm-shadow) 16%, transparent);
     }
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale::before {
       content: "";
