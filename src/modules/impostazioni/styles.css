@@ -469,6 +469,10 @@
   max-width: 62ch;
 }
 
+/* La nota STATICA di un pannello (una frase che spiega, e resta li). Gli
+   ESITI delle azioni non stanno piu qui: dal 10 settembre 2026 passano dal
+   toaster dell'app (src/components/ui/toast.tsx), perche un esito e un
+   avviso di passaggio e in mezzo alle righe non si vede. */
 .jm-st-note {
   font-size: calc(12.5px * var(--jm-ui-scale));
   line-height: 1.5;
@@ -478,12 +482,6 @@
   border-radius: var(--jm-radius-md);
   padding: calc(12px * var(--jm-space)) 14px;
   margin-bottom: calc(24px * var(--jm-space));
-}
-
-.jm-st-note.err {
-  color: var(--color-danger);
-  border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
-  background: color-mix(in oklab, var(--color-danger) 7%, transparent);
 }
 
 /* Aggiunta di un obiettivo */

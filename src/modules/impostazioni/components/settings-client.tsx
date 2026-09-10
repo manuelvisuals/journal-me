@@ -212,8 +212,6 @@ export function SettingsClient({
   const [goals, setGoals] = useState<GoalDef[]>(initialGoals);
   const [entryCount, setEntryCount] = useState<number | null>(null);
   const [busy, setBusy] = useState<Busy>("idle");
-  const [note, setNote] = useState<string | null>(null);
-  const [noteErr, setNoteErr] = useState<boolean>(false);
   const [eraseArmed, setEraseArmed] = useState<boolean>(false);
   const [deleteArmed, setDeleteArmed] = useState<boolean>(false);
   const [signingOut, setSigningOut] = useState<boolean>(false);
@@ -296,9 +294,30 @@ export function SettingsClient({
     };
   }, [storageMode, busy]);
 
+  /**
+   * L'esito di un'azione delle Impostazioni: esce nel TOASTER dell'app
+   * (`src/components/ui/toast.tsx`), quello che usano gia il salvataggio di
+   * una giornata e il ripristino degli acquisti.
+   *
+   * Fino al 10 settembre 2026 finiva in una riga grigia incastrata fra le
+   * righe dell'elenco (`.jm-st-note`), a meta schermata: Manuel l'ha vista
+   * comparire sotto Face ID dopo aver cambiato la foto del profilo, cioe
+   * lontana dalla riga che aveva toccato e in mezzo a cose che non
+   * c'entravano. Un esito e un avviso di passaggio, non una riga di
+   * impostazione: sta sopra tutto, si legge, e se ne va da solo (2,5s se e
+   * andata bene, 6s se e un errore, che va letto).
+   *
+   * `say("")` non e un messaggio vuoto ma un "azzera": prima di partire, le
+   * azioni lunghe cancellano l'esito precedente perche non resti a schermo
+   * a dire una cosa vecchia. Sul toaster e `hide()`.
+   */
   const say = (text: string, err = false) => {
-    setNote(text);
-    setNoteErr(err);
+    if (text === "") {
+      toast.hide();
+      return;
+    }
+    if (err) toast.error(text);
+    else toast.ok(text);
   };
 
   const handleExport = async () => {
@@ -661,12 +680,6 @@ export function SettingsClient({
               className="hidden"
               onChange={(e) => void handleImportFile(e.target.files?.[0] ?? null)}
             />
-
-            {note && (
-              <div className={`jm-st-note${noteErr ? " err" : ""}`} role="status">
-                {note}
-              </div>
-            )}
 
             {/* L'account sul telefono: su desktop vive nella rail destra. */}
             <div className="jm-st-phoneonly">
