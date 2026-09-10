@@ -830,3 +830,90 @@
   cursor: pointer;
   align-self: center;
 }
+
+/* =============================================================
+   La porta del giorno (porta-giorno.tsx, 10 settembre 2026): stesso
+   riquadro del saluto, piu il titolo grande, i pallini del regalo e i
+   due tasti secondari. Il velo, la foto, il corpo che scorre e il tasto
+   pieno sono quelli qui sopra.
+   ============================================================= */
+
+.jm-benv-sal-hero {
+  margin-top: calc(14px * var(--jm-space));
+  text-align: center;
+  font-family: var(--font-serif, var(--font-sans));
+  font-size: calc(26px * var(--jm-ui-scale));
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: pre-line;
+}
+
+/* La mattina in cui il conto non e cambiato il titolo e il giorno: piu
+   piccolo, e senza il peso di un numero che non c'e. */
+.jm-benv-sal[data-variante="uguale"] .jm-benv-sal-hero {
+  font-size: calc(20px * var(--jm-ui-scale));
+  text-transform: capitalize;
+}
+
+.jm-benv-sal-oltre {
+  margin-top: calc(10px * var(--jm-space));
+  text-align: center;
+  font-size: calc(12px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-faint);
+}
+
+.jm-benv-sal-pallini {
+  display: flex;
+  justify-content: center;
+  gap: calc(6px * var(--jm-space));
+  margin-top: calc(16px * var(--jm-space));
+}
+
+.jm-benv-sal-pallino {
+  width: calc(10px * var(--jm-space));
+  height: calc(10px * var(--jm-space));
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.jm-benv-sal-pallino.spesa {
+  background: var(--color-line);
+}
+
+.jm-benv-sal[data-variante="uguale"] .jm-benv-sal-pallino {
+  width: calc(6px * var(--jm-space));
+  height: calc(6px * var(--jm-space));
+}
+
+.jm-benv-sal-ghost {
+  width: 100%;
+  min-height: calc(44px * var(--jm-space));
+  margin-top: calc(8px * var(--jm-space));
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-md);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.jm-benv-sal-quieto {
+  display: block;
+  width: 100%;
+  min-height: calc(40px * var(--jm-space));
+  margin-top: calc(6px * var(--jm-space));
+  border: none;
+  background: transparent;
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  font-size: calc(12.5px * var(--jm-ui-scale));
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

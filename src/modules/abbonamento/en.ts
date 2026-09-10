@@ -33,7 +33,7 @@ export const ABBONAMENTO: Record<string, string> = {
     "Premium needs an account: that is where the encrypted cloud copy lives, and it is how it follows you across devices.",
   "Entra con la tua email": "Continue with your email",
   "Ho gia un abbonamento": "I already have a subscription",
-  "Cosa fa premium": "What premium does",
+  "{prezzo} {periodo}. Disdici quando vuoi.": "{prezzo} {periodo}. Cancel anytime.",
   // Il muro del regalo che non copre, per motivo (audit 10 settembre 2026, C4).
   "L'AI in regalo\nsi accende dall'app": "The AI gift\nturns on in the app",
   "Per oggi l'AI\nha fatto abbastanza": "The AI has done\nenough for today",
@@ -87,6 +87,4 @@ export const ABBONAMENTO: Record<string, string> = {
   "Provalo adesso": "Try it now",
   "Ho gia un account": "I already have an account",
   "L'AI ha chiuso\nquesta giornata per te": "The AI closed\nthis day for you",
-  "Titolo, sintesi, aree: li ha scritti lei. Ne hai altre {n} in regalo.": "Title, summary, areas: it wrote them. You have {n} more as a gift.",
-  "Titolo, sintesi, aree: li ha scritti lei. Le prime giornate sono in regalo.": "Title, summary, areas: it wrote them. The first days are a gift.",
 };

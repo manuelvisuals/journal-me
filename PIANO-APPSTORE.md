@@ -176,3 +176,35 @@ col lucchetto); il recap di agosto lo genera l'app.
   ci sono `demo/giulia-titoli-en.json` (i titoli scritti a mano) e
   `scripts/ritocca-titoli-demo.mjs`, che li mette col lucchetto dal Chrome del
   Mac (`ritocca-titoli-demo.command`). Banco: `scripts/verify-titoli-demo.mjs`.
+
+## 2. Il modello premium del 10 settembre 2026 (audit, decisioni 1A-7A)
+
+Riscrive il punto 1a e il revisore. Referto: `AUDIT-premium-vuole-account.html`
+(cartella di Manuel); i recinti nei CLAUDE.md di abbonamento e accesso.
+
+- **Il revisore e un account GRATIS (1A).** `appreview@dayalogue.com` entra con
+  il codice fisso (1c), trova le giornate demo e i recap gia scritti (un free
+  con recap scritti li LEGGE: la vetrina compare solo se non ce ne sono), e
+  compra premium in sandbox dal muro come chiunque. Cosi l'acquisto e
+  "visible to the reviewer and functional" (2.1(b)) senza nessuna voce
+  speciale, e `plan_source = 'manual'` non serve piu: la SQL che lo rendeva
+  premium va rifatta al contrario prima dell'invio
+  (`update profiles set plan = 'free', plan_source = null, current_period_end = null where user_id = (select id from auth.users where email = 'appreview@dayalogue.com')`).
+  Il caricatore demo (`carica-account-demo.mjs`) vuole premium per far
+  lavorare l'AI: si carica da premium, POI si torna gratis. In sandbox
+  l'abbonamento si rinnova al massimo 12 volte accelerato e poi scade
+  (documentato da Apple): normale, il revisore lo sa.
+- **Si compra SOLO nel guscio**, con In-App Purchase, e **premium vuole un
+  account** (6): il muro da ospite dice il prezzo di Apple (3A) e apre la
+  porta dell'email; dopo il codice il muro si riapre da solo con le schede
+  (`src/lib/ospite/muro-riapri.ts`). Sul web non si vende (9) e, con
+  DeviceCheck acceso, non si regala (2A, `src/modules/accesso/DEVICECHECK-passi.md`).
+- **Il bivio "FREE o PREMIUM" non esiste piu (7)**: `/app/benvenuto` porta
+  dentro. All'ingresso c'e UNA porta, una volta al giorno
+  (`src/modules/accesso/components/porta-giorno.tsx`): la lettera al primo
+  avvio con "Ho gia un account" (B5, e la porta del revisore verso il login),
+  poi il conto delle giornate in regalo.
+- Banco: `scripts/verify-appstore.mjs` riscritto (22 controlli: acquisto
+  raggiungibile da un account gratis nel guscio, prezzo di Apple prima
+  dell'email da ospite, niente vendita sul web, Elimina l'account a due
+  tocchi, porta del revisore spenta, /app/benvenuto senza bivio).

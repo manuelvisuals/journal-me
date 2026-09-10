@@ -318,22 +318,40 @@ export async function requireOspiteOPremium(
  * Non spende niente e non conta niente: il conto lo fa la guardia.
  */
 export async function registraBraccialetto(req: NextRequest): Promise<NextResponse> {
+  // Un guasto NOSTRO (database muto, env mancanti) e "rimandato", con 200:
+  // la registrazione parte a ogni avvio ed e la prima chiamata dell'app, e un
+  // 5xx qui finirebbe nella console del browser come errore a ogni apertura
+  // (i banchi senza il Supabase finto lo vedevano). Il client riprova alla
+  // prossima apertura; intanto l'AI, se la chiama, riceve solo_app e riprova
+  // a registrare da li.
+  const rimandato = (motivo: string) => NextResponse.json({ esito: "rimandato", motivo });
   const admin = getAdminClient();
-  if (!admin) {
-    return NextResponse.json({ error: "Entitlement not configured (missing Supabase env)" }, { status: 500 });
-  }
+  if (!admin) return rimandato("Entitlement not configured (missing Supabase env)");
   const segreto = segretoDalla(req);
   if (!segreto) return NextResponse.json({ error: "Missing braccialetto" }, { status: 400 });
 
+  // Il gettone, se c'e e vale, lega la riga alla persona. Se e scaduto NON
+  // si risponde 401: il braccialetto e del dispositivo, non dell'account, e
+  // un telefono con la sessione vecchia deve potersi registrare lo stesso
+  // (la riga si leghera alla prima chiamata AI con un gettone buono).
   let userId: string | null = null;
   if ((req.headers.get("authorization") ?? "").startsWith("Bearer ")) {
     const user = await requireUser(req);
-    if (user instanceof NextResponse) return user;
-    userId = user.userId;
+    if (!(user instanceof NextResponse)) userId = user.userId;
   }
 
-  const gia = await braccialettoDaSegreto(segreto, userId, { crea: false });
-  if (gia) return NextResponse.json({ esito: "gia", devicecheck: deviceCheckConfigurato() });
+  const { data: rigaGia, error: errLettura } = await admin
+    .from("braccialetti")
+    .select("id,user_id")
+    .eq("segreto_hash", hashBraccialetto(segreto))
+    .maybeSingle();
+  if (errLettura) return rimandato(errLettura.message);
+  if (rigaGia) {
+    if (userId && !rigaGia.user_id) {
+      await admin.from("braccialetti").update({ user_id: userId }).eq("id", rigaGia.id);
+    }
+    return NextResponse.json({ esito: "gia", devicecheck: deviceCheckConfigurato() });
+  }
 
   let token = "";
   try {
@@ -370,9 +388,7 @@ export async function registraBraccialetto(req: NextRequest): Promise<NextRespon
   const { error } = await admin
     .from("braccialetti")
     .insert({ segreto_hash: hash, user_id: userId, devicecheck: conDeviceCheck });
-  if (error && error.code !== "23505") {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  if (error && error.code !== "23505") return rimandato(error.message);
   return NextResponse.json({ esito: error ? "gia" : "nato", devicecheck: conDeviceCheck });
 }
 

@@ -1,5 +1,5 @@
-# Pagina del modulo ACCESSO (/benvenuto)
+# Pagina del modulo ACCESSO (/app/benvenuto)
 
-Questa pagina appartiene al modulo Accesso: il recinto completo e in
-`src/modules/accesso/CLAUDE.md`. Da lg le due card stanno AFFIANCATE
-(regola di Manuel: si sfrutta tutto lo schermo).
+Dal 10 settembre 2026 e solo un rimando a /app: il bivio "gratis o premium"
+non esiste piu (punto 7 del modello premium). Il recinto completo e in
+`src/modules/accesso/CLAUDE.md`; la porta unica e `components/porta-giorno.tsx`.

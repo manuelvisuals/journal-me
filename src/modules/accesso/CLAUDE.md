@@ -149,3 +149,35 @@ Audit del modello premium (AUDIT-premium-vuole-account.html), decisioni 2A e
 - Banchi: `verify-ospite` (55, con la sezione 4A/2A), `verify-devicecheck`
   (19, con il DeviceCheck finto di scripts/lib/finti-server.mjs: il dev
   server va rilanciato con `APPLE_DEVICECHECK_BASE_URL=http://127.0.0.1:3196`).
+
+## La porta del giorno, il bivio che non c'e piu (10 settembre 2026, branch `modello-premium`)
+
+Decisioni B1, 5A, C4, B5 e punto 7 del modello premium (audit del 10
+settembre; Manuel: "vai, facciamo tutto").
+
+- `components/porta-giorno.tsx` ha preso il posto di `saluto-avvio.tsx` e del
+  foglio "presentazione" del muro: UNA schermata all'ingresso, una volta al
+  giorno. La logica (quale variante: lettera, cambiata, uguale, finite, pausa,
+  proposta, niente) e in `porta-stato.ts`, pura, banco
+  `verify-porta-stato` (`node --experimental-strip-types`, 19 controlli). Le
+  memorie sono `jm.porta.lettera` (versione vista), `jm.porta.giorno` (giorno
+  locale del dispositivo), `jm.porta.rimaste` (conto detto l'ultima volta).
+  `saluto-stato.ts` resta per la vedetta del logout (`jm.saluto.uscito`) e
+  per il gancio dei banchi (`jm.saluto.silenzio` valido = porta muta).
+- La lettera (primo avvio): nel guscio il regalo in testa ("N giornate, con
+  l'AI accesa", "Comincia a scrivere") e sotto la lettera di Manuel dal
+  pannello; sul web solo la lettera. In locale la riga "Ho gia un account"
+  -> /login. Il campo `bottone` del pannello non comanda piu il tasto. Niente
+  casella "non mostrare piu": una volta per dispositivo e per versione.
+- Le mattine: "Ti restano N" con i pallini quando il conto e cambiato (o
+  restano 2 o meno); il GIORNO come titolo e il conto in piccolo quando e
+  uguale a ieri (5A); "finite"; "in pausa" con le giornate che restano (C4);
+  "proposta" per un account gratis senza regalo qui (il web). "Passa a
+  premium" chiude la porta e apre il muro. Premium: niente.
+- Il bivio `/app/benvenuto` e un rimando a /app; `src/lib/welcome.ts` e
+  `components/differenze.tsx` non esistono piu; `afterLogin` porta su /app e
+  il muro si riapre da solo se si era partiti da li (`src/lib/ospite/muro-riapri.ts`,
+  letto da AuthGate, cancellato da "Non ora").
+- Banchi: `verify-porta-giorno` (35, browser), `verify-benvenuto` (65,
+  riscritta la sezione della casella), `verify-saluto-logout` (10),
+  `verify-linguetta-revisore` (6), `verify-appstore` (22, riscritto).

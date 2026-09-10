@@ -76,6 +76,7 @@ export async function registraBraccialetto(): Promise<EsitoRegistrazione> {
       });
       if (resp.ok) {
         const j = (await resp.json()) as { esito?: string };
+        if (j.esito === "rimandato") return "rimandato";
         return j.esito === "nato" ? "nato" : "gia";
       }
       if (resp.status === 403) return "solo_app";

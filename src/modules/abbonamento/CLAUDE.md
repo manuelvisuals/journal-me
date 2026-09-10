@@ -151,3 +151,18 @@ della scheda e della nota (stessa struttura, testo sbiadito con "—,— EUR",
 basso ha gia la sua altezza. Testi del muro accorciati (regola: la gente
 non legge). Un tasto pieno solo in tutta l'app: `--jm-btn-ombra` in
 base.css, usato da btn-primary, dal "Genera" del Recap e da "Fine e salva".
+
+## Dopo l'audit (10 settembre 2026, branch `modello-premium`)
+
+- Il muro da ospite dice il PREZZO DI APPLE sotto "Entra con la tua email"
+  (decisione 3A): "{n} giorni gratis, poi {prezzo} {periodo}". La riga
+  "Passa a Premium" di Impostazioni legge lo stesso prodotto (`prodottiInTasca`,
+  dalla porta) e usa i numeri di pricing.ts solo dove il negozio non c'e.
+- `vaiAlLogin` lascia `jm.muro.riapri` (src/lib/ospite/muro-riapri.ts):
+  AuthGate riapre il muro dopo il codice, con le schede.
+- La feature `presentazione` NON esiste piu: la porta del giorno (modulo
+  accesso) dice il conto la mattina dopo. `src/lib/ospite/presentazione.ts`
+  e sparito.
+- Il muro "regalo" parla per motivo (`MotivoRegaloFinito`): quota = finite;
+  tetto/spento = in pausa, le giornate restano; solo_app = si accende
+  dall'app; chiamate = per oggi ha fatto abbastanza.

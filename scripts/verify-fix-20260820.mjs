@@ -97,17 +97,7 @@ for (const [label, w, h] of [["desktop", 1440, 900], ["phone", 430, 932]]) {
   await ctx.close();
 }
 
-/* ============ 3. /benvenuto: prezzo onesto ============ */
-{
-  const { ctx, page, errors } = await newPage(430, 932, { local: false });
-  await page.goto(BASE + "/app/benvenuto", { waitUntil: "networkidle" });
-  await page.waitForTimeout(500);
-  const price = (await page.locator(".jm-benv-price").innerText()).trim();
-  check("benvenuto: prezzo 4,99 EUR al mese", /4,99\s*€\s*al mese/.test(price), price);
-  check("benvenuto: niente 'primo mese incluso'", !/primo mese/i.test(price), price);
-  check("benvenuto: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
-  await ctx.close();
-}
+/* (La sezione 3, il prezzo di /benvenuto, non esiste piu: il bivio e sparito il 10 settembre 2026.) */
 
 /* ============ 4. editor a schermo intero fluidi da lg ============ */
 {

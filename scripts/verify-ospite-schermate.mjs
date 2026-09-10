@@ -195,20 +195,11 @@ let semeA = null;
   const avvisoPrima = await page.locator(".jm-avviso-regalo").count();
   const t1 = await scriviEChiudi(page, "Oggi ho chiuso una giornata con l'AI e ne restano poche.", { conAI: true });
   check("02 la giornata e chiusa dall'AI (titolo del modello finto)", /giornata da ospite/i.test(t1), t1);
-  // A2 (mockup premium-senza-password): la PRIMA giornata chiusa dall'AI su
-  // questo dispositivo apre il foglio "L'AI ha chiuso questa giornata per
-  // te", una volta sola, con la scheda e "non ora".
-  const foglioA2 = page.locator(".jm-wall");
-  await foglioA2.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-  const testoA2 = await foglioA2.innerText().catch(() => "");
-  check("A2 dopo la prima giornata chiusa dall'AI si apre il foglio 'L'AI ha chiuso questa giornata per te' con 'Ne hai altre 2 giornate'", /L'AI ha chiuso\s*questa giornata per te/.test(testoA2) && /altre 2 in regalo/.test(testoA2), testoA2.replace(/\s+/g, " ").slice(0, 120));
-  // Controaudit del 10 settembre 2026: il foglio festeggia, non vende. Prima
-  // il controllo cercava solo 'Ho gia un account' e lasciava passare la
-  // porta dell'email ('Entra con la tua email', 'Ho gia un abbonamento').
-  check("A2 il foglio NON chiede l'account: niente porta dell'email, il tasto e 'Continua' e c'e 'Cosa fa premium'", !/Entra con la tua email/.test(testoA2) && !/Ho gia un/.test(testoA2) && /Continua/.test(testoA2) && /Cosa fa premium/.test(testoA2), testoA2.replace(/\s+/g, " ").slice(0, 160));
-  check("A2 e segnato come gia presentato (localStorage jm.premium.presentato)", (await page.evaluate(() => localStorage.getItem("jm.premium.presentato"))) === "1");
-  await page.locator(".jm-wall .btn-primary").click().catch(() => {});
-  await page.waitForTimeout(500);
+  // Dal 10 settembre 2026 (porta del giorno, modulo accesso) dopo la prima
+  // giornata chiusa dall'AI NON si apre nessun foglio: il conto lo dice la
+  // porta la mattina dopo. Qui si misura che l'ingresso resta libero.
+  await page.waitForTimeout(1200);
+  check("A2 dopo la prima giornata chiusa dall'AI non si apre nessun foglio (niente muro, niente porta)", (await page.locator(".jm-wall, .jm-benv-sal").count()) === 0);
   const avviso = page.locator(".jm-avviso-regalo");
   await avviso.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
   const testoAvviso = await avviso.innerText().catch(() => "");

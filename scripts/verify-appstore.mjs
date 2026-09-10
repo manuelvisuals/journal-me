@@ -1,16 +1,25 @@
-// I tre blocchi da revisione Apple (PIANO-APPSTORE §1) — porta 3100.
+// I punti da revisione Apple (PIANO-APPSTORE, e l'audit del 10 settembre
+// 2026: AUDIT-premium-vuole-account.html) - porta 3100.
 //
-// 1a. Dentro il guscio iOS il muro premium NON vende: niente prezzo,
-//     niente bottone d'acquisto; la nota onesta e la via del login.
-//     Il guscio si simula piantando window.Capacitor PRIMA del bundle:
-//     e lo stesso oggetto che il bundle interroga per isNativePlatform().
-// 2b. Nel browser invece il bottone col prezzo C'E: la vendita web resta.
-// 3. La zona pericolosa cloud ha "Elimina l'account" a DUE tocchi: il
-//    primo arma e non chiama nessuna API.
-// 4. /api/review-login senza le variabili d'ambiente risponde
-//    {review:false}: la porta del revisore spenta e indistinguibile da
-//    una porta che non esiste.
+// Riscritto il 10 settembre 2026: la versione di agosto misurava il modello
+// opposto (il web vendeva, il guscio no, e il bivio /benvenuto). Il modello
+// di oggi: si compra SOLO nel guscio con In-App Purchase, premium vuole un
+// account, sul web non si vende, il bivio non esiste.
+//
+// 1. Guscio iOS, account gratis (il revisore, decisione 1A): il muro ha le
+//    schede con il prezzo di Apple e "Ripristina acquisti"; in Impostazioni
+//    "Passa a Premium" e "Ripristina acquisti" ci sono (2.1(b): l'acquisto
+//    e raggiungibile e visibile; 3.1.1: il ripristino c'e).
+// 2. Guscio iOS, ospite: il muro non vende senza account, dice il prezzo di
+//    Apple sotto la porta dell'email (3A), e "Ho gia un abbonamento" e il
+//    ripristino di chi non ha ancora l'account.
+// 3. Browser: nessun tasto d'acquisto, si rimanda all'app (niente Stripe).
+// 4. Cloud: "Elimina l'account" a due tocchi, il primo non chiama API
+//    (5.1.1(v)).
+// 5. /api/review-login senza le variabili risponde {review:false}.
+// 6. /app/benvenuto non e piu un bivio: porta dentro.
 import { chromium } from "playwright-core";
+import { SupabaseFinto, montaSupabaseFinto } from "./lib/supabase-finto.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = "http://localhost:3100";
@@ -23,15 +32,33 @@ function check(name, ok, extra = "") {
 
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
 
-async function open({ native = false, mode = "local" } = {}) {
+async function open({ native = false, mode = "local", negozio = false } = {}) {
   const ctx = await browser.newContext({
     viewport: { width: 430, height: 932 },
     locale: "it-IT",
   });
+  if (mode === "cloud") {
+    // Il Supabase finto nel browser (scripts/lib/supabase-finto.mjs): la
+    // sessione e vera per il client, il profilo e GRATIS (il revisore,
+    // decisione 1A del 10 settembre 2026).
+    const finto = new SupabaseFinto();
+    finto.tabelle.profiles = [];
+    await montaSupabaseFinto(ctx, finto, {});
+    await ctx.addInitScript(() => {
+      try {
+        window.localStorage.setItem("jm.plan", "free");
+      } catch {}
+    });
+  }
   await ctx.addInitScript(
-    ({ native, mode }) => {
+    ({ native, mode, negozio }) => {
       try {
         window.localStorage.setItem("jm.mode", mode);
+        // La porta del giorno (10 settembre 2026): lettera gia vista e giorno
+        // gia passato, cosi nessun velo intercetta i click del banco.
+        window.localStorage.setItem("jm.porta.lettera", "1");
+        const d = new Date();
+        window.localStorage.setItem("jm.porta.giorno", `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
         // Il saluto all'avvio (modulo accesso) e un velo aria-modal che
         // intercetta i click: qui si pianta il suo "non mostrare piu",
         // legato all'identita giusta (saluto-stato.ts: in locale e l'id di
@@ -46,7 +73,8 @@ async function open({ native = false, mode = "local" } = {}) {
             "usr:00000000-0000-4000-8000-000000000001#v1",
           );
         }
-        if (mode === "cloud") {
+        if (mode === "cloud" && false) {
+          // (Superato: la sessione la monta montaSupabaseFinto qui sopra.)
           // Sessione finta (stessa ricetta dei banchi Stoqfolio): il client
           // Supabase la legge da localStorage e l'app si crede dentro. Il
           // ref "example" viene da NEXT_PUBLIC_SUPABASE_URL del sandbox.
@@ -72,6 +100,18 @@ async function open({ native = false, mode = "local" } = {}) {
           );
         }
       } catch {}
+      if (negozio) {
+        // Il negozio di Apple finto (stessa forma del plugin, come in
+        // verify-abbonamento): prezzo e prova come li direbbe StoreKit.
+        window.__jmNegozioFinto = {
+          async prodotti() { return { prodotti: [{ id: "com.manuelvisuals.journalme.premium.mensile", prezzo: "4,99 EUR", periodo: "mese", provaGiorni: 14, provaDisponibile: true }] }; },
+          async compra() { return { esito: "annullato" }; },
+          async ripristina() { return { transazioni: [] }; },
+          async gestisci() {},
+          async finisci() {},
+          addListener() { return { remove() {} }; },
+        };
+      }
       if (native) {
         // Il core di Capacitor RISCRIVE i metodi di window.Capacitor, quindi
         // uno stub li non serve. La leva vera e CapacitorCustomPlatform:
@@ -85,50 +125,89 @@ async function open({ native = false, mode = "local" } = {}) {
         window.CapacitorCustomPlatform = { name: "iosprova" };
       }
     },
-    { native, mode },
+    { native, mode, negozio },
   );
   const page = await ctx.newPage();
   return { ctx, page };
 }
 
-/* ---------------- 1a. guscio iOS: il muro non vende ---------------- */
+/**
+ * Con un account nuovo il cancello della cassaforte chiede di salvare le
+ * otto parole: si passa come una persona (spunta e "Ho capito, continua").
+ * Il guscio si finge SOLO con il negozio finto, non con CapacitorCustomPlatform:
+ * con quello il portachiavi vorrebbe il plugin nativo, che qui non c'e.
+ */
+async function passaCancello(page) {
+  const parole = page.locator(".jm-login-cassa-check input");
+  try {
+    await parole.waitFor({ state: "visible", timeout: 20000 });
+    await parole.check();
+    await page.locator("button.btn-primary").click();
+  } catch {
+    // gia dentro
+  }
+  await page.waitForTimeout(800);
+}
+
+/* ---- 1. guscio iOS, account gratis: l'acquisto e raggiungibile ---- */
 {
-  const { ctx, page } = await open({ native: true, mode: "local" });
-  // In locale "genera il recap" apre il muro (SPEC-v2 §3.3: mai un 402
-  // a sorpresa): e il modo piu affidabile di vederlo senza account.
-  await page.goto(BASE + "/app/recap", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".jm-gen-btn", { timeout: 15000 });
-  await page.waitForTimeout(300);
-  await page.locator(".jm-gen-btn").first().click();
-  await page.waitForSelector(".jm-wall", { timeout: 10000 });
-  const wall = await page.locator(".jm-wall").innerText();
-  check("guscio iOS: nessun prezzo nel muro", !wall.includes("4,99"));
-  check(
-    "guscio iOS: nessun bottone d'acquisto",
-    !wall.includes("prova premium") && !wall.toLowerCase().includes("try premium"),
-  );
-  check(
-    "guscio iOS: la nota onesta c'e",
-    wall.includes("L'abbonamento si attiva a breve"),
-  );
-  check("guscio iOS: la via del login c'e", wall.includes("Ho gia un account"));
+  const { ctx, page } = await open({ native: false, mode: "cloud", negozio: true });
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  await passaCancello(page);
+  await page.waitForSelector(".jm-st-row", { timeout: 25000 });
+  await page.waitForTimeout(2500);
+  const righe = (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  check("1 guscio, account gratis: in Impostazioni c'e 'Passa a Premium' (2.1(b))", /Passa a Premium/.test(righe));
+  check("1 guscio, account gratis: l'invito dice la prova e il prezzo di Apple, non 'si attiva dall'app'", /14 giorni gratis, poi 4,99 EUR al mese/.test(righe) && !/Si attiva dall'app/.test(righe), righe.match(/Passa a Premium[\s\S]{0,90}/)?.[0]);
+  check("1 guscio, account gratis: in Impostazioni c'e 'Ripristina acquisti' (3.1.1)", /Ripristina acquisti/.test(righe));
+  check("1 guscio, account gratis: nessuna riga 'Ho gia un abbonamento' (quella e da ospite)", !/Ho gia un abbonamento/.test(righe));
+  await page.locator("button", { hasText: "Passa a Premium" }).first().click();
+  await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+  await page.waitForTimeout(600);
+  const muro = (await page.locator(".jm-wall").innerText().catch(() => "")).replace(/\s+/g, " ");
+  check("1 guscio, account gratis: il muro ha la scheda con il prezzo di Apple", (await page.locator("[data-testid='jm-wall-schede']").count()) === 1 && /4,99 EUR/.test(muro), muro.slice(0, 120));
+  check("1 guscio, account gratis: il tasto e la prova gratis (Apple), non un prezzo a mano", /Prova gratis 14 giorni/.test(muro));
+  check("1 guscio, account gratis: 'Ripristina acquisti' nel muro", /Ripristina acquisti/.test(muro));
+  check("1 guscio, account gratis: niente porta dell'email (ha gia l'account)", !/Entra con la tua email/.test(muro));
   await ctx.close();
 }
 
-/* ---------------- 2b. browser: la vendita web resta ---------------- */
+/* ---- 2. guscio iOS, ospite: senza account non si compra, ma si sa il prezzo ---- */
 {
-  const { ctx, page } = await open({ native: false, mode: "local" });
-  await page.goto(BASE + "/app/recap", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".jm-gen-btn", { timeout: 15000 });
-  await page.waitForTimeout(300);
-  await page.locator(".jm-gen-btn").first().click();
-  await page.waitForSelector(".jm-wall", { timeout: 10000 });
-  const wall = await page.locator(".jm-wall").innerText();
-  check("browser: il bottone col prezzo c'e", wall.includes("4,99"));
+  const { ctx, page } = await open({ native: false, mode: "local", negozio: true });
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".jm-st-row", { timeout: 25000 });
+  await page.waitForTimeout(2500);
+  const righe = (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  check("2 guscio, ospite: 'Passa a Premium' con il prezzo di Apple, non quello a mano", /Passa a Premium/.test(righe) && /4,99 EUR/.test(righe) && !/4,99 \u20ac/.test(righe), righe.match(/Passa a Premium[\s\S]{0,80}/)?.[0]?.replace(/\s+/g, " "));
+  check("2 guscio, ospite: 'Ho gia un abbonamento' (il ripristino di chi non ha l'account)", /Ho gia un abbonamento/.test(righe));
+  await page.locator(".jm-st-row", { hasText: "Passa a Premium" }).first().click();
+  await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+  await page.waitForTimeout(600);
+  const muro = (await page.locator(".jm-wall").innerText().catch(() => "")).replace(/\s+/g, " ");
+  check("2 guscio, ospite: il muro non vende: nessuna scheda, 'Entra con la tua email'", (await page.locator("[data-testid='jm-wall-schede']").count()) === 0 && /Entra con la tua email/.test(muro), muro.slice(0, 120));
+  check("2 guscio, ospite: il prezzo di Apple e detto PRIMA dell'email (3A)", /14 giorni gratis, poi 4,99 EUR al mese/.test(muro), muro.slice(0, 200));
+  check("2 guscio, ospite: 'Ho gia un abbonamento' nel muro", /Ho gia un abbonamento/.test(muro));
   await ctx.close();
 }
 
-/* ------- 3. cloud: Elimina l'account, due tocchi, zero chiamate ------- */
+/* ---------------- 3. browser: non si compra ---------------- */
+{
+  const { ctx, page } = await open({ native: false, mode: "cloud" });
+  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  await passaCancello(page);
+  await page.waitForSelector(".jm-st-row", { timeout: 25000 });
+  await page.waitForTimeout(900);
+  const testo = await page.locator("main").innerText();
+  check("3 browser, account gratis: 'Si attiva dall'app per iPhone', nessun tasto di acquisto", /Si attiva dall'app per iPhone/.test(testo) && !/Abbonati/.test(testo) && !/Prova gratis/.test(testo));
+  await page.locator("button", { hasText: "Passa a Premium" }).first().click().catch(() => {});
+  await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
+  const muro = (await page.locator(".jm-wall").innerText().catch(() => "")).replace(/\s+/g, " ");
+  check("3 browser: il muro rimanda all'app ('Scarica dayalogue per iPhone'), niente checkout", /Scarica dayalogue per iPhone/.test(muro) && !/Abbonati/.test(muro) && !/stripe/i.test(muro), muro.slice(0, 100));
+  await ctx.close();
+}
+
+/* ------- 4. cloud: Elimina l'account, due tocchi, zero chiamate ------- */
 {
   const { ctx, page } = await open({ native: false, mode: "cloud" });
   const chiamate = [];
@@ -136,6 +215,7 @@ async function open({ native = false, mode = "local" } = {}) {
     if (r.url().includes("/api/account/delete")) chiamate.push(r.url());
   });
   await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
+  await passaCancello(page);
   // La sessione finta si idrata lato client: le righe arrivano dopo.
   await page.waitForSelector(".jm-st-row", { timeout: 25000 });
   await page.waitForTimeout(900);
@@ -155,7 +235,7 @@ async function open({ native = false, mode = "local" } = {}) {
   await ctx.close();
 }
 
-/* --------- 4. la porta del revisore spenta risponde di no --------- */
+/* --------- 5. la porta del revisore spenta risponde di no --------- */
 {
   const { ctx, page } = await open({ native: false, mode: "local" });
   await page.goto(BASE + "/login", { waitUntil: "domcontentloaded" });
@@ -184,46 +264,12 @@ async function open({ native = false, mode = "local" } = {}) {
   await ctx.close();
 }
 
-/* -- 5. guscio iOS, /benvenuto post-login: il tasto premium e il prezzo -- */
-// Il bivio corto (9 settembre 2026): i due tasti stanno in fondo alla
-// pagina e il primario dice "Inizia con premium". Il prezzo sotto il tasto
-// dentro il guscio lo detta APPLE (StoreKit, negozio-ios.ts): finche il
-// negozio non ha risposto non si scrive nessuna cifra, e non si inventa
-// mai il listino del web.
-{
-  const { ctx, page } = await open({ native: true, mode: "cloud" });
-  await page.goto(BASE + "/app/benvenuto", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
-  await page.waitForTimeout(600);
-  const main = await page.locator(".jm-benv").innerText();
-  check("guscio iOS: /benvenuto senza il listino del web", !main.includes("4,99"));
-  const tastoPremium = await page.locator(".jm-benv-card.pick .btn-primary").count();
-  check("guscio iOS: la card premium ha il suo tasto", tastoPremium >= 1);
-  const tastoFree = await page
-    .locator(".jm-benv-card .btn-ghost", { hasText: "Inizia con Free" })
-    .count();
-  check("guscio iOS: la card Free ha 'Inizia con Free'", tastoFree >= 1);
-  await ctx.close();
-}
-
-/* ------ 6. browser, /benvenuto post-login: la vendita web resta ------ */
+/* ---- 6. /app/benvenuto non e piu un bivio: porta dentro ---- */
 {
   const { ctx, page } = await open({ native: false, mode: "cloud" });
   await page.goto(BASE + "/app/benvenuto", { waitUntil: "domcontentloaded" });
-  await page.waitForSelector(".jm-benv-card", { timeout: 25000 });
-  await page.waitForTimeout(600);
-  const main = await page.locator(".jm-benv").innerText();
-  check("browser: /benvenuto ha il prezzo", main.includes("4,99"));
-  check(
-    "browser: /benvenuto ha il tasto 'Inizia con Free'",
-    main.includes("Inizia con Free"),
-  );
-  // Sul web la prova non esiste (PREMIUM_HAS_FREE_TRIAL = false): la riga
-  // sotto il tasto dice il prezzo e basta, mai "giorni gratis".
-  check(
-    "browser: /benvenuto non promette nessuna prova gratis",
-    !main.toLowerCase().includes("giorni gratis"),
-  );
+  await page.waitForURL("**/app", { timeout: 15000 }).catch(() => {});
+  check("6 /app/benvenuto porta dentro, nessun bivio FREE/PREMIUM", /\/app$/.test(page.url()) && !/Come vuoi iniziare/.test(await page.locator("body").innerText()), page.url());
   await ctx.close();
 }
 
