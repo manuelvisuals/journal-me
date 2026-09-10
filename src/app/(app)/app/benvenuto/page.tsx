@@ -15,7 +15,7 @@ import { haChiestoSilenzio, markWelcomeSeen, nonChiederePiu } from "@/lib/welcom
 import { usePianoNoto } from "@/lib/plan";
 import { openPremiumWall, prodottiInTasca, prodottiPremium } from "@/modules/abbonamento";
 import type { ProdottoNegozio } from "@/modules/abbonamento";
-import { FoglioDifferenze } from "@/modules/accesso";
+import { FoglioDifferenze, SegnoDayalogue } from "@/modules/accesso";
 
 /**
  * /benvenuto — la scelta, al primo avvio (SPEC-v2 §7.1).
@@ -147,7 +147,7 @@ export default function BenvenutoPage() {
     <main className="jm-screen jm-benv mx-auto w-full max-w-[440px] flex-1">
       {/* Titolo su due righe: dove spezzare lo decide la traduzione. */}
       <h1 className="jm-benv-hero" style={{ whiteSpace: "pre-line" }}>
-        {t("Dove vuoi tenere\nil tuo diario?")}
+        {t("Come vuoi iniziare?")}
       </h1>
       <p className="jm-benv-sub">
         {t("Puoi cambiare idea dopo. Quello che hai scritto viene con te.")}
@@ -155,69 +155,64 @@ export default function BenvenutoPage() {
 
       <div className="jm-benv-cards">
         <div className="jm-benv-card">
-          <div className="jm-benv-tag">{t("Free")}</div>
-          <div className="jm-benv-t" style={{ whiteSpace: "pre-line" }}>
-            {t("Scrivi tu,\nsul telefono.")}
+          <div className="jm-benv-testa">
+            <SegnoDayalogue />
+            <span className="jm-benv-nome">
+              Dayalogue <b>FREE</b>
+            </span>
           </div>
           <ul className="jm-benv-list">
             <li>{t("Scrivi la tua giornata, con obiettivi, peso, sonno e umore")}</li>
             <li>{t("Mese e Memo")}</li>
             <li>{t("Tutto resta su questo telefono")}</li>
           </ul>
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={() => (postLogin ? enter() : void startLocal())}
+            disabled={starting || waiting}
+          >
+            {starting ? t("preparo...") : t("Inizia con Free")}
+          </button>
         </div>
 
         <div className="jm-benv-card pick">
-          <div className="jm-benv-tag">{t("Premium")}</div>
-          <div className="jm-benv-t" style={{ whiteSpace: "pre-line" }}>
-            {t("Tu parli.\nDayalogue scrive.")}
+          <div className="jm-benv-testa">
+            <SegnoDayalogue />
+            <span className="jm-benv-nome">
+              Dayalogue <b>PREMIUM</b>
+            </span>
           </div>
           <ul className="jm-benv-list">
             <li>{t("Racconti a voce e si trascrive da solo")}</li>
             <li>{t("Titolo, sintesi e recap del mese, del semestre, dell'anno")}</li>
             <li>{t("Copia criptata nel cloud, su tutti i tuoi dispositivi")}</li>
           </ul>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              if (!postLogin) {
+                router.push("/login");
+                return;
+              }
+              // Post-login il muro sa gia dove mandare: Apple se c'e il
+              // negozio, l'App Store sul web. Qui non si duplica quella
+              // decisione, la si chiama.
+              markWelcomeSeen();
+              openPremiumWall("aiSummary");
+            }}
+            disabled={starting || waiting}
+          >
+            {prova > 0 ? t("Prova {n}gg gratis", { n: String(prova) }) : t("Passa a premium")}
+          </button>
+          {rigaPrezzo && <p className="jm-benv-sotto">{rigaPrezzo}</p>}
         </div>
       </div>
 
       <button type="button" className="jm-benv-vedi" onClick={() => setDifferenze(true)}>
         {t("Vedi tutte le differenze")}
       </button>
-
-      <div className="jm-benv-scelte">
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={() => {
-            if (!postLogin) {
-              router.push("/login");
-              return;
-            }
-            // Post-login il muro sa gia dove mandare: Apple se c'e il
-            // negozio, l'App Store sul web. Qui non si duplica quella
-            // decisione, la si chiama.
-            markWelcomeSeen();
-            openPremiumWall("aiSummary");
-          }}
-          disabled={starting || waiting}
-        >
-          {t("Inizia con premium")}
-        </button>
-        {rigaPrezzo && <p className="jm-benv-sotto">{rigaPrezzo}</p>}
-
-        <button
-          type="button"
-          className="btn-ghost"
-          onClick={() => (postLogin ? enter() : void startLocal())}
-          disabled={starting || waiting}
-        >
-          {starting ? t("preparo...") : postLogin ? t("Continua gratis") : t("Inizia senza account")}
-        </button>
-        <p className="jm-benv-sotto">
-          {postLogin
-            ? t("niente voce e niente AI")
-            : t("il diario resta su questo telefono")}
-        </p>
-      </div>
 
       {/* "Non chiedermelo piu" (Manuel, 27 agosto 2026): la scelta torna
           ogni dieci accessi ai gratis, e questa spunta la spegne per
@@ -246,18 +241,16 @@ export default function BenvenutoPage() {
         </div>
       )}
 
-      {/* La didascalia dice la verita del CONTESTO in cui la leggi. Prima
-          del login diceva "nessun dato lascia il dispositivo: non c'e un
-          server a cui mandarli": dal 4 settembre e FALSO, perche l'ospite e
-          acceso di fabbrica e le prime giornate con l'AI passano dal
-          server. Si dice cio che succede davvero. */}
+      {/* La riga in fondo (Manuel, 10 settembre 2026): una sola, e tecnica.
+          Prima erano quattro frasi che spiegavano tre cose diverse. Qui si
+          dice l'unico fatto che conta e si dice con il suo nome: la
+          cifratura e AES-256-GCM (src/lib/cassaforte/serratura.ts), la
+          chiave nasce sul dispositivo dal codice di recupero (PBKDF2-SHA256,
+          600.000 giri) e non parte mai. Il resto (l'AI, la cancellazione) sta
+          dove serve: nel foglio delle differenze e nelle Impostazioni. */}
       <p className="jm-benv-foot">
-        {postLogin
-          ? t("Nella versione gratis scrivi a mano: niente racconto a voce e niente AI.")
-          : t("Senza account il diario resta su questo telefono.")}
-        <br />
         {t(
-          "Con premium le tue giornate salgono nel cloud gia criptate e la chiave resta sul tuo telefono. Quando usi l'AI il testo di quella giornata passa dai modelli AI e non viene salvato. Puoi cancellare tutto quando vuoi.",
+          "Le tue giornate sono cifrate sul dispositivo con AES-256-GCM. La chiave resta sul tuo telefono: senza, nel cloud non si legge nulla.",
         )}
       </p>
 

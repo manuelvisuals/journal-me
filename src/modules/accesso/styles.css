@@ -136,6 +136,56 @@
    foglio con tutte le differenze a un tocco, e i due tasti in
    fondo con la loro riga di verita sotto.
    ============================================================= */
+/* La testa della card: il segno e il nome del piano, come si presenta un
+   prodotto (Manuel, 10 settembre 2026). Il nome NON e t(): "Dayalogue" e un
+   nome proprio e "FREE"/"PREMIUM" sono i nomi dei due piani, uguali nelle
+   due lingue. */
+.jm-benv-testa {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: calc(14px * var(--jm-space));
+}
+
+.jm-segno {
+  flex: 0 0 auto;
+  display: block;
+}
+
+.jm-segno-fondo {
+  fill: color-mix(in oklab, var(--color-ink) 6%, transparent);
+}
+
+.jm-segno-d {
+  fill: var(--color-ink);
+}
+
+.jm-segno-punti {
+  fill: var(--color-accent);
+}
+
+.jm-benv-nome {
+  font-size: calc(15px * var(--jm-ui-scale));
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+}
+
+.jm-benv-nome b {
+  font-weight: 700;
+  letter-spacing: var(--jm-tracking-label);
+}
+
+.jm-benv-card.pick .jm-benv-nome b {
+  color: var(--color-accent);
+}
+
+/* Il tasto sta DENTRO la sua card e chiude la colonna: l'elenco sopra ha
+   il margine, qui basta staccarlo dall'ultima riga. */
+.jm-benv-card .btn-primary,
+.jm-benv-card .btn-ghost {
+  margin-top: auto;
+}
+
 .jm-benv-vedi {
   display: block;
   margin: calc(14px * var(--jm-space)) auto 0;
@@ -148,18 +198,6 @@
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
-}
-
-.jm-benv-scelte {
-  display: flex;
-  flex-direction: column;
-  margin-top: calc(20px * var(--jm-space));
-}
-
-/* Il secondo tasto sta sotto la riga del primo, non incollato al primo:
-   fra le due coppie ci vuole aria, o si leggono come un blocco solo. */
-.jm-benv-scelte .btn-ghost {
-  margin-top: calc(18px * var(--jm-space));
 }
 
 .jm-benv-sotto {

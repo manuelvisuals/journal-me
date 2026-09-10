@@ -14,3 +14,4 @@ export {
   RIGHE_DIFFERENZE,
   type RigaDifferenza,
 } from "@/modules/accesso/components/differenze";
+export { SegnoDayalogue } from "@/modules/accesso/components/segno";

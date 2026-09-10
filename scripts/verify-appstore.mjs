@@ -197,14 +197,12 @@ async function open({ native = false, mode = "local" } = {}) {
   await page.waitForTimeout(600);
   const main = await page.locator(".jm-benv").innerText();
   check("guscio iOS: /benvenuto senza il listino del web", !main.includes("4,99"));
-  const tastoPremium = await page
-    .locator(".jm-benv-scelte .btn-primary", { hasText: "Inizia con premium" })
+  const tastoPremium = await page.locator(".jm-benv-card.pick .btn-primary").count();
+  check("guscio iOS: la card premium ha il suo tasto", tastoPremium >= 1);
+  const tastoFree = await page
+    .locator(".jm-benv-card .btn-ghost", { hasText: "Inizia con Free" })
     .count();
-  check("guscio iOS: il tasto 'Inizia con premium' c'e", tastoPremium >= 1);
-  const senzaAccount = await page
-    .locator(".jm-benv-scelte .btn-ghost")
-    .count();
-  check("guscio iOS: l'uscita gratuita c'e", senzaAccount >= 1);
+  check("guscio iOS: la card Free ha 'Inizia con Free'", tastoFree >= 1);
   await ctx.close();
 }
 
@@ -217,8 +215,8 @@ async function open({ native = false, mode = "local" } = {}) {
   const main = await page.locator(".jm-benv").innerText();
   check("browser: /benvenuto ha il prezzo", main.includes("4,99"));
   check(
-    "browser: /benvenuto ha il tasto 'Inizia con premium'",
-    main.includes("Inizia con premium"),
+    "browser: /benvenuto ha il tasto 'Inizia con Free'",
+    main.includes("Inizia con Free"),
   );
   // Sul web la prova non esiste (PREMIUM_HAS_FREE_TRIAL = false): la riga
   // sotto il tasto dice il prezzo e basta, mai "giorni gratis".
