@@ -81,6 +81,20 @@ export type Testi = {
     lei: { data: string; titolo: string; prosa: string; area: string; umore: string };
     lui: { data: string; titolo: string; prosa: string; area: string; umore: string };
   };
+  /** La cassaforte rifatta (10 settembre 2026): "Solo tu hai la chiave". */
+  chiave: {
+    /** Le tre frasi che si danno il cambio mentre l'animazione va. */
+    titoloUno: string;
+    titoloDue: string;
+    titoloTre: string;
+    testo: string;
+    etichettaGiornata: string;
+    etichettaChiave: string;
+    otto: string;
+    /** Otto parole d'esempio: non sono una chiave vera. */
+    parole: string[];
+    punti: { titolo: string; testo: string }[];
+  };
   vocePaginaTre: {
     etichetta: string;
     titoloPrima: string;
@@ -330,6 +344,31 @@ const it: Testi = {
       area: "Marco",
       umore: "Umore \u00b7 5",
     },
+  },
+  chiave: {
+    titoloUno: "Solo tu hai la chiave.",
+    titoloDue: "Otto parole. Non passano mai da noi.",
+    titoloTre: "Senza quelle otto parole il diario non si riapre.",
+    testo:
+      "Se scegli di tenere il diario anche sul cloud, il backup viene cifrato con una chiave di otto parole che possiedi soltanto tu. Senza quelle otto parole il diario non si riapre: non possiamo farlo noi, non puo farlo nessuno.",
+    etichettaGiornata: "La tua giornata",
+    etichettaChiave: "La tua chiave",
+    otto: "Otto parole",
+    parole: ["salpare", "cardo", "vetrina", "molo", "ruggine", "fienile", "tacco", "brina"],
+    punti: [
+      {
+        titolo: "Le otto parole le ricevi una volta",
+        testo: "Le tieni con uno screenshot, o le lasci nel portachiavi di iCloud. Non passano mai da noi.",
+      },
+      {
+        titolo: "Il backup sul cloud e una tua scelta",
+        testo: "Puoi tenere il diario solo sul dispositivo. Se lo salvi anche sul cloud, sale gia cifrato.",
+      },
+      {
+        titolo: "Senza la chiave non si torna indietro",
+        testo: "Chi perde le otto parole e i dispositivi perde il diario. Nessuno puo recuperarlo: e il punto.",
+      },
+    ],
   },
   vocePaginaTre: {
     etichetta: "La tua giornata, scritta",
@@ -731,6 +770,31 @@ const en: Testi = {
       area: "Marco",
       umore: "Mood \u00b7 5",
     },
+  },
+  chiave: {
+    titoloUno: "Only you hold the key.",
+    titoloDue: "Eight words. They never pass through us.",
+    titoloTre: "Without those eight words the journal never opens again.",
+    testo:
+      "If you choose to keep your journal in the cloud too, the backup is encrypted with an eight-word key that only you hold. Without those eight words the journal never opens again: not by us, not by anyone.",
+    etichettaGiornata: "Your day",
+    etichettaChiave: "Your key",
+    otto: "Eight words",
+    parole: ["harbour", "thistle", "window", "pier", "rust", "barn", "heel", "frost"],
+    punti: [
+      {
+        titolo: "You receive the eight words once",
+        testo: "Keep them with a screenshot, or leave them in the iCloud keychain. They never pass through us.",
+      },
+      {
+        titolo: "The cloud backup is your choice",
+        testo: "You can keep the journal on your device alone. If you save it to the cloud too, it goes up already encrypted.",
+      },
+      {
+        titolo: "Without the key there is no way back",
+        testo: "Lose the eight words and your devices and you lose the journal. Nobody can recover it: that is the point.",
+      },
+    ],
   },
   vocePaginaTre: {
     etichetta: "Your day, written",

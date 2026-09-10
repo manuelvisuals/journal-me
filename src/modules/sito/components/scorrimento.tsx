@@ -31,8 +31,49 @@ export function Scorrimento() {
 
     const blocchi = Array.from(radice.querySelectorAll<HTMLElement>("[data-fx]"));
     const piste = Array.from(radice.querySelectorAll<HTMLElement>("[data-pista]"));
+    const scene = Array.from(radice.querySelectorAll<HTMLElement>("[data-misura]"));
     const visti = new WeakSet<HTMLElement>();
     let quadro = 0;
+
+    /**
+     * LE MISURE DELLA SCENA "Solo tu hai la chiave" (.jm-sito9).
+     *
+     * Quella scena ha bisogno di tre numeri veri: quanto e alta la lastra,
+     * quanto c'e sopra il testo dentro di lei, e quanto e alta la chiave.
+     * Da quei tre ricava di quanto deve salire la chiave e quale riga ha
+     * gia attraversato. Scriverli a mano nel CSS non regge: cambiano con la
+     * larghezza (il titolo va a capo diversamente), con --jm-ui-scale (che
+     * di fabbrica non e 1, e 1,15) e col carattere appena finisce di
+     * caricarsi. Bastano sette pixel di scarto e la chiave si scolla dal
+     * fronte di cifratura. Quindi si misurano qui, e si rimisurano quando
+     * la finestra cambia o i font arrivano.
+     */
+    const misuraScene = () => {
+      for (const el of scene) {
+        const lastra = el.querySelector<HTMLElement>("[data-lastra]");
+        const corpo = el.querySelector<HTMLElement>("[data-corpo]");
+        const chiavi = el.querySelector<HTMLElement>("[data-chiavi]");
+        const titolo = el.querySelector<HTMLElement>("[data-titolo]");
+        if (!lastra || !corpo || !chiavi || !titolo) continue;
+        const hl = lastra.getBoundingClientRect().height;
+        const hc = chiavi.getBoundingClientRect().height;
+        const ht = titolo.getBoundingClientRect().height;
+        const testa = corpo.getBoundingClientRect().top - lastra.getBoundingClientRect().top;
+        const stile = getComputedStyle(el);
+        const stacco = parseFloat(stile.gap) || 0;
+        const staccoChiave = parseFloat(stile.getPropertyValue("--gap")) || 0;
+        el.style.setProperty("--lastra-h", `${hl.toFixed(1)}px`);
+        el.style.setProperty("--testa", `${testa.toFixed(1)}px`);
+        el.style.setProperty("--chiave-h", `${hc.toFixed(1)}px`);
+        // L'altezza della scena e la somma dei pezzi veri, chiave a riposo
+        // compresa: cosi la scena si centra su cio che si vede davvero e su
+        // qualunque schermo non taglia niente e non lascia buchi.
+        el.style.setProperty(
+          "--scena-h",
+          `${(ht + stacco + hl + staccoChiave + hc).toFixed(1)}px`,
+        );
+      }
+    };
 
     const misura = () => {
       quadro = 0;
@@ -51,7 +92,13 @@ export function Scorrimento() {
       }
       for (const el of piste) {
         const r = el.getBoundingClientRect();
-        let s = -r.top / (r.height - H);
+        // Di norma il cursore parte quando la pista esce dallo schermo in
+        // cima. Con `data-pista="avanti"` parte prima, quando la pista e
+        // scesa al 55% della finestra: serve alle scene che si incollano al
+        // CENTRO dello schermo, dove altrimenti si vedrebbe la scena ferma e
+        // immobile per quasi uno schermo intero di scorrimento a vuoto.
+        const av = el.dataset.pista === "avanti" ? H * 0.55 : 0;
+        let s = (av - r.top) / (r.height - H + av);
         s = s < 0 ? 0 : s > 1 ? 1 : s;
         el.style.setProperty("--s", s.toFixed(4));
       }
@@ -62,13 +109,22 @@ export function Scorrimento() {
 
     // Prima misura, POI la classe che accende gli stati "nascosto": cosi i
     // blocchi gia in vista hanno --v=1 nello stesso frame e non lampeggiano.
+    misuraScene();
     misura();
     radice.setAttribute("data-js", "");
+    const rimisura = () => {
+      misuraScene();
+      chiedi();
+    };
     window.addEventListener("scroll", chiedi, { passive: true });
-    window.addEventListener("resize", chiedi);
+    window.addEventListener("resize", rimisura);
+    // I caratteri cambiano le altezze quando arrivano: si rimisura.
+    if (typeof document !== "undefined" && "fonts" in document) {
+      void document.fonts.ready.then(rimisura);
+    }
     return () => {
       window.removeEventListener("scroll", chiedi);
-      window.removeEventListener("resize", chiedi);
+      window.removeEventListener("resize", rimisura);
       if (quadro) cancelAnimationFrame(quadro);
     };
   }, []);

@@ -45,6 +45,18 @@ import { Scorrimento } from "@/modules/sito/components/scorrimento";
  */
 const APP_STORE_URL: string | null = null;
 
+/**
+ * Il blocco illeggibile che si vede al posto della giornata nella sezione
+ * "Solo tu hai la chiave". E rumore, non una cifratura vera: sta qui e non in
+ * testi.ts perche non e testo da tradurre, e `aria-hidden` perche a chi legge
+ * con la voce non serve sentirlo.
+ */
+const CIFRATO =
+  "qN3f8Vb2xLm0pRt7Kc9ZwYh4Ej6Ga1sd5UoiIeWnBvA2lP0mQ7rT9yXz4kJ8cF3hG6bD1nS5vM0wE2uR7tY9iO4p" +
+  "L6aZ8xC3vB5nM1kJ7hG2fD4sA9qW0eR6tY3uI8oP5lK1jH7gF2dS4a6zX9cV0bN3mQ8wR2tY6uI0oP4lK9jH3gF" +
+  "7dS1aZ5xC8vB2nM6kJ0hG4fD9sA3qW7eR1tY5uI9oP3lK7jH1gF5dS9aZ3xC7vB1nM5kJ9hG3fD8sA2qW6eR0tY" +
+  "4uI8oP2lK6jH0gF4dS7aZ1xC5vB9nM3kJ7hG1fD6sA0qW4eR8tY2uI6oP0lK4jH8gF2dS5aZ9xC3v";
+
 /* -------------------------------------------------------------- foto */
 
 function Foto({ nome, className, eager = false }: { nome: string; className?: string; eager?: boolean }) {
@@ -602,52 +614,75 @@ export function HomeSito({
         </section>
 
 
-        {/* --------------------------------------------- la cassaforte */}
-        <section className="jm-sito-sez jm-sito-cassa" id="cassaforte">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-testa larga" data-fx="testo">
-              <p className="jm-sito-kick">{t.cassaforte.etichetta}</p>
-              <h2 className="jm-sito-h2">{t.cassaforte.titolo}</h2>
-              <p className="big">{t.cassaforte.testo}</p>
-              <p className="jm-sito4-solo-tu">{t.cassaforte.soloTu}</p>
-            </div>
-            <div className="jm-sito-cassa-viz" data-fx="testo">
-              <div className="jm-sito-cassa-box">
-                <p className="l">
-                  <span>{t.cassaforte.telefono}</span>
-                  <b>{t.cassaforte.leggibile}</b>
-                </p>
-                <p className="chiaro">
-                  <b>{t.esempio.titolo}</b>
-                  {t.esempio.prosa}
-                </p>
-              </div>
-              <div className="jm-sito-cassa-freccia" aria-hidden="true">
-                <Icona nome="lucchetto" />
-                <span>AES-256</span>
-              </div>
-              <div className="jm-sito-cassa-box">
-                <p className="l">
-                  <span>{t.cassaforte.server}</span>
-                  <b>{t.cassaforte.illeggibile}</b>
-                </p>
-                <p className="cifra" aria-hidden="true">
-                  qN3f8Vb2xLm0pRt7Kc9ZwYh4Ej6Ga1sd5UoiIeWnBvA2lP0mQ7rT9yXz4kJ8cF3hG6bD1nS5vM0wE2uR7tY9iO4pL6aZ8xC3vB5nM1kJ7hG2fD4sA9qW0eR6tY3uI8oP5lK1jH7gF2dS4a6zX9cV0bN3m
-                </p>
-              </div>
-            </div>
-            <div className="jm-sito-cassa-griglia">
-              <figure className="jm-sito-cassa-chiave" data-fx="foto">
-                <Foto nome="chiave" />
-              </figure>
-              <div className="jm-sito-cassa-punti">
-                {t.cassaforte.punti.map((x, i) => (
-                  <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
-                    <h3>{x.titolo}</h3>
-                    <p>{x.testo}</p>
+        {/* ------------------------------------------ solo tu hai la chiave */}
+        {/* La cassaforte rifatta il 10 settembre 2026 (mockup approvato da
+            Manuel). Tiene l'ancora #cassaforte a cui puntano menu e piede.
+            La vecchia .jm-sito-cassa resta nel CSS e nei testi: la usano gli
+            archivi /v1../v6. */}
+        <section className="jm-sito9-chiave" id="cassaforte" aria-labelledby="jm-sito9-titolo">
+          <div className="jm-sito9-cont">
+            <p className="jm-sito9-intro">{t.chiave.testo}</p>
+
+            <div className="jm-sito9-pista" data-pista="avanti">
+              <div className="jm-sito9-scena" data-misura>
+                {/* Il titolo sta DENTRO la scena ferma e racconta cosa sta
+                    succedendo sotto: tre stati che si danno il cambio col
+                    cursore. Essendo tutto funzione di --s, tornando su con lo
+                    scorrimento la frase torna indietro da sola e il testo
+                    cifrato ridiventa leggibile. */}
+                <h2 className="jm-sito9-titolo" id="jm-sito9-titolo" data-titolo>
+                  <span className="uno">{t.chiave.titoloUno}</span>
+                  <span className="due">{t.chiave.titoloDue}</span>
+                  <span className="tre">{t.chiave.titoloTre}</span>
+                </h2>
+
+                <div className="jm-sito9-palco">
+                  <div className="jm-sito9-lastra" data-lastra>
+                    <p className="jm-sito9-riga">
+                      <span>{t.chiave.etichettaGiornata}</span>
+                      <b>{t.esempio.data}</b>
+                    </p>
+                    <div className="jm-sito9-corpo" data-corpo>
+                      <div className="jm-sito9-strato">
+                        <p className="jm-sito9-chiaro">
+                          <span className="t">{t.esempio.titolo}</span>
+                          {t.esempio.prosa}
+                        </p>
+                      </div>
+                      <div className="jm-sito9-strato cifrato" aria-hidden="true">
+                        <p className="jm-sito9-cifra">{CIFRATO}</p>
+                      </div>
+                    </div>
                   </div>
-                ))}
+
+                  {/* La chiave: parte sotto la lastra e sale DIETRO di lei. Il
+                      suo bordo alto e anche il fronte di cifratura, quindi le
+                      due cose non possono andare fuori sincrono. */}
+                  <div className="jm-sito9-chiavi" data-chiavi>
+                    <p className="jm-sito9-riga">
+                      <span>{t.chiave.etichettaChiave}</span>
+                      <b>{t.chiave.otto}</b>
+                    </p>
+                    <div className="jm-sito9-parole">
+                      {t.chiave.parole.map((parola, i) => (
+                        <div key={parola}>
+                          <span className="n">{`0${i + 1}`}</span>
+                          <span className="w">{parola}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div className="jm-sito9-punti">
+              {t.chiave.punti.map((x, i) => (
+                <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
+                  <h3>{x.titolo}</h3>
+                  <p>{x.testo}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
