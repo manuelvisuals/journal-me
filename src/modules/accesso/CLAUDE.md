@@ -121,3 +121,63 @@ legge la sessione in tasca, niente rete; da ospite e sempre falso) e una
 riga in `components/linguetta.tsx`. Il saluto senza bersaglio ha gia la
 chiusura secca. Banco: `verify-linguetta-revisore` (6 controlli, morso
 provato).
+
+## Il braccialetto nasce con DeviceCheck, la giornata e quella del diario (10 settembre 2026, branch `modello-premium`)
+
+Audit del modello premium (AUDIT-premium-vuole-account.html), decisioni 2A e
+4A di Manuel.
+
+- Il server NON crea piu un braccialetto per qualunque segreto: nasce solo
+  da POST /api/ospite/braccialetto (`server/ospite-braccialetto.ts` ->
+  `registraBraccialetto` in src/lib/server/ospite.ts, scheletro). Con
+  DeviceCheck acceso (variabili `APPLE_DEVICECHECK_*`, vedi
+  `DEVICECHECK-passi.md`) vuole il token del guscio (`ios/App/App/DeviceCheck.swift`,
+  `src/lib/native/devicecheck.ts`) e il bit "regalo gia dato" spento presso
+  Apple. Sul web niente token: 403 `solo_app`, e l'AI risponde 402
+  `regalo_finito` motivo `solo_app`; il muro dice "si accende dall'app".
+  Spento (banchi, sviluppo, e produzione finche Manuel non carica la chiave)
+  il server registra e basta. `assicuraBraccialetto` registra all'avvio, una
+  volta per apertura, in fila (due effetti di AuthGate creavano DUE segreti).
+- `x-jm-giorno` = il giorno del DIARIO su cui l'AI lavora (apiFetch, opzione
+  `giorno`; lo mandano save-recording, analyze-day, chiarimenti, scan-archivio);
+  il server lo accetta solo se plausibile (non nel futuro oltre un giorno,
+  non piu vecchio di un anno, esistente) e ogni giornata ha un tetto di
+  chiamate (`CHIAMATE_PER_GIORNATA` = 60, migration 028 `chiamate`): oltre,
+  402 motivo `chiamate`.
+- `/api/ospite/stato` risponde anche `registrato`; la riga "AI in regalo"
+  dice "nell'app per iPhone" quando e falso.
+- Banchi: `verify-ospite` (55, con la sezione 4A/2A), `verify-devicecheck`
+  (19, con il DeviceCheck finto di scripts/lib/finti-server.mjs: il dev
+  server va rilanciato con `APPLE_DEVICECHECK_BASE_URL=http://127.0.0.1:3196`).
+
+## La porta del giorno, il bivio che non c'e piu (10 settembre 2026, branch `modello-premium`)
+
+Decisioni B1, 5A, C4, B5 e punto 7 del modello premium (audit del 10
+settembre; Manuel: "vai, facciamo tutto").
+
+- `components/porta-giorno.tsx` ha preso il posto di `saluto-avvio.tsx` e del
+  foglio "presentazione" del muro: UNA schermata all'ingresso, una volta al
+  giorno. La logica (quale variante: lettera, cambiata, uguale, finite, pausa,
+  proposta, niente) e in `porta-stato.ts`, pura, banco
+  `verify-porta-stato` (`node --experimental-strip-types`, 19 controlli). Le
+  memorie sono `jm.porta.lettera` (versione vista), `jm.porta.giorno` (giorno
+  locale del dispositivo), `jm.porta.rimaste` (conto detto l'ultima volta).
+  `saluto-stato.ts` resta per la vedetta del logout (`jm.saluto.uscito`) e
+  per il gancio dei banchi (`jm.saluto.silenzio` valido = porta muta).
+- La lettera (primo avvio): nel guscio il regalo in testa ("N giornate, con
+  l'AI accesa", "Comincia a scrivere") e sotto la lettera di Manuel dal
+  pannello; sul web solo la lettera. In locale la riga "Ho gia un account"
+  -> /login. Il campo `bottone` del pannello non comanda piu il tasto. Niente
+  casella "non mostrare piu": una volta per dispositivo e per versione.
+- Le mattine: "Ti restano N" con i pallini quando il conto e cambiato (o
+  restano 2 o meno); il GIORNO come titolo e il conto in piccolo quando e
+  uguale a ieri (5A); "finite"; "in pausa" con le giornate che restano (C4);
+  "proposta" per un account gratis senza regalo qui (il web). "Passa a
+  premium" chiude la porta e apre il muro. Premium: niente.
+- Il bivio `/app/benvenuto` e un rimando a /app; `src/lib/welcome.ts` e
+  `components/differenze.tsx` non esistono piu; `afterLogin` porta su /app e
+  il muro si riapre da solo se si era partiti da li (`src/lib/ospite/muro-riapri.ts`,
+  letto da AuthGate, cancellato da "Non ora").
+- Banchi: `verify-porta-giorno` (35, browser), `verify-benvenuto` (65,
+  riscritta la sezione della casella), `verify-saluto-logout` (10),
+  `verify-linguetta-revisore` (6), `verify-appstore` (22, riscritto).

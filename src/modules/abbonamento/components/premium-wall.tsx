@@ -61,14 +61,16 @@ import {
 } from "@/modules/abbonamento/negozio-ios";
 import { openPremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 import { statoOspiteInTasca } from "@/lib/ospite/stato";
+import type { MotivoRegaloFinito } from "@/lib/regalo";
+import { segnaMuroDaRiaprire } from "@/lib/ospite/muro-riapri";
 
 /**
- * "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3).
- * "presentazione" = il foglio dopo la PRIMA giornata chiusa dall'AI
- * (mockup premium-senza-password, decisione A2 di Manuel): il regalo si
- * presenta una volta sola, e premium ha un nome.
+ * "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3), o il
+ * regalo che oggi non copre (motivo). Il foglio "presentazione" dopo la
+ * prima giornata AI (4 settembre) non esiste piu dal 10 settembre 2026: la
+ * porta del giorno (modulo accesso) fa quel lavoro la mattina dopo.
  */
-export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns" | "regalo" | "presentazione";
+export type WallFeature = "voice" | "aiSummary" | "recap" | "patterns" | "regalo";
 
 type WallState = {
   feature: WallFeature;
@@ -76,8 +78,14 @@ type WallState = {
   onDismiss?: () => void;
   /** Per "regalo": quante giornate erano (per dirlo nel titolo). */
   max?: number;
-  /** Per "presentazione": quante giornate restano in regalo. */
-  rimaste?: number;
+  /**
+   * Per "regalo": PERCHE il regalo non ha coperto la chiamata (contratto
+   * MotivoRegaloFinito). Cambia le parole, non la schermata: "finite" e
+   * "in pausa per il tetto" e "solo nell'app" sono tre verita diverse e
+   * dire "finite" a chi ne ha ancora sei e una bugia (audit del 10
+   * settembre 2026, C4).
+   */
+  motivo?: MotivoRegaloFinito;
 } | null;
 
 let state: WallState = null;
@@ -89,9 +97,9 @@ function emit(): void {
 export function openPremiumWall(
   feature: WallFeature,
   onDismiss?: () => void,
-  extra?: { max?: number; rimaste?: number },
+  extra?: { max?: number; motivo?: MotivoRegaloFinito },
 ): void {
-  state = { feature, onDismiss, max: extra?.max, rimaste: extra?.rimaste };
+  state = { feature, onDismiss, max: extra?.max, motivo: extra?.motivo };
   emit();
 }
 
@@ -123,7 +131,6 @@ const TITLES: Record<WallFeature, string> = {
   recap: "Per i recap del mese\nserve premium",
   patterns: "Per le letture sui pattern\nserve premium",
   regalo: "Le giornate con l'AI\nin regalo sono finite",
-  presentazione: "L'AI ha chiuso\nquesta giornata per te",
 };
 
 const FEATURES: { t: string; p: string }[] = [
@@ -179,8 +186,8 @@ export function PremiumWall() {
   useEffect(() => {
     ascoltaTransazioni();
     const suRegalo = (e: Event) => {
-      const d = (e as CustomEvent<{ max?: number }>).detail;
-      openPremiumWall("regalo", undefined, { max: d?.max });
+      const d = (e as CustomEvent<{ max?: number; motivo?: MotivoRegaloFinito }>).detail;
+      openPremiumWall("regalo", undefined, { max: d?.max, motivo: d?.motivo });
     };
     window.addEventListener("jm:regalo-finito", suRegalo);
     return () => window.removeEventListener("jm:regalo-finito", suRegalo);
@@ -247,19 +254,16 @@ export function PremiumWall() {
   if (!wall) return null;
 
   const regalo = wall.feature === "regalo";
-  const presentazione = wall.feature === "presentazione";
-  // La PRESENTAZIONE da ospite festeggia, non vende (controaudit del 10
-  // settembre 2026): e il foglio dopo la prima giornata chiusa dall'AI, a
-  // chi ne ha ancora nove in regalo. Chiedergli l'email qui e contro il
-  // primo avvio senza bivio: "Continua" e basta, e una riga piccola per chi
-  // vuole sapere cosa fa premium (che riapre questo muro nella sua forma
-  // normale, con la porta dell'email).
-  const festeggia = presentazione && senzaAccount;
   const prodotto = prodotti?.find((p) => p.id === scelto) ?? prodotti?.[0] ?? null;
   const prova = prodotto && prodotto.provaGiorni && prodotto.provaDisponibile !== false ? prodotto.provaGiorni : 0;
 
-  /** L'ospite: premium vuole un account, quindi prima l'email. */
+  /**
+   * L'ospite: premium vuole un account, quindi prima l'email. Il muro si
+   * riapre da solo dopo il codice (auth-gate legge il promemoria): chi
+   * voleva comprare trova le schede con il prezzo, non la giornata vuota.
+   */
   const vaiAlLogin = () => {
+    if (wall) segnaMuroDaRiaprire(wall.feature);
     closePremiumWall();
     router.push("/login");
   };
@@ -318,16 +322,29 @@ export function PremiumWall() {
     setCloudNote(true);
   };
 
-  const titolo =
-    regalo && wall.max
-      ? t("Le {n} giornate con l'AI\nin regalo sono finite", { n: String(wall.max) })
-      : t(TITLES[wall.feature]);
-  const sottotitolo = presentazione
-    ? wall.rimaste !== undefined && wall.rimaste > 0
-      ? t("Titolo, sintesi, aree: li ha scritti lei. Ne hai altre {n} in regalo.", { n: String(wall.rimaste) })
-      : t("Titolo, sintesi, aree: li ha scritti lei. Le prime giornate sono in regalo.")
-    : regalo
-      ? t("Continua a scrivere. Manca solo l'AI.")
+  // Il regalo che non copre: le parole seguono il motivo. "quota" e la
+  // fine vera; il resto e una pausa, e si dice che le giornate restano.
+  const motivo: MotivoRegaloFinito = wall.motivo ?? "quota";
+  const pausa = regalo && motivo !== "quota";
+  const titolo = regalo
+    ? motivo === "solo_app"
+      ? t("L'AI in regalo\nsi accende dall'app")
+      : motivo === "chiamate"
+        ? t("Per oggi l'AI\nha fatto abbastanza")
+        : motivo === "tetto" || motivo === "spento"
+          ? t("Oggi l'AI in regalo\ne in pausa")
+          : wall.max
+            ? t("Le {n} giornate con l'AI\nin regalo sono finite", { n: String(wall.max) })
+            : t(TITLES[wall.feature])
+    : t(TITLES[wall.feature]);
+  const sottotitolo = regalo && motivo === "solo_app"
+      ? t("Dal browser si legge e si scrive. Le giornate con l'AI in regalo sono nell'app per iPhone.")
+      : regalo && motivo === "chiamate"
+        ? t("Questa giornata ha gia ricevuto molte richieste. Le tue giornate restano: domani si riparte, o passi a premium.")
+        : pausa
+          ? t("Il regalo del mese e stato usato tutto, per tutti. Le tue giornate restano: torna domani, o passa a premium.")
+          : regalo
+            ? t("Continua a scrivere. Manca solo l'AI.")
       : negozio && senzaAccount
         ? t("Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi.")
         : negozio
@@ -349,7 +366,7 @@ export function PremiumWall() {
         <div className="jm-wall-t">{titolo}</div>
         <div className="jm-wall-p">{sottotitolo}</div>
 
-        {negozio && senzaAccount && !festeggia && (
+        {negozio && senzaAccount && (
           <div className="jm-wall-note">
             {t(
               "Premium ha bisogno di un account: e li che vive la copia cifrata nel cloud, ed e cosi che ti segue su tutti i dispositivi.",
@@ -422,11 +439,7 @@ export function PremiumWall() {
           </div>
         )}
 
-        {festeggia ? (
-          <button type="button" className="btn-primary" onClick={dismiss}>
-            {t("Continua")}
-          </button>
-        ) : !negozio ? (
+        {!negozio ? (
           <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
             {t("Scarica dayalogue per iPhone")}
           </button>
@@ -450,20 +463,12 @@ export function PremiumWall() {
                   : t("Passa a premium")}
           </button>
         )}
-        {!festeggia && (
-          <button type="button" className="btn-ghost" onClick={dismiss}>
-            {regalo ? t("Continua senza AI") : t("non ora")}
-          </button>
-        )}
+        <button type="button" className="btn-ghost" onClick={dismiss}>
+          {regalo ? t("Continua senza AI") : t("non ora")}
+        </button>
 
         <div className="jm-wall-quiet">
-          {festeggia && (
-            <button type="button" onClick={() => openPremiumWall("aiSummary")}>
-              {t("Cosa fa premium")}
-            </button>
-          )}
           {negozio &&
-            !festeggia &&
             (senzaAccount ? (
               <button type="button" onClick={vaiAlLogin}>
                 {t("Ho gia un abbonamento")}
@@ -498,8 +503,27 @@ export function PremiumWall() {
             <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot; <a href="/privacy">{t("Privacy")}</a>
           </div>
         )}
-        {negozio && senzaAccount && !festeggia && (
+        {negozio && senzaAccount && (
           <div className="jm-wall-nota">
+            {/* Il prezzo PRIMA dell'email (decisione 3A di Manuel, 10 settembre
+                2026): chiedere un indirizzo senza dire quanto costa e il tipo di
+                cosa che fa disinstallare. Lo dice Apple (prodotti in cache),
+                quindi e quello che vedra nel foglio; se non e ancora arrivato
+                si tace, non si inventa. */}
+            {prodotto && (
+              <>
+                {prova > 0
+                  ? t("{n} giorni gratis, poi {prezzo} {periodo}. Disdici quando vuoi.", {
+                      n: String(prova),
+                      prezzo: prodotto.prezzo,
+                      periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
+                    })
+                  : t("{prezzo} {periodo}. Disdici quando vuoi.", {
+                      prezzo: prodotto.prezzo,
+                      periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
+                    })}{" "}
+              </>
+            )}
             {t("Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.")}
           </div>
         )}

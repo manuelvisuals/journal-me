@@ -138,7 +138,11 @@ conto "braccialetto", IndexedDB sul web), `src/lib/regalo.ts` (il
 contratto dei limiti, come `aree.ts`), `src/lib/server/regalo.ts` (lettura
 con cache e spesa del mese), `src/lib/server/ospite.ts` (la quarta guardia
 `requireOspiteOPremium`: premium o braccialetto con quota, tetto R4 con la
-grazia per la giornata gia iniziata), `src/lib/server/openai.ts`
+grazia per la giornata gia iniziata; dal 10 settembre 2026 il braccialetto
+NASCE solo da `registraBraccialetto`, con DeviceCheck acceso vuole il token
+del guscio: `src/lib/server/devicecheck.ts`, `src/lib/native/devicecheck.ts`,
+`ios/App/App/DeviceCheck.swift`; la giornata e quella del diario, `x-jm-giorno`
+validato, con un tetto di chiamate per giornata, migration 028), `src/lib/server/openai.ts`
 (l'indirizzo di OpenAI in un posto solo, per i banchi). `apiFetch` manda
 il braccialetto e distingue il 402 `regalo_finito` da "Premium required";
 `can()` e AuthGate leggono l'interruttore. Migration 023 (`regalo` a una

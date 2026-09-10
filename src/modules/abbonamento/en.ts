@@ -33,7 +33,17 @@ export const ABBONAMENTO: Record<string, string> = {
     "Premium needs an account: that is where the encrypted cloud copy lives, and it is how it follows you across devices.",
   "Entra con la tua email": "Continue with your email",
   "Ho gia un abbonamento": "I already have a subscription",
-  "Cosa fa premium": "What premium does",
+  "{prezzo} {periodo}. Disdici quando vuoi.": "{prezzo} {periodo}. Cancel anytime.",
+  // Il muro del regalo che non copre, per motivo (audit 10 settembre 2026, C4).
+  "L'AI in regalo\nsi accende dall'app": "The AI gift\nturns on in the app",
+  "Per oggi l'AI\nha fatto abbastanza": "The AI has done\nenough for today",
+  "Oggi l'AI in regalo\ne in pausa": "The AI gift\nis paused today",
+  "Dal browser si legge e si scrive. Le giornate con l'AI in regalo sono nell'app per iPhone.":
+    "In the browser you read and write. The AI gift days live in the iPhone app.",
+  "Questa giornata ha gia ricevuto molte richieste. Le tue giornate restano: domani si riparte, o passi a premium.":
+    "This day has already had many requests. Your days are safe: tomorrow it resumes, or go premium.",
+  "Il regalo del mese e stato usato tutto, per tutti. Le tue giornate restano: torna domani, o passa a premium.":
+    "This month's gift has been used up, for everyone. Your days are safe: come back tomorrow, or go premium.",
   "Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.":
     "No password: you get a six-digit code. The days you have already written come with you.",
   "Termini": "Terms",
@@ -77,6 +87,4 @@ export const ABBONAMENTO: Record<string, string> = {
   "Provalo adesso": "Try it now",
   "Ho gia un account": "I already have an account",
   "L'AI ha chiuso\nquesta giornata per te": "The AI closed\nthis day for you",
-  "Titolo, sintesi, aree: li ha scritti lei. Ne hai altre {n} in regalo.": "Title, summary, areas: it wrote them. You have {n} more as a gift.",
-  "Titolo, sintesi, aree: li ha scritti lei. Le prime giornate sono in regalo.": "Title, summary, areas: it wrote them. The first days are a gift.",
 };

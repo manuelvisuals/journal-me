@@ -27,6 +27,7 @@
 //
 // poi: node scripts/verify-ospite-schermate.mjs
 import { chromium } from "playwright-core";
+import { createHash } from "node:crypto";
 import { SupabaseFintoServer, OpenAIFinto } from "./lib/finti-server.mjs";
 import { SupabaseFinto, jwtFinto, montaSupabaseFinto, UTENTE_ID } from "./lib/supabase-finto.mjs";
 
@@ -194,20 +195,11 @@ let semeA = null;
   const avvisoPrima = await page.locator(".jm-avviso-regalo").count();
   const t1 = await scriviEChiudi(page, "Oggi ho chiuso una giornata con l'AI e ne restano poche.", { conAI: true });
   check("02 la giornata e chiusa dall'AI (titolo del modello finto)", /giornata da ospite/i.test(t1), t1);
-  // A2 (mockup premium-senza-password): la PRIMA giornata chiusa dall'AI su
-  // questo dispositivo apre il foglio "L'AI ha chiuso questa giornata per
-  // te", una volta sola, con la scheda e "non ora".
-  const foglioA2 = page.locator(".jm-wall");
-  await foglioA2.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-  const testoA2 = await foglioA2.innerText().catch(() => "");
-  check("A2 dopo la prima giornata chiusa dall'AI si apre il foglio 'L'AI ha chiuso questa giornata per te' con 'Ne hai altre 2 giornate'", /L'AI ha chiuso\s*questa giornata per te/.test(testoA2) && /altre 2 in regalo/.test(testoA2), testoA2.replace(/\s+/g, " ").slice(0, 120));
-  // Controaudit del 10 settembre 2026: il foglio festeggia, non vende. Prima
-  // il controllo cercava solo 'Ho gia un account' e lasciava passare la
-  // porta dell'email ('Entra con la tua email', 'Ho gia un abbonamento').
-  check("A2 il foglio NON chiede l'account: niente porta dell'email, il tasto e 'Continua' e c'e 'Cosa fa premium'", !/Entra con la tua email/.test(testoA2) && !/Ho gia un/.test(testoA2) && /Continua/.test(testoA2) && /Cosa fa premium/.test(testoA2), testoA2.replace(/\s+/g, " ").slice(0, 160));
-  check("A2 e segnato come gia presentato (localStorage jm.premium.presentato)", (await page.evaluate(() => localStorage.getItem("jm.premium.presentato"))) === "1");
-  await page.locator(".jm-wall .btn-primary").click().catch(() => {});
-  await page.waitForTimeout(500);
+  // Dal 10 settembre 2026 (porta del giorno, modulo accesso) dopo la prima
+  // giornata chiusa dall'AI NON si apre nessun foglio: il conto lo dice la
+  // porta la mattina dopo. Qui si misura che l'ingresso resta libero.
+  await page.waitForTimeout(1200);
+  check("A2 dopo la prima giornata chiusa dall'AI non si apre nessun foglio (niente muro, niente porta)", (await page.locator(".jm-wall, .jm-benv-sal").count()) === 0);
   const avviso = page.locator(".jm-avviso-regalo");
   await avviso.waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
   const testoAvviso = await avviso.innerText().catch(() => "");
@@ -386,8 +378,12 @@ let semeA = null;
   check("06 con la cassaforte aperta la giornata del telefono SALE, chiusa a chiave (una cassettina sul server)", finto.tab("cassettine").length === 1 && !JSON.stringify(finto.tab("cassettine")).includes("prima dell'email"), String(finto.tab("cassettine").length));
   const adotta = api.filter((a) => a.path === "/api/ospite/adotta");
   check("06 il braccialetto viene adottato: /api/ospite/adotta con gettone E braccialetto", adotta.length >= 1 && adotta[0].auth !== null && typeof adotta[0].braccialetto === "string", JSON.stringify(adotta[0] ?? null));
-  const brA = sb.tab("braccialetti").find((b) => b.user_id === UTENTE_ID);
-  check("06 sul server il braccialetto e legato all'account", !!brA);
+  // Il braccialetto di QUESTO dispositivo, dal segreto che ha mandato: dal
+  // 10 settembre 2026 (2A) ogni dispositivo si registra all'avvio anche con
+  // il gettone, quindi piu righe possono portare lo stesso user_id.
+  const hashA = adotta[0] ? createHash("sha256").update(adotta[0].braccialetto, "utf8").digest("hex") : null;
+  const brA = sb.tab("braccialetti").find((b) => b.segreto_hash === hashA);
+  check("06 sul server il braccialetto e legato all'account", !!brA && brA.user_id === UTENTE_ID);
   await page.waitForTimeout(500);
   check("06 il promemoria della migrazione cade solo a fine riuscita", (await page.evaluate(() => localStorage.getItem("jm.migrazione.locale"))) === null);
   await page.locator(".jm-fv-h, .jm-ed-ta").first().waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});

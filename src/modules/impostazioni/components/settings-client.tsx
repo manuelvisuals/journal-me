@@ -72,6 +72,7 @@ import {
   gestisciAbbonamento,
   negozioDisponibile,
   openPremiumWall,
+  prodottiInTasca,
   ripristinaAcquisti,
 } from "@/modules/abbonamento";
 import {
@@ -134,6 +135,27 @@ const APPEARANCE_OPTIONS: { value: Appearance; label: string; short: string }[] 
 ];
 
 type Busy = "idle" | "export" | "import" | "erase" | "deleteAccount";
+
+/**
+ * La riga del prezzo come la dice APPLE quando il negozio c'e (prezzo gia
+ * nella valuta della persona, prova solo se le spetta), e i numeri di
+ * pricing.ts solo dove il negozio non esiste (il web). Audit del 10
+ * settembre 2026, A6/3A: un prezzo a mano in euro davanti a un ospite
+ * americano, mentre il muro a un tocco ne mostrava un altro, era una
+ * contraddizione in due schermate.
+ */
+function rigaPrezzo(t: (s: string, v?: Record<string, string>) => string): { prova: string; poi: string } {
+  const apple = negozioDisponibile() ? prodottiInTasca(false)?.[0] : undefined;
+  if (apple) {
+    const periodo = apple.periodo === "anno" ? t("all'anno") : t("al mese");
+    const prova = apple.provaGiorni && apple.provaDisponibile !== false ? t("{n} giorni gratis", { n: String(apple.provaGiorni) }) : "";
+    return { prova, poi: `${prova ? t("Poi") + " " : ""}${apple.prezzo} ${periodo}` };
+  }
+  return {
+    prova: t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) }),
+    poi: `${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}`,
+  };
+}
 
 export function SettingsClient({
   mode,
@@ -362,7 +384,7 @@ export function SettingsClient({
    * elimina l'utente Supabase e la cascata porta via tutte le sue righe.
    * Dopo, questo browser torna vergine: via la sessione, la cache del
    * piano, la memoria della scansione e la scelta della modalita — il
-   * prossimo avvio riparte da /benvenuto.
+   * prossimo avvio riparte da ospite, come un telefono nuovo.
    */
   const handleDeleteAccount = async () => {
     if (busy !== "idle") return;
@@ -383,7 +405,7 @@ export function SettingsClient({
       try {
         window.localStorage.removeItem("jm.mode");
       } catch {}
-      router.push("/app/benvenuto");
+      router.push("/app");
     } catch (err) {
       setDeleteArmed(false);
       say(
@@ -681,8 +703,8 @@ export function SettingsClient({
                     />
                     <SetRow
                       title={t("Passa a Premium")}
-                      value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
-                      desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
+                      value={rigaPrezzo(t).prova || undefined}
+                      desc={`${rigaPrezzo(t).poi}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
                       onClick={() => openPremiumWall("aiSummary")}
                     />
                     {/* Il ripristino, da ospite, comincia dal ritrovare il
@@ -991,7 +1013,10 @@ export function SettingsClient({
  */
 function PremiumInvite() {
   const t = useT();
-  const native = isNative();
+  // "Si attiva dall'app" vale dove il negozio NON c'e: e il negozio a dire
+  // se qui si compra, non la piattaforma (i banchi fingono il negozio senza
+  // fingere iOS).
+  const native = negozioDisponibile();
   return (
     <div className="jm-st-inv">
       <div className="jm-st-inv-t">{t("Il diario a voce e spento")}</div>
@@ -1014,7 +1039,7 @@ function PremiumInvite() {
       </button>
       <div className="jm-st-inv-n">
         {native
-          ? `${t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}, ${t("poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)} . ${t("disdici quando vuoi")}`
+          ? `${rigaPrezzo(t).prova ? rigaPrezzo(t).prova + ", " : ""}${rigaPrezzo(t).poi.replace(/^Poi /, t("poi") + " ")} . ${t("disdici quando vuoi")}`
           : t("Si attiva dall'app per iPhone")}
       </div>
     </div>

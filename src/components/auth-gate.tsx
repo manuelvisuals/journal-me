@@ -18,6 +18,8 @@ import {
 } from "@/lib/cassaforte";
 import { CassaforteCancello } from "@/modules/accesso";
 import { migraSePromesso } from "@/lib/ospite/migrazione";
+import { prendiMuroDaRiaprire } from "@/lib/ospite/muro-riapri";
+import { openPremiumWall } from "@/modules/abbonamento";
 
 type CloudAuth = "unknown" | "in" | "out";
 
@@ -179,6 +181,15 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (mode !== "cloud" || auth !== "in" || cassaforte !== "aperta") return;
     void migraSePromesso();
+    // Il muro lasciato a meta dall'ospite che e andato a mettere l'email
+    // (C1 dell'audit del 10 settembre 2026): adesso e in cloud e mostra le
+    // schede. Si riapre dopo che le giornate sono salite, cosi il piano e
+    // riletto e il foglio di Apple trova un account intero.
+    const feature = prendiMuroDaRiaprire();
+    if (feature) {
+      const t = window.setTimeout(() => openPremiumWall(feature), 400);
+      return () => window.clearTimeout(t);
+    }
   }, [mode, auth, cassaforte]);
 
   if (mode === "resolving") return null;

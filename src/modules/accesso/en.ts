@@ -8,39 +8,16 @@
  */
 export const ACCESSO: Record<string, string> = {
   "Feedback": "Feedback",
-  "Inizia": "Start",
-  "Puoi cambiare idea dopo. Quello che hai scritto viene con te.": "You can change your mind later. What you have written comes with you.",
   "Obiettivi, peso, sonno, umore": "Goals, weight, sleep, mood",
   "Mese e Memo": "Month and Memo",
   // Il bivio corto e i due tasti (9 settembre 2026).
-  "Come vuoi iniziare?": "How do you want to start?",
   // La seconda schermata: il regalo di benvenuto (10 settembre 2026).
-  "Regalo di benvenuto": "A welcome gift",
-  "{n} giornate con l'AI accesa, incluse. Racconti a voce, lei trascrive e scrive titolo e sintesi della giornata.": "{n} days with the AI on, included. You speak, it transcribes and writes the title and summary of your day.",
-  "E' un assaggio. Premium fa anche i recap del mese, del semestre e dell'anno, tiene una copia criptata nel cloud e ti segue su tutti i dispositivi.": "It is a taste. Premium also writes the recaps of the month, half year and year, keeps an encrypted copy in the cloud and follows you on all your devices.",
-  "Inizia con Free": "Start with Free",
-  "Prova {n}gg gratis": "Try {n} days free",
-  "Le tue giornate sono cifrate sul dispositivo con AES-256-GCM. La chiave resta sul tuo telefono: senza, nel cloud non si legge nulla.": "Your days are encrypted on device with AES-256-GCM. The key stays on your phone: without it, nothing in the cloud can be read.",
-  "Scrivi la tua giornata, con obiettivi, peso, sonno e umore": "Write your day, with goals, weight, sleep and mood",
-  "Tutto resta su questo telefono": "Everything stays on this phone",
-  "Racconti a voce e si trascrive da solo": "Speak, and it transcribes itself",
-  "Titolo, sintesi e recap del mese, del semestre, dell'anno": "Title, summary and recaps of the month, half year and year",
-  "Copia criptata nel cloud, su tutti i tuoi dispositivi": "Encrypted copy in the cloud, on all your devices",
-  "Vedi tutte le differenze": "See all the differences",
-  "{n} giorni gratis, poi {prezzo}. Disdici quando vuoi.": "{n} days free, then {prezzo}. Cancel whenever you want.",
-  "{prezzo}. Disdici quando vuoi.": "{prezzo}. Cancel whenever you want.",
   // Il foglio con tutte le differenze.
-  "Tutte le differenze": "All the differences",
-  "Quello che c'e sempre, e quello che aggiunge premium.": "What is always there, and what premium adds.",
   "Backup su file che puoi esportare": "Backup to a file you can export",
   "Titolo, sintesi e aree della giornata": "Title, summary and areas of the day",
   "Recap del mese, del semestre, dell'anno": "Recaps of the month, half year and year",
   "Copia criptata nel cloud, si aggiorna da sola": "Encrypted copy in the cloud, updates itself",
   "Su tutti i tuoi dispositivi, con la tua chiave": "On all your devices, with your key",
-  "Su iPhone e iPad la chiave viaggia da sola con iCloud. Sul Mac la scrivi una volta.": "On iPhone and iPad the key travels on its own with iCloud. On the Mac you type it once.",
-  "preparo...": "getting ready...",
-  "Non chiedermelo piu": "Do not ask me again",
-  "Va bene. Quando vorrai passare a premium, potrai farlo dalle Impostazioni.": "All right. Whenever you want to go premium, you can do it from Settings.",
   "Racconti a voce, si trascrive da solo": "Speak, and it transcribes itself",
   "Il codice": "The code",
   "Sei cifre inviate a": "Six digits sent to",
@@ -56,7 +33,6 @@ export const ACCESSO: Record<string, string> = {
   "Sto inviando...": "Sending...",
   "Mandami il codice": "Send me the code",
   "Il codice vale un'ora.": "The code is valid for one hour.",
-  "Non mostrare piu questo messaggio": "Do not show this message again",
   // La proposta Face ID dopo il codice a sei cifre (1 settembre 2026).
   "Vuoi usare Face ID?": "Want to use Face ID?",
   "Il diario si apre col tuo volto, senza codice. Puoi cambiare idea quando vuoi dalle Impostazioni.":
@@ -114,4 +90,31 @@ export const ACCESSO: Record<string, string> = {
   "Le tue giornate, anche altrove.": "Your days, elsewhere too.",
   "Backup chiuso a chiave, su iPad e computer. Ti mando un codice. Mai una password.": "Locked backup, on iPad and computer. I will send you a code. Never a password.",
   "Le giornate scritte qui salgono.": "The days written here go up.",
+  // La porta del giorno (porta-giorno.tsx, 10 settembre 2026).
+  "{n} giornate,\ncon l'AI accesa": "{n} days,\nwith the AI on",
+  "Racconti a voce e lei trascrive, scrive il titolo e la sintesi della giornata. Sono in regalo: non serve nessuna email.":
+    "Speak your day and it transcribes, writes the title and the summary. They are a gift: no email needed.",
+  "Comincia a scrivere": "Start writing",
+  "Una giornata si conta quando l'AI lavora. Tutto il resto di quel giorno e compreso.":
+    "A day counts when the AI works. Everything else on that day is included.",
+  "Le tue giornate restano su questo dispositivo. Nel cloud salgono solo chiuse a chiave, quando lo vorrai tu.":
+    "Your days stay on this device. They go to the cloud only locked, and only when you want.",
+  "Ti resta\n1 giornata": "You have\n1 day left",
+  "Ti restano\n{n} giornate": "You have\n{n} days left",
+  "Poi il diario resta e si scrive a mano. Con premium l'AI non finisce mai, e le giornate vanno nel cloud.":
+    "Then the diary stays and you write by hand. With premium the AI never runs out, and your days go to the cloud.",
+  "Continua cosi": "Keep going",
+  "Hai ancora 1 giornata con l'AI in regalo. Quando la vuoi, e accesa.":
+    "You still have 1 gift day with the AI. Whenever you want it, it is on.",
+  "Hai ancora {n} giornate con l'AI in regalo. Quando la vuoi, e accesa.":
+    "You still have {n} gift days with the AI. Whenever you want them, it is on.",
+  "Le {n} giornate\nsono finite": "The {n} days\nare over",
+  "Il diario resta tutto. Da qui in avanti scrivi a mano, oppure passi a premium e l'AI torna.":
+    "The diary stays, all of it. From here you write by hand, or go premium and the AI comes back.",
+  "Il regalo del mese e stato usato tutto, per tutti. Le tue {n} giornate restano: torna domani, o passa a premium.":
+    "This month's gift has been used up, for everyone. Your {n} days are safe: come back tomorrow, or go premium.",
+  "Con premium\nl'AI scrive per te": "With premium\nthe AI writes for you",
+  "Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi. Si attiva dall'app per iPhone.":
+    "Voice, title, summary, recaps, and your diary on all your devices. It turns on in the iPhone app.",
+  "Scopri premium": "Discover premium",
 };

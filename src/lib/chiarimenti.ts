@@ -102,6 +102,7 @@ async function generaDomande(
   mode: DataMode,
   transcript: string,
   contesto: { people?: string[]; areas?: AreaSummary[] },
+  giorno?: string,
 ): Promise<Domanda[]> {
   try {
     const [roster, aliases] = await Promise.all([
@@ -118,6 +119,7 @@ async function generaDomande(
         people: contesto.people ?? [],
         areas: contesto.areas ?? [],
       }),
+      giorno,
     });
     if (!resp.ok) return [];
     const data = (await resp.json()) as { domande?: Domanda[] };
@@ -149,7 +151,7 @@ export async function chiediChiarimenti(
   transcript: string,
   contesto: { people?: string[]; areas?: AreaSummary[] },
 ): Promise<Domanda[]> {
-  const nuove = await generaDomande(mode, transcript, contesto);
+  const nuove = await generaDomande(mode, transcript, contesto, dateISO);
   try {
     await saveOpenQuestions(mode, dateISO, nuove);
   } catch {

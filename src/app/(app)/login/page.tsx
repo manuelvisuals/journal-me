@@ -2,11 +2,11 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { dimenticaMuroDaRiaprire } from "@/lib/ospite/muro-riapri";
 import { createClient } from "@/lib/supabase/client";
 import { Marchio } from "@/components/brand/marchio";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
-import { registraAccesso } from "@/lib/welcome";
 import { forcePlanRefresh } from "@/lib/plan";
 import { clearLocalMode, getStore } from "@/lib/data/store";
 import { segnaMigrazioneDaFare } from "@/lib/ospite/migrazione";
@@ -61,13 +61,13 @@ export default function LoginPage() {
   const [verifying, setVerifying] = useState(false);
 
   /**
-   * Dove si va dopo un codice giusto. Al PRIMO accesso su questo
-   * dispositivo si passa da /benvenuto — la schermata "gratis o premium",
-   * che dal 24 agosto 2026 sta qui invece che prima del login. Poi la
-   * scelta si RIPROPONE ogni dieci accessi ai gratis (Manuel, 27 agosto
-   * 2026), salvo "non chiedermelo piu": tutta la regola vive in
-   * src/lib/welcome.ts (registraAccesso). Ai premium ci pensa /benvenuto
-   * stessa, che quando il piano risulta premium entra da sola.
+   * Dove si va dopo un codice giusto: dentro, su Oggi. Fino al 10 settembre
+   * 2026 si passava da /benvenuto, il bivio "gratis o premium" (dal 24
+   * agosto dopo il login, poi ogni dieci accessi ai gratis). Il bivio non
+   * esiste piu (punto 7 del modello premium): una porta sola per tutti, e la
+   * proposta di premium vive nella porta del giorno (modulo accesso) e nel
+   * muro, che si riapre da solo dopo il login se e da li che si e partiti
+   * (src/lib/ospite/muro-riapri.ts).
    */
   /**
    * FACE ID, SOLO DOPO IL CODICE (1 settembre 2026, richiesta di Manuel).
@@ -127,16 +127,17 @@ export default function LoginPage() {
     clearLocalMode();
     // IL PIANO SI RILEGGE ADESSO (10 settembre 2026). Prima di questa riga
     // nessuno chiedeva `profiles` dopo un accesso: il piano restava quello
-    // che si sapeva PRIMA della sessione, cioe niente. /benvenuto, che per
-    // i premium entra da sola, non poteva saperlo e mostrava il bivio a un
-    // abbonato — che da li poteva ricomprare cio che aveva gia (successo
-    // davvero, con l'account della revisione, il 10 settembre).
+    // che si sapeva PRIMA della sessione, cioe niente, e un abbonato poteva
+    // ricomprare cio che aveva gia (successo davvero, con l'account della
+    // revisione, il 10 settembre).
     void forcePlanRefresh();
-    return registraAccesso() ? "/app/benvenuto" : "/app";
+    return "/app";
   }
 
   /** "Non ora": la schermata non e un bivio (mockup premium-senza-password, D1). Si torna dov'eri. */
   const nonOra = () => {
+    // Chi torna indietro non voleva comprare: il muro non si riapre.
+    dimenticaMuroDaRiaprire();
     if (window.history.length > 1) router.back();
     else router.replace("/app");
   };

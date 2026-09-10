@@ -45,15 +45,17 @@ const locale = leggi("src/lib/data/store/local.ts");
 {
   check(
     "riassunto e fatti escono dalla stessa funzione",
-    /callProcessEntry\(transcript\)/.test(analisi) &&
-      /callExtractFacts\(transcript\)/.test(analisi),
+    /callProcessEntry\(transcript(, giorno)?\)/.test(analisi) &&
+      /callExtractFacts\(transcript(, giorno)?\)/.test(analisi),
   );
   // Lo stesso identico testo a tutte e due: e la proprieta che mancava.
+  // (Dal 10 settembre 2026 viaggia anche il giorno del diario, 4A: e un
+  // secondo argomento, il testo resta lo stesso.)
   const dentro = funzione(analisi, "export async function analyzeDay(");
   check(
     "ricevono lo STESSO testo, non due testi diversi",
-    /callProcessEntry\(transcript\)/.test(dentro) &&
-      /callExtractFacts\(transcript\)/.test(dentro),
+    /callProcessEntry\(transcript(, giorno)?\)/.test(dentro) &&
+      /callExtractFacts\(transcript(, giorno)?\)/.test(dentro),
     dentro.split("\n").find((l) => l.includes("Promise.all")) ?? "",
   );
   check(
@@ -66,11 +68,11 @@ const locale = leggi("src/lib/data/store/local.ts");
 {
   check(
     "il salvataggio di un racconto analizza tutto il giorno",
-    /analyzeDay\(fullTranscript\)/.test(salva),
+    /analyzeDay\(fullTranscript(, [a-zA-Z.]+)?\)/.test(salva),
   );
   check(
     "anche la modifica del testo rianalizza tutto",
-    /analyzeDay\(newTranscript\)/.test(
+    /analyzeDay\(newTranscript(, [a-zA-Z.]+)?\)/.test(
       funzione(salva, "export async function reprocessEntryTranscript("),
     ),
   );

@@ -176,7 +176,7 @@ async function apri(ctx, url = "/app") {
   const par = await box.locator(".jm-benv-sal-p").count();
   check("i tre paragrafi della lettera ci sono", par === 3, `${par} trovati`);
   check("c'e la firma", (await box.locator(".jm-benv-sal-firma").innerText()) === "Manuel");
-  check("il tasto dice Inizia", (await box.locator(".jm-benv-sal-b").innerText()) === "Inizia");
+  check("il tasto dice Comincia a scrivere", (await box.locator(".jm-benv-sal-b").innerText()) === "Comincia a scrivere");
 
   /* Il grassetto: *fra asterischi* diventa <b>, e gli asterischi spariscono. */
   const testoTutto = await box.innerText();
@@ -209,62 +209,37 @@ async function apri(ctx, url = "/app") {
 }
 
 /* ============================================================
-   2. LA CASELLA dalla terza apertura, e il silenzio
+   2. UNA VOLTA PER DISPOSITIVO (porta del giorno, 10 settembre 2026)
+   La casella "non mostrare piu" non esiste piu: la lettera si vede una
+   volta per dispositivo e per versione; "mostralo di nuovo" dal pannello
+   (versione piu uno) la fa tornare.
    ============================================================ */
 {
   const ctx = await nuovoContesto();
-
-  // Prima e seconda apertura: nessuna casella.
-  for (const n of [1, 2]) {
-    const { page } = await apri(ctx);
-    const c = await page.locator(".jm-benv-sal-c").count();
-    check(`apertura ${n}: nessuna casella`, c === 0, `${c} trovate`);
-    await page.close();
-  }
-
-  // Terza: la casella c'e.
   const { page } = await apri(ctx);
-  const casella = page.locator(".jm-benv-sal-c input");
-  check("terza apertura: la casella compare", (await casella.count()) === 1);
-  check(
-    "la riga della casella e alta almeno 44px",
-    await page.locator(".jm-benv-sal-c").evaluate((el) => el.getBoundingClientRect().height >= 44),
-  );
-
-  // Spuntata + Inizia: il messaggio se ne va e non torna.
-  await casella.check();
+  check("prima apertura: la lettera c'e e non c'e nessuna casella", (await page.locator(".jm-benv-sal").count()) === 1 && (await page.locator(".jm-benv-sal-c").count()) === 0);
   await page.locator(".jm-benv-sal-b").click();
-  await page.waitForTimeout(1200);
-  check("premendo Inizia il messaggio sparisce", (await page.locator(".jm-benv-sal").count()) === 0);
-  const scritto = await page.evaluate(() => window.localStorage.getItem("jm.saluto.silenzio"));
-  check("il silenzio porta dentro la versione", scritto === "dev:banco#v1", String(scritto));
+  await page.waitForTimeout(600);
+  check("premendo il tasto il messaggio sparisce", (await page.locator(".jm-benv-sal").count()) === 0);
+  const scritto = await page.evaluate(() => window.localStorage.getItem("jm.porta.lettera"));
+  check("la memoria porta la versione della lettera (jm.porta.lettera)", scritto === "1", String(scritto));
   await page.close();
 
   const dopo = await apri(ctx);
-  check(
-    "dopo la spunta il messaggio non torna",
-    (await dopo.page.locator(".jm-benv-sal").count()) === 0,
-  );
+  check("alla seconda apertura la lettera non torna", (await dopo.page.locator(".jm-benv-sal").count()) === 0);
   await dopo.page.close();
 
-  // "Mostralo di nuovo" dal pannello = versione piu uno: il silenzio cade.
-  // Qui si simula scrivendo un silenzio di una versione vecchia, che e
-  // esattamente cio che si trova in tasca un utente dopo quel tasto.
+  // "Mostralo di nuovo" dal pannello = versione piu uno: qui si simula con
+  // una memoria di versione vecchia, che e cio che si trova in tasca un
+  // utente dopo quel tasto.
   const ctx2 = await nuovoContesto();
   await ctx2.addInitScript(() => {
     try {
-      window.localStorage.setItem("jm.saluto.silenzio", "dev:banco#v0");
+      window.localStorage.setItem("jm.porta.lettera", "0");
     } catch {}
   });
   const rivisto = await apri(ctx2);
-  check(
-    "un silenzio di una versione vecchia non vale piu",
-    (await rivisto.page.locator(".jm-benv-sal").count()) === 1,
-  );
-  const rimasto = await rivisto.page.evaluate(() =>
-    window.localStorage.getItem("jm.saluto.silenzio"),
-  );
-  check("il silenzio scaduto viene buttato", rimasto === null, String(rimasto));
+  check("una memoria di una versione vecchia non vale piu: la lettera torna", (await rivisto.page.locator(".jm-benv-sal").count()) === 1);
   await rivisto.page.close();
   await ctx2.close();
   await ctx.close();
@@ -370,7 +345,7 @@ async function apri(ctx, url = "/app") {
   const occhiello = await page.locator(".jm-benv-sal-occhiello").innerText();
   check("in inglese l'occhiello e tradotto", occhiello === "Welcome to", occhiello);
   const bott = await page.locator(".jm-benv-sal-b").innerText();
-  check("in inglese il tasto dice Get started", bott === "Get started", bott);
+  check("in inglese il tasto dice Start writing", bott === "Start writing", bott);
   await page.close();
   await ctx.close();
 }
@@ -531,9 +506,12 @@ async function apri(ctx, url = "/app") {
     "il grassetto del pannello diventa grassetto",
     (await box.locator(".jm-benv-sal-p b").innerText()) === "una parte forte",
   );
+  // Dal 10 settembre 2026 il tasto della lettera e fisso ("Comincia a
+  // scrivere", mockup del primo avvio senza bivio): il campo "bottone" del
+  // pannello non lo cambia piu.
   check(
-    "il tasto porta il testo del pannello",
-    (await box.locator(".jm-benv-sal-b").innerText()) === "Vai",
+    "il tasto e fisso, non quello del pannello",
+    (await box.locator(".jm-benv-sal-b").innerText()) === "Comincia a scrivere",
   );
   check(
     "la riga in fondo non compare senza indirizzo",

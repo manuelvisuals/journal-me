@@ -52,7 +52,8 @@ const ROUTE_AI = [
   "/api/chiarimenti",
   "/api/remember/classify",
 ];
-const ROUTE_AMMESSE = [...ROUTE_AI, "/api/ospite/stato", "/api/apple/verifica"];
+// /api/ospite/braccialetto (10 settembre 2026, 2A): il braccialetto nasce sul server.
+const ROUTE_AMMESSE = [...ROUTE_AI, "/api/ospite/stato", "/api/ospite/braccialetto", "/api/apple/verifica"];
 
 import { readFileSync } from "node:fs";
 
@@ -205,7 +206,11 @@ let segretoA = null;
   // Aprire l'app non e chiedere all'AI: prima della prima chiusura con
   // l'AI il server non deve aver visto niente (nemmeno il warm-up, che in
   // modalita locale resta spento: prewarm.ts).
-  check("R1 primo avvio: aprire l'app non chiama nessuna route", api.length === 0, api.map((a) => a.metodo + " " + a.path).join(", "));
+  // Dal 10 settembre 2026 (2A) all'avvio parte UNA chiamata: la nascita del
+  // braccialetto sul server (POST /api/ospite/braccialetto, con il segreto e,
+  // nel guscio, il token DeviceCheck). Niente altro, e niente AI.
+  check("R1 primo avvio: aprire l'app chiama solo la registrazione del braccialetto", api.length >= 1 && api.every((a) => a.path === "/api/ospite/braccialetto" && a.braccialetto === segretoA), api.map((a) => a.metodo + " " + a.path).join(", "));
+  check("R1 primo avvio: il server conosce il braccialetto (una riga, registrato: true)", sb.tab("braccialetti").length === 1 && (await statoDalServer(segretoA)).registrato === true, String(sb.tab("braccialetti").length));
   check("R1 primo avvio: nessuna giornata consumata solo per aver aperto", sb.tab("braccialetto_giornate").length === 0, String(sb.tab("braccialetto_giornate").length));
 
   /* ================= R2: la quota scende sul server ================= */
@@ -228,6 +233,46 @@ let segretoA = null;
   await nuovaGiornata(page);
   await scriviEChiudi(page, "Seconda versione della stessa giornata, riscritta.", { conAI: true });
   check("R2 rilavorare oggi non costa una seconda giornata", sb.tab("braccialetto_giornate").filter((g) => g.braccialetto_id === idA).length === 3, String(sb.tab("braccialetto_giornate").length));
+
+  /* ================= 4A: il giorno del diario e il tetto di chiamate ================= */
+  {
+    const oggi = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date());
+    const ieri = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Rome" }).format(new Date(Date.now() - 86_400_000));
+    const chiama = (giorno) => fetch(BASE + "/api/remember/classify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-jm-braccialetto": segretoA, ...(giorno ? { "x-jm-giorno": giorno } : {}) },
+      body: JSON.stringify({ text: "ricordami di comprare il pane" }),
+    });
+    const prima = sb.tab("braccialetto_giornate").filter((g) => g.braccialetto_id === idA).length;
+    const rIeri = await chiama(ieri);
+    check("4A x-jm-giorno = ieri: l'AI lavora su ieri e spende la giornata di ieri", rIeri.status === 200 && sb.tab("braccialetto_giornate").some((g) => g.braccialetto_id === idA && g.giorno === ieri), String(rIeri.status));
+    const rFuturo = await chiama("2099-01-01");
+    const dopoFuturo = sb.tab("braccialetto_giornate").filter((g) => g.braccialetto_id === idA).length;
+    check("4A x-jm-giorno nel futuro: si ignora, vale oggi (nessuna giornata nuova)", rFuturo.status === 200 && dopoFuturo === prima + 1 && !sb.tab("braccialetto_giornate").some((g) => g.giorno === "2099-01-01"), String(dopoFuturo - prima));
+    const rFinto = await chiama("2026-02-31");
+    check("4A x-jm-giorno inesistente (2026-02-31): si ignora, vale oggi", rFinto.status === 200 && !sb.tab("braccialetto_giornate").some((g) => /02-31|03-0[23]/.test(g.giorno)));
+    // Il tetto di chiamate per giornata (migration 028): la riga di oggi
+    // dice 60 chiamate fatte, la sessantunesima e un 402 motivo 'chiamate'.
+    const rigaOggi = sb.tab("braccialetto_giornate").find((g) => g.braccialetto_id === idA && g.giorno === oggi);
+    const chiamatePrima = rigaOggi?.chiamate ?? 0;
+    check("4A ogni chiamata AI incrementa il contatore della giornata", typeof chiamatePrima === "number" && chiamatePrima >= 3, String(chiamatePrima));
+    rigaOggi.chiamate = 60;
+    const rTroppe = await chiama(oggi);
+    const jTroppe = await rTroppe.json().catch(() => ({}));
+    check("4A oltre 60 chiamate nella stessa giornata: 402 regalo_finito motivo 'chiamate'", rTroppe.status === 402 && jTroppe.error === "regalo_finito" && jTroppe.motivo === "chiamate", JSON.stringify(jTroppe));
+    rigaOggi.chiamate = chiamatePrima;
+    // La giornata di ieri era solo per questa prova: si toglie, cosi i
+    // conti delle sezioni dopo (reinstallazione, R3) restano quelli di prima.
+    sb.tabelle.braccialetto_giornate = sb.tab("braccialetto_giornate").filter((g) => !(g.braccialetto_id === idA && g.giorno === ieri));
+    // Un segreto che il server non conosce (un curl): niente regalo, 402 solo_app.
+    const rCurl = await fetch(BASE + "/api/remember/classify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-jm-braccialetto": "curl_" + "a".repeat(40) },
+      body: JSON.stringify({ text: "ciao" }),
+    });
+    const jCurl = await rCurl.json().catch(() => ({}));
+    check("2A un segreto mai registrato (un curl) non riceve AI: 402 regalo_finito motivo 'solo_app', nessuna riga nasce", rCurl.status === 402 && jCurl.motivo === "solo_app" && sb.tab("braccialetti").length === 1, JSON.stringify(jCurl) + " righe=" + sb.tab("braccialetti").length);
+  }
 
   /* ================= par. 5: cosa e uscito dal dispositivo ================= */
   const fuoriElenco = api.filter((a) => !ROUTE_AMMESSE.includes(a.path));
@@ -345,7 +390,9 @@ let segretoA = null;
   check("R4 tetto: il server risponde regalo_finito con motivo tetto", finitoN.some((d) => d?.motivo === "tetto"), JSON.stringify(finitoN[0] ?? null));
   check("R4 tetto: OpenAI non e stato chiamato per lui", oa.chiamate.slice(chiamateOa).filter((c) => c.url === "/v1/chat/completions").length === 0);
   const muroTetto = await nuovo.page.locator(".jm-wall").innerText().catch(() => "");
-  check("R4 tetto: si apre il muro del regalo finito, non quello premium", /in regalo sono finite/.test(muroTetto) && !/serve premium/.test(muroTetto), muroTetto.slice(0, 60));
+  // Dal 10 settembre 2026 (C4 dell'audit) il muro dice la verita del motivo:
+  // sopra il tetto le giornate NON sono finite, l'AI e "in pausa".
+  check("R4 tetto: si apre il muro del regalo in PAUSA (non 'finite', non premium)", /in regalo\s*e in pausa/.test(muroTetto) && /Le tue giornate restano/.test(muroTetto) && !/serve premium/.test(muroTetto) && !/sono finite/.test(muroTetto), muroTetto.replace(/\s+/g, " ").slice(0, 80));
   await nuovo.ctx.close();
 
   // Ospite A, a meta giornata: la finisce.

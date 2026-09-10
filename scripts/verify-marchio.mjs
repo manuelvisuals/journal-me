@@ -87,7 +87,7 @@ const POSTI = [
   ["lo sblocco biometrico", "src/components/biometric-lock.tsx"],
   ["il login", "src/app/(app)/login/page.tsx"],
   ["la privacy", "src/app/(app)/privacy/page.tsx"],
-  ["il saluto d'avvio", "src/modules/accesso/components/saluto-avvio.tsx"],
+  ["la porta del giorno", "src/modules/accesso/components/porta-giorno.tsx"],
   ["il pannello admin", "src/modules/admin/components/admin-client.tsx"],
   ["il sito", "src/modules/sito/components/guscio.tsx"],
 ];

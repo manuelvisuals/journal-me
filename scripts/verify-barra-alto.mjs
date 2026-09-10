@@ -16,7 +16,7 @@
 //    reintrodurre il difetto e rimetterlo li);
 //  - il titolo giusto per ogni indirizzo;
 //  - su DESKTOP la barra non si vede e il pallino sta nella rail (uno solo);
-//  - le pagine pubbliche (login, benvenuto, privacy) non hanno la barra;
+//  - le pagine pubbliche (login, privacy) non hanno la barra;
 //  - Mese scorre SOTTO la barra: la barra resta a zero e l'intestazione
 //    del mese si incolla esattamente sotto, non sopra;
 //  - una schermata corta non guadagna una striscia di scorrimento;
@@ -217,7 +217,8 @@ const SCHERMATE = [
 /* ---------- 4. le pagine pubbliche restano nude ---------- */
 {
   const { ctx, page } = await open({ mode: "none" });
-  for (const rotta of ["/login", "/app/benvenuto", "/privacy"]) {
+  // /app/benvenuto dal 10 settembre 2026 porta dentro: non e piu una pagina pubblica.
+  for (const rotta of ["/login", "/privacy"]) {
     await page.goto(BASE + rotta, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
     const n = await page.evaluate(() => document.querySelectorAll(".jm-appbar").length);

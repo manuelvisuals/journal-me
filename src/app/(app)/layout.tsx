@@ -3,7 +3,7 @@ import { AuthGate } from "@/components/auth-gate";
 import { BiometricLock } from "@/components/biometric-lock";
 import { Toaster } from "@/components/ui/toast";
 import { PremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
-import { Linguetta, SalutoAvvio } from "@/modules/accesso";
+import { Linguetta, PortaGiorno } from "@/modules/accesso";
 import { DesktopShell } from "@/components/desktop/desktop-shell";
 
 /**
@@ -56,7 +56,7 @@ export default function AppLayout({
               gia per costruzione. Si disegna prima del paint, cosi i
               secondi in cui l'app finisce di caricarsi passano dietro
               il velo invece che davanti a una schermata nuda. */}
-          <SalutoAvvio />
+          <PortaGiorno />
           <DesktopShell>{children}</DesktopShell>
         </AuthGate>
       </BiometricLock>
