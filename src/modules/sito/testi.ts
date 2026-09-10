@@ -586,7 +586,7 @@ const it: Testi = {
       },
       {
         d: "C'e l'app per iPhone?",
-        r: "Sta arrivando. Oggi dayalogue si usa dal browser e si installa sulla schermata Home come un'app.",
+        r: "L'app per iPhone sta arrivando sull'App Store, ed e da li che si attiva premium. Ma dayalogue non vive solo dentro l'app: si usa anche dal browser, e si installa sulla schermata Home come se fosse un'app. L'account e lo stesso — con premium entri da qualunque browser, su qualunque dispositivo, e ritrovi il diario dove l'avevi lasciato.",
       },
     ],
   },
@@ -1025,7 +1025,7 @@ const en: Testi = {
       },
       {
         d: "Is there an iPhone app?",
-        r: "It is coming. Today dayalogue runs in the browser and installs on your Home screen like an app.",
+        r: "The iPhone app is coming to the App Store, and that is where premium is switched on. But dayalogue does not live only inside the app: it also runs in the browser, and installs on your Home screen as if it were one. The account is the same — with premium you sign in from any browser, on any device, and find the journal where you left it.",
       },
     ],
   },

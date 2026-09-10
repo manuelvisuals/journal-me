@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { LinguaSito } from "@/modules/sito/seo";
 import { prefisso, testiDi, type Testi } from "@/modules/sito/testi";
 import { NavSito, PiedeSito } from "@/modules/sito/components/guscio";
+import { WordmarkSito } from "@/modules/sito/components/wordmark";
 import { Scorrimento } from "@/modules/sito/components/scorrimento";
 
 /**
@@ -73,6 +74,26 @@ function Foto({ nome, className, eager = false }: { nome: string; className?: st
       decoding="async"
       className={className}
     />
+  );
+}
+
+/**
+ * Il titolo con "Dayalogue" scritto col MARCHIO invece che col carattere
+ * (Manuel, 11 settembre 2026). Lo spezzone si fa qui e non in testi.ts per
+ * due ragioni: la frase resta una frase sola da tradurre (e /v6 continua a
+ * usarla come testo), e il nome accessibile del titolo non cambia — l'`alt`
+ * del marchio e "dayalogue", quindi chi legge con la voce sente ancora
+ * "Parli tu. dayalogue la scrive.".
+ */
+function TitoloColMarchio({ testo }: { testo: string }) {
+  const i = testo.indexOf("Dayalogue");
+  if (i < 0) return <>{testo}</>;
+  return (
+    <>
+      {testo.slice(0, i)}
+      <WordmarkSito className="jm-sito8-marchio" />
+      {testo.slice(i + "Dayalogue".length)}
+    </>
   );
 }
 
@@ -679,16 +700,20 @@ export function HomeSito({
             #come, che e la risposta vera a "guarda come funziona" — e che
             resta dov'era, poco sotto. */}
         <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
-          <div className="jm-sito8-testa" data-fx="testo">
-            <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
-            <h2 id="jm-sito8-titolo">{t.vocePagina.titolo}</h2>
-            <p>{t.vocePagina.testo}</p>
-          </div>
-
-          {/* La pista e alta piu di quattro schermate: la scena ci sta ferma
-              dentro (sticky) e scorrerla muove --s da 0 a 1. Due atti in fila,
-              i tempi stanno in styles.css sotto .jm-sito8-scena. */}
+          {/* La pista e alta piu di quattro schermate: dentro ci sta fermo
+              (sticky) il BLOCCO — titolo e scena insieme — e scorrerla muove
+              --s da 0 a 1. Il titolo e entrato qui dentro l'11 settembre 2026
+              (Manuel: "la scritta in alto si blocca, le immagini si bloccano,
+              e scrollando salgono solo i fumetti e poi la scheda"): prima
+              scorreva via da solo e ci si trovava a guardare due fotografie
+              senza piu la frase che diceva cosa stavano facendo. */}
           <div className="jm-sito8-pista" data-pista>
+            <div className="jm-sito8-blocco">
+            <div className="jm-sito8-testa" data-fx="testo">
+              <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
+              <h2 id="jm-sito8-titolo"><TitoloColMarchio testo={t.vocePagina.titolo} /></h2>
+              <p>{t.vocePagina.testo}</p>
+            </div>
             <div className="jm-sito8-scena">
               <Ritratto
                 lato="donna"
@@ -704,6 +729,7 @@ export function HomeSito({
                 stato={t.vocePagina.stato}
                 g={t.giornate.lui}
               />
+            </div>
             </div>
           </div>
 

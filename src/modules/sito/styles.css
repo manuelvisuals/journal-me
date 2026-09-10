@@ -4478,10 +4478,50 @@ textarea.jm-sito-in {
 
 /* ---- e adesso il movimento, solo con lo script acceso ---- */
 .jm-sito7[data-js] .jm-sito8-pista { height: 420svh; }
-.jm-sito7[data-js] .jm-sito8-scena {
+/* IL BLOCCO CHE SI FERMA (11 settembre 2026, Manuel: "la scritta in alto si
+   blocca, le immagini si bloccano, e scrollando salgono solo i fumetti di
+   vetro e poi la scheda col recap").
+
+   Prima si fermava solo la scena e il titolo scorreva via per conto suo:
+   dopo mezza schermata ci si trovava davanti a due fotografie senza piu la
+   frase che diceva cosa stavano facendo. Adesso titolo e scena sono un
+   blocco solo, alto quanto lo schermo, e si ferma tutto insieme: le uniche
+   cose che si muovono sono quelle che devono muoversi.
+
+   Il titolo prende la sua altezza e la scena si prende il resto (flex: 1).
+   Siccome un titolo da 78px si mangerebbe un terzo dello schermo lasciando
+   ai ritratti un ritaglio schiacciato, dentro il blocco il titolo e piu
+   contenuto: e la stessa frase, detta con la voce giusta per una scena
+   ferma invece che per una testata. */
+.jm-sito7[data-js] .jm-sito8-blocco {
   position: sticky;
-  top: 24px;
-  height: calc(100svh - 48px);
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  padding: 18px 0 24px;
+}
+.jm-sito7[data-js] .jm-sito8-blocco .jm-sito8-testa {
+  flex: 0 0 auto;
+  margin-bottom: clamp(16px, 2vw, 26px);
+}
+.jm-sito7[data-js] .jm-sito8-blocco .jm-sito8-testa h2 {
+  font-size: clamp(calc(30px * var(--jm-ui-scale)), 3.4vw, calc(50px * var(--jm-ui-scale)));
+}
+.jm-sito7[data-js] .jm-sito8-blocco .jm-sito8-testa > p:last-child {
+  margin-top: 12px;
+  font-size: calc(16px * var(--jm-ui-scale));
+}
+.jm-sito7[data-js] .jm-sito8-scena {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* `width: 100%` non e ridondante. La scena ha `margin: 0 auto` per
+     restare centrata sotto i 1490px, e in un contenitore flex un margine
+     automatico sull'asse trasversale ANNULLA lo stiramento: l'elemento si
+     stringe sul contenuto. E siccome i due ritratti sono blocchi senza
+     larghezza propria, il contenuto era zero e la scena spariva, lasciando
+     in mezzo alla pagina una riga verticale alta 670 pixel. */
+  width: 100%;
   /* i due atti, in fila */
   --g1: clamp(0, calc(var(--s) / .32), 1);
   --e1: clamp(0, calc((var(--s) - .34) / .13), 1);
@@ -4588,9 +4628,14 @@ textarea.jm-sito-in {
      era scorrimento per il secondo atto sarebbe diventato scorrimento a
      vuoto. */
   .jm-sito7[data-js] .jm-sito8-pista { height: 210svh; }
+  /* Sul telefono la barra in cima e fissa: il blocco deve fermarsi SOTTO di
+     lei, se no l'occhiello e la cima del titolo finiscono dietro il vetro. */
+  .jm-sito7[data-js] .jm-sito8-blocco {
+    top: var(--jm-sito-nav-h);
+    height: calc(100svh - var(--jm-sito-nav-h));
+    padding: 10px 0 16px;
+  }
   .jm-sito7[data-js] .jm-sito8-scena {
-    top: 12px;
-    height: calc(100svh - 24px);
     --fuori: 420px;
     /* UN ATTO SOLO:
 
@@ -5318,7 +5363,10 @@ textarea.jm-sito-in {
    riportano all'avorio. Misurato su tela: 248,240,226 contro il 247,239,228
    di --jm-sito-su-foto, cioe la stessa cosa a occhio. */
 .jm-sito4.jm-sito7 > .jm-sito-nav .jm-sito-nav-in { color: var(--jm-sito-su-foto); }
-.jm-sito4.jm-sito7 .jm-sito-wordmark {
+/* Solo il marchio DENTRO LA BARRA: dall'11 settembre 2026 lo stesso file
+   compare anche nel titolo della giornata, su fondo chiaro, e li un invert
+   lo farebbe sparire. */
+.jm-sito4.jm-sito7 .jm-sito-marchio .jm-sito-wordmark {
   filter: invert(1) brightness(.9) sepia(.24);
 }
 /* Il vetro sotto ai link (blur + saturate, riga 175) era nato per la barra
@@ -5920,4 +5968,38 @@ textarea.jm-sito-in {
     left: 10px;
     top: calc(100svh - 22px);
   }
+}
+
+/* IL MARCHIO DENTRO IL TITOLO (jm-sito8-marchio) — 11 settembre 2026.
+   Manuel: "usa dayalogue in SVG, ma assicurati che sia allineato bene
+   verticalmente con le altre parole, sulla stessa riga".
+
+   Non e una misura a occhio, sono due numeri misurati.
+
+   IL DISEGNO. Reso a 1000px di larghezza il file e alto 223, e analizzando
+   riga per riga quanto inchiostro c'e: la linea di base sta al 76,68%
+   dell'altezza (sotto ci sono solo le code di "y" e "g") e l'altezza della
+   x e il 53,36%.
+
+   IL CARATTERE. Newsreader, misurato con actualBoundingBoxAscent: l'altezza
+   della x e 0,445em.
+
+   LA MISURA. Si accordano le altezze della x, che e cio che l'occhio legge
+   come "stessa riga, stesso corpo" quando si scambia una parola con un
+   logotipo: 0,445 / 0,5336 = 0,834em di altezza. (Accordare gli
+   ascendenti darebbe 0,93em e una pancia troppo grossa.)
+
+   L'ALLINEAMENTO. `vertical-align: baseline` su un'immagine appoggia il suo
+   BORDO BASSO sulla linea di base del testo — non la linea di base del
+   disegno, che sta piu in alto di (1 - 0,7668) = 0,2332 dell'altezza. Quindi
+   si scende di 0,2332 x 0,834 = 0,1945em ed e li che le due linee di base
+   coincidono. Chi cambia l'altezza deve rifare anche questo numero: sono
+   la stessa misura scritta due volte. */
+.jm-sito8-marchio {
+  --marchio-h: .834em;
+  display: inline-block;
+  width: auto;
+  height: var(--marchio-h);
+  vertical-align: baseline;
+  translate: 0 calc(.2332 * var(--marchio-h));
 }
