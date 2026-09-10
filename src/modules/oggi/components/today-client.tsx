@@ -1052,6 +1052,7 @@ export function TodayClient({
           onMuro={() => setMuro((n) => n + 1)}
         >
         <FilledView
+          dateISO={entry?.entryDate ?? todayISO()}
           headline={entry?.headline ?? null}
           snippet={entry?.snippet ?? null}
           areas={entry?.areas ?? []}

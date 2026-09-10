@@ -20,6 +20,8 @@ import { nomeDaChiave, type Area } from "@/lib/aree";
 import { useAree } from "@/lib/aree-client";
 
 type Props = {
+  /** La giornata (YYYY-MM-DD): il foglio del peso cerca l'ultimo peso prima di lei. */
+  dateISO: string;
   headline?: string | null;
   snippet?: string | null;
   areas?: AreaSummary[];
@@ -86,6 +88,7 @@ type Props = {
 };
 
 export function FilledView({
+  dateISO,
   headline,
   snippet,
   areas,
@@ -270,7 +273,7 @@ export function FilledView({
 
         <Separator />
 
-        <MetricCards metrics={metrics} onChange={onMetricChange} />
+        <MetricCards metrics={metrics} onChange={onMetricChange} dateISO={dateISO} />
         <GoalList goals={goals} onToggle={onGoalToggle} />
       </div>
 

@@ -466,6 +466,7 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
         </div>
       ) : entry ? (
         <FilledView
+          dateISO={date}
           headline={entry.headline}
           snippet={entry.snippet}
           areas={entry.areas}
