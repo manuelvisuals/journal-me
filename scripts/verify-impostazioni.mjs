@@ -10,8 +10,9 @@
 //  4. i pannelli si aprono e il tasto indietro riporta all'elenco;
 //  5. cambiare tema o chiaro/scuro si vede SUBITO nella riga dell'elenco;
 //  6. la rail destra tiene l'identita e non sborda a nessuna larghezza;
-//  7. sul telefono la card Recap c'e, su desktop no (li Recap e nella rail
-//     sinistra) — e viceversa per l'identita;
+//  7. l'identita e nella rail destra su desktop e nella colonna sul
+//     telefono; la card Recap e la riga Memo non ci sono piu da nessuna
+//     parte (10 settembre 2026: stavano gia nel dock);
 //  8. "Zona pericolosa" esiste solo in modalita locale;
 //  9. l'ESITO di un'azione esce nel toaster dell'app e sparisce da solo, non
 //     in una riga incastrata fra le impostazioni (10 settembre 2026).
@@ -44,7 +45,10 @@ async function newPage(width, height, { local = true } = {}) {
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push(String(e)));
   await page.goto(BASE + "/app/settings", { waitUntil: "networkidle" });
-  await page.waitForSelector(".jm-st-group", { timeout: 15000 });
+  // Dal 10 settembre 2026 il PRIMO gruppo e Account, che su desktop e
+  // nascosto (l'identita sta nella rail destra): si aspetta il primo gruppo
+  // VISIBILE, non il primo del documento.
+  await page.waitForSelector(".jm-st-group:visible", { timeout: 15000 });
   await page.waitForTimeout(400);
   return { ctx, page, errors };
 }
@@ -225,7 +229,7 @@ for (const w of [1280, 1440, 1728, 2600]) {
   await ctx.close();
 }
 
-/* ============ 6-7. rail destra su desktop, Recap sul telefono ============ */
+/* ============ 6-7. rail destra su desktop, niente doppioni del dock ====== */
 {
   const { ctx, page } = await newPage(1728, 1000);
   check(
@@ -233,8 +237,8 @@ for (const w of [1280, 1440, 1728, 2600]) {
     await page.locator(".jm-rail-r .jm-st-acct").isVisible(),
   );
   check(
-    "desktop: la card Recap NON e nella colonna",
-    !(await page.locator(".jm-st-recap").isVisible()),
+    "desktop: la card Recap non c'e",
+    (await page.locator(".jm-st-recap").count()) === 0,
   );
   check(
     "desktop: la rail dice piano e versione",
@@ -244,9 +248,20 @@ for (const w of [1280, 1440, 1728, 2600]) {
 }
 {
   const { ctx, page } = await newPage(430, 932);
+  // 10 settembre 2026 (Manuel): Recap e Memo sono nel dock, e una seconda
+  // porta per la stessa stanza dentro un elenco di impostazioni fa lista.
   check(
-    "telefono: la card Recap c'e",
-    await page.locator(".jm-st-recap").isVisible(),
+    "telefono: la card Recap non c'e piu (sta nel dock)",
+    (await page.locator(".jm-st-recap").count()) === 0,
+  );
+  check(
+    "telefono: la riga Memo non c'e piu (sta nel dock)",
+    !(await page.locator(".jm-st-row .t").filter({ hasText: /^Memo$/ }).count()),
+  );
+  check(
+    "telefono: Account e il PRIMO gruppo e App e un gruppo suo",
+    (await page.locator(".jm-st-gl").allInnerTexts()).map((x) => x.trim().toLowerCase())[0] === "account"
+      && (await page.locator(".jm-st-gl").allInnerTexts()).map((x) => x.trim().toLowerCase()).includes("app"),
   );
   check(
     "telefono: il gruppo Account e nella colonna",

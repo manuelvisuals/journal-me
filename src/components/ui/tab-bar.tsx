@@ -95,9 +95,17 @@ type Tab = {
 const SIDE_TABS_LEFT: Tab[] = [
   {
     key: "today",
-    /* "Diario", come la barra: il tab e il posto (la pagina di un giorno,
-       aperta su oggi), non la data. Mockup una-giornata-sola, 2 set 2026. */
-    label: "Diario",
+    /* "Oggi", e un QUADERNO (Manuel, 10 settembre 2026). Prima diceva
+       "Diario" con un sole disegnato: il sole non e un diario, e "Diario"
+       era il nome del POSTO perche lo stesso titolo serviva anche a
+       /app/giorno, cioe a un giorno passato. Ma il TAB non porta a un
+       giorno qualsiasi: porta sempre a oggi, quindi puo dirlo. Il titolo
+       in alto (app-bar) resta "Diario" proprio per quel motivo: li
+       sopra una giornata di agosto "Oggi" sarebbe falso.
+       Il quaderno con margine e due righe, provato a 40, 22 e 18px, e
+       l'unico che resta leggibile nella rail e non si confonde con i
+       vicini: calendario (Mese), segnalibro (Memo), libro (Recap). */
+    label: "Oggi",
     href: "/app",
     icon: (
       <svg
@@ -109,8 +117,9 @@ const SIDE_TABS_LEFT: Tab[] = [
         strokeLinejoin="round"
         aria-hidden="true"
       >
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <path d="M8 3v18" />
+        <path d="M11 9h6M11 13h6" />
       </svg>
     ),
   },

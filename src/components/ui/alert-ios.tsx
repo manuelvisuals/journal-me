@@ -16,11 +16,19 @@
  * cinque temi senza una riga in piu.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   titolo: string;
   testo?: string;
+  /**
+   * LA PAROLA DA SCRIVERE (10 settembre 2026, Manuel: "elimina l'account non
+   * deve essere un secondo tocco"). Quando c'e, l'avviso mostra un campo e
+   * il tasto che distrugge resta spento finche dentro non c'e questa parola.
+   * La parola arriva gia tradotta da chi chiama (ELIMINA / DELETE): qui non
+   * si sa che lingua e. Il confronto ignora maiuscole e spazi ai bordi.
+   */
+  parolaDaScrivere?: string;
   /** Il tasto che fa la cosa: in rosso se `distruttivo`. */
   conferma: string;
   distruttivo?: boolean;
@@ -32,12 +40,18 @@ type Props = {
 export function AlertIos({
   titolo,
   testo,
+  parolaDaScrivere,
   conferma,
   distruttivo = false,
   annulla,
   onConferma,
   onAnnulla,
 }: Props) {
+  const [scritto, setScritto] = useState<string>("");
+  const pronto =
+    !parolaDaScrivere ||
+    scritto.trim().toLocaleLowerCase() === parolaDaScrivere.toLocaleLowerCase();
+
   // Esc = annulla, come toccare fuori.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -59,12 +73,27 @@ export function AlertIos({
         <div className="jm-alert-body">
           <div className="jm-alert-t">{titolo}</div>
           {testo && <div className="jm-alert-p">{testo}</div>}
+          {parolaDaScrivere && (
+            <input
+              className="jm-alert-campo"
+              type="text"
+              autoFocus
+              value={scritto}
+              onChange={(e) => setScritto(e.target.value)}
+              placeholder={parolaDaScrivere}
+              aria-label={parolaDaScrivere}
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+            />
+          )}
         </div>
         <div className="jm-alert-btns">
           <button
             type="button"
             className={`jm-alert-btn${distruttivo ? " rosso" : ""}`}
             onClick={onConferma}
+            disabled={!pronto}
           >
             {conferma}
           </button>

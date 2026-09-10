@@ -526,56 +526,6 @@
 
 .jm-st-add button:disabled { opacity: 0.4; cursor: default; }
 
-/* Card Recap: solo sul telefono, dove la tab bar non ha uno slot Recap. */
-.jm-st-recap {
-  display: block;
-  padding: calc(20px * var(--jm-space)) 22px calc(18px * var(--jm-space));
-  background: linear-gradient(180deg, color-mix(in oklab, var(--color-accent) 4%, transparent) 0%, transparent 100%),
-    var(--color-surface);
-  border: 1px solid var(--color-line);
-  border-radius: var(--jm-radius-lg);
-  margin-bottom: calc(28px * var(--jm-space));
-  text-decoration: none;
-  color: inherit;
-}
-
-.jm-st-recap .meta {
-  display: block;
-  font-size: calc(10px * var(--jm-ui-scale));
-  font-weight: 650;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--color-ink-faint);
-  margin-bottom: 10px;
-}
-
-.jm-st-recap .title {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: calc(23px * var(--jm-ui-scale));
-  font-weight: 400;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-  color: var(--color-ink);
-  margin-bottom: 8px;
-}
-
-.jm-st-recap .sub {
-  display: block;
-  font-size: calc(12.5px * var(--jm-ui-scale));
-  color: var(--color-ink-faint);
-  line-height: 1.5;
-}
-
-.jm-st-recap .last {
-  display: block;
-  font-size: calc(12px * var(--jm-ui-scale));
-  color: var(--color-ink-faint);
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-line);
-}
-
 /* Rail destra di Impostazioni: l'identita, non le impostazioni */
 .jm-st-acct { margin-bottom: 30px; }
 
@@ -682,10 +632,10 @@
 
 .jm-st-out:disabled { opacity: 0.55; cursor: default; }
 
-/* Solo telefono. NON si usa `lg:hidden` di Tailwind: le utility hanno la
-   stessa specificita di queste regole e vince l'ordine nel bundle, che qui
-   dava .jm-st-recap { display: block } sopra .lg\:hidden. Meglio dirlo una
-   volta sola, con una media query nostra. */
+/* Solo telefono (il gruppo Account: su desktop l'identita sta nella rail
+   destra). NON si usa `lg:hidden` di Tailwind: le utility hanno la stessa
+   specificita di queste regole e vince l'ordine nel bundle. Meglio dirlo
+   una volta sola, con una media query nostra. */
 @media (min-width: 1024px) {
   .jm-st-phoneonly { display: none; }
 }

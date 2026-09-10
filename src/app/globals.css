@@ -36,6 +36,7 @@
   --color-ink-faint: var(--jm-ink-faint);
   --color-success: var(--jm-success);
   --color-danger: var(--jm-danger);
+  --color-live-ready: var(--jm-live-ready);
   --color-shadow: var(--jm-shadow);
   --color-glow: var(--jm-glow);
   /* Il vetro del dock (base.css, jm-dock-*): cinque token che ogni tema
