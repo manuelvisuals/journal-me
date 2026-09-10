@@ -12,6 +12,9 @@ import {
 import { useT } from "@/lib/i18n";
 import { isNative } from "@/lib/native/platform";
 import { haChiestoSilenzio, markWelcomeSeen, nonChiederePiu } from "@/lib/welcome";
+import { ospiteAttivo } from "@/lib/ospite/flag";
+import { statoOspiteInTasca } from "@/lib/ospite/stato";
+import { REGALO_DI_FABBRICA } from "@/lib/regalo";
 import { usePianoNoto } from "@/lib/plan";
 import { openPremiumWall, prodottiInTasca, prodottiPremium } from "@/modules/abbonamento";
 import type { ProdottoNegozio } from "@/modules/abbonamento";
@@ -42,6 +45,15 @@ import { FoglioDifferenze, SegnoDayalogue } from "@/modules/accesso";
  * persona (prezzo gia nella sua valuta, prova solo se `provaDisponibile`).
  * Sul web non si vende e non esiste nessuna prova: li la riga dice il
  * prezzo e basta.
+ *
+ * IL REGALO SI DICE DOPO, NON PRIMA (Manuel, 10 settembre 2026). Chi sceglie
+ * Free non trova nessun "in regalo" nella card: lo scopre nella schermata
+ * SUBITO DOPO, come un benvenuto. Due motivi. Uno: nella card, accanto ai 14
+ * giorni di Apple, erano due offerte gratuite affiancate e chi legge non
+ * capiva quale stesse prendendo. Due: un regalo annunciato mentre stai
+ * ancora scegliendo e un argomento di vendita; dato dopo che hai scelto e un
+ * regalo. La schermata dice anche cosa NON contiene, se no il gratis sembra
+ * premium e premium non si compra piu.
  */
 export default function BenvenutoPage() {
   const t = useT();
@@ -86,6 +98,24 @@ export default function BenvenutoPage() {
 
   /** Il foglio con tutte e nove le differenze. Chiuso finche non lo chiedono. */
   const [differenze, setDifferenze] = useState<boolean>(false);
+
+  /**
+   * La seconda schermata: il regalo di benvenuto. Si accende solo dopo aver
+   * scelto Free, e solo se c'e davvero qualcosa da regalare.
+   */
+  const [regaloVisto, setRegaloVisto] = useState<boolean>(false);
+
+  /**
+   * Quante giornate in regalo dire. Il numero VERO lo tiene il server
+   * (tabella `regalo`, pannello admin) e arriva con /api/ospite/stato: se il
+   * dispositivo l'ha gia sentito una volta si usa quello, altrimenti il
+   * valore di fabbrica. Qui NON si chiama la rete: siamo nella schermata di
+   * chi ha appena scelto di restare sul telefono.
+   */
+  const inTasca = typeof window === "undefined" ? null : statoOspiteInTasca();
+  const giornateRegalo = inTasca?.max ?? REGALO_DI_FABBRICA.giornatePerOspite;
+  const regaloDaDire =
+    ospiteAttivo() && giornateRegalo > 0 && (inTasca === null || inTasca.rimaste > 0);
 
   /**
    * Il mensile come lo descrive Apple. `null` = non ancora arrivato (o web,
@@ -135,6 +165,11 @@ export default function BenvenutoPage() {
       await store.requestPersistence().catch(() => false);
       await store.setMeta("onboardingDone", true).catch(() => undefined);
     }
+    setStarting(false);
+    if (regaloDaDire) {
+      setRegaloVisto(true);
+      return;
+    }
     router.replace("/app");
   };
 
@@ -142,6 +177,42 @@ export default function BenvenutoPage() {
   useEffect(() => {
     signalReady();
   }, []);
+
+  if (regaloVisto) {
+    return (
+      <main className="jm-screen jm-benv jm-benv-dono mx-auto w-full max-w-[440px] flex-1">
+        <div className="jm-dono-segno">
+          <SegnoDayalogue size={54} />
+        </div>
+        <h1 className="jm-benv-hero">{t("Regalo di benvenuto")}</h1>
+        <p className="jm-dono-p">
+          {t(
+            "{n} giornate con l'AI accesa, incluse. Racconti a voce, lei trascrive e scrive titolo e sintesi della giornata.",
+            { n: String(giornateRegalo) },
+          )}
+        </p>
+        <p className="jm-dono-p jm-dono-oltre">
+          {t(
+            "E' un assaggio. Premium fa anche i recap del mese, del semestre e dell'anno, tiene una copia criptata nel cloud e ti segue su tutti i dispositivi.",
+          )}
+        </p>
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => {
+            markWelcomeSeen();
+            router.replace("/app");
+          }}
+        >
+          {t("Inizia a scrivere")}
+        </button>
+        <button type="button" className="jm-benv-vedi" onClick={() => setDifferenze(true)}>
+          {t("Vedi tutte le differenze")}
+        </button>
+        {differenze && <FoglioDifferenze onClose={() => setDifferenze(false)} />}
+      </main>
+    );
+  }
 
   return (
     <main className="jm-screen jm-benv mx-auto w-full max-w-[440px] flex-1">
@@ -169,7 +240,19 @@ export default function BenvenutoPage() {
           <button
             type="button"
             className="btn-ghost"
-            onClick={() => (postLogin ? enter() : void startLocal())}
+            onClick={() => {
+              if (!postLogin) {
+                void startLocal();
+                return;
+              }
+              // Il regalo segue la persona (7 settembre 2026): vale anche
+              // per un account sul piano free, sullo stesso braccialetto.
+              if (regaloDaDire) {
+                setRegaloVisto(true);
+                return;
+              }
+              enter();
+            }}
             disabled={starting || waiting}
           >
             {starting ? t("preparo...") : t("Inizia con Free")}

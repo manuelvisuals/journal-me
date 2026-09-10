@@ -14,6 +14,11 @@ export const ACCESSO: Record<string, string> = {
   "Mese e Memo": "Month and Memo",
   // Il bivio corto e i due tasti (9 settembre 2026).
   "Come vuoi iniziare?": "How do you want to start?",
+  // La seconda schermata: il regalo di benvenuto (10 settembre 2026).
+  "Regalo di benvenuto": "A welcome gift",
+  "{n} giornate con l'AI accesa, incluse. Racconti a voce, lei trascrive e scrive titolo e sintesi della giornata.": "{n} days with the AI on, included. You speak, it transcribes and writes the title and summary of your day.",
+  "E' un assaggio. Premium fa anche i recap del mese, del semestre e dell'anno, tiene una copia criptata nel cloud e ti segue su tutti i dispositivi.": "It is a taste. Premium also writes the recaps of the month, half year and year, keeps an encrypted copy in the cloud and follows you on all your devices.",
+  "Inizia a scrivere": "Start writing",
   "Inizia con Free": "Start with Free",
   "Prova {n}gg gratis": "Try {n} days free",
   "Le tue giornate sono cifrate sul dispositivo con AES-256-GCM. La chiave resta sul tuo telefono: senza, nel cloud non si legge nulla.": "Your days are encrypted on device with AES-256-GCM. The key stays on your phone: without it, nothing in the cloud can be read.",

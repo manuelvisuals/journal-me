@@ -186,6 +186,42 @@
   margin-top: auto;
 }
 
+/* La seconda schermata: il regalo di benvenuto (10 settembre 2026). Una
+   colonna centrata, tre blocchi e un tasto: si legge in cinque secondi e
+   non ha niente da scegliere. */
+.jm-benv-dono {
+  text-align: center;
+  justify-content: center;
+}
+
+.jm-dono-segno {
+  display: flex;
+  justify-content: center;
+  margin-top: calc(30px * var(--jm-space));
+}
+
+.jm-benv-dono .jm-benv-hero {
+  margin-top: calc(16px * var(--jm-space));
+}
+
+.jm-dono-p {
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.6;
+  color: var(--color-ink-muted);
+  margin-top: calc(16px * var(--jm-space));
+}
+
+/* Il secondo blocco dice cosa NON c'e: un tono piu basso del primo, o
+   sembra che il regalo abbia una postilla. */
+.jm-dono-oltre {
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+}
+
+.jm-benv-dono .btn-primary {
+  margin-top: calc(30px * var(--jm-space));
+}
+
 .jm-benv-vedi {
   display: block;
   margin: calc(14px * var(--jm-space)) auto 0;
