@@ -5575,7 +5575,11 @@ textarea.jm-sito-in {
 /* --------------------------------------------------- CON JAVASCRIPT */
 .jm-sito7[data-js] .jm-sito12-pista {
   position: relative;
-  height: 420svh;
+  /* Alta 500 e non 420: la coreografia e la stessa, ma distribuita su piu
+     pixel di scorrimento, quindi ogni carta resta leggibile piu a lungo. Le
+     due cose insieme — finestra piena piu larga e pista piu lunga — portano
+     il tempo di lettura da 283 a 525 pixel di scorrimento, quasi il doppio. */
+  height: 500svh;
   background: var(--jm-bg);
 }
 .jm-sito7[data-js] .jm-sito12-scena {
@@ -5679,9 +5683,23 @@ textarea.jm-sito-in {
   backdrop-filter: blur(22px) saturate(1.3);
   box-shadow: 0 22px 60px color-mix(in oklab, var(--jm-shadow) 18%, transparent);
   pointer-events: none;
+  /* IL TEMPO PER LEGGERE (11 settembre 2026, Manuel: "spariscono troppo
+     presto, non faccio a tempo a leggerle").
+
+     La carta vive dentro la sua finestra (un terzo della corsa) e dentro
+     quella finestra faceva: entrata 0-22%, PIENA 22-58%, uscita 58-80%. A
+     piena opacita stava dunque solo il 36% del suo tempo — 283 pixel di
+     scorrimento su un desktop da 900 — e il resto lo passava a comparire o a
+     sparire. Adesso entra e esce piu in fretta e sta ferma piu a lungo:
+     entrata 0-13%, PIENA 13-68%, uscita 68-85%. Il 55% invece del 36%.
+
+     Il limite dell'uscita non e arbitrario: a u 0.85 il bordo alto della
+     carta e a 200px e il cartiglio finisce a 174. Oltre lo 0.88 la carta
+     comincerebbe a leggersi sopra il titolo, che e il difetto che questa
+     dissolvenza esiste per evitare. */
   opacity: min(
-    clamp(0, calc(var(--u, 0) * 4.5455), 1),
-    calc(1 - clamp(0, calc((var(--u, 0) - .58) * 4.5455), 1))
+    clamp(0, calc(var(--u, 0) * 7.6923), 1),
+    calc(1 - clamp(0, calc((var(--u, 0) - .68) * 5.8824), 1))
   );
 }
 .jm-sito7[data-js] .jm-sito12-schermo { --scala: .86; }
@@ -5707,7 +5725,7 @@ textarea.jm-sito-in {
   translate: -50% -50%;
 }
 @media (max-width: 900px) {
-  .jm-sito7[data-js] .jm-sito12-pista { height: 440svh; }
+  .jm-sito7[data-js] .jm-sito12-pista { height: 520svh; }
   /* La barra in cima e fissa e alta 76px: il cartiglio partiva a 55 e ci
      finiva sotto. Qui si parte DA la barra, non da un numero a caso. */
   .jm-sito7[data-js] .jm-sito12-occhio { top: calc(var(--jm-sito-nav-h) + 20px); }
