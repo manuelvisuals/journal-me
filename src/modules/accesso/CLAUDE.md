@@ -146,9 +146,17 @@ Audit del modello premium (AUDIT-premium-vuole-account.html), decisioni 2A e
   402 motivo `chiamate`.
 - `/api/ospite/stato` risponde anche `registrato`; la riga "AI in regalo"
   dice "nell'app per iPhone" quando e falso.
+- 400 e 401 di Apple NON sono la stessa cosa (10 settembre 2026, provando la
+  chiave in produzione): 400 e il token del telefono, 401 e la NOSTRA chiave.
+  Confusi, una chiave sbagliata su Vercel avrebbe tolto il regalo a ogni
+  iPhone in silenzio. Adesso 401 e `non_disponibile` (503, riprova), e la
+  differenza e il modo di verificare la chiave da fuori: un token inventato
+  deve dare 403 `token_non_valido`; se da 503, la chiave non vale
+  (`DEVICECHECK-passi.md` par. 4).
 - Banchi: `verify-ospite` (55, con la sezione 4A/2A), `verify-devicecheck`
-  (19, con il DeviceCheck finto di scripts/lib/finti-server.mjs: il dev
-  server va rilanciato con `APPLE_DEVICECHECK_BASE_URL=http://127.0.0.1:3196`).
+  (22, con il DeviceCheck finto di scripts/lib/finti-server.mjs, che sa
+  fingere anche la chiave rotta: `dc.chiaveRotta = true`; il dev server va
+  rilanciato con `APPLE_DEVICECHECK_BASE_URL=http://127.0.0.1:3196`).
 
 ## La porta del giorno, il bivio che non c'e piu (10 settembre 2026, branch `modello-premium`)
 
