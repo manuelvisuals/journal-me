@@ -912,7 +912,9 @@
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe {
     display: block;
     height: 100svh;
-    min-height: 700px;
+    /* Su uno schermo corto (iPhone SE) 700px fissi spingevano la pilla sotto
+       il bordo: il minimo non puo superare lo schermo. */
+    min-height: min(700px, 100svh);
     max-height: 860px;
     margin: 0;
     padding: 0;
@@ -923,15 +925,19 @@
     position: relative;
     z-index: 4;
     display: block;
-    padding: 88px 27px 0;
-    text-align: left;
+    /* Centrato e a tutta larghezza (Manuel, 10 settembre 2026: "sfrutta
+       meglio lo spazio"), con lo stesso margine laterale del resto della
+       pagina. Il velo qui sotto e stato allargato di conseguenza: il testo
+       adesso passa anche sopra di lei e deve restare leggibile. */
+    padding: 84px 24px 0;
+    text-align: center;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe-t {
-    max-width: 340px;
+    max-width: none;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-eyebrow {
-    max-width: 25ch;
-    margin-bottom: 14px;
+    max-width: 26ch;
+    margin: 0 auto 14px;
     font-size: calc(10px * var(--jm-ui-scale));
     line-height: 1.55;
     letter-spacing: .22em;
@@ -940,22 +946,23 @@
      per questo il titolo non ha un tetto in em ma la larghezza del testo. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-h1 {
     max-width: none;
-    font-size: calc(38px * var(--jm-ui-scale));
-    line-height: 1;
+    font-size: calc(40px * var(--jm-ui-scale));
+    line-height: 1.02;
     letter-spacing: -.045em;
+    text-wrap: balance;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-sotto {
-    max-width: 180px; /* in px, non in ch: finisce dove iniziano i capelli */
-    margin-top: 14px;
+    max-width: 30ch;
+    margin: 14px auto 0;
     color: var(--jm-ink-muted);
     font-size: calc(14px * var(--jm-ui-scale));
     line-height: 1.38;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-cta {
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: 20px;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-b {
     min-width: 0;
@@ -995,13 +1002,20 @@
     -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%);
     mask-image: linear-gradient(180deg, transparent 0, #000 14%);
   }
-  /* Il velo copre solo la fascia del testo (in alto e a sinistra); sul
-     viso arriva a zero, altrimenti lei sbiadisce come su una tenda. */
+  /* Il velo copre la fascia del testo, che adesso e centrata e larga quanto
+     la pagina: quindi in alto vale su tutta la larghezza e si spegne appena
+     sotto le parole, dove ricomincia lei. Un velo uniforme la sbiadirebbe
+     come dietro una tenda. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe::before {
     z-index: 1;
     background:
-      linear-gradient(180deg, var(--jm-bg-app) 0, color-mix(in srgb, var(--jm-bg-app) 92%, transparent) 22%, color-mix(in srgb, var(--jm-bg-app) 45%, transparent) 30%, transparent 40%),
-      linear-gradient(90deg, color-mix(in srgb, var(--jm-bg-app) 92%, transparent) 0, color-mix(in srgb, var(--jm-bg-app) 80%, transparent) 32%, color-mix(in srgb, var(--jm-bg-app) 24%, transparent) 48%, transparent 58%);
+      linear-gradient(180deg,
+        var(--jm-bg-app) 0,
+        color-mix(in srgb, var(--jm-bg-app) 96%, transparent) 30%,
+        color-mix(in srgb, var(--jm-bg-app) 78%, transparent) 40%,
+        color-mix(in srgb, var(--jm-bg-app) 44%, transparent) 50%,
+        color-mix(in srgb, var(--jm-bg-app) 18%, transparent) 58%,
+        transparent 66%);
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-telefono-foto {
     position: absolute;
@@ -1017,7 +1031,7 @@
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
     position: absolute;
     right: 10px;
-    bottom: 0;
+    bottom: 14px;
     left: 10px;
     z-index: 6;
     margin: 0;
@@ -1026,23 +1040,30 @@
     padding: 18px 10px 14px;
     isolation: isolate;
     border: 1px solid color-mix(in srgb, var(--jm-surface) 72%, transparent);
-    border-bottom: 0;
-    border-radius: 26px 26px 0 0;
+    border-radius: 26px;
     /* Lo stesso vetro del desktop (min-width: 1100px, piu sotto): fondo
        quasi trasparente, sfocatura forte, riflesso in alto. Richiesta di
        Manuel dell'8 settembre 2026. Dove backdrop-filter manca resta il
        fondo pieno di prima, sennò il testo si legge sopra la foto. */
     background: color-mix(in srgb, var(--jm-surface) 90%, transparent);
-    box-shadow: 0 -12px 36px color-mix(in srgb, var(--jm-shadow) 12%, transparent);
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--jm-shadow) 16%, transparent);
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
-      background: linear-gradient(145deg, color-mix(in srgb, var(--jm-surface) 86%, transparent), color-mix(in srgb, var(--jm-surface) 74%, transparent));
-      -webkit-backdrop-filter: blur(30px) saturate(1.3);
-      backdrop-filter: blur(30px) saturate(1.3);
+      /* Vetro vero: la lastra deve lasciar passare cio che ha sotto, non
+         essere una scheda bianca. Fondo molto piu trasparente, sfocatura
+         alta e due luci sui bordi (in alto la riflessione, in fondo il
+         rimbalzo): e quello che fa leggere la superficie come vetro invece
+         che come plastica. */
+      background: linear-gradient(150deg,
+        color-mix(in srgb, var(--jm-surface) 64%, transparent),
+        color-mix(in srgb, var(--jm-surface) 46%, transparent));
+      -webkit-backdrop-filter: blur(34px) saturate(1.6);
+      backdrop-filter: blur(34px) saturate(1.6);
       box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 95%, transparent),
-        0 -18px 48px color-mix(in oklab, var(--jm-shadow) 16%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 92%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, var(--jm-surface) 42%, transparent),
+        0 16px 40px color-mix(in oklab, var(--jm-shadow) 20%, transparent);
     }
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale::before {
       content: "";
@@ -4384,6 +4405,14 @@ textarea.jm-sito-in {
 @media (max-width: 900px) {
   .jm-sito8-giornata { padding: 82px 12px 68px; }
   .jm-sito8-testa { padding-inline: 12px; }
+  /* Due righe, non tre: "Parli tu." e "Dayalogue la scrive." (in inglese
+     "You talk." / "Dayalogue writes it."). Col minimo del clamp a 48px la
+     seconda riga non ci stava e andava a capo dentro se stessa. */
+  .jm-sito8-testa h2 {
+    font-size: clamp(calc(26px * var(--jm-ui-scale)), 11.2vw, calc(46px * var(--jm-ui-scale)));
+    line-height: 1.04;
+    text-wrap: balance;
+  }
   .jm-sito8-scena { grid-template-columns: 1fr; }
   .jm-sito8-persona { min-height: 480px; padding: 36px 18px; }
   .jm-sito8-vetro { width: min(262px, 100%); padding: 15px 17px 14px; }
