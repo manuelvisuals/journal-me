@@ -486,15 +486,20 @@
 .jm-goal-row.on .jm-goal-lab { color: var(--color-ink); }
 
 /* Date chip used in the recording overlay header */
+/* UN QUINTO PIU GRANDE (Manuel, 10 settembre 2026): su questa schermata la
+   pillola e l'unica cosa che dice SU QUALE GIORNO stai per registrare, e a
+   12px in mezzo a tanto vuoto non si vedeva. Cresciuta del 20 per cento in
+   tutto — testo, spazi, icona, freccia — perche una pillola con il testo
+   piu grande e i fianchi di prima diventa stretta, non piu leggibile. */
 .jm-date-chip {
   display: inline-flex;
   align-items: center;
-  gap: calc(6px * var(--jm-space));
+  gap: calc(7.2px * var(--jm-space));
   background: var(--color-surface);
   border: 1px solid var(--color-line);
   border-radius: var(--jm-radius-pill);
-  padding: calc(7px * var(--jm-space)) calc(14px * var(--jm-space)) calc(7px * var(--jm-space)) calc(12px * var(--jm-space));
-  font-size: calc(12px * var(--jm-ui-scale));
+  padding: calc(8.4px * var(--jm-space)) calc(16.8px * var(--jm-space)) calc(8.4px * var(--jm-space)) calc(14.4px * var(--jm-space));
+  font-size: calc(14.4px * var(--jm-ui-scale));
   font-weight: 500;
   color: var(--color-ink-muted);
   letter-spacing: 0.01em;
@@ -511,8 +516,8 @@
 }
 
 .jm-date-chip .icn {
-  width: 14px;
-  height: 14px;
+  width: 16.8px;
+  height: 16.8px;
   color: var(--color-accent);
 }
 
@@ -522,7 +527,7 @@
 }
 
 .jm-date-chip .chev {
-  font-size: calc(9px * var(--jm-ui-scale));
+  font-size: calc(10.8px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
   margin-left: 2px;
 }
@@ -734,6 +739,66 @@
   padding: calc(8px * var(--jm-space)) calc(20px * var(--jm-space)) calc(14px * var(--jm-space));
   border-top: 1px solid var(--color-line);
   text-align: center;
+}
+
+/* SCRIVI LA TUA GIORNATA: il foglio bianco (10 settembre 2026, mockup di
+   Manuel). Solo struttura e stile: la logica (autosave, bozza, chip della
+   data) non e cambiata. Le classi `jm-editor-*` restano condivise con
+   transcript-editor, review-screen e recap-editor: qui si tocca soltanto
+   quello che sta sotto `.jm-mw`, cosi le altre schermate non si muovono.
+   Il foglio prende `--color-surface`, quindi e bianco di giorno e scuro di
+   notte, in ogni tema, senza un colore scritto a mano. */
+.jm-mw .jm-editor-header {
+  border-bottom: none;
+  padding-bottom: calc(6px * var(--jm-space));
+}
+
+.jm-mw-foglio {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: calc(6px * var(--jm-space)) calc(16px * var(--jm-space)) calc(10px * var(--jm-space));
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg);
+  padding: calc(18px * var(--jm-space)) calc(4px * var(--jm-space)) calc(4px * var(--jm-space));
+  overflow: hidden;
+}
+
+.jm-mw-invito {
+  padding: 0 calc(16px * var(--jm-space)) calc(10px * var(--jm-space));
+}
+
+.jm-mw-invito-t {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.jm-mw-invito-s {
+  margin-top: calc(3px * var(--jm-space));
+  font-size: calc(15px * var(--jm-ui-scale));
+  line-height: 1.35;
+  color: var(--color-ink-faint);
+}
+
+.jm-mw .jm-editor-textarea {
+  padding: 0 calc(16px * var(--jm-space)) calc(16px * var(--jm-space));
+  min-height: 0;
+}
+
+/* La riga sotto il foglio: minuscola come una didascalia iOS, senza il
+   filo e senza il maiuscolo spaziato della vecchia barra. */
+.jm-mw .jm-editor-hint {
+  border-top: none;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: calc(12px * var(--jm-ui-scale));
+  padding-top: 0;
 }
 
 .jm-editor-footer-row {

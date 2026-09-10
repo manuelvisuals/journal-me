@@ -27,11 +27,15 @@ const NAV_ITEMS: { key: NavKey; href: string; label: string; icon: React.ReactNo
   {
     key: "today",
     href: "/app",
-    label: "Diario",
+    // Lo stesso nome e lo stesso quaderno del dock (10 settembre 2026): e
+    // la stessa destinazione, e una destinazione non puo avere due nomi a
+    // seconda che tu sia sul telefono o sul computer.
+    label: "Oggi",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="8" />
-        <circle cx="12" cy="12" r="2.5" />
+        <rect x="4" y="3" width="16" height="18" rx="2" />
+        <path d="M8 3v18" />
+        <path d="M11 9h6M11 13h6" />
       </svg>
     ),
   },

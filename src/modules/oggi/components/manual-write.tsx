@@ -107,7 +107,7 @@ export function ManualWrite({
 
   return (
     <div className="jm-editor-overlay" role="dialog" aria-modal="true">
-      <div className="jm-editor-card">
+      <div className="jm-editor-card jm-mw">
         <div className="jm-editor-header">
           <div>
             <div className="jm-editor-title">{t("Scrivi la tua giornata")}</div>
@@ -193,17 +193,29 @@ export function ManualWrite({
           />
         )}
 
-        <textarea
-          ref={textareaRef}
-          autoFocus
-          className="jm-editor-textarea"
-          value={value}
-          onChange={(e) => handleChange(e.target.value)}
-          spellCheck
-          autoCorrect="on"
-          autoCapitalize="sentences"
-          placeholder={t("Racconta la tua giornata: come hai dormito e di che umore ti senti, cosa hai mangiato e fatto, chi hai visto e cosa hai provato. Aggiungi se vuoi peso, esercizio, crescita, corsi, cio che vuoi ricordare e quello che hai capito di te.\n\nEsempio: \u201cOggi ho dormito 7 ore ed ero serena. Ho lavorato, visto Giulia, fatto una passeggiata e capito che uscire mi fa stare meglio. Poi ho fatto colazione con fiocchi d'avena e yogurt. In ufficio ho incontrato...\u201d")}
-        />
+        {/* IL FOGLIO BIANCO (10 settembre 2026, mockup di Manuel). Il
+            placeholder lungo con l'esempio non c'e piu: era un muro di testo
+            da leggere prima di poter scrivere, e spariva alla prima lettera.
+            Al suo posto due righe ferme in testa al foglio - la domanda e
+            cosa metterci - e sotto il campo vuoto, pronto. La barra sopra la
+            tastiera (freccia su, freccia giu, conferma) e quella nativa di
+            iOS: non si disegna qui, si lascia stare. */}
+        <div className="jm-mw-foglio">
+          <div className="jm-mw-invito">
+            <div className="jm-mw-invito-t">{t("Com'e andata la giornata?")}</div>
+            <div className="jm-mw-invito-s">{t("Scrivi quello che vuoi ricordare.")}</div>
+          </div>
+          <textarea
+            ref={textareaRef}
+            autoFocus
+            className="jm-editor-textarea"
+            value={value}
+            onChange={(e) => handleChange(e.target.value)}
+            spellCheck
+            autoCorrect="on"
+            autoCapitalize="sentences"
+          />
+        </div>
 
         <div className="jm-editor-hint">
           {t("continua . poi rileggi e l'ai elabora la giornata")}

@@ -162,6 +162,17 @@ export function cssVarsFor(theme: Theme, mode: Mode): Record<string, string> {
     "--jm-on-accent": c.onAccent,
     "--jm-success": c.success,
     "--jm-danger": c.danger,
+    /* IL VERDE DELLA SPIA "PRONTO" (10 settembre 2026, richiesta di Manuel
+       sulla schermata del microfono). NON e un colore del tema ed e giusto
+       cosi: e la spia di uno stato dell'hardware, come il led di una
+       telecamera, e la persona la riconosce perche e ESATTAMENTE il verde
+       della batteria in carica di iOS. Misurato dallo screenshot di Manuel,
+       non scelto a occhio: #65C466, 455 pixel pieni.
+       Sta qui, e non scritto a mano dentro un componente, perche un colore
+       fisso va comunque dichiarato una volta e con un nome; ed e uguale in
+       tutti i temi, chiaro e scuro, per lo stesso motivo per cui la batteria
+       dell'iPhone non cambia colore con lo sfondo. */
+    "--jm-live-ready": "#65C466",
     "--jm-line": c.line,
     "--jm-shadow": c.shadow,
     "--jm-glow": c.glow,

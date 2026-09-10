@@ -742,8 +742,10 @@ export function RecordingOverlay({
         : state === "error"
           ? t("errore")
           : t("in ascolto");
+  // Il pallino di "pronto" e ACCESO, non sbiadito: e una spia, e una spia a
+  // mezza opacita non dice niente (10 settembre 2026).
   const liveDotOpacity =
-    state === "recording" ? 1 : state === "paused" ? 0.45 : 0.6;
+    state === "recording" || state === "paused" ? 1 : 0.6;
   // Il rosso significa "sto catturando la tua voce", e nient'altro. Prima era
   // rosso anche su "pronto" e su "connetto", cioe proprio quando il microfono e
   // chiuso: un pallino rosso che lampeggia mentre non registra e una bugia, e
@@ -754,6 +756,18 @@ export function RecordingOverlay({
     state === "recording" || state === "error"
       ? "var(--color-danger)"
       : "var(--color-ink-faint)";
+  /**
+   * IL PALLINO ha un colore suo, la scritta no (richiesta di Manuel del 10
+   * settembre 2026). Su "pronto" e VERDE — lo stesso verde della batteria in
+   * carica di iOS, misurato dallo screenshot: --color-live-ready — perche li
+   * il microfono e armato e aspetta te, e una spia verde e la cosa che
+   * chiunque legge senza doverla imparare. Resta rosso mentre registra e
+   * sull'errore (il rosso vuol dire "sto catturando la tua voce", o
+   * "guasto"), e grigio mentre si connette, che non e ne l'uno ne l'altro.
+   * La scritta accanto resta del colore dei testi secondari: due cose verdi
+   * di fila diventerebbero un avviso, e qui non c'e niente da avvisare.
+   */
+  const liveDotColor = state === "paused" ? "var(--color-live-ready)" : liveColor;
 
   if (!portalReady || typeof document === "undefined") {
     return null;
@@ -790,11 +804,13 @@ export function RecordingOverlay({
                 width: 8,
                 height: 8,
                 borderRadius: "50%",
-                background: liveColor,
+                background: liveDotColor,
                 boxShadow:
                   state === "recording" || state === "error"
                     ? "0 0 10px color-mix(in oklab, var(--color-danger) 70%, transparent)"
-                    : "none",
+                    : state === "paused"
+                      ? "0 0 10px color-mix(in oklab, var(--color-live-ready) 55%, transparent)"
+                      : "none",
                 opacity: liveDotOpacity,
               }}
             />
