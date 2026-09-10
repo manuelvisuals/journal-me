@@ -62,8 +62,11 @@ fare su App Store Connect: `APP-STORE-CONNECT-passi.md`.
 
 ## Premium senza password (4 settembre 2026, branch `premium-senza-password`)
 
+**SUPERATO il 10 settembre 2026: vedi la sezione dopo.** Resta qui perche
+spiega da dove viene meta del codice di questo modulo.
+
 Mockup `design/mockups/premium-senza-password.html`, risposte di Manuel
-A2 B1 C1 D1 E1. Regola: premium si compra con un tocco e vive sul
+A2 B1 C1 D1 E1. Regola di allora: premium si compra con un tocco e vive sul
 telefono; l'email serve solo per backup e altri dispositivi (linea guida
 Apple 5.1.1).
 
@@ -90,7 +93,56 @@ Apple 5.1.1).
   funzione SQL `adotta_braccialetto`: il braccialetto si lega e il premium
   passa al profilo. Lo chiama `src/lib/ospite/migrazione.ts` dal cancello.
 
-Banco: `scripts/verify-abbonamento.mjs` sezione 9 (48/48).
+Banco: `scripts/verify-abbonamento.mjs` sezione 9 (riscritta il 10
+settembre 2026: adesso pretende il contrario).
+
+## PREMIUM VUOLE UN ACCOUNT (10 settembre 2026, branch `premium-vuole-account`)
+
+Manuel, mockup `MOCKUP-riga-abbonamento.html`: **premium senza email non
+puo esistere**. Non e una stretta commerciale, e cosa vende l'abbonamento:
+la copia cifrata nel cloud e il diario su tutti i dispositivi hanno bisogno
+di un posto dove stare, e quel posto e l'account. Un braccialetto vive su UN
+telefono. Chi paga senza email si ritroverebbe premium legato a un
+dispositivo, cioe meno di quello che ha comprato.
+
+Cosa cambia rispetto al 4 settembre:
+
+- `server/apple-verifica.ts` VUOLE il gettone: senza, 401. Sparito il ramo
+  che scriveva il premium su `braccialetti`. Resta il ramo che LIBERA una
+  transazione ferma su un braccialetto e la porta sul profilo: e il
+  ripristino di chi aveva comprato da ospite e ora ha messo l'email.
+- `requirePremium` (scheletro, entitlement.ts) e `requireOspiteOPremium`
+  (scheletro, lib/server/ospite.ts) non guardano piu il premium del
+  braccialetto. Il braccialetto porta il REGALO, non l'abbonamento.
+  `premiumDelBraccialetto` non esiste piu; `/api/ospite/stato` non risponde
+  piu `premiumFino`.
+- `negozio-ios.ts`: via il ramo `dove === "dispositivo"`. Un 401 dal server
+  torna come `esito: "serve_account"`, non come errore generico.
+- `premium-wall.tsx`: all'ospite (modalita locale) il muro NON mostra un
+  prezzo che non puo pagare da qui. Mostra perche serve un account, il tasto
+  **"Entra con la tua email"** e, al posto del ripristino, **"Ho gia un
+  abbonamento"** (Apple vuole il ripristino sempre raggiungibile; per chi
+  non ha un account, ripristinare comincia dal ritrovare il proprio).
+- **Sul web vince l'App Store**: il browser accompagna l'app, non e il posto
+  dove si compra. Li il negozio non esiste per nessuno, con o senza account,
+  quindi la porta dell'email non si apre e si dice la cosa vera.
+- `src/lib/ospite/stato.ts` non tiene piu `jm.premium.dispositivo` (la
+  chiave vecchia si cancella una volta sola all'avvio) e `capabilities.ts`
+  non ha piu `dispositivoPremiumPuo`.
+- L'adozione (`adotta_braccialetto`, migration 025) RESTA: e la strada con
+  cui un premium comprato prima di oggi torna alla persona che entra.
+
+Banco: `verify-abbonamento` sezione 9 riscritta, 54/54.
+
+Controaudit del 10 settembre 2026 (sera), prima del merge in main: la
+feature `presentazione` da ospite (il foglio dopo la PRIMA giornata chiusa
+dall'AI) NON vende l'email: tasto "Continua" e la riga piccola "Cosa fa
+premium", che riapre il muro normale. Chiedere l'email a chi ha ancora nove
+giornate in regalo era un effetto collaterale di `senzaAccount`, non una
+scelta. E il testo del 401 in `negozio-ios.ts` non nomina piu "Ripristina
+acquisti", riga che da ospite non esiste (si chiama "Ho gia un abbonamento").
+Il referto completo: `AUDIT-premium-vuole-account.html` nella cartella di
+Manuel; le decisioni prese (1A 2A 3A 4A 5A 6B 7A) sono il lavoro che segue.
 
 Rifiniture del 4 settembre sera (branch `rifiniture-ive`): il muro non
 salta piu quando arriva il prezzo da Apple: in attesa mostra il FANTASMA

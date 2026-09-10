@@ -103,21 +103,18 @@ export async function requireUser(
  */
 export async function requirePremium(
   req: NextRequest,
-): Promise<{ userId: string | null; braccialettoId?: string | null } | NextResponse> {
-  // Il premium comprato SENZA email (migration 025) vive sul braccialetto
-  // del telefono: se non c'e un gettone ma c'e il braccialetto e ha un
-  // premium valido, e premium. Import dinamico: ospite.ts importa questo
-  // file, e un ciclo statico fra i due confonderebbe il bundler.
-  const header = req.headers.get("authorization") ?? "";
-  if (!header.startsWith("Bearer ")) {
-    const { segretoDalla, braccialettoDaSegreto, premiumDelBraccialetto } = await import("@/lib/server/ospite");
-    const segreto = segretoDalla(req);
-    if (segreto) {
-      const id = await braccialettoDaSegreto(segreto, null, { crea: false });
-      if (id && (await premiumDelBraccialetto(id))) return { userId: null, braccialettoId: id };
-      return NextResponse.json({ error: "Premium required" }, { status: 402 });
-    }
-  }
+): Promise<{ userId: string } | NextResponse> {
+  // PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026). Fino a ieri qui
+  // c'era una seconda porta: niente gettone ma un braccialetto con un
+  // premium sopra (migration 025) ed era premium lo stesso. Quella porta e
+  // chiusa. Non e una stretta commerciale, e cosa vende il premium: la
+  // copia cifrata nel cloud e il diario su tutti i dispositivi hanno
+  // bisogno di un posto dove stare, e quel posto e l'account. Un
+  // braccialetto vive su UN telefono e basta.
+  //
+  // Chi aveva comprato senza email non perde niente: la riga sul
+  // braccialetto resta, e adotta_braccialetto (migration 025) porta quel
+  // premium sul profilo appena mette l'email.
   const user = await requireUser(req);
   if (user instanceof NextResponse) return user;
 

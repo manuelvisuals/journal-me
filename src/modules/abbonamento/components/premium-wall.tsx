@@ -15,10 +15,27 @@
  * Manuel): dentro il guscio iOS il muro e A SCHEDE — un prodotto per
  * scheda, prezzo e prova letti da Apple (negozio-ios.ts), oggi il solo
  * mensile, l'annuale quando l'interruttore del pannello lo accende — e il
- * tasto apre il foglio di acquisto di Apple (In-App Purchase). In locale
- * (l'ospite) il tasto porta prima al login: premium e dell'account. Sul
- * web non si compra: il muro rimanda all'App Store. Il codice Stripe resta
+ * tasto apre il foglio di acquisto di Apple (In-App Purchase). Sul web non
+ * si compra: il muro rimanda all'App Store. Il codice Stripe resta
  * (fakeCheckout per l'ambiente di prova) ma non e piu la strada del web.
+ *
+ * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026; mockup
+ * MOCKUP-riga-abbonamento.html). Dal 4 settembre l'ospite comprava di qui
+ * con un tocco e il premium restava sul telefono. Adesso no: quello che si
+ * vende e la copia cifrata nel cloud e il diario su tutti i dispositivi, e
+ * senza un account non c'e dove metterlo. Quindi all'ospite il muro NON
+ * mostra un prezzo che non puo pagare da qui: dice perche serve l'email e
+ * apre quella porta. Il prezzo lo trova subito dopo, entrato.
+ *
+ * "Ho gia un abbonamento" e il ripristino visto da un ospite: Apple vuole
+ * che il ripristino sia sempre raggiungibile, e per chi non ha un account
+ * ripristinare vuol dire prima ritrovare il proprio. Porta al login.
+ *
+ * SUL WEB VINCE L'APP STORE. Il browser e un accompagnatore dell'app, non
+ * il posto dove si compra: li il negozio non esiste per nessuno, con o
+ * senza account. Quindi la porta dell'email non si apre sul web, dove non
+ * porterebbe comunque a un acquisto: si dice la cosa vera, che premium si
+ * attiva dall'app per iPhone.
  *
  * Il muro "regalo" (SPEC R3, ospite a giornate finite) e lo stesso muro con
  * un altro titolo: si apre da solo sull'evento `jm:regalo-finito` di
@@ -27,6 +44,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { useStorageMode } from "@/lib/data/store";
 import { apiFetch } from "@/lib/api";
 import { APP_STORE_URL, PREMIUM_PRICE_LABEL, PREMIUM_PROVA_GIORNI } from "@/lib/pricing";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
@@ -131,6 +149,11 @@ export function PremiumWall() {
   const t = useT();
   const wall = useWallState();
   const router = useRouter();
+  // Senza account non si compra (10 settembre 2026): il muro cambia mestiere
+  // e diventa la porta dell'email. Non e il negozio a mancare, e l'account:
+  // sul web senza account valgono tutte e due le cose, e vince questa, che
+  // e il primo passo comunque.
+  const senzaAccount = useStorageMode() === "local";
   const [cloudNote, setCloudNote] = useState<boolean>(false);
   const [busy, setBusy] = useState<boolean>(false);
   // I prodotti letti per QUESTA apertura del muro: legati allo stato con
@@ -225,15 +248,25 @@ export function PremiumWall() {
 
   const regalo = wall.feature === "regalo";
   const presentazione = wall.feature === "presentazione";
+  // La PRESENTAZIONE da ospite festeggia, non vende (controaudit del 10
+  // settembre 2026): e il foglio dopo la prima giornata chiusa dall'AI, a
+  // chi ne ha ancora nove in regalo. Chiedergli l'email qui e contro il
+  // primo avvio senza bivio: "Continua" e basta, e una riga piccola per chi
+  // vuole sapere cosa fa premium (che riapre questo muro nella sua forma
+  // normale, con la porta dell'email).
+  const festeggia = presentazione && senzaAccount;
   const prodotto = prodotti?.find((p) => p.id === scelto) ?? prodotti?.[0] ?? null;
   const prova = prodotto && prodotto.provaGiorni && prodotto.provaDisponibile !== false ? prodotto.provaGiorni : 0;
 
-  /** Il tasto pieno dentro il guscio: compra (o prima l'account). */
+  /** L'ospite: premium vuole un account, quindi prima l'email. */
+  const vaiAlLogin = () => {
+    closePremiumWall();
+    router.push("/login");
+  };
+
+  /** Il tasto pieno dentro il guscio: compra. */
   const compra = async () => {
     if (busy) return;
-    // L'ospite compra come tutti: il foglio di Apple, nessun login in mezzo
-    // (mockup premium-senza-password, B1). Il server scrive il premium sul
-    // braccialetto del telefono; l'email arriva quando vuole il backup.
     if (!prodotto) return;
     setBusy(true);
     setErrore(null);
@@ -250,7 +283,7 @@ export function PremiumWall() {
       setErrore(t("L'acquisto aspetta un'approvazione (In famiglia): premium si accende da solo appena arriva."));
       return;
     }
-    if (esito.esito === "errore") setErrore(esito.messaggio);
+    if (esito.esito === "serve_account" || esito.esito === "errore") setErrore(esito.messaggio);
   };
 
   const ripristina = async () => {
@@ -264,7 +297,7 @@ export function PremiumWall() {
       openPremiumWelcome();
       return;
     }
-    if (esito.esito === "errore") setErrore(esito.messaggio);
+    if (esito.esito === "serve_account" || esito.esito === "errore") setErrore(esito.messaggio);
   };
 
   /** Il tasto pieno sul web: nessun acquisto qui, si va all'App Store. */
@@ -295,8 +328,10 @@ export function PremiumWall() {
       : t("Titolo, sintesi, aree: li ha scritti lei. Le prime giornate sono in regalo.")
     : regalo
       ? t("Continua a scrivere. Manca solo l'AI.")
-      : negozio
-        ? t("Prova tutto, gratis. Poi decidi.")
+      : negozio && senzaAccount
+        ? t("Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi.")
+        : negozio
+          ? t("Prova tutto, gratis. Poi decidi.")
         : t("Si attiva dall'app per iPhone. {n} giorni gratis, poi {prezzo}.", {
             n: String(PREMIUM_PROVA_GIORNI),
             prezzo: PREMIUM_PRICE_LABEL,
@@ -314,7 +349,15 @@ export function PremiumWall() {
         <div className="jm-wall-t">{titolo}</div>
         <div className="jm-wall-p">{sottotitolo}</div>
 
-        {negozio && (
+        {negozio && senzaAccount && !festeggia && (
+          <div className="jm-wall-note">
+            {t(
+              "Premium ha bisogno di un account: e li che vive la copia cifrata nel cloud, ed e cosi che ti segue su tutti i dispositivi.",
+            )}
+          </div>
+        )}
+
+        {negozio && !senzaAccount && (
           <div className="jm-wall-schede" data-testid="jm-wall-schede">
             {prodotti === null && (
               // Il fantasma della scheda: STESSA struttura e stesse
@@ -379,7 +422,19 @@ export function PremiumWall() {
           </div>
         )}
 
-        {negozio ? (
+        {festeggia ? (
+          <button type="button" className="btn-primary" onClick={dismiss}>
+            {t("Continua")}
+          </button>
+        ) : !negozio ? (
+          <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
+            {t("Scarica dayalogue per iPhone")}
+          </button>
+        ) : senzaAccount ? (
+          <button type="button" className="btn-primary" onClick={vaiAlLogin}>
+            {t("Entra con la tua email")}
+          </button>
+        ) : (
           <button
             type="button"
             className="btn-primary"
@@ -394,24 +449,33 @@ export function PremiumWall() {
                   ? `${t("Abbonati")} . ${prodotto.prezzo} ${t(PERIODI[prodotto.periodo] ?? "al mese")}`
                   : t("Passa a premium")}
           </button>
-        ) : (
-          <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
-            {t("Scarica dayalogue per iPhone")}
+        )}
+        {!festeggia && (
+          <button type="button" className="btn-ghost" onClick={dismiss}>
+            {regalo ? t("Continua senza AI") : t("non ora")}
           </button>
         )}
-        <button type="button" className="btn-ghost" onClick={dismiss}>
-          {regalo ? t("Continua senza AI") : t("non ora")}
-        </button>
 
         <div className="jm-wall-quiet">
-          {negozio && (
-            <button type="button" onClick={() => void ripristina()} disabled={busy}>
-              {t("Ripristina acquisti")}
+          {festeggia && (
+            <button type="button" onClick={() => openPremiumWall("aiSummary")}>
+              {t("Cosa fa premium")}
             </button>
           )}
+          {negozio &&
+            !festeggia &&
+            (senzaAccount ? (
+              <button type="button" onClick={vaiAlLogin}>
+                {t("Ho gia un abbonamento")}
+              </button>
+            ) : (
+              <button type="button" onClick={() => void ripristina()} disabled={busy}>
+                {t("Ripristina acquisti")}
+              </button>
+            ))}
         </div>
 
-        {negozio && !prodotto && (
+        {negozio && !senzaAccount && !prodotto && (
           // Il posto della nota, gia occupato con lo stesso testo (sbiadito):
           // il foglio e ancorato in basso e una riga che compare dopo
           // alzerebbe tutto il resto.
@@ -420,7 +484,7 @@ export function PremiumWall() {
             <a>{t("Termini")}</a> &middot; <a>{t("Privacy")}</a>
           </div>
         )}
-        {negozio && prodotto && (
+        {negozio && !senzaAccount && prodotto && (
           <div className="jm-wall-nota">
             {prova > 0
               ? t("Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.", {
@@ -432,6 +496,11 @@ export function PremiumWall() {
                   periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
                 })}{" "}
             <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot; <a href="/privacy">{t("Privacy")}</a>
+          </div>
+        )}
+        {negozio && senzaAccount && !festeggia && (
+          <div className="jm-wall-nota">
+            {t("Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.")}
           </div>
         )}
       </div>
