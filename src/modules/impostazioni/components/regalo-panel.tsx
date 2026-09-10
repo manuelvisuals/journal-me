@@ -23,9 +23,12 @@ import { SetGroup, SetRow } from "@/modules/impostazioni/components/rows";
 /** Il valore corto per la riga "AI in regalo" della schermata principale. */
 export function valoreRegalo(
   t: T,
-  s: { attivo: boolean; sopraIlTetto: boolean; rimaste: number; max: number } | null,
+  s: { attivo: boolean; sopraIlTetto: boolean; rimaste: number; max: number; registrato?: boolean } | null,
 ): string | undefined {
   if (!s) return undefined;
+  // Il server non conosce questo braccialetto (2A): sul web il regalo non
+  // c'e, si dice dove sta.
+  if (s.registrato === false) return t("nell'app per iPhone");
   if (!s.attivo || s.sopraIlTetto) return t("in pausa");
   if (s.rimaste <= 0) return t("finito");
   return t("{n} giornate su {max}", { n: formatNumber(s.rimaste), max: formatNumber(s.max) });
@@ -37,7 +40,9 @@ export function RegaloPanel() {
 
   const lede = !stato
     ? t("Un attimo: chiedo al server quante giornate restano.")
-    : !stato.attivo || stato.sopraIlTetto
+    : stato.registrato === false
+      ? t("Le giornate con l'AI in regalo sono nell'app per iPhone: dal browser si legge e si scrive.")
+      : !stato.attivo || stato.sopraIlTetto
       ? t("Il regalo e in pausa: per ora l'AI non lavora per chi non ha un abbonamento.")
       : stato.rimaste <= 0
         ? t("Le {max} giornate con l'AI in regalo sono finite.", { max: formatNumber(stato.max) })

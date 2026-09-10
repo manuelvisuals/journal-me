@@ -27,6 +27,7 @@
 //
 // poi: node scripts/verify-ospite-schermate.mjs
 import { chromium } from "playwright-core";
+import { createHash } from "node:crypto";
 import { SupabaseFintoServer, OpenAIFinto } from "./lib/finti-server.mjs";
 import { SupabaseFinto, jwtFinto, montaSupabaseFinto, UTENTE_ID } from "./lib/supabase-finto.mjs";
 
@@ -386,8 +387,12 @@ let semeA = null;
   check("06 con la cassaforte aperta la giornata del telefono SALE, chiusa a chiave (una cassettina sul server)", finto.tab("cassettine").length === 1 && !JSON.stringify(finto.tab("cassettine")).includes("prima dell'email"), String(finto.tab("cassettine").length));
   const adotta = api.filter((a) => a.path === "/api/ospite/adotta");
   check("06 il braccialetto viene adottato: /api/ospite/adotta con gettone E braccialetto", adotta.length >= 1 && adotta[0].auth !== null && typeof adotta[0].braccialetto === "string", JSON.stringify(adotta[0] ?? null));
-  const brA = sb.tab("braccialetti").find((b) => b.user_id === UTENTE_ID);
-  check("06 sul server il braccialetto e legato all'account", !!brA);
+  // Il braccialetto di QUESTO dispositivo, dal segreto che ha mandato: dal
+  // 10 settembre 2026 (2A) ogni dispositivo si registra all'avvio anche con
+  // il gettone, quindi piu righe possono portare lo stesso user_id.
+  const hashA = adotta[0] ? createHash("sha256").update(adotta[0].braccialetto, "utf8").digest("hex") : null;
+  const brA = sb.tab("braccialetti").find((b) => b.segreto_hash === hashA);
+  check("06 sul server il braccialetto e legato all'account", !!brA && brA.user_id === UTENTE_ID);
   await page.waitForTimeout(500);
   check("06 il promemoria della migrazione cade solo a fine riuscita", (await page.evaluate(() => localStorage.getItem("jm.migrazione.locale"))) === null);
   await page.locator(".jm-fv-h, .jm-ed-ta").first().waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});

@@ -239,6 +239,9 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Il testo, quando l'AI ci lavora": "The text, when the AI works on it",
   "Poi sul server non resta niente.": "Then nothing stays on the server.",
   "in pausa": "paused",
+  "nell'app per iPhone": "in the iPhone app",
+  "Le giornate con l'AI in regalo sono nell'app per iPhone: dal browser si legge e si scrive.":
+    "The AI gift days live in the iPhone app: in the browser you read and write.",
   "finito": "used up",
   "{n} giornate su {max}": "{n} days of {max}",
   "Un attimo: chiedo al server quante giornate restano.": "One moment: asking the server how many days are left.",

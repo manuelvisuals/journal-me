@@ -29,6 +29,13 @@ export type StatoOspite = {
   rimaste: number;
   /** La giornata di oggi e gia coperta (una riga esiste): l'AI lavora anche a quota zero (R4). */
   oggi: boolean;
+  /**
+   * Il server conosce questo braccialetto (decisione 2A, 10 settembre 2026).
+   * Falso sul web con DeviceCheck acceso e per un dispositivo che il regalo
+   * l'ha gia avuto: le schermate dicono "nell'app" invece di promettere
+   * dieci giornate che non arriveranno.
+   */
+  registrato: boolean;
 };
 
 /**
@@ -92,6 +99,8 @@ export async function aggiornaStatoOspite(): Promise<StatoOspite | null> {
         usate: typeof j.usate === "number" ? j.usate : 0,
         rimaste: j.rimaste,
         oggi: j.oggi === true,
+        // Un server vecchio che non risponde `registrato` vale come registrato.
+        registrato: j.registrato !== false,
       };
       avvisa();
       return stato;

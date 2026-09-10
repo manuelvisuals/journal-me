@@ -120,17 +120,24 @@ export class SupabaseFintoServer {
     return righe.map((r) => Object.fromEntries(cols.map((c) => [c, r[c] ?? null])));
   }
 
-  /* La stessa logica della funzione SQL della migration 023. */
-  usaGiornata({ p_braccialetto_id, p_giorno, p_max, p_blocca_nuove }) {
+  /* La stessa logica della funzione SQL della migration 023, con il tetto
+     di chiamate per giornata della 028. */
+  usaGiornata({ p_braccialetto_id, p_giorno, p_max, p_blocca_nuove, p_max_chiamate = 60 }) {
     const b = this.tab("braccialetti").find((r) => r.id === p_braccialetto_id);
     if (!b) return { esito: "bloccato", usate: 0, gia: false };
     const mie = this.tab("braccialetto_giornate").filter((r) => r.braccialetto_id === p_braccialetto_id);
     const n = mie.length;
-    if (mie.some((r) => r.giorno === p_giorno)) return { esito: "ok", usate: n, gia: true };
+    const stessa = mie.find((r) => r.giorno === p_giorno);
+    if (stessa) {
+      const fatte = stessa.chiamate ?? 0;
+      if (fatte >= p_max_chiamate) return { esito: "chiamate", usate: n, gia: true, chiamate: fatte };
+      stessa.chiamate = fatte + 1;
+      return { esito: "ok", usate: n, gia: true, chiamate: fatte + 1 };
+    }
     if (p_blocca_nuove) return { esito: "bloccato", usate: n, gia: false };
     if (n >= p_max) return { esito: "quota", usate: n, gia: false };
-    this.tab("braccialetto_giornate").push({ braccialetto_id: p_braccialetto_id, giorno: p_giorno, creato_il: new Date().toISOString() });
-    return { esito: "ok", usate: n + 1, gia: false };
+    this.tab("braccialetto_giornate").push({ braccialetto_id: p_braccialetto_id, giorno: p_giorno, chiamate: 1, creato_il: new Date().toISOString() });
+    return { esito: "ok", usate: n + 1, gia: false, chiamate: 1 };
   }
 
   /** La funzione SQL adotta_braccialetto della migration 025, in JS. */
@@ -449,6 +456,57 @@ export class AppleFinto {
         res.statusCode = 500;
         res.end(JSON.stringify({ errorMessage: String(e) }));
       });
+    });
+    await new Promise((r) => this.server.listen(porta, "127.0.0.1", r));
+    this.porta = this.server.address().port;
+    return `http://127.0.0.1:${this.porta}`;
+  }
+
+  async ferma() {
+    if (this.server) await new Promise((r) => this.server.close(r));
+  }
+}
+
+
+/**
+ * L'Apple DeviceCheck finto (decisione 2A, 10 settembre 2026): i due bit
+ * per dispositivo, in memoria, chiave = il token. Non guarda la firma del
+ * gettone del server (e il gettone vuoto dei banchi). Risponde come Apple:
+ * 200 con {bit0, bit1} se i bit sono stati scritti, 200 con il testo
+ * "Failed to find bit state" se il dispositivo e nuovo, 400 se il token non
+ * e uno dei nostri ("Missing or incorrectly formatted device token").
+ * I token validi sono quelli che cominciano per "dc-": il resto e falso.
+ */
+export class DeviceCheckFinto {
+  constructor() {
+    this.bit = new Map();
+    this.registro = [];
+    this.server = null;
+    this.porta = 0;
+  }
+
+  async avvia(porta = 0) {
+    this.server = createServer(async (req, res) => {
+      const corpo = await leggiCorpo(req);
+      let j = {};
+      try { j = JSON.parse(corpo || "{}"); } catch { j = {}; }
+      this.registro.push({ path: req.url, corpo: j, auth: req.headers.authorization ?? "" });
+      const rispondi = (status, testo) => {
+        res.writeHead(status, { "Content-Type": "application/json" });
+        res.end(testo);
+      };
+      const token = typeof j.device_token === "string" ? j.device_token : "";
+      if (!token.startsWith("dc-")) return rispondi(400, "Missing or incorrectly formatted device token");
+      if (req.url === "/v1/query_two_bits") {
+        const b = this.bit.get(token);
+        if (!b) return rispondi(200, "Failed to find bit state");
+        return rispondi(200, JSON.stringify({ bit0: b.bit0, bit1: b.bit1, last_update_time: "2026-09" }));
+      }
+      if (req.url === "/v1/update_two_bits") {
+        this.bit.set(token, { bit0: j.bit0 === true, bit1: j.bit1 === true });
+        return rispondi(200, "");
+      }
+      return rispondi(404, "");
     });
     await new Promise((r) => this.server.listen(porta, "127.0.0.1", r));
     this.porta = this.server.address().port;

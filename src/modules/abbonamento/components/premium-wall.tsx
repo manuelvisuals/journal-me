@@ -61,6 +61,7 @@ import {
 } from "@/modules/abbonamento/negozio-ios";
 import { openPremiumWelcome } from "@/modules/abbonamento/components/premium-welcome";
 import { statoOspiteInTasca } from "@/lib/ospite/stato";
+import type { MotivoRegaloFinito } from "@/lib/regalo";
 
 /**
  * "regalo" = l'ospite che ha finito le giornate in regalo (SPEC R3).
@@ -78,6 +79,14 @@ type WallState = {
   max?: number;
   /** Per "presentazione": quante giornate restano in regalo. */
   rimaste?: number;
+  /**
+   * Per "regalo": PERCHE il regalo non ha coperto la chiamata (contratto
+   * MotivoRegaloFinito). Cambia le parole, non la schermata: "finite" e
+   * "in pausa per il tetto" e "solo nell'app" sono tre verita diverse e
+   * dire "finite" a chi ne ha ancora sei e una bugia (audit del 10
+   * settembre 2026, C4).
+   */
+  motivo?: MotivoRegaloFinito;
 } | null;
 
 let state: WallState = null;
@@ -89,9 +98,9 @@ function emit(): void {
 export function openPremiumWall(
   feature: WallFeature,
   onDismiss?: () => void,
-  extra?: { max?: number; rimaste?: number },
+  extra?: { max?: number; rimaste?: number; motivo?: MotivoRegaloFinito },
 ): void {
-  state = { feature, onDismiss, max: extra?.max, rimaste: extra?.rimaste };
+  state = { feature, onDismiss, max: extra?.max, rimaste: extra?.rimaste, motivo: extra?.motivo };
   emit();
 }
 
@@ -179,8 +188,8 @@ export function PremiumWall() {
   useEffect(() => {
     ascoltaTransazioni();
     const suRegalo = (e: Event) => {
-      const d = (e as CustomEvent<{ max?: number }>).detail;
-      openPremiumWall("regalo", undefined, { max: d?.max });
+      const d = (e as CustomEvent<{ max?: number; motivo?: MotivoRegaloFinito }>).detail;
+      openPremiumWall("regalo", undefined, { max: d?.max, motivo: d?.motivo });
     };
     window.addEventListener("jm:regalo-finito", suRegalo);
     return () => window.removeEventListener("jm:regalo-finito", suRegalo);
@@ -318,16 +327,33 @@ export function PremiumWall() {
     setCloudNote(true);
   };
 
-  const titolo =
-    regalo && wall.max
-      ? t("Le {n} giornate con l'AI\nin regalo sono finite", { n: String(wall.max) })
-      : t(TITLES[wall.feature]);
+  // Il regalo che non copre: le parole seguono il motivo. "quota" e la
+  // fine vera; il resto e una pausa, e si dice che le giornate restano.
+  const motivo: MotivoRegaloFinito = wall.motivo ?? "quota";
+  const pausa = regalo && motivo !== "quota";
+  const titolo = regalo
+    ? motivo === "solo_app"
+      ? t("L'AI in regalo\nsi accende dall'app")
+      : motivo === "chiamate"
+        ? t("Per oggi l'AI\nha fatto abbastanza")
+        : motivo === "tetto" || motivo === "spento"
+          ? t("Oggi l'AI in regalo\ne in pausa")
+          : wall.max
+            ? t("Le {n} giornate con l'AI\nin regalo sono finite", { n: String(wall.max) })
+            : t(TITLES[wall.feature])
+    : t(TITLES[wall.feature]);
   const sottotitolo = presentazione
     ? wall.rimaste !== undefined && wall.rimaste > 0
       ? t("Titolo, sintesi, aree: li ha scritti lei. Ne hai altre {n} in regalo.", { n: String(wall.rimaste) })
       : t("Titolo, sintesi, aree: li ha scritti lei. Le prime giornate sono in regalo.")
-    : regalo
-      ? t("Continua a scrivere. Manca solo l'AI.")
+    : regalo && motivo === "solo_app"
+      ? t("Dal browser si legge e si scrive. Le giornate con l'AI in regalo sono nell'app per iPhone.")
+      : regalo && motivo === "chiamate"
+        ? t("Questa giornata ha gia ricevuto molte richieste. Le tue giornate restano: domani si riparte, o passi a premium.")
+        : pausa
+          ? t("Il regalo del mese e stato usato tutto, per tutti. Le tue giornate restano: torna domani, o passa a premium.")
+          : regalo
+            ? t("Continua a scrivere. Manca solo l'AI.")
       : negozio && senzaAccount
         ? t("Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi.")
         : negozio

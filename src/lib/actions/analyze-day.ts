@@ -72,12 +72,14 @@ function misureValide(raw: unknown): Partial<EntryMetrics> | undefined {
 /** Il riassunto: titolo, sintesi, aree, misure del risveglio. */
 async function callProcessEntry(
   transcript: string,
+  giorno?: string,
 ): Promise<Omit<AIFields, "people"> | null | "negato"> {
   try {
     const resp = await apiFetch("/api/process-entry", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),
+      giorno,
     });
     // 402: l'AI non c'e PER SCELTA del server (regalo finito, o serve
     // premium), non per un guasto. La giornata va salvata come una giornata
@@ -115,7 +117,7 @@ async function callProcessEntry(
  * elenco scrive "panca", con l'elenco scrive "panca piana", e i progressi
  * restano un grafico solo invece di due meta che non si sommano.
  */
-async function callExtractFacts(transcript: string): Promise<NewFact[] | null> {
+async function callExtractFacts(transcript: string, giorno?: string): Promise<NewFact[] | null> {
   let known: string[] = [];
   try {
     known = await loadKnownLabels();
@@ -127,6 +129,7 @@ async function callExtractFacts(transcript: string): Promise<NewFact[] | null> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript, known }),
+      giorno,
     });
     if (!resp.ok) return null;
     const data = (await resp.json()) as {
@@ -187,12 +190,14 @@ function fallbackFields(transcript: string): AIFields {
  * `transcript` deve essere tutto il testo del giorno, non il pezzo appena
  * aggiunto: e il punto di tutta questa storia.
  */
-export async function analyzeDay(transcript: string): Promise<AIFields> {
+export async function analyzeDay(transcript: string, giorno?: string): Promise<AIFields> {
   // In parallelo: sono indipendenti, e in fila sommerebbero le due attese
   // davanti a un utente che sta gia guardando la schermata di elaborazione.
+  // `giorno` e il giorno del diario su cui si lavora: e quello che il regalo
+  // dell'ospite conta (decisione 4A), quindi viaggia fino al server.
   const [summary, facts] = await Promise.all([
-    callProcessEntry(transcript),
-    callExtractFacts(transcript),
+    callProcessEntry(transcript, giorno),
+    callExtractFacts(transcript, giorno),
   ]);
 
   // Le persone della giornata SONO i fatti di tipo persona: una lettura

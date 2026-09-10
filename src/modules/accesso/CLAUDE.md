@@ -121,3 +121,31 @@ legge la sessione in tasca, niente rete; da ospite e sempre falso) e una
 riga in `components/linguetta.tsx`. Il saluto senza bersaglio ha gia la
 chiusura secca. Banco: `verify-linguetta-revisore` (6 controlli, morso
 provato).
+
+## Il braccialetto nasce con DeviceCheck, la giornata e quella del diario (10 settembre 2026, branch `modello-premium`)
+
+Audit del modello premium (AUDIT-premium-vuole-account.html), decisioni 2A e
+4A di Manuel.
+
+- Il server NON crea piu un braccialetto per qualunque segreto: nasce solo
+  da POST /api/ospite/braccialetto (`server/ospite-braccialetto.ts` ->
+  `registraBraccialetto` in src/lib/server/ospite.ts, scheletro). Con
+  DeviceCheck acceso (variabili `APPLE_DEVICECHECK_*`, vedi
+  `DEVICECHECK-passi.md`) vuole il token del guscio (`ios/App/App/DeviceCheck.swift`,
+  `src/lib/native/devicecheck.ts`) e il bit "regalo gia dato" spento presso
+  Apple. Sul web niente token: 403 `solo_app`, e l'AI risponde 402
+  `regalo_finito` motivo `solo_app`; il muro dice "si accende dall'app".
+  Spento (banchi, sviluppo, e produzione finche Manuel non carica la chiave)
+  il server registra e basta. `assicuraBraccialetto` registra all'avvio, una
+  volta per apertura, in fila (due effetti di AuthGate creavano DUE segreti).
+- `x-jm-giorno` = il giorno del DIARIO su cui l'AI lavora (apiFetch, opzione
+  `giorno`; lo mandano save-recording, analyze-day, chiarimenti, scan-archivio);
+  il server lo accetta solo se plausibile (non nel futuro oltre un giorno,
+  non piu vecchio di un anno, esistente) e ogni giornata ha un tetto di
+  chiamate (`CHIAMATE_PER_GIORNATA` = 60, migration 028 `chiamate`): oltre,
+  402 motivo `chiamate`.
+- `/api/ospite/stato` risponde anche `registrato`; la riga "AI in regalo"
+  dice "nell'app per iPhone" quando e falso.
+- Banchi: `verify-ospite` (55, con la sezione 4A/2A), `verify-devicecheck`
+  (19, con il DeviceCheck finto di scripts/lib/finti-server.mjs: il dev
+  server va rilanciato con `APPLE_DEVICECHECK_BASE_URL=http://127.0.0.1:3196`).

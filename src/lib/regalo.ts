@@ -72,4 +72,27 @@ export const HEADER_BRACCIALETTO = "x-jm-braccialetto";
  * muri diversi (uno per chi ha finito un regalo, uno per chi non ha premium).
  */
 export const ERRORE_REGALO_FINITO = "regalo_finito";
-export type MotivoRegaloFinito = "quota" | "tetto" | "spento";
+/**
+ * Perche il regalo non copre questa chiamata:
+ *  - quota:    le giornate del braccialetto sono finite;
+ *  - tetto:    la spesa del mese ha superato il tetto (per tutti, oggi);
+ *  - spento:   il regalo e spento dal pannello;
+ *  - chiamate: questa giornata ha gia ricevuto troppe chiamate (un tetto
+ *              largo, che una persona non tocca: e per i cicli di curl);
+ *  - solo_app: questo braccialetto non e registrato sul server. Con
+ *              DeviceCheck acceso succede a chi non ha il guscio iOS (il
+ *              web) o a un dispositivo che il regalo l'ha gia avuto.
+ */
+export type MotivoRegaloFinito = "quota" | "tetto" | "spento" | "chiamate" | "solo_app";
+
+/**
+ * Quante chiamate AI puo ricevere UNA giornata del regalo (audit del 10
+ * settembre 2026, decisione 4A). Una registrazione ne fa circa cinque
+ * (trascrizione, spezzatura, analisi, fatti, chiarimenti); dieci
+ * registrazioni in un giorno sono gia tante. Il tetto serve contro chi
+ * manda sempre lo stesso giorno per non spendere mai una giornata nuova.
+ */
+export const CHIAMATE_PER_GIORNATA = 60;
+
+/** L'intestazione con cui il client dice SU QUALE GIORNO del diario lavora l'AI. */
+export const HEADER_GIORNO = "x-jm-giorno";

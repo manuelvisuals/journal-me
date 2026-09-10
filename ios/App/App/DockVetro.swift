@@ -314,6 +314,9 @@ class AppViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(CassafortePlugin())
         // Il negozio di Apple (Abbonamento.swift, In-App Purchase).
         bridge?.registerPluginInstance(AbbonamentoPlugin())
+        // DeviceCheck (DeviceCheck.swift): il token con cui il braccialetto
+        // del regalo nasce sul server (decisione 2A, 10 settembre 2026).
+        bridge?.registerPluginInstance(DeviceCheckPlugin())
     }
 
     override open func router() -> Router {

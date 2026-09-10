@@ -121,7 +121,7 @@ export async function scansionaArchivio(
     try {
       let corrente = e;
       if (maiLetta(e)) {
-        const ai = await analyzeDay(e.transcript);
+        const ai = await analyzeDay(e.transcript, e.entryDate);
         corrente = await store.saveProcessedEntry(
           e.entryDate,
           e.transcript,

@@ -12,8 +12,8 @@
 import { getAccessToken } from "@/lib/supabase/client";
 import { getLang } from "@/lib/i18n";
 import { conSegnale } from "@/lib/tetto";
-import { ERRORE_REGALO_FINITO, HEADER_BRACCIALETTO } from "@/lib/regalo";
-import { leggiBraccialetto } from "@/lib/ospite/braccialetto";
+import { ERRORE_REGALO_FINITO, HEADER_BRACCIALETTO, HEADER_GIORNO } from "@/lib/regalo";
+import { leggiBraccialetto, registraBraccialetto } from "@/lib/ospite/braccialetto";
 
 const BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/+$/, "");
 
@@ -28,7 +28,16 @@ export function apiUrl(path: string): string {
  */
 const DEFAULT_TIMEOUT_MS = 15_000;
 
-export type ApiFetchInit = RequestInit & { timeoutMs?: number };
+export type ApiFetchInit = RequestInit & {
+  timeoutMs?: number;
+  /**
+   * Il giorno del DIARIO su cui l'AI sta lavorando (YYYY-MM-DD), quando il
+   * chiamante lo sa: e il giorno che il regalo conta (decisione 4A, 10
+   * settembre 2026). Chi non lo sa (la trascrizione, un memo) non lo manda
+   * e il server usa oggi.
+   */
+  giorno?: string;
+};
 
 /**
  * The one way the client calls its own /api routes. Every route is gated by
@@ -57,7 +66,7 @@ export async function apiFetch(
   path: string,
   init: ApiFetchInit = {},
 ): Promise<Response> {
-  const { timeoutMs = DEFAULT_TIMEOUT_MS, headers, ...rest } = init;
+  const { timeoutMs = DEFAULT_TIMEOUT_MS, headers, giorno, ...rest } = init;
 
   const merged = new Headers(headers);
   const ctrl = new AbortController();
@@ -80,6 +89,7 @@ export async function apiFetch(
     // primo avvio come ospite (auth-gate).
     const braccialetto = await conSegnale(leggiBraccialetto(), ctrl.signal, "braccialetto");
     if (braccialetto) merged.set(HEADER_BRACCIALETTO, braccialetto);
+    if (giorno && /^\d{4}-\d{2}-\d{2}$/.test(giorno)) merged.set(HEADER_GIORNO, giorno);
 
     const resp = await fetch(apiUrl(path), {
       ...rest,
@@ -98,6 +108,12 @@ export async function apiFetch(
         .json()
         .then((body: { error?: string; motivo?: string; usate?: number; max?: number }) => {
           if (body?.error === ERRORE_REGALO_FINITO) {
+            // `solo_app`: il server non conosce questo braccialetto. Di
+            // solito e il web con DeviceCheck acceso; ma puo essere un
+            // telefono partito senza rete, che non si e potuto registrare
+            // all'avvio: si ritenta la registrazione prima di dirlo, cosi al
+            // prossimo tocco funziona.
+            if (body.motivo === "solo_app") void registraBraccialetto();
             window.dispatchEvent(new CustomEvent("jm:regalo-finito", { detail: body }));
             return;
           }

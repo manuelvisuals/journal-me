@@ -83,6 +83,7 @@ async function callSplitByDate(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript, defaultDate }),
+      giorno: defaultDate,
     });
     if (!resp.ok) return [{ date: defaultDate, text: transcript }];
     const data = (await resp.json()) as { segments?: DateSegment[] };
@@ -122,7 +123,7 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
     ? (async () => {
         const existing = await store.loadEntryForDate(input.defaultDate);
         const fullTranscript = testoCompleto(existing, input.transcript);
-        const ai = await analyzeDay(fullTranscript);
+        const ai = await analyzeDay(fullTranscript, input.defaultDate);
         return { existing, fullTranscript, ai };
       })()
     : null;
@@ -154,7 +155,7 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
     const ai = vinta
       ? vinta.ai
       : useAI
-        ? await analyzeDay(fullTranscript)
+        ? await analyzeDay(fullTranscript, seg.date)
         : localFields(fullTranscript);
     if (useAI && input.onAnalisi) {
       input.onAnalisi({
@@ -211,7 +212,7 @@ export async function reprocessEntryTranscript(
 ): Promise<Entry> {
   const store = getStore();
   const ai = can("aiSummary")
-    ? await analyzeDay(newTranscript)
+    ? await analyzeDay(newTranscript, dateISO)
     : localFields(newTranscript);
   let saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
   if (ai.metrics) {
