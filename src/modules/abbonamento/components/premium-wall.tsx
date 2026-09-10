@@ -248,6 +248,13 @@ export function PremiumWall() {
 
   const regalo = wall.feature === "regalo";
   const presentazione = wall.feature === "presentazione";
+  // La PRESENTAZIONE da ospite festeggia, non vende (controaudit del 10
+  // settembre 2026): e il foglio dopo la prima giornata chiusa dall'AI, a
+  // chi ne ha ancora nove in regalo. Chiedergli l'email qui e contro il
+  // primo avvio senza bivio: "Continua" e basta, e una riga piccola per chi
+  // vuole sapere cosa fa premium (che riapre questo muro nella sua forma
+  // normale, con la porta dell'email).
+  const festeggia = presentazione && senzaAccount;
   const prodotto = prodotti?.find((p) => p.id === scelto) ?? prodotti?.[0] ?? null;
   const prova = prodotto && prodotto.provaGiorni && prodotto.provaDisponibile !== false ? prodotto.provaGiorni : 0;
 
@@ -342,7 +349,7 @@ export function PremiumWall() {
         <div className="jm-wall-t">{titolo}</div>
         <div className="jm-wall-p">{sottotitolo}</div>
 
-        {negozio && senzaAccount && (
+        {negozio && senzaAccount && !festeggia && (
           <div className="jm-wall-note">
             {t(
               "Premium ha bisogno di un account: e li che vive la copia cifrata nel cloud, ed e cosi che ti segue su tutti i dispositivi.",
@@ -415,7 +422,11 @@ export function PremiumWall() {
           </div>
         )}
 
-        {!negozio ? (
+        {festeggia ? (
+          <button type="button" className="btn-primary" onClick={dismiss}>
+            {t("Continua")}
+          </button>
+        ) : !negozio ? (
           <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
             {t("Scarica dayalogue per iPhone")}
           </button>
@@ -439,12 +450,20 @@ export function PremiumWall() {
                   : t("Passa a premium")}
           </button>
         )}
-        <button type="button" className="btn-ghost" onClick={dismiss}>
-          {regalo ? t("Continua senza AI") : t("non ora")}
-        </button>
+        {!festeggia && (
+          <button type="button" className="btn-ghost" onClick={dismiss}>
+            {regalo ? t("Continua senza AI") : t("non ora")}
+          </button>
+        )}
 
         <div className="jm-wall-quiet">
+          {festeggia && (
+            <button type="button" onClick={() => openPremiumWall("aiSummary")}>
+              {t("Cosa fa premium")}
+            </button>
+          )}
           {negozio &&
+            !festeggia &&
             (senzaAccount ? (
               <button type="button" onClick={vaiAlLogin}>
                 {t("Ho gia un abbonamento")}
@@ -479,7 +498,7 @@ export function PremiumWall() {
             <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot; <a href="/privacy">{t("Privacy")}</a>
           </div>
         )}
-        {negozio && senzaAccount && (
+        {negozio && senzaAccount && !festeggia && (
           <div className="jm-wall-nota">
             {t("Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.")}
           </div>

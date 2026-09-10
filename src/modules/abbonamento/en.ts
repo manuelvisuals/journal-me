@@ -33,6 +33,7 @@ export const ABBONAMENTO: Record<string, string> = {
     "Premium needs an account: that is where the encrypted cloud copy lives, and it is how it follows you across devices.",
   "Entra con la tua email": "Continue with your email",
   "Ho gia un abbonamento": "I already have a subscription",
+  "Cosa fa premium": "What premium does",
   "Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.":
     "No password: you get a six-digit code. The days you have already written come with you.",
   "Termini": "Terms",

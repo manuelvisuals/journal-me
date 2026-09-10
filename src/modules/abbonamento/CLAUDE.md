@@ -134,6 +134,16 @@ Cosa cambia rispetto al 4 settembre:
 
 Banco: `verify-abbonamento` sezione 9 riscritta, 54/54.
 
+Controaudit del 10 settembre 2026 (sera), prima del merge in main: la
+feature `presentazione` da ospite (il foglio dopo la PRIMA giornata chiusa
+dall'AI) NON vende l'email: tasto "Continua" e la riga piccola "Cosa fa
+premium", che riapre il muro normale. Chiedere l'email a chi ha ancora nove
+giornate in regalo era un effetto collaterale di `senzaAccount`, non una
+scelta. E il testo del 401 in `negozio-ios.ts` non nomina piu "Ripristina
+acquisti", riga che da ospite non esiste (si chiama "Ho gia un abbonamento").
+Il referto completo: `AUDIT-premium-vuole-account.html` nella cartella di
+Manuel; le decisioni prese (1A 2A 3A 4A 5A 6B 7A) sono il lavoro che segue.
+
 Rifiniture del 4 settembre sera (branch `rifiniture-ive`): il muro non
 salta piu quando arriva il prezzo da Apple: in attesa mostra il FANTASMA
 della scheda e della nota (stessa struttura, testo sbiadito con "—,— EUR",

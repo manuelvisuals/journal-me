@@ -213,7 +213,11 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     // login PRIMA di aprire il foglio di Apple; se succede lo stesso (un
     // gettone scaduto proprio in quell'istante) l'acquisto e comunque al
     // sicuro presso Apple e si recupera entrando e ripristinando.
-    return { esito: "serve_account", messaggio: "Per attivare premium serve il tuo account: entra con la tua email e tocca Ripristina acquisti. L'acquisto e al sicuro presso Apple." };
+    // Chi legge questo testo e senza account, e da ospite la riga si
+    // chiama "Ho gia un abbonamento", non "Ripristina acquisti" (audit del
+    // 10 settembre 2026): si dice la strada vera, non il nome di una riga
+    // che comparira solo dopo il login.
+    return { esito: "serve_account", messaggio: "Per attivare premium serve il tuo account: entra con la tua email. L'acquisto e al sicuro presso Apple e si riattiva da Impostazioni." };
   }
   if (resp.status === 409) {
     return { esito: "errore", messaggio: "Questo abbonamento e legato a un altro account: entra con quello." };
