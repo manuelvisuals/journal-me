@@ -443,23 +443,50 @@ export function HomeSito({
           <div className="jm-sito-cont jm-sito2-eroe-in">
             <div className="jm-sito2-eroe-t">
               <p className="jm-sito4-eyebrow">
-                {t.eroe.etichetta}
+                {t.eroeVivo.etichetta}
               </p>
               <h1 className="jm-sito-h1">
                 {t.eroe.titolo}
                 <br />
                 {t.eroe.titoloDue}
               </h1>
-              <p className="jm-sito2-sotto">{t.eroe.sotto}</p>
+              <p className="jm-sito2-sotto">{t.eroeVivo.sotto}</p>
               <div className="jm-sito-cta">
                 <Link href="/login" className="jm-sito-b p lg">
-                  {t.eroe.cta}
+                  {t.eroeVivo.cta}
                 </Link>
-                <a href="#giornata" className="jm-sito-link">
-                  {t.eroe.ctaSecondo}
+                {/* Secondaria per davvero: un tasto di contorno, non un link
+                    nudo. Resta accessibile, ma il gesto dominante e uno solo. */}
+                <a href="#giornata" className="jm-sito-b jm-sito10-secondo">
+                  {t.eroeVivo.ctaSecondo}
                 </a>
               </div>
-              <p className="jm-sito2-sotto-cta">{t.eroe.sottoCta}</p>
+              <ul className="jm-sito10-garanzie">
+                {t.eroeVivo.garanzie.map((g) => (
+                  <li key={g}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" className="jm-sito10-spunta">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M8.2 12.3l2.6 2.6 5-5.4" />
+                    </svg>
+                    {g}
+                  </li>
+                ))}
+              </ul>
+
+            {/* Il rituale reso visibile: non e un lettore vero e non e un tasto,
+                e la sera di chi usa Dayalogue messa nella scena. Serve a far
+                capire il prodotto senza mostrare un mockup tecnologico. */}
+            <div className="jm-sito10-rituale-vivo" aria-hidden="true">
+              <span className="tondo">
+                <span className="onda">
+                  {Array.from({ length: 5 }, (_, i) => <i key={i} />)}
+                </span>
+              </span>
+              <span className="parole">
+                <span className="quando">{t.eroeVivo.quando}</span>
+                <span className="domanda">{t.eroeVivo.domanda}</span>
+              </span>
+            </div>
             </div>
           </div>
           {/* LA SCENA. La fotografia e il telefono stanno nello STESSO

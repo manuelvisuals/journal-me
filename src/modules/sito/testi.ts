@@ -41,6 +41,22 @@ export type Testi = {
     ctaSecondo: string;
     sottoCta: string;
   };
+  /**
+   * L'eroe della home VIVA, rifatto il 10 settembre 2026 sull'audit di un
+   * revisore esterno approvato da Manuel. Sta a parte da `eroe` perche
+   * quello lo usano ancora gli archivi /v1../v6, che devono restare
+   * identici. Il titolo invece e lo stesso e si legge da `eroe`.
+   */
+  eroeVivo: {
+    etichetta: string;
+    sotto: string;
+    cta: string;
+    ctaSecondo: string;
+    /** Il micro-lettore nella scena: non e un tasto, e il rituale reso visibile. */
+    quando: string;
+    domanda: string;
+    garanzie: string[];
+  };
   rituale: {
     etichetta: string;
     titolo: string;
@@ -204,6 +220,16 @@ const it: Testi = {
     cta: "Inizia stasera",
     ctaSecondo: "Come funziona",
     sottoCta: "Nessun account per iniziare · Cifrato sul tuo dispositivo",
+  },
+  eroeVivo: {
+    etichetta: "Il tuo diario, a voce",
+    sotto:
+      "Parla per due minuti. Dayalogue trasforma la tua voce in una pagina privata, pronta da ritrovare.",
+    cta: "Provalo stasera",
+    ctaSecondo: "Guarda come funziona",
+    quando: "Stasera \u00b7 2 minuti",
+    domanda: "\u201cCom'e andata oggi?\u201d",
+    garanzie: ["Nessun account per iniziare", "Cifrato sul tuo dispositivo"],
   },
   rituale: {
     etichetta: "Un piccolo rituale",
@@ -630,6 +656,16 @@ const en: Testi = {
     cta: "Start tonight",
     ctaSecondo: "How it works",
     sottoCta: "No account to begin · Encrypted on your device",
+  },
+  eroeVivo: {
+    etichetta: "Your journal, spoken",
+    sotto:
+      "Talk for two minutes. Dayalogue turns your voice into a private page, ready to return to.",
+    cta: "Try it tonight",
+    ctaSecondo: "See how it works",
+    quando: "Tonight \u00b7 2 minutes",
+    domanda: "\u201cHow did today go?\u201d",
+    garanzie: ["No account to start", "Encrypted on your device"],
   },
   rituale: {
     etichetta: "A small ritual",

@@ -46,7 +46,11 @@ export function NavSito({
           <nav className="jm-sito-nav-l">
             <a href="#come">{t.nav.come}</a>
             <a href="#cassaforte">{v4 ? t.nav.privacy : t.nav.cassaforte}</a>
-            <a href="#giornata">{v4 ? t.nav.diario : t.nav.domande}</a>
+            {/* "Diario" tolto dalla home viva il 10 settembre 2026 (audit
+                del revisore, approvato da Manuel): la pagina E il diario, la
+                voce non aggiungeva niente e la barra sul telefono ne
+                guadagna. Gli archivi tengono la loro "Domande". */}
+            {v4 ? null : <a href="#giornata">{t.nav.domande}</a>}
           </nav>
         ) : null}
         <div className="jm-sito-nav-r">
@@ -76,7 +80,7 @@ export function NavSito({
             <div>
               <a href="#come">{t.nav.come}</a>
               <a href="#cassaforte">{v4 ? t.nav.privacy : t.nav.cassaforte}</a>
-              <a href="#giornata">{v4 ? t.nav.diario : t.nav.domande}</a>
+              {v4 ? null : <a href="#giornata">{t.nav.domande}</a>}
               <Link href={altraLingua}>{t.piede.lingua}</Link>
             </div>
           </details>
