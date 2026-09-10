@@ -247,3 +247,27 @@ avviso di passaggio, non una riga di impostazione.
   cancellazione locale fino in fondo e pretendono il toaster 'ok' sopra la
   pagina, nessuna riga nuova nell'elenco, e la sparizione da sola dopo
   2,5s). Provato a mordere: rimettendo la riga vecchia escono 4 rossi.
+
+## Account in cima, App a parte, elimina l'account si scrive (10 settembre 2026)
+
+Manuel, guardando le Impostazioni sul telefono:
+
+- via la card Recap e via la riga Memo: erano gia nel dock, e una seconda
+  porta per la stessa stanza dentro un elenco fa solo lista. ATTENZIONE:
+  con un modulo acceso, sul telefono Memo perde il posto nella barra in
+  basso e quella riga era la strada che gli restava; se torna a dare
+  fastidio, la risposta e nella barra, non qui. La prop `latestRecap` e
+  sparita anche dalla pagina.
+- via la sezione "Cosa vede il server" dal pannello Cassaforte.
+- il gruppo Account e il PRIMO blocco (chi apre le Impostazioni cerca quasi
+  sempre se stesso), e versione, pacchetto e "Esci dall'account" sono
+  passati in un gruppo "App": non dicono chi sei, dicono cosa hai
+  installato. Su desktop il blocco resta nascosto (`jm-st-phoneonly`,
+  l'identita e nella rail destra): per questo i banchi aspettano il primo
+  gruppo VISIBILE.
+- "Elimina l'account" non e piu un secondo tocco su "si, elimina" (un tasto
+  che compare dove prima c'era la riga si preme per sbaglio): apre
+  `AlertIos` con `parolaDaScrivere`, e il tasto rosso resta spento finche
+  nel campo non c'e ELIMINA (DELETE in inglese, la parola arriva gia
+  tradotta da chi chiama). Banco: `verify-appstore` sezione 4, morso
+  provato.

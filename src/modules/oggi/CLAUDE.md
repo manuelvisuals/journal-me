@@ -256,3 +256,18 @@ maiuscola iniziale non si affida al modello: la mette il codice
 (`titoloInSentenceCase` in `server/process-entry.ts`), anche sul titolo di
 ripiego. Il titolo del recap (modulo recap) resta minuscolo: non e stato
 toccato. Banco: `verify-titolo-maiuscola`.
+
+## Il foglio bianco di "Scrivi la tua giornata" (10 settembre 2026)
+
+Mockup di Manuel, solo struttura e stile: la logica (autosave 800 ms, bozza
+recuperata, chip della data, Continua) non e stata toccata. Il placeholder
+lungo con l'esempio non c'e piu — era un muro di testo da leggere prima di
+poter scrivere, e spariva alla prima lettera. Al suo posto `.jm-mw-foglio`:
+un foglio a angoli tondi in `--color-surface` (bianco di giorno, scuro di
+notte, in ogni tema) con due righe ferme in testa, "Com'e andata la
+giornata?" e "Scrivi quello che vuoi ricordare.", e sotto il campo vuoto.
+La barra sopra la tastiera (freccia su, freccia giu, conferma) e quella
+NATIVA di iOS: non si disegna, si lascia stare. Le classi `jm-editor-*`
+restano condivise con transcript-editor, review-screen e recap-editor:
+tutto cio che cambia sta sotto `.jm-mw`, cosi le altre schermate non si
+muovono.
