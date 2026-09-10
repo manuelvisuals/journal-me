@@ -347,6 +347,62 @@ function Riquadro({ forma, t }: { forma: Testi["funzioni"]["voci"][number]["form
   return <Libro t={t} />;
 }
 
+/* ------------------------------- la giornata: un ritratto e la sua pagina
+
+   Ordine dentro <figure>: fotografia, pagina, didascalia. La didascalia sta
+   per ULTIMA perche <figcaption> deve essere il primo o l'ultimo figlio di
+   <figure>, e qui fa anche da STRATO: e alta quanto la fotografia ed e lei a
+   scorrere, cosi la corsa del vetro e in percentuale dell'immagine e vale
+   uguale su ogni schermo. Il vetro vero e la <span> dentro. */
+
+function Ritratto({
+  lato,
+  foto,
+  voce,
+  stato,
+  g,
+}: {
+  lato: "donna" | "uomo";
+  foto: string;
+  voce: string;
+  stato: string;
+  g: Testi["giornate"]["lei"];
+}) {
+  return (
+    <figure className={`jm-sito8-persona ${lato}`} data-fx="foto">
+      <Foto nome={foto} />
+
+      <article className="jm-sito8-pagina" aria-label={g.titolo}>
+        <header>
+          <span>{g.data}</span>
+          <b>dayalogue</b>
+        </header>
+        <h3>{g.titolo}</h3>
+        <p>{g.prosa}</p>
+        <div className="jm-sito8-miniature" aria-hidden="true">
+          <Foto nome="salotto-voce" />
+          <Foto nome="comodino" />
+          <Foto nome="divano-notte" />
+        </div>
+        <div className="jm-sito8-pagina-fondo">
+          <span>{g.area}</span>
+          <span>{g.umore}</span>
+        </div>
+      </article>
+
+      <figcaption className="jm-sito8-strato">
+        <span className="jm-sito8-vetro">
+          <span className="jm-sito8-rec"><i /> {stato}</span>
+          <q>{voce}</q>
+          <span className="jm-sito8-onda" aria-hidden="true">
+            {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
+          </span>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
 /* ---------------------------------------------------------- la home */
 
 export function HomeSito({
@@ -433,59 +489,39 @@ export function HomeSito({
             "jm-sito2-giornata" che stava qui sopra e uscita: diceva la stessa
             cosa una seconda volta. Di quella restano solo i tre punti, che
             adesso stanno sotto le fotografie. */}
-        <section className="jm-sito5-voce-pagina" id="giornata" aria-labelledby="jm-sito5-titolo">
-          <div className="jm-sito5-testa" data-fx="testo">
+        <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
+          <div className="jm-sito8-testa" data-fx="testo">
             <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
-            <h2 id="jm-sito5-titolo">{t.vocePagina.titolo}</h2>
+            <h2 id="jm-sito8-titolo">{t.vocePagina.titolo}</h2>
             <p>{t.vocePagina.testo}</p>
           </div>
 
-          <div className="jm-sito5-scena">
-            <figure className="jm-sito5-persona donna" data-fx="foto">
-              <Foto nome="skincare" />
-              <figcaption>
-                <span className="jm-sito5-rec"><i /> {t.vocePagina.stato}</span>
-                <q>{t.vocePagina.donna}</q>
-                <span className="jm-sito5-onda" aria-hidden="true">
-                  {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
-                </span>
-              </figcaption>
-            </figure>
-
-            <article className="jm-sito5-pagina" aria-label={t.esempio.titolo} data-fx="testo" style={{ "--i": 1 } as CSSProperties}>
-              <header>
-                <span>{t.esempio.data}</span>
-                <b>dayalogue</b>
-              </header>
-              <h3>{t.esempio.titolo}</h3>
-              <p>{t.esempio.prosa}</p>
-              <div className="jm-sito5-miniature" aria-hidden="true">
-                <Foto nome="salotto-voce" />
-                <Foto nome="comodino" />
-                <Foto nome="divano-notte" />
-              </div>
-              <div className="jm-sito5-pagina-fondo">
-                <span>{t.esempio.persona}</span>
-                <span>{t.esempio.metriche[0].nome} · {t.esempio.metriche[0].valore}</span>
-              </div>
-            </article>
-
-            <figure className="jm-sito5-persona uomo" data-fx="foto" style={{ "--i": 2 } as CSSProperties}>
-              <Foto nome="barba" />
-              <figcaption>
-                <span className="jm-sito5-rec"><i /> {t.vocePagina.stato}</span>
-                <q>{t.vocePagina.uomo}</q>
-                <span className="jm-sito5-onda" aria-hidden="true">
-                  {Array.from({ length: 18 }, (_, i) => <i key={i} />)}
-                </span>
-              </figcaption>
-            </figure>
+          {/* La pista e alta piu di quattro schermate: la scena ci sta ferma
+              dentro (sticky) e scorrerla muove --s da 0 a 1. Due atti in fila,
+              i tempi stanno in styles.css sotto .jm-sito8-scena. */}
+          <div className="jm-sito8-pista" data-pista>
+            <div className="jm-sito8-scena">
+              <Ritratto
+                lato="donna"
+                foto="skincare"
+                voce={t.vocePagina.donna}
+                stato={t.vocePagina.stato}
+                g={t.giornate.lei}
+              />
+              <Ritratto
+                lato="uomo"
+                foto="barba"
+                voce={t.vocePagina.uomo}
+                stato={t.vocePagina.stato}
+                g={t.giornate.lui}
+              />
+            </div>
           </div>
 
           {/* I tre punti che stavano nella sezione "La giornata" (tolta il 9
               settembre 2026): la promessa la fa la scena qui sopra, questi
               dicono cosa resta scritto. */}
-          <div className="jm-sito5-punti">
+          <div className="jm-sito8-punti">
             {t.giornata.punti.map((x, i) => (
               <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
                 <h3>{x.titolo}</h3>
@@ -494,9 +530,8 @@ export function HomeSito({
             ))}
           </div>
 
-          <p className="jm-sito5-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
+          <p className="jm-sito8-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
         </section>
-
 
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">

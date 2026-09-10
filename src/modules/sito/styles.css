@@ -2730,58 +2730,8 @@
   padding-top: 13px;
   border-top: 1px solid var(--jm-line);
 }
-/* I tre punti sotto la scena (arrivati il 9 settembre 2026 dalla sezione
-   "La giornata", tolta). Tre colonne separate da un filo, come il pannello
-   del rituale nell'eroe: stessa grammatica, cosi la pagina non inventa un
-   secondo modo di elencare tre cose. */
-.jm-sito5-punti {
-  display: grid;
-  grid-template-columns: 1fr;
-  max-width: 1490px;
-  margin: 40px auto 0;
-}
-.jm-sito5-punti > div {
-  padding: 22px 6px;
-  text-align: center;
-  border-bottom: 1px solid var(--jm-line);
-}
-.jm-sito5-punti > div:last-child {
-  border-bottom: 0;
-}
-.jm-sito5-punti h3 {
-  font-size: calc(17px * var(--jm-ui-scale));
-  font-weight: 650;
-  letter-spacing: -.01em;
-}
-.jm-sito5-punti p {
-  margin-top: 6px;
-  color: var(--jm-ink-muted);
-  font-size: calc(14px * var(--jm-ui-scale));
-  line-height: 1.5;
-}
-@media (min-width: 901px) {
-  .jm-sito5-punti {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-top: 56px;
-  }
-  .jm-sito5-punti > div {
-    padding: 6px 34px;
-    border-bottom: 0;
-    border-right: 1px solid var(--jm-line);
-  }
-  .jm-sito5-punti > div:last-child {
-    border-right: 0;
-  }
-  .jm-sito5-punti h3 {
-    font-size: calc(19px * var(--jm-ui-scale));
-  }
-  .jm-sito5-punti p {
-    margin-top: 9px;
-    font-size: calc(15px * var(--jm-ui-scale));
-  }
-}
 .jm-sito5-chiusura {
-  margin-top: 40px;
+  margin-top: 32px;
   text-align: center;
   color: var(--jm-accent);
   font-size: calc(10px * var(--jm-ui-scale));
@@ -4124,4 +4074,418 @@ textarea.jm-sito-in {
       border-bottom-color: transparent;
     }
   }
+}
+
+/* =====================================================================
+   LA GIORNATA (jm-sito8) — due ritratti, due pagine che entrano dai lati
+   (Manuel, 9 settembre 2026; mockup approvato "due card che entrano").
+
+   COME SI MUOVE. La pista e alta piu di quattro schermate e la scena ci
+   sta ferma dentro (sticky): scorrere la pista muove --s da 0 a 1, e --s
+   e il cursore di tutta la coreografia. Due atti IN FILA, mai insieme:
+
+     atto 1 (lei)   --g1  0    -> .32   il vetro attraversa la fotografia
+                    --e1  .34  -> .47   entra la pagina, da sinistra
+     pausa
+     atto 2 (lui)   --g2  .53  -> .85
+                    --e2  .87  -> 1
+
+   PERCHE LA PISTA E COSI LUNGA. Il vetro deve restare LEGGIBILE mentre
+   attraversa: la sua velocita e (corsa del vetro) / (scorrimento
+   disponibile). Con questa pista viene 0,88 volte il dito sul desktop e
+   0,40 sul telefono — piu lento di chi scorre, quindi si legge. Senza il
+   blocco la fotografia si muove insieme alla pagina, le due velocita si
+   sommano e si arriva a quasi 4x: il vetro scappa. E il motivo per cui la
+   scena e sticky e non un blocco qualunque. Non accorciare la pista senza
+   rimisurare.
+
+   PERCHE LA CORSA E 102% E NON DI PIU. Al vetro basta partire col bordo
+   basso appoggiato al fondo della fotografia e finire col bordo alto fuori
+   dalla cima: poco piu dell'altezza dell'immagine. Ogni percento in piu e
+   sorpasso inutile, e si paga tutto in velocita.
+
+   SENZA SCRIPT (e con "riduci il movimento", che spegne scorrimento.tsx
+   prima che scriva data-js): niente di tutto questo. La scena resta una
+   colonna semplice, il vetro e la pagina uno sotto l'altro sopra la
+   fotografia, tutto leggibile fermo. Le regole del movimento stanno tutte
+   sotto .jm-sito7[data-js].
+   ===================================================================== */
+.jm-sito8-giornata {
+  overflow: clip;
+  padding: 118px 20px 84px;
+  color: var(--jm-ink);
+  background:
+    radial-gradient(circle at 50% 44%, color-mix(in srgb, var(--jm-accent) 7%, transparent), transparent 38%),
+    var(--jm-bg-app);
+}
+.jm-sito8-testa {
+  max-width: 960px;
+  margin: 0 auto 54px;
+  text-align: center;
+}
+.jm-sito8-testa .jm-sito-kick {
+  color: var(--jm-accent);
+  letter-spacing: .22em;
+}
+.jm-sito8-testa h2 {
+  margin-top: 14px;
+  font-family: var(--jm-font-marchio);
+  font-size: clamp(calc(48px * var(--jm-ui-scale)), 5.5vw, calc(78px * var(--jm-ui-scale)));
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+.jm-sito8-testa > p:last-child {
+  max-width: 650px;
+  margin: 20px auto 0;
+  color: var(--jm-ink-muted);
+  font-size: calc(18px * var(--jm-ui-scale));
+  line-height: 1.55;
+}
+.jm-sito8-pista { position: relative; }
+.jm-sito8-scena {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1490px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--jm-surface) 34%, transparent);
+  border-radius: var(--jm-radius-xl);
+  background: var(--jm-ink);
+  box-shadow: 0 34px 90px color-mix(in srgb, var(--jm-shadow) 24%, transparent);
+}
+.jm-sito8-persona {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 26px;
+  min-height: 560px;
+  margin: 0;
+  padding: 44px 26px;
+  overflow: hidden;
+}
+.jm-sito8-persona > img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.83) contrast(1.04) brightness(.82);
+}
+.jm-sito8-persona.donna > img { object-position: 40% 50%; }
+.jm-sito8-persona.uomo > img { object-position: 57% 43%; }
+/* Il velo che scurisce il fondo e chiude verso la giuntura. Sta DENTRO ogni
+   ritratto, non sulla scena: la figure ha un transform (data-fx) e quindi fa
+   da contesto di impilamento, percio un velo messo sulla scena finirebbe
+   sopra le pagine invece che sotto. */
+.jm-sito8-persona::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--jm-ink) 36%, transparent));
+}
+@media (min-width: 901px) {
+  .jm-sito8-persona.donna::after {
+    background:
+      linear-gradient(90deg, transparent 0 68%, color-mix(in srgb, var(--jm-ink) 38%, transparent) 100%),
+      linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--jm-ink) 36%, transparent));
+  }
+  .jm-sito8-persona.uomo::after {
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--jm-ink) 38%, transparent) 0, transparent 32% 100%),
+      linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--jm-ink) 36%, transparent));
+  }
+}
+.jm-sito8-strato { position: relative; z-index: 3; }
+.jm-sito8-vetro {
+  display: block;
+  width: min(330px, 100%);
+  margin: 0 auto;
+  padding: 17px 19px 16px;
+  border: 1px solid color-mix(in srgb, var(--jm-surface) 58%, transparent);
+  border-radius: var(--jm-radius-lg);
+  color: var(--jm-sito-su-foto);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--jm-surface) 22%, transparent), color-mix(in srgb, var(--jm-ink) 30%, transparent));
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  backdrop-filter: blur(22px) saturate(1.25);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 58%, transparent), 0 16px 38px color-mix(in srgb, var(--jm-shadow) 28%, transparent);
+}
+.jm-sito8-rec {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in srgb, var(--jm-sito-su-foto) 78%, transparent);
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.jm-sito8-rec > i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jm-accent);
+  animation: jm-sito5-registra 1.8s ease-in-out infinite;
+}
+.jm-sito8-vetro q {
+  display: block;
+  margin-top: 10px;
+  font-size: calc(16px * var(--jm-ui-scale));
+  line-height: 1.35;
+}
+.jm-sito8-onda {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 15px;
+  margin-top: 12px;
+  opacity: .85;
+}
+.jm-sito8-onda i {
+  width: 2px;
+  height: 55%;
+  border-radius: 1px;
+  background: currentColor;
+  animation: jm-sito5-onda 1.1s ease-in-out infinite alternate;
+}
+.jm-sito8-onda i:nth-child(3n) { height: 78%; animation-delay: -.3s; }
+.jm-sito8-onda i:nth-child(4n) { height: 100%; animation-delay: -.6s; }
+.jm-sito8-onda i:nth-child(5n) { height: 52%; animation-delay: -.8s; }
+.jm-sito8-pagina {
+  position: relative;
+  z-index: 2;
+  width: min(340px, 100%);
+  margin: 0 auto;
+  padding: 30px 28px 24px;
+  border: 1px solid color-mix(in srgb, var(--jm-ink) 9%, transparent);
+  border-radius: var(--jm-radius-sm);
+  color: var(--jm-ink);
+  background: var(--jm-bg-app);
+  box-shadow: 0 32px 78px color-mix(in srgb, var(--jm-shadow) 46%, transparent);
+}
+.jm-sito8-pagina::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .38;
+  background-image: radial-gradient(color-mix(in srgb, var(--jm-ink) 14%, transparent) .45px, transparent .65px);
+  background-size: 5px 5px;
+}
+.jm-sito8-pagina header,
+.jm-sito8-pagina-fondo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--jm-ink-faint);
+  font-size: calc(9px * var(--jm-ui-scale));
+  letter-spacing: .04em;
+}
+.jm-sito8-pagina header {
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--jm-line);
+}
+.jm-sito8-pagina header b {
+  color: var(--jm-ink);
+  font-family: var(--jm-font-marchio);
+  font-size: calc(15px * var(--jm-ui-scale));
+  font-weight: 400;
+}
+.jm-sito8-pagina h3 {
+  position: relative;
+  margin-top: 24px;
+  font-family: var(--jm-font-marchio);
+  font-size: calc(28px * var(--jm-ui-scale));
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -.035em;
+}
+.jm-sito8-pagina > p {
+  position: relative;
+  margin-top: 16px;
+  font-family: var(--jm-font-marchio);
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.45;
+}
+.jm-sito8-miniature {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 20px;
+}
+.jm-sito8-miniature img {
+  width: 100%;
+  height: 58px;
+  object-fit: cover;
+  border-radius: var(--jm-radius-xs);
+}
+.jm-sito8-pagina-fondo {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--jm-line);
+}
+/* I tre punti sotto la scena: tre colonne separate da un filo, come il
+   pannello del rituale nell'eroe. */
+.jm-sito8-punti {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 1490px;
+  margin: 40px auto 0;
+}
+.jm-sito8-punti > div {
+  padding: 22px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--jm-line);
+}
+.jm-sito8-punti > div:last-child { border-bottom: 0; }
+.jm-sito8-punti h3 {
+  font-size: calc(17px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+.jm-sito8-punti p {
+  margin-top: 6px;
+  color: var(--jm-ink-muted);
+  font-size: calc(14px * var(--jm-ui-scale));
+  line-height: 1.5;
+}
+.jm-sito8-chiusura {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--jm-accent);
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+@media (min-width: 901px) {
+  .jm-sito8-punti {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 56px;
+  }
+  .jm-sito8-punti > div {
+    padding: 6px 34px;
+    border-bottom: 0;
+    border-right: 1px solid var(--jm-line);
+  }
+  .jm-sito8-punti > div:last-child { border-right: 0; }
+  .jm-sito8-punti h3 { font-size: calc(19px * var(--jm-ui-scale)); }
+  .jm-sito8-punti p { margin-top: 9px; font-size: calc(15px * var(--jm-ui-scale)); }
+}
+@media (max-width: 900px) {
+  .jm-sito8-giornata { padding: 82px 12px 68px; }
+  .jm-sito8-testa { padding-inline: 12px; }
+  .jm-sito8-scena { grid-template-columns: 1fr; }
+  .jm-sito8-persona { min-height: 480px; padding: 36px 18px; }
+  .jm-sito8-vetro { width: min(262px, 100%); padding: 15px 17px 14px; }
+  /* Bloccata, la scena e alta quanto lo schermo e ogni meta e circa 380px:
+     la pagina deve starci dentro lasciando vedere chi c'e sotto, quindi qui
+     e piu compatta di quella del desktop. */
+  .jm-sito8-pagina {
+    width: min(266px, 100%);
+    padding: 16px 17px 13px;
+  }
+  .jm-sito8-pagina header,
+  .jm-sito8-pagina-fondo { font-size: calc(8.5px * var(--jm-ui-scale)); }
+  .jm-sito8-pagina header { padding-bottom: 10px; }
+  .jm-sito8-pagina header b { font-size: calc(13px * var(--jm-ui-scale)); }
+  .jm-sito8-pagina h3 { margin-top: 13px; font-size: calc(18px * var(--jm-ui-scale)); }
+  .jm-sito8-pagina > p { margin-top: 9px; font-size: calc(11.5px * var(--jm-ui-scale)); line-height: 1.38; }
+  .jm-sito8-miniature { gap: 4px; margin-top: 11px; }
+  .jm-sito8-miniature img { height: 36px; }
+  .jm-sito8-pagina-fondo { margin-top: 10px; padding-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jm-sito8-rec > i,
+  .jm-sito8-onda i { animation: none; }
+}
+
+/* ---- e adesso il movimento, solo con lo script acceso ---- */
+.jm-sito7[data-js] .jm-sito8-pista { height: 420svh; }
+.jm-sito7[data-js] .jm-sito8-scena {
+  position: sticky;
+  top: 24px;
+  height: calc(100svh - 48px);
+  /* i due atti, in fila */
+  --g1: clamp(0, calc(var(--s) / .32), 1);
+  --e1: clamp(0, calc((var(--s) - .34) / .13), 1);
+  --g2: clamp(0, calc((var(--s) - .53) / .32), 1);
+  --e2: clamp(0, calc((var(--s) - .87) / .13), 1);
+  /* quanto la pagina sta fuori dal suo lato prima di entrare */
+  --fuori: 660px;
+}
+.jm-sito7[data-js] .jm-sito8-persona {
+  display: block;
+  min-height: 0;
+  padding: 0;
+}
+/* Lo strato e alto quanto la fotografia ed e lui a scorrere: la corsa del
+   vetro resta in percentuale dell'immagine su qualunque schermo, e il
+   ritaglio di .jm-sito8-persona lo fa sparire sul bordo alto, non per
+   dissolvenza anticipata. */
+.jm-sito7[data-js] .jm-sito8-strato {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.jm-sito7[data-js] .jm-sito8-persona.donna .jm-sito8-strato {
+  transform: translateY(calc(40% - var(--g1) * 102%));
+  opacity: clamp(0, calc((1 - var(--g1)) / .07), 1);
+}
+.jm-sito7[data-js] .jm-sito8-persona.uomo .jm-sito8-strato {
+  transform: translateY(calc(40% - var(--g2) * 102%));
+  opacity: clamp(0, calc((1 - var(--g2)) / .07), 1);
+}
+.jm-sito7[data-js] .jm-sito8-vetro {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+}
+.jm-sito7[data-js] .jm-sito8-persona.donna .jm-sito8-vetro { left: 28px; }
+.jm-sito7[data-js] .jm-sito8-persona.uomo .jm-sito8-vetro { right: 28px; }
+/* La pagina entra dal suo lato e si ferma al centro della SUA fotografia.
+   La centratura sta in `transform` insieme all'entrata (non in `translate`)
+   perche qui nessuna regola di scorrimento tocca il transform di questo
+   elemento: lo scrive solo questa. */
+.jm-sito7[data-js] .jm-sito8-pagina {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-50% + var(--dx, 0px)), -50%);
+  margin: 0;
+  will-change: transform, opacity;
+}
+.jm-sito7[data-js] .jm-sito8-persona.donna .jm-sito8-pagina {
+  rotate: -1.6deg;
+  opacity: var(--e1);
+  --dx: calc((1 - var(--e1)) * (0px - var(--fuori)));
+}
+.jm-sito7[data-js] .jm-sito8-persona.uomo .jm-sito8-pagina {
+  rotate: 1.5deg;
+  opacity: var(--e2);
+  --dx: calc((1 - var(--e2)) * var(--fuori));
+}
+@media (max-width: 900px) {
+  .jm-sito7[data-js] .jm-sito8-pista { height: 460svh; }
+  .jm-sito7[data-js] .jm-sito8-scena {
+    top: 12px;
+    height: calc(100svh - 24px);
+    --fuori: 420px;
+  }
+  .jm-sito7[data-js] .jm-sito8-persona { position: absolute; inset-inline: 0; height: 50%; }
+  .jm-sito7[data-js] .jm-sito8-persona.donna { top: 0; }
+  .jm-sito7[data-js] .jm-sito8-persona.uomo { bottom: 0; }
+  .jm-sito7[data-js] .jm-sito8-persona.donna .jm-sito8-vetro { left: 16px; }
+  .jm-sito7[data-js] .jm-sito8-persona.uomo .jm-sito8-vetro { right: 16px; }
 }
