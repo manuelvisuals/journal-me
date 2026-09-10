@@ -4575,31 +4575,52 @@ textarea.jm-sito-in {
 
    Il desktop non si tocca: tutto questo vive dentro max-width: 900px. */
 @media (max-width: 900px) {
-  .jm-sito7[data-js] .jm-sito8-pista { height: 460svh; }
+  /* L'ATTO DELL'UOMO NON C'E (11 settembre 2026, Manuel: "e uguale a quella
+     con la donna e diventa noioso vederne due di fila"). Sul desktop i due
+     ritratti si vedono INSIEME e il confronto e il senso della sezione: due
+     giornate diverse, stessa app. Sul telefono, uno dopo l'altro, il
+     confronto non si vede — si vede solo la stessa cosa due volte, e la
+     seconda dura quanto la prima. Quindi qui si racconta una giornata sola.
+     Il ritratto dell'uomo resta nell'HTML (lo legge chi arriva da una
+     ricerca, e sul desktop c'e): sparisce solo dallo schermo stretto. */
+  .jm-sito8-persona.uomo { display: none; }
+  /* Con un atto solo la pista si accorcia quasi della meta: quello che prima
+     era scorrimento per il secondo atto sarebbe diventato scorrimento a
+     vuoto. */
+  .jm-sito7[data-js] .jm-sito8-pista { height: 210svh; }
   .jm-sito7[data-js] .jm-sito8-scena {
     top: 12px;
     height: calc(100svh - 24px);
     --fuori: 420px;
-    /* I DUE ATTI, RITEMPRATI PER IL TELEFONO. Sul desktop i due ritratti si
-       vedono insieme, quindi fra un atto e l'altro basta una pausa di sei
-       centesimi. Qui invece uno deve USCIRE e l'altro ENTRARE, e in mezzo la
-       card di lei ha bisogno di restare ferma abbastanza da leggerla. Percio
-       gli atti si stringono un po' e la pausa si allarga:
+    /* UN ATTO SOLO:
 
-         lei    vetro   0    -> .28      card  .30 -> .41
-         la card di lei resta ferma      .41 -> .48
-         il cambio                       .48 -> .58
-         lui    vetro  .56 -> .86        card  .88 -> 1
+         vetro   0   -> .72       (esce dallo schermo gia a .37)
+         card   .40  -> .72       (entra mentre il vetro sta uscendo)
+         la card resta ferma      .72 -> 1
 
-       Velocita del vetro rimisurata su questi numeri: 0,85 volte il dito nel
-       primo atto e 0,80 nel secondo. Sotto 1 (cioe piu lento di chi scorre,
-       la condizione per leggerlo) e sotto lo 0,88 del desktop. */
-    --g1: clamp(0, calc(var(--s) / .28), 1);
-    --e1: clamp(0, calc((var(--s) - .30) / .11), 1);
-    --g2: clamp(0, calc((var(--s) - .56) / .30), 1);
-    --e2: clamp(0, calc((var(--s) - .88) / .12), 1);
-    /* il cambio della guardia, un numero solo per tutti e due */
-    --cambio: clamp(0, calc((var(--s) - .48) / .10), 1);
+       Le due finestre si sovrappongono APPOSTA. Il vetro impiega .72 di pista
+       a completare la sua corsa, ma dallo schermo se ne va molto prima — a
+       .37, cioe quando ha fatto il 51% del cammino: il resto lo fa fuori dal
+       ritaglio. Facendo partire la card alla fine di quel viaggio ci sarebbero
+       stati trecento pixel di scorrimento con la sola fotografia ferma. Cosi
+       invece una cosa esce mentre l'altra entra.
+
+       LA VELOCITA DEL VETRO e (corsa) / (pixel di scorrimento della sua
+       finestra) e deve restare sotto 1, cioe piu lento del dito: e la
+       condizione per riuscire a leggerlo mentre passa. Qui la corsa e il 102%
+       di una fotografia alta 828px (845px) e la finestra e .72 di 1406px di
+       scorrimento (1012px): viene 0,83. Sotto lo 0,88 del desktop, che Manuel
+       ha gia approvato. Il conto torna uguale sull'iPhone SE, perche tutte e
+       due le misure sono in svh. Chi tocca la pista o questi numeri lo
+       rifaccia.
+
+       L'ultimo quarto e la card ferma al centro: serve per leggerla prima che
+       la scena si stacchi. */
+    --g1: clamp(0, calc(var(--s) / .72), 1);
+    --e1: clamp(0, calc((var(--s) - .40) / .32), 1);
+    /* Non c'e piu nessun cambio della guardia: la card di lei non deve
+       sparire, resta lei fino alla fine. */
+    --cambio: 0;
   }
   /* `isolation` non e un vezzo: la card ha z-index 2 e la fotografia 0, e
      finche i due ritratti non fanno contesto per conto loro quei numeri si
@@ -5668,20 +5689,44 @@ textarea.jm-sito-in {
      finiva sotto. Qui si parte DA la barra, non da un numero a caso. */
   .jm-sito7[data-js] .jm-sito12-occhio { top: calc(var(--jm-sito-nav-h) + 20px); }
   .jm-sito7[data-js] .jm-sito12-titolo { top: calc(var(--jm-sito-nav-h) + 50px); }
+  /* LA CARTA, SUL TELEFONO, E QUADRATA (11 settembre 2026, Manuel: "le pill
+     piu quadrate cosi ci sta tutto senza sovrapporsi al telefono").
+     Era larga e bassa — schermo a sinistra, testo a destra — e a 92vw
+     copriva il telefono per intero. Girata in colonna diventa quasi un
+     quadrato (228x250 circa) e ci sta nella meta destra, di fianco alla
+     parte di telefono che si vede, non sopra. */
   .jm-sito7[data-js] .jm-sito12-carta {
-    left: 50%;
-    width: min(92vw, 460px);
-    gap: 16px;
-    padding: 14px 16px;
+    left: 68%;
+    flex-direction: column;
+    align-items: flex-start;
+    width: min(58vw, 252px);
+    gap: 12px;
+    padding: 15px 16px 16px;
     border-radius: 20px;
+    /* La corsa si accorcia: dal 112% al 30% invece che all'8%. Salendo fino
+       all'8% la carta finiva addosso al titolo, che qui e piu in basso che
+       sul desktop perche sotto c'e la barra fissa. E la dissolvenza in uscita
+       si chiude prima (0.58 -> 0.80), quando il bordo alto della carta e
+       ancora sotto il cartiglio. */
+    top: calc(112% - 82% * var(--u, 0));
+    opacity: min(
+      clamp(0, calc(var(--u, 0) * 4.5455), 1),
+      calc(1 - clamp(0, calc((var(--u, 0) - .58) * 4.5455), 1))
+    );
   }
-  .jm-sito12-schermo { --scala: .38; }
-  .jm-sito12-carta > p { font-size: calc(14px * var(--jm-ui-scale)); }
+  .jm-sito12-schermo { --scala: .40; }
+  .jm-sito12-carta > p { font-size: calc(13.5px * var(--jm-ui-scale)); line-height: 1.45; }
+  /* IL TELEFONO PIU PICCOLO E PIU IN BASSO. A 102vw era alto 567px e il suo
+     bordo alto arrivava a 169px, cioe dentro la fascia del titolo (126-205):
+     "Si scrive da sola" si leggeva sopra una scocca nera. A 72vw e alto
+     400px, e portandolo al 58% dell'altezza il bordo alto scende a 294. Se
+     ne vede anche meno — 141px invece di 200 — ed e quello che libera la
+     meta destra per la carta. */
   .jm-sito7[data-js] .jm-sito12-telefono {
-    --fuori: 102vw;
+    --fuori: 72vw;
     --dentro: min(66vw, calc((100svh - 210px) * .7069));
     left: calc(0% + 50% * var(--centro));
-    top: calc(50% + 3.5% * var(--corsa) + 6.5% * var(--centro));
+    top: calc(58% + 3.5% * var(--corsa) - 0.5% * var(--centro));
   }
 }
 /* Chi ha chiesto meno movimento vede la scena ferma sull'ultimo quadro:
