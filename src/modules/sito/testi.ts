@@ -124,8 +124,8 @@ export type Testi = {
   };
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
-  /** La fotografia dello schermo vero, dopo i tre passi. */
-  prova: { etichetta: string; titolo: string };
+  /** La frase che chiude la scena bloccata, quando il telefono torna al centro. */
+  prova: { finale: string };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
   cassaforte: {
     etichetta: string;
@@ -423,8 +423,7 @@ const it: Testi = {
     ],
   },
   prova: {
-    etichetta: "La pagina di giovedi",
-    titolo: "Ecco com'e fatta, davvero.",
+    finale: "Il tuo diario, sempre con te.",
   },
   mentre: {
     etichetta: "Mentre fai altro",
@@ -863,8 +862,7 @@ const en: Testi = {
     ],
   },
   prova: {
-    etichetta: "Thursday's page",
-    titolo: "This is what it actually looks like.",
+    finale: "Your journal, always with you.",
   },
   mentre: {
     etichetta: "While you do something else",
