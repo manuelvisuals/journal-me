@@ -148,8 +148,12 @@ export function SettingsClient({
   const regaloInGioco = useRegaloInGioco();
   const statoOspite = useStatoOspite(regaloInGioco);
   // Il premium comprato senza email (mockup premium-senza-password, B1):
-  // vive sul telefono; la riga Piano lo dice, e "Backup ogni notte" e la
-  // porta all'email (C1).
+  // vive sul telefono; la riga Piano lo dice, e "Copia nel cloud" e la
+  // porta all'email (C1). Fino al 10 settembre 2026 quella riga si
+  // chiamava "Backup ogni notte": un backup notturno non esiste in nessuna
+  // riga di codice (niente cron, niente vercel.json). Quello che esiste e
+  // meglio e si chiama con il suo nome: la copia cifrata nel cloud, che si
+  // aggiorna a ogni modifica.
   const premiumSulDispositivo = usePremiumDispositivo();
   const finoDispositivo = premiumSulDispositivo ? premiumDispositivoFino() : null;
   const plan = usePlan();
@@ -656,10 +660,10 @@ export function SettingsClient({
                       />
                     )}
                     <SetRow
-                      title={t("Backup ogni notte")}
-                      value={t("Spento")}
+                      title={t("Copia nel cloud")}
+                      value={t("Spenta")}
                       desc={t(
-                        "Con una email. Chiuso a chiave, su tutti i tuoi dispositivi.",
+                        "Con una email. Chiusa a chiave, su tutti i tuoi dispositivi.",
                       )}
                       onClick={() => router.push("/login")}
                     />
@@ -672,7 +676,7 @@ export function SettingsClient({
                       <SetRow
                         title={t("Passa a Premium")}
                         value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
-                        desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, backup ogni notte, i recap.")}`}
+                        desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
                         onClick={() => openPremiumWall("aiSummary")}
                       />
                     )}

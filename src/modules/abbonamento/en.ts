@@ -31,7 +31,7 @@ export const ABBONAMENTO: Record<string, string> = {
   "Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.": "Then it renews automatically at {prezzo} {periodo}. Cancel anytime.",
   "Si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.": "Renews automatically at {prezzo} {periodo}. Cancel anytime.",
   "Voce, titolo, sintesi, aree, persone, recap.": "Voice, title, summary, areas, people, recaps.",
-  "Chiuso a chiave, con backup ogni notte.": "Locked with your key, backed up every night.",
+  "Chiuso a chiave, la copia nel cloud si aggiorna da sola.": "Locked with your key, the cloud copy updates itself.",
   "all'anno": "per year",
   "alla settimana": "per week",
   "al giorno": "per day",

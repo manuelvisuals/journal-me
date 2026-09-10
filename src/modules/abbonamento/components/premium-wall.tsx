@@ -115,7 +115,7 @@ const FEATURES: { t: string; p: string }[] = [
   },
   {
     t: "Su tutti i dispositivi",
-    p: "Chiuso a chiave, con backup ogni notte.",
+    p: "Chiuso a chiave, la copia nel cloud si aggiorna da sola.",
   },
 ];
 

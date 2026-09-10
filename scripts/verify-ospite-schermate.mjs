@@ -149,7 +149,7 @@ let semeA = null;
   check("04 Impostazioni: 'Dove sono le mie giornate' con 'Solo su questo dispositivo'", /Dove sono le mie giornate/.test(testo) && /Solo su questo dispositivo/.test(testo));
   check("04 Impostazioni: 'AI in regalo' dice il conto vero letto dal server: 10 giornate su 10", /AI in regalo\s*\n?\s*10 giornate su 10/.test(testo), testo.match(/AI in regalo[\s\S]{0,40}/)?.[0]?.replace(/\s+/g, " "));
   check("04 Impostazioni: 'Passa a Premium' con '14 giorni gratis' e il prezzo dopo", /Passa a Premium/.test(testo) && /14 giorni gratis/.test(testo) && /Poi .*al mese/.test(testo));
-  check("04 Impostazioni: 'Ho gia un account' e 'Backup ogni notte: Spento' (la porta all'email, C1)", /Ho gia un account/.test(testo) && /Backup ogni notte[\s\S]{0,160}Spento/.test(testo) && !/Accedi al tuo account/.test(testo), testo.match(/Backup ogni notte[\s\S]{0,30}/)?.[0]?.replace(/\s+/g, " "));
+  check("04 Impostazioni: 'Ho gia un account' e 'Copia nel cloud: Spenta' (la porta all'email, C1)", /Ho gia un account/.test(testo) && /Copia nel cloud[\s\S]{0,160}Spenta/.test(testo) && !/Accedi al tuo account/.test(testo), testo.match(/Copia nel cloud[\s\S]{0,30}/)?.[0]?.replace(/\s+/g, " "));
   check("04 Impostazioni: la parola 'Locale' non compare", !/\bLocale\b/.test(testo));
 
   await page.getByText("AI in regalo").first().click();

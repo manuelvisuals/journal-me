@@ -204,12 +204,8 @@ export default function BenvenutoPage() {
             router.replace("/app");
           }}
         >
-          {t("Inizia a scrivere")}
+          {t("Continua")}
         </button>
-        <button type="button" className="jm-benv-vedi" onClick={() => setDifferenze(true)}>
-          {t("Vedi tutte le differenze")}
-        </button>
-        {differenze && <FoglioDifferenze onClose={() => setDifferenze(false)} />}
       </main>
     );
   }

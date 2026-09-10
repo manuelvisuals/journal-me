@@ -58,7 +58,7 @@ const DINAMICHE = {
     "Racconti e basta",
     "Voce, titolo, sintesi, aree, persone, recap.",
     "Su tutti i dispositivi",
-    "Chiuso a chiave, con backup ogni notte.",
+    "Chiuso a chiave, la copia nel cloud si aggiorna da sola.",
     "al mese",
     "all'anno",
     "alla settimana",

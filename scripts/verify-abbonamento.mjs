@@ -456,7 +456,7 @@ const NEGOZIO = {
   await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
   await page.getByText(/Premium fino al/).first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
   const imp = await page.locator("main").innerText();
-  check("ospite premium: Impostazioni dice 'Premium fino al ...', 'Backup ogni notte: Spento', 'Gestisci abbonamento'; niente 'Passa a Premium'", /Premium fino al/.test(imp) && /Backup ogni notte/.test(imp) && /Gestisci abbonamento/.test(imp) && !/Passa a Premium/.test(imp), imp.replace(/\s+/g, " ").slice(0, 200));
+  check("ospite premium: Impostazioni dice 'Premium fino al ...', 'Copia nel cloud: Spenta', 'Gestisci abbonamento'; niente 'Passa a Premium'", /Premium fino al/.test(imp) && /Copia nel cloud/.test(imp) && /Gestisci abbonamento/.test(imp) && !/Passa a Premium/.test(imp), imp.replace(/\s+/g, " ").slice(0, 200));
 
   // L'AI lavora da premium: nessuna giornata del regalo spesa, ai_usage senza regalo.
   const giornatePrima = sb.tab("braccialetto_giornate").length;
