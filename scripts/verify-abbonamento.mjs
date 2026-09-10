@@ -28,6 +28,7 @@
 //   APPLE_IAP_ISSUER_ID=00000000-finto-issuer APPLE_IAP_PRIVATE_KEY="$(cat scripts/lib/apple-chiave-finta.txt)"
 //   SUPABASE_SERVICE_ROLE_KEY=finto OPENAI_API_KEY=finto ./node_modules/.bin/next dev -p 3100
 // poi: node scripts/verify-abbonamento.mjs
+import { createHash } from "node:crypto";
 import { chromium } from "playwright-core";
 import { AppleFinto, OpenAIFinto, SupabaseFintoServer, jwsFinto } from "./lib/finti-server.mjs";
 import { SupabaseFinto, jwtFinto, montaSupabaseFinto, UTENTE_ID } from "./lib/supabase-finto.mjs";
@@ -38,6 +39,9 @@ const MENSILE = "com.manuelvisuals.journalme.premium.mensile";
 const ANNUALE = "com.manuelvisuals.journalme.premium.annuale";
 const BUNDLE = "com.manuelvisuals.dayalogue";
 const ALTRO_UTENTE = "00000000-0000-4000-8000-000000000002";
+
+/** Lo stesso hash che il server calcola sul braccialetto (lib/server/ospite.ts). */
+const hashFinto = (s) => createHash("sha256").update(s, "utf8").digest("hex");
 
 const results = [];
 function check(name, ok, extra = "") {
@@ -400,10 +404,18 @@ const NEGOZIO = {
   sb.regalo.annuale_attivo = false;
 }
 
-/* ================= 9. Premium SENZA email: l'ospite compra con il foglio di Apple =================
-   Mockup premium-senza-password (risposte di Manuel: B1 C1 D1), migration
-   025: il premium vive sul braccialetto del telefono; l'email arriva dopo,
-   e allora il premium passa all'account (adotta_braccialetto). */
+/* ================= 9. PREMIUM VUOLE UN ACCOUNT =================
+   Manuel, 10 settembre 2026 (mockup MOCKUP-riga-abbonamento.html). Fino a
+   ieri questa sezione pretendeva il contrario: l'ospite comprava dal foglio
+   di Apple senza email e il premium restava sul braccialetto (migration
+   025). Adesso no. Quello che si vende e la copia cifrata nel cloud e il
+   diario su tutti i dispositivi: senza un account non c'e dove metterlo.
+
+   Quindi: all'ospite il muro non mostra un prezzo, mostra la porta
+   dell'email; /api/apple/verifica senza gettone risponde 401; una route
+   premium con il solo braccialetto risponde 401. Resta l'adozione: chi
+   aveva comprato senza email (prima del 10 settembre) ritrova il suo
+   premium sul profilo appena entra. */
 {
   sb.regalo.annuale_attivo = false;
   // Un dispositivo OSPITE: modalita locale, nessuna sessione, il negozio finto.
@@ -438,66 +450,54 @@ const NEGOZIO = {
 
   await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
   await page.getByText("Passa a Premium").first().waitFor({ state: "visible", timeout: 30_000 });
+  const impPrima = await page.locator("main").innerText();
+  check("ospite: nelle Impostazioni il ripristino porta all'account, non a Apple", /Ho gia un abbonamento/.test(impPrima) && !/Ripristina acquisti/.test(impPrima), impPrima.replace(/\s+/g, " ").slice(0, 160));
   await page.getByText("Passa a Premium").first().click();
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 });
-  await page.locator(".jm-wall-scheda[data-prodotto]").first().waitFor({ state: "visible", timeout: 15_000 });
+  await page.waitForTimeout(800);
   const muro = await page.locator(".jm-wall").innerText();
-  check("ospite: il muro ha la scheda Mensile e NON 'Ho gia un account' (D1)", /Mensile/.test(muro) && !/Ho gia un account/.test(muro), muro.replace(/\s+/g, " ").slice(0, 100));
+  check("ospite: il muro NON mostra nessuna scheda di prezzo", (await page.locator(".jm-wall-scheda").count()) === 0, String(await page.locator(".jm-wall-scheda").count()));
+  check("ospite: il muro dice perche serve un account", /Premium ha bisogno di un account/.test(muro), muro.replace(/\s+/g, " ").slice(0, 140));
+  check("ospite: il tasto pieno e 'Entra con la tua email'", /Entra con la tua email/.test(muro));
+  check("ospite: il ripristino c'e, e si chiama 'Ho gia un abbonamento'", /Ho gia un abbonamento/.test(muro));
   await page.locator(".jm-wall .btn-primary").click();
-  await page.locator(".jm-cong").waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-  check("ospite: dopo 'Prova gratis' si apre direttamente il foglio di Apple (compra) e poi il benvenuto premium, nessun login", (await page.evaluate(() => window.__jmNegozioFinto.__chiamate.some((c) => c.m === "compra"))) && (await page.locator(".jm-cong").count()) === 1 && !page.url().includes("/login"));
-  const ver = api.filter((a) => a.path === "/api/apple/verifica");
-  check("ospite: /api/apple/verifica chiamata SENZA gettone e CON il braccialetto", ver.length === 1 && ver[0].auth === null && typeof ver[0].braccialetto === "string", JSON.stringify(ver[0] ?? null));
-  const br = sb.tab("braccialetti").find((b) => b.apple_original_transaction_id === "3000");
-  check("ospite: il server ha scritto premium sul BRACCIALETTO (plan, scadenza, transazione), non su un profilo", !!br && br.plan === "premium" && br.plan_source === "apple" && !sb.tab("profiles").some((p) => p.apple_original_transaction_id === "3000"), JSON.stringify(br ?? null));
-  check("ospite: la transazione e finita (finisci) dopo la risposta del server", await page.evaluate(() => window.__jmNegozioFinto.__chiamate.some((c) => c.m === "finisci" && c.transactionId === "3001")));
-  check("ospite: il dispositivo ricorda la scadenza (jm.premium.dispositivo)", Boolean(await page.evaluate(() => localStorage.getItem("jm.premium.dispositivo"))));
-  await page.locator(".jm-cong button, .jm-cong .btn-primary").first().click().catch(() => {});
-  await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
-  await page.getByText(/Premium fino al/).first().waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
-  const imp = await page.locator("main").innerText();
-  check("ospite premium: Impostazioni dice 'Premium fino al ...', 'Copia nel cloud: Spenta', 'Gestisci abbonamento'; niente 'Passa a Premium'", /Premium fino al/.test(imp) && /Copia nel cloud/.test(imp) && /Gestisci abbonamento/.test(imp) && !/Passa a Premium/.test(imp), imp.replace(/\s+/g, " ").slice(0, 200));
-
-  // L'AI lavora da premium: nessuna giornata del regalo spesa, ai_usage senza regalo.
-  const giornatePrima = sb.tab("braccialetto_giornate").length;
-  const stato = await fetch(BASE + "/api/ospite/stato", { headers: { "x-jm-braccialetto": ver[0].braccialetto } }).then((r) => r.json());
-  check("ospite premium: /api/ospite/stato dice premiumFino", typeof stato.premiumFino === "string", JSON.stringify(stato));
-  const rAI = await fetch(BASE + "/api/process-entry", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": ver[0].braccialetto }, body: JSON.stringify({ transcript: "Una giornata da premium senza email." }) });
-  check("ospite premium: una route AI risponde 200 e NON spende una giornata del regalo", rAI.status === 200 && sb.tab("braccialetto_giornate").length === giornatePrima, String(rAI.status));
-  await new Promise((r) => setTimeout(r, 2000)); // logAiUsage e "void": scrive dopo la risposta
-  const usoPremium = sb.tab("ai_usage").filter((u) => u.braccialetto_id === br.id);
-  check("ospite premium: ai_usage ha la riga col braccialetto e regalo=false (non entra nel tetto)", usoPremium.length >= 1 && usoPremium.every((u) => u.regalo === false), JSON.stringify(usoPremium[0] ?? null));
-  const rRecap = await fetch(BASE + "/api/recap/generate", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": ver[0].braccialetto }, body: JSON.stringify({}) });
-  check("ospite premium: anche il Recap (requirePremium) accetta il braccialetto premium (non 402)", rRecap.status !== 402 && rRecap.status !== 401, String(rRecap.status));
-  const rRecapNo = await fetch(BASE + "/api/recap/generate", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": "braccialetto-che-non-esiste-000000000000" }, body: JSON.stringify({}) });
-  check("un braccialetto senza premium sul Recap: 402", rRecapNo.status === 402, String(rRecapNo.status));
-
-  // La notifica di Apple sul braccialetto: EXPIRED -> free.
-  const notifica = (uuid, tipo, sottotipo, t) => JSON.stringify({ signedPayload: jwsFinto({ notificationType: tipo, subtype: sottotipo, notificationUUID: uuid, data: { environment: "Sandbox", bundleId: BUNDLE, signedTransactionInfo: jwsFinto(t) } }) });
-  apple.transazioni.set("3002", { transactionId: "3002", originalTransactionId: "3000", productId: MENSILE, bundleId: BUNDLE, environment: "Sandbox", expiresDate: Date.now() - 1000, type: "Auto-Renewable Subscription" });
-  const rN = await fetch(BASE + "/api/apple/notifiche", { method: "POST", headers: { "Content-Type": "application/json" }, body: notifica("uuid-ospite-scaduto", "EXPIRED", "VOLUNTARY", { transactionId: "3002", originalTransactionId: "3000", productId: MENSILE }) });
-  const jN = await rN.json();
-  check("notifica EXPIRED sul braccialetto: applicata, il braccialetto torna free", rN.status === 200 && jN.applicata === true && jN.dove === "dispositivo" && br.plan === "free", JSON.stringify(jN));
-  const statoDopo = await fetch(BASE + "/api/ospite/stato", { headers: { "x-jm-braccialetto": ver[0].braccialetto } }).then((r) => r.json());
-  check("dopo la scadenza /api/ospite/stato non dice piu premiumFino", statoDopo.premiumFino === null, JSON.stringify(statoDopo));
+  await page.waitForTimeout(1500);
+  check("ospite: il tasto porta al login e NON apre il foglio di Apple", page.url().includes("/login") && !(await page.evaluate(() => window.__jmNegozioFinto.__chiamate.some((c) => c.m === "compra"))), page.url());
+  check("ospite: /api/apple/verifica non e mai stata chiamata", api.filter((a) => a.path === "/api/apple/verifica").length === 0);
+  check("ospite: niente scadenza ricordata sul telefono (jm.premium.dispositivo)", !(await page.evaluate(() => localStorage.getItem("jm.premium.dispositivo"))));
   check("ospite: zero errori console", errors.length === 0, errors.slice(0, 2).join(" | "));
+
+  // Il server, senza gettone, non scrive premium da nessuna parte.
+  const braccialettoFinto = "banco-braccialetto-senza-email-000000000000";
+  const rV0 = await fetch(BASE + "/api/apple/verifica", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": braccialettoFinto }, body: JSON.stringify({ transactionId: "3001" }) });
+  check("verifica senza gettone: 401, premium non si attiva senza account", rV0.status === 401, String(rV0.status));
+  check("verifica senza gettone: niente premium scritto sul braccialetto", !sb.tab("braccialetti").some((b) => b.apple_original_transaction_id === "3000"));
+  const rR0 = await fetch(BASE + "/api/recap/generate", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": braccialettoFinto }, body: JSON.stringify({}) });
+  check("una route premium col solo braccialetto: 401 (serve l'account)", rR0.status === 401, String(rR0.status));
+  const stato0 = await fetch(BASE + "/api/ospite/stato", { headers: { "x-jm-braccialetto": braccialettoFinto } }).then((r) => r.json());
+  check("/api/ospite/stato non parla piu di premium sul dispositivo", stato0.premiumFino === undefined, JSON.stringify(stato0));
 
   // L'adozione: l'ospite (di nuovo premium, rinnovato) mette l'email. Il
   // braccialetto si lega all'account e il premium passa al profilo.
-  Object.assign(br, { plan: "premium", plan_source: "apple", current_period_end: new Date(fraUnMese).toISOString(), apple_original_transaction_id: "3000", apple_product_id: MENSILE, apple_environment: "Sandbox" });
+  // Si finge una riga vecchia: un premium comprato senza email prima del 10
+  // settembre 2026, rimasto sul braccialetto. E' l'unico modo in cui una
+  // riga cosi puo esistere oggi, e deve tornare alla persona.
+  const br = { id: "br-vecchio-0001", segreto_hash: hashFinto(braccialettoFinto), user_id: null, plan: "premium", plan_source: "apple", current_period_end: new Date(fraUnMese).toISOString(), apple_original_transaction_id: "3000", apple_product_id: MENSILE, apple_environment: "Sandbox" };
+  sb.tab("braccialetti").push(br);
   const NUOVO_UTENTE = "00000000-0000-4000-8000-000000000009";
   const TOKEN_NUOVO = jwtFinto(exp, NUOVO_UTENTE);
   sb.utenti.set(TOKEN_NUOVO, { id: NUOVO_UTENTE, email: "nuovo@dayalogue.test" });
-  const rA = await fetch(BASE + "/api/ospite/adotta", { method: "POST", headers: { Authorization: `Bearer ${TOKEN_NUOVO}`, "x-jm-braccialetto": ver[0].braccialetto } });
+  const rA = await fetch(BASE + "/api/ospite/adotta", { method: "POST", headers: { Authorization: `Bearer ${TOKEN_NUOVO}`, "x-jm-braccialetto": braccialettoFinto } });
   const jA = await rA.json();
   const profNuovo = sb.tab("profiles").find((p) => p.user_id === NUOVO_UTENTE);
   check("adozione: /api/ospite/adotta lega il braccialetto all'account e sposta il premium sul profilo", rA.status === 200 && jA.premium_spostato === true && br.user_id === NUOVO_UTENTE && profNuovo?.plan === "premium" && profNuovo?.apple_original_transaction_id === "3000" && br.plan === "free", JSON.stringify({ jA, profNuovo, br }));
-  const rA2 = await fetch(BASE + "/api/ospite/adotta", { method: "POST", headers: { Authorization: `Bearer ${TOKEN_NUOVO}`, "x-jm-braccialetto": ver[0].braccialetto } });
+  const rA2 = await fetch(BASE + "/api/ospite/adotta", { method: "POST", headers: { Authorization: `Bearer ${TOKEN_NUOVO}`, "x-jm-braccialetto": braccialettoFinto } });
   const jA2 = await rA2.json();
   check("adozione ripetuta: niente da spostare, nessun errore", rA2.status === 200 && jA2.premium_spostato === false, JSON.stringify(jA2));
-  // La transazione ora e del profilo: un braccialetto che prova a prendersela riceve 409.
-  const rV = await fetch(BASE + "/api/apple/verifica", { method: "POST", headers: { "Content-Type": "application/json", "x-jm-braccialetto": "altro-telefono-senza-email-0000000000000" }, body: JSON.stringify({ transactionId: "3001" }) });
-  check("una transazione gia di un account non torna su un braccialetto: 409", rV.status === 409, String(rV.status));
+  // La transazione ora e del profilo: un ALTRO account che prova a
+  // prendersela riceve 409 (e la strada e "entra con quello").
+  const rV = await fetch(BASE + "/api/apple/verifica", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${TOKEN}` }, body: JSON.stringify({ transactionId: "3001" }) });
+  check("una transazione gia di un account non passa a un altro account: 409", rV.status === 409, String(rV.status));
   await ctx.close();
 }
 

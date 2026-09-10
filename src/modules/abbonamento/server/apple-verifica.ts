@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminClient, requireUser } from "@/lib/server/entitlement";
-import { braccialettoDaSegreto, segretoDalla } from "@/lib/server/ospite";
 import {
   corpoNonVerificato,
   pianoDaTransazione,
@@ -23,29 +22,27 @@ import {
  * altro (chi ripristina con un account diverso da quello con cui ha
  * comprato) si risponde 409 e si dice quale strada c'e: entrare con quello.
  *
- * SENZA ACCOUNT (4 settembre 2026, mockup premium-senza-password, B1):
- * l'ospite compra con il foglio di Apple e basta. Se non c'e un gettone ma
- * c'e il braccialetto (x-jm-braccialetto), il premium si scrive sul
- * BRACCIALETTO (migration 025). Quando la persona mettera una email,
- * adotta_braccialetto lo portera sull'account. Una transazione gia legata a
- * un profilo non torna su un braccialetto (409: e di un account, entra con
- * quello); una gia su un ALTRO braccialetto lo lascia (nuovo telefono
- * senza email, ripristino con lo stesso Apple ID): l'ultimo vince.
+ * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026). Dal 4 settembre
+ * questa route accettava anche il solo braccialetto e scriveva il premium
+ * sul BRACCIALETTO (migration 025): si comprava senza email. Adesso no.
+ * L'abbonamento vende la copia cifrata nel cloud e il diario su tutti i
+ * dispositivi: senza un account non c'e dove metterlo, e chi paga si
+ * ritroverebbe un premium legato a un telefono. Quindi qui serve il
+ * gettone, e senza si risponde 401: e il client a mandare la persona al
+ * login PRIMA di aprire il foglio di Apple, cosi non si prendono soldi per
+ * una cosa che non si puo consegnare.
+ *
+ * Chi aveva gia comprato senza email non perde niente: la riga sul
+ * braccialetto resta e adotta_braccialetto la sposta sul profilo al primo
+ * accesso. E se ripristina da qui con l'account, il ramo qui sotto libera
+ * quella riga e scrive il premium sul profilo.
  *
  * Il piano si scrive SOLO qui e nelle notifiche di Apple: mai dal client.
  */
 export async function POST(req: NextRequest) {
-  const conGettone = (req.headers.get("authorization") ?? "").startsWith("Bearer ");
-  let userId: string | null = null;
-  if (conGettone) {
-    const user = await requireUser(req);
-    if (user instanceof NextResponse) return user;
-    userId = user.userId;
-  }
-  const segreto = segretoDalla(req);
-  if (!userId && !segreto) {
-    return NextResponse.json({ error: "Missing bearer token" }, { status: 401 });
-  }
+  const user = await requireUser(req);
+  if (user instanceof NextResponse) return user;
+  const userId = user.userId;
 
   const supabase = getAdminClient();
   if (!supabase) {
@@ -115,43 +112,29 @@ export async function POST(req: NextRequest) {
     current_period_end: scadenza,
   };
 
-  // La stessa transazione su un braccialetto: si libera (l'indice e unico).
-  // Vale sia per l'ospite che cambia telefono, sia per l'ospite che ha
-  // appena messo l'email e ripristina: da ora il premium sta sul profilo.
+  // La stessa transazione ferma su un braccialetto (comprata prima del 10
+  // settembre 2026, quando si poteva comprare senza email): si libera, che
+  // l'indice e unico, e il premium passa al profilo. E il ripristino di chi
+  // aveva comprato da ospite e ora ha messo l'email.
   const { data: suBraccialetto } = await supabase
     .from("braccialetti")
     .select("id")
     .eq("apple_original_transaction_id", originale)
     .maybeSingle();
 
-  if (userId) {
-    if (suBraccialetto) {
-      await supabase
-        .from("braccialetti")
-        .update({ plan: "free", plan_source: null, current_period_end: null, apple_original_transaction_id: null, apple_product_id: null, apple_environment: null })
-        .eq("id", suBraccialetto.id);
-    }
-    const { error } = await supabase.from("profiles").upsert({ user_id: userId, ...campi }, { onConflict: "user_id" });
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  } else {
-    const braccialettoId = await braccialettoDaSegreto(segreto as string, null, { crea: true });
-    if (!braccialettoId) return NextResponse.json({ error: "Cannot read braccialetti" }, { status: 500 });
-    if (suBraccialetto && suBraccialetto.id !== braccialettoId) {
-      await supabase
-        .from("braccialetti")
-        .update({ plan: "free", plan_source: null, current_period_end: null, apple_original_transaction_id: null, apple_product_id: null, apple_environment: null })
-        .eq("id", suBraccialetto.id);
-    }
-    const { error } = await supabase.from("braccialetti").update(campi).eq("id", braccialettoId);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (suBraccialetto) {
+    await supabase
+      .from("braccialetti")
+      .update({ plan: "free", plan_source: null, current_period_end: null, apple_original_transaction_id: null, apple_product_id: null, apple_environment: null })
+      .eq("id", suBraccialetto.id);
   }
+  const { error } = await supabase.from("profiles").upsert({ user_id: userId, ...campi }, { onConflict: "user_id" });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({
     plan: piano,
     productId: t.productId,
     expiresAt: scadenza,
     environment: t.environment ?? null,
-    // Dove e finito: "account" o "dispositivo" (il braccialetto).
-    dove: userId ? "account" : "dispositivo",
   });
 }

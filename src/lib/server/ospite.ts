@@ -25,6 +25,13 @@ import {
  * cerca (o si crea) la riga in `braccialetti`. Il server non sa chi e la
  * persona: sa solo "questo braccialetto ha usato N giornate su M".
  *
+ * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026): il braccialetto
+ * porta il REGALO, non l'abbonamento. Fino a ieri un braccialetto poteva
+ * avere un premium sopra (migration 025) e passava di qui senza contare
+ * niente; adesso premium si legge solo dal profilo. La riga sul
+ * braccialetto resta dov'e e adotta_braccialetto la porta sull'account
+ * appena la persona mette l'email.
+ *
  * L'ordine delle decisioni:
  *   1. c'e un gettone valido e il piano e premium  -> dentro, senza contare;
  *   2. c'e un braccialetto                          -> si chiede al database
@@ -154,23 +161,6 @@ export async function braccialettoDaSegreto(
   return nuova.id as string;
 }
 
-/**
- * Il premium che vive sul BRACCIALETTO (migration 025: comprato dall'ospite
- * con il foglio di Apple, senza email). Torna la scadenza se e valido.
- */
-export async function premiumDelBraccialetto(braccialettoId: string): Promise<string | null> {
-  const admin = getAdminClient();
-  if (!admin) return null;
-  const { data } = await admin
-    .from("braccialetti")
-    .select("plan, current_period_end")
-    .eq("id", braccialettoId)
-    .maybeSingle();
-  if (!data) return null;
-  const riga = data as { plan?: string | null; current_period_end?: string | null };
-  return pianoEffettivo(riga) === "premium" ? (riga.current_period_end ?? null) : null;
-}
-
 /** Il piano EFFETTIVO dell'utente (scadenza compresa), o null se non si legge. */
 async function pianoDi(userId: string): Promise<string | null> {
   const admin = getAdminClient();
@@ -221,12 +211,6 @@ export async function requireOspiteOPremium(
   const braccialettoId = await braccialettoDaSegreto(segreto, userId, { crea: true });
   if (!braccialettoId) {
     return NextResponse.json({ error: "Cannot read braccialetti" }, { status: 500 });
-  }
-
-  // Il premium comprato senza email vive sul braccialetto: e un premium
-  // a tutti gli effetti, non conta giornate e non entra nel tetto.
-  if (await premiumDelBraccialetto(braccialettoId)) {
-    return { chi: { userId, braccialettoId, regalo: false }, tipo: "premium" };
   }
 
   const speso = await spesoRegaloMeseUsd();
@@ -319,8 +303,6 @@ export async function statoOspite(req: NextRequest): Promise<NextResponse> {
     usate,
     rimaste: Math.max(0, regalo.giornatePerOspite - usate),
     oggi: esito.gia === true,
-    // Il premium sul braccialetto (migration 025): la scadenza, o null.
-    premiumFino: await premiumDelBraccialetto(id),
   });
 }
 

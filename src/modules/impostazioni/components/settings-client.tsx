@@ -45,7 +45,7 @@ import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
 import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
 import { ospiteAttivo } from "@/lib/ospite/flag";
-import { premiumDispositivoFino, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
+import { useStatoOspite } from "@/lib/ospite/stato";
 import { useRegaloInGioco } from "@/lib/capabilities";
 import { useNomeMostrato, useProfilo, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
@@ -154,15 +154,17 @@ export function SettingsClient({
   // c'e anche con un account non premium, sullo stesso braccialetto.
   const regaloInGioco = useRegaloInGioco();
   const statoOspite = useStatoOspite(regaloInGioco);
-  // Il premium comprato senza email (mockup premium-senza-password, B1):
-  // vive sul telefono; la riga Piano lo dice, e "Copia nel cloud" e la
-  // porta all'email (C1). Fino al 10 settembre 2026 quella riga si
-  // chiamava "Backup ogni notte": un backup notturno non esiste in nessuna
-  // riga di codice (niente cron, niente vercel.json). Quello che esiste e
-  // meglio e si chiama con il suo nome: la copia cifrata nel cloud, che si
-  // aggiorna a ogni modifica.
-  const premiumSulDispositivo = usePremiumDispositivo();
-  const finoDispositivo = premiumSulDispositivo ? premiumDispositivoFino() : null;
+  // "Copia nel cloud" e la porta all'email. Fino al 10 settembre 2026 quella
+  // riga si chiamava "Backup ogni notte": un backup notturno non esiste in
+  // nessuna riga di codice (niente cron, niente vercel.json). Quello che
+  // esiste ed e meglio si chiama con il suo nome: la copia cifrata nel
+  // cloud, che si aggiorna a ogni modifica.
+  //
+  // PREMIUM VUOLE UN ACCOUNT (10 settembre 2026): qui c'erano tre rami per
+  // il "premium sul dispositivo" (la riga Piano, Gestisci abbonamento, il
+  // tasto Passa a Premium che spariva). Non servono piu: un ospite premium
+  // non esiste, quindi da ospite le voci dell'abbonamento sono sempre
+  // quelle di chi non ha ancora comprato.
   const plan = usePlan();
   const dettaglioPiano = useDettaglioPiano();
   const themeId = useThemeId();
@@ -659,25 +661,11 @@ export function SettingsClient({
                       value={accountName}
                       onClick={() => setPanel("nome")}
                     />
-                    {premiumSulDispositivo ? (
-                      <SetRow
-                        title={t("Piano")}
-                        value={
-                          finoDispositivo
-                            ? t("Premium fino al {data}", {
-                                data: formatDate(new Date(finoDispositivo), { day: "numeric", month: "long" }),
-                              })
-                            : t("Premium")
-                        }
-                        chevron={false}
-                      />
-                    ) : (
-                      <SetRow
-                        title={t("AI in regalo")}
-                        value={valoreRegalo(t, statoOspite)}
-                        onClick={() => setPanel("regalo")}
-                      />
-                    )}
+                    <SetRow
+                      title={t("AI in regalo")}
+                      value={valoreRegalo(t, statoOspite)}
+                      onClick={() => setPanel("regalo")}
+                    />
                     <SetRow
                       title={t("Copia nel cloud")}
                       value={t("Spenta")}
@@ -691,25 +679,21 @@ export function SettingsClient({
                       value={t("Solo su questo dispositivo")}
                       onClick={() => setPanel("where")}
                     />
-                    {!premiumSulDispositivo && (
-                      <SetRow
-                        title={t("Passa a Premium")}
-                        value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
-                        desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
-                        onClick={() => openPremiumWall("aiSummary")}
-                      />
-                    )}
-                    {negozioDisponibile() && premiumSulDispositivo && (
-                      <SetRow
-                        title={t("Gestisci abbonamento")}
-                        value={t("Apple")}
-                        onClick={() => void gestisciAbbonamento()}
-                      />
-                    )}
+                    <SetRow
+                      title={t("Passa a Premium")}
+                      value={t("{n} giorni gratis", { n: String(PREMIUM_PROVA_GIORNI) })}
+                      desc={`${t("Poi")} ${PREMIUM_PRICE_AMOUNT} ${t(PREMIUM_PRICE_PERIOD)}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
+                      onClick={() => openPremiumWall("aiSummary")}
+                    />
+                    {/* Il ripristino, da ospite, comincia dal ritrovare il
+                        proprio account: e li che sta l'abbonamento. Apple
+                        vuole che la voce sia sempre raggiungibile, e questa
+                        lo e; quello che cambia e dove porta. */}
                     {negozioDisponibile() && (
                       <SetRow
-                        title={t("Ripristina acquisti")}
-                        onClick={() => void ripristina()}
+                        title={t("Ho gia un abbonamento")}
+                        desc={t("Entra con la tua email e ripristina.")}
+                        onClick={() => router.push("/login")}
                       />
                     )}
                     <SetRow
@@ -930,16 +914,6 @@ export function SettingsClient({
               <span className="v">{valoreRegalo(t, statoOspite) ?? "…"}</span>
             </button>
           )}
-          {ospite && premiumSulDispositivo && (
-            <div className="jm-st-rrow">
-              <span className="k">{t("Piano")}</span>
-              <span className="v">
-                {finoDispositivo
-                  ? t("Premium fino al {data}", { data: formatDate(new Date(finoDispositivo), { day: "numeric", month: "long" }) })
-                  : t("Premium")}
-              </span>
-            </div>
-          )}
           {!isLocal && <ConsumiRailRow onOpen={() => setPanel("consumi")} />}
           <div className="jm-st-rrow">
             <span className="k">{t("Versione")}</span>
@@ -950,7 +924,7 @@ export function SettingsClient({
             <span className="v">{BUILD_INFO}</span>
           </div>
 
-          {ospite && !premiumSulDispositivo && (
+          {ospite && (
             <button
               type="button"
               className="jm-st-out"

@@ -22,7 +22,6 @@ import { registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 import { apiFetch } from "@/lib/api";
 import { isNative } from "@/lib/native/platform";
 import { forcePlanRefresh, setPlanNow } from "@/lib/plan";
-import { aggiornaStatoOspite, setPremiumDispositivo } from "@/lib/ospite/stato";
 import { PRODOTTI_IOS, type ProdottoIos } from "@/lib/pricing";
 
 export type ProdottoNegozio = {
@@ -172,6 +171,8 @@ export type EsitoAcquisto =
   | { esito: "premium"; expiresAt: string | null }
   | { esito: "annullato" }
   | { esito: "in_attesa" }
+  /** Il server non ha visto un account: premium non si puo attivare senza. */
+  | { esito: "serve_account"; messaggio: string }
   | { esito: "errore"; messaggio: string };
 
 /**
@@ -207,7 +208,12 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     }
   }
   if (resp.status === 401) {
-    return { esito: "errore", messaggio: "Il server non ha riconosciuto questo telefono: riapri l'app e tocca Ripristina acquisti." };
+    // PREMIUM VUOLE UN ACCOUNT (10 settembre 2026): il server risponde 401 a
+    // chi non ha un gettone. Non dovrebbe succedere, perche il muro manda al
+    // login PRIMA di aprire il foglio di Apple; se succede lo stesso (un
+    // gettone scaduto proprio in quell'istante) l'acquisto e comunque al
+    // sicuro presso Apple e si recupera entrando e ripristinando.
+    return { esito: "serve_account", messaggio: "Per attivare premium serve il tuo account: entra con la tua email e tocca Ripristina acquisti. L'acquisto e al sicuro presso Apple." };
   }
   if (resp.status === 409) {
     return { esito: "errore", messaggio: "Questo abbonamento e legato a un altro account: entra con quello." };
@@ -223,18 +229,10 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     }
     return { esito: "errore", messaggio: m };
   }
-  const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null; dove?: string };
+  const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null };
   if (dati.plan === "premium") {
-    if (dati.dove === "dispositivo") {
-      // Comprato senza email (mockup premium-senza-password, B1): il
-      // premium vive sul braccialetto del telefono. Si ricorda la scadenza
-      // e si rilegge lo stato, che ora dice premiumFino.
-      setPremiumDispositivo(dati.expiresAt ?? null);
-      void aggiornaStatoOspite();
-    } else {
-      setPlanNow("premium");
-      void forcePlanRefresh();
-    }
+    setPlanNow("premium");
+    void forcePlanRefresh();
     return { esito: "premium", expiresAt: dati.expiresAt ?? null };
   }
   return { esito: "errore", messaggio: "Questo abbonamento e scaduto: puoi riattivarlo da qui." };

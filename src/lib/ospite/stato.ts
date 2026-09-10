@@ -29,63 +29,30 @@ export type StatoOspite = {
   rimaste: number;
   /** La giornata di oggi e gia coperta (una riga esiste): l'AI lavora anche a quota zero (R4). */
   oggi: boolean;
-  /** Il premium comprato senza email, sul braccialetto (migration 025): la scadenza, o null. */
-  premiumFino: string | null;
 };
 
 /**
- * IL PREMIUM SUL DISPOSITIVO (mockup premium-senza-password, B1). Il server
- * lo dice in /api/ospite/stato e in /api/apple/verifica; qui si ricorda la
- * scadenza in localStorage per non far lampeggiare i lucchetti all'avvio
- * e per non chiamare la rete solo per saperlo. La decisione vera resta al
- * server (402), come per il piano dell'account (plan.ts).
+ * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026). Qui viveva il
+ * "premium sul dispositivo": la scadenza di un abbonamento comprato senza
+ * email, ricordata in localStorage (`jm.premium.dispositivo`) perche i
+ * lucchetti non lampeggiassero all'avvio. Quel premium non esiste piu:
+ * l'abbonamento sta sul profilo e si legge da plan.ts come per tutti.
+ *
+ * La chiave vecchia si cancella una volta sola, alla prima apertura dopo
+ * l'aggiornamento: un telefono che se la tiene non accende piu niente (chi
+ * la leggeva non c'e), ma lasciare in giro una scadenza che nessuno guarda
+ * e il modo migliore per confondere chi legge il codice fra un anno. Chi
+ * aveva comprato senza email ritrova il suo premium mettendo la sua email:
+ * adotta_braccialetto (migration 025) lo porta sul profilo.
  */
-const CHIAVE_PREMIUM = "jm.premium.dispositivo";
-let premiumFinoInMemoria: string | null | undefined;
+const CHIAVE_PREMIUM_VECCHIA = "jm.premium.dispositivo";
 
-function leggiPremiumCache(): string | null {
-  if (premiumFinoInMemoria !== undefined) return premiumFinoInMemoria;
+function dimenticaPremiumVecchio(): void {
   try {
-    premiumFinoInMemoria = window.localStorage.getItem(CHIAVE_PREMIUM);
+    window.localStorage.removeItem(CHIAVE_PREMIUM_VECCHIA);
   } catch {
-    premiumFinoInMemoria = null;
+    // niente memoria: non c'e niente da dimenticare
   }
-  return premiumFinoInMemoria;
-}
-
-/** Scrive la scadenza (o null) e avvisa chi ascolta. */
-export function setPremiumDispositivo(fino: string | null): void {
-  premiumFinoInMemoria = fino;
-  try {
-    if (fino) window.localStorage.setItem(CHIAVE_PREMIUM, fino);
-    else window.localStorage.removeItem(CHIAVE_PREMIUM);
-  } catch {
-    // niente memoria: vale per questa sessione
-  }
-  avvisa();
-}
-
-/** La scadenza del premium sul dispositivo, se e ancora valido. */
-export function premiumDispositivoFino(): string | null {
-  if (typeof window === "undefined") return null;
-  const f = leggiPremiumCache();
-  if (!f) return null;
-  const t = Date.parse(f);
-  return Number.isFinite(t) && t > Date.now() ? f : null;
-}
-
-export function premiumDispositivo(): boolean {
-  return premiumDispositivoFino() !== null;
-}
-
-/** Reattivo: vero finche il premium sul dispositivo e valido. */
-export function usePremiumDispositivo(): boolean {
-  return useSyncExternalStore(ascolta, premiumDispositivo, () => false);
-}
-
-/** Al logout / cambio account: il dispositivo non ha piu un premium suo. */
-export function dimenticaPremiumDispositivo(): void {
-  setPremiumDispositivo(null);
 }
 
 let stato: StatoOspite | null = null;
@@ -125,16 +92,7 @@ export async function aggiornaStatoOspite(): Promise<StatoOspite | null> {
         usate: typeof j.usate === "number" ? j.usate : 0,
         rimaste: j.rimaste,
         oggi: j.oggi === true,
-        premiumFino: typeof j.premiumFino === "string" ? j.premiumFino : null,
       };
-      // Il server e la verita anche sul premium del dispositivo.
-      premiumFinoInMemoria = stato.premiumFino;
-      try {
-        if (stato.premiumFino) window.localStorage.setItem(CHIAVE_PREMIUM, stato.premiumFino);
-        else window.localStorage.removeItem(CHIAVE_PREMIUM);
-      } catch {
-        // niente memoria
-      }
       avvisa();
       return stato;
     } catch {
@@ -176,6 +134,7 @@ export function useStatoOspite(vivo: boolean): StatoOspite | null {
 }
 
 if (typeof window !== "undefined") {
+  dimenticaPremiumVecchio();
   // Il server ha appena detto "regalo finito": lo stato in tasca e vecchio.
   window.addEventListener("jm:regalo-finito", () => {
     void aggiornaStatoOspite();

@@ -173,11 +173,20 @@ NON si calcola qui: `src/lib/ospite/stato.ts` chiede a /api/ospite/stato.
 Il pannello `where` col locale "puro" (jm.ospite = "0") tiene le parole di
 prima. Banco: `scripts/verify-ospite-schermate.mjs`.
 
-Dal 4 settembre sera (branch `premium-senza-password`): con il premium sul
-dispositivo (`usePremiumDispositivo`) la riga Piano dice "Premium fino al
-{data}", "Passa a Premium" sparisce, compaiono "Gestisci abbonamento" e
-"Ripristina acquisti"; la riga **Backup ogni notte: Spento** e la porta
-all'email (C1) e apre /login; "Ho gia un account" al posto di "Accedi".
+Dal 4 settembre sera (branch `premium-senza-password`): la riga **Copia nel
+cloud: Spenta** e la porta all'email (C1) e apre /login; "Ho gia un account"
+al posto di "Accedi". (Il nome vecchio era "Backup ogni notte": un backup
+notturno non esiste in nessuna riga di codice, e il 10 settembre 2026 la
+riga ha preso il nome della cosa che esiste davvero.)
+
+**Premium vuole un account** (Manuel, 10 settembre 2026, branch
+`premium-vuole-account`). Qui c'erano tre rami per il "premium sul
+dispositivo" (`usePremiumDispositivo`): la riga Piano che diceva "Premium
+fino al {data}", "Gestisci abbonamento", e "Passa a Premium" che spariva.
+Non ci sono piu: un ospite premium non esiste, quindi da ospite le voci
+dell'abbonamento sono sempre quelle di chi non ha ancora comprato. Al posto
+di "Ripristina acquisti" c'e **"Ho gia un abbonamento"**, che porta al login:
+per chi non ha un account, ripristinare vuol dire prima ritrovare il proprio.
 
 ## Il Recap e un modulo, e il dock lo dice senza parole (4 settembre 2026, sera)
 

@@ -265,4 +265,7 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Accendi quello che vuoi. L'ultimo acceso va nel dock.": "Turn on what you want. The last one on goes in the dock.",
   "Spegnere non cancella niente.": "Turning off deletes nothing.",
   "Nel dock": "In the dock",
+  // Premium vuole un account (10 settembre 2026): da ospite il ripristino
+  // comincia dal ritrovare il proprio account.
+  "Entra con la tua email e ripristina.": "Sign in with your email and restore.",
 };

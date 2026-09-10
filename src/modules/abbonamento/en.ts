@@ -26,6 +26,15 @@ export const ABBONAMENTO: Record<string, string> = {
   "Scarica dayalogue per iPhone": "Get dayalogue for iPhone",
   "Continua senza AI": "Continue without AI",
   "Ripristina acquisti": "Restore purchases",
+  // Premium vuole un account (10 settembre 2026): il muro visto da un ospite.
+  "Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi.":
+    "Voice, title, summary, recaps, and your diary on all your devices.",
+  "Premium ha bisogno di un account: e li che vive la copia cifrata nel cloud, ed e cosi che ti segue su tutti i dispositivi.":
+    "Premium needs an account: that is where the encrypted cloud copy lives, and it is how it follows you across devices.",
+  "Entra con la tua email": "Continue with your email",
+  "Ho gia un abbonamento": "I already have a subscription",
+  "Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.":
+    "No password: you get a six-digit code. The days you have already written come with you.",
   "Termini": "Terms",
   "Privacy": "Privacy policy",
   "Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.": "Then it renews automatically at {prezzo} {periodo}. Cancel anytime.",

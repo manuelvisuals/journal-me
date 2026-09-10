@@ -36,8 +36,7 @@ import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
 import { usePlan } from "@/lib/plan";
 import { isNative } from "@/lib/native/platform";
 import { ospiteAttivo } from "@/lib/ospite/flag";
-import { premiumDispositivoFino, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
-import { formatDate } from "@/lib/format";
+import { useStatoOspite } from "@/lib/ospite/stato";
 import { eseguiLogout } from "@/lib/auth/logout";
 import { openPremiumWall } from "@/modules/abbonamento";
 // Nome e foto li SA il modulo impostazioni (e li che si cambiano), li
@@ -52,14 +51,6 @@ import { Sheet } from "@/components/ui/sheet";
 import { useT } from "@/lib/i18n";
 
 type Account = { email: string | null; badge: string };
-
-/** La scadenza del premium sul dispositivo, gia formattata ("18 settembre"). */
-function useDettaglioPremiumDispositivo(): string | null {
-  const attivo = usePremiumDispositivo();
-  if (!attivo) return null;
-  const f = premiumDispositivoFino();
-  return f ? formatDate(new Date(f), { day: "numeric", month: "long" }) : null;
-}
 
 /**
  * Chi sei, per il pallino e per la testata del menu: l'email e il badge del
@@ -128,19 +119,17 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const locale = mode === "local";
   const ospite = locale && ospiteAttivo();
   // L'ospite (mockup premium-senza-password, 01): il sottotitolo dice il
-  // regalo che resta, o il premium sul dispositivo; il menu ha la voce
-  // Premium anche per lui, e "Ho gia un account" al posto di "Accedi".
+  // regalo che resta; il menu ha la voce Premium anche per lui, e "Ho gia
+  // un account" al posto di "Accedi". Dal 10 settembre 2026 qui non c'e piu
+  // il ramo "premium sul dispositivo": premium vuole un account, quindi un
+  // ospite premium non esiste.
   // Lo stato si chiede al server SOLO quando il menu e aperto.
   const statoOspite = useStatoOspite(ospite && open);
-  const premiumSulDispositivo = usePremiumDispositivo();
-  const finoPremium = useDettaglioPremiumDispositivo();
   // Con l'AI in regalo il testo esce dal dispositivo nel momento in cui
   // l'AI ci lavora: "non escono di qui" non sarebbe vero (divieto 7).
   const sottotitoloLocale = !ospite
     ? t("Le giornate non escono di qui")
-    : premiumSulDispositivo && finoPremium
-      ? t("Premium fino al {data}", { data: finoPremium })
-      : statoOspite && statoOspite.attivo && !statoOspite.sopraIlTetto && statoOspite.rimaste > 0
+    : statoOspite && statoOspite.attivo && !statoOspite.sopraIlTetto && statoOspite.rimaste > 0
         ? statoOspite.rimaste === 1
           ? t("1 giornata con l'AI in regalo")
           : t("{n} giornate con l'AI in regalo", { n: String(statoOspite.rimaste) })
@@ -233,7 +222,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
         <IconaIngranaggio />
         {t("Impostazioni")}
       </button>
-      {((!locale && plan !== "premium") || (ospite && !premiumSulDispositivo)) && (
+      {((!locale && plan !== "premium") || ospite) && (
         <button type="button" className={classi.i} role="menuitem" onClick={vaiPremium}>
           <IconaStella />
           {ospite ? t("Premium") : native ? t("Scopri Premium") : t("Passa a Premium")}
