@@ -281,7 +281,11 @@ export default function BenvenutoPage() {
               markWelcomeSeen();
               openPremiumWall("aiSummary");
             }}
-            disabled={starting || waiting}
+            /* Dopo il login il tasto non parte finche il piano non e NOTO
+               (10 settembre 2026): con il piano ancora sconosciuto un
+               abbonato poteva ricomprare cio che aveva gia. L'effetto qui
+               sopra, appena sa che e premium, entra da solo. */
+            disabled={starting || waiting || (postLogin && pianoNoto === null)}
           >
             {prova > 0 ? t("Prova {n}gg gratis", { n: String(prova) }) : t("Passa a premium")}
           </button>

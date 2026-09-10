@@ -7,6 +7,7 @@ import { Marchio } from "@/components/brand/marchio";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
 import { registraAccesso } from "@/lib/welcome";
+import { forcePlanRefresh } from "@/lib/plan";
 import { clearLocalMode, getStore } from "@/lib/data/store";
 import { segnaMigrazioneDaFare } from "@/lib/ospite/migrazione";
 import {
@@ -124,6 +125,13 @@ export default function LoginPage() {
     // e /benvenuto crederebbe di stare PRIMA del login. Rileggerla e
     // l'unico modo di dirle che adesso c'e un account.
     clearLocalMode();
+    // IL PIANO SI RILEGGE ADESSO (10 settembre 2026). Prima di questa riga
+    // nessuno chiedeva `profiles` dopo un accesso: il piano restava quello
+    // che si sapeva PRIMA della sessione, cioe niente. /benvenuto, che per
+    // i premium entra da sola, non poteva saperlo e mostrava il bivio a un
+    // abbonato — che da li poteva ricomprare cio che aveva gia (successo
+    // davvero, con l'account della revisione, il 10 settembre).
+    void forcePlanRefresh();
     return registraAccesso() ? "/app/benvenuto" : "/app";
   }
 

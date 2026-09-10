@@ -29,6 +29,14 @@ let plan: Plan | null = null;
 export type DettaglioPiano = { source: string | null; periodEnd: string | null };
 let dettaglio: DettaglioPiano = { source: null, periodEnd: null };
 let refreshStarted = false;
+/**
+ * Quando e stato fatto l'ultimo tentativo ANDATO A VUOTO (modalita non
+ * ancora cloud, o sessione non ancora in piedi). Serve solo a non
+ * riprovare a ogni render: il tentativo a vuoto NON deve lasciare il
+ * lucchetto chiuso per sempre, ma nemmeno diventare un martello.
+ */
+let ultimoTentativoVuoto = 0;
+const ATTESA_RITENTATIVO_MS = 1500;
 const listeners = new Set<() => void>();
 
 function emit(): void {
@@ -97,21 +105,49 @@ export function clearPlanCache(): void {
   emit();
 }
 
+/**
+ * IL TENTATIVO A VUOTO NON CHIUDE LA PORTA (bug del 10 settembre 2026).
+ *
+ * `refreshStarted` si alzava PRIMA di sapere se il piano si poteva davvero
+ * leggere, e sui due ritorni anticipati (modalita non cloud, nessuna
+ * sessione) restava alzato per sempre. Al primo avvio l'app parte ospite,
+ * qualcuno chiede il piano, il tentativo torna a vuoto — e da quel momento
+ * `profiles` non si legge PIU per tutta la vita della pagina, login
+ * compreso. Conseguenza misurata sul telefono di Manuel: un account
+ * premium (appreview@dayalogue.com, premium dall'8 settembre) e rimasto
+ * "piano sconosciuto" dopo l'accesso, /benvenuto non e entrata da sola
+ * come fa con i premium, e 45 secondi dopo il login l'app gli ha venduto
+ * un abbonamento che aveva gia.
+ *
+ * Adesso il tentativo a vuoto si annota e si puo ripetere, con un'attesa
+ * breve in mezzo perche getPlanSync() viene chiamata a ogni render.
+ */
 async function refreshPlan(): Promise<void> {
   if (refreshStarted) return;
+  if (Date.now() - ultimoTentativoVuoto < ATTESA_RITENTATIVO_MS) return;
   refreshStarted = true;
+  const aVuoto = () => {
+    refreshStarted = false;
+    ultimoTentativoVuoto = Date.now();
+  };
   // MAI in locale: si aspetta la risoluzione della modalita (sincrona nel
   // ramo locale) e il client Supabase non si costruisce nemmeno — la
   // promessa zero-rete della PR 3 vale anche qui.
   const mode = await resolveStorageMode();
-  if (mode !== "cloud") return;
+  if (mode !== "cloud") {
+    aVuoto();
+    return;
+  }
   try {
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      aVuoto();
+      return;
+    }
     const { data: profile } = await supabase
       .from("profiles")
       .select("plan, plan_source, current_period_end")
@@ -125,7 +161,9 @@ async function refreshPlan(): Promise<void> {
     // lucchetti, come il server gli rispondera 402.
     setPlan(pianoEffettivo(profile));
   } catch {
-    // rete giu o env mancanti: resta la cache (o l'ottimismo)
+    // Rete giu o env mancanti: resta la cache (o l'ottimismo), ma il
+    // prossimo giro deve poter riprovare — vedi il commento sopra.
+    aVuoto();
   }
 }
 
