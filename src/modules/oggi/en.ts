@@ -8,6 +8,7 @@
  * "chiave": "valore", — verify-i18n legge questo formato.
  */
 export const OGGI: Record<string, string> = {
+  "Cambia gli obiettivi": "Edit your goals",
   "Errore": "Error",
   "Conferma": "Confirm",
   "Continua": "Continue",
@@ -112,8 +113,6 @@ export const OGGI: Record<string, string> = {
   "Scrivi altro": "Write more",
   "Si aggiunge in fondo a quello che c'e gia": "It gets added below what is already there",
   "Con la data del {giorno} gia impostata": "With {giorno} already set as the date",
-  "Salva in Memo": "Save to Memo",
-  "Una persona, un posto, un'idea di quel giorno": "A person, a place, an idea from that day",
   "Com'e andato {giorno}?": "How was {giorno}?",
   "Raccontalo adesso: resta quel giorno,\nnon diventa oggi.": "Tell it now: it stays on that day,\nit does not become today.",
   "Racconta il {giorno}": "Tell {giorno}",
@@ -121,8 +120,6 @@ export const OGGI: Record<string, string> = {
   "Aggiunto alla giornata": "Added to the day",
   "Salvato sul {giorno}": "Saved on {giorno}",
   "Non sono riuscito a salvare. Riprova.": "I could not save it. Try again.",
-  "Salvo in Memo...": "Saving to Memo...",
-  "Salvato in Memo": "Saved to Memo",
   "Salvo le modifiche...": "Saving your changes...",
   "Salvato": "Saved",
   "Elimino la giornata...": "Deleting the day...",

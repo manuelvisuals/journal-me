@@ -1,8 +1,15 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
+
+/**
+ * Quanti fogli sono aperti adesso. Il blocco dello scorrimento si mette al
+ * primo e si toglie all'ultimo: due fogli sovrapposti non devono sbloccare
+ * la pagina quando si chiude quello sopra.
+ */
+let apertiOra = 0;
 
 /**
  * Il foglio dal basso — la primitiva di scheletro.
@@ -52,6 +59,28 @@ export function Sheet({
      coprirebbe solo sul web — nel guscio iOS la lastra nativa sta sopra
      la WebView e resterebbe accesa sopra le righe del menu. */
   useRitiraDock();
+  /* LA PAGINA DIETRO NON SCORRE (Manuel, 10 settembre 2026). Il foglio delle
+     ruote e alto cinque righe e largo meno del foglio: il dito che passava
+     accanto alla ruota non trovava niente da scorrere, il gesto saliva alla
+     pagina e sotto il velo scorreva il diario. Un foglio modale blocca lo
+     sfondo, punto: si blocca l'html (la pagina scorre li, non in un div) e
+     si riapre esattamente dov'era. */
+  useEffect(() => {
+    const el = document.documentElement;
+    if (apertiOra === 0) {
+      el.dataset.jmSheetTop = String(window.scrollY);
+      el.style.overflow = "hidden";
+    }
+    apertiOra += 1;
+    return () => {
+      apertiOra -= 1;
+      if (apertiOra > 0) return;
+      el.style.overflow = "";
+      const y = Number(el.dataset.jmSheetTop ?? "0");
+      delete el.dataset.jmSheetTop;
+      if (Number.isFinite(y)) window.scrollTo(0, y);
+    };
+  }, []);
   /* Mount flag senza setState-in-effect: stesso pattern di AppBarAzione.
      Il foglio si apre solo su un gesto, quindi in pratica e sempre gia
      montato; il flag serve solo a non toccare document sul server. */

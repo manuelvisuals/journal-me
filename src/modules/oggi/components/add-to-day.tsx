@@ -15,8 +15,12 @@
  *    saveRecording con la data forzata: l'aggiunta in coda al transcript
  *    esiste gia (`existing.transcript + SEGMENT_SEP + nuovo`);
  *  - "Racconta a voce" apre lo stesso RecordingOverlay con defaultDate;
- *  - "Salva in Memo" monta QuickCapture, lo stesso della schermata
- *    Ricorda.
+ *  - "Aggiungi dal rullino" prende le foto di quel giorno.
+ *
+ * "Salva in Memo" e stata TOLTA il 10 settembre 2026 (Manuel): un memo non
+ * e una cosa che aggiungi a una giornata, e un appunto che vive per conto
+ * suo, e ha gia la sua sezione con il suo tasto. Qui dentro portava a
+ * pensare che fosse un pezzo del giorno.
  *
  * LA VOCE NON C'E IN GRATIS, e non come tasto spento con la targhetta
  * "Premium": quello e solo un modo elegante di dire di no. Chi non ce l'ha
@@ -28,16 +32,14 @@ import { ManualWrite } from "@/modules/oggi/components/manual-write";
 import { RecordingOverlay } from "@/modules/oggi/components/recording-overlay";
 import { aggiungiDalRullino } from "@/modules/oggi/components/foto-giorno";
 import { Sheet } from "@/components/ui/sheet";
-import { QuickCapture } from "@/modules/ricorda";
 import { useCan } from "@/lib/capabilities";
 import { useStorageMode } from "@/lib/data/store";
-import { addRemember } from "@/lib/data/remembers";
 import { saveRecording } from "@/lib/actions/save-recording";
 import { compactDayDate, formatDate, parseISODate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import { toast } from "@/components/ui/toast";
 import type { DataMode } from "@/lib/data/entries";
-import type { Entry, RememberKind } from "@/lib/types";
+import type { Entry } from "@/lib/types";
 
 type Props = {
   mode: DataMode;
@@ -70,7 +72,7 @@ type Props = {
   apriVoceSegnale?: number;
 };
 
-type Sheet = "closed" | "menu" | "write" | "record" | "remember";
+type Sheet = "closed" | "menu" | "write" | "record";
 
 export function AddToDay({
   mode,
@@ -164,18 +166,6 @@ export function AddToDay({
     }
   };
 
-  const handleRemember = async (text: string, kind: RememberKind) => {
-    setSheet("closed");
-    toast.loading(t("Salvo in Memo..."));
-    try {
-      await addRemember(mode, text, kind);
-      toast.ok(t("Salvato in Memo"));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : t("Errore nel salvataggio");
-      onError(msg);
-      toast.error(msg);
-    }
-  };
 
   return (
     <>
@@ -274,37 +264,9 @@ export function AddToDay({
                 </span>
               </button>
             )}
-
-            <button
-              type="button"
-              className="jm-sheet-row"
-              onClick={() => setSheet("remember")}
-            >
-              <span className="jm-sheet-ic" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z" />
-                </svg>
-              </span>
-              <span className="jm-sheet-txt">
-                <span className="jm-sheet-t">{t("Salva in Memo")}</span>
-                <span className="jm-sheet-d">
-                  {t("Una persona, un posto, un'idea di quel giorno")}
-                </span>
-              </span>
-            </button>
         </Sheet>
       )}
 
-      {sheet === "remember" && (
-        <Sheet label={t("Salva in Memo")} onClose={() => setSheet("closed")}>
-          <div className="jm-sheet-head">{t("Salva in Memo")}</div>
-          <QuickCapture
-            mode={mode}
-            defaultKind="nota"
-            onAdd={(text, kind) => handleRemember(text, kind)}
-          />
-        </Sheet>
-      )}
 
       {sheet === "write" && (
         <ManualWrite

@@ -103,6 +103,13 @@ type Props = {
   latestRecap: { title: string; periodLabel: string } | null;
 };
 
+/**
+ * I pannelli che si possono aprire dall'indirizzo (?panel=...). Elenco
+ * chiuso: un parametro sconosciuto apre la radice, non una schermata
+ * mezza vuota.
+ */
+const PANELS_APRIBILI: readonly string[] = ["goals", "theme", "language", "textsize", "where", "moduli"];
+
 type Panel =
   | "root" | "goals" | "theme" | "where" | "language" | "textsize" | "consumi"
   | "moduli" | "nome" | "cassaforte" | "regalo";
@@ -165,7 +172,19 @@ export function SettingsClient({
   const langPref = useLangPref();
   const uiScale = useUiScale();
 
-  const [panel, setPanel] = useState<Panel>("root");
+  /**
+   * Il pannello di partenza puo arrivare dall'indirizzo: la matita accanto
+   * agli obiettivi (modulo oggi, goal-list.tsx) manda a
+   * /app/settings?panel=goals e si vuole trovare gia aperto quel pannello,
+   * non la radice con la voce da cercare. Si legge da window e non da
+   * useSearchParams di proposito: quel hook obbliga a una Suspense sopra la
+   * pagina, e qui serve solo il valore all'apertura.
+   */
+  const [panel, setPanel] = useState<Panel>(() => {
+    if (typeof window === "undefined") return "root";
+    const chiesto = new URLSearchParams(window.location.search).get("panel");
+    return chiesto && PANELS_APRIBILI.includes(chiesto) ? (chiesto as Panel) : "root";
+  });
   const [goals, setGoals] = useState<GoalDef[]>(initialGoals);
   const [entryCount, setEntryCount] = useState<number | null>(null);
   const [busy, setBusy] = useState<Busy>("idle");
