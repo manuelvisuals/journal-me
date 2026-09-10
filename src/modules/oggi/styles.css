@@ -205,100 +205,136 @@
   cursor: default;
 }
 
-.jm-metric-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  font-family: var(--font-sans);
-  color: var(--color-accent-hi);
-  font-size: calc(18px * var(--jm-ui-scale));
-  font-weight: 600;
-  text-align: center;
-  width: 60px;
-}
-
-.jm-stepper {
+/* =============================================================
+   LE RUOTE (foglio-metrica.tsx + src/components/ui/ruota.tsx)
+   Mockup MOCKUP-ruote-metriche.html, approvato il 10 settembre 2026.
+   Il foglio e la primitiva jm-sheet; qui c'e solo cio che sta dentro:
+   la testata, il numero grande, le ruote con la banda e la sfumatura,
+   i due tasti. Tutto dai token: tema, chiaro/scuro, dimensione testo.
+   ============================================================= */
+.jm-ruote-top {
   display: flex;
-  gap: calc(6px * var(--jm-space));
-  justify-content: center;
-  margin-top: calc(6px * var(--jm-space));
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 4px;
 }
-
-.jm-stepper button {
-  width: 22px;
-  height: 22px;
-  border-radius: var(--jm-radius-circle);
-  background: color-mix(in oklab, var(--color-accent) 10%, transparent);
-  color: var(--color-accent);
-  font-weight: 600;
+.jm-ruote-t {
   font-size: calc(12px * var(--jm-ui-scale));
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.jm-stepper button:hover {
-  background: color-mix(in oklab, var(--color-accent) 18%, transparent);
-}
-
-.jm-sleep-inputs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: calc(4px * var(--jm-space));
-  font-family: var(--font-sans);
-}
-
-.jm-sleep-inputs input {
-  width: 28px;
-  background: transparent;
-  border: none;
-  outline: none;
-  text-align: center;
-  font-size: calc(18px * var(--jm-ui-scale));
-  font-weight: 600;
-  color: var(--color-accent-hi);
-  padding: 0;
-}
-
-.jm-sleep-inputs .sep {
-  font-size: calc(14px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--color-ink-faint);
-  margin: 0 2px;
 }
-
-.jm-mood-picker {
+.jm-ruote-x {
+  font-family: inherit;
+  font-size: calc(15px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Il numero grande: leggero, tabulare (non balla quando cambia), con
+   l'unita piccola accanto. E il valore che stai scegliendo, non un titolo. */
+.jm-ruote-big {
+  text-align: center;
+  font-size: calc(44px * var(--jm-ui-scale));
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+  margin: 6px 0 2px;
+  min-height: calc(54px * var(--jm-ui-scale));
+}
+.jm-ruote-big small {
+  font-size: calc(16px * var(--jm-ui-scale));
+  font-weight: 500;
+  color: var(--color-ink-faint);
+  margin-left: 6px;
+}
+/* Cinque righe visibili; la sfumatura sopra e sotto e una maschera, cosi
+   vale su qualunque fondo (tema chiaro o scuro) senza dipingere niente. */
+.jm-ruote {
+  --jm-ruota-riga: calc(44px * var(--jm-ui-scale));
+  position: relative;
   display: flex;
-  gap: calc(4px * var(--jm-space));
   justify-content: center;
-  margin-top: calc(2px * var(--jm-space));
+  align-items: stretch;
+  gap: 4px;
+  height: calc(var(--jm-ruota-riga) * 5);
+  margin-top: 6px;
+  -webkit-mask-image: linear-gradient(transparent 0, #000 28%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(transparent 0, #000 28%, #000 72%, transparent 100%);
 }
-
-.jm-mood-picker .opt {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--jm-radius-circle);
+.jm-ruote-band {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 50%;
+  height: var(--jm-ruota-riga);
+  transform: translateY(-50%);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--color-ink) 6%, transparent);
+  pointer-events: none;
+}
+.jm-ruota {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  padding: calc(var(--jm-ruota-riga) * 2) 0;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  outline: none;
+}
+.jm-ruota::-webkit-scrollbar { display: none; }
+.jm-ruota-v {
+  height: var(--jm-ruota-riga);
+  line-height: var(--jm-ruota-riga);
+  scroll-snap-align: center;
+  font-size: calc(24px * var(--jm-ui-scale));
+  font-weight: 400;
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+  transition: color 120ms;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.jm-ruota-v.sel {
+  color: var(--color-ink);
+  font-weight: 500;
+}
+.jm-ruota-kg { width: calc(84px * var(--jm-ui-scale)); }
+.jm-ruota-dec { width: calc(56px * var(--jm-ui-scale)); }
+.jm-ruota-h { width: calc(70px * var(--jm-ui-scale)); }
+.jm-ruota-m { width: calc(84px * var(--jm-ui-scale)); }
+.jm-ruota-mood { width: min(100%, 260px); }
+.jm-ruota-mood .jm-ruota-v {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(18px * var(--jm-ui-scale));
-  opacity: 0.45;
-  transition: opacity 100ms, transform 100ms, background-color 100ms;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
+  gap: 14px;
 }
-
-.jm-mood-picker .opt:hover {
-  opacity: 0.85;
+.jm-ruota-faccia { font-size: calc(30px * var(--jm-ui-scale)); line-height: 1; }
+.jm-ruota-parola { font-size: calc(17px * var(--jm-ui-scale)); min-width: 5.5em; text-align: left; }
+.jm-ruote-unit {
+  align-self: center;
+  color: var(--color-ink-faint);
+  font-size: calc(15px * var(--jm-ui-scale));
+  padding-top: 4px;
 }
+.jm-ruote-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+/* I due tasti sono .btn-primary e .btn-ghost, che di fabbrica sono larghi
+   tutta la riga: qui "Togli" e stretto e "Fatto" prende il resto. */
+.jm-ruote-fatto { flex: 1 1 auto; width: auto; min-height: calc(50px * var(--jm-ui-scale)); }
+.jm-ruote-togli { flex: 0 0 auto; width: auto; padding: 0 20px; min-height: calc(50px * var(--jm-ui-scale)); }
 
 .jm-mood-picker .opt.on {
   opacity: 1;
