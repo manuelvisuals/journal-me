@@ -41,6 +41,22 @@ export type Testi = {
     ctaSecondo: string;
     sottoCta: string;
   };
+  /**
+   * L'eroe della home VIVA, rifatto il 10 settembre 2026 sull'audit di un
+   * revisore esterno approvato da Manuel. Sta a parte da `eroe` perche
+   * quello lo usano ancora gli archivi /v1../v6, che devono restare
+   * identici. Il titolo invece e lo stesso e si legge da `eroe`.
+   */
+  eroeVivo: {
+    etichetta: string;
+    sotto: string;
+    cta: string;
+    ctaSecondo: string;
+    /** Il micro-lettore nella scena: non e un tasto, e il rituale reso visibile. */
+    quando: string;
+    domanda: string;
+    garanzie: string[];
+  };
   rituale: {
     etichetta: string;
     titolo: string;
@@ -108,6 +124,8 @@ export type Testi = {
   };
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
+  /** La fotografia dello schermo vero, dopo i tre passi. */
+  prova: { etichetta: string; titolo: string };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
   cassaforte: {
     etichetta: string;
@@ -204,6 +222,16 @@ const it: Testi = {
     cta: "Inizia stasera",
     ctaSecondo: "Come funziona",
     sottoCta: "Nessun account per iniziare · Cifrato sul tuo dispositivo",
+  },
+  eroeVivo: {
+    etichetta: "Il tuo diario, a voce",
+    sotto:
+      "Parla per due minuti. Dayalogue trasforma la tua voce in una pagina privata, pronta da ritrovare.",
+    cta: "Provalo stasera",
+    ctaSecondo: "Guarda come funziona",
+    quando: "Stasera \u00b7 2 minuti",
+    domanda: "\u201cCom'e andata oggi?\u201d",
+    garanzie: ["Nessun account per iniziare", "Cifrato sul tuo dispositivo"],
   },
   rituale: {
     etichetta: "Un piccolo rituale",
@@ -393,6 +421,10 @@ const it: Testi = {
       { titolo: "Si scrive da sola", testo: "Titolo, sintesi, persone, impegni. Se un nome non e chiaro, te lo chiede." },
       { titolo: "Rileggi quando vuoi", testo: "Il mese, una giornata sola, o il recap che arriva da se." },
     ],
+  },
+  prova: {
+    etichetta: "La pagina di giovedi",
+    titolo: "Ecco com'e fatta, davvero.",
   },
   mentre: {
     etichetta: "Mentre fai altro",
@@ -631,6 +663,16 @@ const en: Testi = {
     ctaSecondo: "How it works",
     sottoCta: "No account to begin · Encrypted on your device",
   },
+  eroeVivo: {
+    etichetta: "Your journal, spoken",
+    sotto:
+      "Talk for two minutes. Dayalogue turns your voice into a private page, ready to return to.",
+    cta: "Try it tonight",
+    ctaSecondo: "See how it works",
+    quando: "Tonight \u00b7 2 minutes",
+    domanda: "\u201cHow did today go?\u201d",
+    garanzie: ["No account to start", "Encrypted on your device"],
+  },
   rituale: {
     etichetta: "A small ritual",
     titolo: "Speak. Remember. Return.",
@@ -819,6 +861,10 @@ const en: Testi = {
       { titolo: "It writes itself", testo: "Headline, summary, people, tasks. If a name is unclear, it asks." },
       { titolo: "Read back whenever", testo: "The month, a single day, or the recap that arrives on its own." },
     ],
+  },
+  prova: {
+    etichetta: "Thursday's page",
+    titolo: "This is what it actually looks like.",
   },
   mentre: {
     etichetta: "While you do something else",

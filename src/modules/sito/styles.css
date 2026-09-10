@@ -912,7 +912,9 @@
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe {
     display: block;
     height: 100svh;
-    min-height: 700px;
+    /* Su uno schermo corto (iPhone SE) 700px fissi spingevano la pilla sotto
+       il bordo: il minimo non puo superare lo schermo. */
+    min-height: min(700px, 100svh);
     max-height: 860px;
     margin: 0;
     padding: 0;
@@ -923,15 +925,19 @@
     position: relative;
     z-index: 4;
     display: block;
-    padding: 88px 27px 0;
-    text-align: left;
+    /* Centrato e a tutta larghezza (Manuel, 10 settembre 2026: "sfrutta
+       meglio lo spazio"), con lo stesso margine laterale del resto della
+       pagina. Il velo qui sotto e stato allargato di conseguenza: il testo
+       adesso passa anche sopra di lei e deve restare leggibile. */
+    padding: 84px 24px 0;
+    text-align: center;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe-t {
-    max-width: 340px;
+    max-width: none;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-eyebrow {
-    max-width: 25ch;
-    margin-bottom: 14px;
+    max-width: 26ch;
+    margin: 0 auto 14px;
     font-size: calc(10px * var(--jm-ui-scale));
     line-height: 1.55;
     letter-spacing: .22em;
@@ -940,22 +946,23 @@
      per questo il titolo non ha un tetto in em ma la larghezza del testo. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-h1 {
     max-width: none;
-    font-size: calc(38px * var(--jm-ui-scale));
-    line-height: 1;
+    font-size: calc(40px * var(--jm-ui-scale));
+    line-height: 1.02;
     letter-spacing: -.045em;
+    text-wrap: balance;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-sotto {
-    max-width: 180px; /* in px, non in ch: finisce dove iniziano i capelli */
-    margin-top: 14px;
+    max-width: 30ch;
+    margin: 14px auto 0;
     color: var(--jm-ink-muted);
     font-size: calc(14px * var(--jm-ui-scale));
     line-height: 1.38;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-cta {
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: 20px;
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe .jm-sito-b {
     min-width: 0;
@@ -995,13 +1002,36 @@
     -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14%);
     mask-image: linear-gradient(180deg, transparent 0, #000 14%);
   }
-  /* Il velo copre solo la fascia del testo (in alto e a sinistra); sul
-     viso arriva a zero, altrimenti lei sbiadisce come su una tenda. */
+  /* Il velo copre la fascia del testo, che adesso e centrata e larga quanto
+     la pagina: quindi in alto vale su tutta la larghezza e si spegne appena
+     sotto le parole, dove ricomincia lei. Un velo uniforme la sbiadirebbe
+     come dietro una tenda. */
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe::before {
     z-index: 1;
     background:
-      linear-gradient(180deg, var(--jm-bg-app) 0, color-mix(in srgb, var(--jm-bg-app) 92%, transparent) 22%, color-mix(in srgb, var(--jm-bg-app) 45%, transparent) 30%, transparent 40%),
-      linear-gradient(90deg, color-mix(in srgb, var(--jm-bg-app) 92%, transparent) 0, color-mix(in srgb, var(--jm-bg-app) 80%, transparent) 32%, color-mix(in srgb, var(--jm-bg-app) 24%, transparent) 48%, transparent 58%);
+      linear-gradient(180deg,
+        var(--jm-bg-app) 0,
+        color-mix(in srgb, var(--jm-bg-app) 96%, transparent) 30%,
+        color-mix(in srgb, var(--jm-bg-app) 78%, transparent) 40%,
+        color-mix(in srgb, var(--jm-bg-app) 44%, transparent) 50%,
+        color-mix(in srgb, var(--jm-bg-app) 18%, transparent) 58%,
+        transparent 66%);
+  }
+  /* LA GIUNTURA COL BLOCCO SOTTO. L'eroe ha overflow: hidden, quindi tutto
+     quello che arriva al suo bordo basso viene tranciato di netto: l'ombra
+     della pilla e il fondo della fotografia. Sotto comincia una sezione
+     dello stesso colore, percio si vedeva solo la riga del taglio. Questa
+     fascia porta l'eroe al colore esatto del blocco successivo prima che il
+     taglio arrivi, e la cucitura sparisce. Sta sotto la pilla (livello 6) e
+     sopra fotografia, velo e telefono. */
+  .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito2-eroe::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 5;
+    height: 110px;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 0, var(--jm-bg-app) 72%);
   }
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-telefono-foto {
     position: absolute;
@@ -1017,7 +1047,7 @@
   .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
     position: absolute;
     right: 10px;
-    bottom: 0;
+    bottom: 22px;
     left: 10px;
     z-index: 6;
     margin: 0;
@@ -1026,23 +1056,32 @@
     padding: 18px 10px 14px;
     isolation: isolate;
     border: 1px solid color-mix(in srgb, var(--jm-surface) 72%, transparent);
-    border-bottom: 0;
-    border-radius: 26px 26px 0 0;
+    border-radius: 26px;
     /* Lo stesso vetro del desktop (min-width: 1100px, piu sotto): fondo
        quasi trasparente, sfocatura forte, riflesso in alto. Richiesta di
        Manuel dell'8 settembre 2026. Dove backdrop-filter manca resta il
        fondo pieno di prima, sennò il testo si legge sopra la foto. */
     background: color-mix(in srgb, var(--jm-surface) 90%, transparent);
-    box-shadow: 0 -12px 36px color-mix(in srgb, var(--jm-shadow) 12%, transparent);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--jm-shadow) 14%, transparent);
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale {
-      background: linear-gradient(145deg, color-mix(in srgb, var(--jm-surface) 86%, transparent), color-mix(in srgb, var(--jm-surface) 74%, transparent));
-      -webkit-backdrop-filter: blur(30px) saturate(1.3);
-      backdrop-filter: blur(30px) saturate(1.3);
+      /* Vetro vero: la lastra deve lasciar passare cio che ha sotto, non
+         essere una scheda bianca. Fondo molto piu trasparente, sfocatura
+         alta e due luci sui bordi (in alto la riflessione, in fondo il
+         rimbalzo): e quello che fa leggere la superficie come vetro invece
+         che come plastica. */
+      background: linear-gradient(150deg,
+        color-mix(in srgb, var(--jm-surface) 64%, transparent),
+        color-mix(in srgb, var(--jm-surface) 46%, transparent));
+      -webkit-backdrop-filter: blur(34px) saturate(1.6);
+      backdrop-filter: blur(34px) saturate(1.6);
       box-shadow:
-        inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 95%, transparent),
-        0 -18px 48px color-mix(in oklab, var(--jm-shadow) 16%, transparent);
+        inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 92%, transparent),
+        inset 0 -1px 0 color-mix(in srgb, var(--jm-surface) 42%, transparent),
+        /* corta apposta: l'eroe taglia a 22px sotto la pilla, e un'ombra
+           lunga finirebbe tranciata di netto proprio sulla giuntura */
+        0 6px 18px color-mix(in oklab, var(--jm-shadow) 16%, transparent);
     }
     .jm-sito4:not(.jm-sito4-archivio-v5) .jm-sito4-rituale::before {
       content: "";
@@ -4384,6 +4423,14 @@ textarea.jm-sito-in {
 @media (max-width: 900px) {
   .jm-sito8-giornata { padding: 82px 12px 68px; }
   .jm-sito8-testa { padding-inline: 12px; }
+  /* Due righe, non tre: "Parli tu." e "Dayalogue la scrive." (in inglese
+     "You talk." / "Dayalogue writes it."). Col minimo del clamp a 48px la
+     seconda riga non ci stava e andava a capo dentro se stessa. */
+  .jm-sito8-testa h2 {
+    font-size: clamp(calc(26px * var(--jm-ui-scale)), 11.2vw, calc(46px * var(--jm-ui-scale)));
+    line-height: 1.04;
+    text-wrap: balance;
+  }
   .jm-sito8-scena { grid-template-columns: 1fr; }
   .jm-sito8-persona { min-height: 480px; padding: 36px 18px; }
   .jm-sito8-vetro { width: min(262px, 100%); padding: 15px 17px 14px; }
@@ -4856,3 +4903,514 @@ textarea.jm-sito-in {
 /* Con "riduci il movimento" scorrimento.tsx non accende data-js: resta tutto
    il blocco qui sopra spento, la scena e una colonna ferma e si legge tutto.
    Non serve altro. */
+
+
+/* =====================================================================
+   L'EROE CINEMATOGRAFICO (jm-sito10) — 10 settembre 2026.
+
+   Nasce dall'audit di un revisore esterno, approvato da Manuel. Sei mosse,
+   tutte sulla home viva e SOLO li: il selettore e `.jm-sito4.jm-sito7`, non
+   `.jm-sito4:not(.jm-sito4-archivio-v5)` come nel resto del foglio. Quella
+   negazione prende anche /v4 e /v6, che sono `.jm-sito4` senza la classe di
+   v5: con lei l'eroe scuro era comparso pure negli archivi e /v6 aveva perso
+   il telefono fotografato. `jm-sito7` la scrive home.tsx solo quando NON sta
+   servendo l'archivio, quindi e l'unico nome che dice "la home viva".
+   Gli archivi /v1../v6 restano quelli di prima, testi compresi (`eroe` in
+   testi.ts non si tocca, il nuovo sta in `eroeVivo`).
+
+   1. La promessa e il meccanismo, non l'orario. "La mattina" apriva una
+      domanda temporale senza aggiungere valore; adesso si dice cosa fa il
+      prodotto: la voce diventa una pagina privata.
+   2. Un gesto dominante. "Provalo stasera" pieno, "Guarda come funziona"
+      di contorno: era un link nudo, cioe niente.
+   3. Il rituale si vede. Un micro-lettore ("Stasera, 2 minuti — Com'e
+      andata oggi?") al posto del telefono fotografato, che era freddo e
+      raccontava l'interfaccia invece del gesto.
+   4. Barra piu leggera: "Diario" via (sta in guscio.tsx).
+   5. Contrasto cinematografico. Il velo beige appiattiva foto e testo:
+      adesso il fondo e scuro, la fotografia respira e il testo ci sta
+      sopra in avorio. Conseguenze gestite qui sotto: la barra dell'ora di
+      Safari, il vetro della pilla e la giuntura col blocco chiaro.
+   6. Restano headline, serif editoriale, terracotta, fotografia domestica.
+   ===================================================================== */
+@media (max-width: 1099px) {
+  /* La barra dell'ora di Safari campiona il primo elemento fisso in cima
+     (body::before): con l'eroe scuro deve campiare scuro, o esce una banda
+     chiara sopra la fotografia. Vedi il commento a inizio blocco mobile. */
+  html:has(.jm-sito4.jm-sito7),
+  html:has(.jm-sito4.jm-sito7) body,
+  html:has(.jm-sito4.jm-sito7) body::before {
+    background: var(--jm-ink);
+    background-color: var(--jm-ink);
+  }
+}
+.jm-sito4.jm-sito7 .jm-sito2-eroe {
+  background: var(--jm-ink);
+  color: var(--jm-sito-su-foto);
+}
+.jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-h1,
+.jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito2-sotto {
+  color: var(--jm-sito-su-foto);
+}
+.jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito4-eyebrow {
+  color: color-mix(in srgb, var(--jm-sito-su-foto) 76%, transparent);
+}
+/* La fotografia riempie la scena invece di essere un ritaglio appoggiato:
+   e il volto, non il telefono, a dover reggere l'inquadratura. */
+.jm-sito4.jm-sito7 .jm-sito2-eroe-media .scena {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 64% 28%;
+  -webkit-mask-image: none;
+  mask-image: none;
+  filter: saturate(.92) contrast(1.04) brightness(.9);
+}
+/* Il telefono fotografato esce: raccontava l'interfaccia, non il gesto. */
+.jm-sito4.jm-sito7 .jm-sito4-telefono-foto { display: none; }
+/* Il velo diventa uno scrim da cinema: scuro dove ci sono le parole, quasi
+   niente sul viso. Su una fotografia calda un velo uniforme spegne tutto. */
+.jm-sito4.jm-sito7 .jm-sito2-eroe::before {
+  z-index: 1;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--jm-ink) 82%, transparent) 0, color-mix(in srgb, var(--jm-ink) 30%, transparent) 26%, transparent 46%),
+    linear-gradient(90deg, color-mix(in srgb, var(--jm-ink) 86%, transparent) 0, color-mix(in srgb, var(--jm-ink) 62%, transparent) 34%, color-mix(in srgb, var(--jm-ink) 18%, transparent) 58%, transparent 74%),
+    linear-gradient(0deg, color-mix(in srgb, var(--jm-ink) 74%, transparent) 0, transparent 34%);
+}
+/* Il tasto secondario: contorno chiaro sulla fotografia, non un link nudo. */
+.jm-sito10-secondo {
+  border-color: color-mix(in srgb, var(--jm-sito-su-foto) 46%, transparent);
+  color: var(--jm-sito-su-foto);
+  font-size: calc(15.5px * var(--jm-ui-scale));
+  padding: 13px 24px;
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  background: color-mix(in srgb, var(--jm-sito-su-foto) 10%, transparent);
+}
+.jm-sito10-secondo:hover {
+  background: color-mix(in srgb, var(--jm-sito-su-foto) 18%, transparent);
+}
+/* Le due garanzie, con la spunta: erano una riga sola in grigio, invisibile. */
+.jm-sito10-garanzie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.jm-sito10-garanzie li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in srgb, var(--jm-sito-su-foto) 82%, transparent);
+  font-size: calc(13px * var(--jm-ui-scale));
+}
+.jm-sito10-spunta {
+  width: calc(17px * var(--jm-ui-scale));
+  height: calc(17px * var(--jm-ui-scale));
+  flex: 0 0 auto;
+  fill: none;
+  stroke: var(--jm-accent-hi);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* IL RITUALE RESO VISIBILE. Non e un lettore vero: e la sera di chi usa
+   Dayalogue, messa nella scena. Un mockup di interfaccia spiega il
+   software; questo fa capire il gesto. */
+/* Nel FLUSSO, sotto le garanzie, non appoggiato in fondo alla scena: in
+   fondo ci sta gia la pilla del rituale, e due oggetti di vetro sovrapposti
+   non si leggono. Qui invece chiude l'offerta: promessa, gesto, prova. */
+.jm-sito10-rituale-vivo {
+  position: relative;
+  z-index: 4;
+  width: fit-content;
+  max-width: 100%;
+  margin: 26px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px 14px 14px;
+  border: 1px solid color-mix(in srgb, var(--jm-surface) 46%, transparent);
+  border-radius: var(--jm-radius-pill);
+  background: color-mix(in srgb, var(--jm-surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(26px) saturate(1.4);
+  backdrop-filter: blur(26px) saturate(1.4);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--jm-surface) 92%, transparent),
+    0 18px 44px color-mix(in oklab, var(--jm-shadow) 30%, transparent);
+}
+.jm-sito10-rituale-vivo .tondo {
+  display: grid;
+  place-items: center;
+  width: calc(44px * var(--jm-ui-scale));
+  height: calc(44px * var(--jm-ui-scale));
+  border-radius: 50%;
+  background: var(--jm-accent);
+}
+.jm-sito10-rituale-vivo .onda {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: calc(18px * var(--jm-ui-scale));
+}
+.jm-sito10-rituale-vivo .onda i {
+  width: 2px;
+  height: 42%;
+  border-radius: 1px;
+  background: var(--jm-on-accent);
+  animation: jm-sito5-onda 1.15s ease-in-out infinite alternate;
+}
+.jm-sito10-rituale-vivo .onda i:nth-child(2) { height: 76%; animation-delay: -.25s; }
+.jm-sito10-rituale-vivo .onda i:nth-child(3) { height: 100%; animation-delay: -.5s; }
+.jm-sito10-rituale-vivo .onda i:nth-child(4) { height: 68%; animation-delay: -.75s; }
+.jm-sito10-rituale-vivo .parole {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.jm-sito10-rituale-vivo .quando {
+  color: var(--jm-ink-faint);
+  font-size: calc(10px * var(--jm-ui-scale));
+  font-weight: 650;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.jm-sito10-rituale-vivo .domanda {
+  color: var(--jm-ink);
+  font-family: var(--jm-font-marchio);
+  font-size: calc(19px * var(--jm-ui-scale));
+  line-height: 1.1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .jm-sito10-rituale-vivo .onda i { animation: none; }
+}
+
+@media (max-width: 900px) {
+  /* Sul telefono tutto resta centrato come il 10 settembre: qui cambia solo
+     cio che il fondo scuro richiede. */
+  .jm-sito4.jm-sito7 .jm-sito2-eroe::before {
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--jm-ink) 88%, transparent) 0,
+        color-mix(in srgb, var(--jm-ink) 78%, transparent) 42%,
+        color-mix(in srgb, var(--jm-ink) 44%, transparent) 60%,
+        color-mix(in srgb, var(--jm-ink) 66%, transparent) 100%);
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-media .scena {
+    object-position: 60% 24%;
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta {
+    align-items: stretch;
+    gap: 10px;
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-b {
+    width: min(280px, 100%);
+    margin: 0 auto;
+  }
+  .jm-sito10-garanzie {
+    justify-content: center;
+    gap: 8px 18px;
+    margin-top: 18px;
+  }
+  .jm-sito10-garanzie li { font-size: calc(12px * var(--jm-ui-scale)); }
+  /* Il micro-lettore torna nel flusso, sotto le garanzie: in fondo alla
+     scena ci sta gia la pilla del rituale. */
+  .jm-sito10-rituale-vivo {
+    margin-inline: auto;
+    padding: 11px 18px 11px 11px;
+    gap: 12px;
+  }
+  .jm-sito10-rituale-vivo .tondo {
+    width: calc(38px * var(--jm-ui-scale));
+    height: calc(38px * var(--jm-ui-scale));
+  }
+  .jm-sito10-rituale-vivo .domanda { font-size: calc(16px * var(--jm-ui-scale)); }
+  /* La giuntura: adesso l'eroe e scuro e sotto comincia il chiaro, quindi la
+     fascia in fondo deve fare tutta la strada da uno all'altro. */
+  .jm-sito4.jm-sito7 .jm-sito2-eroe::after {
+    height: 190px;
+    background: linear-gradient(180deg,
+      transparent 0,
+      color-mix(in srgb, var(--jm-bg-app) 30%, transparent) 42%,
+      color-mix(in srgb, var(--jm-bg-app) 82%, transparent) 70%,
+      var(--jm-bg-app) 92%);
+  }
+}
+@media (max-width: 900px) and (max-height: 740px) {
+  /* iPhone SE. Lo schermo e corto: il micro-lettore esce (la pilla del
+     rituale, subito sotto, dice gia il gesto) e la colonna si stringe,
+     altrimenti le garanzie finiscono sotto la pilla. */
+  .jm-sito10-rituale-vivo { display: none; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-in { padding-top: 80px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-h1 { font-size: calc(34px * var(--jm-ui-scale)); }
+  .jm-sito4.jm-sito7 .jm-sito2-sotto { margin-top: 10px; font-size: calc(13px * var(--jm-ui-scale)); }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { margin-top: 14px; gap: 8px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-b { min-height: 44px; padding: 0 16px; }
+  .jm-sito4.jm-sito7 .jm-sito10-secondo { padding: 11px 20px; font-size: calc(14px * var(--jm-ui-scale)); }
+  .jm-sito10-garanzie { margin-top: 12px; gap: 6px 14px; }
+  .jm-sito10-garanzie li { font-size: calc(11.5px * var(--jm-ui-scale)); }
+}
+
+/* LA PILLA DEL RITUALE SOPRA L'EROE SCURO. Era vetro chiaro con testo
+   scuro: nato per un eroe beige, sopra la fotografia scura diventava una
+   lastra slavata con le parole quasi invisibili. Adesso e vetro scuro con
+   testo avorio, cioe la stessa idea letta sul fondo giusto. */
+.jm-sito4.jm-sito7 .jm-sito4-rituale {
+  border-color: color-mix(in srgb, var(--jm-sito-su-foto) 24%, transparent);
+  background: color-mix(in srgb, var(--jm-ink) 62%, transparent);
+  color: var(--jm-sito-su-foto);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--jm-sito-su-foto) 22%, transparent),
+    0 18px 44px color-mix(in oklab, #000 34%, transparent);
+}
+@supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+  .jm-sito4.jm-sito7 .jm-sito4-rituale {
+    background: linear-gradient(150deg,
+      color-mix(in srgb, var(--jm-ink) 58%, transparent),
+      color-mix(in srgb, var(--jm-ink) 44%, transparent));
+    -webkit-backdrop-filter: blur(34px) saturate(1.4);
+    backdrop-filter: blur(34px) saturate(1.4);
+  }
+  .jm-sito4.jm-sito7 .jm-sito4-rituale::before { background: none; }
+}
+.jm-sito4.jm-sito7 .jm-sito4-rituale > h2,
+.jm-sito4.jm-sito7 .jm-sito4-rituale .jm-sito4-eyebrow,
+.jm-sito4.jm-sito7 .jm-sito4-rituale-voci h3 {
+  color: var(--jm-sito-su-foto);
+}
+.jm-sito4.jm-sito7 .jm-sito4-rituale-voci p {
+  color: color-mix(in srgb, var(--jm-sito-su-foto) 74%, transparent);
+}
+.jm-sito4.jm-sito7 .jm-sito4-rituale-voci > div {
+  border-right-color: color-mix(in srgb, var(--jm-sito-su-foto) 18%, transparent);
+}
+.jm-sito4.jm-sito7 .jm-sito4-rituale-voci > div > span {
+  color: var(--jm-sito-su-foto);
+  background: color-mix(in srgb, var(--jm-sito-su-foto) 14%, transparent);
+}
+/* LA BARRA IN CIMA SOPRA L'EROE SCURO. Con l'eroe chiaro la barra poteva
+   essere una lastra di vetro chiara con l'inchiostro sopra. Sopra la
+   fotografia scura quella lastra diventa una banda grigia che taglia in due
+   l'inquadratura: il contrario di cio che il revisore chiedeva. Quindi sulla
+   home viva la barra e trasparente in cima a QUALSIASI larghezza, e sotto ci
+   passa la fotografia; appena si scorre si fa scura, non chiara.
+
+   La posizione cambia con la larghezza (riga 3254 e riga 4088) ma il colore
+   no: sopra i 1100px la barra e `absolute` e se ne va scorrendo, sotto e
+   sticky/fixed e resta — in tutti e due i casi ha il buio dietro, quindi le
+   scritte vanno in avorio sempre, senza guardare [data-scorso]. Guardarlo
+   sarebbe anzi sbagliato: scatta a 24px di scorrimento, quando la barra e
+   ancora sopra la fotografia.
+
+   Il marchio e un <img> che punta a un .svg con fill="currentColor": dentro
+   un <img> quel currentColor si risolve nel documento SVG, non in questa
+   pagina, quindi esce nero e nessun `color` scritto qui lo tocca. Lo si gira
+   con un filtro: invert(1) porta il nero a bianco, brightness+sepia lo
+   riportano all'avorio. Misurato su tela: 248,240,226 contro il 247,239,228
+   di --jm-sito-su-foto, cioe la stessa cosa a occhio. */
+.jm-sito4.jm-sito7 > .jm-sito-nav .jm-sito-nav-in { color: var(--jm-sito-su-foto); }
+.jm-sito4.jm-sito7 .jm-sito-wordmark {
+  filter: invert(1) brightness(.9) sepia(.24);
+}
+/* Il vetro sotto ai link (blur + saturate, riga 175) era nato per la barra
+   chiara: sul fondo scuro disegna due rettangoli arrotondati piu chiari
+   attorno alle parole, che si vedono anche senza passarci sopra. Via: qui
+   il fondo e gia una lastra sua. */
+.jm-sito4.jm-sito7 .jm-sito-nav-l a {
+  color: color-mix(in srgb, var(--jm-sito-su-foto) 84%, transparent);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.jm-sito4.jm-sito7 .jm-sito-nav-l a:hover,
+.jm-sito4.jm-sito7 .jm-sito-nav-l a:focus-visible {
+  color: var(--jm-sito-su-foto);
+  border-color: color-mix(in srgb, var(--jm-sito-su-foto) 30%, transparent);
+  background: color-mix(in srgb, var(--jm-sito-su-foto) 12%, transparent);
+  box-shadow: none;
+}
+.jm-sito4.jm-sito7 .jm-sito-lang {
+  color: color-mix(in srgb, var(--jm-sito-su-foto) 66%, transparent);
+  border-color: color-mix(in srgb, var(--jm-sito-su-foto) 34%, transparent);
+}
+.jm-sito4.jm-sito7 .jm-sito-lang .on,
+.jm-sito4.jm-sito7 .jm-sito-lang a:hover {
+  color: var(--jm-sito-su-foto);
+}
+.jm-sito4.jm-sito7 .jm-sito-menu-mobile summary::before,
+.jm-sito4.jm-sito7 .jm-sito-menu-mobile summary::after,
+.jm-sito4.jm-sito7 .jm-sito-menu-mobile summary span {
+  background: var(--jm-sito-su-foto);
+}
+.jm-sito4.jm-sito7 .jm-sito-menu-mobile summary { background: none; }
+/* La fascia dove la barra RESTA appesa (sotto i 1100px): trasparente in
+   cima, scura appena la pagina scende. Sotto i 768px il fondo trasparente
+   glielo da gia il blocco del telefono; qui serve per la fascia di mezzo,
+   dove vinceva ancora il vetro chiaro di .jm-sito-nav. */
+@media (max-width: 1099px) {
+  .jm-sito4.jm-sito7 > .jm-sito-nav {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    transition: background-color .3s ease, border-color .3s ease;
+  }
+  /* Sotto i 768px la .jm-sito-nav e alta zero (la lastra e quella dentro),
+     quindi il suo fondo non dipinge niente e l'unico velo e quello di
+     .jm-sito-nav-in: a 82% il testo che scorre sotto si intravedeva
+     (misurato: 34 livelli su 255). A 90% scende a una decina, cioe sotto la
+     soglia in cui si legge qualcosa. */
+  .jm-sito4.jm-sito7[data-scorso] > .jm-sito-nav {
+    background: color-mix(in srgb, var(--jm-ink) 82%, transparent);
+    border-bottom-color: transparent;
+  }
+  .jm-sito4.jm-sito7[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
+    background: color-mix(in srgb, var(--jm-ink) 90%, transparent);
+    border-bottom-color: transparent;
+  }
+  @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+    .jm-sito4.jm-sito7[data-scorso] > .jm-sito-nav {
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      backdrop-filter: blur(18px) saturate(1.2);
+    }
+  }
+}
+
+@media (min-width: 1100px) {
+  /* L'ALTEZZA DELL'EROE, FATTA COME SI DEVE. Prima reggeva per caso: la
+     colonna partiva da un padding-top fisso di 194px dentro un blocco alto
+     100svh che sbordava dal genitore, e il risultato buono a 900px di
+     finestra era la somma di due errori. Su uno schermo piu basso — un
+     portatile da 1512x780, che e la misura piu comune che esista — la
+     colonna finiva sotto la barra in cima E sopra la pilla del rituale.
+     Adesso lo spazio si dichiara: si tolgono l'altezza della barra in alto
+     e quella della pilla in basso, e cio che avanza si centra da solo. */
+  .jm-sito4.jm-sito7 .jm-sito2-eroe {
+    align-items: stretch;
+    padding-bottom: 0;
+    /* `height: 100svh` secco (riga 3277) e una promessa che su uno schermo
+       basso non si puo mantenere: o il testo sborda o si taglia. `min-height`
+       la trasforma in "almeno una schermata": quando ci sta, l'eroe e alto
+       esattamente una schermata come prima; quando non ci sta, cresce e si
+       scorre di poco invece di accavallare barra, testo e pilla. */
+    height: auto;
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-in {
+    justify-content: center;
+    padding-top: calc(var(--jm-sito-nav-h) + 24px);
+    /* La pilla e alta 189-197px e sta a 18 dal fondo: 232 sono quelli piu un
+       filo d'aria. Misurato, non stimato. */
+    padding-bottom: 232px;
+  }
+  /* IL MARCHIO IN COLONNA CON L'EROE. La barra rientra di 24px (riga 3262),
+     la colonna dell'eroe di 36px (riga 3283): il marchio stava dodici pixel
+     piu a sinistra dell'occhiello e del titolo, e su una pagina fatta di una
+     sola colonna di testo quello scarto si vede tutto. Stessa misura per
+     tutti e due. Le due regole d'origine restano come sono, che valgono
+     anche per gli archivi. */
+  .jm-sito4.jm-sito7 .jm-sito-nav-in { padding-inline: 36px; }
+  /* IL SALTO IN APERTURA. I due tasti stavano in 570px per il rotto della
+     cuffia: con il carattere vero misurano 232 + 50 di spazio + 284 = 566
+     su 570, quattro pixel di margine. Prima che Inter arrivi il ripiego di
+     sistema e piu largo (240 + 50 + 320 = 610), i tasti vanno a capo, la
+     riga passa da 66 a 182 pixel e — siccome la colonna e centrata in
+     verticale — TUTTO l'eroe si alza di 116 pixel. Poi il carattere arriva e
+     torna giu: e quello il salto che si vede aprendo la pagina.
+     Si toglie dando aria, non bloccando il ritorno a capo: lo spazio fra i
+     tasti scende da 50 a 18 (cinquanta li faceva sembrare due cose diverse)
+     e la colonna sale a 640. Cosi anche con il carattere di ripiego i tasti
+     stanno su una riga sola — 578 su 640 — e non c'e niente da riassestare. */
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-t { max-width: 640px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { gap: 18px; }
+}
+/* SCHERMI LARGHI MA BASSI. La colonna dell'eroe misura 591px: con la barra
+   (86) e la pilla (189) servono 866px di finestra perche ci stia tutto, e
+   un portatile ne offre 700-780. Invece di lasciarla sbordare, si stringe —
+   stessa cosa che si fa gia sull'iPhone SE, solo dall'altra parte. */
+@media (min-width: 1100px) and (max-height: 930px) {
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito4-eyebrow { margin-bottom: 16px; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-h1 { font-size: calc(54px * var(--jm-ui-scale)); }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito2-sotto {
+    margin-top: 20px;
+    font-size: calc(17px * var(--jm-ui-scale));
+  }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe .jm-sito-cta { margin-top: 24px; }
+  .jm-sito4.jm-sito7 .jm-sito10-garanzie { margin-top: 16px; }
+  .jm-sito4.jm-sito7 .jm-sito10-rituale-vivo {
+    margin-top: 18px;
+    padding: 10px 20px 10px 10px;
+  }
+  .jm-sito4.jm-sito7 .jm-sito10-rituale-vivo .tondo {
+    width: calc(40px * var(--jm-ui-scale));
+    height: calc(40px * var(--jm-ui-scale));
+  }
+}
+/* Ancora piu bassi. Qui il micro-lettore esce (la pilla sotto dice gia lo
+   stesso gesto) e la pilla si stringe. La soglia e bassa apposta: fra i 700
+   e i 930 pixel preferisco che l'eroe cresca di qualche decina di pixel e
+   la pilla scenda un po' sotto il bordo, piuttosto che togliere il rituale
+   dalla prima schermata — e la cosa che il revisore chiedeva di far vedere. */
+@media (min-width: 1100px) and (max-height: 700px) {
+  .jm-sito4.jm-sito7 .jm-sito10-rituale-vivo { display: none; }
+  .jm-sito4.jm-sito7 .jm-sito2-eroe-in { padding-bottom: 220px; }
+  .jm-sito4.jm-sito7 .jm-sito4-rituale { padding: 22px 26px; }
+  .jm-sito4.jm-sito7 .jm-sito4-rituale > h2 { font-size: calc(26px * var(--jm-ui-scale)); }
+}
+@media (max-width: 767px) {
+  /* Stessa cosa sul telefono: la barra rientrava di 26px e l'eroe di 24. */
+  .jm-sito4.jm-sito7 .jm-sito-nav-in { padding-inline: 24px; }
+}
+
+/* =====================================================================
+   LA PROVA (jm-sito11) — 11 settembre 2026.
+
+   La fotografia dello schermo vero. Stava nell'eroe e li era una scheda
+   tecnica: mostrava l'interfaccia prima ancora di aver detto a cosa serve,
+   ed e per questo che l'audit del revisore l'aveva fatta togliere. Qui
+   arriva dopo i tre passi — che sono disegni astratti, onde e righe — nel
+   punto in cui chi legge si chiede "si, ma com'e fatto davvero?". Una
+   fotografia messa in cima e una presentazione; la stessa messa qui e una
+   prova.
+
+   Le regole del posto, tutte per sottrazione: un oggetto solo, dritto (mai
+   inclinato: l'inclinazione e un trucco da mockup e si vede), su un fondo
+   piu profondo di quello della pagina, senza card ne didascalie ne frecce
+   intorno. L'unica cosa che lo tiene a terra e un'ombra bassa e larga, del
+   colore dell'inchiostro, non nera.
+
+   Il fondo e --jm-bg (piu scuro di --jm-bg-app di un soffio): fa da palco
+   senza diventare una sezione colorata, e prepara il salto al buio della
+   cassaforte che viene subito dopo.
+   ===================================================================== */
+.jm-sito11-prova {
+  padding: clamp(64px, 7vw, 100px) 0 clamp(56px, 6vw, 88px);
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 62%, color-mix(in srgb, var(--jm-surface) 62%, transparent), transparent 70%),
+    var(--jm-bg);
+}
+.jm-sito11-scena {
+  display: flex;
+  justify-content: center;
+}
+.jm-sito11-telefono {
+  display: block;
+  width: min(320px, 76vw);
+  height: auto;
+  /* La misura vera del file (919x1300). Senza, il browser non sa quanto e
+     alta la fotografia finche non l'ha scaricata e la pagina sotto sobbalza
+     quando arriva: e lo stesso salto che abbiamo appena tolto dall'eroe. */
+  aspect-ratio: 919 / 1300;
+  /* L'ombra e in oklab sull'inchiostro della tavolozza: un'ombra nera su un
+     fondo caldo vira al grigio e stacca l'oggetto dalla pagina invece di
+     appoggiarcelo. */
+  filter:
+    drop-shadow(0 2px 3px color-mix(in oklab, var(--jm-ink) 16%, transparent))
+    drop-shadow(0 26px 44px color-mix(in oklab, var(--jm-ink) 26%, transparent));
+}
+@media (min-width: 768px) {
+  .jm-sito11-telefono { width: 380px; }
+}

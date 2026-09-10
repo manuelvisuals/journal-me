@@ -52,9 +52,16 @@ export const viewportSito: Viewport = {
  * (/v1../v5) e /support tengono la barra piena color --jm-bg, quindi per
  * loro il campionamento di Safari e gia giusto.
  */
+/**
+ * La home viva apre con l'eroe SCURO (10 settembre 2026): la barra di
+ * sistema deve accordarsi con quello, non col fondo chiaro della pagina.
+ * Il valore e --jm-ink del tema wine chiaro; chi legge theme-color lo usa,
+ * e Safari 26, che invece campiona il primo elemento fisso, trova lo stesso
+ * colore su body::before (vedi styles.css, blocco jm-sito10).
+ */
 export const viewportSitoHome: Viewport = {
   ...viewportSito,
-  themeColor: "#FBF7F2",
+  themeColor: "#2B1A17",
 };
 
 export async function metadataSito(
