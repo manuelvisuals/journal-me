@@ -5591,7 +5591,6 @@ textarea.jm-sito-in {
   /* i pezzi della scena */
   --fine: clamp(0, calc((var(--s, 0) - .76) * 10), 1);
   --centro: clamp(0, calc((var(--s, 0) - .76) * 5.8824), 1);
-  --corsa: clamp(0, calc((var(--s, 0) - .04) * 1.4286), 1);
 }
 .jm-sito7[data-js] .jm-sito12-passo {
   display: contents;
@@ -5697,10 +5696,14 @@ textarea.jm-sito-in {
   --dentro: min(420px, calc((100svh - 250px) * .7069));
   width: calc(var(--fuori) + (var(--dentro) - var(--fuori)) * var(--centro));
   left: calc(2% + 48% * var(--centro));
-  /* Una deriva di tre punti e mezzo mentre le carte salgono: senza, il
-     telefono sembra un'immagine incollata dietro invece di un oggetto nella
-     stessa stanza. Si sente, non si vede. */
-  top: calc(50% + 3.5% * var(--corsa) + 4.5% * var(--centro));
+  /* IMMOBILE finche non tocca a lui (Manuel, 11 settembre 2026: "il telefono
+     si muove leggermente in verticale: no, deve stare immobile mentre le pill
+     scorrono"). C'era una deriva di tre punti e mezzo lungo tutta la corsa
+     delle carte: nata per non farlo sembrare un'immagine incollata dietro,
+     ma il risultato e che nella scena si muovono due cose invece di una, e
+     l'occhio non sa piu quale sta raccontando. Adesso il telefono si muove
+     SOLO su --centro, cioe solo nel suo turno, quando scivola al centro. */
+  top: calc(50% + 8% * var(--centro));
   translate: -50% -50%;
 }
 @media (max-width: 900px) {
@@ -5740,7 +5743,7 @@ textarea.jm-sito-in {
     --fuori: 72vw;
     --dentro: min(66vw, calc((100svh - 210px) * .7069));
     left: calc(0% + 50% * var(--centro));
-    top: calc(58% + 3.5% * var(--corsa) - 0.5% * var(--centro));
+    top: calc(58% - 0.5% * var(--centro));
   }
 }
 /* Chi ha chiesto meno movimento vede la scena ferma sull'ultimo quadro:

@@ -538,19 +538,6 @@ export function HomeSito({
           </div>
         </section>
 
-        {/* ------------------------------------------------- la sera */}
-        <section className="jm-sito-foto-sez">
-          <div className="jm-sito-cont">
-            <div className="jm-sito-banda" data-fx="sfondo">
-              <Foto nome="divano-notte" className="arte" />
-              <div className="ft" data-fx="testo">
-                <h2>{t.sera.titolo}</h2>
-                <p>{t.sera.testo}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* --------------------------------- come funziona (scena bloccata) */}
         {/* LA SCENA (jm-sito12, 11 settembre 2026, mockup approvato da Manuel).
             Prende il posto di DUE sezioni: i tre passi in colonna e la
@@ -845,6 +832,26 @@ export function HomeSito({
                   <p>{v.r}</p>
                 </details>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* -------------------------------------- la sera (l'ultimo respiro) */}
+        {/* Dall'11 settembre 2026 sta QUI, in fondo, attaccata alla chiusura
+            (Manuel). Prima veniva quasi in cima, fra le tre promesse e la
+            scena: una fotografia grande e una frase lenta in mezzo al
+            racconto di come funziona, cioe una pausa proprio dove il
+            visitatore aveva appena cominciato a capire. In fondo invece fa
+            quello per cui e nata — abbassare la voce — e passa il testimone
+            alla domanda che chiude la pagina. */}
+        <section className="jm-sito-foto-sez">
+          <div className="jm-sito-cont">
+            <div className="jm-sito-banda" data-fx="sfondo">
+              <Foto nome="divano-notte" className="arte" />
+              <div className="ft" data-fx="testo">
+                <h2>{t.sera.titolo}</h2>
+                <p>{t.sera.testo}</p>
+              </div>
             </div>
           </div>
         </section>
