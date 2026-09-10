@@ -32,7 +32,7 @@ const leggi = (p) => readFileSync(p, "utf8");
   check("1. 'Lascialo cosi' risponde col soggetto stesso (il ruolo resta il nome)", /avanti\(\[d\.soggetto\]\)/.test(ch));
 
   const mw = leggi("src/modules/oggi/components/manual-write.tsx");
-  check("2. la bozza ha il tasto per scartarla, con conferma prima", /scarta la bozza/.test(mw) && /Sicuro\? Il testo va perso\./.test(mw) && /clearDraft\(targetDate\)/.test(mw));
+  check("2. la bozza ha il tasto per scartarla, con l'avviso iOS prima", /<AlertIos/.test(mw) && /Scartare la bozza\?/.test(mw) && /clearDraft\(targetDate\)/.test(mw));
   const tc = leggi("src/modules/oggi/components/today-client.tsx");
   check("2. Oggi cancella la bozza su disco e chiude l'editor", /handleDiscardDraft/.test(tc) && /onDiscard=\{draftNotice \? handleDiscardDraft : undefined\}/.test(tc));
 
@@ -47,7 +47,8 @@ const leggi = (p) => readFileSync(p, "utf8");
   const se = leggi("src/modules/oggi/components/snippet-editable.tsx");
   check("4. stelline + matita + targhetta 'tuo' come il titolo", /jm-fv-ai/.test(se) && /jm-fv-hpen/.test(se) && /jm-fv-tuo/.test(se));
   const css = leggi("src/modules/oggi/styles.css");
-  check("4. la sintesi e in corsivo anche sul telefono", /\.jm-fv-sn \{[^}]*font-style: italic/.test(css));
+  check("4. la sintesi e in corsivo, sans, nel colore pieno del testo", /\.jm-fv-sn \{[^}]*font-family: var\(--font-sans\)[^}]*font-style: italic[^}]*color: var\(--color-ink\)/.test(css));
+  check("4. le stelline prendono il colore del testo (nere in chiaro, chiare in scuro)", /\.jm-fv-ai \{[^}]*fill: var\(--color-ink\)/.test(css));
   const cloud = leggi("src/lib/data/store/cloud.ts");
   const local = leggi("src/lib/data/store/local.ts");
   check("4. saveSnippet blocca la sintesi in entrambi gli store", /async saveSnippet/.test(cloud) && /snippetLocked: true/.test(cloud) && /async saveSnippet/.test(local) && /snippetLocked: true/.test(local));
@@ -163,14 +164,22 @@ const GIORNATA = {
   let aperto = true;
   try { await editor.waitFor({ state: "visible", timeout: 10000 }); } catch { aperto = false; }
   check("2. vivo: la bozza recuperata riapre l'editor", aperto);
-  const scarta = page.locator(".jm-editor-scarta", { hasText: /scarta la bozza/i });
-  check("2. vivo: c'e il tasto 'scarta la bozza'", (await scarta.count()) === 1);
+  const scarta = page.locator(".jm-editor-scarta");
+  check("2. vivo: c'e il tasto 'scarta'", (await scarta.count()) === 1);
   await scarta.click();
-  const conf = page.locator(".jm-editor-scarta-conf");
-  check("2. vivo: prima chiede conferma", await conf.isVisible());
-  await page.locator(".jm-editor-scarta.si").click();
+  const alert = page.locator(".jm-alert");
+  let avviso = true;
+  try { await alert.waitFor({ state: "visible", timeout: 5000 }); } catch { avviso = false; }
+  check("2. vivo: prima chiede conferma con l'avviso iOS", avviso);
+  // "Tienila" chiude l'avviso e la bozza resta.
+  await page.locator(".jm-alert-btn.forte").click();
+  await page.waitForTimeout(300);
+  check("2. vivo: 'Tienila' chiude l'avviso e l'editor resta", (await alert.count()) === 0 && (await editor.count()) === 1);
+  await scarta.click();
+  await alert.waitFor({ state: "visible", timeout: 5000 });
+  await page.locator(".jm-alert-btn.rosso").click();
   await page.waitForTimeout(600);
-  check("2. vivo: dopo 'Si, scarta' l'editor e chiuso", (await editor.count()) === 0);
+  check("2. vivo: dopo 'Scarta' l'editor e chiuso", (await editor.count()) === 0);
   const resta = await page.evaluate(async (iso) => {
     const req = indexedDB.open("journalme");
     const db = await new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
