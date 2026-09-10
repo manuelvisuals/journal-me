@@ -5792,3 +5792,132 @@ textarea.jm-sito-in {
   }
   .jm-sito7[data-js] .jm-sito12-telefono { width: min(320px, 76vw); margin: 0 auto; }
 }
+
+/* =====================================================================
+   L'EROE CHE SI APRE (jm-sito13) — 11 settembre 2026, Manuel: "la pilla
+   non mostrarla subito; quando scrolli falla apparire dal basso, con del
+   parallasse sulla ragazza e facendo sparire gli altri elementi verso
+   destra e sinistra".
+
+   COSA SUCCEDE. L'eroe si incolla per due schermate e mezzo. Scorrendo:
+   le parole se ne vanno dai lati — occhiello e titolo a sinistra, tutto
+   il resto a destra, ognuno un po' piu lontano del precedente, cosi si
+   sfilano invece di uscire come un blocco unico; la fotografia cresce e
+   sale di poco (il parallasse); la pilla del rituale, che alla prima
+   schermata NON C'E, sale dal basso e si prende il centro.
+
+   PERCHE LA PILLA PUO PARTIRE DA FUORI. Sui due lati estremi era gia in
+   posizione assoluta in fondo all'eroe; nella fascia di mezzo (768-1099)
+   stava nel flusso, e una cosa nel flusso non puo salire da sotto senza
+   allungare la pagina. Qui sotto le si da la stessa posizione assoluta a
+   tutte le larghezze, cosi la coreografia e una sola.
+
+   E PERCHE LA COLONNA ADESSO CI STA. Prima l'eroe doveva riservare 232px
+   in fondo per la pilla, ed e da li che venivano tutti i guai sugli
+   schermi bassi. Adesso a riposo la pilla e fuori schermo: la colonna ha
+   tutta l'altezza meno la barra, e quando la pilla arriva le parole se
+   ne sono gia andate. Le due cose non si incontrano mai.
+
+   `data-pista` senza "avanti": il cursore parte da zero quando la pista e
+   in cima alla pagina, che e esattamente il caso dell'eroe.
+
+   Senza JavaScript (e con "riduci il movimento") niente di tutto questo:
+   la pista non si incolla, la pilla e al suo posto e l'eroe e quello
+   fermo di sempre. Tutte le regole stanno sotto .jm-sito7[data-js].
+   ===================================================================== */
+.jm-sito7[data-js] .jm-sito13-pista {
+  position: relative;
+  height: 250svh;
+  /* le tre corse */
+  --via: clamp(0, calc((var(--s, 0) - .05) / .33), 1);
+  --pil: clamp(0, calc((var(--s, 0) - .30) / .40), 1);
+  --par: clamp(0, calc(var(--s, 0) / .80), 1);
+}
+/* L'eroe si incolla e BASTA: altezza, margini e riempimenti restano quelli
+   di prima. Il primo tentativo li riscriveva — colonna centrata su tutta
+   l'altezza, niente spazio riservato in fondo alla pilla — e sembrava
+   giusto, perche a riposo la pilla e fuori schermo. Ma quelle regole
+   arrivano con `data-js`, cioe DOPO il primo disegno: la colonna saltava di
+   96 pixel appena lo script partiva, e il CLS passava da 0,0010 a 0,0213.
+   Una geometria che cambia quando arriva JavaScript e un salto, sempre. */
+.jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe {
+  position: sticky;
+  top: 0;
+}
+/* IL PARALLASSE. La fotografia cresce del 12% e sale di quattro punti:
+   poco, ma abbastanza perche il fondo e le parole non si muovano insieme.
+   Sta dentro .jm-sito2-eroe, che ha overflow: hidden, quindi non sborda. */
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe-media .scena {
+  scale: calc(1 + .12 * var(--par));
+  translate: 0 calc(var(--par) * -4%);
+}
+/* LE PAROLE SE NE VANNO. Le distanze crescono di elemento in elemento —
+   62, 68, 74, 80, 86 vw — cosi non escono incollate: si sfilano. La
+   dissolvenza parte a meta viaggio, quando sono gia mezze fuori, se no
+   svanirebbero sul posto invece di andarsene. */
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito4-eyebrow,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-h1,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-sotto,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-cta,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-garanzie,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-rituale-vivo {
+  opacity: calc(1 - clamp(0, calc((var(--via) - .5) / .4), 1));
+  will-change: translate, opacity;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito4-eyebrow {
+  translate: calc(var(--via) * -68vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-h1 {
+  translate: calc(var(--via) * -62vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-sotto {
+  translate: calc(var(--via) * 66vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-cta {
+  translate: calc(var(--via) * 74vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-garanzie {
+  translate: calc(var(--via) * 80vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-rituale-vivo {
+  translate: calc(var(--via) * 86vw) 0;
+}
+/* LA PILLA SALE. Posizione assoluta a tutte le larghezze (vedi sopra) e
+   132% di altezza sotto il bordo a riposo: piu del suo ingombro piu lo
+   stacco dal fondo, quindi alla prima schermata non se ne vede il filo. */
+.jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe > .jm-sito4-rituale {
+  position: absolute;
+  z-index: 6;
+  margin: 0;
+  right: 20px;
+  left: 20px;
+  /* Ancorata al FONDO DELLA FINESTRA, non al fondo dell'eroe. Quando l'eroe
+     e alto quanto lo schermo le due cose coincidono; ma su una finestra
+     bassa l'eroe cresce oltre lo schermo (e cosi deve fare, se no il testo
+     sborda), e una pilla agganciata al suo fondo salirebbe restando sotto la
+     piega. Agganciata a 100svh sale sempre dentro l'inquadratura. */
+  top: calc(100svh - 18px);
+  bottom: auto;
+  border-radius: var(--jm-radius-xl);
+  translate: 0 calc(-100% + (1 - var(--pil)) * 132%);
+  opacity: clamp(0, calc(var(--pil) / .22), 1);
+  will-change: translate, opacity;
+}
+@media (min-width: 768px) and (max-width: 1099px) {
+  /* La fascia di mezzo non aveva la pilla in assoluto: le si danno le
+     stesse misure del desktop, se no qui sarebbe l'unica larghezza in cui
+     l'animazione non puo esistere. */
+  .jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe > .jm-sito4-rituale {
+    padding: 18px 6% 22px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+}
+@media (max-width: 767px) {
+  .jm-sito7[data-js] .jm-sito13-pista { height: 270svh; }
+  .jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe > .jm-sito4-rituale {
+    right: 10px;
+    left: 10px;
+    top: calc(100svh - 22px);
+  }
+}

@@ -439,6 +439,15 @@ export function HomeSito({
 
       <main>
         {/* ------------------------------------------------------ eroe */}
+        {/* LA PISTA DELL'EROE (jm-sito13, 11 settembre 2026, Manuel). L'eroe
+            si incolla per due schermate e mezzo: scorrendo, le parole escono
+            dai lati, la fotografia respira, e la pilla del rituale — che
+            all'inizio non c'e — sale dal basso e prende il centro.
+            `data-pista` senza "avanti" e voluto: il cursore parte da zero
+            quando la pista e in cima alla pagina, che e esattamente il caso
+            dell'eroe. Senza JavaScript la pista non esiste e l'eroe e quello
+            fermo di sempre, con la pilla gia al suo posto. */}
+        <div className="jm-sito13-pista" data-pista="eroe">
         <section className="jm-sito2-eroe">
           <div className="jm-sito-cont jm-sito2-eroe-in">
             <div className="jm-sito2-eroe-t">
@@ -518,6 +527,7 @@ export function HomeSito({
             </div>
           </section>
         </section>
+        </div>
 
         {/* La scena "voce → pagina" che si componeva allo scorrimento e stata
             rimossa dalla home viva (Manuel, 9 settembre 2026): resta intatta
