@@ -457,7 +457,7 @@ export function HomeSito({
                 </Link>
                 {/* Secondaria per davvero: un tasto di contorno, non un link
                     nudo. Resta accessibile, ma il gesto dominante e uno solo. */}
-                <a href="#giornata" className="jm-sito-b jm-sito10-secondo">
+                <a href="#come" className="jm-sito-b jm-sito10-secondo">
                   {t.eroeVivo.ctaSecondo}
                 </a>
               </div>
@@ -522,55 +522,6 @@ export function HomeSito({
         {/* La scena "voce → pagina" che si componeva allo scorrimento e stata
             rimossa dalla home viva (Manuel, 9 settembre 2026): resta intatta
             su /v6, insieme al suo CSS (.jm-sito6-*) e ai testi vocePaginaTre. */}
-
-        {/* LA GIORNATA (dal 9 settembre 2026 e questa, e si tiene l'ancora
-            #giornata a cui puntano il menu e il link dell'eroe). La sezione
-            "jm-sito2-giornata" che stava qui sopra e uscita: diceva la stessa
-            cosa una seconda volta. Di quella restano solo i tre punti, che
-            adesso stanno sotto le fotografie. */}
-        <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
-          <div className="jm-sito8-testa" data-fx="testo">
-            <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
-            <h2 id="jm-sito8-titolo">{t.vocePagina.titolo}</h2>
-            <p>{t.vocePagina.testo}</p>
-          </div>
-
-          {/* La pista e alta piu di quattro schermate: la scena ci sta ferma
-              dentro (sticky) e scorrerla muove --s da 0 a 1. Due atti in fila,
-              i tempi stanno in styles.css sotto .jm-sito8-scena. */}
-          <div className="jm-sito8-pista" data-pista>
-            <div className="jm-sito8-scena">
-              <Ritratto
-                lato="donna"
-                foto="skincare"
-                voce={t.vocePagina.donna}
-                stato={t.vocePagina.stato}
-                g={t.giornate.lei}
-              />
-              <Ritratto
-                lato="uomo"
-                foto="barba"
-                voce={t.vocePagina.uomo}
-                stato={t.vocePagina.stato}
-                g={t.giornate.lui}
-              />
-            </div>
-          </div>
-
-          {/* I tre punti che stavano nella sezione "La giornata" (tolta il 9
-              settembre 2026): la promessa la fa la scena qui sopra, questi
-              dicono cosa resta scritto. */}
-          <div className="jm-sito8-punti">
-            {t.giornata.punti.map((x, i) => (
-              <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
-                <h3>{x.titolo}</h3>
-                <p>{x.testo}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="jm-sito8-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
-        </section>
 
         {/* -------------------------------------------- tre promesse */}
         <section className="jm-sito-promesse-sez piana">
@@ -716,6 +667,62 @@ export function HomeSito({
               ))}
             </div>
           </div>
+        </section>
+
+        {/* LA GIORNATA. Dall'11 settembre 2026 sta QUI, dopo la cassaforte
+            (Manuel). Prima veniva subito dopo l'eroe, cioe prima ancora di
+            aver detto come funziona e a chi resta la chiave: due ritratti e
+            due pagine private in faccia a chi era arrivato da trenta secondi.
+            Nell'ordine di adesso il visitatore sa gia il gesto (l'eroe), il
+            meccanismo (la scena bloccata) e chi puo leggere (la cassaforte);
+            queste due giornate sono la conseguenza, e si leggono come tali.
+
+            L'ancora #giornata resta la sua: la usa il menu del telefono negli
+            archivi. Il tasto di contorno dell'eroe invece adesso punta a
+            #come, che e la risposta vera a "guarda come funziona" — e che
+            resta dov'era, poco sotto. */}
+        <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
+          <div className="jm-sito8-testa" data-fx="testo">
+            <p className="jm-sito-kick">{t.vocePagina.etichetta}</p>
+            <h2 id="jm-sito8-titolo">{t.vocePagina.titolo}</h2>
+            <p>{t.vocePagina.testo}</p>
+          </div>
+
+          {/* La pista e alta piu di quattro schermate: la scena ci sta ferma
+              dentro (sticky) e scorrerla muove --s da 0 a 1. Due atti in fila,
+              i tempi stanno in styles.css sotto .jm-sito8-scena. */}
+          <div className="jm-sito8-pista" data-pista>
+            <div className="jm-sito8-scena">
+              <Ritratto
+                lato="donna"
+                foto="skincare"
+                voce={t.vocePagina.donna}
+                stato={t.vocePagina.stato}
+                g={t.giornate.lei}
+              />
+              <Ritratto
+                lato="uomo"
+                foto="barba"
+                voce={t.vocePagina.uomo}
+                stato={t.vocePagina.stato}
+                g={t.giornate.lui}
+              />
+            </div>
+          </div>
+
+          {/* I tre punti che stavano nella sezione "La giornata" (tolta il 9
+              settembre 2026): la promessa la fa la scena qui sopra, questi
+              dicono cosa resta scritto. */}
+          <div className="jm-sito8-punti">
+            {t.giornata.punti.map((x, i) => (
+              <div key={x.titolo} data-fx="testo" style={{ "--i": i } as CSSProperties}>
+                <h3>{x.titolo}</h3>
+                <p>{x.testo}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="jm-sito8-chiusura" data-fx="testo">{t.vocePagina.chiusura}</p>
         </section>
 
         {/* ------------------------------------------------- funzioni */}
