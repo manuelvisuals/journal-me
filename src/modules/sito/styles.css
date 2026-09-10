@@ -5364,3 +5364,53 @@ textarea.jm-sito-in {
   /* Stessa cosa sul telefono: la barra rientrava di 26px e l'eroe di 24. */
   .jm-sito4.jm-sito7 .jm-sito-nav-in { padding-inline: 24px; }
 }
+
+/* =====================================================================
+   LA PROVA (jm-sito11) — 11 settembre 2026.
+
+   La fotografia dello schermo vero. Stava nell'eroe e li era una scheda
+   tecnica: mostrava l'interfaccia prima ancora di aver detto a cosa serve,
+   ed e per questo che l'audit del revisore l'aveva fatta togliere. Qui
+   arriva dopo i tre passi — che sono disegni astratti, onde e righe — nel
+   punto in cui chi legge si chiede "si, ma com'e fatto davvero?". Una
+   fotografia messa in cima e una presentazione; la stessa messa qui e una
+   prova.
+
+   Le regole del posto, tutte per sottrazione: un oggetto solo, dritto (mai
+   inclinato: l'inclinazione e un trucco da mockup e si vede), su un fondo
+   piu profondo di quello della pagina, senza card ne didascalie ne frecce
+   intorno. L'unica cosa che lo tiene a terra e un'ombra bassa e larga, del
+   colore dell'inchiostro, non nera.
+
+   Il fondo e --jm-bg (piu scuro di --jm-bg-app di un soffio): fa da palco
+   senza diventare una sezione colorata, e prepara il salto al buio della
+   cassaforte che viene subito dopo.
+   ===================================================================== */
+.jm-sito11-prova {
+  padding: clamp(64px, 7vw, 100px) 0 clamp(56px, 6vw, 88px);
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 62%, color-mix(in srgb, var(--jm-surface) 62%, transparent), transparent 70%),
+    var(--jm-bg);
+}
+.jm-sito11-scena {
+  display: flex;
+  justify-content: center;
+}
+.jm-sito11-telefono {
+  display: block;
+  width: min(320px, 76vw);
+  height: auto;
+  /* La misura vera del file (919x1300). Senza, il browser non sa quanto e
+     alta la fotografia finche non l'ha scaricata e la pagina sotto sobbalza
+     quando arriva: e lo stesso salto che abbiamo appena tolto dall'eroe. */
+  aspect-ratio: 919 / 1300;
+  /* L'ombra e in oklab sull'inchiostro della tavolozza: un'ombra nera su un
+     fondo caldo vira al grigio e stacca l'oggetto dalla pagina invece di
+     appoggiarcelo. */
+  filter:
+    drop-shadow(0 2px 3px color-mix(in oklab, var(--jm-ink) 16%, transparent))
+    drop-shadow(0 26px 44px color-mix(in oklab, var(--jm-ink) 26%, transparent));
+}
+@media (min-width: 768px) {
+  .jm-sito11-telefono { width: 380px; }
+}

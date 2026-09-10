@@ -124,6 +124,8 @@ export type Testi = {
   };
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
+  /** La fotografia dello schermo vero, dopo i tre passi. */
+  prova: { etichetta: string; titolo: string };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
   cassaforte: {
     etichetta: string;
@@ -419,6 +421,10 @@ const it: Testi = {
       { titolo: "Si scrive da sola", testo: "Titolo, sintesi, persone, impegni. Se un nome non e chiaro, te lo chiede." },
       { titolo: "Rileggi quando vuoi", testo: "Il mese, una giornata sola, o il recap che arriva da se." },
     ],
+  },
+  prova: {
+    etichetta: "La pagina di giovedi",
+    titolo: "Ecco com'e fatta, davvero.",
   },
   mentre: {
     etichetta: "Mentre fai altro",
@@ -855,6 +861,10 @@ const en: Testi = {
       { titolo: "It writes itself", testo: "Headline, summary, people, tasks. If a name is unclear, it asks." },
       { titolo: "Read back whenever", testo: "The month, a single day, or the recap that arrives on its own." },
     ],
+  },
+  prova: {
+    etichetta: "Thursday's page",
+    titolo: "This is what it actually looks like.",
   },
   mentre: {
     etichetta: "While you do something else",

@@ -641,6 +641,27 @@ export function HomeSito({
         </section>
 
 
+        {/* -------------------------------------------------- la prova */}
+        {/* LA FOTOGRAFIA DELLO SCHERMO VERO (11 settembre 2026, scelta di
+            Manuel sul mockup "dove va il telefono", opzione 1). Stava
+            nell'eroe e li era una scheda tecnica: raccontava l'interfaccia
+            prima ancora di aver detto a cosa serve. Qui invece arriva dopo i
+            tre passi, che sono disegni astratti — onde, righe, icone — nel
+            punto esatto in cui chi legge si chiede "si, ma com'e fatto
+            davvero?". Un oggetto solo, grande, dritto, su un fondo vuoto:
+            niente inclinazioni, niente card intorno, niente didascalie. */}
+        <section className="jm-sito11-prova" aria-labelledby="jm-sito11-titolo">
+          <div className="jm-sito-cont">
+            <div className="jm-sito-testa" data-fx="testo">
+              <p className="jm-sito-kick">{t.prova.etichetta}</p>
+              <h2 className="jm-sito-h2" id="jm-sito11-titolo">{t.prova.titolo}</h2>
+            </div>
+            <div className="jm-sito11-scena" data-fx="testo">
+              <Foto nome="iphone-giornata" className="jm-sito11-telefono" />
+            </div>
+          </div>
+        </section>
+
         {/* ------------------------------------------ solo tu hai la chiave */}
         {/* La cassaforte rifatta il 10 settembre 2026 (mockup approvato da
             Manuel). Tiene l'ancora #cassaforte a cui puntano menu e piede.
