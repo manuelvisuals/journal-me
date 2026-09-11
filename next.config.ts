@@ -96,7 +96,19 @@ const webConfig: NextConfig = {
             // registrazione, cioe il preflight bocciato. I banchi girano
             // sulla stessa origine e non potevano vederlo: da oggi
             // verify-ospite legge questo file e pretende l'header.
-            value: "Content-Type, Authorization, x-jm-lang, x-jm-braccialetto",
+            //
+            // x-jm-giorno: il giorno del diario che il regalo conta (decisione
+            // 4A, 10 settembre 2026). Terza volta, stesso buco: apiFetch lo
+            // mandava dal 10, qui nessuno lo aveva scritto, e sul telefono di
+            // Manuel process-entry ed extract-facts morivano con "Load failed"
+            // mentre la trascrizione (che non lo manda) andava - per questo
+            // il testo si allungava e titolo, aree e peso no. Una giornata
+            // finiva in coda e la coda ripeteva lo stesso preflight bocciato
+            // ogni cinque minuti, per sempre. Il controllo per nome di
+            // verify-ospite non poteva vederlo: da oggi
+            // scripts/verify-cors-guscio.mjs pretende OGNI header che apiFetch
+            // mette, chiunque sia, e prova il preflight in un browser vero.
+            value: "Content-Type, Authorization, x-jm-lang, x-jm-braccialetto, x-jm-giorno",
           },
           {
             key: "Access-Control-Allow-Methods",
