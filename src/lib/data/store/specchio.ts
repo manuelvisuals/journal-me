@@ -44,6 +44,7 @@
  */
 
 import { openDB, type DBSchema, type IDBPDatabase } from "idb";
+import { utenteDalDispositivo } from "@/lib/supabase/client";
 
 /** Una riga come sta sul server: la busta e chiusa. */
 export type RigaSpecchio = {
@@ -115,19 +116,29 @@ async function scriviMeta(chiave: string, valore: string | number | boolean): Pr
 }
 
 /**
- * Vero solo dopo una sincronizzazione completa. Non chiede chi sei di
- * proposito: sapere l'utente vuol dire chiedere la sessione, e questa
- * domanda sta davanti a OGNI lettura — una domanda che costa rete davanti a
- * una lettura fatta per non usare la rete sarebbe un cerchio ridicolo. Che
- * lo specchio sia della persona giusta lo garantiscono i due estremi: il
- * logout lo svuota (`svuotaSpecchio`) e la sincronizzazione lo svuota se
- * trova un altro id (`assicuraUtente`). Fra i due, non c'e modo che una
- * giornata di un altro account finisca qui dentro.
+ * Vero solo dopo una sincronizzazione completa E SOLO SE LO SPECCHIO E DI
+ * CHI STA USANDO L'APP ADESSO.
+ *
+ * La seconda meta di quella frase e costata cara l'11 settembre 2026:
+ * senza, bastava entrare con un altro account (il revisore Apple, sullo
+ * stesso telefono) per vedere il MESE VUOTO — le letture rispondevano
+ * dallo specchio, che era pronto ma di un altro, e non andavano mai in
+ * rete a scoprire che le giornate c'erano. Uno specchio che risponde "non
+ * c'e niente" e peggio di uno specchio che non risponde.
+ *
+ * Chi sia l'utente si legge dal dispositivo (`utenteDalDispositivo`), senza
+ * rete: chiedere la sessione al server davanti a ogni lettura fatta apposta
+ * per non usare la rete sarebbe un cerchio ridicolo. Senza sessione (ospite,
+ * modalita locale) lo specchio non si usa: quelle giornate stanno gia sul
+ * dispositivo per conto loro.
  */
 export async function pronto(): Promise<boolean> {
   if (!disponibile()) return false;
+  const chi = utenteDalDispositivo();
+  if (!chi) return false;
   try {
-    return (await meta<boolean>("pronto")) === true;
+    const [ok, suo] = await Promise.all([meta<boolean>("pronto"), meta<string>("utente")]);
+    return ok === true && suo === chi;
   } catch {
     return false;
   }

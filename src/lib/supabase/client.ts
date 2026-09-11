@@ -77,3 +77,42 @@ export async function getAccessToken(): Promise<string | null> {
   const { data } = await createClient().auth.getSession();
   return data.session?.access_token ?? null;
 }
+
+/**
+ * CHI E, LETTO DAL DISPOSITIVO E BASTA (11 settembre 2026).
+ *
+ * `auth.getUser()` chiede ad Apple... cioe a Supabase: e una richiesta di
+ * rete, e ci sono posti dove la domanda "di chi sono queste giornate?" sta
+ * DAVANTI a una lettura fatta apposta per non usare la rete (lo specchio,
+ * store/specchio.ts). Li serve una risposta locale o niente.
+ *
+ * La sessione di supabase-js sta in localStorage, sotto una chiave che
+ * finisce per `-auth-token`; dentro c'e il gettone, e dentro il gettone
+ * c'e `sub`, che e l'id dell'utente. Qui si legge quello. NON si verifica
+ * la firma e non e un controllo di sicurezza: serve solo a dire "questo
+ * specchio e di un altro account", e nel caso peggiore (gettone illeggibile)
+ * si risponde null, cioe "non mi fidare", che e il lato giusto in cui
+ * sbagliare.
+ */
+export function utenteDalDispositivo(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const chiave = Object.keys(window.localStorage).find(
+      (k) => k.startsWith("sb-") && k.endsWith("-auth-token"),
+    );
+    if (!chiave) return null;
+    const grezzo = window.localStorage.getItem(chiave);
+    if (!grezzo) return null;
+    const sessione = JSON.parse(grezzo) as { access_token?: string; user?: { id?: string } };
+    if (sessione?.user?.id) return sessione.user.id;
+    const gettone = sessione?.access_token;
+    if (!gettone) return null;
+    const pezzo = gettone.split(".")[1];
+    if (!pezzo) return null;
+    const json = atob(pezzo.replace(/-/g, "+").replace(/_/g, "/"));
+    const dati = JSON.parse(json) as { sub?: string };
+    return dati?.sub ?? null;
+  } catch {
+    return null;
+  }
+}

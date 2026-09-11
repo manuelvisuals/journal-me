@@ -18,6 +18,7 @@ import {
 } from "@/lib/cassaforte";
 import { CassaforteCancello } from "@/modules/accesso";
 import { avviaCoda } from "@/lib/actions/coda-analisi";
+import { utenteDalDispositivo } from "@/lib/supabase/client";
 import { migraSePromesso } from "@/lib/ospite/migrazione";
 import { prendiMuroDaRiaprire } from "@/lib/ospite/muro-riapri";
 import { openPremiumWall } from "@/modules/abbonamento";
@@ -146,7 +147,32 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (settledOut && !publicPath) {
+      /* APPENA LOGGATO NON VUOL DIRE APPENA USCITO (11 settembre 2026,
+         Manuel: "ho fatto il login e dice ancora This device, non mi ha
+         loggato").
+         Dopo un codice giusto succedono due cose, e NON nello stesso
+         istante: la modalita smette di essere "local" (clearLocalMode, che
+         legge il gettone dal dispositivo: immediato) e lo stato di
+         autenticazione diventa "in" (la vedetta di Supabase: piu lento,
+         nel guscio anche di parecchio). Nella fessura fra le due, qui
+         dentro si leggeva "modalita cloud + auth out" = "e uscito", e si
+         rispondeva chiamando chooseLocalMode(): l'app si rimetteva da sola
+         in modalita ospite un attimo dopo il login, e il mese dell'account
+         appena entrato appariva vuoto.
+         Il gettone sul dispositivo e la prova che quella fessura e una
+         fessura e non un'uscita: finche c'e, si aspetta. */
+      if (utenteDalDispositivo()) return;
       if (ospiteAttivo()) {
+        /* UNA RIGA PER IL DUMP (11 settembre 2026). Qui l'app decide che
+           sei un ospite, e da qui in poi il diario dell'account non si vede
+           piu: se la decisione e sbagliata, questa riga e l'unico modo di
+           saperlo dal telefono di Manuel. Non e un messaggio per la
+           persona: e per il log di Xcode. */
+        try {
+          console.warn(`[jm] torno ospite: modalita=${mode} auth=${auth} gettone=no`);
+        } catch {
+          // niente console, niente riga
+        }
         // L'OSPITE (SPEC R1, mockup ospite-primo-avvio 01, in attesa
         // dell'ok): nessun login e nessun bivio, si entra dritti su Oggi in
         // modalita locale, e nasce il braccialetto anonimo che accende
@@ -173,7 +199,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       // cieco. La migrazione locale->cloud vera e propria arriva con §7.2.
       router.replace("/app");
     }
-  }, [settledOut, auth, publicPath, pathname, router]);
+  }, [settledOut, auth, mode, publicPath, pathname, router]);
 
   // L'ospite che ha appena messo l'email (mockup premium-senza-password,
   // C1): con la sessione e la cassaforte aperta, le giornate del telefono

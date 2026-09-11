@@ -189,3 +189,27 @@ settembre; Manuel: "vai, facciamo tutto").
 - Banchi: `verify-porta-giorno` (35, browser), `verify-benvenuto` (65,
   riscritta la sezione della casella), `verify-saluto-logout` (10),
   `verify-linguetta-revisore` (6), `verify-appstore` (22, riscritto).
+
+## Lo specchio e di UN account solo, e chi ha un account non torna ospite (11 settembre 2026)
+
+Manuel entra con `appreview@` sul telefono e trova il mese vuoto e, in
+Impostazioni, ancora "Solo su questo dispositivo" con le giornate in
+regalo. Due cose diverse, tutte e due qui:
+
+- `pronto()` dello specchio (src/lib/data/store/specchio.ts) confronta il
+  padrone dello specchio con la sessione SUL DISPOSITIVO
+  (`utenteDalDispositivo` in src/lib/supabase/client.ts: legge il `sub` del
+  gettone da localStorage, zero rete). Senza, uno specchio pronto ma di un
+  altro account rispondeva "non c'e niente" e nessuno andava in rete a
+  controllare: il mese usciva VUOTO. Uno specchio che risponde il falso e
+  peggio di uno che non risponde. Il banco non sa fingere due account
+  insieme (il Supabase finto ha un utente solo): la regola vive nel codice,
+  ed e scritta anche in testa a verify-specchio.
+- AuthGate: finche sul dispositivo c'e la sessione di un account, NON si
+  torna in modalita ospite. "Non risulta autenticato" puo voler dire tre
+  cose — e uscito davvero, la risposta non e ancora arrivata, il rinnovo
+  del gettone e fallito — e solo la prima e un'uscita. Trattarle uguali
+  vuol dire prendere chi ha un diario nel cloud, rimetterlo ospite e
+  mostrargli un mese vuoto. Quando la decisione "torno ospite" viene presa
+  davvero, una riga sulla console la annuncia col motivo: e per il dump di
+  Xcode, non per la persona.

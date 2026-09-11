@@ -18,6 +18,14 @@
 //  6. il logout svuota lo specchio: un diario che resta addosso al telefono
 //     dopo che la persona e uscita sarebbe il peggiore dei bug.
 //
+// QUELLO CHE QUESTO BANCO NON SA PROVARE, e va tenuto a mente: il secondo
+// account sullo stesso telefono. Il Supabase finto ha un utente solo, e non
+// sa fingere due identita insieme; la regola ("uno specchio di un altro
+// account non risponde, e le letture tornano in rete") vive in
+// `pronto()`, che confronta il padrone dello specchio con la sessione sul
+// dispositivo. Se un giorno il finto imparera a fare due utenti, il
+// controllo va aggiunto qui.
+//
 // Serve il dev server su :3100 con NEXT_PUBLIC_SUPABASE_URL=https://sbfinto.supabase.co.
 import { chromium } from "playwright-core";
 import { SupabaseFinto, montaSupabaseFinto } from "./lib/supabase-finto.mjs";
