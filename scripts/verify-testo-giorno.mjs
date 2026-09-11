@@ -31,7 +31,7 @@ function check(name, ok, extra = "") {
 
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
 
-async function open(path, { w = 430, h = 932, scale = null, wait = ".jm-st-group" } = {}) {
+async function open(path, { w = 430, h = 932, scale = null, wait = ".jm-st-group:visible" } = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, locale: "it-IT" });
   await ctx.addInitScript(
     ([s]) => {

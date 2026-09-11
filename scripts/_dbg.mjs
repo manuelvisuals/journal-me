@@ -1,0 +1,25 @@
+import { chromium } from "playwright-core";
+import { SupabaseFinto, montaSupabaseFinto } from "./lib/supabase-finto.mjs";
+const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
+const BASE = "http://localhost:3100";
+const b = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
+const finto = new SupabaseFinto();
+const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, locale: "it-IT" });
+await montaSupabaseFinto(ctx, finto);
+const page = await ctx.newPage();
+page.on("console", (m) => { if (m.type() === "error") console.log("CONSOLE", m.text().slice(0, 200)); });
+await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+try { await page.locator(".jm-login-cassa-check input").waitFor({ state: "visible", timeout: 25000 }); await page.locator(".jm-login-cassa-check input").check(); await page.locator("button.btn-primary").click(); } catch {}
+await page.locator(".jm-ed-ta").waitFor({ state: "visible", timeout: 40000 });
+await page.locator(".jm-ed-ta").click();
+await page.keyboard.type("Basalto turchese nella cava di Pietraperzia");
+await page.keyboard.press("Control+s");
+await page.waitForFunction(() => document.body.innerText.includes("Basalto turchese"), null, { timeout: 40000 });
+await page.waitForTimeout(3000);
+const aereo = (r) => r.abort();
+await ctx.route("**/sbfinto.supabase.co/**", aereo);
+await page.goto(BASE + "/app/mese", { waitUntil: "domcontentloaded" });
+await page.waitForTimeout(12000);
+console.log("--- TESTO ---");
+console.log((await page.locator("body").innerText()).replace(/\s+/g, " ").slice(0, 500));
+await b.close();

@@ -768,6 +768,18 @@ export function RecordingOverlay({
    * di fila diventerebbero un avviso, e qui non c'e niente da avvisare.
    */
   const liveDotColor = state === "paused" ? "var(--color-live-ready)" : liveColor;
+  /**
+   * MENTRE TRASCRIVE LA SPIA SE NE VA (11 settembre 2026, Manuel: "durante
+   * la trascrizione non dovrebbe dire READY"). Aveva ragione: in quel
+   * momento il microfono e chiuso e la registrazione e gia finita, quindi
+   * "pronto" e falso due volte, e il pallino verde dice "ti ascolto" mentre
+   * nessuno ascolta. La regola che si applica qui e quella di Apple: un
+   * elemento di stato che non ha piu niente di vero da dire SPARISCE, non si
+   * riempie di parole nuove. Cosa sta succedendo lo dice gia, in grande, il
+   * centro dello schermo. Resta solo la durata, spenta: e l'unico fatto
+   * ancora vero, cioe quanto hai registrato.
+   */
+  const spiaVisibile = !recovering;
 
   if (!portalReady || typeof document === "undefined") {
     return null;
@@ -797,7 +809,11 @@ export function RecordingOverlay({
           className="flex items-center justify-between shrink-0"
           style={{ marginBottom: 20 }}
         >
-          <div className="flex items-center" style={{ gap: 7 }}>
+          <div
+            className="flex items-center"
+            style={{ gap: 7, visibility: spiaVisibile ? "visible" : "hidden" }}
+            aria-hidden={spiaVisibile ? undefined : true}
+          >
             <span
               className="inline-block"
               style={{
@@ -834,6 +850,7 @@ export function RecordingOverlay({
               fontWeight: 500,
               color: "var(--color-ink)",
               letterSpacing: "0.06em",
+              opacity: recovering ? 0.5 : 1,
             }}
           >
             {formatDurationMmSs(seconds)}

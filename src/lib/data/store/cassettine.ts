@@ -34,6 +34,7 @@ import {
   BustaNonApribile,
 } from "@/lib/cassaforte/serratura";
 import type { AreaSummary, EntryMetrics, Fact, NewFact } from "@/lib/types";
+import * as specchio from "./specchio";
 
 /** Cio che sta dentro una busta. Campi stabili: si aggiunge, non si rinomina. */
 export type Contenuto = {
@@ -157,8 +158,28 @@ export class Cassettine {
     };
   }
 
-  /** La cassettina di un giorno (senza ripiego). */
-  async leggiCassettina(giorno: string): Promise<Cassettina | null> {
+  /**
+   * LE LETTURE PASSANO DALLO SPECCHIO (store/specchio.ts, decisione 1C
+   * dell'11 settembre 2026). Quando lo specchio e pronto, una giornata si
+   * legge dal telefono e si apre con la chiave: zero rete, zero attesa,
+   * quindi zero skeleton, e il diario si legge anche in aereo.
+   *
+   * LE SCRITTURE NO: quelle rileggono sempre dal server (`dalServer`).
+   * Scrivere sopra una versione che il telefono crede corrente ma non lo e
+   * piu aprirebbe il foglio del conflitto per colpa nostra, non della
+   * persona. Il costo e una richiesta dentro un salvataggio, dove si sta
+   * gia aspettando.
+   */
+  private async specchioVivo(): Promise<boolean> {
+    try {
+      return await specchio.pronto();
+    } catch {
+      return false;
+    }
+  }
+
+  /** La cassettina di un giorno com'e sul SERVER, sempre (le scritture). */
+  private async dalServer(giorno: string): Promise<Cassettina | null> {
     const { data, error } = await this.sb()
       .from("cassettine")
       .select("giorno, v, busta, updated_at, created_at")
@@ -169,30 +190,50 @@ export class Cassettine {
     return this.apriRiga(data as RigaCassettina);
   }
 
+  /** La cassettina di un giorno (senza ripiego): specchio se c'e, altrimenti rete. */
+  async leggiCassettina(giorno: string): Promise<Cassettina | null> {
+    if (await this.specchioVivo()) {
+      const r = await specchio.una(giorno);
+      return r ? this.apriRiga(r as RigaCassettina) : null;
+    }
+    return this.dalServer(giorno);
+  }
+
   /** Il contenuto di un giorno: cassettina, altrimenti riga in chiaro, altrimenti null. */
   async leggi(giorno: string): Promise<Contenuto | null> {
     const c = await this.leggiCassettina(giorno);
     if (c) return c.contenuto;
+    // Il ripiego (R12) e una seconda richiesta: si fa solo se sul server
+    // righe in chiaro ce ne sono davvero. Lo specchio se lo segna alla
+    // sincronizzazione, e quasi sempre e zero.
+    if ((await this.specchioVivo()) && (await specchio.righeInChiaro()) === 0) return null;
     const chiara = await this.ripiego.leggiInChiaro(giorno);
     return chiara?.contenuto ?? null;
   }
 
   /** I contenuti di un intervallo (estremi inclusi), giorno -> contenuto, dal piu recente. */
   async leggiTra(da: string, a: string): Promise<Map<string, Contenuto>> {
-    const { data, error } = await this.sb()
-      .from("cassettine")
-      .select("giorno, v, busta, updated_at, created_at")
-      .gte("giorno", da)
-      .lte("giorno", a)
-      .order("giorno", { ascending: false });
-    if (error) throw new Error(error.message);
+    const vivo = await this.specchioVivo();
+    let righe: RigaCassettina[];
+    if (vivo) {
+      righe = (await specchio.tra(da, a)) as RigaCassettina[];
+    } else {
+      const { data, error } = await this.sb()
+        .from("cassettine")
+        .select("giorno, v, busta, updated_at, created_at")
+        .gte("giorno", da)
+        .lte("giorno", a)
+        .order("giorno", { ascending: false });
+      if (error) throw new Error(error.message);
+      righe = (data ?? []) as RigaCassettina[];
+    }
     const out = new Map<string, Contenuto>();
-    const aperte = await Promise.all(
-      ((data ?? []) as RigaCassettina[]).map((r) => this.apriRiga(r)),
-    );
+    const aperte = await Promise.all(righe.map((r) => this.apriRiga(r)));
     for (const c of aperte) out.set(c.giorno, c.contenuto);
-    const chiare = await this.ripiego.leggiInChiaroTra(da, a);
-    for (const [g, r] of chiare) if (!out.has(g)) out.set(g, r.contenuto);
+    if (!vivo || (await specchio.righeInChiaro()) > 0) {
+      const chiare = await this.ripiego.leggiInChiaroTra(da, a);
+      for (const [g, r] of chiare) if (!out.has(g)) out.set(g, r.contenuto);
+    }
     return new Map([...out.entries()].sort((x, y) => (x[0] < y[0] ? 1 : -1)));
   }
 
@@ -200,6 +241,50 @@ export class Cassettine {
   async leggiTutte(): Promise<Map<string, Contenuto>> {
     const tutte = await this.leggiTra("0001-01-01", "9999-12-31");
     return new Map([...tutte.entries()].sort((x, y) => (x[0] < y[0] ? -1 : 1)));
+  }
+
+  /**
+   * LA SINCRONIZZAZIONE DELLO SPECCHIO (1C, 11 settembre 2026). Due passi e
+   * nessuna furbizia:
+   *   1. l'ELENCO dal server — solo `giorno` e `v`, cioe una manciata di
+   *      byte per giornata: un anno di diario sta in pochi kilobyte;
+   *   2. il confronto con l'elenco locale dice tutto: cosa e sparito (via
+   *      dallo specchio), cosa e cambiato di versione (si scarica la busta),
+   *      e tutto il resto non si tocca.
+   * Le buste si scaricano a lotti, perche un `in (...)` con mille giorni
+   * dentro diventa un URL che nessuno vuole.
+   *
+   * Errori: si lasciano uscire, ma chi chiama (warm.ts) li ingoia. Una
+   * sincronizzazione fallita vuol dire solo che lo specchio resta com'era —
+   * e se non e mai stato pronto, le letture vanno in rete come prima.
+   */
+  async sincronizza(): Promise<void> {
+    if (!specchio.disponibile()) return;
+    await specchio.assicuraUtente(await this.userId());
+    const { data, error } = await this.sb().from("cassettine").select("giorno, v");
+    if (error) throw new Error(error.message);
+    const remoto = new Map(
+      ((data ?? []) as { giorno: string; v: number }[]).map((r) => [r.giorno, r.v]),
+    );
+    const locale = await specchio.elencoLocale();
+    await specchio.togli([...locale.keys()].filter((g) => !remoto.has(g)));
+    const daScaricare = [...remoto.entries()]
+      .filter(([g, v]) => locale.get(g) !== v)
+      .map(([g]) => g);
+    const LOTTO = 150;
+    for (let i = 0; i < daScaricare.length; i += LOTTO) {
+      const fetta = daScaricare.slice(i, i + LOTTO);
+      const { data: buste, error: e2 } = await this.sb()
+        .from("cassettine")
+        .select("giorno, v, busta, updated_at, created_at")
+        .in("giorno", fetta);
+      if (e2) throw new Error(e2.message);
+      await specchio.metti((buste ?? []) as specchio.RigaSpecchio[]);
+    }
+    // Quante righe in chiaro ci sono ancora (R12): serve a non fare la query
+    // di ripiego a ogni lettura quando la risposta e sempre zero.
+    const { count } = await this.sb().from("entries").select("id", { count: "exact", head: true });
+    await specchio.segnaPronto(count ?? 0);
   }
 
   async conta(): Promise<{ chiuse: number; inChiaro: number }> {
@@ -213,6 +298,7 @@ export class Cassettine {
 
   private async chiama(giorno: string, vAttesa: number, contenuto: Contenuto): Promise<number> {
     const busta = testoDaBusta(await chiudi(chiavi().aes, contenuto));
+    const primaDiScrivere = specchio.disponibile() ? await specchio.una(giorno).catch(() => null) : null;
     const { data, error } = await this.sb().rpc("salva_cassettina", {
       p_giorno: giorno,
       p_v_attesa: vAttesa,
@@ -220,7 +306,7 @@ export class Cassettine {
     });
     if (error) {
       if (/versione_superata/.test(error.message)) {
-        const loro = await this.leggiCassettina(giorno);
+        const loro = await this.dalServer(giorno);
         if (loro) {
           const c = new ConflittoVersione(giorno, contenuto, loro);
           for (const a of ascoltatoriConflitto) a(c);
@@ -229,7 +315,26 @@ export class Cassettine {
       }
       throw new Error(error.message);
     }
-    return typeof data === "number" ? data : vAttesa + 1;
+    const nuovaV = typeof data === "number" ? data : vAttesa + 1;
+    // Lo specchio si aggiorna con quello che abbiamo appena scritto: la
+    // busta ce l'abbiamo in mano, la versione l'ha appena detta il server.
+    // Senza questa riga la giornata appena salvata resterebbe vecchia sul
+    // telefono fino alla prossima sincronizzazione.
+    if (specchio.disponibile()) {
+      const adesso = new Date().toISOString();
+      await specchio
+        .metti([
+          {
+            giorno,
+            v: nuovaV,
+            busta,
+            updated_at: adesso,
+            created_at: primaDiScrivere?.created_at ?? contenuto.createdAt ?? adesso,
+          },
+        ])
+        .catch(() => {});
+    }
+    return nuovaV;
   }
 
   /**
@@ -242,7 +347,7 @@ export class Cassettine {
     giorno: string,
     modifica: (corrente: Contenuto, esisteva: boolean) => Contenuto,
   ): Promise<Contenuto> {
-    const c = await this.leggiCassettina(giorno);
+    const c = await this.dalServer(giorno);
     if (c) {
       const nuovo = modifica(c.contenuto, true);
       await this.chiama(giorno, c.v, nuovo);
@@ -262,7 +367,7 @@ export class Cassettine {
    * un'ALTRA scrittura, e un conflitto nuovo e si rilancia.
    */
   async sovrascrivi(giorno: string, contenuto: Contenuto): Promise<Contenuto> {
-    const c = await this.leggiCassettina(giorno);
+    const c = await this.dalServer(giorno);
     await this.chiama(giorno, c?.v ?? 0, contenuto);
     return contenuto;
   }
@@ -275,6 +380,7 @@ export class Cassettine {
       .eq("user_id", userId)
       .eq("giorno", giorno);
     if (error) throw new Error(error.message);
+    if (specchio.disponibile()) await specchio.togli([giorno]).catch(() => {});
     await this.ripiego.cancellaInChiaro(giorno);
   }
 
@@ -302,7 +408,7 @@ export class Cassettine {
     const giorni = [...chiare.keys()].sort();
     let fatte = 0;
     for (const g of giorni) {
-      const gia = await this.leggiCassettina(g);
+      const gia = await this.dalServer(g);
       if (gia) {
         // Esiste gia una cassettina: la riga in chiaro e un doppione vecchio.
         await this.ripiego.cancellaInChiaro(g);

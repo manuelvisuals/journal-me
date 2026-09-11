@@ -201,6 +201,11 @@ export class CloudStore implements JournalStore {
     },
   );
 
+  /** La sincronizzazione dello specchio: la chiama warm.ts all'avvio. */
+  async sincronizzaSpecchio(): Promise<void> {
+    await this.cassettine.sincronizza();
+  }
+
   private rowToContenuto(row: Record<string, unknown>, facts: Fact[]): Contenuto {
     return {
       transcript: (row.transcript as string) ?? "",

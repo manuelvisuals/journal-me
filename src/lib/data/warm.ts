@@ -16,9 +16,18 @@
  * aprira. Si aspetta `signalReady()` — lo stesso segnale che toglie la
  * splash — e in piu un attimo di respiro.
  *
- * COSA. Le quattro letture che servono agli altri tab: il mese corrente
+ * COSA. Prima di tutto LO SPECCHIO (store/specchio.ts, decisione 1C dell'11
+ * settembre 2026): la copia cifrata delle giornate sul dispositivo si mette
+ * in pari col server, e da quel momento Mese e i giorni passati si leggono
+ * dal telefono — niente rete, niente skeleton, anche in aereo. Va per primo
+ * perche le letture qui sotto, se lo specchio e pronto, non toccano piu la
+ * rete. Poi le quattro letture che servono agli altri tab: il mese corrente
  * (Mese), i micro-goal (Oggi e Impostazioni), Ricorda, i recap. Non le
  * giornate passate una per una: sono infinite e non si sa quale aprira.
+ *
+ * E POI OGNI VOLTA CHE L'APP TORNA IN PRIMO PIANO: mentre eri altrove puoi
+ * aver scritto dall'iPad. La sincronizzazione e un elenco leggero piu le
+ * buste cambiate, quindi quasi sempre e una richiesta sola e niente.
  *
  * COSA NON FA. Non tocca niente se la modalita non e ancora risolta, non
  * riprova in caso di errore e non dice niente all'utente: e un lusso, non
@@ -30,7 +39,7 @@ import { loadGoalDefs } from "@/lib/data/goals";
 import { loadMonthEntries } from "@/lib/data/entries";
 import { loadRecaps } from "@/lib/data/recaps";
 import { loadRemembers } from "@/lib/data/remembers";
-import { resolveStorageMode } from "@/lib/data/store";
+import { resolveStorageMode, sincronizzaSpecchio } from "@/lib/data/store";
 import { nowAppParts } from "@/lib/format";
 
 let started = false;
@@ -42,6 +51,11 @@ export async function warmAll(): Promise<void> {
   try {
     const mode = await resolveStorageMode();
     if (mode !== "local" && mode !== "cloud") return;
+    // Lo specchio per primo: se si mette in pari, tutto il resto si legge
+    // dal telefono. Se fallisce (niente rete, IndexedDB negato) non cambia
+    // niente: le letture vanno in rete come hanno sempre fatto.
+    await sincronizzaSpecchio().catch(() => {});
+    vedetta();
     const { year, month } = nowAppParts();
     // Tutte insieme: sono indipendenti, e in serie sommerebbero le latenze.
     await Promise.allSettled([
@@ -53,4 +67,27 @@ export async function warmAll(): Promise<void> {
   } catch {
     // Il precaricamento non ha diritto di rompere niente.
   }
+}
+
+let vedettaMessa = false;
+
+/**
+ * La vedetta del ritorno in primo piano. Una sola per sessione, e un solo
+ * giro alla volta: se il telefono va e viene tre volte in tre secondi non
+ * partono tre sincronizzazioni.
+ */
+function vedetta(): void {
+  if (vedettaMessa || typeof document === "undefined") return;
+  vedettaMessa = true;
+  let inCorso = false;
+  const guarda = () => {
+    if (document.visibilityState !== "visible" || inCorso) return;
+    inCorso = true;
+    void sincronizzaSpecchio()
+      .catch(() => {})
+      .finally(() => {
+        inCorso = false;
+      });
+  };
+  document.addEventListener("visibilitychange", guarda);
 }

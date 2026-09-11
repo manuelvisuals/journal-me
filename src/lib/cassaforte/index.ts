@@ -154,12 +154,65 @@ async function provaSiApre(ch: Chiavi, prova: string): Promise<boolean> {
  * la sessione cloud e nota. Idempotente: richiamarla con lo stesso utente a
  * cassaforte aperta non ricalcola niente.
  */
+/**
+ * SENZA RETE, LA CHIAVE BASTA (11 settembre 2026, con lo specchio: decisione
+ * 1C di Manuel). La prova sta sul server e serve a una cosa sola: accorgersi
+ * che questa cassaforte non e piu quella di prima (account ricominciato da
+ * zero altrove). E una verifica utile, ma non e la condizione per leggere il
+ * proprio diario: la chiave e sul dispositivo, le buste anche (lo specchio),
+ * e in aereo non c'e nessun server a cui chiedere il permesso. Quindi: se
+ * questa cassaforte si e GIA aperta qui per QUESTO utente, e il server non
+ * risponde, si apre lo stesso. Al primo momento di rete la verifica si rifa
+ * da sola, alla prossima apertura dell'app.
+ *
+ * Il segno sta in localStorage e non altrove perche deve sopravvivere alla
+ * chiusura dell'app ed essere leggibile prima di qualunque rete.
+ */
+const SEGNO_APERTA = "jm.cassaforte.aperta";
+
+function segnaApertaQui(userId: string): void {
+  try {
+    window.localStorage.setItem(SEGNO_APERTA, userId);
+  } catch {
+    // storage negato: si perde solo il ripiego offline
+  }
+}
+
+function giaApertaQui(userId: string): boolean {
+  try {
+    return window.localStorage.getItem(SEGNO_APERTA) === userId;
+  } catch {
+    return false;
+  }
+}
+
+export function dimenticaAperturaLocale(): void {
+  try {
+    window.localStorage.removeItem(SEGNO_APERTA);
+  } catch {
+    // niente storage, niente segno
+  }
+}
+
+async function apriConLaChiaveCheCEGia(userId: string): Promise<boolean> {
+  if (!giaApertaQui(userId)) return false;
+  const seme = await leggiSeme(userId).catch(() => null);
+  if (!seme) return false;
+  const ch = await chiaviDaSeme(seme, userId);
+  imposta({ stato: "aperta", chiavi: ch, seme, errore: null });
+  return true;
+}
+
 export async function risolviCassaforte(userId: string): Promise<StatoCassaforte> {
   if (interno.userId === userId && interno.stato === "aperta") return "aperta";
   imposta({ stato: "risolvendo", userId, chiavi: null, seme: null, errore: null });
   try {
     return await risolviDavvero(userId);
   } catch (e) {
+    // Prima di dire "non risponde": se la chiave e qui e questa cassaforte
+    // si e gia aperta su questo dispositivo, si apre. E l'aereo, non un
+    // guasto (vedi il commento sopra).
+    if (await apriConLaChiaveCheCEGia(userId)) return "aperta";
     // Mai una schermata vuota: se il server non risponde o le tabelle non
     // ci sono ancora, lo si dice (AuthGate mostra il messaggio e un riprova).
     imposta({ stato: "errore", errore: (e as Error)?.message ?? String(e) });
@@ -190,6 +243,7 @@ async function risolviDavvero(userId: string): Promise<StatoCassaforte> {
     return "chiusa";
   }
   imposta({ stato: "aperta", chiavi: ch, seme });
+  segnaApertaQui(userId);
   return "aperta";
 }
 

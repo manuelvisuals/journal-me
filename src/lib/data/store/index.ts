@@ -125,6 +125,18 @@ export function getStore(): JournalStore {
   return cloudStore;
 }
 
+/**
+ * LO SPECCHIO (store/specchio.ts, 1C dell'11 settembre 2026): la copia
+ * cifrata delle giornate sul dispositivo. Solo in cloud: in locale le
+ * giornate SONO gia sul dispositivo, e non c'e niente da rispecchiare.
+ * Chi chiama (warm.ts, e il ritorno in primo piano) ingoia gli errori.
+ */
+export async function sincronizzaSpecchio(): Promise<void> {
+  if (resolved !== "cloud") return;
+  const s = getStore();
+  if (s instanceof CloudStore) await s.sincronizzaSpecchio();
+}
+
 export type {
   AIFields,
   BackupFile,

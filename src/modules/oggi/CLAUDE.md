@@ -271,3 +271,14 @@ NATIVA di iOS: non si disegna, si lascia stare. Le classi `jm-editor-*`
 restano condivise con transcript-editor, review-screen e recap-editor:
 tutto cio che cambia sta sotto `.jm-mw`, cosi le altre schermate non si
 muovono.
+
+## Mentre trascrive, la spia se ne va (11 settembre 2026)
+
+Manuel: "durante la trascrizione non dovrebbe dire READY". Vero due volte:
+il microfono e chiuso e la registrazione e gia finita, quindi il pallino
+verde dice "ti ascolto" mentre nessuno ascolta. Con `recovering` acceso la
+riga di stato (pallino + parola) diventa invisibile e la durata resta a
+meta opacita: e l'unico fatto ancora vero, cioe quanto hai registrato.
+Cosa stia succedendo lo dice gia, in grande, il centro dello schermo. La
+regola da tenere: un elemento di stato che non ha piu niente di vero da
+dire SPARISCE, non si riempie di parole nuove.
