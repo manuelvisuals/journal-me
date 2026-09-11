@@ -27,7 +27,53 @@ export function Scorrimento() {
   useEffect(() => {
     const radice = document.querySelector<HTMLElement>(".jm-sito7");
     if (!radice) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    /**
+     * LA FASCIA DELL'ORA SU IPHONE (11 settembre 2026, richiesta di Manuel:
+     * "sarebbe bello se la parte in alto fosse trasparente come nel
+     * mockup").
+     *
+     * Trasparente davvero non si puo, e bene dirlo: dentro Safari quella
+     * striscia e cromo del browser e viene sempre dipinta di un colore
+     * pieno — `theme-color`, e su Safari 26 il colore del primo elemento
+     * fisso, che il CSS tiene uguale. Trasparente lo e solo nell'app
+     * installata in schermata Home, dove `black-translucent` +
+     * `viewport-fit: cover` (layout.tsx) fanno passare la pagina sotto
+     * l'ora: quello e gia acceso.
+     *
+     * Quello che si puo fare e toglierle il contrasto: finche la pagina e
+     * in cima la striscia prende il tono medio dei primi pixel della
+     * fotografia velata (#60554b, misurato sul rendering, non scelto a
+     * occhio) invece del colore della pagina, che sopra una fotografia si
+     * legge come una banda scura. Appena si scende torna il colore della
+     * pagina, che li e giusto.
+     *
+     * Sta prima dell'uscita anticipata perche vale anche per chi ha chiesto
+     * meno animazioni: non e un'animazione, e un colore.
+     */
+    const meta = radice.classList.contains("jm-sito4-archivio-v7")
+      ? null
+      : document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    // Non si riusa il valore che c'e nel meta: `boot.ts` ci scrive
+    // `--jm-bg-app`, che e il fondo CHIARO dell'app (#F7F2E9). Sulla home
+    // scura quella striscia color crema e proprio la banda che stiamo
+    // togliendo, solo di un altro colore. Il colore giusto da scrollata e
+    // il fondo vero della pagina.
+    const tonoPagina =
+      getComputedStyle(radice).getPropertyValue("--jm-ink").trim() ||
+      meta?.content ||
+      "";
+    const tingi = () => {
+      if (meta) meta.content = window.scrollY > 24 ? tonoPagina : "#60554b";
+    };
+    tingi();
+    window.addEventListener("scroll", tingi, { passive: true });
+    const spegniTinta = () => {
+      window.removeEventListener("scroll", tingi);
+      if (meta) meta.content = tonoPagina;
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return spegniTinta;
 
     const blocchi = Array.from(radice.querySelectorAll<HTMLElement>("[data-fx]"));
     const piste = Array.from(radice.querySelectorAll<HTMLElement>("[data-pista]"));
@@ -123,6 +169,7 @@ export function Scorrimento() {
       void document.fonts.ready.then(rimisura);
     }
     return () => {
+      spegniTinta();
       window.removeEventListener("scroll", chiedi);
       window.removeEventListener("resize", rimisura);
       if (quadro) cancelAnimationFrame(quadro);

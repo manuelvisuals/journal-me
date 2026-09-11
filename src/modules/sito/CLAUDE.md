@@ -56,28 +56,46 @@ risalva con `--scrivi`.
 ## La prima schermata sul telefono (jm-sito14)
 
 La home del telefono, dall'11 settembre 2026, non e piu "una pagina con una
-foto dietro" ma **una fotografia con una didascalia sopra**: foto in alto,
-occhiello-titolo-testo-tasto in basso a sinistra, un gesto solo.
+foto dietro" ma **una fotografia con una didascalia sopra**: foto a tutta
+pagina, occhiello-titolo-testo-tasto in basso a sinistra, un gesto solo.
 
-Un numero regge tutto il resto, e conviene saperlo prima di toccare la
-fascia. La foto `salotto-voce.webp` e 1920x1081 (larga 1,78 volte
-l'altezza); uno schermo di telefono e alto 2,17 volte la larghezza. Con
-`object-fit: cover` a tutta pagina il browser la ingrandisce fino a coprire
-l'altezza e se ne vede il 26% della larghezza: un primo piano sul viso,
-senza la mano e senza il telefono. **Non e una questione di
-`object-position`**: spostando il taglio resta comunque una finestra da 499
-pixel, e per tenere dentro dalla spalla al telefono ne servono 566. Il
-taglio si allarga solo abbassando la fotografia. Per questo la foto occupa
-una fascia alta `64svh` e non tutto lo schermo: li dentro se ne vede il 42%,
-e il gesto — che e la ragione per cui quella foto sta sul sito — c'e tutto.
-Chi cambia l'altezza della fascia cambia l'inquadratura: sono lo stesso
-numero.
+**Il fondo sotto le parole e la fotografia velata, non una fascia di
+colore.** E' la correzione del 11 settembre: avevo provato a mettere la foto
+in una fascia alta con sotto il fondo scuro, e Manuel ha risposto — con
+ragione — che c'era "troppo layer color cioccolato". Se qualcuno rimette una
+fascia, ha rifatto l'errore.
 
-Scrollando la fascia si apre fino a tutta pagina (`64svh + 36svh * --par`,
-lo stesso cursore del parallasse): la didascalia esce di lato e la
-fotografia prende il posto suo, invece di lasciare un terzo di buio vuoto.
-Senza JS `var(--par, 0)` vale zero e la fascia resta 64svh, che e la
-composizione ferma.
+Un numero regge il taglio, e conviene saperlo prima di toccarlo. La foto
+`salotto-voce.webp` e 1920x1081 (larga 1,78 volte l'altezza); uno schermo di
+telefono e alto 2,17 volte la larghezza. Con `cover` il browser la
+ingrandisce fino a coprire l'altezza e se ne vedono 1081 x 393/852 = **499
+pixel di larghezza, il 26%**. In 499 pixel non ci stanno insieme la spalla e
+il telefono (ne servirebbero 751): **si sceglie**. Si tiene il gesto —
+orecchio, viso, mano, telefono — che va da 1140 a 1639, cioe esattamente
+499, e da li `object-position: 80%`. Non c'e margine, e il margine non si
+crea spostando il taglio.
+
+Il velo e in due pezzi e il secondo non e decorazione. Col solo velo
+verticale abbastanza leggero da non spegnere la fotografia, l'occhiello
+misurava 2,5 di contrasto e il titolo 4,1 — sotto soglia — perche le loro
+code finiscono sul collo e sulla mano, le zone piu chiare. Scurire tutta la
+fascia bassa li alzava ma rifaceva la tenda di cioccolato. L'ellisse
+agganciata in basso a sinistra scurisce solo il quarto dove stanno le
+parole: **occhiello 3,2, titolo 4,9, sottotitolo 8,9, link 12,0**, e la
+fotografia a destra resta luminosa. Chi cambia velo o inquadratura rimisura
+questi quattro numeri.
+
+**La fascia dell'ora di iPhone.** Trasparente davvero non si puo dentro
+Safari: quella striscia e cromo del browser e viene sempre dipinta di un
+colore pieno. Lo e solo nell'app installata in schermata Home
+(`black-translucent` + `viewport-fit: cover` in `src/app/layout.tsx`, gia
+acceso). Quello che si fa e toglierle il contrasto: finche la pagina e in
+cima prende `#60554b`, il tono medio dei primi pixel della fotografia
+velata, e appena si scende torna `--jm-ink`. Va scritto in **due posti**,
+perche i Safari non sono d'accordo fra loro: il meta `theme-color`
+(`scorrimento.tsx`) e il colore di `body::before` (qui in styles.css), che
+e quello che Safari 26 campiona. Se cambia l'inquadratura o il velo, quel
+numero si rimisura e si cambia in tutti e due.
 
 **Le due trappole gia pagate, per non ripagarle:**
 
@@ -98,10 +116,10 @@ composizione ferma.
   generale: sul telefono nessuna misura che si vede nella prima schermata
   puo dipendere da `[data-js]`.**
 
-Misure buone dopo il rifacimento (393x852, build di produzione, rete a 1,6
-Mbps / 150 ms / CPU x4, cache fredda): CLS **0,0005** sul telefono e
-**0,0010** sul desktop; nessuno scorrimento laterale a 375, 393, 430, 744 e
-900; zero errori in console.
+Misure buone (393x852, build di produzione, rete a 1,6 Mbps / 150 ms / CPU
+x4, cache fredda): CLS **0,0005** sul telefono e **0,0010** sul desktop;
+nessuno scorrimento laterale a 375, 393, 430, 744 e 900; zero errori in
+console.
 
 ## Le tre regole che non si toccano
 

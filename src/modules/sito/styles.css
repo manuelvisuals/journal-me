@@ -6020,11 +6020,12 @@ textarea.jm-sito-in {
 
    Cinque mosse, e la prima e quella da cui discendono tutte le altre:
 
-   1. LA FOTOGRAFIA SCENDE A FASCIA (64svh) E IL VELO QUASI SPARISCE. A
-      tutta pagina il taglio mostrava solo il viso: la fascia lo allarga
-      fino a comprendere la mano e il telefono (il conto e qui sotto). Il
-      velo, che era dall'88% di inchiostro in cima al 66% in fondo — buio
-      dappertutto — adesso scurisce solo dove servono le parole.
+   1. IL VELO SI ALLEGGERISCE E IL TAGLIO SI SPOSTA SUL GESTO. Era
+      dall'88% di inchiostro in cima al 66% in fondo, cioe buio
+      dappertutto, e inquadrava solo il viso. Adesso scurisce solo dove ci
+      sono le parole e il taglio tiene dentro mano e telefono (il conto e
+      qui sotto). La fotografia resta a tutta pagina: sotto il titolo si
+      deve vedere lei, non una fascia di colore.
    2. IL TESTO VA IN BASSO A SINISTRA, allineato a sinistra. Impaginazione
       da copertina, non da modulo: il titolo si appoggia sulla fotografia
       invece di stare in mezzo al buio.
@@ -6039,62 +6040,81 @@ textarea.jm-sito-in {
       sfumatura crema in fondo: l'immagine arriva al bordo.
    ===================================================================== */
 @media (max-width: 900px) {
-  /* 1. L'INQUADRATURA. Qui c'e un conto che decide tutto il resto, percio
-     lo scrivo: la fotografia e 1920x1081, cioe larga 1,78 volte l'altezza;
-     lo schermo di un telefono e alto 2,17 volte la larghezza. Con
-     `object-fit: cover` a tutta pagina il browser la ingrandisce fino a
-     coprire l'altezza, e di quei 1920 pixel se ne vedono 1081 x 393/852 =
-     499, il 26%: un primo piano sul viso, senza la mano e senza il
-     telefono. E non e un difetto di posizione — spostando il taglio a
-     destra o a sinistra resta comunque una finestra da 499 pixel, mentre
-     per tenere dentro dalla spalla al telefono ne servono 566. Il taglio
-     non si allarga muovendolo: si allarga solo ABBASSANDO la fotografia.
-     Percio la foto qui non riempie piu lo schermo, occupa la fascia alta —
-     64svh — e li dentro se ne vede il 42%: viso, mano, telefono, il gesto
-     per intero, che e poi la ragione per cui questa foto sta sul sito.
-     Chi cambia l'altezza cambia anche l'inquadratura: sono lo stesso
-     numero. */
+  /* 1. L'INQUADRATURA. La fotografia resta a tutta pagina — il fondo scuro
+     sotto le parole deve essere la fotografia velata, non una fascia di
+     cioccolato: e la differenza fra una copertina e un modulo.
+
+     Il taglio pero non e libero, ed e bene sapere perche. La foto e
+     1920x1081 (larga 1,78 volte l'altezza), lo schermo di un telefono e
+     alto 2,17 volte la larghezza: con `cover` il browser la ingrandisce
+     fino a coprire l'altezza e di quei 1920 pixel se ne vedono 1081 x
+     393/852 = 499, il 26%. In 499 pixel non ci stanno insieme la spalla e
+     il telefono (ne servirebbero 751): si sceglie. Si tiene il gesto —
+     orecchio, viso, mano, telefono — che va da 1140 a 1639, cioe esattamente
+     499. Da li l'80%: il bordo sinistro della finestra e (1920-499) x 0,80 =
+     1137. Chi sposta questo numero perde il telefono da una parte o il viso
+     dall'altra; non c'e margine, e il margine non si crea muovendo il
+     taglio. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe-media {
-    /* `width: auto` e `left: 0` non sono di contorno: fra 768 e 900 pixel
+    /* `width: auto` e `inset: 0` non sono di contorno: fra 768 e 900 pixel
        valeva ancora la regola da tavolo (`inset: 0 0 0 auto; width: 56%`),
-       che teneva la fotografia nella meta destra. Senza azzerarla la fascia
-       restava larga 56% e, con destra e sinistra entrambe a zero, finiva
-       persino dalla parte sbagliata. Sotto i 900 il telefono comanda: la
-       fotografia e una fascia larga quanto la pagina. */
-    inset: 0 0 auto 0;
+       che teneva la fotografia nella meta destra. */
+    inset: 0;
     width: auto;
-    /* LA FASCIA SI APRE. A pagina ferma la fotografia e alta 64svh: e il
-       taglio largo, ed e il fondo scuro che regge le parole. Scrollando le
-       parole se ne vanno di lato (`--via`) e sotto resterebbe un terzo di
-       buio vuoto; percio la fascia cresce fino a tutta pagina seguendo lo
-       stesso `--par` del parallasse. Non e un effetto in piu: e lo stesso
-       movimento: la didascalia esce, la fotografia prende il posto suo.
-       `var(--par, 0)` vale zero senza JS e con le animazioni spente: li la
-       fascia resta 64svh, che e la composizione ferma. */
-    height: calc(64svh + 36svh * var(--par, 0));
-    /* Sotto non c'e un bordo: la fotografia si spegne nel fondo scuro. A
-       fascia aperta la sfumatura si ritira fino a sparire, se no
-       resterebbe una banda slavata in fondo allo schermo. */
-    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(74% + 26% * var(--par, 0)), transparent 100%);
-    mask-image: linear-gradient(180deg, #000 0, #000 calc(74% + 26% * var(--par, 0)), transparent 100%);
   }
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe-media .scena {
-    object-position: 80% 18%;
+    object-position: 80% 20%;
     filter: saturate(.96) contrast(1.02) brightness(1);
   }
-  /* IL VELO segue la fotografia: quasi niente in cima (basta che il
-     marchio avorio si stacchi), libero sul viso, e poi scende deciso da
-     meta in giu, dove la fotografia sta gia svanendo e cominciano le
-     parole. */
+  /* IL VELO, IN DUE PEZZI. Uno verticale che lascia libero il viso e
+     scurisce scendendo; sopra, uno ellittico agganciato all'angolo in
+     basso a sinistra, che e dove stanno le parole. La ragione del secondo
+     e misurata: col solo velo verticale abbastanza leggero da non
+     spegnere la fotografia, l'occhiello arrivava a 2,5 di contrasto e il
+     titolo a 4,1 — sotto la soglia — perche le loro code finiscono sul
+     collo e sulla mano, che sono le zone piu chiare dell'inquadratura.
+     Scurire tutta la fascia bassa li avrebbe alzati, ma avrebbe rifatto
+     la tenda di cioccolato che siamo venuti qui a togliere. L'ellisse
+     scurisce solo il quarto in basso a sinistra: occhiello a 3,2, titolo
+     a 4,9, sottotitolo 8,9, link 12,0 — e la fotografia a destra resta
+     luminosa. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe::before {
     background:
+      radial-gradient(140% 60% at 4% 98%,
+        color-mix(in srgb, var(--jm-ink) 58%, transparent) 0,
+        color-mix(in srgb, var(--jm-ink) 40%, transparent) 45%,
+        color-mix(in srgb, var(--jm-ink) 14%, transparent) 72%,
+        transparent 100%),
       linear-gradient(180deg,
-        color-mix(in srgb, var(--jm-ink) 42%, transparent) 0,
-        color-mix(in srgb, var(--jm-ink) 10%, transparent) 18%,
-        color-mix(in srgb, var(--jm-ink) 4%, transparent) 40%,
-        color-mix(in srgb, var(--jm-ink) 34%, transparent) 62%,
-        color-mix(in srgb, var(--jm-ink) 84%, transparent) 78%,
-        color-mix(in srgb, var(--jm-ink) 94%, transparent) 100%);
+        color-mix(in srgb, var(--jm-ink) 40%, transparent) 0,
+        color-mix(in srgb, var(--jm-ink) 8%, transparent) 14%,
+        color-mix(in srgb, var(--jm-ink) 3%, transparent) 30%,
+        color-mix(in srgb, var(--jm-ink) 34%, transparent) 42%,
+        color-mix(in srgb, var(--jm-ink) 58%, transparent) 52%,
+        color-mix(in srgb, var(--jm-ink) 72%, transparent) 66%,
+        color-mix(in srgb, var(--jm-ink) 78%, transparent) 84%,
+        color-mix(in srgb, var(--jm-ink) 82%, transparent) 100%);
+  }
+  /* LA FASCIA DELL'ORA, PARTE CSS. Safari 26 non legge `theme-color`: per
+     quella striscia campiona il primo elemento fisso in cima, che qui e
+     `body::before`. Il blocco jm-sito10 lo tiene color pagina; sulla home
+     viva del telefono va portato allo stesso tono della fotografia velata
+     che gli sta davanti, se no la striscia resta scura sopra l'immagine e
+     il lavoro fatto in `scorrimento.tsx` serve solo su meta dei Safari.
+     `body::before` sta dietro a tutto e la home e opaca dappertutto:
+     questo colore non si vede in pagina, si vede solo nel campionamento.
+     Il numero e lo stesso del copione — se cambia l'inquadratura o il
+     velo, si rimisura e si cambiano tutti e due. */
+  html:has(.jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)) body::before {
+    background: #60554b;
+    background-color: #60554b;
+  }
+  /* Scesi dalla prima schermata sotto la striscia non c'e piu la
+     fotografia ma il fondo della pagina: il campione torna quello. Stessa
+     coppia di stati del meta in scorrimento.tsx. */
+  html:has(.jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso]) body::before {
+    background: var(--jm-ink);
+    background-color: var(--jm-ink);
   }
   /* 2. IL TESTO IN BASSO A SINISTRA. `.jm-sito2-eroe-in` sul telefono e un
      BLOCCO, non un contenitore flex: `justify-content` li non fa niente (ci
@@ -6148,6 +6168,10 @@ textarea.jm-sito-in {
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe .jm-sito4-eyebrow {
     text-align: left;
     margin-inline: 0;
+    /* Sul desktop l'occhiello e avorio al 76%: li sotto c'e un fondo
+       calmo. Qui sotto c'e una fotografia, e il 24% che manca se lo mangia
+       il collo di lei. Pieno. */
+    color: var(--jm-sito-su-foto);
   }
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-sotto {
     margin-inline: 0;
