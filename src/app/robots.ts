@@ -18,9 +18,12 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // /v1, /v2 e /v3 sono home congelate per confronto: non sono pagine
-        // da trovare, e sparira con la 2.0 approvata.
-        disallow: ["/app", "/app/", "/login", "/auth", "/admin", "/api", "/v1", "/en/v1", "/v2", "/en/v2", "/v3", "/en/v3"],
+        // Le home congelate per confronto non sono pagine da trovare. /v4,
+        // /v5 e /v6 restano fuori da qui solo perche hanno gia `robots:
+        // index false` nel loro generateMetadata, che e il modo piu forte:
+        // /v7 ce l'ha e in piu sta qui, perche e quella che restera piu a
+        // lungo (e il metro del desktop approvato).
+        disallow: ["/app", "/app/", "/login", "/auth", "/admin", "/api", "/v1", "/en/v1", "/v2", "/en/v2", "/v3", "/en/v3", "/v7", "/en/v7"],
       },
     ],
     sitemap: `${SITO}/sitemap.xml`,

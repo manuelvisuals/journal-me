@@ -27,6 +27,100 @@ cancellare quando la 2.0 e approvata. Le classi nuove hanno prefisso
 - Prefisso CSS: `jm-sito`.
 - Banchi prima del push: `verify-sito` (piu tsc, eslint, verify-i18n).
 
+## Dall'11 settembre 2026: solo telefono, e /v7 e il metro
+
+Manuel ha approvato il sito **desktop** e ha chiesto di congelarne una
+copia: e `/v7` (`components/home-v7.tsx`, pagine `src/app/v7` e
+`src/app/en/v7`, link in fondo al piede). Da quel giorno **le modifiche si
+fanno solo sulla versione telefono, e il desktop non si tocca**.
+
+In pratica, per ogni regola nuova:
+
+1. sta dentro `@media (max-width: 900px)` — se ne sta fuori, cambia anche il
+   desktop, ed e proprio cio che non si deve fare;
+2. esclude l'archivio: `.jm-sito7:not(.jm-sito4-archivio-v7) ...`.
+
+La seconda e quella che si dimentica. `/v7` NON e una copia a parte del CSS:
+usa lo stesso foglio e le stesse classi della home viva — e l'unico modo per
+avere un archivio che si comporta davvero come il sito di quel giorno,
+animazioni comprese — quindi una regola che non lo esclude lo cambia insieme
+alla home. Non da errore da nessuna parte: /v7 comincia semplicemente a
+somigliare alla home viva invece che a se stesso.
+
+Per questo c'e un banco: `node scripts/verify-v7.mjs` (col sito in ascolto)
+impronta posizione e misura di 23 pezzi di /v7 a 1440x900 e 393x852 e le
+confronta con `scripts/verify-v7.impronta.json`. Se qualcosa si e mosso lo
+dice e mostra cosa. Quando il cambiamento e voluto — cioe quasi mai — si
+risalva con `--scrivi`.
+
+## La prima schermata sul telefono (jm-sito14)
+
+La home del telefono, dall'11 settembre 2026, non e piu "una pagina con una
+foto dietro" ma **una fotografia con una didascalia sopra**: foto a tutta
+pagina, occhiello-titolo-testo-tasto in basso a sinistra, un gesto solo.
+
+**Il fondo sotto le parole e la fotografia velata, non una fascia di
+colore.** E' la correzione del 11 settembre: avevo provato a mettere la foto
+in una fascia alta con sotto il fondo scuro, e Manuel ha risposto — con
+ragione — che c'era "troppo layer color cioccolato". Se qualcuno rimette una
+fascia, ha rifatto l'errore.
+
+Un numero regge il taglio, e conviene saperlo prima di toccarlo. La foto
+`salotto-voce.webp` e 1920x1081 (larga 1,78 volte l'altezza); uno schermo di
+telefono e alto 2,17 volte la larghezza. Con `cover` il browser la
+ingrandisce fino a coprire l'altezza e se ne vedono 1081 x 393/852 = **499
+pixel di larghezza, il 26%**. In 499 pixel non ci stanno insieme la spalla e
+il telefono (ne servirebbero 751): **si sceglie**. Si tiene il gesto —
+orecchio, viso, mano, telefono — che va da 1140 a 1639, cioe esattamente
+499, e da li `object-position: 80%`. Non c'e margine, e il margine non si
+crea spostando il taglio.
+
+Il velo e in due pezzi e il secondo non e decorazione. Col solo velo
+verticale abbastanza leggero da non spegnere la fotografia, l'occhiello
+misurava 2,5 di contrasto e il titolo 4,1 — sotto soglia — perche le loro
+code finiscono sul collo e sulla mano, le zone piu chiare. Scurire tutta la
+fascia bassa li alzava ma rifaceva la tenda di cioccolato. L'ellisse
+agganciata in basso a sinistra scurisce solo il quarto dove stanno le
+parole: **occhiello 3,2, titolo 4,9, sottotitolo 8,9, link 12,0**, e la
+fotografia a destra resta luminosa. Chi cambia velo o inquadratura rimisura
+questi quattro numeri.
+
+**La fascia dell'ora di iPhone.** Trasparente davvero non si puo dentro
+Safari: quella striscia e cromo del browser e viene sempre dipinta di un
+colore pieno. Lo e solo nell'app installata in schermata Home
+(`black-translucent` + `viewport-fit: cover` in `src/app/layout.tsx`, gia
+acceso). Quello che si fa e toglierle il contrasto: finche la pagina e in
+cima prende `#60554b`, il tono medio dei primi pixel della fotografia
+velata, e appena si scende torna `--jm-ink`. Va scritto in **due posti**,
+perche i Safari non sono d'accordo fra loro: il meta `theme-color`
+(`scorrimento.tsx`) e il colore di `body::before` (qui in styles.css), che
+e quello che Safari 26 campiona. Se cambia l'inquadratura o il velo, quel
+numero si rimisura e si cambia in tutti e due.
+
+**Le due trappole gia pagate, per non ripagarle:**
+
+- `.jm-sito2-eroe` sul telefono e `display: block`: `align-items` e
+  `justify-content` li non fanno niente. Per appoggiare la colonna in fondo
+  va reso `flex` in colonna — e allora serve `width: 100%` su
+  `.jm-sito2-eroe-in`, perche `.jm-sito-cont` porta `margin-inline: auto` e
+  un margine automatico sull'asse trasversale annulla lo stiramento
+  (identico inciampo di `.jm-sito8-scena`).
+- `scorrimento.tsx` mette `data-js` dentro un effetto, e **non lo mette
+  affatto se il sistema chiede meno animazioni**. In quello stato — che e
+  anche il primo disegno di ogni visita — la pilla del rituale resta
+  assoluta a 22 pixel dal fondo e finisce sotto la didascalia. Non si
+  risolve dando aria alla colonna: quel riempimento sparirebbe
+  all'idratazione e le parole scenderebbero di 182 pixel sotto gli occhi di
+  chi guarda (vale quasi 0,09 di CLS da solo). Si spegne la pilla, che
+  essendo fuori flusso non muove niente ne prima ne dopo. **Regola
+  generale: sul telefono nessuna misura che si vede nella prima schermata
+  puo dipendere da `[data-js]`.**
+
+Misure buone (393x852, build di produzione, rete a 1,6 Mbps / 150 ms / CPU
+x4, cache fredda): CLS **0,0005** sul telefono e **0,0010** sul desktop;
+nessuno scorrimento laterale a 375, 393, 430, 744 e 900; zero errori in
+console.
+
 ## Le tre regole che non si toccano
 
 **1. Server, non client.** Le pagine sono componenti SERVER. Cio che scarica
