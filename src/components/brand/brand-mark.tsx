@@ -26,8 +26,14 @@
  * occhio), cosi l'altezza in `em` vale davvero quello che dice.
  */
 
+/**
+ * PROVA DELL'11 SETTEMBRE 2026, sera (Manuel: "solo i tre punti terracotta
+ * senza la d"). La cornice e stretta attorno ai soli pallini, con un
+ * respiro di mezzo raggio ai lati: il segno diventa una riga di tre punti,
+ * larga e bassa, e va misurata in larghezza e non in altezza.
+ */
 /** La cornice: misurata sul disegno vero, non stimata. */
-const VIEW_BOX = "358.8 243.7 306.4 536.6";
+const VIEW_BOX = "355.5 706.7 316.9 77.6";
 
 export function BrandMark({ className }: { className?: string }) {
   return (
@@ -37,9 +43,6 @@ export function BrandMark({ className }: { className?: string }) {
       aria-hidden="true"
       focusable="false"
     >
-      <g transform="translate(338.65 656.68) scale(0.28796 -0.28796)">
-        <path fill="currentColor" d="M752 611Q752 697 705.5 750.0Q659 803 564 803Q490 803 437.5 765.0Q385 727 357.0 650.0Q329 573 329 458Q329 347 359.0 273.5Q389 200 443.5 164.0Q498 128 573 128Q632 128 691.0 145.5Q750 163 806 200V122Q735 77 684.5 48.0Q634 19 596.0 3.5Q558 -12 525.5 -18.0Q493 -24 461 -24Q333 -24 245.5 29.5Q158 83 114.0 179.0Q70 275 70 401Q70 524 111.0 619.5Q152 715 223.5 780.5Q295 846 386.5 880.0Q478 914 578 914Q633 914 683.5 905.5Q734 897 786.5 879.5Q839 862 900 832L752 799V1203Q738 1219 715.0 1234.0Q692 1249 664.0 1263.5Q636 1278 603 1293V1338L977 1434H1012L997 1230V178Q1007 167 1023.0 156.0Q1039 145 1058.0 133.5Q1077 122 1096.5 113.5Q1116 105 1134 99V59L817 -23H785L752 147Z" />
-      </g>
       <g fill="var(--color-accent)">
         <circle cx="396.3" cy="745.5" r="34.8" />
         <circle cx="512" cy="745.5" r="34.8" />

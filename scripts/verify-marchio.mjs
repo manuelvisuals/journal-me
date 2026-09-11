@@ -72,10 +72,10 @@ check(
 );
 const segnoTsx = readFileSync("src/components/brand/brand-mark.tsx", "utf8");
 check(
-  "il segno e il simbolo dell'icona: la 'd' in currentColor e tre pallini d'accento",
-  /currentColor/.test(segnoTsx) &&
-    (segnoTsx.match(/<circle/g) ?? []).length === 3 &&
-    /var\(--color-accent\)/.test(segnoTsx),
+  "il segno e un disegno del tema: tre pallini d'accento (e, se c'e un glifo, in currentColor)",
+  (segnoTsx.match(/<circle/g) ?? []).length === 3 &&
+    /var\(--color-accent\)/.test(segnoTsx) &&
+    (!/<path/.test(segnoTsx) || /currentColor/.test(segnoTsx)),
 );
 /* Senza i commenti: la storia del PNG e raccontata li dentro, e una
    ricerca cieca la scambierebbe per codice vivo. */

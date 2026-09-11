@@ -52,8 +52,10 @@ for (const [dove, url, opts] of [
   const { ctx, page, errors } = await open(url, opts);
   const n = await page.locator("svg.jm-logo").count();
   check(`${dove}: il segno c'e`, n >= 1, `${n} trovati`);
+  /* La firma del disegno: il tracciato se c'e (la "d"), altrimenti la
+     cornice, che basta a distinguere due segni diversi. */
   const firme = await page.locator("svg.jm-logo").evaluateAll((els) =>
-    [...new Set(els.map((e) => (e.querySelector("path")?.getAttribute("d") ?? "").slice(0, 60)))],
+    [...new Set(els.map((e) => (e.querySelector("path")?.getAttribute("d") ?? e.getAttribute("viewBox") ?? "").slice(0, 60)))],
   );
   check(`${dove}: un disegno solo`, firme.length === 1, JSON.stringify(firme));
   for (const f of firme) tracciati.add(f);
@@ -72,18 +74,27 @@ check("lo stesso identico segno in tutte le schermate", tracciati.size === 1, `$
   const brand = await page.locator(".jm-rail-brand").boundingBox();
   check("rail: il segno e dentro il blocco del marchio", box.x >= brand.x - 1 && box.y >= brand.y - 1, JSON.stringify(box));
   const parola = await page.locator(".jm-rail-brand .jm-marchio-parola").boundingBox();
+  void parola;
   check("rail: il segno sta SOPRA la scritta", box.y + box.height <= parola.y + 2, `segno finisce a y ${Math.round(box.y + box.height)}, parola inizia a y ${Math.round(parola.y)}`);
-  check("rail: altezza sensata rispetto al testo", box.height > 18 && box.height < 60, `${Math.round(box.height)}px`);
+  /* La misura sensata si guarda in LARGHEZZA: il segno puo essere alto (la
+     "d" coi pallini) o basso (i soli pallini), ma in tutti e due i casi
+     deve stare fra un quarto e una volta e mezza la parola accanto. */
+  const parolaBox = await page.locator(".jm-rail-brand .jm-marchio-parola").boundingBox();
+  check(
+    "rail: misura sensata rispetto alla parola",
+    box.width > parolaBox.width * 0.2 && box.width < parolaBox.width * 1.6,
+    `segno ${Math.round(box.width)}px, parola ${Math.round(parolaBox.width)}px`,
+  );
   await ctx.close();
 }
 
 /* La misura e in em: cambiando "Dimensione del testo" il segno cresce. */
 {
   const a = await open("/app/mese", { scale: 1 });
-  const h1 = (await a.page.locator(".jm-rail-brand svg.jm-logo").boundingBox()).height;
+  const h1 = (await a.page.locator(".jm-rail-brand svg.jm-logo").boundingBox()).width;
   await a.ctx.close();
   const b2 = await open("/app/mese", { scale: 1.5 });
-  const h2 = (await b2.page.locator(".jm-rail-brand svg.jm-logo").boundingBox()).height;
+  const h2 = (await b2.page.locator(".jm-rail-brand svg.jm-logo").boundingBox()).width;
   await b2.ctx.close();
   check(
     "il segno segue la dimensione del testo",
@@ -104,16 +115,20 @@ check("lo stesso identico segno in tutte le schermate", tracciati.size === 1, `$
       const [r, g, b] = (c.match(/[\d.]+/g) ?? [0, 0, 0]).map(Number);
       return 0.2126 * r + 0.7152 * g + 0.0722 * b;
     };
+    const glifo = el.querySelector("path");
     return {
       filtro: getComputedStyle(el).filter,
-      d: chiaro(getComputedStyle(el.querySelector("path")).fill),
+      /* Il colore che il segno EREDITA: e quello che `currentColor` usa,
+         e vale sia col glifo sia senza (11 settembre 2026: il segno puo
+         essere la "d" coi pallini o i soli pallini). */
+      d: chiaro(glifo ? getComputedStyle(glifo).fill : getComputedStyle(el).color),
       pallino: getComputedStyle(el.querySelector("circle")).fill,
       accento: getComputedStyle(document.documentElement).getPropertyValue("--color-accent").trim(),
       fondo: chiaro(getComputedStyle(document.body).backgroundColor),
     };
   });
   check("scuro: nessun filtro che ribalta le tinte", m.filtro === "none", m.filtro);
-  check("scuro: la 'd' e chiara sul fondo scuro", m.d - m.fondo > 60, `${Math.round(m.d)} contro ${Math.round(m.fondo)}`);
+  check("scuro: il segno eredita un colore chiaro sul fondo scuro", m.d - m.fondo > 60, `${Math.round(m.d)} contro ${Math.round(m.fondo)}`);
   check("scuro: i pallini restano l'accento del tema", m.pallino.length > 0 && m.pallino !== "none", `${m.pallino} (accento ${m.accento})`);
   await ctx.close();
 }

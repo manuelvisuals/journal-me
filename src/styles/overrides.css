@@ -285,7 +285,7 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5em;
+  gap: 0.42em;
   font-family: var(--jm-font-marchio);
   font-weight: 300;
   line-height: 1;
@@ -310,11 +310,11 @@
    testo, che qui non esiste piu. */
 .jm-marchio .jm-logo {
   display: block;
-  /* Il segno era 2.1em quando era il ghirigoro, che e largo e leggero.
-     La "d" e stretta e pesante: alla stessa misura schiaccia la parola.
-     1.75em e la misura in cui il segno e la parola pesano uguale, guardata
-     a schermo in chiaro e in scuro (11 settembre 2026). */
-  height: 1.75em;
+  /* Prova dell'11 settembre sera: solo i tre pallini. Il segno adesso e
+     una riga bassa e larga, quindi si misura la LARGHEZZA (in em, come
+     tutto il resto) e l'altezza viene da se. */
+  height: auto;
+  width: 1.45em;
   margin: 0;
   vertical-align: baseline;
 }
