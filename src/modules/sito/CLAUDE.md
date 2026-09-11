@@ -27,6 +27,32 @@ cancellare quando la 2.0 e approvata. Le classi nuove hanno prefisso
 - Prefisso CSS: `jm-sito`.
 - Banchi prima del push: `verify-sito` (piu tsc, eslint, verify-i18n).
 
+## Dall'11 settembre 2026: solo telefono, e /v7 e il metro
+
+Manuel ha approvato il sito **desktop** e ha chiesto di congelarne una
+copia: e `/v7` (`components/home-v7.tsx`, pagine `src/app/v7` e
+`src/app/en/v7`, link in fondo al piede). Da quel giorno **le modifiche si
+fanno solo sulla versione telefono, e il desktop non si tocca**.
+
+In pratica, per ogni regola nuova:
+
+1. sta dentro `@media (max-width: 900px)` — se ne sta fuori, cambia anche il
+   desktop, ed e proprio cio che non si deve fare;
+2. esclude l'archivio: `.jm-sito7:not(.jm-sito4-archivio-v7) ...`.
+
+La seconda e quella che si dimentica. `/v7` NON e una copia a parte del CSS:
+usa lo stesso foglio e le stesse classi della home viva — e l'unico modo per
+avere un archivio che si comporta davvero come il sito di quel giorno,
+animazioni comprese — quindi una regola che non lo esclude lo cambia insieme
+alla home. Non da errore da nessuna parte: /v7 comincia semplicemente a
+somigliare alla home viva invece che a se stesso.
+
+Per questo c'e un banco: `node scripts/verify-v7.mjs` (col sito in ascolto)
+impronta posizione e misura di 23 pezzi di /v7 a 1440x900 e 393x852 e le
+confronta con `scripts/verify-v7.impronta.json`. Se qualcosa si e mosso lo
+dice e mostra cosa. Quando il cambiamento e voluto — cioe quasi mai — si
+risalva con `--scrivi`.
+
 ## Le tre regole che non si toccano
 
 **1. Server, non client.** Le pagine sono componenti SERVER. Cio che scarica
