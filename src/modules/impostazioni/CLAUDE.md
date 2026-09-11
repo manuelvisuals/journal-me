@@ -262,7 +262,9 @@ Manuel, guardando le Impostazioni sul telefono:
 - il gruppo Account e il PRIMO blocco (chi apre le Impostazioni cerca quasi
   sempre se stesso), e versione, pacchetto e "Esci dall'account" sono
   passati in un gruppo "App": non dicono chi sei, dicono cosa hai
-  installato. Su desktop il blocco resta nascosto (`jm-st-phoneonly`,
+  installato. Dall'11 settembre 2026 il gruppo App non sta piu sotto
+  Account ma in fondo, fra "I tuoi dati" e la zona pericolosa (Manuel).
+  Su desktop il blocco resta nascosto (`jm-st-phoneonly`,
   l'identita e nella rail destra): per questo i banchi aspettano il primo
   gruppo VISIBILE.
 - "Elimina l'account" non e piu un secondo tocco su "si, elimina" (un tasto

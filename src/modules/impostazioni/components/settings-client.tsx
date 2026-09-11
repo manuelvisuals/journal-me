@@ -665,27 +665,6 @@ export function SettingsClient({
                 )}
               </SetGroup>
 
-              {/* APP, non Account (10 settembre 2026, Manuel): la versione,
-                  il pacchetto e l'uscita non dicono CHI SEI, dicono che cosa
-                  hai installato. Stavano nello stesso gruppo del piano e
-                  della foto e facevano sembrare il logout una riga di
-                  profilo. */}
-              <SetGroup label={t("App")}>
-                <SetRow title={t("Versione")} value={APP_VERSION} />
-                {/* La riga che risponde a "quale codice ho davvero addosso":
-                    il commit da cui e nato questo pacchetto. */}
-                <SetRow title={t("Pacchetto")} value={BUILD_INFO} chevron={false} />
-                {!isLocal && (
-                  <SetRow
-                    title={t("Esci dall'account")}
-                    danger
-                    chevron={false}
-                    value={signingOut ? t("esco...") : undefined}
-                    onClick={() => void handleLogout()}
-                    disabled={signingOut}
-                  />
-                )}
-              </SetGroup>
             </div>
 
             <SetGroup label={t("Il diario")}>
@@ -820,6 +799,30 @@ export function SettingsClient({
                 />
               )}
             </SetGroup>
+
+            <div className="jm-st-phoneonly">
+              {/* APP, non Account (10 settembre 2026, Manuel): la versione,
+                  il pacchetto e l'uscita non dicono CHI SEI, dicono che cosa
+                  hai installato. Stavano nello stesso gruppo del piano e
+                  della foto e facevano sembrare il logout una riga di
+                  profilo. */}
+              <SetGroup label={t("App")}>
+                <SetRow title={t("Versione")} value={APP_VERSION} />
+                {/* La riga che risponde a "quale codice ho davvero addosso":
+                    il commit da cui e nato questo pacchetto. */}
+                <SetRow title={t("Pacchetto")} value={BUILD_INFO} chevron={false} />
+                {!isLocal && (
+                  <SetRow
+                    title={t("Esci dall'account")}
+                    danger
+                    chevron={false}
+                    value={signingOut ? t("esco...") : undefined}
+                    onClick={() => void handleLogout()}
+                    disabled={signingOut}
+                  />
+                )}
+              </SetGroup>
+            </div>
 
             <input
               ref={fileRef}
