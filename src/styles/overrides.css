@@ -319,6 +319,17 @@
   vertical-align: baseline;
 }
 
+/* ARIA ATTORNO AL MARCHIO dove il marchio e il protagonista (11 settembre
+   2026, Manuel: "aggiungi spazio libero sopra e sotto per dare aria al
+   logo"). Solo li: nella barra del sito e nella rail il marchio sta dentro
+   una riga con altre cose, e lo spazio in piu diventerebbe un buco. La
+   misura e in em, cosi l'aria cresce col marchio e non resta un margine
+   fisso attorno a un segno che si e ingrandito. */
+.jm-splash-mark .jm-marchio,
+.jm-benv-sal-marchio .jm-marchio {
+  margin-block: 0.7em;
+}
+
 .jm-rail-brand .jm-marchio { font-size: calc(21px * var(--jm-ui-scale)); }
 .jm-splash-mark .jm-marchio { font-size: calc(34px * var(--jm-ui-scale)); }
 .jm-benv-sal-marchio .jm-marchio { font-size: calc(25px * var(--jm-ui-scale)); }
