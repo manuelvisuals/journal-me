@@ -6003,3 +6003,239 @@ textarea.jm-sito-in {
   vertical-align: baseline;
   translate: 0 calc(.2332 * var(--marchio-h));
 }
+
+/* =====================================================================
+   IL TELEFONO, RIFATTO (jm-sito14) — 11 settembre 2026, mockup di Manuel.
+
+   Da oggi si lavora solo sulla versione telefono e il desktop non si tocca:
+   tutto quello che c'e qui sotto vive dentro `@media (max-width: 900px)` e
+   ogni selettore esclude l'archivio `/v7`, che e il metro del desktop
+   approvato. Vedi src/modules/sito/CLAUDE.md.
+
+   IL CAMBIO. Non e un ritocco, e un cambio di gerarchia. Prima la prima
+   schermata era UNA PAGINA CON UNA FOTO DIETRO: il velo era cosi carico che
+   la ragazza faceva da texture, il viso usciva tagliato in alto e sopra ci
+   stavano sei elementi, tutti centrati. Adesso e UNA FOTOGRAFIA CON UNA
+   DIDASCALIA SOPRA.
+
+   Cinque mosse, e la prima e quella da cui discendono tutte le altre:
+
+   1. LA FOTOGRAFIA SCENDE A FASCIA (64svh) E IL VELO QUASI SPARISCE. A
+      tutta pagina il taglio mostrava solo il viso: la fascia lo allarga
+      fino a comprendere la mano e il telefono (il conto e qui sotto). Il
+      velo, che era dall'88% di inchiostro in cima al 66% in fondo — buio
+      dappertutto — adesso scurisce solo dove servono le parole.
+   2. IL TESTO VA IN BASSO A SINISTRA, allineato a sinistra. Impaginazione
+      da copertina, non da modulo: il titolo si appoggia sulla fotografia
+      invece di stare in mezzo al buio.
+   3. UN GESTO SOLO. "Provalo stasera" con la freccia, una pilla che si
+      stringe sul testo invece di occupare tutta la riga; "Guarda come
+      funziona" scende a link sottolineato. Due tasti squadrati uguali
+      erano due gesti che si contendevano lo stesso peso.
+   4. L'HAMBURGER ENTRA IN UN CERCHIO col contorno avorio: tre righe nude
+      sopra una fotografia chiara si perdono.
+   5. VIA DALLA PRIMA SCHERMATA le due garanzie e il micro-lettore (scelta
+      di Manuel: sul telefono spariscono, il desktop le tiene) e via la
+      sfumatura crema in fondo: l'immagine arriva al bordo.
+   ===================================================================== */
+@media (max-width: 900px) {
+  /* 1. L'INQUADRATURA. Qui c'e un conto che decide tutto il resto, percio
+     lo scrivo: la fotografia e 1920x1081, cioe larga 1,78 volte l'altezza;
+     lo schermo di un telefono e alto 2,17 volte la larghezza. Con
+     `object-fit: cover` a tutta pagina il browser la ingrandisce fino a
+     coprire l'altezza, e di quei 1920 pixel se ne vedono 1081 x 393/852 =
+     499, il 26%: un primo piano sul viso, senza la mano e senza il
+     telefono. E non e un difetto di posizione — spostando il taglio a
+     destra o a sinistra resta comunque una finestra da 499 pixel, mentre
+     per tenere dentro dalla spalla al telefono ne servono 566. Il taglio
+     non si allarga muovendolo: si allarga solo ABBASSANDO la fotografia.
+     Percio la foto qui non riempie piu lo schermo, occupa la fascia alta —
+     64svh — e li dentro se ne vede il 42%: viso, mano, telefono, il gesto
+     per intero, che e poi la ragione per cui questa foto sta sul sito.
+     Chi cambia l'altezza cambia anche l'inquadratura: sono lo stesso
+     numero. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe-media {
+    /* `width: auto` e `left: 0` non sono di contorno: fra 768 e 900 pixel
+       valeva ancora la regola da tavolo (`inset: 0 0 0 auto; width: 56%`),
+       che teneva la fotografia nella meta destra. Senza azzerarla la fascia
+       restava larga 56% e, con destra e sinistra entrambe a zero, finiva
+       persino dalla parte sbagliata. Sotto i 900 il telefono comanda: la
+       fotografia e una fascia larga quanto la pagina. */
+    inset: 0 0 auto 0;
+    width: auto;
+    /* LA FASCIA SI APRE. A pagina ferma la fotografia e alta 64svh: e il
+       taglio largo, ed e il fondo scuro che regge le parole. Scrollando le
+       parole se ne vanno di lato (`--via`) e sotto resterebbe un terzo di
+       buio vuoto; percio la fascia cresce fino a tutta pagina seguendo lo
+       stesso `--par` del parallasse. Non e un effetto in piu: e lo stesso
+       movimento: la didascalia esce, la fotografia prende il posto suo.
+       `var(--par, 0)` vale zero senza JS e con le animazioni spente: li la
+       fascia resta 64svh, che e la composizione ferma. */
+    height: calc(64svh + 36svh * var(--par, 0));
+    /* Sotto non c'e un bordo: la fotografia si spegne nel fondo scuro. A
+       fascia aperta la sfumatura si ritira fino a sparire, se no
+       resterebbe una banda slavata in fondo allo schermo. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(74% + 26% * var(--par, 0)), transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0, #000 calc(74% + 26% * var(--par, 0)), transparent 100%);
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe-media .scena {
+    object-position: 80% 18%;
+    filter: saturate(.96) contrast(1.02) brightness(1);
+  }
+  /* IL VELO segue la fotografia: quasi niente in cima (basta che il
+     marchio avorio si stacchi), libero sul viso, e poi scende deciso da
+     meta in giu, dove la fotografia sta gia svanendo e cominciano le
+     parole. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe::before {
+    background:
+      linear-gradient(180deg,
+        color-mix(in srgb, var(--jm-ink) 42%, transparent) 0,
+        color-mix(in srgb, var(--jm-ink) 10%, transparent) 18%,
+        color-mix(in srgb, var(--jm-ink) 4%, transparent) 40%,
+        color-mix(in srgb, var(--jm-ink) 34%, transparent) 62%,
+        color-mix(in srgb, var(--jm-ink) 84%, transparent) 78%,
+        color-mix(in srgb, var(--jm-ink) 94%, transparent) 100%);
+  }
+  /* 2. IL TESTO IN BASSO A SINISTRA. `.jm-sito2-eroe-in` sul telefono e un
+     BLOCCO, non un contenitore flex: `justify-content` li non fa niente (ci
+     ho perso un giro). Chi impagina in verticale e l'eroe, che e flex: gli
+     si dice di appoggiare il contenuto in fondo, e il riempimento in basso
+     lo mette la colonna. Il `padding-bottom: 58%` dell'eroe — nato per
+     tenere la colonna sopra la pilla quando la pilla stava nel flusso — qui
+     va a zero, se no la spinge su di 228 pixel. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe {
+    padding-bottom: 0;
+  }
+  /* LA PILLA QUANDO IL COPIONE NON PARTE. `scorrimento.tsx` mette `data-js`
+     dentro un effetto, e non lo mette affatto se il sistema chiede meno
+     animazioni: in quei due casi la pilla del rituale resta dov'era —
+     assoluta, a 22 pixel dal fondo dell'eroe — e adesso che la didascalia
+     e scesa in fondo le finisce sopra.
+     Non si risolve dando aria alla colonna: quel riempimento varrebbe al
+     primo disegno e sparirebbe all'idratazione, cioe le parole
+     scenderebbero di 182 pixel sotto gli occhi di chi guarda (ho fatto il
+     conto: vale da solo quasi 0,09 di CLS, novanta volte il salto che
+     abbiamo adesso). La pilla invece e fuori flusso: spegnerla non muove
+     niente, ne prima ne dopo. Col copione acceso torna, e la trova al suo
+     posto sotto il bordo, da dove sale scrollando. */
+  .jm-sito4.jm-sito7:not([data-js]):not(.jm-sito4-archivio-v7) .jm-sito4-rituale {
+    display: none;
+  }
+  /* Nella colonna flex `.jm-sito-cont` porta con se `margin-inline: auto`, e
+     un margine automatico sull'asse trasversale annulla lo stiramento: senza
+     questa larghezza la colonna si stringe sul testo. E' lo stesso inciampo
+     di `.jm-sito8-scena`, scritto due volte per non ripeterlo una terza. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe-in {
+    width: 100%;
+    /* L'altezza minima da tavolo (100svh meno la barra) riempiva la colonna
+       e la rimandava in cima: qui chi da l'altezza e l'eroe. */
+    min-height: 0;
+    padding-bottom: clamp(44px, 9svh, 78px);
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe-t {
+    text-align: left;
+    margin-inline: 0;
+    max-width: 30ch;
+  }
+  /* L'occhiello non era centrato dal testo ma da `margin-inline: auto` su
+     una larghezza massima sua: allineare il testo non bastava, il blocco
+     restava in mezzo. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe .jm-sito4-eyebrow {
+    text-align: left;
+    margin-inline: 0;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-sotto {
+    margin-inline: 0;
+    max-width: 34ch;
+  }
+  /* 3. UN GESTO SOLO. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe .jm-sito-cta {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 18px;
+    margin-top: 26px;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe .jm-sito-b.p {
+    width: auto;
+    margin: 0;
+    padding: 0 26px;
+    min-height: 54px;
+    border-radius: var(--jm-radius-pill);
+    font-size: calc(17px * var(--jm-ui-scale));
+  }
+  /* La freccia e disegnata qui e non nel markup perche e decorazione, e
+     perche il markup e condiviso col desktop, che non la vuole. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe .jm-sito-b.p::after {
+    content: "\2192";
+    margin-left: 12px;
+    font-size: 1.05em;
+    line-height: 1;
+  }
+  /* Il secondo non e piu un tasto: e una parola sottolineata. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito10-secondo {
+    width: auto;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+    border: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    font-size: calc(15.5px * var(--jm-ui-scale));
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+    text-decoration-color: color-mix(in srgb, var(--jm-sito-su-foto) 52%, transparent);
+  }
+  /* 4-bis. LA BARRA NON SFUOCA PIU LA FOTOGRAFIA. `.jm-sito-nav-in` porta un
+     `backdrop-filter: blur(18px)` acceso sempre, anche a pagina ferma in
+     cima: sopra un fondo piatto non si nota, sopra una fotografia si', e
+     lascia una cucitura netta alla sua base (76 pixel) dove il mosso
+     finisce e la nitidezza riprende. Con la foto in fascia quella riga
+     cadeva proprio sui capelli. A pagina ferma il vetro si spegne: il
+     marchio avorio sta bene sulla fotografia da solo. Appena si scende
+     (`[data-scorso]`) torna, che li serve davvero. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7):not([data-scorso]) > .jm-sito-nav .jm-sito-nav-in {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* 5. VIA dalla prima schermata. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito10-garanzie,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito10-rituale-vivo {
+    display: none;
+  }
+  /* La fotografia arriva al bordo: niente sfumatura crema in fondo. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito2-eroe::after {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  /* 4. L'HAMBURGER NEL CERCHIO. Le tre righe erano agganciate al bordo
+     destro (right: 2px) perche prima non c'era nessun contenitore: dentro
+     un cerchio vanno centrate, e le misure si rifanno da capo. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary {
+    width: 46px;
+    height: 46px;
+    border: 1px solid color-mix(in srgb, var(--jm-sito-su-foto) 46%, transparent);
+    border-radius: var(--jm-radius-pill);
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary::before,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary::after,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary span {
+    right: auto;
+    left: 13px;
+    width: 20px;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary::before { top: 17px; }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary span { top: 22.5px; }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary::after { top: 28px; }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile[open] summary::before,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile[open] summary::after { top: 22.5px; }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile { top: 15px; right: 22px; }
+}

@@ -53,6 +53,56 @@ confronta con `scripts/verify-v7.impronta.json`. Se qualcosa si e mosso lo
 dice e mostra cosa. Quando il cambiamento e voluto — cioe quasi mai — si
 risalva con `--scrivi`.
 
+## La prima schermata sul telefono (jm-sito14)
+
+La home del telefono, dall'11 settembre 2026, non e piu "una pagina con una
+foto dietro" ma **una fotografia con una didascalia sopra**: foto in alto,
+occhiello-titolo-testo-tasto in basso a sinistra, un gesto solo.
+
+Un numero regge tutto il resto, e conviene saperlo prima di toccare la
+fascia. La foto `salotto-voce.webp` e 1920x1081 (larga 1,78 volte
+l'altezza); uno schermo di telefono e alto 2,17 volte la larghezza. Con
+`object-fit: cover` a tutta pagina il browser la ingrandisce fino a coprire
+l'altezza e se ne vede il 26% della larghezza: un primo piano sul viso,
+senza la mano e senza il telefono. **Non e una questione di
+`object-position`**: spostando il taglio resta comunque una finestra da 499
+pixel, e per tenere dentro dalla spalla al telefono ne servono 566. Il
+taglio si allarga solo abbassando la fotografia. Per questo la foto occupa
+una fascia alta `64svh` e non tutto lo schermo: li dentro se ne vede il 42%,
+e il gesto — che e la ragione per cui quella foto sta sul sito — c'e tutto.
+Chi cambia l'altezza della fascia cambia l'inquadratura: sono lo stesso
+numero.
+
+Scrollando la fascia si apre fino a tutta pagina (`64svh + 36svh * --par`,
+lo stesso cursore del parallasse): la didascalia esce di lato e la
+fotografia prende il posto suo, invece di lasciare un terzo di buio vuoto.
+Senza JS `var(--par, 0)` vale zero e la fascia resta 64svh, che e la
+composizione ferma.
+
+**Le due trappole gia pagate, per non ripagarle:**
+
+- `.jm-sito2-eroe` sul telefono e `display: block`: `align-items` e
+  `justify-content` li non fanno niente. Per appoggiare la colonna in fondo
+  va reso `flex` in colonna — e allora serve `width: 100%` su
+  `.jm-sito2-eroe-in`, perche `.jm-sito-cont` porta `margin-inline: auto` e
+  un margine automatico sull'asse trasversale annulla lo stiramento
+  (identico inciampo di `.jm-sito8-scena`).
+- `scorrimento.tsx` mette `data-js` dentro un effetto, e **non lo mette
+  affatto se il sistema chiede meno animazioni**. In quello stato — che e
+  anche il primo disegno di ogni visita — la pilla del rituale resta
+  assoluta a 22 pixel dal fondo e finisce sotto la didascalia. Non si
+  risolve dando aria alla colonna: quel riempimento sparirebbe
+  all'idratazione e le parole scenderebbero di 182 pixel sotto gli occhi di
+  chi guarda (vale quasi 0,09 di CLS da solo). Si spegne la pilla, che
+  essendo fuori flusso non muove niente ne prima ne dopo. **Regola
+  generale: sul telefono nessuna misura che si vede nella prima schermata
+  puo dipendere da `[data-js]`.**
+
+Misure buone dopo il rifacimento (393x852, build di produzione, rete a 1,6
+Mbps / 150 ms / CPU x4, cache fredda): CLS **0,0005** sul telefono e
+**0,0010** sul desktop; nessuno scorrimento laterale a 375, 393, 430, 744 e
+900; zero errori in console.
+
 ## Le tre regole che non si toccano
 
 **1. Server, non client.** Le pagine sono componenti SERVER. Cio che scarica
