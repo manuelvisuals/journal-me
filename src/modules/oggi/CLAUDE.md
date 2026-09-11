@@ -282,3 +282,31 @@ meta opacita: e l'unico fatto ancora vero, cioe quanto hai registrato.
 Cosa stia succedendo lo dice gia, in grande, il centro dello schermo. La
 regola da tenere: un elemento di stato che non ha piu niente di vero da
 dire SPARISCE, non si riempie di parole nuove.
+
+## L'AI non fallisce, al massimo tarda (11 settembre 2026)
+
+Manuel apre una giornata scritta a mano e trova "Giornata raccontata" al
+posto del titolo, zero aree, zero misure - e nessuno che glielo dica.
+Dietro: `/api/process-entry` non aveva risposto entro il tetto di 15
+secondi (4G, funzione fredda), il codice era caduto in `fallbackFields` e
+il ripiego veniva SALVATO come se fosse una risposta. Un guasto di rete
+diventava un fatto permanente, uguale a "l'AI ha deciso di no". La sua
+regola: "non deve proprio succedere che l'ai fallisce".
+
+- `analizzaGiornata` (lib/actions/analyze-day.ts) dice anche COM'E ANDATA:
+  `ok`, `negato` (402, una scelta) o `guasto` (rete, tetto, risposta
+  malformata). `analyzeDay` resta come scorciatoia.
+- Su `guasto` il giorno entra nella CODA (lib/actions/coda-analisi.ts):
+  IndexedDB `journalme-coda`, sopravvive alla chiusura dell'app, riparte
+  da sola ai tre risvegli (app aperta, primo piano, rete tornata) finche
+  non riesce. Finito, riscrive titolo, sintesi, aree, misure e persone e
+  annuncia `jm:giornata-analizzata`: today-client e day-client rileggono,
+  cosi il titolo vero compare sotto gli occhi senza toccare niente.
+- Il 402 NON entra in coda: un no non si riprova.
+- Finche il giorno e in coda, al posto di "aree macro non ancora estratte"
+  (che suona definitivo, e non lo e) la giornata dice "l'ai sta ancora
+  elaborando questa giornata" (`useAnalisiInCoda`). Nessun tasto: finisce
+  da sola.
+- Il tetto delle due chiamate dell'analisi e passato da 15 a 45 secondi,
+  quanto la schermata di attesa gia prevede.
+- Banco: `verify-coda-analisi` (7 controlli, morso provato).

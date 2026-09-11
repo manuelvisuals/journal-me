@@ -260,6 +260,24 @@ export function TodayClient({
     if (canVoice) warmRealtime();
   }, [canVoice]);
 
+  /* LA CODA HA FINITO (11 settembre 2026, lib/actions/coda-analisi.ts). Una
+     giornata rimasta senza titolo e senza aree perche la rete e caduta viene
+     completata in sottofondo: qui la si rilegge, cosi chi sta guardando vede
+     comparire il titolo vero senza toccare niente. */
+  useEffect(() => {
+    const suFinito = (e: Event) => {
+      const giorno = (e as CustomEvent<{ giorno: string }>).detail?.giorno;
+      if (!giorno) return;
+      void loadEntryForDate(mode, giorno)
+        .then((aggiornata) => {
+          if (aggiornata) setEntry((corrente) => (corrente?.entryDate === giorno ? aggiornata : corrente));
+        })
+        .catch(() => {});
+    };
+    window.addEventListener("jm:giornata-analizzata", suFinito);
+    return () => window.removeEventListener("jm:giornata-analizzata", suFinito);
+  }, [mode]);
+
   /* UNA GIORNATA SOLA (mockup una-giornata-sola.html, approvato il 2
      settembre 2026): la pagina "Racconta" non esiste piu. Il microfono del
      dock apre l'ASCOLTO sopra la Giornata di oggi, e il giorno del

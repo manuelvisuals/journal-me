@@ -23,9 +23,11 @@ import { apiFetch } from "@/lib/api";
 import { can } from "@/lib/capabilities";
 import { getStore } from "@/lib/data/store";
 import { invalidateAll } from "@/lib/data/cache";
-import { analyzeDay, localFields } from "@/lib/actions/analyze-day";
+import { analizzaGiornata, localFields } from "@/lib/actions/analyze-day";
+import { accodaAnalisi } from "@/lib/actions/coda-analisi";
 import { proponiPromemoriaSerale } from "@/lib/native/reminders";
 import type { AreaSummary, Entry } from "@/lib/types";
+import type { AIFields } from "@/lib/data/store";
 
 export type RecordingInput = {
   transcript: string;
@@ -123,8 +125,8 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
     ? (async () => {
         const existing = await store.loadEntryForDate(input.defaultDate);
         const fullTranscript = testoCompleto(existing, input.transcript);
-        const ai = await analyzeDay(fullTranscript, input.defaultDate);
-        return { existing, fullTranscript, ai };
+        const { campi, esito } = await analizzaGiornata(fullTranscript, input.defaultDate);
+        return { existing, fullTranscript, ai: campi, esito };
       })()
     : null;
   // Una scommessa persa non deve far esplodere niente: si ignora e basta.
@@ -152,11 +154,27 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
     // Da zero, su TUTTO il testo del giorno: titolo, sintesi, aree e
     // persone escono dalla stessa lettura dello stesso testo. Vedi
     // src/lib/actions/analyze-day.ts.
-    const ai = vinta
-      ? vinta.ai
-      : useAI
-        ? await analyzeDay(fullTranscript, seg.date)
-        : localFields(fullTranscript);
+    let esitoAnalisi: "ok" | "negato" | "guasto" = "ok";
+    let ai: AIFields;
+    if (vinta) {
+      ai = vinta.ai;
+      esitoAnalisi = vinta.esito;
+    } else if (useAI) {
+      const r = await analizzaGiornata(fullTranscript, seg.date);
+      ai = r.campi;
+      esitoAnalisi = r.esito;
+    } else {
+      ai = localFields(fullTranscript);
+    }
+    /* L'AI NON FALLISCE, AL MASSIMO TARDA (11 settembre 2026, Manuel: "non
+       deve proprio succedere che l'ai fallisce"). Se la lettura e andata
+       storta — rete, tetto scaduto, risposta malformata — la giornata si
+       salva lo stesso (non si perde una parola, e la regola di sempre) ma
+       il lavoro NON e finito: entra in coda sul dispositivo e riparte da
+       solo finche non riesce. Prima di oggi un guasto veniva salvato come
+       se fosse una risposta, e quella giornata restava senza titolo, senza
+       aree e senza misure per sempre. Vedi lib/actions/coda-analisi.ts. */
+    if (esitoAnalisi === "guasto") void accodaAnalisi(seg.date);
     if (useAI && input.onAnalisi) {
       input.onAnalisi({
         date: seg.date,
@@ -211,9 +229,13 @@ export async function reprocessEntryTranscript(
   newTranscript: string,
 ): Promise<Entry> {
   const store = getStore();
-  const ai = can("aiSummary")
-    ? await analyzeDay(newTranscript, dateISO)
-    : localFields(newTranscript);
+  let ai: AIFields = localFields(newTranscript);
+  if (can("aiSummary")) {
+    const r = await analizzaGiornata(newTranscript, dateISO);
+    ai = r.campi;
+    // Stessa regola del salvataggio: un guasto non diventa un risultato.
+    if (r.esito === "guasto") void accodaAnalisi(dateISO);
+  }
   let saved = await store.saveProcessedEntry(dateISO, newTranscript, ai, 0);
   if (ai.metrics) {
     try {

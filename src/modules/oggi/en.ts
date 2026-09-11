@@ -30,6 +30,7 @@ export const OGGI: Record<string, string> = {
   "giornata raccontata, l'AI non ha ancora generato un titolo": "day told, the AI has not generated a title yet",
   "Con premium questa giornata avrebbe un titolo, una sintesi e le macro-aree. E la puoi raccontare a voce, invece di scriverla.": "With premium this day would have a title, a summary and its areas. And you could talk it out loud instead of typing it.",
   "aree macro non ancora estratte": "areas not extracted yet",
+  "l'ai sta ancora elaborando questa giornata": "the ai is still working on this day",
   "Scrivi la tua giornata": "Write your day",
   "senza parlare a voce alta": "without saying it out loud",
   "Com'e andata la giornata?": "How was your day?",

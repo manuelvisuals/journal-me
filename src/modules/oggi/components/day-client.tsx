@@ -130,6 +130,22 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
     };
   }, [date, mode]);
 
+  /* La coda dell'analisi ha completato una giornata (coda-analisi.ts): se e
+     quella a schermo, la si rilegge. Vedi today-client. */
+  useEffect(() => {
+    const suFinito = (e: Event) => {
+      const giorno = (e as CustomEvent<{ giorno: string }>).detail?.giorno;
+      if (!giorno) return;
+      void loadEntryForDate(mode, giorno)
+        .then((aggiornata) => {
+          if (aggiornata) setEntry((corrente) => (corrente?.entryDate === giorno ? aggiornata : corrente));
+        })
+        .catch(() => {});
+    };
+    window.addEventListener("jm:giornata-analizzata", suFinito);
+    return () => window.removeEventListener("jm:giornata-analizzata", suFinito);
+  }, [mode]);
+
   /**
    * Il cambio giorno. Tre strade e una regola sola: oltre oggi non si va.
    *   - domani o piu in la -> il muro (la riga che si dissolve)

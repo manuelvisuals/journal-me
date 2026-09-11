@@ -77,6 +77,12 @@ async function callProcessEntry(
   try {
     const resp = await apiFetch("/api/process-entry", {
       method: "POST",
+      // Il tetto di 15 secondi di apiFetch era tarato su una rete di casa:
+      // in 4G, con una funzione che si sveglia fredda, ci si arriva. E
+      // arrivarci voleva dire perdere aree e misure per sempre (11
+      // settembre 2026). La schermata di attesa ne prevede 45: tanto vale
+      // dare all'analisi tutto il tempo che la persona sta gia aspettando.
+      timeoutMs: 45_000,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript }),
       giorno,
@@ -127,6 +133,7 @@ async function callExtractFacts(transcript: string, giorno?: string): Promise<Ne
   try {
     const resp = await apiFetch("/api/extract-facts", {
       method: "POST",
+      timeoutMs: 45_000,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ transcript, known }),
       giorno,
@@ -190,29 +197,45 @@ function fallbackFields(transcript: string): AIFields {
  * `transcript` deve essere tutto il testo del giorno, non il pezzo appena
  * aggiunto: e il punto di tutta questa storia.
  */
-export async function analyzeDay(transcript: string, giorno?: string): Promise<AIFields> {
-  // In parallelo: sono indipendenti, e in fila sommerebbero le due attese
-  // davanti a un utente che sta gia guardando la schermata di elaborazione.
-  // `giorno` e il giorno del diario su cui si lavora: e quello che il regalo
-  // dell'ospite conta (decisione 4A), quindi viaggia fino al server.
+/**
+ * Come e andata la lettura:
+ *   ok      il modello ha risposto: titolo, sintesi, aree, misure, persone;
+ *   negato  402, cioe l'AI ha detto di NO per scelta (regalo finito, o serve
+ *           premium). Non e un guasto e non si riprova;
+ *   guasto  rete, tetto scaduto, errore, risposta malformata. E qui che
+ *           nasceva il danno: fino all'11 settembre 2026 il guasto veniva
+ *           salvato come se fosse un risultato, e la giornata restava senza
+ *           aree per sempre. Adesso chi chiama lo sa e mette in coda
+ *           (lib/actions/coda-analisi.ts).
+ */
+export type EsitoAnalisi = "ok" | "negato" | "guasto";
+
+/** Come analyzeDay, ma dice anche COM'E ANDATA. */
+export async function analizzaGiornata(
+  transcript: string,
+  giorno?: string,
+): Promise<{ campi: AIFields; esito: EsitoAnalisi }> {
   const [summary, facts] = await Promise.all([
     callProcessEntry(transcript, giorno),
     callExtractFacts(transcript, giorno),
   ]);
-
-  // Le persone della giornata SONO i fatti di tipo persona: una lettura
-  // sola, quindi non possono piu discordare fra loro.
   const people = facts
     ? [...new Set(facts.filter((f) => f.kind === "persona").map((f) => f.label))]
     : null;
-
   const base =
     summary === "negato" ? localFields(transcript) : (summary ?? fallbackFields(transcript));
-  return {
+  const campi: AIFields = {
     ...base,
     people: people ?? undefined,
     facts: facts ?? undefined,
   };
+  const esito: EsitoAnalisi =
+    summary === "negato" ? "negato" : summary === null || facts === null ? "guasto" : "ok";
+  return { campi, esito };
+}
+
+export async function analyzeDay(transcript: string, giorno?: string): Promise<AIFields> {
+  return (await analizzaGiornata(transcript, giorno)).campi;
 }
 
 /**

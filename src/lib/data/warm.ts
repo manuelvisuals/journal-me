@@ -40,6 +40,7 @@ import { loadMonthEntries } from "@/lib/data/entries";
 import { loadRecaps } from "@/lib/data/recaps";
 import { loadRemembers } from "@/lib/data/remembers";
 import { resolveStorageMode, sincronizzaSpecchio } from "@/lib/data/store";
+import { avviaCoda } from "@/lib/actions/coda-analisi";
 import { nowAppParts } from "@/lib/format";
 
 let started = false;
@@ -56,6 +57,10 @@ export async function warmAll(): Promise<void> {
     // niente: le letture vanno in rete come hanno sempre fatto.
     await sincronizzaSpecchio().catch(() => {});
     vedetta();
+    // La coda dell'analisi (lib/actions/coda-analisi.ts): se una giornata e
+    // rimasta senza titolo e senza aree perche la rete e caduta, il lavoro
+    // riparte qui, da solo, senza che la persona debba premere niente.
+    avviaCoda();
     const { year, month } = nowAppParts();
     // Tutte insieme: sono indipendenti, e in serie sommerebbero le latenze.
     await Promise.allSettled([

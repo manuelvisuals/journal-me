@@ -18,6 +18,7 @@ import type { DataMode } from "@/lib/data/entries";
 import { useLang, useT } from "@/lib/i18n";
 import { nomeDaChiave, type Area } from "@/lib/aree";
 import { useAree } from "@/lib/aree-client";
+import { useAnalisiInCoda } from "@/lib/actions/coda-analisi";
 
 type Props = {
   /** La giornata (YYYY-MM-DD): il foglio del peso cerca l'ultimo peso prima di lei. */
@@ -114,6 +115,9 @@ export function FilledView({
   // Le aree dal contratto: nomi, ordine e icone. In modalita locale e
   // l'elenco di fabbrica; col cloud, cio che dice la tabella.
   const aree = useAree();
+  // La coda dell'analisi (lib/actions/coda-analisi.ts): se questa giornata
+  // e ancora in lavorazione, "aree non estratte" sarebbe una bugia.
+  const analisiInCoda = useAnalisiInCoda(dateISO);
   const hasHeadline = !!headline && headline.trim().length > 0;
   const hasSnippet = !!snippet && snippet.trim().length > 0;
   const realAreas = orderAreas(areas ?? [], aree);
@@ -225,6 +229,13 @@ export function FilledView({
                   <div className="x">{area.text}</div>
                 </div>
               ))}
+            </div>
+          ) : analisiInCoda ? (
+            /* La coda sta ancora lavorando (lib/actions/coda-analisi.ts):
+               qui "aree non estratte" sarebbe una bugia, perche suona
+               definitivo e non lo e. Nessun tasto: finisce da sola. */
+            <div className="jm-fv-noareas">
+              {t("l'ai sta ancora elaborando questa giornata")}
             </div>
           ) : (
             <div className="jm-fv-noareas">
