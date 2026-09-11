@@ -6262,4 +6262,23 @@ textarea.jm-sito-in {
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile[open] summary::before,
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile[open] summary::after { top: 22.5px; }
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile { top: 15px; right: 22px; }
+  /* IL MENU APERTO ERA VUOTO (Manuel, 11 settembre: "il menu non si vede
+     niente"). Il pannello e una lastra CHIARA — crema all'84% con la
+     sfocatura dietro — ma il colore del testo gli arriva in eredita da
+     `.jm-sito-nav-in`, che sulla home scura e avorio perche deve stare
+     sopra la fotografia. Avorio su crema: le tre voci c'erano, si leggeva
+     il vuoto. Dentro la lastra si torna al colore della pagina. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div a {
+    color: var(--jm-ink);
+  }
+  /* Il pannello attaccava al bordo basso del cerchio (46 = l'altezza del
+     cerchio): il tasto sembrava incastrato nell'angolo della lastra. Dieci
+     pixel d'aria e tornano due oggetti. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div {
+    top: 56px;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div a:active {
+    background: color-mix(in srgb, var(--jm-ink) 9%, transparent);
+  }
 }
