@@ -23,8 +23,12 @@ export async function updateRecap(
   id: string,
   patch: { title?: string; snippet?: string; body?: string },
 ): Promise<Recap> {
-  invalidateAll();
-  return getStore().updateRecap(id, patch);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().updateRecap(id, patch);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /* ----------------- Period helpers ----------------- */

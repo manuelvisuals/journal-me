@@ -41,8 +41,12 @@ export async function replaceAiFacts(
   dateISO: string,
   facts: NewFact[],
 ): Promise<Fact[]> {
-  invalidateAll();
-  return getStore().replaceAiFacts(dateISO, facts);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().replaceAiFacts(dateISO, facts);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /**
@@ -59,8 +63,12 @@ export async function saveAlias(
   _mode: DataMode,
   alias: Alias,
 ): Promise<Alias[]> {
-  invalidateAll();
-  return getStore().saveAlias(alias);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().saveAlias(alias);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /* --- cose tolte a mano da una giornata (migrazione 013) --- */
@@ -76,16 +84,24 @@ export async function addExclusion(
   _mode: DataMode,
   e: DayExclusion,
 ): Promise<void> {
-  invalidateAll();
-  return getStore().addExclusion(e);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().addExclusion(e);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function removeExclusion(
   _mode: DataMode,
   e: DayExclusion,
 ): Promise<void> {
-  invalidateAll();
-  return getStore().removeExclusion(e);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().removeExclusion(e);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /* --- le domande dell'AI, in coda (migrazione 014) --- */

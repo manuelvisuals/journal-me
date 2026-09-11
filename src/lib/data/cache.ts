@@ -46,7 +46,18 @@ type Entry<T> = { at: number; value: T };
 const store = new Map<string, Entry<unknown>>();
 const inFlight = new Map<string, Promise<unknown>>();
 
-/** Svuota tutto. La chiama ogni scrittura (vedi src/lib/data/*.ts). */
+/**
+ * Svuota tutto. La chiama ogni scrittura (vedi src/lib/data/*.ts), e la
+ * chiama DOPO, non prima.
+ *
+ * L'ordine non e un dettaglio (11 settembre 2026, controaudit degli
+ * obiettivi che riapparivano). Svuotando PRIMA resta aperta una finestra —
+ * il tempo della scrittura, che su rete mobile e mezzo secondo — in cui una
+ * lettura qualunque rimette in cache lo stato VECCHIO, e da li se lo tiene
+ * per un minuto intero. Effetto a schermo: una riga appena cancellata che
+ * ricompare, e nessun errore da nessuna parte. Svuotare dopo, in un
+ * `finally`, chiude la finestra e copre anche la scrittura fallita a meta.
+ */
 export function invalidateAll(): void {
   store.clear();
   inFlight.clear();

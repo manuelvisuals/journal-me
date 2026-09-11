@@ -18,11 +18,19 @@ export async function addGoal(
   _mode: DataMode,
   label: string,
 ): Promise<GoalDef> {
-  invalidateAll();
-  return getStore().addGoal(label);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().addGoal(label);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function removeGoal(_mode: DataMode, id: string): Promise<void> {
-  invalidateAll();
-  return getStore().removeGoal(id);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().removeGoal(id);
+  } finally {
+    invalidateAll();
+  }
 }

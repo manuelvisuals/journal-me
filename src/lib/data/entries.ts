@@ -56,8 +56,12 @@ export async function deleteEntry(
   _mode: DataMode,
   dateISO: string,
 ): Promise<void> {
-  invalidateAll();
-  return getStore().deleteEntry(dateISO);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().deleteEntry(dateISO);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /**
@@ -70,8 +74,12 @@ export async function updateEntryTranscript(
   dateISO: string,
   newTranscript: string,
 ): Promise<Entry> {
-  invalidateAll();
-  return reprocessEntryTranscript(dateISO, newTranscript);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await reprocessEntryTranscript(dateISO, newTranscript);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function updateMetric(
@@ -79,8 +87,12 @@ export async function updateMetric(
   dateISO: string,
   patch: Partial<EntryMetrics>,
 ): Promise<Entry> {
-  invalidateAll();
-  return getStore().updateMetric(dateISO, patch);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().updateMetric(dateISO, patch);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function toggleGoal(
@@ -88,8 +100,12 @@ export async function toggleGoal(
   dateISO: string,
   label: string,
 ): Promise<Entry> {
-  invalidateAll();
-  return getStore().toggleGoal(dateISO, label);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().toggleGoal(dateISO, label);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function saveEntryPeople(
@@ -97,8 +113,12 @@ export async function saveEntryPeople(
   dateISO: string,
   people: string[],
 ): Promise<Entry> {
-  invalidateAll();
-  return getStore().saveEntryPeople(dateISO, people);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().saveEntryPeople(dateISO, people);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /**
@@ -114,8 +134,12 @@ export async function saveHeadline(
   dateISO: string,
   headline: string,
 ): Promise<Entry> {
-  invalidateAll();
-  return getStore().saveHeadline(dateISO, headline);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().saveHeadline(dateISO, headline);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /** La sintesi riscritta a mano: stessa regola del titolo, tua per sempre. */
@@ -124,8 +148,12 @@ export async function saveSnippet(
   dateISO: string,
   snippet: string,
 ): Promise<Entry> {
-  invalidateAll();
-  return getStore().saveSnippet(dateISO, snippet);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().saveSnippet(dateISO, snippet);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /**
@@ -138,8 +166,12 @@ export async function saveAreas(
   dateISO: string,
   areas: AreaSummary[],
 ): Promise<Entry> {
-  invalidateAll();
-  return getStore().saveAreas(dateISO, areas);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().saveAreas(dateISO, areas);
+  } finally {
+    invalidateAll();
+  }
 }
 
 /**

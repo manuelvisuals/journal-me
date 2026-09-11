@@ -28,6 +28,10 @@ export async function portaNellaCassaforte(
   avanza?: (fatte: number, totale: number) => void,
 ): Promise<number> {
   const n = await cloud().portaNellaCassaforte(avanza);
-  invalidateAll();
-  return n;
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await n;
+  } finally {
+    invalidateAll();
+  }
 }

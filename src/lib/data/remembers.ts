@@ -19,16 +19,24 @@ export async function addRemember(
   text: string,
   kind: RememberKind,
 ): Promise<Remember> {
-  invalidateAll();
-  return getStore().addRemember(text, kind);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().addRemember(text, kind);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function deleteRemember(
   _mode: DataMode,
   id: string,
 ): Promise<void> {
-  invalidateAll();
-  return getStore().deleteRemember(id);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().deleteRemember(id);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function loadPersonaNames(_mode?: DataMode): Promise<string[]> {
@@ -40,8 +48,12 @@ export async function addPersonas(
   names: string[],
   sourceEntryId?: string | null,
 ): Promise<string[]> {
-  invalidateAll();
-  return getStore().addPersonas(names, sourceEntryId);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().addPersonas(names, sourceEntryId);
+  } finally {
+    invalidateAll();
+  }
 }
 
 export async function updateRememberKind(
@@ -49,6 +61,10 @@ export async function updateRememberKind(
   id: string,
   kind: RememberKind,
 ): Promise<void> {
-  invalidateAll();
-  return getStore().updateRememberKind(id, kind);
+  // Si svuota DOPO la scrittura: vedi invalidateAll in cache.ts.
+  try {
+    return await getStore().updateRememberKind(id, kind);
+  } finally {
+    invalidateAll();
+  }
 }
