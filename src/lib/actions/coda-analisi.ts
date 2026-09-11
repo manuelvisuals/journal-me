@@ -155,6 +155,41 @@ async function togli(giorno: string): Promise<void> {
 /* ---------------------------- il lavoro ---------------------------- */
 
 let inCorso = false;
+
+/**
+ * LE GIORNATE CHE LA PERSONA STA SALVANDO ADESSO SONO INTOCCABILI
+ * (11 settembre 2026, sera: Manuel registra un audio su una giornata in
+ * coda, la trascrizione riesce, e la giornata resta IDENTICA).
+ *
+ * La coda tiene in mano il testo che ha letto quando ha cominciato. Se nel
+ * frattempo la persona aggiunge un racconto, quel testo diventa vecchio: e
+ * `saveProcessedEntry` scrive il transcript che gli passi, quindi la coda
+ * che finisce dopo riscrive la giornata com'era PRIMA e si porta via le
+ * parole appena dette. Non e un ritardo: e una perdita.
+ *
+ * Due difese, e servono tutte e due. Questa e la prima: finche un
+ * salvataggio e in corso su un giorno, la coda quel giorno non lo tocca.
+ * La seconda sta dentro il giro (si rilegge il testo un attimo prima di
+ * scrivere, e se e cambiato non si scrive niente).
+ */
+const inSalvataggio = new Set<string>();
+
+export function segnaSalvataggio(giorno: string): void {
+  inSalvataggio.add(giorno);
+}
+
+export function fineSalvataggio(giorno: string): void {
+  inSalvataggio.delete(giorno);
+}
+
+/**
+ * La persona ha appena rifatto l'analisi di questo giorno salvandolo: cio
+ * che la coda aveva da fare e gia stato fatto, e su un testo piu nuovo.
+ */
+export async function togliDallaCoda(giorno: string): Promise<void> {
+  if (!disponibile()) return;
+  await togli(giorno);
+}
 let sveglia: number | null = null;
 let attesa = 0;
 
@@ -190,6 +225,7 @@ export async function lavoraLaCoda(): Promise<void> {
   try {
     const lavori = await rileggi();
     for (const l of lavori) {
+      if (inSalvataggio.has(l.giorno)) continue;
       const store = getStore();
       const entry = await store.loadEntryForDate(l.giorno).catch(() => null);
       // La giornata non c'e piu, o e vuota: non c'e niente da analizzare.
@@ -210,6 +246,16 @@ export async function lavoraLaCoda(): Promise<void> {
         continue;
       }
       if (esito === "ok") {
+        /* La seconda difesa: fra l'inizio dell'analisi e adesso sono
+           passati dei secondi, e in quei secondi la persona puo aver
+           aggiunto un racconto. Si rilegge, e se il testo non e piu quello
+           non si scrive NIENTE: l'analisi in mano e vecchia, e scriverla
+           vorrebbe dire cancellare le parole appena dette. Il lavoro resta
+           in coda e il prossimo giro parte dal testo nuovo. */
+        const adesso = await store.loadEntryForDate(l.giorno).catch(() => null);
+        if (!adesso || adesso.transcript !== entry.transcript || inSalvataggio.has(l.giorno)) {
+          continue;
+        }
         try {
           await store.saveProcessedEntry(l.giorno, entry.transcript, campi, entry.durationSeconds ?? 0);
           if (campi.metrics) await store.updateMetric(l.giorno, campi.metrics).catch(() => null);

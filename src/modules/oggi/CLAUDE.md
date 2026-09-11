@@ -323,4 +323,19 @@ regola: "non deve proprio succedere che l'ai fallisce".
   (`[jm] process-entry non ha risposto: HTTP 500` / `tetto scaduto`):
   non e per la persona, e per il dump di Xcode. Senza, 500, tetto e
   risposta storta erano indistinguibili da fuori.
-- Banco: `verify-coda-analisi` (7 controlli, morso provato).
+- LA CODA NON RIPORTA INDIETRO LA GIORNATA (11 settembre 2026, sera, il
+  bug piu brutto della giornata: Manuel registra un audio su un giorno in
+  coda, la trascrizione riesce, l'analisi riesce, "ma poi la giornata resta
+  identica"). La coda tiene in mano il TESTO che ha letto quando e partita,
+  e `saveProcessedEntry` scrive il transcript che gli passi: se la coda
+  finisce dopo il salvataggio della persona, riscrive la giornata com'era e
+  si porta via le parole appena dette. Non e un ritardo, e una perdita.
+  Due difese, servono tutte e due: `segnaSalvataggio`/`fineSalvataggio`
+  (mentre un salvataggio e in corso su un giorno, la coda quel giorno non
+  lo tocca — lo chiama saveRecording e anche reprocessEntryTranscript), e
+  la rilettura un attimo prima di scrivere (se il testo non e piu quello,
+  non si scrive niente e il lavoro resta in coda per il giro dopo). In piu
+  un salvataggio riuscito toglie il giorno dalla coda: la sua analisi e
+  piu nuova.
+- Banco: `verify-coda-analisi` (12 controlli, morso provato: togliendo le
+  due difese la riga aggiunta sparisce davvero).

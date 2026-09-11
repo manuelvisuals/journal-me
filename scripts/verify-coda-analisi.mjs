@@ -15,6 +15,12 @@
 //     la giornata si completa: titolo vero, e la coda si svuota;
 //  4. un 402 (regalo finito: l'AI ha detto di no, non ha fallito) NON entra
 //     in coda: un no non si riprova all'infinito;
+//  6. LA CODA NON RIPORTA INDIETRO LA GIORNATA: mentre la coda analizza,
+//     la persona aggiunge un racconto. La coda tiene in mano il testo di
+//     prima, e `saveProcessedEntry` scrive il transcript che gli passi:
+//     finendo dopo, riscriverebbe la giornata com'era e si porterebbe via
+//     le parole appena dette. Non e un ritardo, e una perdita. Rilegge, e
+//     se il testo e cambiato non scrive niente;
 //  5. se il riassunto riesce e solo i FATTI falliscono, la giornata e
 //     finita lo stesso: titolo e aree si scrivono, niente coda. E il bug
 //     che ha impallato il telefono di Manuel l'11 settembre 2026 — la coda
@@ -182,6 +188,72 @@ async function coda() {
   const dopo = await coda();
   check("5 la giornata NON resta in coda per colpa dei fatti", dopo.length === 0, JSON.stringify(dopo));
   await ctx.unroute("**/api/extract-facts", fattiRotti);
+}
+
+/* ===== 6. la coda non riporta indietro la giornata ===== */
+{
+  await ctx.unroute("**/api/extract-facts");
+  await ctx.unroute("**/api/process-entry");
+  await page.evaluate(
+    () =>
+      new Promise((res) => {
+        const r = indexedDB.deleteDatabase("journalme");
+        r.onsuccess = () => res(null);
+        r.onerror = () => res(null);
+        r.onblocked = () => res(null);
+      }),
+  );
+
+  // a) una giornata che finisce in coda (analisi rotta).
+  await processEntryRotta(true);
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+  await page.locator(".jm-ed-ta").waitFor({ state: "visible", timeout: 90_000 });
+  await page.locator(".jm-ed-ta").click();
+  await page.keyboard.type("Il primo racconto, quello che la coda ha letto.");
+  await page.keyboard.press("Control+Enter");
+  await page.locator(".jm-fv-h").waitFor({ state: "visible", timeout: 60_000 });
+  await page.waitForTimeout(2000);
+  check("6 la giornata e in coda", (await coda()).length === 1);
+
+  // b) l'analisi torna a funzionare ma LENTA: il giro della coda parte
+  //    all'apertura dell'app e finira fra dieci secondi.
+  await processEntryRotta(false);
+  /* SOLO LA PRIMA chiamata e lenta: quella e il giro della coda, che parte
+     all'apertura dell'app. Il salvataggio della persona, che viene dopo,
+     passa subito. Cosi l'ordine non e una speranza ma un fatto: la persona
+     finisce PRIMA, la coda molto DOPO, col testo vecchio in mano. */
+  let quante = 0;
+  const lenta = async (route) => {
+    quante += 1;
+    if (quante === 1) await new Promise((r) => setTimeout(r, 30_000));
+    await route.fallback();
+  };
+  await ctx.route("**/api/process-entry", lenta);
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+  await page.locator(".jm-fv-h").waitFor({ state: "visible", timeout: 60_000 });
+
+  // c) nel frattempo la persona aggiunge un racconto e salva SENZA AI
+  //    (Cmd+S): il suo salvataggio finisce subito, la coda molto dopo.
+  // Il foglio "aggiungi a questa giornata", come in verify-testo-giorno.
+  await page.locator(".jm-day-add, .jm-add-open").first().click().catch(() => {});
+  await page.waitForTimeout(500);
+  await page.locator(".jm-sheet-row", { hasText: /Scrivi altro|Scrivi a mano/ }).first().click().catch(() => {});
+  await page.waitForTimeout(500);
+  const scrivi = page.locator(".jm-editor-textarea").first();
+  await scrivi.waitFor({ state: "visible", timeout: 30_000 });
+  await scrivi.fill("Poi sono andato a cena con Marco, e questa riga non deve sparire.");
+  await page.locator(".jm-editor-btn.save").click();
+  // Il salvataggio passa dall'analisi, che qui e lenta apposta.
+  await page.waitForFunction(() => !document.body.innerText.includes("Salvo..."), null, { timeout: 60_000 }).catch(() => {});
+  await page.waitForTimeout(2500);
+  const subito = (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  check("6 il racconto aggiunto c'e subito dopo il salvataggio", /cena con Marco/.test(subito), subito.slice(0, 140));
+
+  // d) la coda finisce col testo VECCHIO in mano: non deve scrivere.
+  await page.waitForTimeout(30_000);
+  const dopo = (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  check("6 quando la coda finisce, il racconto aggiunto e ancora li", /cena con Marco/.test(dopo), dopo.slice(0, 140));
+  await ctx.unroute("**/api/process-entry", lenta);
 }
 
 await ctx.close();

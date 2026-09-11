@@ -24,7 +24,12 @@ import { can } from "@/lib/capabilities";
 import { getStore } from "@/lib/data/store";
 import { invalidateAll } from "@/lib/data/cache";
 import { analizzaGiornata, localFields } from "@/lib/actions/analyze-day";
-import { accodaAnalisi } from "@/lib/actions/coda-analisi";
+import {
+  accodaAnalisi,
+  fineSalvataggio,
+  segnaSalvataggio,
+  togliDallaCoda,
+} from "@/lib/actions/coda-analisi";
 import { proponiPromemoriaSerale } from "@/lib/native/reminders";
 import type { AreaSummary, Entry } from "@/lib/types";
 import type { AIFields } from "@/lib/data/store";
@@ -107,6 +112,24 @@ function testoCompleto(existing: Entry | null, pezzo: string): string {
 
 export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
   const store = getStore();
+  /* LA CODA STIA FERMA MENTRE SALVIAMO (11 settembre 2026, sera). La coda
+     dell'analisi (lib/actions/coda-analisi.ts) tiene in mano il testo che
+     ha letto quando e partita: se finisce mentre questo salvataggio sta
+     scrivendo, riscrive la giornata com'era prima e si porta via il
+     racconto appena aggiunto. Finche siamo qui dentro, quel giorno e
+     nostro. */
+  segnaSalvataggio(input.defaultDate);
+  try {
+    return await salvaDavvero(input, store);
+  } finally {
+    fineSalvataggio(input.defaultDate);
+  }
+}
+
+async function salvaDavvero(
+  input: RecordingInput,
+  store: ReturnType<typeof getStore>,
+): Promise<Entry[]> {
   const useAI = can("aiSummary") && !input.skipAI;
   const conSplit = useAI && !input.skipSplit;
 
@@ -175,6 +198,10 @@ export async function saveRecording(input: RecordingInput): Promise<Entry[]> {
        se fosse una risposta, e quella giornata restava senza titolo, senza
        aree e senza misure per sempre. Vedi lib/actions/coda-analisi.ts. */
     if (esitoAnalisi === "guasto") void accodaAnalisi(seg.date);
+    /* Riuscita: se quel giorno era in coda, la coda non ha piu niente da
+       fare — l'analisi appena fatta e piu nuova della sua, e lasciarla li
+       vorrebbe dire rifarla su un testo vecchio. */
+    else void togliDallaCoda(seg.date);
     if (useAI && input.onAnalisi) {
       input.onAnalisi({
         date: seg.date,
@@ -229,6 +256,21 @@ export async function reprocessEntryTranscript(
   newTranscript: string,
 ): Promise<Entry> {
   const store = getStore();
+  // Come saveRecording: mentre si riscrive una giornata, la coda non la
+  // tocca (vedi il commento li sopra).
+  segnaSalvataggio(dateISO);
+  try {
+    return await riprocessaDavvero(dateISO, newTranscript, store);
+  } finally {
+    fineSalvataggio(dateISO);
+  }
+}
+
+async function riprocessaDavvero(
+  dateISO: string,
+  newTranscript: string,
+  store: ReturnType<typeof getStore>,
+): Promise<Entry> {
   let ai: AIFields = localFields(newTranscript);
   if (can("aiSummary")) {
     const r = await analizzaGiornata(newTranscript, dateISO);
