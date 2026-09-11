@@ -69,6 +69,22 @@ function misureValide(raw: unknown): Partial<EntryMetrics> | undefined {
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+/**
+ * PERCHE NON HA FUNZIONATO, in una riga sola sulla console (11 settembre
+ * 2026). Sul telefono di Manuel l'analisi falliva e non c'era modo di
+ * sapere se fosse un 500, un tetto scaduto o una risposta storta: dal di
+ * fuori i tre casi erano identici, e senza saperlo non si ripara niente.
+ * Non e un messaggio per la persona (quella non deve fare niente: ci pensa
+ * la coda): e una riga per il dump di Xcode.
+ */
+function perche(dove: string, motivo: string): void {
+  try {
+    console.warn(`[jm] ${dove} non ha risposto: ${motivo}`);
+  } catch {
+    // una console che non c'e non e un problema
+  }
+}
+
 /** Il riassunto: titolo, sintesi, aree, misure del risveglio. */
 async function callProcessEntry(
   transcript: string,
@@ -91,16 +107,23 @@ async function callProcessEntry(
     // premium), non per un guasto. La giornata va salvata come una giornata
     // senza AI (titolo = prima riga), non come un'AI che non ha risposto.
     if (resp.status === 402) return "negato";
-    if (!resp.ok) return null;
+    if (!resp.ok) {
+      perche("process-entry", `HTTP ${resp.status}`);
+      return null;
+    }
     const data = (await resp.json()) as Partial<AIFields>;
-    if (!data.headline || !data.snippet) return null;
+    if (!data.headline || !data.snippet) {
+      perche("process-entry", "risposta senza titolo o sintesi");
+      return null;
+    }
     return {
       headline: data.headline,
       snippet: data.snippet,
       areas: Array.isArray(data.areas) ? data.areas : [],
       metrics: misureValide(data.metrics),
     };
-  } catch {
+  } catch (e) {
+    perche("process-entry", (e as Error)?.name === "AbortError" ? "tetto scaduto (45 s)" : String((e as Error)?.message ?? e));
     return null;
   }
 }
@@ -138,7 +161,10 @@ async function callExtractFacts(transcript: string, giorno?: string): Promise<Ne
       body: JSON.stringify({ transcript, known }),
       giorno,
     });
-    if (!resp.ok) return null;
+    if (!resp.ok) {
+      perche("extract-facts", `HTTP ${resp.status}`);
+      return null;
+    }
     const data = (await resp.json()) as {
       facts?: {
         kind?: string;
@@ -172,7 +198,8 @@ async function callExtractFacts(transcript: string, giorno?: string): Promise<Ne
         confidence: typeof f.confidence === "number" ? f.confidence : null,
         origin: "ai" as const,
       }));
-  } catch {
+  } catch (e) {
+    perche("extract-facts", (e as Error)?.name === "AbortError" ? "tetto scaduto (45 s)" : String((e as Error)?.message ?? e));
     return null;
   }
 }
@@ -229,8 +256,18 @@ export async function analizzaGiornata(
     people: people ?? undefined,
     facts: facts ?? undefined,
   };
+  /* COSA CONTA PER DIRE "FATTO" (corretto l'11 settembre 2026, sul telefono
+     di Manuel). Solo il riassunto: titolo, sintesi, aree e misure. I FATTI
+     no — `null` li vuol dire "non li ho letti", che non e un danno: la
+     giornata resta completa e le persone non si toccano (e la regola di
+     `AIFields.people`, che esiste da sempre).
+     Prima qui bastava che i fatti mancassero per marcare tutto come guasto,
+     e allora la coda non scriveva NEMMENO il titolo buono che aveva in
+     mano: la giornata restava "Giornata raccontata" per sempre mentre la
+     coda riprovava all'infinito una cosa che era gia riuscita. Un'analisi
+     riuscita a meta si scrive per la meta riuscita. */
   const esito: EsitoAnalisi =
-    summary === "negato" ? "negato" : summary === null || facts === null ? "guasto" : "ok";
+    summary === "negato" ? "negato" : summary === null ? "guasto" : "ok";
   return { campi, esito };
 }
 

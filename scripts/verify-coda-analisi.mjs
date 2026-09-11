@@ -14,7 +14,12 @@
 //  3. tornata la rete, la coda riparte DA SOLA — nessun tasto premuto — e
 //     la giornata si completa: titolo vero, e la coda si svuota;
 //  4. un 402 (regalo finito: l'AI ha detto di no, non ha fallito) NON entra
-//     in coda: un no non si riprova all'infinito.
+//     in coda: un no non si riprova all'infinito;
+//  5. se il riassunto riesce e solo i FATTI falliscono, la giornata e
+//     finita lo stesso: titolo e aree si scrivono, niente coda. E il bug
+//     che ha impallato il telefono di Manuel l'11 settembre 2026 — la coda
+//     aveva in mano il titolo buono e non lo scriveva perche mancavano i
+//     fatti, che vogliono dire solo "non li ho letti".
 //
 // Il server parla con un Supabase FINTO e un OpenAI FINTO (finti-server.mjs)
 // su 3198 e 3199. Dev server come per verify-ospite.mjs:
@@ -149,6 +154,34 @@ async function coda() {
   await page.waitForTimeout(6000);
   const dopo = await coda();
   check("4 un 402 non mette niente in coda (un no non si riprova)", dopo.length === 0, JSON.stringify(dopo));
+}
+
+/* ===== 5. i fatti falliscono ma il riassunto no: la giornata e finita ===== */
+{
+  await ctx.unroute("**/api/process-entry");
+  const fattiRotti = (route) => route.abort();
+  await ctx.route("**/api/extract-facts", fattiRotti);
+  await page.evaluate(
+    () =>
+      new Promise((res) => {
+        const r = indexedDB.deleteDatabase("journalme");
+        r.onsuccess = () => res(null);
+        r.onerror = () => res(null);
+        r.onblocked = () => res(null);
+      }),
+  );
+  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+  await page.locator(".jm-ed-ta").waitFor({ state: "visible", timeout: 90_000 });
+  await page.locator(".jm-ed-ta").click();
+  await page.keyboard.type("Una giornata in cui i fatti non si leggono ma il riassunto si.");
+  await page.keyboard.press("Control+Enter");
+  await page.locator(".jm-fv-h").waitFor({ state: "visible", timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  const titolo = await page.locator(".jm-fv-h").innerText();
+  check("5 il titolo dell'AI si scrive anche senza i fatti", /giornata da ospite/i.test(titolo), titolo);
+  const dopo = await coda();
+  check("5 la giornata NON resta in coda per colpa dei fatti", dopo.length === 0, JSON.stringify(dopo));
+  await ctx.unroute("**/api/extract-facts", fattiRotti);
 }
 
 await ctx.close();

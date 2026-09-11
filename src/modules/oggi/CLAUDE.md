@@ -309,4 +309,18 @@ regola: "non deve proprio succedere che l'ai fallisce".
   da sola.
 - Il tetto delle due chiamate dell'analisi e passato da 15 a 45 secondi,
   quanto la schermata di attesa gia prevede.
+- CORRETTO LO STESSO GIORNO, sul telefono: "finito" lo decide SOLO il
+  riassunto. I fatti che mancano vogliono dire "non li ho letti" e non
+  sono un danno (le persone non si toccano, e la regola di `AIFields`);
+  prima bastava quello per marcare tutto guasto, e allora la coda non
+  scriveva nemmeno il titolo buono che aveva in mano — la giornata restava
+  "Giornata raccontata" per sempre mentre la coda riprovava all'infinito
+  una cosa gia riuscita.
+- La coda parte da AuthGate, non solo dal precaricamento (che si ferma da
+  solo se la modalita non e risolta), e finche c'e un lavoro riprova da
+  sola diradando: 15 s, 30, 60, 120, 300.
+- Quando l'analisi non riesce, UNA riga sulla console dice perche
+  (`[jm] process-entry non ha risposto: HTTP 500` / `tetto scaduto`):
+  non e per la persona, e per il dump di Xcode. Senza, 500, tetto e
+  risposta storta erano indistinguibili da fuori.
 - Banco: `verify-coda-analisi` (7 controlli, morso provato).

@@ -169,11 +169,24 @@ function svgInImmagine(svg: SVGElement, colore: string): Promise<HTMLImageElemen
   const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml" }));
   return new Promise((resolve, reject) => {
     const img = new Image();
+    /* UN TETTO ANCHE QUI (11 settembre 2026, dock sfigurato sul telefono di
+       Manuel). Un'immagine da blob dentro WKWebView, all'avvio, puo non
+       chiamare NE onload NE onerror: senza tetto la fotografia del dock
+       resta appesa per sempre, e con lei ogni sincronizzazione successiva —
+       il dock si congela sull'ultima immagine buona, o su nessuna. E la
+       stessa regola dei tetti di rete (src/lib/tetto.ts): ogni attesa che
+       puo non finire deve avere una fine scritta da noi. */
+    const tetto = window.setTimeout(() => {
+      URL.revokeObjectURL(url);
+      reject(new Error("icona: tetto scaduto"));
+    }, 1_000);
     img.onload = () => {
+      window.clearTimeout(tetto);
       URL.revokeObjectURL(url);
       resolve(img);
     };
     img.onerror = () => {
+      window.clearTimeout(tetto);
       URL.revokeObjectURL(url);
       reject(new Error("icona non rasterizzabile"));
     };
@@ -181,9 +194,15 @@ function svgInImmagine(svg: SVGElement, colore: string): Promise<HTMLImageElemen
   });
 }
 
+/**
+ * `completa` = ogni icona che doveva esserci e stata davvero disegnata. Una
+ * foto a meta si manda lo stesso (meglio mezzo dock che nessuno), ma NON si
+ * mette in cache: era questo il dock sfigurato che restava sfigurato
+ * (11 settembre 2026). Vedi il commento sulla chiave, piu sotto.
+ */
 async function fotografaDock(
   pillola: HTMLElement,
-): Promise<{ png: string; scala: number } | null> {
+): Promise<{ png: string; scala: number; completa: boolean } | null> {
   const rp = pillola.getBoundingClientRect();
   if (rp.width === 0) return null;
   /* I font del tema devono esserci, o la prima foto esce col font di
@@ -196,6 +215,7 @@ async function fotografaDock(
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   ctx.scale(scala, scala);
+  let completa = true;
 
   const dentro = (el: Element): Rettangolo => {
     const r = el.getBoundingClientRect();
@@ -217,7 +237,9 @@ async function fotografaDock(
         const img = await svgInImmagine(icona, stile.color);
         ctx.drawImage(img, ri.x, ri.y, ri.larghezza, ri.altezza);
       } catch {
-        /* Un'icona in meno e meglio di niente foto. */
+        /* Un'icona in meno e meglio di niente foto: ma la foto non vale
+           come definitiva, e al giro dopo si rifa. */
+        completa = false;
       }
     }
     const parola = tasto.querySelector<HTMLElement>(".jm-dock-l");
@@ -265,13 +287,15 @@ async function fotografaDock(
         const img = await svgInImmagine(iconaMic, sm.color);
         ctx.drawImage(img, ri.x, ri.y, ri.larghezza, ri.altezza);
       } catch {
-        /* come sopra */
+        /* come sopra: mezzo microfono e meglio di niente, ma la foto non
+           si mette in cache. */
+        completa = false;
       }
     }
   }
 
   const dataUrl = canvas.toDataURL("image/png");
-  return { png: dataUrl.slice("data:image/png;base64,".length), scala };
+  return { png: dataUrl.slice("data:image/png;base64,".length), scala, completa };
 }
 
 /**
@@ -339,7 +363,7 @@ export function useVetroNativo(
       const questo = ++giro;
       const { modo: m, tema: t, firma: f } = statoRef.current;
       const chiave = `${f}|${t}|${m}|${Math.round(r.width)}x${Math.round(r.height)}`;
-      let foto: { png: string; scala: number } | null = null;
+      let foto: { png: string; scala: number; completa: boolean } | null = null;
       if (chiave !== chiaveFoto) {
         /* Una foto fallita non deve fermare la geometria: lastra e lente
            si aggiornano comunque, e la foto si ritenta al giro dopo. */
@@ -349,7 +373,15 @@ export function useVetroNativo(
           foto = null;
         }
         if (!vivo || questo !== giro) return;
-        if (foto) chiaveFoto = chiave;
+        /* LA CACHE SOLO SE LA FOTO E INTERA (11 settembre 2026). La chiave
+           dice "per questo tasto acceso, questo tema e questa misura la
+           foto e gia fatta": se ci si scrive dentro una foto a cui manca
+           un'icona, quel dock resta sfigurato finche non cambia tasto o
+           tema — che e esattamente cio che Manuel ha visto sul telefono.
+           Una foto incompleta si manda (meglio di niente) e si richiede
+           subito un altro giro, che di solito riesce. */
+        if (foto?.completa) chiaveFoto = chiave;
+        else if (foto) window.setTimeout(() => richiedi(), 300);
       }
       const tastoAcceso = p.querySelector(".jm-dock-t.on");
       const riduci =

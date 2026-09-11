@@ -130,6 +130,13 @@ export async function accodaAnalisi(giorno: string): Promise<void> {
     });
     inCoda.add(giorno);
     annuncia();
+    // Un lavoro nuovo merita il primo giro subito, non fra cinque minuti.
+    attesa = 0;
+    if (sveglia !== null && typeof window !== "undefined") {
+      window.clearTimeout(sveglia);
+      sveglia = null;
+    }
+    riprovaPiuTardi();
   } catch {
     // Senza IndexedDB non c'e coda: resta il comportamento di prima.
   }
@@ -148,6 +155,29 @@ async function togli(giorno: string): Promise<void> {
 /* ---------------------------- il lavoro ---------------------------- */
 
 let inCorso = false;
+let sveglia: number | null = null;
+let attesa = 0;
+
+/**
+ * L'ATTESA CHE CRESCE. I tre risvegli (app aperta, primo piano, rete
+ * tornata) coprono chi esce e rientra, ma non chi resta dentro l'app a
+ * guardare la giornata che non si completa: li nessun evento arriva mai.
+ * Quindi finche c'e un lavoro in coda si riprova da soli, diradando: 15
+ * secondi, poi 30, 60, due minuti, cinque, e li ci si ferma. Diradare non
+ * e pigrizia: e non consumare batteria per scoprire dieci volte al minuto
+ * che la rete manca ancora.
+ */
+const ATTESE = [15_000, 30_000, 60_000, 120_000, 300_000];
+
+function riprovaPiuTardi(): void {
+  if (typeof window === "undefined" || sveglia !== null || inCoda.size === 0) return;
+  const quanto = ATTESE[Math.min(attesa, ATTESE.length - 1)];
+  attesa += 1;
+  sveglia = window.setTimeout(() => {
+    sveglia = null;
+    void lavoraLaCoda();
+  }, quanto);
+}
 
 /**
  * Un giro di coda. Un lavoro per volta e in fila: due analisi insieme
@@ -201,6 +231,10 @@ export async function lavoraLaCoda(): Promise<void> {
     }
   } finally {
     inCorso = false;
+    // Se e riuscito qualcosa si riparte dal primo scalino: la rete e
+    // tornata, e un secondo lavoro non deve aspettare cinque minuti.
+    if (inCoda.size === 0) attesa = 0;
+    riprovaPiuTardi();
   }
 }
 
@@ -208,16 +242,26 @@ let avviata = false;
 
 /**
  * Le sveglie della coda: l'app che si apre, l'app che torna in primo piano,
- * la rete che torna. Sono i tre momenti in cui qualcosa e cambiato davvero;
- * fuori di li, un timer che riprova ogni N secondi consumerebbe batteria per
- * scoprire che la rete manca ancora.
+ * la rete che torna — piu l'attesa che cresce, qui sopra, per chi resta
+ * dentro l'app e non genera nessun evento.
+ *
+ * Si chiama da AuthGate, al montaggio, e NON solo dal precaricamento: il
+ * precaricamento parte dopo `signalReady()` e si ferma da solo se la
+ * modalita non e ancora risolta, e legare a quel filo l'unica cosa che
+ * ripara una giornata rotta vuol dire che, il giorno che quel filo si
+ * spezza, la giornata resta rotta. Chiamarla due volte non fa niente.
  */
 export function avviaCoda(): void {
   if (avviata || typeof window === "undefined") return;
   avviata = true;
   void rileggi().then(() => lavoraLaCoda());
-  window.addEventListener("online", () => void lavoraLaCoda());
+  window.addEventListener("online", () => {
+    attesa = 0;
+    void lavoraLaCoda();
+  });
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") void lavoraLaCoda();
+    if (document.visibilityState !== "visible") return;
+    attesa = 0;
+    void lavoraLaCoda();
   });
 }

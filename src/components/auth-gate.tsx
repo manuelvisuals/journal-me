@@ -17,6 +17,7 @@ import {
   statoCassaforte,
 } from "@/lib/cassaforte";
 import { CassaforteCancello } from "@/modules/accesso";
+import { avviaCoda } from "@/lib/actions/coda-analisi";
 import { migraSePromesso } from "@/lib/ospite/migrazione";
 import { prendiMuroDaRiaprire } from "@/lib/ospite/muro-riapri";
 import { openPremiumWall } from "@/modules/abbonamento";
@@ -178,6 +179,15 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   // C1): con la sessione e la cassaforte aperta, le giornate del telefono
   // salgono e il braccialetto si lega all'account. Un effetto, una volta
   // per apertura della cassaforte; se non c'e niente da fare torna subito.
+  /* LA CODA DELL'ANALISI (lib/actions/coda-analisi.ts) parte QUI, al
+     montaggio del cancello, e non solo dal precaricamento: se una giornata
+     e rimasta senza titolo perche la rete e caduta, cio che la ripara non
+     puo dipendere da un filo che si ferma da solo quando la modalita non e
+     ancora risolta. Chiamarla due volte non fa niente. */
+  useEffect(() => {
+    avviaCoda();
+  }, []);
+
   useEffect(() => {
     if (mode !== "cloud" || auth !== "in" || cassaforte !== "aperta") return;
     void migraSePromesso();
