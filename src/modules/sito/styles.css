@@ -4478,10 +4478,50 @@ textarea.jm-sito-in {
 
 /* ---- e adesso il movimento, solo con lo script acceso ---- */
 .jm-sito7[data-js] .jm-sito8-pista { height: 420svh; }
-.jm-sito7[data-js] .jm-sito8-scena {
+/* IL BLOCCO CHE SI FERMA (11 settembre 2026, Manuel: "la scritta in alto si
+   blocca, le immagini si bloccano, e scrollando salgono solo i fumetti di
+   vetro e poi la scheda col recap").
+
+   Prima si fermava solo la scena e il titolo scorreva via per conto suo:
+   dopo mezza schermata ci si trovava davanti a due fotografie senza piu la
+   frase che diceva cosa stavano facendo. Adesso titolo e scena sono un
+   blocco solo, alto quanto lo schermo, e si ferma tutto insieme: le uniche
+   cose che si muovono sono quelle che devono muoversi.
+
+   Il titolo prende la sua altezza e la scena si prende il resto (flex: 1).
+   Siccome un titolo da 78px si mangerebbe un terzo dello schermo lasciando
+   ai ritratti un ritaglio schiacciato, dentro il blocco il titolo e piu
+   contenuto: e la stessa frase, detta con la voce giusta per una scena
+   ferma invece che per una testata. */
+.jm-sito7[data-js] .jm-sito8-blocco {
   position: sticky;
-  top: 24px;
-  height: calc(100svh - 48px);
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  padding: 18px 0 24px;
+}
+.jm-sito7[data-js] .jm-sito8-blocco .jm-sito8-testa {
+  flex: 0 0 auto;
+  margin-bottom: clamp(16px, 2vw, 26px);
+}
+.jm-sito7[data-js] .jm-sito8-blocco .jm-sito8-testa h2 {
+  font-size: clamp(calc(30px * var(--jm-ui-scale)), 3.4vw, calc(50px * var(--jm-ui-scale)));
+}
+.jm-sito7[data-js] .jm-sito8-blocco .jm-sito8-testa > p:last-child {
+  margin-top: 12px;
+  font-size: calc(16px * var(--jm-ui-scale));
+}
+.jm-sito7[data-js] .jm-sito8-scena {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* `width: 100%` non e ridondante. La scena ha `margin: 0 auto` per
+     restare centrata sotto i 1490px, e in un contenitore flex un margine
+     automatico sull'asse trasversale ANNULLA lo stiramento: l'elemento si
+     stringe sul contenuto. E siccome i due ritratti sono blocchi senza
+     larghezza propria, il contenuto era zero e la scena spariva, lasciando
+     in mezzo alla pagina una riga verticale alta 670 pixel. */
+  width: 100%;
   /* i due atti, in fila */
   --g1: clamp(0, calc(var(--s) / .32), 1);
   --e1: clamp(0, calc((var(--s) - .34) / .13), 1);
@@ -4588,9 +4628,14 @@ textarea.jm-sito-in {
      era scorrimento per il secondo atto sarebbe diventato scorrimento a
      vuoto. */
   .jm-sito7[data-js] .jm-sito8-pista { height: 210svh; }
+  /* Sul telefono la barra in cima e fissa: il blocco deve fermarsi SOTTO di
+     lei, se no l'occhiello e la cima del titolo finiscono dietro il vetro. */
+  .jm-sito7[data-js] .jm-sito8-blocco {
+    top: var(--jm-sito-nav-h);
+    height: calc(100svh - var(--jm-sito-nav-h));
+    padding: 10px 0 16px;
+  }
   .jm-sito7[data-js] .jm-sito8-scena {
-    top: 12px;
-    height: calc(100svh - 24px);
     --fuori: 420px;
     /* UN ATTO SOLO:
 
@@ -5318,7 +5363,10 @@ textarea.jm-sito-in {
    riportano all'avorio. Misurato su tela: 248,240,226 contro il 247,239,228
    di --jm-sito-su-foto, cioe la stessa cosa a occhio. */
 .jm-sito4.jm-sito7 > .jm-sito-nav .jm-sito-nav-in { color: var(--jm-sito-su-foto); }
-.jm-sito4.jm-sito7 .jm-sito-wordmark {
+/* Solo il marchio DENTRO LA BARRA: dall'11 settembre 2026 lo stesso file
+   compare anche nel titolo della giornata, su fondo chiaro, e li un invert
+   lo farebbe sparire. */
+.jm-sito4.jm-sito7 .jm-sito-marchio .jm-sito-wordmark {
   filter: invert(1) brightness(.9) sepia(.24);
 }
 /* Il vetro sotto ai link (blur + saturate, riga 175) era nato per la barra
@@ -5575,7 +5623,11 @@ textarea.jm-sito-in {
 /* --------------------------------------------------- CON JAVASCRIPT */
 .jm-sito7[data-js] .jm-sito12-pista {
   position: relative;
-  height: 420svh;
+  /* Alta 500 e non 420: la coreografia e la stessa, ma distribuita su piu
+     pixel di scorrimento, quindi ogni carta resta leggibile piu a lungo. Le
+     due cose insieme — finestra piena piu larga e pista piu lunga — portano
+     il tempo di lettura da 283 a 525 pixel di scorrimento, quasi il doppio. */
+  height: 500svh;
   background: var(--jm-bg);
 }
 .jm-sito7[data-js] .jm-sito12-scena {
@@ -5679,9 +5731,23 @@ textarea.jm-sito-in {
   backdrop-filter: blur(22px) saturate(1.3);
   box-shadow: 0 22px 60px color-mix(in oklab, var(--jm-shadow) 18%, transparent);
   pointer-events: none;
+  /* IL TEMPO PER LEGGERE (11 settembre 2026, Manuel: "spariscono troppo
+     presto, non faccio a tempo a leggerle").
+
+     La carta vive dentro la sua finestra (un terzo della corsa) e dentro
+     quella finestra faceva: entrata 0-22%, PIENA 22-58%, uscita 58-80%. A
+     piena opacita stava dunque solo il 36% del suo tempo — 283 pixel di
+     scorrimento su un desktop da 900 — e il resto lo passava a comparire o a
+     sparire. Adesso entra e esce piu in fretta e sta ferma piu a lungo:
+     entrata 0-13%, PIENA 13-68%, uscita 68-85%. Il 55% invece del 36%.
+
+     Il limite dell'uscita non e arbitrario: a u 0.85 il bordo alto della
+     carta e a 200px e il cartiglio finisce a 174. Oltre lo 0.88 la carta
+     comincerebbe a leggersi sopra il titolo, che e il difetto che questa
+     dissolvenza esiste per evitare. */
   opacity: min(
-    clamp(0, calc(var(--u, 0) * 4.5455), 1),
-    calc(1 - clamp(0, calc((var(--u, 0) - .58) * 4.5455), 1))
+    clamp(0, calc(var(--u, 0) * 7.6923), 1),
+    calc(1 - clamp(0, calc((var(--u, 0) - .68) * 5.8824), 1))
   );
 }
 .jm-sito7[data-js] .jm-sito12-schermo { --scala: .86; }
@@ -5707,7 +5773,7 @@ textarea.jm-sito-in {
   translate: -50% -50%;
 }
 @media (max-width: 900px) {
-  .jm-sito7[data-js] .jm-sito12-pista { height: 440svh; }
+  .jm-sito7[data-js] .jm-sito12-pista { height: 520svh; }
   /* La barra in cima e fissa e alta 76px: il cartiglio partiva a 55 e ci
      finiva sotto. Qui si parte DA la barra, non da un numero a caso. */
   .jm-sito7[data-js] .jm-sito12-occhio { top: calc(var(--jm-sito-nav-h) + 20px); }
@@ -5773,4 +5839,167 @@ textarea.jm-sito-in {
     margin: 0 auto clamp(40px, 5vw, 64px);
   }
   .jm-sito7[data-js] .jm-sito12-telefono { width: min(320px, 76vw); margin: 0 auto; }
+}
+
+/* =====================================================================
+   L'EROE CHE SI APRE (jm-sito13) — 11 settembre 2026, Manuel: "la pilla
+   non mostrarla subito; quando scrolli falla apparire dal basso, con del
+   parallasse sulla ragazza e facendo sparire gli altri elementi verso
+   destra e sinistra".
+
+   COSA SUCCEDE. L'eroe si incolla per due schermate e mezzo. Scorrendo:
+   le parole se ne vanno dai lati — occhiello e titolo a sinistra, tutto
+   il resto a destra, ognuno un po' piu lontano del precedente, cosi si
+   sfilano invece di uscire come un blocco unico; la fotografia cresce e
+   sale di poco (il parallasse); la pilla del rituale, che alla prima
+   schermata NON C'E, sale dal basso e si prende il centro.
+
+   PERCHE LA PILLA PUO PARTIRE DA FUORI. Sui due lati estremi era gia in
+   posizione assoluta in fondo all'eroe; nella fascia di mezzo (768-1099)
+   stava nel flusso, e una cosa nel flusso non puo salire da sotto senza
+   allungare la pagina. Qui sotto le si da la stessa posizione assoluta a
+   tutte le larghezze, cosi la coreografia e una sola.
+
+   E PERCHE LA COLONNA ADESSO CI STA. Prima l'eroe doveva riservare 232px
+   in fondo per la pilla, ed e da li che venivano tutti i guai sugli
+   schermi bassi. Adesso a riposo la pilla e fuori schermo: la colonna ha
+   tutta l'altezza meno la barra, e quando la pilla arriva le parole se
+   ne sono gia andate. Le due cose non si incontrano mai.
+
+   `data-pista` senza "avanti": il cursore parte da zero quando la pista e
+   in cima alla pagina, che e esattamente il caso dell'eroe.
+
+   Senza JavaScript (e con "riduci il movimento") niente di tutto questo:
+   la pista non si incolla, la pilla e al suo posto e l'eroe e quello
+   fermo di sempre. Tutte le regole stanno sotto .jm-sito7[data-js].
+   ===================================================================== */
+.jm-sito7[data-js] .jm-sito13-pista {
+  position: relative;
+  height: 250svh;
+  /* le tre corse */
+  --via: clamp(0, calc((var(--s, 0) - .05) / .33), 1);
+  --pil: clamp(0, calc((var(--s, 0) - .30) / .40), 1);
+  --par: clamp(0, calc(var(--s, 0) / .80), 1);
+}
+/* L'eroe si incolla e BASTA: altezza, margini e riempimenti restano quelli
+   di prima. Il primo tentativo li riscriveva — colonna centrata su tutta
+   l'altezza, niente spazio riservato in fondo alla pilla — e sembrava
+   giusto, perche a riposo la pilla e fuori schermo. Ma quelle regole
+   arrivano con `data-js`, cioe DOPO il primo disegno: la colonna saltava di
+   96 pixel appena lo script partiva, e il CLS passava da 0,0010 a 0,0213.
+   Una geometria che cambia quando arriva JavaScript e un salto, sempre. */
+.jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe {
+  position: sticky;
+  top: 0;
+}
+/* IL PARALLASSE. La fotografia cresce del 12% e sale di quattro punti:
+   poco, ma abbastanza perche il fondo e le parole non si muovano insieme.
+   Sta dentro .jm-sito2-eroe, che ha overflow: hidden, quindi non sborda. */
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe-media .scena {
+  scale: calc(1 + .12 * var(--par));
+  translate: 0 calc(var(--par) * -4%);
+}
+/* LE PAROLE SE NE VANNO. Le distanze crescono di elemento in elemento —
+   62, 68, 74, 80, 86 vw — cosi non escono incollate: si sfilano. La
+   dissolvenza parte a meta viaggio, quando sono gia mezze fuori, se no
+   svanirebbero sul posto invece di andarsene. */
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito4-eyebrow,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-h1,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-sotto,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-cta,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-garanzie,
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-rituale-vivo {
+  opacity: calc(1 - clamp(0, calc((var(--via) - .5) / .4), 1));
+  will-change: translate, opacity;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito4-eyebrow {
+  translate: calc(var(--via) * -68vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-h1 {
+  translate: calc(var(--via) * -62vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-sotto {
+  translate: calc(var(--via) * 66vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito2-eroe .jm-sito-cta {
+  translate: calc(var(--via) * 74vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-garanzie {
+  translate: calc(var(--via) * 80vw) 0;
+}
+.jm-sito7[data-js] .jm-sito13-pista .jm-sito10-rituale-vivo {
+  translate: calc(var(--via) * 86vw) 0;
+}
+/* LA PILLA SALE. Posizione assoluta a tutte le larghezze (vedi sopra) e
+   132% di altezza sotto il bordo a riposo: piu del suo ingombro piu lo
+   stacco dal fondo, quindi alla prima schermata non se ne vede il filo. */
+.jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe > .jm-sito4-rituale {
+  position: absolute;
+  z-index: 6;
+  margin: 0;
+  right: 20px;
+  left: 20px;
+  /* Ancorata al FONDO DELLA FINESTRA, non al fondo dell'eroe. Quando l'eroe
+     e alto quanto lo schermo le due cose coincidono; ma su una finestra
+     bassa l'eroe cresce oltre lo schermo (e cosi deve fare, se no il testo
+     sborda), e una pilla agganciata al suo fondo salirebbe restando sotto la
+     piega. Agganciata a 100svh sale sempre dentro l'inquadratura. */
+  top: calc(100svh - 18px);
+  bottom: auto;
+  border-radius: var(--jm-radius-xl);
+  translate: 0 calc(-100% + (1 - var(--pil)) * 132%);
+  opacity: clamp(0, calc(var(--pil) / .22), 1);
+  will-change: translate, opacity;
+}
+@media (min-width: 768px) and (max-width: 1099px) {
+  /* La fascia di mezzo non aveva la pilla in assoluto: le si danno le
+     stesse misure del desktop, se no qui sarebbe l'unica larghezza in cui
+     l'animazione non puo esistere. */
+  .jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe > .jm-sito4-rituale {
+    padding: 18px 6% 22px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+}
+@media (max-width: 767px) {
+  .jm-sito7[data-js] .jm-sito13-pista { height: 270svh; }
+  .jm-sito7[data-js] .jm-sito13-pista > .jm-sito2-eroe > .jm-sito4-rituale {
+    right: 10px;
+    left: 10px;
+    top: calc(100svh - 22px);
+  }
+}
+
+/* IL MARCHIO DENTRO IL TITOLO (jm-sito8-marchio) — 11 settembre 2026.
+   Manuel: "usa dayalogue in SVG, ma assicurati che sia allineato bene
+   verticalmente con le altre parole, sulla stessa riga".
+
+   Non e una misura a occhio, sono due numeri misurati.
+
+   IL DISEGNO. Reso a 1000px di larghezza il file e alto 223, e analizzando
+   riga per riga quanto inchiostro c'e: la linea di base sta al 76,68%
+   dell'altezza (sotto ci sono solo le code di "y" e "g") e l'altezza della
+   x e il 53,36%.
+
+   IL CARATTERE. Newsreader, misurato con actualBoundingBoxAscent: l'altezza
+   della x e 0,445em.
+
+   LA MISURA. Si accordano le altezze della x, che e cio che l'occhio legge
+   come "stessa riga, stesso corpo" quando si scambia una parola con un
+   logotipo: 0,445 / 0,5336 = 0,834em di altezza. (Accordare gli
+   ascendenti darebbe 0,93em e una pancia troppo grossa.)
+
+   L'ALLINEAMENTO. `vertical-align: baseline` su un'immagine appoggia il suo
+   BORDO BASSO sulla linea di base del testo — non la linea di base del
+   disegno, che sta piu in alto di (1 - 0,7668) = 0,2332 dell'altezza. Quindi
+   si scende di 0,2332 x 0,834 = 0,1945em ed e li che le due linee di base
+   coincidono. Chi cambia l'altezza deve rifare anche questo numero: sono
+   la stessa misura scritta due volte. */
+.jm-sito8-marchio {
+  --marchio-h: .834em;
+  display: inline-block;
+  width: auto;
+  height: var(--marchio-h);
+  vertical-align: baseline;
+  translate: 0 calc(.2332 * var(--marchio-h));
 }
