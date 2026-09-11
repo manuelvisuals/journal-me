@@ -213,3 +213,20 @@ regalo. Due cose diverse, tutte e due qui:
   mostrargli un mese vuoto. Quando la decisione "torno ospite" viene presa
   davvero, una riga sulla console la annuncia col motivo: e per il dump di
   Xcode, non per la persona.
+
+## Gli obiettivi cancellati che tornavano su (11 settembre 2026)
+
+Manuel: "rimuovo dei goal dalle impostazioni e poi riappaiono sempre".
+Non era la cancellazione: era la MIGRAZIONE. `migraSePromesso` versa nel
+cloud il backup del telefono, e il telefono ha i sei obiettivi di fabbrica
+seminati da LocalStore alla creazione del database. L'account ne ha gia sei
+identici dal trigger Postgres (migration 010): farli salire non aggiunge
+niente, ma se la persona nel frattempo li ha tolti dalle Impostazioni li
+RIMETTE. E il promemoria `jm.migrazione.locale` lo rimette ogni login fatto
+da un dispositivo in modalita locale, quindi succedeva a ripetizione.
+
+Due difese: gli obiettivi DI FABBRICA non salgono (quelli aggiunti dalla
+persona si, sono suoi), e `jm.migrazione.fatta` tiene l'elenco degli account
+in cui questo dispositivo ha gia versato — un dispositivo versa in un
+account una volta sola. Banco: `verify-ospite-schermate` sezione 06, due
+controlli nuovi, morso provato (senza la prima difesa i sei tornano su).

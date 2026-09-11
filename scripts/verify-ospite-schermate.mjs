@@ -386,6 +386,36 @@ let semeA = null;
   check("06 sul server il braccialetto e legato all'account", !!brA && brA.user_id === UTENTE_ID);
   await page.waitForTimeout(500);
   check("06 il promemoria della migrazione cade solo a fine riuscita", (await page.evaluate(() => localStorage.getItem("jm.migrazione.locale"))) === null);
+
+  /* GLI OBIETTIVI CANCELLATI NON RISALGONO (11 settembre 2026, Manuel:
+     "rimuovo dei goal dalle impostazioni e poi riappaiono sempre").
+     Il telefono ha i sei obiettivi di fabbrica, seminati da LocalStore alla
+     creazione del database; l'account ne ha gia sei uguali, seminati dal
+     trigger Postgres. Se la migrazione li fa salire, uno tolto a mano dalle
+     Impostazioni torna su al primo login successivo. Quindi: di fabbrica
+     non salgono, quelli aggiunti dalla persona si. */
+  const etichette = () => finto.tab("goals").map((g) => String(g.label).toLowerCase());
+  check(
+    "06 gli obiettivi DI FABBRICA non risalgono dal telefono",
+    !etichette().some((l) => ["mosso il corpo", "tempo per me", "letto qualcosa"].includes(l)),
+    JSON.stringify(etichette()),
+  );
+
+  /* E il dispositivo versa in un account UNA volta sola: rimettere il
+     promemoria (lo fa ogni login da modalita locale) non rifa la salita. */
+  {
+    const primaDiTutto = finto.tab("goals").length;
+    await page.evaluate(() => {
+      window.localStorage.setItem("jm.migrazione.locale", "1");
+    });
+    await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(4000);
+    check(
+      "06 un secondo login non rifa la migrazione (niente obiettivi in piu)",
+      finto.tab("goals").length === primaDiTutto,
+      `${primaDiTutto} -> ${finto.tab("goals").length}`,
+    );
+  }
   await page.locator(".jm-fv-h, .jm-ed-ta").first().waitFor({ state: "visible", timeout: 30_000 }).catch(() => {});
   const dopo = await page.locator("main").innerText().catch(() => "");
   check("06 la giornata scritta da ospite si vede anche da account", /Giornata scritta da ospite/.test(dopo), dopo.replace(/\s+/g, " ").slice(0, 100));
