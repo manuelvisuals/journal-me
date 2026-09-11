@@ -285,7 +285,7 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.34em;
+  gap: 0.5em;
   font-family: var(--jm-font-marchio);
   font-weight: 300;
   line-height: 1;
@@ -294,21 +294,27 @@
   text-shadow: none;
 }
 
+/* LA PAROLA E UN DISEGNO (11 settembre 2026, scelta 1B): non piu testo in
+   Newsreader con "day" in grassetto, ma il tracciato di brand-word.tsx, coi
+   due pesi gia dentro la forma. L'altezza e in em, come tutto il marchio:
+   0.78em e la misura che allinea il disegno alla stessa massa ottica che
+   aveva il testo alla stessa font-size. */
 .jm-marchio .jm-marchio-parola {
-  white-space: nowrap;
-}
-
-.jm-marchio b {
-  font-weight: 600;
+  display: block;
+  height: 0.78em;
+  width: auto;
 }
 
 /* Il segno dentro il marchio: sopra la parola, non accanto. Le regole
-   generali di .jm-logo (features.css: altezza 1.55em, allineamento
-   ottico e margine a destra) sono per il segno IN LINEA col testo, che
-   qui non esiste piu. */
+   generali di .jm-logo (features.css) sono per il segno IN LINEA col
+   testo, che qui non esiste piu. */
 .jm-marchio .jm-logo {
   display: block;
-  height: 2.1em;
+  /* Il segno era 2.1em quando era il ghirigoro, che e largo e leggero.
+     La "d" e stretta e pesante: alla stessa misura schiaccia la parola.
+     1.75em e la misura in cui il segno e la parola pesano uguale, guardata
+     a schermo in chiaro e in scuro (11 settembre 2026). */
+  height: 1.75em;
   margin: 0;
   vertical-align: baseline;
 }

@@ -1,4 +1,5 @@
 import { BrandMark } from "@/components/brand/brand-mark";
+import { BrandWord } from "@/components/brand/brand-word";
 
 /**
  * IL MARCHIO (2 settembre 2026, scelta di Manuel sul mockup
@@ -18,6 +19,12 @@ import { BrandMark } from "@/components/brand/brand-mark";
  *
  * `segno={false}` esiste per un posto solo: il piede del sito, dove il
  * nome sta in una riga di testo e un segno alto sarebbe rumore.
+ *
+ * 11 settembre 2026 (scelta 1B di Manuel): il segno e la parola sono tutti
+ * e due DISEGNI, non piu una foto e del testo. Il segno e il simbolo
+ * dell'icona — la "d" coi tre pallini — cosi chi apre l'app ritrova la
+ * faccia che ha appena toccato sulla home. La misura resta delle schermate
+ * (`.jm-rail-brand`, `.jm-splash-mark`, ...), in em: qui non c'e un pixel.
  */
 export function Marchio({
   className,
@@ -29,9 +36,7 @@ export function Marchio({
   return (
     <span className={className ? `jm-marchio ${className}` : "jm-marchio"}>
       {segno && <BrandMark />}
-      <span className="jm-marchio-parola">
-        <b>day</b>alogue
-      </span>
+      <BrandWord />
     </span>
   );
 }

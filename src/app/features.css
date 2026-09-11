@@ -333,35 +333,28 @@
 
 /* ============================================================
    IL SEGNO DI DAYALOGUE  (src/components/brand/brand-mark.tsx)
-   Un file solo per tutto il sito: public/logo.png.
+   Dall'11 settembre 2026 e un SVG scritto nel componente: la "d" coi tre
+   pallini, cioe il simbolo dell'icona sulla home del telefono.
    ============================================================ */
 
 .jm-logo {
-  /* In em, non in px: il segno segue il testo accanto a cui sta, quindi
-     una regola sola vale per la rail (serif 21px), la splash (sans 30px),
-     il login e lo sblocco (22px) — e segue anche "Dimensione del testo". */
-  height: 1.55em;
+  /* In em, non in px: il segno segue il testo accanto a cui sta, quindi una
+     regola sola vale per la rail, la splash, il login e lo sblocco — e segue
+     anche "Dimensione del testo". La cornice dell'SVG e stretta attorno al
+     disegno, quindi questa altezza e quella del segno VERO: prima, col PNG e
+     il suo margine trasparente, ne serviva 1.55 per ottenerne 1.2. */
+  height: 1.2em;
   width: auto;
   display: inline-block;
-  /* Il file ha un margine trasparente suo (circa il 15 per cento per lato):
-     l'allineamento e quindi ottico e misurato a schermo, non calcolato. */
-  vertical-align: -0.44em;
-  margin-right: 0.18em;
+  vertical-align: -0.22em;
+  margin-right: 0.3em;
   flex: 0 0 auto;
-  user-select: none;
-  -webkit-user-drag: none;
 }
 
-/* Sui temi scuri il marrone del segno sparisce sul fondo nero. Il file
-   resta UNO: e il CSS che lo schiarisce, e si puo fare anche su un PNG.
-   invert(1) da un segno chiaro ma di colore complementare (azzurro);
-   hue-rotate(180deg) subito dopo riporta la tinta nella famiglia calda di
-   partenza. Il risultato e un beige caldo, non il marrone originale: e il
-   prezzo di tenere un file solo, ed e stato guardato a schermo prima di
-   sceglierlo, non dedotto. */
-[data-mode="dark"] .jm-logo {
-  filter: invert(1) hue-rotate(180deg);
-}
+/* Sul buio non si ribalta piu niente: la "d" e `currentColor` e i pallini
+   prendono l'accento del tema (brand-mark.tsx). Il vecchio
+   `filter: invert(1) hue-rotate(180deg)` schiariva un PNG nero e per strada
+   ribaltava anche il terracotta dei pallini, che diventava azzurrino. */
 
 /* ============================================================
    LE ICONE DELLE AREE  (src/components/aree/area-icon.tsx,

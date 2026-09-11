@@ -2,14 +2,15 @@
 // Manuel sul mockup sfondo-lancio.html "02 . Newsreader"; nato il 31
 // agosto per il corsivo Sacramento, che non c'e piu) — porta 3100.
 //
-// La cosa che questo banco esiste per impedire e UNA: che la parola sembri
-// scritta in Newsreader e invece sia il ripiego del sistema. E il difetto
-// piu insidioso della tipografia, perche la pagina si vede lo stesso e
-// nessuno se ne accorge — ci e gia successo con i mockup che caricavano i
-// font da Google (HANDOVER §13). Quindi qui non si controlla che il CSS
-// DICHIARI Newsreader: si MISURA la parola e la si confronta con la stessa
-// parola scritta in un carattere che di sicuro non esiste. Se le due
-// larghezze coincidono, il file non e arrivato e il banco e rosso.
+// DALL'11 SETTEMBRE 2026 (scelta 1B di Manuel) il marchio non e piu ne una
+// foto ne del testo: sono DUE DISEGNI. Il segno e il simbolo dell'icona
+// sulla home del telefono (la "d" coi tre pallini) e la parola e il
+// tracciato di "dayalogue", coi due pesi gia dentro la forma. Quindi la
+// vecchia misura del carattere non ha piu senso — un disegno non puo
+// "ripiegare" su un altro font — e al suo posto si pretende che la parola
+// sia davvero un disegno: un SVG con dentro un tracciato e il nome scritto
+// per chi legge con le orecchie. Se un giorno qualcuno rimettesse del testo,
+// il banco lo vede.
 //
 // Poi si controlla che il marchio (il componente Marchio) stia in tutti i
 // posti dove il nome e un MARCHIO — col segno SOPRA la parola e "day" piu
@@ -63,15 +64,30 @@ check(
   /\.jm-marchio\s*\{[^}]*flex-direction:\s*column/.test(overrides) &&
     /\.jm-marchio \.jm-logo\s*\{[^}]*display:\s*block/.test(overrides),
 );
-check(
-  '"day" pesa piu di "alogue"',
-  /\.jm-marchio b\s*\{[^}]*font-weight:\s*600/.test(overrides) &&
-    /\.jm-marchio\s*\{[^}]*font-weight:\s*300/.test(overrides),
-);
 const marchioTsx = readFileSync("src/components/brand/marchio.tsx", "utf8");
 check(
-  "il componente Marchio: il segno prima della parola, e <b>day</b>alogue",
-  marchioTsx.indexOf("<BrandMark />") < marchioTsx.indexOf("<b>day</b>alogue"),
+  "il componente Marchio: il segno prima della parola, tutti e due disegni",
+  marchioTsx.indexOf("<BrandMark />") < marchioTsx.indexOf("<BrandWord />") &&
+    !/<b>day<\/b>alogue/.test(marchioTsx),
+);
+const segnoTsx = readFileSync("src/components/brand/brand-mark.tsx", "utf8");
+check(
+  "il segno e il simbolo dell'icona: la 'd' in currentColor e tre pallini d'accento",
+  /currentColor/.test(segnoTsx) &&
+    (segnoTsx.match(/<circle/g) ?? []).length === 3 &&
+    /var\(--color-accent\)/.test(segnoTsx),
+);
+/* Senza i commenti: la storia del PNG e raccontata li dentro, e una
+   ricerca cieca la scambierebbe per codice vivo. */
+const segnoCodice = segnoTsx.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+check(
+  "il segno non e piu un'immagine (niente <img>, niente logo.png)",
+  !/<img/.test(segnoCodice) && !/logo\.png/.test(segnoCodice),
+);
+const parolaTsx = readFileSync("src/components/brand/brand-word.tsx", "utf8");
+check(
+  "la parola e un disegno, col nome scritto per chi legge con le orecchie",
+  /aria-label="dayalogue"/.test(parolaTsx) && /<path/.test(parolaTsx),
 );
 check(
   "nessun file del progetto nomina piu Sacramento come carattere in uso",
@@ -146,25 +162,6 @@ async function apri(percorso, w, h, locale = true) {
  * marchio e con uno che non esiste. Se le larghezze coincidono, Newsreader
  * non e arrivato e stiamo guardando il ripiego.
  */
-async function davveroCorsivo(page) {
-  return page.evaluate(() => {
-    const misura = (famiglia) => {
-      const s = document.createElement("span");
-      s.style.cssText = `font-family:${famiglia};font-size:64px;position:absolute;visibility:hidden;white-space:nowrap`;
-      s.textContent = "dayalogue";
-      document.body.appendChild(s);
-      const w = s.getBoundingClientRect().width;
-      s.remove();
-      return Math.round(w);
-    };
-    return {
-      marchio: misura("var(--jm-font-marchio)"),
-      inesistente: misura('"NonEsisteQuestoCarattere", cursive'),
-      grottesco: misura("var(--jm-font-sans)"),
-    };
-  });
-}
-
 for (const [percorso, w, h, selettore, nome] of [
   ["/", 1440, 900, ".jm-sito-nav .jm-marchio", "sito, barra"],
   ["/", 390, 844, ".jm-sito-nav .jm-marchio", "sito sul telefono"],
@@ -172,12 +169,6 @@ for (const [percorso, w, h, selettore, nome] of [
   ["/app", 1440, 900, ".jm-rail-brand .jm-marchio", "rail del desktop"],
 ]) {
   const { ctx, page, errori } = await apri(percorso, w, h);
-  const m = await davveroCorsivo(page);
-  check(
-    `${nome}: il carattere del marchio E' arrivato (non e il ripiego)`,
-    m.marchio !== m.inesistente && m.marchio !== m.grottesco,
-    `marchio ${m.marchio}px, ripiego ${m.inesistente}px, grottesco ${m.grottesco}px`,
-  );
 
   const el = await page.$(selettore);
   check(`${nome}: il marchio e in pagina`, el !== null, selettore);
@@ -200,12 +191,14 @@ for (const [percorso, w, h, selettore, nome] of [
           (e.querySelector(".jm-logo")?.getBoundingClientRect().bottom ?? Infinity) <=
           (e.querySelector(".jm-marchio-parola")?.getBoundingClientRect().top ?? -Infinity) + 1,
         pesoDay: e.querySelector("b") ? getComputedStyle(e.querySelector("b")).fontWeight : "0",
+        parolaTag: (e.querySelector(".jm-marchio-parola")?.tagName ?? "?").toLowerCase(),
+        parolaDisegno: (e.querySelector(".jm-marchio-parola")?.tagName ?? "").toLowerCase() === "svg",
       };
     });
     check(
-      `${nome}: usa il carattere del marchio`,
-      /newsreader/i.test(dati.famiglia),
-      dati.famiglia.slice(0, 60),
+      `${nome}: la parola e un disegno, non del testo`,
+      dati.parolaDisegno,
+      `tag ${dati.parolaTag}`,
     );
     check(
       `${nome}: e in colonna, il segno sopra la parola`,
@@ -213,9 +206,9 @@ for (const [percorso, w, h, selettore, nome] of [
       `direction ${dati.direzione}, segno y ${dati.segnoBottom} <= parola y ${dati.parolaTop}`,
     );
     check(
-      `${nome}: "day" pesa piu di "alogue"`,
-      Number(dati.pesoDay) > Number(dati.peso),
-      `day ${dati.pesoDay}, resto ${dati.peso}`,
+      `${nome}: nel marchio non e rimasto del testo in grassetto`,
+      dati.pesoDay === "0",
+      `trovato un <b> con peso ${dati.pesoDay}`,
     );
     check(
       `${nome}: sta dentro lo schermo`,
