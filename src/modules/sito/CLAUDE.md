@@ -97,27 +97,19 @@ perche i Safari non sono d'accordo fra loro: il meta `theme-color`
 e quello che Safari 26 campiona. Se cambia l'inquadratura o il velo, quel
 numero si rimisura e si cambia in tutti e due.
 
-**La barra di vetro (11 settembre).** Scendendo, la barra diventava una
-lastra di inchiostro al 90%: un pannello opaco largo quanto lo schermo.
-Adesso e una capsula di vetro che galleggia, staccata 10 pixel per lato,
-arrotondata a pillola, con l'ombra sotto. Il colore non lo mette una tinta
-piena ma `brightness()` **dentro** il backdrop-filter: scurisce cio che
-passa sotto invece di coprirlo, e il movimento che si vede attraverso e
-quello che la fa leggere come vetro. I due numeri — `brightness(.40)` e
-tinta inchiostro 42% — sono misurati sul caso peggiore, che e la sezione
-CREMA: li il marchio avorio sta a 4,2 di contrasto (a .58/30% scendeva a
-2,9 e si sbiadiva, a .34/46% sale a 4,7 ma torna un pannello). Sulla
-fotografia sta a 11,4. Il menu che si apre resta invece **chiaro**, e non e
-una svista: un pannello alto 160 pixel con lo stesso vetro scuro, sopra il
-crema, diventa grigio e l'avorio ci si perde; la barra se la cava perche e
-una striscia sottile. Prende pero gli stessi bordi di luce e la stessa
-ombra, cioe lo stesso materiale in versione chiara.
+**La barra scrollata e vetro, e basta quello (11 settembre).** Prima era
+inchiostro al 90%: la sfocatura c'era ma non aveva niente da sfocare. Ora
+il colore lo mette `brightness()` **dentro** il backdrop-filter, che
+scurisce cio che passa sotto invece di coprirlo; la tinta resta ma al 42%,
+e `saturate` impedisce che sotto il vetro diventi tutto grigio. I due
+numeri — `brightness(.40)` e tinta 42% — sono misurati sul caso peggiore,
+che e la sezione CREMA: li il marchio avorio sta a 4,2 di contrasto (a
+.58/30% scendeva a 2,9 e si sbiadiva). Sulla fotografia sta a 11,4.
 
-`data-scorso` vive in `tingi()` dentro `scorrimento.tsx`, **prima**
-dell'uscita anticipata per `prefers-reduced-motion`, insieme al colore
-della fascia dell'ora: non e un'animazione, e uno stato. Finche stava in
-`misura()` chi aveva chiesto meno animazioni scorreva tutto il sito con il
-marchio avorio nudo sopra le sezioni chiare.
+Forma, altezza e posizioni **non si toccano**. Ci ho provato — capsula
+staccata dai bordi, a pillola, con l'ombra, alla iOS 26 — e Manuel l'ha
+bocciata in un colpo: "mi fa schifo a pill cosi, dovevi solo farlo
+trasparente". Il vetro qui e un materiale, non una forma nuova.
 
 **Le due trappole gia pagate, per non ripagarle:**
 

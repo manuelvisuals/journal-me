@@ -6229,103 +6229,44 @@ textarea.jm-sito-in {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  /* =================================================================
-     LA BARRA DI VETRO (11 settembre 2026, Manuel: "fai lo sticky header
-     di liquid glass iOS 26").
+  /* 4-ter. LA BARRA SCROLLATA DIVENTA VETRO (11 settembre 2026, Manuel:
+     "fallo trasparente con blur"). Cambia SOLO il fondo: forma, altezza,
+     posizione e allineamenti restano quelli di prima.
 
-     Prima: scendendo, la barra diventava una lastra di inchiostro al 90%,
-     cioe un pannello opaco largo quanto lo schermo. Era una scelta di
-     leggibilita — sta scritto nel blocco di settembre che a 82% "il testo
-     che scorre sotto si intravedeva" — ma risolveva il problema
-     spegnendo il materiale: di vetro restava il nome.
+     Prima era inchiostro al 90%, cioe un pannello opaco: la sfocatura
+     c'era ma non aveva niente da sfocare. Il colore adesso lo mette
+     `brightness()` DENTRO il backdrop-filter, che scurisce cio che passa
+     sotto invece di coprirlo — quindi la pagina si vede ancora scorrere
+     attraverso, ed e quello che fa leggere il vetro. La tinta resta, ma
+     al 42%. `saturate` tiene il colore di cio che viene rifratto, se no
+     sotto il vetro tutto diventa grigio.
 
-     Il vetro di iOS 26 ha tre cose, e vanno fatte tutte e tre o non si
-     legge come vetro:
-     1. NON E' UN FONDO, E' UN FILTRO. Il colore non lo mette una tinta
-        piena ma `brightness()` dentro il backdrop-filter: scurisce cio
-        che passa sotto invece di coprirlo, quindi il movimento si vede
-        ancora — ed e il movimento che dice "questo e vetro". La tinta di
-        inchiostro resta, ma al 42% invece che al 90%. `saturate(1.9)` e
-        l'altra meta: il vetro concentra il colore di cio che rifrange, e
-        senza quella spinta la pagina sotto diventa grigia.
-     2. HA UN BORDO CHE PRENDE LUCE. Una riga chiara in cima (la
-        riflessione), una piu debole in fondo (il rimbalzo) e un filo
-        tutto intorno: tre `inset` nella stessa ombra.
-     3. GALLEGGIA. Non e incollata ai bordi: si stacca di 10 pixel per
-        lato, si arrotonda a pillola, posa un'ombra. E' questo che la fa
-        sembrare un oggetto appoggiato sopra la pagina invece di una
-        fascia tagliata dentro la pagina.
-
-     A pagina ferma la barra resta invisibile, come gia era: il vetro si
-     forma scendendo, ed e la transizione a raccontarlo.
-     ================================================================= */
-  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) > .jm-sito-nav .jm-sito-nav-in {
-    height: 76px;
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-    transition:
-      height .34s cubic-bezier(.32, .72, 0, 1),
-      margin .34s cubic-bezier(.32, .72, 0, 1),
-      padding .34s cubic-bezier(.32, .72, 0, 1),
-      border-radius .34s cubic-bezier(.32, .72, 0, 1),
-      background-color .3s ease,
-      box-shadow .34s ease;
-  }
+     I due numeri sono misurati sul caso peggiore, che e la sezione CREMA:
+     li il marchio avorio deve reggere. A brightness .58 con tinta 30% il
+     contrasto scendeva a 2,9 e il nome si sbiadiva; a .40 e 42% sale a
+     4,2 sul crema e resta 11,4 sulla fotografia. Chi li tocca rimisura. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-    height: 58px;
-    /* `max` e per l'app installata in schermata Home, dove la pagina passa
-       sotto l'ora: in Safari `env` vale zero e restano i 10 pixel. */
-    margin: max(10px, env(safe-area-inset-top, 0px)) 10px 0;
-    padding-inline: 16px;
-    border-radius: var(--jm-radius-pill);
-    background:
-      linear-gradient(180deg,
-        color-mix(in srgb, var(--jm-sito-su-foto) 11%, transparent) 0,
-        transparent 46%),
-      color-mix(in srgb, var(--jm-ink) 42%, transparent);
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, var(--jm-sito-su-foto) 26%, transparent),
-      inset 0 -1px 0 color-mix(in srgb, var(--jm-sito-su-foto) 8%, transparent),
-      inset 0 0 0 1px color-mix(in srgb, var(--jm-sito-su-foto) 10%, transparent),
-      0 14px 34px color-mix(in srgb, var(--jm-shadow) 30%, transparent);
+    background: color-mix(in srgb, var(--jm-ink) 42%, transparent);
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-      /* I due numeri sono misurati, non scelti: il marchio avorio deve
-         reggere anche quando sotto la capsula passa la sezione CREMA, che
-         e il fondo piu chiaro del sito. A brightness .58 con tinta 30% li
-         il contrasto scendeva a 2,9 e il nome si sbiadiva. A .40 e 42%
-         sale a 4,2 sul crema e resta 11,4 sulla fotografia, e attraverso
-         il vetro si vede ancora passare la pagina. Piu scuro (.34) regge
-         4,7 ma torna a essere un pannello. */
-      -webkit-backdrop-filter: blur(24px) saturate(1.9) brightness(.40);
-      backdrop-filter: blur(24px) saturate(1.9) brightness(.40);
+      -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(.40);
+      backdrop-filter: blur(24px) saturate(1.8) brightness(.40);
     }
   }
-  /* Dove il vetro non c'e (niente backdrop-filter) una tinta al 42% non fa
-     leggere il marchio: li si torna quasi pieni. */
+  /* Senza backdrop-filter una tinta al 42% non fa leggere il marchio: li
+     si torna quasi pieni, come prima. */
   @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-      background: color-mix(in srgb, var(--jm-ink) 88%, transparent);
+      background: color-mix(in srgb, var(--jm-ink) 90%, transparent);
     }
   }
-  /* La barra esterna e alta zero e non dipinge niente, ma sotto i 900 puo
-     tornare alta: si spegne, se no dietro alla capsula resta la fascia. */
+  /* La barra esterna porta un suo velo all'82%: sommato a quello interno
+     il vetro tornava opaco. Il velo e uno solo, e quello dentro. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav {
     background: transparent;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-  }
-  /* Il cerchio del menu si ricentra dentro la capsula e ammorbidisce il
-     contorno: dentro al vetro un secondo anello marcato fa due oggetti che
-     si contendono lo stesso bordo. */
-  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] .jm-sito-menu-mobile {
-    top: 6px;
-    right: 6px;
-  }
-  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] .jm-sito-menu-mobile summary {
-    border-color: color-mix(in srgb, var(--jm-sito-su-foto) 24%, transparent);
   }
   /* 5. VIA dalla prima schermata. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito10-garanzie,
@@ -6370,35 +6311,11 @@ textarea.jm-sito-in {
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div a {
     color: var(--jm-ink);
   }
-  /* Il pannello resta CHIARO anche adesso che la barra e vetro scuro, e non
-     e una svista. Ho provato a dargli lo stesso vetro scuro: sopra la
-     fotografia funziona, ma sopra le sezioni crema — che sono meta del
-     sito — un pannello alto 160 pixel a quella trasparenza diventa grigio
-     e l'avorio ci si perde dentro. La barra se la cava perche e una
-     striscia sottile; un menu no. Prende pero gli stessi bordi di luce e
-     la stessa ombra, cosi resta lo stesso materiale nella sua versione
-     chiara — che e poi quello che fa anche iOS.
-     Il `top`: attaccato al bordo basso del cerchio (46, la sua altezza) il
-     tasto sembrava incastrato nell'angolo della lastra. Dieci pixel
-     d'aria e tornano due oggetti. */
+  /* Il pannello attaccava al bordo basso del cerchio (46 = l'altezza del
+     cerchio): il tasto sembrava incastrato nell'angolo della lastra. Dieci
+     pixel d'aria e tornano due oggetti. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div {
     top: 56px;
-    width: 210px;
-    padding: 10px;
-    border: 0;
-    border-radius: 24px;
-    background:
-      linear-gradient(180deg,
-        color-mix(in srgb, #fff 40%, transparent) 0,
-        transparent 34%),
-      color-mix(in srgb, var(--jm-surface) 82%, transparent);
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, #fff 76%, transparent),
-      inset 0 0 0 1px color-mix(in srgb, var(--jm-ink) 8%, transparent),
-      0 18px 40px color-mix(in srgb, var(--jm-shadow) 28%, transparent);
-  }
-  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div a {
-    border-radius: 16px;
   }
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile > div a:active {
     background: color-mix(in srgb, var(--jm-ink) 9%, transparent);
