@@ -63,8 +63,19 @@ export function Scorrimento() {
       getComputedStyle(radice).getPropertyValue("--jm-ink").trim() ||
       meta?.content ||
       "";
+    /**
+     * `data-scorso` sta qui, e non dentro `misura`, per la stessa ragione
+     * del colore: non e un'animazione, e uno STATO. E' quello che fa
+     * diventare la barra una capsula di vetro quando la pagina scende, e
+     * senza di lui il marchio avorio resterebbe nudo sopra le sezioni
+     * chiare — cosa che succedeva, fino a oggi, a chiunque avesse chiesto
+     * al sistema meno animazioni: l'uscita anticipata qui sotto se lo
+     * portava via insieme al parallasse.
+     */
     const tingi = () => {
-      if (meta) meta.content = window.scrollY > 24 ? tonoPagina : "#60554b";
+      const giu = window.scrollY > 24;
+      radice.toggleAttribute("data-scorso", giu);
+      if (meta) meta.content = giu ? tonoPagina : "#60554b";
     };
     tingi();
     window.addEventListener("scroll", tingi, { passive: true });
@@ -124,8 +135,6 @@ export function Scorrimento() {
     const misura = () => {
       quadro = 0;
       const H = window.innerHeight;
-      // La barra in cima si fa di vetro solo quando la pagina e scesa.
-      radice.toggleAttribute("data-scorso", window.scrollY > 24);
       for (const el of blocchi) {
         const r = el.getBoundingClientRect();
         let p = (H - r.top) / (H + r.height);
