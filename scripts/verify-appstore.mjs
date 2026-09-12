@@ -182,7 +182,10 @@ async function passaCancello(page) {
   await page.waitForTimeout(2500);
   const righe = (await page.locator("main").innerText()).replace(/\s+/g, " ");
   check("2 guscio, ospite: 'Passa a Premium' con il prezzo di Apple, non quello a mano", /Passa a Premium/.test(righe) && /4,99 EUR/.test(righe) && !/4,99 \u20ac/.test(righe), righe.match(/Passa a Premium[\s\S]{0,80}/)?.[0]?.replace(/\s+/g, " "));
-  check("2 guscio, ospite: 'Ho gia un abbonamento' (il ripristino di chi non ha l'account)", /Ho gia un abbonamento/.test(righe));
+  // 12 settembre 2026: da ospite la porta all'email e UNA sola, "Ho gia un
+  // account" (la riga "Ho gia un abbonamento" portava allo stesso /login).
+  // Il ripristino di Apple resta nel muro e nell'account.
+  check("2 guscio, ospite: una porta sola, 'Ho gia un account' (niente 'Ho gia un abbonamento' ne 'Ripristina acquisti')", /Ho gia un account/.test(righe) && !/Ho gia un abbonamento/.test(righe) && !/Ripristina acquisti/.test(righe), righe.match(/Ho gia un[\s\S]{0,60}/)?.[0]);
   await page.locator(".jm-st-row", { hasText: "Passa a Premium" }).first().click();
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
   await page.waitForTimeout(600);

@@ -528,9 +528,14 @@ export function SettingsClient({
                       iniziale={accountName.slice(0, 1).toUpperCase()}
                       onNota={say}
                     />
+                    {/* Primo utilizzo (Manuel, 12 settembre 2026): finche
+                        non hai scelto un nome la riga non dice "Questo
+                        dispositivo" (che nome sarebbe?) ma "Il tuo nome",
+                        cioe cosa ci va. Il ripiego nel menu e nel pannello
+                        resta quello di prima. */}
                     <SetRow
                       title={t("Nome")}
-                      value={accountName}
+                      value={nomeScelto ?? t("Il tuo nome")}
                       onClick={() => setPanel("nome")}
                     />
                     <SetRow
@@ -539,38 +544,22 @@ export function SettingsClient({
                       onClick={() => setPanel("regalo")}
                     />
                     <SetRow
-                      title={t("Copia nel cloud")}
-                      value={t("Spenta")}
-                      desc={t(
-                        "Con una email. Chiusa a chiave, su tutti i tuoi dispositivi.",
-                      )}
-                      onClick={() => router.push("/login")}
-                    />
-                    <SetRow
-                      title={t("Dove sono le mie giornate")}
-                      value={t("Solo su questo dispositivo")}
-                      onClick={() => setPanel("where")}
-                    />
-                    <SetRow
                       title={t("Passa a Premium")}
                       value={rigaPrezzo(t).prova || undefined}
                       desc={`${rigaPrezzo(t).poi}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
                       onClick={() => openPremiumWall("aiSummary")}
                     />
-                    {/* Il ripristino, da ospite, comincia dal ritrovare il
-                        proprio account: e li che sta l'abbonamento. Apple
-                        vuole che la voce sia sempre raggiungibile, e questa
-                        lo e; quello che cambia e dove porta. */}
-                    {negozioDisponibile() && (
-                      <SetRow
-                        title={t("Ho gia un abbonamento")}
-                        desc={t("Entra con la tua email e ripristina.")}
-                        onClick={() => router.push("/login")}
-                      />
-                    )}
+                    {/* Una porta sola all'email (Manuel, 12 settembre 2026).
+                        Qui c'era anche "Ho gia un abbonamento": portava allo
+                        stesso /login di questa riga, e due righe per la
+                        stessa porta fanno solo lista. Il ripristino di Apple
+                        resta raggiungibile: si entra, e nell'account c'e
+                        "Ripristina acquisti". "Copia nel cloud" e "Dove sono
+                        le mie giornate" sono scese in "I tuoi dati": parlano
+                        delle giornate, non di chi sei. */}
                     <SetRow
                       title={t("Ho gia un account")}
-                      desc={t("Email e codice. Mai una password.")}
+                      desc={t("Accedi su questo dispositivo.")}
                       onClick={() => router.push("/login")}
                     />
                   </>
@@ -764,7 +753,27 @@ export function SettingsClient({
                 onClick={() => fileRef.current?.click()}
                 disabled={busy !== "idle"}
               />
-              {!ospite && (
+              {ospite ? (
+                <>
+                  {/* Da ospite le due righe stavano nel gruppo Account
+                      (12 settembre 2026, Manuel): sono qui perche parlano
+                      delle giornate. "Copia nel cloud: Spenta" resta la
+                      porta all'email (C1). */}
+                  <SetRow
+                    title={t("Dove sono le mie giornate")}
+                    value={t("Solo su questo dispositivo")}
+                    onClick={() => setPanel("where")}
+                  />
+                  <SetRow
+                    title={t("Copia nel cloud")}
+                    value={t("Spenta")}
+                    desc={t(
+                      "Con una email. Chiusa a chiave, su tutti i tuoi dispositivi.",
+                    )}
+                    onClick={() => router.push("/login")}
+                  />
+                </>
+              ) : (
                 <SetRow
                   title={t("Dove sono le mie giornate")}
                   desc={t("Cosa esce da questo dispositivo, e cosa no.")}

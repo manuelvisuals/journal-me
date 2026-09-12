@@ -258,11 +258,10 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Copia nel cloud": "Cloud copy",
   "Spenta": "Off",
   "Con una email. Chiusa a chiave, su tutti i tuoi dispositivi.": "With an email. Locked, on all your devices.",
-  "Email e codice. Mai una password.": "Email and code. Never a password.",
+  // Primo utilizzo (12 settembre 2026): una porta sola all'email, e il
+  // sottotitolo dice cosa succede qui, su questo telefono.
+  "Accedi su questo dispositivo.": "Sign in on this device.",
   "Accendi quello che vuoi. L'ultimo acceso va nel dock.": "Turn on what you want. The last one on goes in the dock.",
   "Spegnere non cancella niente.": "Turning off deletes nothing.",
   "Nel dock": "In the dock",
-  // Premium vuole un account (10 settembre 2026): da ospite il ripristino
-  // comincia dal ritrovare il proprio account.
-  "Entra con la tua email e ripristina.": "Sign in with your email and restore.",
 };

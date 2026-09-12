@@ -158,10 +158,13 @@ export function NomePanel({
 }: Comuni & { onFatto: () => void }) {
   const t = useT();
   const profilo = useProfilo();
-  const [testo, setTesto] = useState(mostrato);
+  const scelto = profilo?.nome ?? null;
+  // Il campo parte da cio che hai scelto; senza email e senza nome parte
+  // VUOTO, col suggerimento "Il tuo nome" (12 settembre 2026): prima si
+  // apriva con "Questo dispositivo" dentro, da cancellare prima di scrivere.
+  const [testo, setTesto] = useState(scelto ?? (email ? mostrato : ""));
   const [salvo, setSalvo] = useState(false);
   const pulito = normalizzaNome(testo);
-  const scelto = profilo?.nome ?? null;
   // Il fondo su cui si ricade: si mostra in chiaro, cosi svuotare il campo
   // non e un salto nel buio.
   // Senza email (ospite, o locale) si ricade su "Questo dispositivo".
@@ -203,6 +206,7 @@ export function NomePanel({
         value={testo}
         maxLength={NOME_MAX}
         autoComplete="name"
+        placeholder={t("Il tuo nome")}
         onChange={(e) => setTesto(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") void salva();
