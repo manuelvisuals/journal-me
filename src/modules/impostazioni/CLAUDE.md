@@ -273,3 +273,24 @@ Manuel, guardando le Impostazioni sul telefono:
   nel campo non c'e ELIMINA (DELETE in inglese, la parola arriva gia
   tradotta da chi chiama). Banco: `verify-appstore` sezione 4, morso
   provato.
+
+## Primo utilizzo: il gruppo Account dell'ospite (12 settembre 2026)
+
+Manuel, dallo screenshot di Settings al primo avvio (branch
+`impostazioni-primo-utilizzo`):
+
+- la riga Nome senza un nome scelto dice **"Il tuo nome"** (cosa ci va), non
+  "Questo dispositivo" (che nome sarebbe?). Il ripiego nel menu dello
+  scheletro e nel pannello resta "Questo dispositivo"; il pannello Nome
+  parte VUOTO con il suggerimento "Il tuo nome" quando non c'e ne email ne
+  nome scelto (prima si apriva con "Questo dispositivo" da cancellare).
+- **una porta sola all'email**: "Ho gia un account" con sotto "Accedi su
+  questo dispositivo." La riga "Ho gia un abbonamento" non c'e piu: portava
+  allo stesso /login. Il ripristino di Apple resta raggiungibile dal muro
+  (da ospite) e da "Ripristina acquisti" nell'account. I banchi
+  `verify-appstore` (sezione 2) e `verify-abbonamento` (ospite) pretendono
+  la porta unica.
+- "Dove sono le mie giornate" e "Copia nel cloud: Spenta" sono scese nel
+  gruppo **"I tuoi dati"**: parlano delle giornate, non di chi sei. La porta
+  all'email di "Copia nel cloud" (C1) e la stessa di prima.
+

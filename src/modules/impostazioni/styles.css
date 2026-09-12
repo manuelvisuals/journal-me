@@ -1307,6 +1307,7 @@
 }
 
 .jm-nome-campo:focus { border-color: var(--color-accent); }
+.jm-nome-campo::placeholder { color: var(--color-ink-faint); font-weight: 400; }
 
 .jm-nome-conta {
   font-size: calc(11.5px * var(--jm-ui-scale));

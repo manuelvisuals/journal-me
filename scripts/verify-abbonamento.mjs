@@ -451,7 +451,9 @@ const NEGOZIO = {
   await page.goto(BASE + "/app/settings", { waitUntil: "domcontentloaded" });
   await page.getByText("Passa a Premium").first().waitFor({ state: "visible", timeout: 30_000 });
   const impPrima = await page.locator("main").innerText();
-  check("ospite: nelle Impostazioni il ripristino porta all'account, non a Apple", /Ho gia un abbonamento/.test(impPrima) && !/Ripristina acquisti/.test(impPrima), impPrima.replace(/\s+/g, " ").slice(0, 160));
+  // 12 settembre 2026: la porta e "Ho gia un account" (una sola), non
+  // "Ho gia un abbonamento"; "Ripristina acquisti" da ospite non c'e.
+  check("ospite: nelle Impostazioni il ripristino porta all'account, non a Apple", /Ho gia un account/.test(impPrima) && !/Ho gia un abbonamento/.test(impPrima) && !/Ripristina acquisti/.test(impPrima), impPrima.replace(/\s+/g, " ").slice(0, 160));
   await page.getByText("Passa a Premium").first().click();
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 });
   await page.waitForTimeout(800);
