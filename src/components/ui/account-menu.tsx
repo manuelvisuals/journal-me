@@ -136,11 +136,12 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
         : t("Solo su questo dispositivo");
   const native = isNative();
   const suSettings = pathname.startsWith("/app/settings");
-  const nome = useNomeMostrato(account?.email, t("ospite"));
-  // Nome e foto valgono anche da ospite (7 settembre 2026): il nome scelto
-  // sostituisce "Questo dispositivo", con sotto le giornate AI che restano.
-  const nomeScelto = useProfilo()?.nome ?? null;
-  const mostrato = locale ? (nomeScelto ?? t("Questo dispositivo")) : nome;
+  // UNA casella sola (Manuel, 12 settembre 2026): il nome scelto, altrimenti
+  // l'email tagliata, altrimenti il riempimento di fabbrica "Il tuo nome"
+  // che vive in profilo-contract.ts (RIPIEGO_NOME). Qui non si decide
+  // nessuna parola: prima il menu diceva "Questo dispositivo" e la riga di
+  // Impostazioni un'altra cosa, e sembravano due dati diversi.
+  const mostrato = useNomeMostrato(locale ? null : account?.email);
   // L'iniziale segue il NOME mostrato, non l'email: chi si chiama Manuel
   // vede una M perche si chiama Manuel, non per come e fatto il suo
   // indirizzo.

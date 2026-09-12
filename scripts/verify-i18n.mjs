@@ -35,7 +35,6 @@ const DINAMICHE = {
   "modules/impostazioni/components/settings-client.tsx (APPEARANCE_OPTIONS, PANEL_TITLES)": [
     "Chiaro", "Scuro", "Sistema", "Ch", "Sc", "Sist",
     "Obiettivi", "Tema", "Dove sono le mie giornate", "Lingua",
-    "Questo dispositivo",
   ],
   "modules/accesso/components/differenze.tsx (RIGHE_DIFFERENZE: il foglio 'vedi tutte le differenze')": [
     "Scrivi la tua giornata",

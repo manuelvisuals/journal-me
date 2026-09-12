@@ -28,7 +28,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { formatNumber } from "@/lib/format";
-import { NOME_MAX, normalizzaNome } from "@/modules/impostazioni/profilo-contract";
+import { NOME_MAX, nomeMostrato, normalizzaNome, RIPIEGO_NOME } from "@/modules/impostazioni/profilo-contract";
 import { salvaNomeProfilo, useProfilo } from "@/modules/impostazioni/profilo";
 
 type Comuni = {
@@ -167,8 +167,9 @@ export function NomePanel({
   const pulito = normalizzaNome(testo);
   // Il fondo su cui si ricade: si mostra in chiaro, cosi svuotare il campo
   // non e un salto nel buio.
-  // Senza email (ospite, o locale) si ricade su "Questo dispositivo".
-  const ripiego = email && email.includes("@") ? email.split("@")[0] : t("Questo dispositivo");
+  // Senza email (ospite, o locale) si ricade sulla casella di fabbrica,
+  // "Il tuo nome": la stessa regola di tutti (nomeMostrato).
+  const ripiego = nomeMostrato(null, email, t(RIPIEGO_NOME));
 
   const salva = async () => {
     if (salvo) return;
@@ -206,7 +207,7 @@ export function NomePanel({
         value={testo}
         maxLength={NOME_MAX}
         autoComplete="name"
-        placeholder={t("Il tuo nome")}
+        placeholder={t(RIPIEGO_NOME)}
         onChange={(e) => setTesto(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") void salva();

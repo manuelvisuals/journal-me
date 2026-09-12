@@ -210,7 +210,8 @@ async function open({
   await page.locator(".jm-hd-av").click();
   await page.waitForSelector(".jm-sheet", { timeout: 5000 });
   const sheet = await page.locator(".jm-sheet").innerText();
-  check("locale: la testata dice Questo dispositivo", sheet.includes("Questo dispositivo"));
+  // 12 settembre 2026: senza nome scelto la casella dice "Il tuo nome".
+  check("locale: la testata dice Il tuo nome (la casella di fabbrica)", sheet.includes("Il tuo nome"));
   check("locale: Accedi al tuo account c'e", sheet.includes("Accedi al tuo account"));
   check("locale: NIENTE Premium", !sheet.includes("Premium"));
   check("locale: NIENTE Esci", !sheet.includes("Esci dall'account"));
