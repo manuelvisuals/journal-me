@@ -24,6 +24,14 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Export compliance (12 settembre 2026, decisione 7:1 di Manuel): la
+	     cassaforte cifra le giornate con AES sul dispositivo, quindi l'app
+	     usa cifratura che NON rientra nelle esenzioni di Apple (non e solo
+	     HTTPS). Con la chiave nel plist App Store Connect non lo chiede a
+	     ogni build; la dichiarazione di autoclassificazione annuale resta a
+	     carico nostro. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>dayalogue usa il microfono per registrare il racconto della tua giornata. L'audio resta sul telefono: viene trascritto e poi scartato, si salva solo il testo.</string>
 	<key>NSFaceIDUsageDescription</key>
