@@ -24,14 +24,21 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<!-- Export compliance (12 settembre 2026, decisione 7:1 di Manuel): la
-	     cassaforte cifra le giornate con AES sul dispositivo, quindi l'app
-	     usa cifratura che NON rientra nelle esenzioni di Apple (non e solo
-	     HTTPS). Con la chiave nel plist App Store Connect non lo chiede a
-	     ogni build; la dichiarazione di autoclassificazione annuale resta a
-	     carico nostro. -->
+	<!-- Export compliance (12 settembre 2026). La cassaforte cifra le
+	     giornate con AES-256-GCM e PBKDF2 di WebCrypto (crypto.subtle),
+	     cioe la cifratura del sistema operativo Apple dentro WKWebView;
+	     nessuna libreria di cifratura di terze parti (controllato in
+	     package.json e nei pod). Per la tabella di App Store Connect
+	     "Export compliance documentation for encryption" e il caso
+	     "encryption limited to that within the Apple operating system":
+	     esente, nessun documento. Quindi NO.
+	     Il primo tentativo con YES e senza ITSEncryptionExportComplianceCode
+	     ha fatto fallire l'upload da xcodebuild ("Invalid Export Compliance
+	     Code"): con YES Apple pretende il codice dei documenti caricati.
+	     La dichiarazione di autoclassificazione annuale al governo USA
+	     resta a carico nostro. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/>
+	<false/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>dayalogue usa il microfono per registrare il racconto della tua giornata. L'audio resta sul telefono: viene trascritto e poi scartato, si salva solo il testo.</string>
 	<key>NSFaceIDUsageDescription</key>
