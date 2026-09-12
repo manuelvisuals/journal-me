@@ -35,7 +35,7 @@ import type {
   Remember,
   RememberKind,
 } from "@/lib/types";
-import { DEFAULT_GOAL_LABELS } from "./default-goals";
+import { etichetteDiFabbrica } from "./default-goals";
 import {
   APP_VERSION,
   BACKUP_FORMAT,
@@ -46,7 +46,7 @@ import {
   type JournalStore,
   type StorageMode,
 } from "./types";
-import { t } from "@/lib/i18n";
+import { getLang, t } from "@/lib/i18n";
 
 /* ----------------- schema ----------------- */
 
@@ -179,7 +179,9 @@ export class LocalStore implements JournalStore {
           const tx = db.transaction(["goals", "meta"], "readwrite");
           const now = new Date().toISOString();
           let position = 0;
-          for (const label of DEFAULT_GOAL_LABELS) {
+          // Nella lingua del dispositivo (12 settembre 2026): getLang() legge la
+          // preferenza o la lingua del sistema, senza aspettare l'idratazione.
+          for (const label of etichetteDiFabbrica(getLang())) {
             await tx.objectStore("goals").put({
               id: uuid(),
               label,
@@ -254,7 +256,7 @@ export class LocalStore implements JournalStore {
     const tx2 = db.transaction(["goals", "meta"], "readwrite");
     const now = new Date().toISOString();
     let position = 0;
-    for (const label of DEFAULT_GOAL_LABELS) {
+    for (const label of etichetteDiFabbrica(getLang())) {
       await tx2.objectStore("goals").put({
         id: uuid(),
         label,

@@ -116,7 +116,7 @@ async function aggiungi(page, nomi) {
   await page.waitForSelector(".jm-sheet", { timeout: 10000 });
   const [chooser] = await Promise.all([
     page.waitForEvent("filechooser"),
-    page.locator(".jm-sheet-row", { hasText: "Aggiungi dal rullino" }).click(),
+    page.locator(".jm-sheet-row", { hasText: "Aggiungi foto" }).click(),
   ]);
   await chooser.setFiles(nomi.map(file));
   await page.waitForTimeout(1200);
@@ -136,9 +136,9 @@ async function aggiungi(page, nomi) {
   await page.locator(".jm-day-add").first().click();
   await page.waitForSelector(".jm-sheet", { timeout: 10000 });
   check(
-    "il foglio ha la riga Aggiungi dal rullino",
+    "il foglio ha la riga Aggiungi foto",
     (await page
-      .locator(".jm-sheet-row", { hasText: "Aggiungi dal rullino" })
+      .locator(".jm-sheet-row", { hasText: "Aggiungi foto" })
       .count()) === 1,
   );
   // si chiude e si riapre dalla stessa strada del banco: cosi il primo
@@ -333,7 +333,7 @@ async function aggiungi(page, nomi) {
   await page.waitForSelector(".jm-sheet", { timeout: 10000 });
   const [chooser] = await Promise.all([
     page.waitForEvent("filechooser"),
-    page.locator(".jm-sheet-row", { hasText: "Aggiungi dal rullino" }).click(),
+    page.locator(".jm-sheet-row", { hasText: "Aggiungi foto" }).click(),
   ]);
   await chooser.setFiles([file("g.png")]);
   await page.waitForSelector(".jm-foto-wrap", { timeout: 10000 });

@@ -22,7 +22,7 @@
 import { apiFetch } from "@/lib/api";
 import { getStore } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
-import { DEFAULT_GOAL_LABELS } from "@/lib/data/store/default-goals";
+import { eDiFabbrica } from "@/lib/data/store/default-goals";
 import { forcePlanRefresh } from "@/lib/plan";
 import { utenteDalDispositivo } from "@/lib/supabase/client";
 
@@ -138,15 +138,18 @@ export async function migraSePromesso(): Promise<EsitoMigrazione> {
     const file = await locale.exportAll();
     /* GLI OBIETTIVI DI FABBRICA NON SALGONO. Quelli del telefono sono la
        stessa lista che il server ha gia dato all'account appena nato
-       (migration 010 e default-goals.ts, tenute identiche apposta): farli
+       (default-goals.ts, nella lingua del dispositivo; dal 12 settembre
+       2026 li semina la rotta del seme, non piu il trigger): farli
        salire vuol dire riscrivere sul cloud sei righe che ci sono gia, o —
        se la persona nel frattempo le ha tolte dalle Impostazioni —
        RIMETTERLE. Cio che la persona ha aggiunto di suo sale, perche
        quello e suo. */
-    const diFabbrica = new Set(DEFAULT_GOAL_LABELS.map((l) => l.toLowerCase()));
+    // In tutte e due le lingue (12 settembre 2026): il telefono inglese ha
+    // "moved my body", e sul cloud l'account appena nato li riceve nella
+    // stessa lingua dalla rotta del seme.
     const suoi = {
       ...file,
-      goals: (file.goals ?? []).filter((g) => !diFabbrica.has((g.label ?? "").trim().toLowerCase())),
+      goals: (file.goals ?? []).filter((g) => !eDiFabbrica(g.label)),
     };
     const report = await cloud.importAll(suoi);
     esito = { giornate: report.entries.added, premiumSpostato };

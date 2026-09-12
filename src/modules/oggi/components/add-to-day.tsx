@@ -15,7 +15,7 @@
  *    saveRecording con la data forzata: l'aggiunta in coda al transcript
  *    esiste gia (`existing.transcript + SEGMENT_SEP + nuovo`);
  *  - "Racconta a voce" apre lo stesso RecordingOverlay con defaultDate;
- *  - "Aggiungi dal rullino" prende le foto di quel giorno.
+ *  - "Aggiungi foto" prende le foto di quel giorno.
  *
  * "Salva in Memo" e stata TOLTA il 10 settembre 2026 (Manuel): un memo non
  * e una cosa che aggiungi a una giornata, e un appunto che vive per conto
@@ -257,7 +257,7 @@ export function AddToDay({
                   </svg>
                 </span>
                 <span className="jm-sheet-txt">
-                  <span className="jm-sheet-t">{t("Aggiungi dal rullino")}</span>
+                  <span className="jm-sheet-t">{t("Aggiungi foto")}</span>
                   <span className="jm-sheet-d">
                     {t("Foto di quel giorno, dal telefono")}
                   </span>

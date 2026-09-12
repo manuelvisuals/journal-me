@@ -53,7 +53,7 @@ inventa mai: copia.
 Le foto dal rullino (1 settembre 2026, mockup `design/mockups/foto-rullino.html`):
 un giorno puo avere le sue foto, legate alla DATA e non al racconto (un
 giorno senza parole le tiene lo stesso, e cancellare il racconto non le
-tocca). Si entra dalla riga "Aggiungi dal rullino" del foglio di AddToDay
+tocca). Si entra dalla riga "Aggiungi foto" (dal 12 settembre 2026; prima "Aggiungi dal rullino") del foglio di AddToDay
 (schermata di scelta di sistema, mai una nostra). Al momento della scelta
 `foto.ts` prepara DUE copie: miniatura ~480px (quella che la giornata
 mostra, striscia `FotoGiorno` sotto il racconto) e copia da schermo
