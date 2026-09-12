@@ -8,7 +8,7 @@
 //      mostrare piu", nessuna frase su AES; il velo blocca i tocchi; chiusa,
 //      scrive jm.porta.lettera e jm.porta.giorno e ricaricando non torna;
 //   2. primo avvio sul web: la lettera senza il regalo;
-//   3. il giorno dopo con il conto cambiato: "Ti restano N giornate", i
+//   3. il giorno dopo con il conto cambiato: "N giornate AI ancora in regalo", i
 //      pallini, "Passa a premium" apre il muro dell'email e lascia il
 //      promemoria jm.muro.riapri;
 //   4. il giorno dopo con il conto uguale: il titolo e il giorno, non il
@@ -177,9 +177,11 @@ void rigaOggiRoma;
   const { ctx, page, api } = await dispositivo({ seme, negozio: true, memoria: { "jm.porta.lettera": "1", "jm.porta.giorno": ieri, "jm.porta.rimaste": "9" } });
   check("3 giorno nuovo, conto cambiato (9 -> 7): la porta si apre", await attendiPorta(page), api.join(" || ") + " IDB=" + JSON.stringify(await page.evaluate(async () => { const req = indexedDB.open("journalme-chiave"); return await new Promise((res) => { req.onsuccess = () => { const db = req.result; try { const tx = db.transaction("semi", "readonly"); const g = tx.objectStore("semi").get("braccialetto"); g.onsuccess = () => res({ v: db.version, seme: (g.result ?? "").slice(0, 8) }); } catch (e) { res({ v: db.version, err: String(e) }); } }; req.onerror = () => res("err"); }); })));
   const t3 = await testo(page);
-  check("3 dice 'Ti restano 7 giornate'", /Ti restano\s*7 giornate/.test(t3), t3.slice(0, 80));
+  // Parole di Manuel del 12 settembre 2026: un regalo, non un conto alla rovescia.
+  check("3 dice '7 giornate Ai ancora in regalo.' e, con le parole di Manuel, che e un regalo dello sviluppatore (numeri in lettere)", /7 giornate Ai ancora in regalo\./.test(t3) && /regalo dello sviluppatore, dieci giornate senza scadenza: ne restano ancora sette, usale quando vuoi/.test(t3), t3.slice(0, 160));
   check("3 i pallini: 10, di cui 3 spesi", (await page.locator(".jm-benv-sal-pallino").count()) === 10 && (await page.locator(".jm-benv-sal-pallino.spesa").count()) === 3);
-  check("3 i tasti: 'Passa a premium' e 'Continua cosi'", /Passa a premium/.test(t3) && /Continua cosi/.test(t3));
+  check("3 i tasti: 'Passa a premium' e 'Continua gratis'", /Passa a premium/.test(t3) && /Continua gratis/.test(t3));
+  check("3 i pallini hanno aria sotto, prima del tasto (margin-bottom > 0)", parseFloat(await page.locator(".jm-benv-sal-pallini").evaluate((e) => getComputedStyle(e).marginBottom)) >= 16);
   await page.getByRole("button", { name: /Passa a premium/ }).click();
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
   const muro = (await page.locator(".jm-wall").innerText().catch(() => "")).replace(/\s+/g, " ");
@@ -197,7 +199,7 @@ void rigaOggiRoma;
   const { ctx, page } = await dispositivo({ seme, memoria: { "jm.porta.lettera": "1", "jm.porta.giorno": ieri, "jm.porta.rimaste": "7" } });
   check("4 giorno nuovo, conto uguale: la porta si apre", await attendiPorta(page));
   const t4 = await testo(page);
-  check("4 il titolo NON e il numero: non c'e 'Ti restano'", !/Ti restano/.test(t4), t4.slice(0, 80));
+  check("4 il titolo NON e il numero: non c'e 'ancora in regalo' come titolo", !/giornate Ai ancora in regalo/.test(t4), t4.slice(0, 80));
   check("4 il conto c'e in piccolo: 'Hai ancora 7 giornate'", /Hai ancora 7 giornate/.test(t4));
   check("4 il tasto pieno e 'Continua', premium e la riga piccola", /Continua/.test(t4) && /Passa a premium/.test(t4) && (await page.locator(".jm-benv-sal-quieto").innerText()).includes("Passa a premium"));
   check("4 la variante e marcata 'uguale' (pallini piccoli via CSS)", (await porta(page).getAttribute("data-variante")) === "uguale");

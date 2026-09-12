@@ -99,11 +99,14 @@ export const ACCESSO: Record<string, string> = {
     "A day counts when the AI works. Everything else on that day is included.",
   "Le tue giornate restano su questo dispositivo. Nel cloud salgono solo chiuse a chiave, quando lo vorrai tu.":
     "Your days stay on this device. They go to the cloud only locked, and only when you want.",
-  "Ti resta\n1 giornata": "You have\n1 day left",
-  "Ti restano\n{n} giornate": "You have\n{n} days left",
-  "Poi il diario resta e si scrive a mano. Con premium l'AI non finisce mai, e le giornate vanno nel cloud.":
-    "Then the diary stays and you write by hand. With premium the AI never runs out, and your days go to the cloud.",
-  "Continua cosi": "Keep going",
+  "uno,due,tre,quattro,cinque,sei,sette,otto,nove,dieci": "one,two,three,four,five,six,seven,eight,nine,ten",
+  "1 giornata Ai ancora in regalo.": "1 AI day still a gift.",
+  "{n} giornate Ai ancora in regalo.": "{n} AI days still a gift.",
+  "La funzionalità di recap AI è un regalo dello sviluppatore, {max} giornate senza scadenza: ne resta ancora una, usala quando vuoi. Allo scadere, il diario resterà tuo comunque. Se desideri, considera il passaggio a premium per avere recap illimitati, il resoconto mensile, e le giornate vanno nel cloud.":
+    "The AI recap feature is a gift from the developer, {max} days with no expiry: one is still left, use it whenever you like. When they run out, the diary will stay yours anyway. If you wish, consider going premium for unlimited recaps, the monthly summary, and your days go to the cloud.",
+  "La funzionalità di recap AI è un regalo dello sviluppatore, {max} giornate senza scadenza: ne restano ancora {n}, usale quando vuoi. Allo scadere, il diario resterà tuo comunque. Se desideri, considera il passaggio a premium per avere recap illimitati, il resoconto mensile, e le giornate vanno nel cloud.":
+    "The AI recap feature is a gift from the developer, {max} days with no expiry: {n} are still left, use them whenever you like. When they run out, the diary will stay yours anyway. If you wish, consider going premium for unlimited recaps, the monthly summary, and your days go to the cloud.",
+  "Continua gratis": "Continue for free",
   "Hai ancora 1 giornata con l'AI in regalo. Quando la vuoi, e accesa.":
     "You still have 1 gift day with the AI. Whenever you want it, it is on.",
   "Hai ancora {n} giornate con l'AI in regalo. Quando la vuoi, e accesa.":

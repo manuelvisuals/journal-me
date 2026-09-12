@@ -18,7 +18,7 @@
  *              sul web solo la lettera, perche li il regalo non c'e. In
  *              locale c'e "Ho gia un account" (B5): chi cambia telefono e
  *              il revisore Apple devono vedere la porta del ritorno subito.
- *  - cambiata: "Ti restano N giornate", i pallini, "Passa a premium".
+ *  - cambiata: "N giornate Ai ancora in regalo.", i pallini, "Passa a premium".
  *  - uguale:   il giorno, non il numero: chi scrive a mano per un mese non
  *              legge trenta volte la stessa frase (5A). Premium resta a un
  *              tocco, in piccolo.
@@ -249,13 +249,33 @@ export function PortaGiorno() {
           primario: { testo: t("Comincia a scrivere"), azione: chiudi },
           quieto: mode === "local" ? { testo: t("Ho gia un account"), azione: account } : undefined,
         };
-      case "cambiata":
+      case "cambiata": {
+        // PAROLE DI MANUEL, ALLA LETTERA (12 settembre 2026, dal telefono).
+        // "Ti restano 4 giornate. Poi il diario resta e si scrive a mano"
+        // metteva ansia: deve capirsi che e un regalo dello sviluppatore.
+        // Il numero va in lettere come nel suo testo ("ne restano ancora
+        // quattro"), da uno a dieci; oltre, in cifre.
+        const parole = t("uno,due,tre,quattro,cinque,sei,sette,otto,nove,dieci").split(",");
+        const inLettere = (k: number) => (k >= 1 && k <= parole.length ? parole[k - 1] : formatNumber(k));
         return {
-          hero: rimaste === 1 ? t("Ti resta\n1 giornata") : t("Ti restano\n{n} giornate", { n: formatNumber(rimaste) }),
-          corpo: t("Poi il diario resta e si scrive a mano. Con premium l'AI non finisce mai, e le giornate vanno nel cloud."),
+          hero:
+            rimaste === 1
+              ? t("1 giornata Ai ancora in regalo.")
+              : t("{n} giornate Ai ancora in regalo.", { n: formatNumber(rimaste) }),
+          corpo:
+            rimaste === 1
+              ? t(
+                  "La funzionalità di recap AI è un regalo dello sviluppatore, {max} giornate senza scadenza: ne resta ancora una, usala quando vuoi. Allo scadere, il diario resterà tuo comunque. Se desideri, considera il passaggio a premium per avere recap illimitati, il resoconto mensile, e le giornate vanno nel cloud.",
+                  { max: inLettere(max) },
+                )
+              : t(
+                  "La funzionalità di recap AI è un regalo dello sviluppatore, {max} giornate senza scadenza: ne restano ancora {n}, usale quando vuoi. Allo scadere, il diario resterà tuo comunque. Se desideri, considera il passaggio a premium per avere recap illimitati, il resoconto mensile, e le giornate vanno nel cloud.",
+                  { max: inLettere(max), n: inLettere(rimaste) },
+                ),
           primario: { testo: t("Passa a premium"), azione: premium },
-          secondario: { testo: t("Continua cosi"), azione: chiudi },
+          secondario: { testo: t("Continua gratis"), azione: chiudi },
         };
+      }
       case "uguale":
         return {
           hero: formatDate(new Date(), { weekday: "long", day: "numeric", month: "long" }),
