@@ -20,10 +20,12 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { apiFetch } from "@/lib/api";
+import { useT } from "@/lib/i18n";
 import { resolveStorageMode } from "@/lib/data/store";
 import {
   nomeMostrato,
   normalizzaNome,
+  RIPIEGO_NOME,
 } from "@/modules/impostazioni/profilo-contract";
 
 type Profilo = {
@@ -223,12 +225,12 @@ export function useProfilo(): Profilo | undefined {
  * proprio la duplicazione che faceva comparire due nomi diversi nella
  * stessa schermata.
  */
-export function useNomeMostrato(
-  email: string | null | undefined,
-  ospite = "ospite",
-): string {
+export function useNomeMostrato(email: string | null | undefined): string {
   const p = useProfilo();
-  return nomeMostrato(p?.nome, email, ospite);
+  const t = useT();
+  // Senza nome scelto e senza email la casella dice "Il tuo nome"
+  // (RIPIEGO_NOME, tradotto qui e in nessun altro posto).
+  return nomeMostrato(p?.nome, email, t(RIPIEGO_NOME));
 }
 
 /** Al logout e alla cancellazione dell'account: il prossimo e un altro. */

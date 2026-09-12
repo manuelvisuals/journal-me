@@ -65,8 +65,6 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Import non riuscito.": "Import failed.",
   "Fatto. Questo dispositivo non contiene piu nessuna giornata.": "Done. This device no longer holds a single day.",
   "Cancellazione non riuscita.": "Deletion failed.",
-  "Ospite": "Guest",
-  "Questo dispositivo": "This device",
   "Come funziona e come si vede il tuo diario.": "How your diary works and how it looks.",
   "Il diario": "The diary",
   "Le caselle che accendi ogni giorno.": "The boxes you tick every day.",
@@ -196,7 +194,6 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "Senza nome l'app dice {n}.": "Without a name the app says {n}.",
   "Nome tolto. Torna quello della tua email.":
     "Name removed. The one from your email is back.",
-  "ospite": "guest",
   // L'interruttore Face ID (1 settembre 2026).
   "Face ID": "Face ID",
   "Il volto al posto del codice, quando apri l'app.":

@@ -53,7 +53,7 @@ import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/reg
 import { ospiteAttivo } from "@/lib/ospite/flag";
 import { useStatoOspite } from "@/lib/ospite/stato";
 import { useRegaloInGioco } from "@/lib/capabilities";
-import { useNomeMostrato, useProfilo, useRichiestaNome } from "@/modules/impostazioni/profilo";
+import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
 import {
   ConsumiPanel,
@@ -463,11 +463,10 @@ export function SettingsClient({
   // regola era scritta qui E in account-menu.tsx, e un nome scelto che
   // raggiungesse un solo dei due avrebbe mostrato due nomi diversi nella
   // stessa schermata.
-  const nomeCloud = useNomeMostrato(email, t("Ospite"));
-  // Nome e foto valgono per tutti, anche da ospite (7 settembre 2026): in
-  // locale il nome scelto sostituisce "Questo dispositivo".
-  const nomeScelto = useProfilo()?.nome ?? null;
-  const accountName = isLocal ? (nomeScelto ?? t("Questo dispositivo")) : nomeCloud;
+  // UNA casella sola (Manuel, 12 settembre 2026): il riempimento di fabbrica
+  // "Il tuo nome" sta in profilo-contract.ts (RIPIEGO_NOME) e lo traduce il
+  // hook; qui non si scrive nessuna parola di ripiego.
+  const accountName = useNomeMostrato(isLocal ? null : email);
 
   return (
     <main
@@ -528,14 +527,12 @@ export function SettingsClient({
                       iniziale={accountName.slice(0, 1).toUpperCase()}
                       onNota={say}
                     />
-                    {/* Primo utilizzo (Manuel, 12 settembre 2026): finche
-                        non hai scelto un nome la riga non dice "Questo
-                        dispositivo" (che nome sarebbe?) ma "Il tuo nome",
-                        cioe cosa ci va. Il ripiego nel menu e nel pannello
-                        resta quello di prima. */}
+                    {/* Primo utilizzo (Manuel, 12 settembre 2026): senza un
+                        nome scelto la casella dice "Il tuo nome" — la stessa
+                        parola del menu del pallino, dallo stesso posto. */}
                     <SetRow
                       title={t("Nome")}
-                      value={nomeScelto ?? t("Il tuo nome")}
+                      value={accountName}
                       onClick={() => setPanel("nome")}
                     />
                     <SetRow
@@ -905,7 +902,7 @@ export function SettingsClient({
         <div className="jm-st-acct">
           {/* L'iniziale viene dal NOME mostrato, non dall'email: in locale
               l'email non esiste e l'avatar diventava un punto interrogativo
-              accanto a "Questo dispositivo".
+              accanto al nome.
               Il ritratto e la PORTA alla foto profilo, in ogni modalita
               (7 settembre 2026): sul computer non esiste il gruppo Account
               del telefono, e senza questo non ci sarebbe nessun modo di

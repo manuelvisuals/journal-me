@@ -15,6 +15,7 @@ import {
   nomeMostrato,
   nomeValido,
   normalizzaNome,
+  RIPIEGO_NOME,
 } from "../src/modules/impostazioni/profilo-contract.ts";
 
 const results = [];
@@ -36,12 +37,14 @@ check("il nome scelto vince sull'email",
   nomeMostrato("Manuel", "madh52@gmail.com") === "Manuel");
 check("un nome fatto di soli spazi non vince: si torna all'email",
   nomeMostrato("   ", "madh52@gmail.com") === "madh52");
-check("senza nome e senza email resta 'ospite'",
-  nomeMostrato(null, null) === "ospite");
-check("l'etichetta 'ospite' e traducibile dal chiamante",
-  nomeMostrato(null, null, "guest") === "guest");
+// 12 settembre 2026 (Manuel): la casella di fabbrica e "Il tuo nome",
+// scritta una volta sola (RIPIEGO_NOME) e tradotta dal chiamante.
+check("senza nome e senza email la casella dice 'Il tuo nome' (RIPIEGO_NOME)",
+  nomeMostrato(null, null) === "Il tuo nome" && RIPIEGO_NOME === "Il tuo nome");
+check("il riempimento e traducibile dal chiamante",
+  nomeMostrato(null, null, "Your name") === "Your name");
 check("un'email malformata non produce un nome a meta",
-  nomeMostrato(null, "non-e-una-email") === "ospite",
+  nomeMostrato(null, "non-e-una-email") === "Il tuo nome",
   nomeMostrato(null, "non-e-una-email"));
 
 /* =====================================================================
@@ -107,6 +110,7 @@ check("il tetto e 30, come il vincolo nella migration 017", NOME_MAX === 30);
   const menu = leggi("src/components/ui/account-menu.tsx");
   const riga = leggi("src/modules/impostazioni/components/nome-riga.tsx");
   const client = leggi("src/modules/impostazioni/components/settings-client.tsx");
+  const contract = leggi("src/modules/impostazioni/profilo-contract.ts");
 
   check("telefono (strada A): la pennina e nella testata del menu",
     /jm-acct-penna/.test(menu));
@@ -117,8 +121,13 @@ check("il tetto e 30, come il vincolo nella migration 017", NOME_MAX === 30);
   // dispositivo".
   check("...e compare anche in modalita locale (nome e foto per tutti)",
     !/\{!locale && \([\s\S]{0,200}jm-acct-penna/.test(menu) && /jm-acct-penna/.test(menu));
-  check("in locale il nome scelto sostituisce 'Questo dispositivo'",
-    /nomeScelto \?\? t\("Questo dispositivo"\)/.test(menu));
+  // 12 settembre 2026: UNA casella sola. Il menu non scrive nessun ripiego
+  // suo: chiede il nome a useNomeMostrato, e "Il tuo nome" vive in
+  // profilo-contract.ts (RIPIEGO_NOME).
+  check("in locale il menu legge la stessa casella di Impostazioni (nessun ripiego scritto qui)",
+    /useNomeMostrato\(locale \? null : account\?\.email\)/.test(menu) && !/Questo dispositivo"\)/.test(menu));
+  check("il riempimento di fabbrica 'Il tuo nome' e scritto in profilo-contract.ts e basta",
+    /export const RIPIEGO_NOME = "Il tuo nome"/.test(contract) && !/t\("Il tuo nome"\)/.test(menu) && !/t\("Il tuo nome"\)/.test(client));
 
   check("computer: la pennina sta accanto al nome nella rail",
     /<NomeRiga\s+mostrato=/.test(client));

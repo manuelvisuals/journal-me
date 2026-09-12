@@ -161,10 +161,20 @@ export function nomeValido(v: unknown): v is string | null {
 export function nomeMostrato(
   scelto: string | null | undefined,
   email: string | null | undefined,
-  ospite = "ospite",
+  ripiego: string = RIPIEGO_NOME,
 ): string {
   const pulito = normalizzaNome(scelto);
   if (pulito) return pulito;
   if (email && email.includes("@")) return email.split("@")[0];
-  return ospite;
+  return ripiego;
 }
+
+/**
+ * La casella del nome, di fabbrica (Manuel, 12 settembre 2026): finche
+ * l'utente non la sovrascrive dice "Il tuo nome", in tutte e due le lingue
+ * (chi la mostra la passa da t()). E UNA parola sola, scritta qui e letta da
+ * tutti — riga di Impostazioni, menu del pallino, rail del computer, pannello
+ * del nome. Prima ogni schermata aveva il suo riempimento ("Questo
+ * dispositivo" nel menu, "Il tuo nome" nella riga) e sembravano due dati.
+ */
+export const RIPIEGO_NOME = "Il tuo nome";

@@ -294,3 +294,30 @@ Manuel, dallo screenshot di Settings al primo avvio (branch
   gruppo **"I tuoi dati"**: parlano delle giornate, non di chi sei. La porta
   all'email di "Copia nel cloud" (C1) e la stessa di prima.
 
+## Il nome: una casella sola, un riempimento solo (12 settembre 2026, sera)
+
+Manuel, guardando il telefono: la riga Nome diceva "Il tuo nome" e il menu
+del pallino "Questo dispositivo", e sembravano due dati. Regola sua, alla
+lettera: **tutti leggono la stessa casella del profilo, e quella casella di
+fabbrica dice "Il tuo nome" (bilingue) finche l'utente non la sovrascrive.**
+
+- `RIPIEGO_NOME = "Il tuo nome"` sta in `profilo-contract.ts` ed e il terzo
+  ramo di `nomeMostrato` (scelto, altrimenti email tagliata, altrimenti
+  questo). `useNomeMostrato(email)` lo traduce da solo: nessun chiamante
+  passa piu una parola di ripiego.
+- Chi lo mostra: la riga Nome e il ritratto di Impostazioni, il menu del
+  pallino (`account-menu.tsx`, scheletro — toccato su richiesta esplicita),
+  la rail del computer, e il pannello Nome (campo vuoto + placeholder, e
+  la frase "Senza nome l'app dice Il tuo nome"). In locale si passa
+  `email = null`: il nome dell'account non entra.
+- Conseguenza voluta: senza nome l'iniziale del pallino e la I di "Il tuo
+  nome" (Y di "Your name"). Se un giorno da fastidio, si cambia il ritratto,
+  non la casella.
+- Le chiavi "Questo dispositivo", "Ospite" e "ospite" sono uscite dal
+  catalogo (orfane). Banchi: `verify-nome-profilo` (52, il contratto e
+  la sorgente), `verify-porta-account` (la testata), `verify-profilo-ovunque`,
+  `verify-barra-alto`, `verify-ospite-schermate`, `verify-impostazioni`.
+  `verify-porta-account` muore al primo passo anche su main (cerca il
+  pallino su /app in cloud senza passare il cancello); `verify-foto-profilo`
+  ha due rossi vecchi dal 7 settembre (foto per tutti). Non sono di qui.
+
