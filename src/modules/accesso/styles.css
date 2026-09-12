@@ -870,6 +870,9 @@
   justify-content: center;
   gap: calc(6px * var(--jm-space));
   margin-top: calc(16px * var(--jm-space));
+  /* Aria anche sotto (12 settembre 2026, Manuel dal telefono): senza, il
+     tasto "Passa a premium" stava attaccato ai pallini. */
+  margin-bottom: calc(22px * var(--jm-space));
 }
 
 .jm-benv-sal-pallino {
