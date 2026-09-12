@@ -87,7 +87,7 @@ della quota, riga in Impostazioni) aspettano l'ok di Manuel sul mockup
 
 Mockup `design/mockups/premium-senza-password.html` (D1, C1). La pagina
 `/login` non e piu un bivio: via "Tienilo solo su questo dispositivo" (l'ospite
-E gia solo sul dispositivo), titolo "Le tue giornate, anche altrove.",
+E gia solo sul dispositivo), titolo "Ovunque tu sia." (dal 12 settembre 2026: prima "Le tue giornate, anche altrove.", che andava a capo sul telefono),
 un campo, "Non ora" che torna indietro. Chi arriva dalla modalita locale
 lascia il promemoria `jm.migrazione.locale` (`segnaMigrazioneDaFare`); il
 cancello (`src/components/auth-gate.tsx`), appena la cassaforte e aperta,

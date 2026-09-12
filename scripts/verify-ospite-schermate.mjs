@@ -340,7 +340,7 @@ let semeA = null;
   await page.waitForURL("**/login**", { timeout: 15_000 });
   await page.waitForTimeout(800);
   const login = await page.locator("main").innerText();
-  check("06 la schermata dell'email dice il perche: 'Le tue giornate, anche altrove.' e 'chiuse a chiave'", /Le tue giornate, anche altrove\./.test(login) && /chiuso a chiave/.test(login), login.replace(/\s+/g, " ").slice(0, 120));
+  check("06 la schermata dell'email dice il perche: 'Ovunque tu sia.' (una riga sola, 12 settembre 2026) e 'chiuse a chiave'", /Ovunque tu sia\./.test(login) && /chiuso a chiave/.test(login), login.replace(/\s+/g, " ").slice(0, 120));
   check("06 niente bivio: via 'Tienilo solo su questo dispositivo' e 'oppure', c'e 'Non ora'", !/Tienilo solo su questo dispositivo/.test(login) && !/\boppure\b/.test(login) && /Non ora/.test(login));
   check("06 niente 'La versione gratis non ha bisogno di email' (confondeva chi veniva a comprare)", !/versione gratis/.test(login));
   await page.getByRole("button", { name: "Non ora" }).click();

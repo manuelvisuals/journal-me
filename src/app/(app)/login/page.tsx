@@ -385,7 +385,10 @@ export default function LoginPage() {
               className="text-center text-[calc(32px*var(--jm-ui-scale))] leading-[1.1] mb-3 text-ink"
               style={{ fontWeight: 650, letterSpacing: "-0.025em" }}
             >
-              {isReturning ? t("Bentornato") : t("Le tue giornate, anche altrove.")}
+              {/* Una riga sola (Manuel, 12 settembre 2026): "Le tue giornate,
+                  anche altrove." andava a capo sul telefono. Misurato a 375,
+                  393 e 430px con testo Normale e Grande: sta su una riga. */}
+              {isReturning ? t("Bentornato") : t("Ovunque tu sia.")}
             </h1>
             <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3">
               {isReturning
