@@ -25,7 +25,8 @@ cancellare quando la 2.0 e approvata. Le classi nuove hanno prefisso
   `support/page.web.tsx`, `en/support/page.web.tsx`, piu `robots.ts`,
   `sitemap.ts` e i gusci `api/sito/seo/` e `api/sito/supporto/`.
 - Prefisso CSS: `jm-sito`.
-- Banchi prima del push: `verify-sito` (piu tsc, eslint, verify-i18n).
+- Banchi prima del push: `verify-sito` e `verify-barra-vetro` (piu tsc,
+  eslint, verify-i18n; e `verify-v7` se si tocca il CSS del sito).
 
 ## Dall'11 settembre 2026: solo telefono, e /v7 e il metro
 
@@ -97,14 +98,53 @@ perche i Safari non sono d'accordo fra loro: il meta `theme-color`
 e quello che Safari 26 campiona. Se cambia l'inquadratura o il velo, quel
 numero si rimisura e si cambia in tutti e due.
 
-**La barra scrollata e vetro, e basta quello (11 settembre).** Prima era
-inchiostro al 90%: la sfocatura c'era ma non aveva niente da sfocare. Ora
-il colore lo mette `brightness()` **dentro** il backdrop-filter, che
-scurisce cio che passa sotto invece di coprirlo; la tinta resta ma al 42%,
-e `saturate` impedisce che sotto il vetro diventi tutto grigio. I due
-numeri — `brightness(.40)` e tinta 42% — sono misurati sul caso peggiore,
-che e la sezione CREMA: li il marchio avorio sta a 4,2 di contrasto (a
-.58/30% scendeva a 2,9 e si sbiadiva). Sulla fotografia sta a 11,4.
+**La barra non ha nessun fondo (12 settembre).** Terzo giro sulla stessa
+richiesta, e conviene leggere i primi due prima di rimettere una tinta.
+L'11 settembre il fondo e sceso da inchiostro 90% a inchiostro 42% piu
+`brightness(.40)` dentro il backdrop-filter. Piu leggero, ma Manuel
+guardando il risultato ha detto la stessa cosa una terza volta: "la voglio
+completamente trasparente, con effetto blur sfocato". Aveva ragione: due
+strati di tinta sommati, sopra le sezioni crema, disegnano ancora un
+rettangolo grigio-cioccolato largo quanto lo schermo. Adesso non c'e ne
+fondo ne `brightness`: solo `blur(24px) saturate(1.8)`, e sotto si vede
+passare la pagina. `saturate` resta perche senza, cio che si rifrange
+sbiadisce.
+
+**Il marchio cambia colore da solo, ed e il prezzo di quella
+trasparenza.** Senza tinta l'avorio sopra il crema misura 1,3 di
+contrasto, cioe sparisce: meta sito senza marchio ne menu. La cura non e
+rimettere il velo — e fare come iOS, cioe cambiare il colore delle
+scritte. Tre pezzi:
+
+1. ogni figlio di `<main>` (e il piede) dichiara `data-tinta="chiaro"` o
+   `"scuro"` in `home.tsx` / `guscio.tsx`. Si DICHIARA e non si indovina
+   campionando i pixel: campionare costa un disegno su tela a ogni frame e
+   sbaglia proprio dove conta, cioe una fotografia scura dentro una
+   sezione chiara;
+2. `scorrimento.tsx` guarda quale sezione passa sotto la MEZZERIA della
+   barra e scrive `data-sotto` sulla radice (con un rAF di freno, e prima
+   dell'uscita per `prefers-reduced-motion`: e uno stato, non
+   un'animazione). Se nessuna sezione e a cavallo — il piede, o un buco
+   fra due blocchi — resta l'ultima nota, se no il marchio lampeggia sulle
+   giunture;
+3. il CSS su `[data-sotto="chiaro"]` toglie il filtro al marchio e porta a
+   inchiostro le tre righe dell'hamburger e il bordo del suo cerchio. Il
+   marchio e un `<img>` verso un `.svg`: dentro un `<img>` il
+   `currentColor` si risolve nel documento SVG e non nella pagina, quindi
+   il file esce NERO e nessun `color` lo tocca — l'avorio e un filtro, e
+   l'inchiostro e quel filtro tolto (stessa scelta gia fatta per lo stesso
+   file dentro il titolo della giornata).
+
+Banco: **`node scripts/verify-barra-vetro.mjs`** (col sito in ascolto).
+Scende tutta la home a 393x852 ogni 200 pixel e misura tre cose: che la
+barra non abbia fondo ne `brightness`; che ogni blocco dichiari la sua
+tinta e che quella dichiarata sia quella VERA (media dei pixel sotto la
+barra); e il contrasto del marchio, fotografando la striscia due volte,
+con e senza marchio — i pixel che cambiano sono il marchio. Peggiore
+misurato oggi: 4,61, in cima alla pagina sopra la fotografia. Provato a
+mordere: rimessa la tinta vecchia scende a 2,36 e tre controlli vanno
+rossi; tolto un `data-tinta`, il marchio non si trova piu in 23 strisce
+su 77.
 
 Forma, altezza e posizioni **non si toccano**. Ci ho provato — capsula
 staccata dai bordi, a pillola, con l'ombra, alla iOS 26 — e Manuel l'ha

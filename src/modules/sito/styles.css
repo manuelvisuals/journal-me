@@ -6229,37 +6229,73 @@ textarea.jm-sito-in {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
-  /* 4-ter. LA BARRA SCROLLATA DIVENTA VETRO (11 settembre 2026, Manuel:
-     "fallo trasparente con blur"). Cambia SOLO il fondo: forma, altezza,
-     posizione e allineamenti restano quelli di prima.
+  /* 4-ter. LA BARRA E' VETRO E BASTA (12 settembre 2026, Manuel: "la voglio
+     completamente trasparente, con effetto blur sfocato").
 
-     Prima era inchiostro al 90%, cioe un pannello opaco: la sfocatura
-     c'era ma non aveva niente da sfocare. Il colore adesso lo mette
-     `brightness()` DENTRO il backdrop-filter, che scurisce cio che passa
-     sotto invece di coprirlo — quindi la pagina si vede ancora scorrere
-     attraverso, ed e quello che fa leggere il vetro. La tinta resta, ma
-     al 42%. `saturate` tiene il colore di cio che viene rifratto, se no
-     sotto il vetro tutto diventa grigio.
+     L'11 settembre il fondo era gia sceso da inchiostro 90% a inchiostro
+     42% piu `brightness(.40)` dentro il backdrop-filter. Piu leggero, ma
+     sempre una tinta: sopra le sezioni crema quei due strati sommati
+     disegnano ancora un rettangolo grigio-cioccolato largo quanto lo
+     schermo, che e esattamente la cosa da togliere. Adesso non c'e nessun
+     fondo e nessun `brightness`: resta la sola sfocatura, che e il vetro
+     vero. `saturate` si tiene, se no cio che passa sotto sbiadisce.
 
-     I due numeri sono misurati sul caso peggiore, che e la sezione CREMA:
-     li il marchio avorio deve reggere. A brightness .58 con tinta 30% il
-     contrasto scendeva a 2,9 e il nome si sbiadiva; a .40 e 42% sale a
-     4,2 sul crema e resta 11,4 sulla fotografia. Chi li tocca rimisura. */
+     Il conto si paga altrove, e va pagato li: senza tinta il marchio
+     avorio sopra il crema misura 1,3 di contrasto, cioe sparisce. Non si
+     rimette il velo — si cambia il colore delle scritte, come fa iOS.
+     Vedi "IL MARCHIO CHE SI ADATTA" qui sotto.
+
+     Dove il vetro non esiste (nessun Safari ne Chrome di oggi) la barra
+     resta comunque trasparente: prima li si tornava a un fondo quasi
+     pieno per far leggere il marchio, adesso il marchio si legge da solo
+     perche cambia colore, e un fondo pieno sarebbe la fascia di
+     cioccolato riportata dentro dalla finestra. */
   .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-    background: color-mix(in srgb, var(--jm-ink) 42%, transparent);
+    background: transparent;
   }
   @supports ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
     .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-      -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(.40);
-      backdrop-filter: blur(24px) saturate(1.8) brightness(.40);
+      -webkit-backdrop-filter: blur(24px) saturate(1.8);
+      backdrop-filter: blur(24px) saturate(1.8);
     }
   }
-  /* Senza backdrop-filter una tinta al 42% non fa leggere il marchio: li
-     si torna quasi pieni, come prima. */
-  @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
-    .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-scorso] > .jm-sito-nav .jm-sito-nav-in {
-      background: color-mix(in srgb, var(--jm-ink) 90%, transparent);
-    }
+  /* IL MARCHIO CHE SI ADATTA (12 settembre 2026).
+
+     Con la barra senza fondo il colore delle scritte non puo piu essere
+     fisso. `data-sotto` lo scrive `scorrimento.tsx` guardando quale
+     sezione passa sotto la mezzeria della barra; le sezioni si dichiarano
+     da sole con `data-tinta` in home.tsx.
+
+     Il marchio e un <img> che punta a un .svg: dentro un <img> il
+     `currentColor` si risolve nel documento SVG e non qui, quindi il file
+     esce NERO e nessun `color` scritto in questa pagina lo tocca. L'avorio
+     si ottiene con un filtro (vedi il blocco del marchio piu su); per
+     l'inchiostro il filtro si TOGLIE, ed e la stessa scelta gia fatta per
+     lo stesso file dentro il titolo della giornata (.jm-sito8-marchio),
+     che sta anche lui su crema.
+
+     La transizione non e decorazione: il cambio scatta su una riga sola di
+     scorrimento, e senza dissolvenza il marchio sbatte da avorio a
+     inchiostro come un errore di disegno. */
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-nav-in .jm-sito-wordmark {
+    transition: filter .22s ease;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary::before,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary::after,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7) .jm-sito-menu-mobile summary span {
+    transition: background-color .22s ease, border-color .22s ease;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-sotto="chiaro"] .jm-sito-marchio .jm-sito-wordmark {
+    filter: none;
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-sotto="chiaro"] .jm-sito-menu-mobile summary::before,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-sotto="chiaro"] .jm-sito-menu-mobile summary::after,
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-sotto="chiaro"] .jm-sito-menu-mobile summary span {
+    background: var(--jm-ink);
+  }
+  .jm-sito4.jm-sito7:not(.jm-sito4-archivio-v7)[data-sotto="chiaro"] .jm-sito-menu-mobile summary {
+    border-color: color-mix(in srgb, var(--jm-ink) 34%, transparent);
   }
   /* La barra esterna porta un suo velo all'82%: sommato a quello interno
      il vetro tornava opaco. Il velo e uno solo, e quello dentro. */

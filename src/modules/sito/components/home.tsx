@@ -459,6 +459,12 @@ export function HomeSito({
       <NavSito lingua={lingua} altraLingua={altraLingua} v4 />
 
       <main>
+        {/* `data-tinta` su ogni blocco di primo livello dice se sotto la barra
+            passa il buio o il chiaro. Lo legge `scorrimento.tsx`, che scrive
+            `data-sotto` sulla radice; da li il CSS decide il colore del
+            marchio e dell'hamburger (styles.css, "IL MARCHIO CHE SI ADATTA").
+            Si DICHIARA invece di indovinarlo campionando i pixel: una sezione
+            nuova deve dire com'e, e `verify-barra-vetro` la rimisura. */}
         {/* ------------------------------------------------------ eroe */}
         {/* LA PISTA DELL'EROE (jm-sito13, 11 settembre 2026, Manuel). L'eroe
             si incolla per due schermate e mezzo: scorrendo, le parole escono
@@ -468,7 +474,7 @@ export function HomeSito({
             quando la pista e in cima alla pagina, che e esattamente il caso
             dell'eroe. Senza JavaScript la pista non esiste e l'eroe e quello
             fermo di sempre, con la pilla gia al suo posto. */}
-        <div className="jm-sito13-pista" data-pista="eroe">
+        <div className="jm-sito13-pista" data-pista="eroe" data-tinta="scuro">
         <section className="jm-sito2-eroe">
           <div className="jm-sito-cont jm-sito2-eroe-in">
             <div className="jm-sito2-eroe-t">
@@ -555,7 +561,7 @@ export function HomeSito({
             su /v6, insieme al suo CSS (.jm-sito6-*) e ai testi vocePaginaTre. */}
 
         {/* -------------------------------------------- tre promesse */}
-        <section className="jm-sito-promesse-sez piana">
+        <section className="jm-sito-promesse-sez piana" data-tinta="chiaro">
           <div className="jm-sito-cont">
             <div className="jm-sito-promesse">
               {t.promesse.map((q, i) => (
@@ -588,7 +594,7 @@ export function HomeSito({
             senza JavaScript, e la frase finale (aria-labelledby). Senza
             JavaScript la scena non si incolla e diventa una colonna normale:
             titolo, carta, titolo, carta, e in fondo il telefono. */}
-        <section className="jm-sito12" id="come" aria-labelledby="jm-sito12-fine">
+        <section className="jm-sito12" id="come" data-tinta="chiaro" aria-labelledby="jm-sito12-fine">
           <div className="jm-sito12-pista" data-pista="avanti">
             <div className="jm-sito12-scena">
               <p className="jm-sito-kick jm-sito12-occhio">{t.passi.etichetta}</p>
@@ -619,7 +625,7 @@ export function HomeSito({
             Manuel). Tiene l'ancora #cassaforte a cui puntano menu e piede.
             La vecchia .jm-sito-cassa resta nel CSS e nei testi: la usano gli
             archivi /v1../v6. */}
-        <section className="jm-sito9-chiave" id="cassaforte" aria-labelledby="jm-sito9-titolo">
+        <section className="jm-sito9-chiave" id="cassaforte" data-tinta="scuro" aria-labelledby="jm-sito9-titolo">
           <div className="jm-sito9-cont">
             <p className="jm-sito9-intro">{t.chiave.testo}</p>
 
@@ -699,7 +705,7 @@ export function HomeSito({
             archivi. Il tasto di contorno dell'eroe invece adesso punta a
             #come, che e la risposta vera a "guarda come funziona" — e che
             resta dov'era, poco sotto. */}
-        <section className="jm-sito8-giornata" id="giornata" aria-labelledby="jm-sito8-titolo">
+        <section className="jm-sito8-giornata" id="giornata" data-tinta="chiaro" aria-labelledby="jm-sito8-titolo">
           {/* La pista e alta piu di quattro schermate: dentro ci sta fermo
               (sticky) il BLOCCO — titolo e scena insieme — e scorrerla muove
               --s da 0 a 1. Il titolo e entrato qui dentro l'11 settembre 2026
@@ -749,7 +755,7 @@ export function HomeSito({
         </section>
 
         {/* ------------------------------------------------- funzioni */}
-        <section className="jm-sito-sez" id="funzioni">
+        <section className="jm-sito-sez" id="funzioni" data-tinta="chiaro">
           <div className="jm-sito-cont">
             <div className="jm-sito-testa">
               <p className="jm-sito-kick">{t.funzioni.etichetta}</p>
@@ -793,7 +799,7 @@ export function HomeSito({
         </section>
 
         {/* ---------------------------------------- le tre condizioni */}
-        <section className="jm-sito-sez" id="condizioni">
+        <section className="jm-sito-sez" id="condizioni" data-tinta="chiaro">
           <div className="jm-sito-cont">
             <div className="jm-sito-testa">
               <p className="jm-sito-kick">{t.condizioni.etichetta}</p>
@@ -831,7 +837,7 @@ export function HomeSito({
         </section>
 
         {/* ------------------------------------------- iPhone / App Store */}
-        <section className="jm-sito-sez" id="iphone">
+        <section className="jm-sito-sez" id="iphone" data-tinta="scuro">
           <div className="jm-sito-cont">
             <div className="jm-sito4-store-banner" data-fx="testo">
               <div>
@@ -853,7 +859,7 @@ export function HomeSito({
         </section>
 
         {/* ------------------------------------------------- domande */}
-        <section className="jm-sito-sez" id="domande">
+        <section className="jm-sito-sez" id="domande" data-tinta="chiaro">
           <div className="jm-sito-cont">
             <div className="jm-sito-testa" data-fx="testo">
               <p className="jm-sito-kick">{t.domande.etichetta}</p>
@@ -880,7 +886,7 @@ export function HomeSito({
             visitatore aveva appena cominciato a capire. In fondo invece fa
             quello per cui e nata — abbassare la voce — e passa il testimone
             alla domanda che chiude la pagina. */}
-        <section className="jm-sito-foto-sez">
+        <section className="jm-sito-foto-sez" data-tinta="scuro">
           <div className="jm-sito-cont">
             <div className="jm-sito-banda" data-fx="sfondo">
               <Foto nome="divano-notte" className="arte" />
@@ -893,7 +899,7 @@ export function HomeSito({
         </section>
 
         {/* -------------------------------------------------- chiusura */}
-        <section className="jm-sito-fine">
+        <section className="jm-sito-fine" data-tinta="chiaro">
           <div className="jm-sito-cont" data-fx="testo">
             <h2>{t.fine.titolo}</h2>
             <p>{t.fine.testo}</p>

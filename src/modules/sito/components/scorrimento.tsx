@@ -17,7 +17,9 @@ import { useEffect } from "react";
  *
  * e sulla pista della scena (`data-pista`) il progresso `--s` 0 → 1 mentre
  * la scena sta ferma; sulla radice, `data-scorso` quando la pagina non e
- * piu in cima (la barra diventa di vetro). Il resto — quanto sale, quanto sfuma, il parallasse
+ * piu in cima (la barra diventa di vetro) e `data-sotto` con la tinta della
+ * sezione che passa sotto la barra (che decide il colore del marchio). Il
+ * resto — quanto sale, quanto sfuma, il parallasse
  * delle foto — e tutto CSS sotto `.jm-sito7[data-js]` in styles.css.
  *
  * Senza JavaScript non succede niente: `data-js` non arriva e la pagina
@@ -72,15 +74,68 @@ export function Scorrimento() {
      * al sistema meno animazioni: l'uscita anticipata qui sotto se lo
      * portava via insieme al parallasse.
      */
+    /**
+     * IL COLORE DELLE SCRITTE DELLA BARRA (12 settembre 2026, Manuel: "la
+     * voglio completamente trasparente, con effetto blur sfocato").
+     *
+     * Dal 12 settembre la barra del telefono non ha piu nessun fondo: solo
+     * la sfocatura. Senza tinta il colore delle scritte non puo piu essere
+     * fisso — l'avorio che si legge sopra la fotografia sparisce sopra le
+     * sezioni crema, che sono meta del sito. Quindi si guarda che cosa
+     * passa sotto la MEZZERIA della barra e si scrive `data-sotto` sulla
+     * radice; il resto e CSS.
+     *
+     * Le sezioni si dichiarano da sole con `data-tinta` in home.tsx invece
+     * di essere indovinate campionando i pixel: campionare costa un
+     * disegno su tela a ogni frame e sbaglia proprio dove conta (una foto
+     * scura dentro una sezione chiara). Dichiararlo costa un attributo, e
+     * una sezione nuova che se ne dimentica la lascia semplicemente com'e
+     * l'ultima nota — non la fa sbagliare a meta.
+     *
+     * Sta insieme a `data-scorso` e non dentro `misura` per la stessa
+     * ragione: non e un'animazione, e uno stato, e vale anche per chi ha
+     * chiesto meno animazioni.
+     */
+    const barra = radice.querySelector<HTMLElement>(".jm-sito-nav-in");
+    const tinte = Array.from(radice.querySelectorAll<HTMLElement>("[data-tinta]"));
+    let quadroTinta = 0;
+    let sotto = "";
+    const adatta = () => {
+      quadroTinta = 0;
+      if (!barra || tinte.length === 0) return;
+      const mezzo = barra.getBoundingClientRect().height / 2;
+      for (const el of tinte) {
+        const r = el.getBoundingClientRect();
+        if (r.top <= mezzo && r.bottom > mezzo) {
+          sotto = el.dataset.tinta ?? sotto;
+          break;
+        }
+      }
+      // Nessuna sezione a cavallo della barra (il piede, o un buco fra due
+      // blocchi): resta l'ultima nota. Cambiare a vuoto farebbe lampeggiare
+      // il marchio proprio sulle giunture.
+      if (sotto && radice.getAttribute("data-sotto") !== sotto) {
+        radice.setAttribute("data-sotto", sotto);
+      }
+    };
+    const chiediTinta = () => {
+      if (!quadroTinta) quadroTinta = requestAnimationFrame(adatta);
+    };
+
     const tingi = () => {
       const giu = window.scrollY > 24;
       radice.toggleAttribute("data-scorso", giu);
       if (meta) meta.content = giu ? tonoPagina : "#60554b";
+      chiediTinta();
     };
     tingi();
+    adatta();
     window.addEventListener("scroll", tingi, { passive: true });
+    window.addEventListener("resize", chiediTinta);
     const spegniTinta = () => {
       window.removeEventListener("scroll", tingi);
+      window.removeEventListener("resize", chiediTinta);
+      if (quadroTinta) cancelAnimationFrame(quadroTinta);
       if (meta) meta.content = tonoPagina;
     };
 

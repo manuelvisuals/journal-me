@@ -105,7 +105,10 @@ export function PiedeSito({
   const t = testiDi(lingua);
   const p = prefisso(lingua);
   return (
-    <footer className="jm-sito-piede">
+    // `data-tinta`: il piede e chiaro. Lo legge scorrimento.tsx sulla home
+    // viva per decidere il colore del marchio nella barra (styles.css, "IL
+    // MARCHIO CHE SI ADATTA"); altrove l'attributo c'e e non fa niente.
+    <footer className="jm-sito-piede" data-tinta="chiaro">
       <div className="jm-sito-piede-in">
         <div>
           <p className="jm-sito-piede-marchio">
