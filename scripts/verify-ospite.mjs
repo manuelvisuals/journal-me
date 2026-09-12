@@ -55,7 +55,7 @@ const ROUTE_AI = [
 // /api/ospite/braccialetto (10 settembre 2026, 2A): il braccialetto nasce sul server.
 const ROUTE_AMMESSE = [...ROUTE_AI, "/api/ospite/stato", "/api/ospite/braccialetto", "/api/apple/verifica"];
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const results = [];
 function check(name, ok, extra = "") {
@@ -74,6 +74,11 @@ function check(name, ok, extra = "") {
   const m = cfg.match(/key:\s*"Access-Control-Allow-Headers",[\s\S]*?value:\s*"([^"]+)"/);
   const lista = (m?.[1] ?? "").split(",").map((x) => x.trim().toLowerCase());
   check("CORS: x-jm-braccialetto e fra gli header ammessi in next.config.ts (preflight del guscio iOS)", lista.includes("x-jm-braccialetto"), m?.[1] ?? "non trovato");
+  // Per nome non basta (12 settembre 2026: x-jm-giorno e passato sotto a
+  // questo controllo). Il banco che pretende TUTTI gli header di apiFetch e
+  // scripts/verify-cors-guscio.mjs: qui si controlla che esista e sia
+  // verde, cosi chi lancia solo questo banco non resta con un buco.
+  check("CORS: c'e il banco che pretende ogni header di apiFetch (scripts/verify-cors-guscio.mjs)", existsSync("scripts/verify-cors-guscio.mjs"));
   check("CORS: anche x-jm-lang e Authorization ci sono ancora", lista.includes("x-jm-lang") && lista.includes("authorization"));
 }
 
