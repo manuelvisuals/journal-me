@@ -11,9 +11,18 @@ import { Marchio } from "@/components/brand/marchio";
  * riga con un catalogo UI — vive qui per intero nelle due lingue, prima
  * italiano poi inglese, e si cambia come un documento, non come una label.
  * Tutto cio che afferma e verificato nel codice: la modalita locale non fa
- * richieste (verify-pr10), la cancellazione dell'account esiste
- * (/api/account/delete), il testo passa a OpenAI dalle route in
+ * richieste finche non si chiede l'AI (verify-pr10, verify-ospite), il
+ * regalo dell'ospite passa dal braccialetto e da DeviceCheck
+ * (src/lib/server/ospite.ts, devicecheck.ts: sul server restano l'hash del
+ * segreto e il conteggio, migration 023), la cancellazione dell'account
+ * esiste (/api/account/delete), il testo passa a OpenAI dalle route in
  * src/modules/oggi/server e recap/server.
+ *
+ * 12 settembre 2026: fino a oggi questa pagina diceva "modalita locale =
+ * niente AI, niente rete". Era vero fino al 3 settembre; dal regalo
+ * dell'ospite (SPEC-ospite-e-cassaforte R2) non lo era piu, e una policy
+ * che nega una raccolta che avviene e il primo motivo di rifiuto sulla
+ * 5.1.1. Le etichette App Privacy si compilano su QUESTA versione.
  */
 
 export const metadata: Metadata = {
@@ -70,7 +79,7 @@ export default function PrivacyPage() {
           color: "var(--color-ink-faint)",
         }}
       >
-        Aggiornata al 23 agosto 2026 · English version below
+        Aggiornata al 12 settembre 2026 · English version below
       </p>
 
       <Sezione titolo="La cosa piu importante">
@@ -87,10 +96,24 @@ export default function PrivacyPage() {
         <p>
           <b>Solo su questo dispositivo (gratis).</b> Le tue giornate restano
           nel dispositivo, dentro l&apos;archivio del browser o dell&apos;app.
-          Non esiste un account, non esiste un server: in questa modalita
-          l&apos;app non fa nemmeno una richiesta di rete. Se cancelli
-          l&apos;app o i suoi dati, le giornate spariscono con lei — per
-          questo esiste il backup su file, che fai tu, quando vuoi tu.
+          Non esiste un account e le giornate non salgono su nessun server:
+          l&apos;app fa una richiesta di rete solo quando chiedi all&apos;AI
+          di lavorare (vedi sotto, &quot;Il regalo dell&apos;AI&quot;). Se
+          cancelli l&apos;app o i suoi dati, le giornate spariscono con lei
+          — per questo esiste il backup su file, che fai tu, quando vuoi tu.
+        </p>
+        <p>
+          <b>Il regalo dell&apos;AI.</b> Anche senza account, l&apos;app per
+          iPhone ti regala l&apos;AI per le prime dieci giornate. Per contare
+          le giornate senza sapere chi sei, il dispositivo genera un codice
+          casuale (un &quot;braccialetto&quot;) e lo presenta al nostro server
+          insieme a un gettone di Apple (DeviceCheck) che prova che si tratta
+          di un iPhone vero e che il regalo non e gia stato dato. Il server
+          conserva solo un&apos;impronta del codice e il conteggio delle
+          giornate: niente nome, niente email, niente testo delle giornate.
+          Quando chiedi all&apos;AI di lavorare, il testo o l&apos;audio della
+          giornata passa a OpenAI come descritto sotto; sul nostro server non
+          resta.
         </p>
         <p>
           <b>Premium (cloud).</b> Crei un account con la tua email (un codice
@@ -126,8 +149,8 @@ export default function PrivacyPage() {
           OpenAI: per farlo, il testo (o l&apos;audio) della giornata passa ai
           loro server tramite la nostra API. Usiamo le API business di OpenAI,
           che per contratto non usano questi dati per addestrare i modelli.
-          Nella modalita locale tutto questo non esiste: niente AI, niente
-          rete.
+          Se non chiedi mai all&apos;AI di lavorare, niente esce dal
+          dispositivo.
         </p>
       </Sezione>
 
@@ -168,7 +191,7 @@ export default function PrivacyPage() {
           color: "var(--color-ink-faint)",
         }}
       >
-        Updated 23 August 2026
+        Updated 12 September 2026
       </p>
 
       <Sezione titolo="What matters most">
@@ -182,9 +205,22 @@ export default function PrivacyPage() {
       <Sezione titolo="The two modes">
         <p>
           <b>Only on this device (free).</b> Your days stay on the device. No
-          account, no server: in this mode the app does not make a single
-          network request. Deleting the app deletes the days with it — that
+          account, and your days never reach a server: the app makes a
+          network request only when you ask the AI to work (see &quot;The AI
+          gift&quot; below). Deleting the app deletes the days with it — that
           is what the file backup is for, made by you, whenever you want.
+        </p>
+        <p>
+          <b>The AI gift.</b> Even without an account, the iPhone app gives
+          you the AI for your first ten days. To count those days without
+          knowing who you are, the device generates a random code (a
+          &quot;wristband&quot;) and presents it to our server together with
+          an Apple token (DeviceCheck) proving it is a real iPhone that has
+          not received the gift before. The server keeps only a fingerprint
+          of that code and the day count: no name, no email, no text of your
+          days. When you ask the AI to work, the day&apos;s text or audio
+          reaches OpenAI as described below; nothing of it stays on our
+          server.
         </p>
         <p>
           <b>Premium (cloud).</b> You create an account with your email (a
@@ -209,8 +245,8 @@ export default function PrivacyPage() {
           Titles, summaries, recaps and transcriptions are generated by OpenAI
           models: the day&apos;s text (or audio) reaches their servers through
           our API. We use OpenAI&apos;s business APIs, which by contract do
-          not use this data to train models. In local mode none of this
-          exists: no AI, no network.
+          not use this data to train models. If you never ask the AI to
+          work, nothing leaves the device.
         </p>
       </Sezione>
 
