@@ -560,6 +560,17 @@ summary:active {
 
 .jm-day-back:active { background: var(--color-surface-2); }
 
+/* La freccia ha la misura QUI, non nell'SVG (12 settembre 2026). Nella
+   pagina Persona l'SVG era senza width/height e in WebKit un SVG senza
+   misura dentro un flex item collassa a zero: cerchio disegnato, freccia
+   invisibile. In Chrome sul Mac si vedeva, e nessuno se n'era accorto.
+   Con la misura sul contenitore vale per ogni pagina che usa il tasto. */
+.jm-day-back svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 .jm-day-head-label {
   flex: 1;
   font-size: calc(11px * var(--jm-ui-scale));
