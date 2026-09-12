@@ -51,7 +51,7 @@ import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
 import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
 import { ospiteAttivo } from "@/lib/ospite/flag";
-import { useStatoOspite } from "@/lib/ospite/stato";
+import { regaloFinito, useStatoOspite } from "@/lib/ospite/stato";
 import { useRegaloInGioco } from "@/lib/capabilities";
 import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
@@ -519,7 +519,17 @@ export function SettingsClient({
                 Impostazioni cerca quasi sempre se stesso — la foto, l'email,
                 il piano, cosa ha speso — non il tema. */}
             <div className="jm-st-phoneonly">
-              {!isLocal && plan !== "premium" && <PremiumInvite />}
+              {/* "Il diario a voce e spento" e VERO solo a regalo finito
+                  (Manuel, 12 settembre 2026, con l'account gratis e due
+                  giornate AI ancora in regalo: "non e vero, ho appena
+                  registrato la mia giornata"). Col regalo in corso la
+                  card non c'e, e Premium resta una riga nell'Account,
+                  come da ospite. Finche lo stato del regalo non e
+                  arrivato (null) regaloFinito dice falso: niente card,
+                  niente lampeggio. */}
+              {!isLocal && plan !== "premium" && !(regaloInGioco && !regaloFinito(statoOspite)) && (
+                <PremiumInvite />
+              )}
               <SetGroup label={t("Account")}>
                 {ospite ? (
                   <>
@@ -626,6 +636,14 @@ export function SettingsClient({
                         title={t("AI in regalo")}
                         value={valoreRegalo(t, statoOspite)}
                         onClick={() => setPanel("regalo")}
+                      />
+                    )}
+                    {regaloInGioco && !regaloFinito(statoOspite) && plan !== "premium" && (
+                      <SetRow
+                        title={t("Passa a Premium")}
+                        value={rigaPrezzo(t).prova || undefined}
+                        desc={`${rigaPrezzo(t).poi}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
+                        onClick={() => openPremiumWall("aiSummary")}
                       />
                     )}
                     {/* L'abbonamento di Apple (mockup abbonamento-iphone.html

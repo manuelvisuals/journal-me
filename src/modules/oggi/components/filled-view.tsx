@@ -208,6 +208,11 @@ export function FilledView({
             )
           )}
 
+          {/* L'avviso del regalo sta QUI, sotto il riassunto dell'AI e prima
+              del tasto "aggiungi" (Manuel, 12 settembre 2026): stava in fondo,
+              dopo le aree, e non si capiva che parlava del riassunto. */}
+          {avvisoSlot}
+
           {footer}
 
           {fotoSlot}
@@ -242,7 +247,6 @@ export function FilledView({
               {t("aree macro non ancora estratte")}
             </div>
           )}
-          {avvisoSlot}
         </>
       )}
 

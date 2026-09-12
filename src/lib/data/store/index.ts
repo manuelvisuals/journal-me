@@ -20,6 +20,7 @@
  */
 
 import { useSyncExternalStore } from "react";
+import { invalidateAll } from "@/lib/data/cache";
 import { CloudStore } from "./cloud";
 import { LocalStore } from "./local";
 import type { JournalStore } from "./types";
@@ -41,6 +42,17 @@ function subscribe(l: () => void): () => void {
 }
 
 function settle(mode: ResolvedMode): ResolvedMode {
+  /* LA CACHE E DI UNA MODALITA SOLA (12 settembre 2026). Manuel, dal
+     telefono: "gli obiettivi che ho cancellato ricompaiono, e in due
+     lingue". Il database dell'account aveva sei obiettivi; lo schermo ne
+     mostrava nove. I tre in piu erano dell'OSPITE: la cache delle letture
+     (src/lib/data/cache.ts) usa le stesse chiavi in locale e in cloud, e
+     al login la modalita cambiava senza svuotarla. La prima schermata
+     dopo l'accesso disegnava con i dati del telefono, e li teneva finche
+     non la si riapriva. Vale anche al contrario (logout: l'ospite vedeva
+     per un minuto i dati dell'account). Un cambio di modalita e un cambio
+     di sorgente: cio che si sapeva prima non vale piu. */
+  if (resolved !== mode) invalidateAll();
   resolved = mode;
   emit();
   return mode;
@@ -92,6 +104,10 @@ export function clearLocalMode(): void {
   } catch {
     // niente da rimuovere
   }
+  // Si svuota qui e non solo in settle(): fra questo istante e la
+  // risoluzione nuova passa una promise di Supabase, e in quella fessura
+  // una lettura rimetterebbe in cache i dati della modalita di prima.
+  invalidateAll();
   resolved = "resolving";
   resolving = null;
   void resolveStorageMode();

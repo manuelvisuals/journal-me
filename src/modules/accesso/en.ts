@@ -87,7 +87,7 @@ export const ACCESSO: Record<string, string> = {
   "Sicuro? Il diario riparte vuoto, con un codice nuovo.": "Sure? The diary starts again empty, with a new code.",
   "Si, ricomincia da zero": "Yes, start over",
   "Un diario nuovo. Otto parole nuove.": "A new diary. Eight new words.",
-  "Le tue giornate, anche altrove.": "Your days, elsewhere too.",
+  "Ovunque tu sia.": "Wherever you are.",
   "Backup chiuso a chiave, su iPad e computer. Ti mando un codice. Mai una password.": "Locked backup, on iPad and computer. I will send you a code. Never a password.",
   "Le giornate scritte qui salgono.": "The days written here go up.",
   // La porta del giorno (porta-giorno.tsx, 10 settembre 2026).

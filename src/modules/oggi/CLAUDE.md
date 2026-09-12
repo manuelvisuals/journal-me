@@ -339,3 +339,11 @@ regola: "non deve proprio succedere che l'ai fallisce".
   piu nuova.
 - Banco: `verify-coda-analisi` (12 controlli, morso provato: togliendo le
   due difese la riga aggiunta sparisce davvero).
+
+## L'avviso del regalo sta sotto il riassunto (12 settembre 2026, sera)
+
+Manuel: "il coso che dice 2 giornate in regalo, mettilo piu su, alla fine
+del riassunto dell'AI, cosi si capisce che e per quello". In
+`filled-view.tsx` lo slot `avvisoSlot` (l'`AvvisoRegalo`) sta subito
+dopo lo snippet e prima del footer ("Aggiungi a questa giornata"), non
+piu in fondo dopo le aree. Banco: `verify-ospite-schermate` 02.

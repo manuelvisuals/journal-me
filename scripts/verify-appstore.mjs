@@ -160,7 +160,10 @@ async function passaCancello(page) {
   await page.waitForTimeout(2500);
   const righe = (await page.locator("main").innerText()).replace(/\s+/g, " ");
   check("1 guscio, account gratis: in Impostazioni c'e 'Passa a Premium' (2.1(b))", /Passa a Premium/.test(righe));
-  check("1 guscio, account gratis: l'invito dice la prova e il prezzo di Apple, non 'si attiva dall'app'", /14 giorni gratis, poi 4,99 EUR al mese/.test(righe) && !/Si attiva dall'app/.test(righe), righe.match(/Passa a Premium[\s\S]{0,90}/)?.[0]);
+  // 12 settembre 2026: col regalo AI ancora in corso la card "Il diario a
+  // voce e spento" non c'e (sarebbe falsa: l'AI lavora), e Premium e una
+  // riga dell'Account con la prova e il prezzo di Apple.
+  check("1 guscio, account gratis col regalo in corso: niente card 'Il diario a voce e spento', la riga dice la prova e il prezzo di Apple", !/Il diario a voce e spento/.test(righe) && /14 giorni gratis/.test(righe) && /Poi 4,99 EUR al mese/.test(righe) && !/Si attiva dall'app/.test(righe), righe.match(/Passa a Premium[\s\S]{0,90}/)?.[0]);
   check("1 guscio, account gratis: in Impostazioni c'e 'Ripristina acquisti' (3.1.1)", /Ripristina acquisti/.test(righe));
   check("1 guscio, account gratis: nessuna riga 'Ho gia un abbonamento' (quella e da ospite)", !/Ho gia un abbonamento/.test(righe));
   await page.locator("button", { hasText: "Passa a Premium" }).first().click();
@@ -204,7 +207,9 @@ async function passaCancello(page) {
   await page.waitForSelector(".jm-st-row", { timeout: 25000 });
   await page.waitForTimeout(900);
   const testo = await page.locator("main").innerText();
-  check("3 browser, account gratis: 'Si attiva dall'app per iPhone', nessun tasto di acquisto", /Si attiva dall'app per iPhone/.test(testo) && !/Abbonati/.test(testo) && !/Prova gratis/.test(testo));
+  // 12 settembre 2026: col regalo in corso la card non c'e; resta la riga
+  // "Passa a Premium" (apre il muro, che sul web dice che si attiva dall'app).
+  check("3 browser, account gratis: nessun tasto di acquisto (niente 'Abbonati' ne 'Prova gratis'), c'e la riga 'Passa a Premium'", /Passa a Premium/.test(testo) && !/Abbonati/.test(testo) && !/Prova gratis/.test(testo) && !/Il diario a voce e spento/.test(testo), testo.replace(/\s+/g, " ").match(/Passa a Premium[\s\S]{0,80}/)?.[0]);
   await page.locator("button", { hasText: "Passa a Premium" }).first().click().catch(() => {});
   await page.locator(".jm-wall").waitFor({ state: "visible", timeout: 10000 }).catch(() => {});
   const muro = (await page.locator(".jm-wall").innerText().catch(() => "")).replace(/\s+/g, " ");

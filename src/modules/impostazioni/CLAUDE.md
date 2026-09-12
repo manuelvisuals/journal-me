@@ -321,3 +321,24 @@ fabbrica dice "Il tuo nome" (bilingue) finche l'utente non la sovrascrive.**
   pallino su /app in cloud senza passare il cancello); `verify-foto-profilo`
   ha due rossi vecchi dal 7 settembre (foto per tutti). Non sono di qui.
 
+## "Il diario a voce e spento" solo a regalo finito (12 settembre 2026, sera)
+
+Manuel, con l'account gratis e due giornate AI ancora in regalo: "non e
+vero, ho appena registrato la mia giornata". La card `PremiumInvite` in
+cima alle Impostazioni compare SOLO quando il regalo non e in gioco o e
+finito (`regaloFinito(statoOspite)`; finche lo stato non e arrivato, null,
+la card non c'e: niente lampeggio). Col regalo in corso Premium e una
+riga "Passa a Premium" nel gruppo Account (prova e prezzo di Apple, come
+da ospite). Banco: `verify-appstore` sezioni 1 e 3.
+
+## Gli obiettivi che ricomparivano (12 settembre 2026, sera)
+
+Non era di questo modulo: il database dell'account aveva sei obiettivi,
+lo schermo ne mostrava nove, e i tre in piu erano dell'OSPITE del
+telefono. La cache delle letture (`src/lib/data/cache.ts`) ha le stesse
+chiavi in locale e in cloud e al login la modalita cambiava senza
+svuotarla. Chiuso nello scheletro (`store/index.ts`, `settle()` e
+`clearLocalMode()` chiamano `invalidateAll()`), con il banco
+`verify-cache-modalita` che rifa la strada vera senza mai ricaricare
+(morso provato: col codice vecchio 2 rossi). Se un giorno "ricompare"
+qualcosa dopo un login o un logout, si parte da li.
