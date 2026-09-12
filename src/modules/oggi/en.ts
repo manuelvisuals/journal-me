@@ -177,7 +177,7 @@ export const OGGI: Record<string, string> = {
   "Giorno dopo": "Next day",
   "Scegli il giorno": "Choose the day",
   "Domani non e ancora successo": "Tomorrow has not happened yet",
-  "Aggiungi dal rullino": "Add from camera roll",
+  "Aggiungi foto": "Add photos",
   "Foto di quel giorno, dal telefono": "Photos of that day, from your phone",
   "Foto del giorno": "Photos of the day",
   "foto {indice} di {totale}": "photo {indice} of {totale}",

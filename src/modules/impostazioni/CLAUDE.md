@@ -342,3 +342,20 @@ svuotarla. Chiuso nello scheletro (`store/index.ts`, `settle()` e
 `verify-cache-modalita` che rifa la strada vera senza mai ricaricare
 (morso provato: col codice vecchio 2 rossi). Se un giorno "ricompare"
 qualcosa dopo un login o un logout, si parte da li.
+
+## Gli obiettivi di fabbrica nella lingua del dispositivo (12 settembre 2026, sera)
+
+Decisione di Manuel (opzione 1): "devono essere O in inglese O in
+italiano". Le due liste stanno in `src/lib/data/store/default-goals.ts`
+(scheletro, `etichetteDiFabbrica(lingua)`, `eDiFabbrica`). In locale le
+semina LocalStore con `getLang()`. In cloud il trigger Postgres NON c'e
+piu (migration 029, applicata in produzione il 12 settembre 2026 e
+verificata: colonna `profiles.goals_seeded_at`, 9 profili su 9 segnati,
+trigger e funzione spariti): al primo accesso il cancello chiama
+`seminaObiettiviDiFabbrica()` (lib/data/goals.ts), che fa POST a
+`/api/account/obiettivi-di-fabbrica` con la lingua; la logica e QUI, in
+`server/obiettivi-di-fabbrica.ts`: semina solo le etichette che mancano,
+segna `goals_seeded_at`, e da li in poi risponde `seminati: 0` — anche
+se la persona cancella tutti gli obiettivi (cancellarli e una scelta).
+Banco: `verify-obiettivi-lingua` (13 controlli: contratto, ospite in
+en-US e it-IT, la rotta con i finti lato server).

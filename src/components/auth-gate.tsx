@@ -20,6 +20,7 @@ import { CassaforteCancello } from "@/modules/accesso";
 import { avviaCoda } from "@/lib/actions/coda-analisi";
 import { utenteDalDispositivo } from "@/lib/supabase/client";
 import { migraSePromesso } from "@/lib/ospite/migrazione";
+import { seminaObiettiviDiFabbrica } from "@/lib/data/goals";
 import { prendiMuroDaRiaprire } from "@/lib/ospite/muro-riapri";
 import { openPremiumWall } from "@/modules/abbonamento";
 
@@ -216,6 +217,9 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (mode !== "cloud" || auth !== "in" || cassaforte !== "aperta") return;
+    // Gli obiettivi di fabbrica dell'account, nella lingua del telefono
+    // (12 settembre 2026): una volta sola per account, lo sa il server.
+    void seminaObiettiviDiFabbrica();
     void migraSePromesso();
     // Il muro lasciato a meta dall'ospite che e andato a mettere l'email
     // (C1 dell'audit del 10 settembre 2026): adesso e in cloud e mostra le

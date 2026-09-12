@@ -2,7 +2,7 @@
 // "assicurati che l'app passi la revisione Apple per fotocamera e rullino").
 //
 // Il fatto: la foto profilo ha "Scatta una foto" (foto-row.tsx, input
-// con capture="user") e la giornata ha "Aggiungi dal rullino" (add-to-day
+// con capture="user") e la giornata ha "Aggiungi foto" (add-to-day
 // .tsx, input file image/*). Dentro WKWebView un input file apre il foglio
 // di sistema con "Scatta foto" e "Libreria foto". Se in Info.plist manca
 // la frase d'uso della fotocamera, al primo tocco su "Scatta foto" iOS
