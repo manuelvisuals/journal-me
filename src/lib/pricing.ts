@@ -1,13 +1,16 @@
 /**
  * Il prezzo del premium, in UN posto solo (SPEC-v2 §10.1).
- * Deciso da Manuel il 19 ago 2026: 4,99 EUR al mese.
- * Il prezzo VERO lo detta Stripe (STRIPE_PRICE_ID): queste etichette sono
- * solo cio che l'utente legge — se cambia il price su Stripe vanno
- * cambiate anche qui.
+ * Deciso da Manuel il 19 ago 2026: 4,99 EUR al mese. Il 12 settembre 2026
+ * il prezzo di lancio scende a 0,99 EUR al mese: chi si abbona ora lo tiene
+ * finche resta abbonato (su App Store Connect, quando il prezzo salira, si
+ * sceglie "mantieni il prezzo per gli abbonati esistenti").
+ * Il prezzo VERO lo detta Apple (il prodotto in App Store Connect; dentro il
+ * guscio lo legge StoreKit, negozio-ios.ts): queste etichette sono solo cio
+ * che legge chi guarda dal web, dove non si compra — e vanno tenute uguali.
  */
 
 /** Solo la cifra, per i punti dove va in evidenza tipografica. */
-export const PREMIUM_PRICE_AMOUNT = "4,99 €";
+export const PREMIUM_PRICE_AMOUNT = "0,99 €";
 
 /** La cadenza, staccata dalla cifra per lo stesso motivo. */
 export const PREMIUM_PRICE_PERIOD = "al mese";
