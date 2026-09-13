@@ -2347,3 +2347,95 @@ summary:active {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* IL POPUP DI CONFERMA (13 settembre 2026; components/ui/conferma.tsx).
+   Uno per tutta l'app: qui il disegno, nel componente le regole. */
+.jm-conf-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: color-mix(in oklab, var(--color-ink) 28%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.jm-conf {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-lg, 16px);
+  padding: calc(24px * var(--jm-space));
+  box-shadow: 0 24px 60px color-mix(in oklab, var(--color-ink) 28%, transparent);
+}
+
+.jm-conf-titolo {
+  font-family: var(--font-serif);
+  font-size: calc(22px * var(--jm-ui-scale));
+  font-weight: 420;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.jm-conf-testo {
+  margin-top: calc(10px * var(--jm-space));
+  font-size: calc(13.5px * var(--jm-ui-scale));
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.jm-conf-testo b { color: var(--color-ink); font-weight: 600; }
+
+.jm-conf-campo {
+  margin-top: calc(14px * var(--jm-space));
+  width: 100%;
+  height: 38px;
+  border-radius: var(--jm-radius-sm, 8px);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+
+.jm-conf-campo::placeholder { color: var(--color-ink-faint); }
+
+.jm-conf-tasti {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: calc(20px * var(--jm-space));
+}
+
+.jm-conf-annulla,
+.jm-conf-azione {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--jm-radius-sm, 8px);
+  font-family: inherit;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.jm-conf-annulla {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.jm-conf-azione {
+  border: 0;
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.jm-conf-azione.pericolo { background: var(--color-danger); color: #fff; }
+.jm-conf-azione:disabled { opacity: 0.4; cursor: default; }

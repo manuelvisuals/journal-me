@@ -124,6 +124,22 @@ sb.utenti.set(TOKEN_ALTRO, { id: ID(2), email: "giulia.r@esempio.it" });
   await put(ID(5), "free");
   await put(ID(4), "free");
   pSara.plan = "premium"; pSara.plan_source = "apple"; pSara.current_period_end = iso(7 * GIORNO);
+  const del = (userId, token = TOKEN) => fetch(BASE + "/api/admin/iscritti", { method: "DELETE", headers: { authorization: "Bearer " + token, "content-type": "application/json" }, body: JSON.stringify({ userId }) });
+  check("7 DELETE da chi non e admin: 404", (await del(ID(6), TOKEN_ALTRO)).status === 404 && sb.accountAuth.some((u) => u.id === ID(6)));
+  check("6 DELETE di se stesso: 409", (await del(ADMIN)).status === 409 && sb.accountAuth.some((u) => u.id === ADMIN));
+}
+
+/* ------------ 1: /admin senza sessione: la porta, e niente guscio dell'app ------------ */
+{
+  const browser0 = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
+  const ctx0 = await browser0.newContext({ viewport: { width: 1440, height: 900 }, locale: "it-IT" });
+  const page0 = await ctx0.newPage();
+  await page0.goto(BASE + "/admin", { waitUntil: "domcontentloaded" });
+  await page0.locator(".jm-adm-porta").waitFor({ state: "visible", timeout: 20_000 });
+  check("1 senza sessione /admin mostra solo il marchio e 'Entra con il tuo account'", (await page0.locator(".jm-adm-porta a").count()) === 1 && /Entra con il tuo account/.test(await page0.locator(".jm-adm-porta").innerText()));
+  check("1 /admin e fuori dal guscio dell'app: niente rail, niente splash, niente lucchetto", (await page0.locator(".jm-rail-l, .jm-splash, .jm-dock-wrap, .jm-lock").count()) === 0);
+  await ctx0.close();
+  await browser0.close();
 }
 
 /* ------------ la schermata ------------ */
@@ -156,6 +172,7 @@ await nav.waitFor({ state: "visible", timeout: 30_000 });
 await nav.getByRole("button", { name: /Iscritti/ }).click();
 await page.locator(".jm-adm-isc-tbl .jm-adm-isc-tr:not(.head)").first().waitFor({ state: "visible", timeout: 20_000 });
 
+check("1 anche da admin: nessuna rail dell'app attorno al pannello", (await page.locator(".jm-rail-l, .jm-dock-wrap").count()) === 0);
 const navTesto = (await nav.innerText()).replace(/\s+/g, " ");
 check("1 la voce 'Iscritti' e nella rail col numero 6", /Iscritti\s*6/.test(navTesto), navTesto);
 
@@ -194,21 +211,49 @@ const isp = page.locator(".jm-adm-isc-isp");
 await isp.waitFor({ state: "visible", timeout: 5_000 });
 const ispTesto = (await isp.innerText()).replace(/\s+/g, " ");
 check("6 l'ispettore di Giulia: email, 11 giornate, cassaforte chiusa, da ospite, Apple", /giulia\.r@esempio\.it/.test(ispTesto) && /\b11\b/.test(ispTesto) && /chiusa/.test(ispTesto) && /si, dal/.test(ispTesto) && /Production/.test(ispTesto), ispTesto.slice(0, 200));
-check("6 per chi paga con Apple il segmented e spento", await isp.locator(".jm-adm-isc-seg2 button").first().isDisabled() && /App Store/.test(ispTesto));
+check("6 per chi paga con Apple non c'e 'Modifica' e non c'e nessuna frase di spiegazione", (await isp.getByRole("button", { name: "Modifica" }).count()) === 0 && !/App Store|non si tocca|sovrascrive/.test(ispTesto), ispTesto.slice(0, 200));
+check("6 nell'ispettore niente va a capo (ogni riga e alta 34)", await isp.locator(".r").evaluateAll((rs) => rs.every((r) => r.getBoundingClientRect().height <= 35)));
 
 await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "luca.p@esempio.it" }).click();
-await isp.getByRole("radio", { name: "Premium" }).click();
+check("6 luca: 'Modifica' c'e, la tendina no", (await isp.getByRole("button", { name: "Modifica" }).count()) === 1 && (await isp.locator("select").count()) === 0);
+await isp.getByRole("button", { name: "Modifica" }).click();
+await isp.locator("select").selectOption("premium");
+const pop = page.locator(".jm-conf");
+await pop.waitFor({ state: "visible", timeout: 5_000 });
+check("6 scegliere Premium apre il popup di conferma con la domanda e l'azione col nome vero", /Passare a Premium\?/.test(await pop.innerText()) && (await pop.getByRole("button", { name: "Passa a Premium" }).count()) === 1, (await pop.innerText()).replace(/\s+/g, " ").slice(0, 120));
+await pop.getByRole("button", { name: "Annulla" }).click();
+await page.waitForTimeout(500);
+check("6 'Annulla' non cambia niente sul server", !sb.tab("profiles").some((p) => p.user_id === ID(5) && p.plan === "premium"));
+await isp.getByRole("button", { name: "Modifica" }).click();
+await isp.locator("select").selectOption("premium");
+await pop.waitFor({ state: "visible", timeout: 5_000 });
+await pop.getByRole("button", { name: "Passa a Premium" }).click();
 await page.waitForTimeout(1200);
 const pLuca = sb.tab("profiles").find((p) => p.user_id === ID(5));
-check("6 dall'ispettore: luca diventa premium a mano sul server", pLuca?.plan === "premium" && pLuca?.plan_source === "manual", JSON.stringify(pLuca));
+check("6 confermato: luca diventa premium a mano sul server", pLuca?.plan === "premium" && pLuca?.plan_source === "manual", JSON.stringify(pLuca));
 const rigaLuca = page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "luca.p@esempio.it" });
 const rigaLucaTesto = (await rigaLuca.innerText()).replace(/\s+/g, " ");
 check("6 la riga mostra Premium, a mano, senza ricaricare", /Premium/i.test(rigaLucaTesto) && /a mano/.test(rigaLucaTesto), rigaLucaTesto);
 const numeriDopo = await page.locator(".jm-adm-isc-box .n").allInnerTexts();
 check("6 il numero dei premium sale a 4", /^4/.test(numeriDopo[1]), numeriDopo[1]);
-await isp.getByRole("radio", { name: "Gratis" }).click();
-await page.waitForTimeout(1200);
-check("6 e torna gratis", sb.tab("profiles").find((p) => p.user_id === ID(5))?.plan === "free");
+check("6 l'ispettore dice 'Premium' e 'a mano', e la tendina e sparita", /Premium/.test(await isp.innerText()) && /a mano/.test(await isp.innerText()) && (await isp.locator("select").count()) === 0);
+check("6 Esc chiude il popup come Annulla", await (async () => { await isp.getByRole("button", { name: "Modifica" }).click(); await isp.locator("select").selectOption("free"); await pop.waitFor({ state: "visible", timeout: 5_000 }); await page.keyboard.press("Escape"); await page.waitForTimeout(300); return (await pop.count()) === 0 && sb.tab("profiles").find((p) => p.user_id === ID(5))?.plan === "premium"; })());
+
+// Eliminare un account: il popup pretende l'email scritta.
+await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "sara.b@esempio.it" }).click();
+await isp.getByRole("button", { name: /Elimina l'account/ }).click();
+await pop.waitFor({ state: "visible", timeout: 5_000 });
+check("6 'Elimina' apre il popup rosso col tasto spento finche non scrivi l'email", (await pop.locator(".jm-conf-azione.pericolo").count()) === 1 && (await pop.getByRole("button", { name: "Elimina" }).isDisabled()));
+await pop.locator(".jm-conf-campo").fill("sara.b@esempio.it");
+check("6 scritta l'email, il tasto si accende", !(await pop.getByRole("button", { name: "Elimina" }).isDisabled()));
+await pop.getByRole("button", { name: "Elimina" }).click();
+await page.waitForTimeout(1500);
+check("6 il server ha eliminato Sara (auth + profilo), i braccialetti restano", !sb.accountAuth.some((u) => u.id === ID(4)) && !sb.tab("profiles").some((p) => p.user_id === ID(4)), String(sb.accountAuth.length));
+check("6 la riga sparisce e il numero degli account scende a 5", (await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "sara.b@esempio.it" }).count()) === 0 && /^5/.test((await page.locator(".jm-adm-isc-box .n").allInnerTexts())[0]));
+await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "Manuel" }).click();
+check("6 l'admin non puo eliminare se stesso (tasto spento)", await isp.getByRole("button", { name: /Elimina l'account/ }).isDisabled());
+// Rimetto luca gratis per i controlli dopo.
+await fetch(BASE + "/api/admin/iscritti", { method: "PUT", headers: { authorization: "Bearer " + TOKEN, "content-type": "application/json" }, body: JSON.stringify({ userId: ID(5), piano: "free" }) });
 
 // La scheda Ospiti.
 await page.getByRole("tab", { name: /Ospiti/ }).click();

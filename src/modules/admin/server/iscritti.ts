@@ -24,6 +24,12 @@ import { pianoEffettivo } from "@/lib/piano";
  * profiles, come la SQL che Manuel ha gia usato per il revisore. Se il
  * piano e di Apple si rifiuta (409): lo governa l'App Store, e al primo
  * avviso il server lo riscriverebbe comunque; meglio dirlo che fingere.
+ *
+ * ELIMINARE UN ACCOUNT (DELETE, 13 settembre sera). auth.admin.deleteUser:
+ * le tabelle sono tutte `on delete cascade` su auth.users (profiles,
+ * entries, cassettine, cassaforte, foto, ai_usage...), i braccialetti
+ * restano con user_id a null (e la memoria della quota). L'admin non puo
+ * eliminare se stesso da qui: sarebbe chiudere la porta da dentro.
  */
 
 const PAGINA = 1000;
@@ -259,4 +265,30 @@ export async function PUT(req: NextRequest) {
     piano: pianoEffettivo(data ?? null),
     fonte: (data as { plan_source?: string | null } | null)?.plan_source ?? null,
   });
+}
+
+export async function DELETE(req: NextRequest) {
+  const gate = await requireAdmin(req);
+  if (gate instanceof NextResponse) return gate;
+
+  const supabase = getAdminClient();
+  if (!supabase) {
+    return NextResponse.json({ error: "Supabase non configurato" }, { status: 500 });
+  }
+
+  let body: { userId?: unknown };
+  try {
+    body = (await req.json()) as { userId?: unknown };
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  const userId = typeof body.userId === "string" ? body.userId : "";
+  if (!userId) return NextResponse.json({ error: "userId e obbligatorio" }, { status: 400 });
+  if (userId === gate.userId) {
+    return NextResponse.json({ error: "se-stesso", messaggio: "Non puoi eliminare il tuo account da qui." }, { status: 409 });
+  }
+
+  const { error } = await supabase.auth.admin.deleteUser(userId);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }

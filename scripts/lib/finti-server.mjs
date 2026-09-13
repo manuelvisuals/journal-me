@@ -190,6 +190,21 @@ export class SupabaseFintoServer {
       const fetta = tutti.slice((page - 1) * perPage, page * perPage);
       return rispondi(200, { users: fetta, aud: "authenticated" }, { "x-total-count": String(tutti.length) });
     }
+    // auth.admin.deleteUser (pannello Iscritti, 13 settembre sera): via
+    // l'account e, come le cascade vere, le sue righe; i braccialetti
+    // restano con user_id a null.
+    const mDel = /^\/auth\/v1\/admin\/users\/([^/]+)$/.exec(url.pathname);
+    if (mDel && req.method === "DELETE") {
+      const id = mDel[1];
+      const prima = (this.accountAuth ?? []).length;
+      this.accountAuth = (this.accountAuth ?? []).filter((u) => u.id !== id);
+      if (this.accountAuth.length === prima) return rispondi(404, { message: "User not found" });
+      for (const nome of ["profiles", "entries", "cassettine", "cassaforte_utente", "ai_usage"]) {
+        this.tabelle[nome] = this.tab(nome).filter((r) => r.user_id !== id);
+      }
+      for (const b of this.tab("braccialetti")) if (b.user_id === id) b.user_id = null;
+      return rispondi(200, {});
+    }
     if (url.pathname.startsWith("/auth/v1/user")) {
       const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
       const u = this.utenti.get(token);

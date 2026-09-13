@@ -89,7 +89,19 @@ export function AdminClient() {
 
   // La pagina di chi non e admin: niente. Anche mentre carica: comparire e
   // poi sparire direbbe comunque che qui c'era qualcosa.
-  if (negatoSenzaCloud || stato !== "pronto") return null;
+  // Senza sessione cloud (dal 13 settembre /admin e fuori dal guscio
+  // dell'app, quindi nessun cancello lo porta al login): l'invito a
+  // entrare, e basta. Chi e entrato e non e admin continua a non vedere
+  // niente: la porta non dice a nessuno che esiste.
+  if (negatoSenzaCloud) {
+    return (
+      <div className="jm-adm-porta">
+        <div className="jm-adm-brand"><Marchio /></div>
+        <a className="jm-adm-btn" href="/login">{t("Entra con il tuo account")}</a>
+      </div>
+    );
+  }
+  if (stato !== "pronto") return null;
 
   const vai = (v: Voce) => (voce === v ? "jm-adm-nav-on" : "jm-adm-nav-off vivo");
 
