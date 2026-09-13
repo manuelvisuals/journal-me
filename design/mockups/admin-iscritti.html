@@ -153,6 +153,44 @@ td.no{color:var(--no)}
 .desk .pop .tasti .p.d{background:var(--danger)}
 .desk .pop .tasti .p.off{opacity:.4}
 
+/* ---- 07: l'imbuto degli ospiti ---- */
+.desk .imbuto{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 16px;margin-top:24px}
+.desk .imbuto .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;line-height:1}
+.desk .imbuto .passi{display:grid;grid-template-columns:200px 1fr 56px 64px;gap:0 16px;align-items:center;margin-top:14px}
+.desk .imbuto .passo{display:contents}
+.desk .imbuto .passo > *{height:40px;display:flex;align-items:center;border-top:1px solid var(--line)}
+.desk .imbuto .passo:first-child > *{border-top:none}
+.desk .imbuto .nome{font-size:13px;color:var(--ink);white-space:nowrap}
+.desk .imbuto .barra{position:relative}
+.desk .imbuto .barra i{display:block;height:18px;border-radius:4px;background:var(--accent);opacity:.9}
+.desk .imbuto .barra i.p2{opacity:.72}.desk .imbuto .barra i.p3{opacity:.54}.desk .imbuto .barra i.p4{opacity:.4}.desk .imbuto .barra i.p5{opacity:.28}
+.desk .imbuto .n{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;justify-content:flex-end;font-family:var(--serif);font-size:20px}
+.desk .imbuto .pc{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums;justify-content:flex-end}
+.desk .imbuto .pc b{color:var(--ink-muted);font-weight:500}
+
+/* ---- 07: il percorso, come una linea della metropolitana ---- */
+.desk .tr.met{grid-template-columns:minmax(0,1.2fr) 72px 88px minmax(320px,2.2fr)}
+.desk .metro{display:flex;align-items:center;width:100%;position:relative;height:40px;padding-right:6px;box-sizing:border-box}
+.desk .metro .st{position:relative;display:flex;flex-direction:column;align-items:center;flex:none;width:0}
+.desk .metro .st i{width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--accent);box-sizing:border-box;flex:none}
+.desk .metro .st.vuota i{background:var(--surface);border-color:#C9BFB5}
+.desk .metro .st.grigia i{background:#C9BFB5;border-color:#C9BFB5}
+.desk .metro .st.mano i{background:var(--surface);border-color:var(--accent);border-width:3px}
+.desk .metro .st span{position:absolute;top:13px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;color:var(--ink-muted);letter-spacing:.02em}
+.desk .metro .st:first-child span{left:0;transform:none}
+.desk .metro .st:last-child span{left:auto;right:0;transform:none}
+.desk .metro .st.vuota span{color:var(--ink-faint)}
+.desk .metro .st span.forte{color:var(--ink);font-weight:600}
+.desk .metro .seg{flex:1;height:2px;background:var(--accent)}
+.desk .metro .seg.tratt{background:none;border-top:2px dashed #C9BFB5;height:0}
+.desk .metro .seg.grigio{background:#C9BFB5}
+.desk .metro-grande{height:64px;margin-top:14px}
+.desk .metro-grande .st i{width:14px;height:14px}
+.desk .metro-grande .st span{top:18px;font-size:12px}
+.desk .metro-grande .seg{height:3px}
+.desk .metro-grande .seg.tratt{border-top-width:3px;height:0}
+.desk .tr.met .num{overflow:visible}
+
 .ann{position:absolute;background:#FBBF24;color:#1a1a1a;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.3;max-width:240px}
 
 .q{max-width:760px;margin:0 auto;background:var(--pg-2);border:1px solid var(--pg-line);border-radius:16px;padding:22px 24px}
@@ -379,8 +417,7 @@ td.no{color:var(--no)}
     </div>
   </div>
   <p class="under">Tre stati dello stesso ispettore: il tuo account (Apple scaduto: si puo cambiare a mano), Giulia (Apple attivo: "Modifica" non c'e, lo dice il perche),
-    e spamming (con "Modifica" premuto: compare la tendina; scegliere "Gratis" apre il popup qui sotto).</p>
-
+    e spamming (con "Modifica" premuto: compare la tendina; scegliere "Gratis" apre il popup qui 
   <div class="row" style="margin-top:28px">
     <div class="desk" style="min-height:0;height:340px;width:520px">
       <div class="velo">
@@ -407,11 +444,86 @@ td.no{color:var(--no)}
     scrivere qualcosa, e il tasto resta spento finche non torna. Esc e il velo chiudono come Annulla.</p>
 
   <div class="divider"></div>
-  <p class="label">06 . Una domanda sola</p>
+  <p class="label">07 . Il percorso di ognuno, come una linea della metropolitana</p>
+  <p class="caption">Richiesta di Manuel: "vorrei capire esattamente a che punto sono", con i pallini delle tappe, il tratto pieno fra due tappe raggiunte e
+    tratteggiato verso la prossima che manca. Ogni riga della scheda Ospiti ha la sua linea, al posto delle colonne Regalo ed Esito. Le tappe sono sempre le
+    stesse quattro — <b>Prova</b> (ha aperto l'app e scritto), <b>Prova completata</b> (ha usato tutte le giornate in regalo), <b>Account</b>, <b>Premium</b> —
+    e l'ultima tappa dice come e finita: Premium, Premium a mano, oppure <b>Inattivo</b> in grigio quando la linea si e fermata (niente da 30 giorni).</p>
+  <div class="row">
+    <div class="desk" style="min-height:0;height:560px">
+      <aside>
+        <div class="brand"><b>day</b>alogue</div>
+        <div class="brand-sub">Admin</div>
+        <nav>
+          <span>Aree <em>6</em></span>
+          <span class="on">Iscritti <em>27</em></span>
+          <span>Sito</span>
+          <span>Messaggio di benvenuto</span>
+          <span>Regalo AI</span>
+          <span>Recensione</span>
+          <span class="off">Obiettivi di default</span>
+        </nav>
+        <div class="who"><b>madh52@gmail.com</b>l'unico che entra qui</div>
+      </aside>
+      <main>
+        <div class="testa">
+          <h1>Iscritti</h1>
+          <div class="seg"><span>Account<em>27</em></span><span class="on">Ospiti<em>61</em></span></div>
+          <div class="cerca">&#128269; Cerca</div>
+        </div>
+        <div class="numeri">
+          <div class="box"><div class="k">In prova</div><div class="n">36<small>hanno ancora giornate in regalo</small></div></div>
+          <div class="box"><div class="k">Prova completata</div><div class="n">19<small>senza account</small></div></div>
+          <div class="box"><div class="k">Con account</div><div class="n">7<small>di cui 2 Premium</small></div></div>
+          <div class="box"><div class="k">Inattivi</div><div class="n">14<small>niente da 30 giorni</small></div></div>
+        </div>
+        <div class="corpo" style="margin-top:24px">
+          <div class="tbl">
+            <div class="tr head met"><div>Ospite</div><div>Dal</div><div>Ultimo uso</div><div>Percorso</div></div>
+            <div class="tr met"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">oggi</div><div><div class="metro"><div class="st piena"><i></i><span>Prova</span></div><div class="seg "></div><div class="st piena"><i></i><span>Prova completata</span></div><div class="seg "></div><div class="st piena"><i></i><span>Account</span></div><div class="seg "></div><div class="st piena"><i></i><span class="forte">Premium</span></div></div></div></div>
+            <div class="tr met"><div class="chi"><b>e5d8&hellip;41</b><span>browser</span></div><div class="num">9 ago</div><div class="num">12 ago</div><div><div class="metro"><div class="st piena"><i></i><span>Prova</span></div><div class="seg "></div><div class="st piena"><i></i><span>Prova completata</span></div><div class="seg grigio"></div><div class="st grigia"><i></i><span class="forte">Inattivo</span></div></div></div></div>
+            <div class="tr met"><div class="chi"><b>b310&hellip;77</b><span>iPhone</span></div><div class="num">23 ago</div><div class="num">ieri</div><div><div class="metro"><div class="st piena"><i></i><span>Prova</span></div><div class="seg "></div><div class="st piena"><i></i><span>Prova completata</span></div><div class="seg "></div><div class="st piena"><i></i><span>Account</span></div><div class="seg "></div><div class="st mano"><i></i><span class="forte">Premium a mano</span></div></div></div></div>
+            <div class="tr met"><div class="chi"><b>a91f&hellip;c3</b><span>iPhone</span></div><div class="num">11 set</div><div class="num">oggi</div><div><div class="metro"><div class="st piena"><i></i><span>Prova</span></div><div class="seg tratt"></div><div class="st vuota"><i></i><span>Prova completata</span></div><div class="seg tratt"></div><div class="st vuota"><i></i><span>Account</span></div><div class="seg tratt"></div><div class="st vuota"><i></i><span>Premium</span></div></div></div></div>
+            <div class="tr met"><div class="chi"><b>0b77&hellip;d0</b><span>iPhone</span></div><div class="num">8 set</div><div class="num">8 set</div><div><div class="metro"><div class="st piena"><i></i><span>Prova</span></div><div class="seg "></div><div class="st piena"><i></i><span>Prova completata</span></div><div class="seg tratt"></div><div class="st vuota"><i></i><span>Account</span></div><div class="seg tratt"></div><div class="st vuota"><i></i><span>Premium</span></div></div></div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <p class="under">Le cinque righe sono i cinque casi possibili: arrivato a Premium; fermo dopo la prova (grigio: inattivo); Premium messo a mano (pallino
+    con l'anello, perche non l'ha pagato); appena arrivato, ancora in prova (tratteggio verso tutto il resto); prova completata e niente altro (tratteggio
+    verso Account). Una data sotto ogni tappa la riservo all'ispettore, qui sotto, dove c'e spazio.</p>
+
+  <div class="row" style="margin-top:28px">
+    <div class="desk" style="min-height:0;height:250px;width:720px">
+      <main style="padding:24px 32px">
+        <div class="k" style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650">Percorso di Giulia R.</div>
+        <div class="metro metro-grande"><div class="st piena"><i></i><span>Prova, 30 ago</span></div><div class="seg "></div><div class="st piena"><i></i><span>Prova completata, 2 set</span></div><div class="seg "></div><div class="st piena"><i></i><span>Account, 2 set</span></div><div class="seg tratt"></div><div class="st vuota"><i></i><span>Premium</span></div></div>
+      </main>
+    </div>
+  </div>
+  <p class="under">Nell'ispettore la stessa linea, piu grande e con le date sotto le tappe raggiunte: e la riga "Da ospite" di prima, ma che si legge in un colpo.
+    Vale anche per gli account: chi si e iscritto senza mai essere ospite parte direttamente da "Account".</p>
+ uso</div><div>Regalo</div><div>Esito</div></div>
+            <div class="tr osp"><div class="chi"><b>a91f&hellip;c3</b><span>iPhone</span></div><div class="num">11 set</div><div class="num">oggi</div><div class="num">6 di 10</div><div class="num">in corso</div></div>
+            <div class="tr osp"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 di 10</div><div class="num">con account giulia.r@esempio.it</div></div>
+            <div class="tr osp"><div class="chi"><b>e5d8&hellip;41</b><span>browser</span></div><div class="num">9 set</div><div class="num">9 set</div><div class="num">10 di 10</div><div class="num">finito, senza account</div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <p class="under">La percentuale e sempre <b>sul passo prima</b> (79% di chi ha aperto ha scritto; 40% di chi ha scritto ha finito il regalo), perche e la domanda utile:
+    dove si perde la gente. La barra invece e in proporzione al primo passo, cosi la forma dell'imbuto si vede a colpo d'occhio. Un solo colore, che sbiadisce
+    a ogni passo; niente frasi dentro: la riga in alto dice solo il periodo. "Hanno creato un account" conta i braccialetti che poi hanno un'email; "Premium"
+    quelli fra questi con un piano attivo. Il periodo (30 giorni) e quello dei numeri di oggi; volendo diventa un selettore (30 / 90 / da sempre).</p>
+
+  <div class="divider"></div>
+  <p class="label">08 . Una domanda sola</p>
   <div class="q">
-    <h4>Costruisco la terza versione (ispettore, Modifica, popup, azioni) e stacco /admin dall'app?</h4>
-    <div class="o"><i>1</i><div><b>Si, cosi.</b></div></div>
-    <div class="o"><i>2</i><div><b>Si, ma senza "Manda un codice di accesso"</b> (e l'unica azione in piu che ho proposto io).</div></div>
+    <h4>Costruisco il percorso a linea di metropolitana (in lista e nell'ispettore)?</h4>
+    <div class="o"><i>1</i><div><b>Si, cosi:</b> nella lista degli ospiti e nell'ispettore, con i quattro numeri in cima rifatti sulle tappe.</div></div>
+    <div class="o"><i>2</i><div><b>Solo nell'ispettore</b>, la lista resta com'e.</div></div>
     <div class="o"><i>3</i><div><b>Cambia qualcosa prima.</b> Dimmi cosa, in chat.</div></div>
   </div>
 
