@@ -30,72 +30,95 @@ th,td{border-top:1px solid var(--pg-line);padding:11px 12px;text-align:left;vert
 th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
 td.no{color:var(--no)}
 
-/* ---------------- il desktop, tema minimal chiaro ---------------- */
-.desk{width:1180px;max-width:100%;min-height:740px;border-radius:18px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;
-  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
-  background:var(--bg);color:var(--ink);font-family:var(--font)}
-.desk aside{width:240px;flex:none;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column}
-.desk .brand{font-family:var(--serif);font-size:22px;color:var(--ink);letter-spacing:-.01em}
+/* ---------------- il desktop, tema minimal chiaro ----------------
+   Ritmo a 8 punti: 32 (bordo main), 24 (fra i blocchi), 16 (dentro), 8/4 (fini).
+   Una sola famiglia di raggi: 14 (contenitori), 8 (controlli). Una sola
+   scala di testo: 30 titolo, 28 numeri, 13 corpo, 12 secondario, 10.5 etichette. */
+.desk{width:1280px;max-width:100%;min-height:740px;border-radius:18px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.09);--accent:#A6512F;--danger:#B3261E;--sel:#EFE7DD;
+  background:var(--bg);color:var(--ink);font-family:var(--font);font-size:13px;line-height:1.4}
+.desk aside{width:240px;flex:none;border-right:1px solid var(--line);padding:32px 16px 24px;display:flex;flex-direction:column}
+.desk .brand{font-family:var(--serif);font-size:22px;color:var(--ink);letter-spacing:-.01em;text-align:center;line-height:1}
 .desk .brand b{font-weight:600}
-.desk .brand-sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:650;margin:4px 0 26px}
+.desk .brand-sub{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:650;margin:8px 0 32px;text-align:center}
 .desk nav{display:flex;flex-direction:column;gap:2px}
-.desk nav span{padding:10px 12px;border-radius:10px;font-size:14px;color:var(--ink-muted);display:flex;justify-content:space-between}
-.desk nav span em{font-style:normal;color:var(--ink-faint);font-size:12px}
-.desk nav span.on{background:var(--surface);color:var(--ink);font-weight:600;border:1px solid var(--line)}
+.desk nav span{height:36px;padding:0 12px;border-radius:8px;font-size:13.5px;color:var(--ink-muted);display:flex;align-items:center;justify-content:space-between}
+.desk nav span em{font-style:normal;color:var(--ink-faint);font-size:12px;font-variant-numeric:tabular-nums}
+.desk nav span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.06)}
 .desk nav span.off{color:#B9AFA6}
-.desk .who{margin-top:auto;font-size:12px;color:var(--ink-faint);line-height:1.5}
-.desk .who b{display:block;color:var(--ink);font-weight:600}
-.desk main{flex:1;padding:30px 36px;min-width:0;display:flex;flex-direction:column}
+.desk .who{margin-top:auto;padding:0 12px;font-size:11.5px;color:var(--ink-faint);line-height:1.5}
+.desk .who b{display:block;color:var(--ink);font-weight:600;font-size:12.5px}
+.desk main{flex:1;padding:32px;min-width:0;display:flex;flex-direction:column}
 
-.desk .testa{display:flex;align-items:center;gap:16px}
-.desk h1{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.015em;color:var(--ink)}
-.desk .seg{display:inline-flex;background:rgba(0,0,0,.06);border-radius:9px;padding:2px;margin-left:8px}
-.desk .seg span{padding:5px 14px;border-radius:7px;font-size:13px;color:var(--ink-muted);cursor:pointer}
+/* testata: 36px di altezza, tutto centrato su quella riga */
+.desk .testa{display:flex;align-items:center;gap:16px;height:36px}
+.desk h1{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.015em;color:var(--ink);line-height:1}
+.desk .seg{display:inline-flex;background:rgba(0,0,0,.06);border-radius:8px;padding:2px;height:32px}
+.desk .seg span{padding:0 14px;border-radius:6px;font-size:13px;color:var(--ink-muted);cursor:pointer;display:flex;align-items:center}
 .desk .seg span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
-.desk .seg span em{font-style:normal;color:var(--ink-faint);font-size:11.5px;margin-left:5px}
-.desk .cerca{margin-left:auto;height:32px;width:220px;border-radius:8px;background:rgba(0,0,0,.06);display:flex;align-items:center;padding:0 10px;font-size:13px;color:var(--ink-faint);gap:8px}
+.desk .seg span em{font-style:normal;color:var(--ink-faint);font-size:11.5px;margin-left:6px;font-variant-numeric:tabular-nums}
+.desk .cerca{margin-left:auto;height:32px;width:300px;border-radius:8px;background:rgba(0,0,0,.06);display:flex;align-items:center;padding:0 12px;font-size:13px;color:var(--ink-faint);gap:8px}
 
-.desk .numeri{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
-.desk .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-.desk .box .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
-.desk .box .n{font-family:var(--serif);font-size:30px;color:var(--ink);margin-top:4px;line-height:1.1;letter-spacing:-.02em}
-.desk .box .n small{font-family:var(--font);font-size:12px;color:var(--ink-faint);margin-left:6px;letter-spacing:0;white-space:nowrap}
+/* i numeri: quattro riquadri uguali, numero grande e didascalia sotto */
+.desk .numeri{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+.desk .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-height:96px}
+.desk .box .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;line-height:1}
+.desk .box .n{font-family:var(--serif);font-size:28px;color:var(--ink);margin-top:10px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.desk .box .n small{display:block;font-family:var(--font);font-size:12px;color:var(--ink-faint);margin-top:6px;letter-spacing:0;line-height:1.3}
 
-.desk .corpo{display:flex;gap:14px;margin-top:18px;flex:1;min-height:0}
-.desk .tbl{flex:1;min-width:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);align-self:flex-start}
-.desk .tr{display:grid;grid-template-columns:2fr 1fr 1.1fr 1.3fr .7fr;gap:12px;align-items:center;padding:11px 16px;border-top:1px solid var(--line);font-size:13px;cursor:pointer}
-.desk .tr.osp{grid-template-columns:1.6fr 1fr 1fr 1fr 1.4fr}
+/* corpo: elenco + ispettore, stessa linea in cima */
+.desk .corpo{display:flex;gap:12px;margin-top:24px;align-items:flex-start}
+.desk .tbl{flex:1;min-width:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.desk .tr{display:grid;grid-template-columns:minmax(0,2.3fr) 72px 88px minmax(0,1.5fr) 64px;gap:16px;align-items:center;height:56px;padding:0 16px;border-top:1px solid var(--line);cursor:pointer}
+.desk .tr.osp{grid-template-columns:minmax(0,1.4fr) 72px 88px 72px minmax(0,1.8fr)}
 .desk .tr:first-child{border-top:none}
-.desk .tr.head{background:var(--bg);cursor:default}
-.desk .tr.head div{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.desk .tr.head{background:var(--bg);height:40px;cursor:default}
+.desk .tr.head div{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;white-space:nowrap}
 .desk .tr:hover:not(.head){background:#F5F0E9}
-.desk .tr.sel{background:#EFE7DD}
-.desk .chi b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
-.desk .chi span{color:var(--ink-faint);font-size:12px}
-.desk .num{font-variant-numeric:tabular-nums;color:var(--ink-muted)}
+.desk .tr.sel{background:var(--sel)}
+.desk .chi{min-width:0}
+.desk .chi b{display:block;color:var(--ink);font-weight:600;font-size:13px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desk .chi span{display:block;color:var(--ink-faint);font-size:12px;line-height:1.3;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desk .num{font-variant-numeric:tabular-nums;color:var(--ink-muted);white-space:nowrap}
 .desk .num.r{text-align:right}
-.desk .pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-muted);white-space:nowrap}
+.desk .pill{display:inline-flex;align-items:center;gap:6px;height:20px;font-size:10.5px;font-weight:650;letter-spacing:.1em;text-transform:uppercase;padding:0 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-muted);white-space:nowrap;line-height:1}
 .desk .pill.prem{color:var(--accent);border-color:rgba(166,81,47,.45);background:rgba(166,81,47,.07)}
 .desk .pill.prova{color:#7A5A1F;border-color:rgba(122,90,31,.4);background:rgba(251,191,36,.10)}
 .desk .pill.scad{color:var(--danger);border-color:rgba(179,38,30,.35)}
-.desk .pill i{width:6px;height:6px;border-radius:50%;background:currentColor}
-.desk .fonte{display:block;font-size:11px;color:var(--ink-faint);margin-top:3px}
+.desk .pill i{width:5px;height:5px;border-radius:50%;background:currentColor}
+.desk .fonte{display:block;font-size:12px;color:var(--ink-faint);margin-top:4px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.desk .isp{width:300px;flex:none;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;align-self:flex-start}
-.desk .isp h2{font-family:var(--serif);font-size:21px;font-weight:420;color:var(--ink);letter-spacing:-.01em;line-height:1.2}
-.desk .isp .mail{font-size:12.5px;color:var(--ink-faint);margin-top:2px;word-break:break-all}
-.desk .isp .sez{border-top:1px solid var(--line);padding-top:12px}
-.desk .isp .kv{display:grid;grid-template-columns:96px 1fr;gap:5px 10px;font-size:12.5px}
-.desk .isp .kv b{color:var(--ink-faint);font-weight:600;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding-top:2px}
-.desk .isp .kv span{color:var(--ink);line-height:1.4}
-.desk .isp .piano{display:flex;flex-direction:column;gap:8px}
-.desk .isp .seg2{display:inline-flex;background:rgba(0,0,0,.06);border-radius:9px;padding:2px;align-self:flex-start}
-.desk .isp .seg2 span{padding:6px 14px;border-radius:7px;font-size:13px;color:var(--ink-muted)}
+.desk .isp{width:288px;flex:none;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:20px}
+.desk .isp h2{font-family:var(--serif);font-size:22px;font-weight:420;color:var(--ink);letter-spacing:-.01em;line-height:1.1}
+.desk .isp .mail{font-size:12px;color:var(--ink-faint);margin-top:4px;word-break:break-all}
+.desk .isp .sez{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+.desk .isp .kv{display:grid;grid-template-columns:1fr 1fr;gap:16px 12px}
+.desk .isp .kv.una{grid-template-columns:1fr}
+.desk .isp .kv b{display:block;color:var(--ink-faint);font-weight:650;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;line-height:1}
+.desk .isp .kv span{display:block;color:var(--ink);line-height:1.4;margin-top:6px;font-size:13px}
+.desk .isp .seg2{display:inline-flex;background:rgba(0,0,0,.06);border-radius:8px;padding:2px;height:32px;margin-top:10px}
+.desk .isp .seg2 span{padding:0 16px;border-radius:6px;font-size:13px;color:var(--ink-muted);display:flex;align-items:center}
 .desk .isp .seg2 span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .desk .isp .seg2.spento{opacity:.45}
-.desk .isp .nota{font-size:11.5px;color:var(--ink-faint);line-height:1.5}
-.desk .isp .vuoto{color:var(--ink-faint);font-size:13px;text-align:center;padding:40px 10px}
-.desk .pie{margin-top:12px;font-size:11.5px;color:var(--ink-faint)}
+.desk .isp .nota{font-size:12px;color:var(--ink-faint);line-height:1.45;margin-top:10px}
+.desk .isp .vuoto{color:var(--ink-faint);font-size:13px;text-align:center;padding:48px 8px 32px;line-height:1.5}
+.desk .pie{margin-top:16px;font-size:12px;color:var(--ink-faint)}
+
+/* la schermata Recensione */
+.desk .rec{max-width:640px}
+.desk .rec .numeri{grid-template-columns:1fr 1fr}
+.desk .rec .numeri.tre{grid-template-columns:1fr 1fr 1fr;margin-top:12px}
+.desk .rec .campo{display:flex;align-items:center;gap:10px;margin-top:10px;height:32px}
+.desk .rec .campo b{width:56px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+.desk .rec .campo span{font-size:13px;color:var(--ink-muted)}
+.desk .rec .seg2{display:inline-flex;background:rgba(0,0,0,.06);border-radius:8px;padding:2px;height:32px;margin-top:10px}
+.desk .rec .seg2 span{padding:0 16px;border-radius:6px;font-size:13px;color:var(--ink-muted);display:flex;align-items:center}
+.desk .rec .seg2 span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.desk .rec .nota{font-size:12px;color:var(--ink-faint);line-height:1.45;margin-top:10px}
+.desk .azioni{display:flex;gap:8px;margin-top:24px;align-items:center}
+.desk .azioni .s{height:36px;padding:0 16px;border-radius:8px;background:var(--ink);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center}
+.desk .azioni .g{height:36px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;display:flex;align-items:center}
+.desk .azioni .nota{margin-left:8px;font-size:12px;color:var(--ink-faint)}
 
 .ann{position:absolute;background:#FBBF24;color:#1a1a1a;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.3;max-width:240px}
 
@@ -141,17 +164,17 @@ td.no{color:var(--no)}
         </div>
 
         <div class="numeri">
-          <div class="box"><div class="k">Account</div><div class="n">27 <small>+4 in 7 giorni</small></div></div>
-          <div class="box"><div class="k">Premium</div><div class="n">6 <small>3 in prova</small></div></div>
-          <div class="box"><div class="k">Ospiti attivi</div><div class="n">48 <small>su 61, 30 giorni</small></div></div>
-          <div class="box"><div class="k">AI, settembre</div><div class="n">12,40 <small>EUR</small></div></div>
+          <div class="box"><div class="k">Account</div><div class="n">27<small>4 in piu questa settimana</small></div></div>
+          <div class="box"><div class="k">Premium</div><div class="n">6<small>di cui 3 in prova</small></div></div>
+          <div class="box"><div class="k">Ospiti attivi</div><div class="n">48<small>su 61, negli ultimi 30 giorni</small></div></div>
+          <div class="box"><div class="k">AI, settembre</div><div class="n">12,40<small>EUR, tutti gli utenti</small></div></div>
         </div>
 
         <div class="corpo">
           <div class="tbl" id="tbl-acc">
-            <div class="tr head"><div>Account</div><div>Iscritto</div><div>Ultimo accesso</div><div>Piano</div><div class="num r">Giornate</div></div>
-            <div class="tr" data-p="0"><div class="chi"><b>luca.p@esempio.it</b></div><div class="num">12 set</div><div class="num">mai</div><div><span class="pill"><i></i>Gratis</span></div><div class="num r">0</div></div>
-            <div class="tr" data-p="1"><div class="chi"><b>appreview@dayalogue.com</b></div><div class="num">11 set</div><div class="num">13 set</div><div><span class="pill"><i></i>Gratis</span></div><div class="num r">2</div></div>
+            <div class="tr head"><div>Account</div><div>Iscritto</div><div>Accesso</div><div>Piano</div><div class="num r">Giornate</div></div>
+            <div class="tr" data-p="0"><div class="chi"><b>luca.p@esempio.it</b><span>senza nome</span></div><div class="num">12 set</div><div class="num">mai</div><div><span class="pill"><i></i>Gratis</span></div><div class="num r">0</div></div>
+            <div class="tr" data-p="1"><div class="chi"><b>appreview@dayalogue.com</b><span>senza nome</span></div><div class="num">11 set</div><div class="num">13 set</div><div><span class="pill"><i></i>Gratis</span></div><div class="num r">2</div></div>
             <div class="tr" data-p="2"><div class="chi"><b>Marco T.</b><span>marco.t@esempio.it</span></div><div class="num">10 set</div><div class="num">ieri</div><div><span class="pill prova"><i></i>Prova</span><span class="fonte">Apple, fino al 24 set</span></div><div class="num r">3</div></div>
             <div class="tr sel" data-p="3"><div class="chi"><b>Giulia R.</b><span>giulia.r@esempio.it</span></div><div class="num">2 set</div><div class="num">oggi</div><div><span class="pill prem"><i></i>Premium</span><span class="fonte">Apple, rinnova il 2 ott</span></div><div class="num r">11</div></div>
             <div class="tr" data-p="4"><div class="chi"><b>Sara B.</b><span>sara.b@esempio.it</span></div><div class="num">28 ago</div><div class="num">6 set</div><div><span class="pill scad"><i></i>Scaduto</span><span class="fonte">Apple, dal 6 set</span></div><div class="num r">9</div></div>
@@ -161,7 +184,7 @@ td.no{color:var(--no)}
           <div class="tbl" id="tbl-osp" style="display:none">
             <div class="tr head osp"><div>Ospite</div><div>Dal</div><div>Ultimo uso</div><div>Regalo</div><div>Esito</div></div>
             <div class="tr osp"><div class="chi"><b>a91f&hellip;c3</b><span>iPhone</span></div><div class="num">11 set</div><div class="num">oggi</div><div class="num">6 di 10</div><div class="num">in corso</div></div>
-            <div class="tr osp"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 di 10</div><div class="num">account: giulia.r@&hellip;</div></div>
+            <div class="tr osp"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 di 10</div><div class="num">account: giulia.r@esempio.it</div></div>
             <div class="tr osp"><div class="chi"><b>e5d8&hellip;41</b><span>browser</span></div><div class="num">9 set</div><div class="num">9 set</div><div class="num">10 di 10</div><div class="num">finito, senza account</div></div>
             <div class="tr osp"><div class="chi"><b>0b77&hellip;d0</b><span>iPhone, senza DeviceCheck</span></div><div class="num">8 set</div><div class="num">8 set</div><div class="num">1 di 10</div><div class="num">in corso</div></div>
           </div>
@@ -196,7 +219,7 @@ td.no{color:var(--no)}
   <p class="caption">Una voce nuova in /admin, "Recensione", spenta di fabbrica. Quando la accendi, <b>tutte le app gia installate</b> cominciano a chiedere la recensione
     senza aggiornamento: il pezzo nativo e gia nel binario, e un interruttore letto dal server. Apple decide se e quando mostrare davvero il foglio (al massimo tre volte l'anno per persona).</p>
   <div class="row">
-    <div class="desk" style="min-height:0;height:520px">
+    <div class="desk" style="min-height:0;height:560px">
       <aside>
         <div class="brand"><b>day</b>alogue</div>
         <div class="brand-sub">Admin</div>
@@ -213,26 +236,26 @@ td.no{color:var(--no)}
       </aside>
       <main>
         <div class="testa"><h1>Recensione</h1></div>
-        <div class="numeri" style="grid-template-columns:1fr 1fr;max-width:640px">
-          <div class="box">
-            <div class="k">La richiesta</div>
-            <div class="piano" style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
-              <div class="seg2" style="display:inline-flex;background:rgba(0,0,0,.06);border-radius:9px;padding:2px;align-self:flex-start"><span class="on" style="padding:6px 14px;border-radius:7px;font-size:13px;background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)">Spenta</span><span style="padding:6px 14px;font-size:13px;color:var(--ink-muted)">Accesa</span></div>
-              <div class="nota" style="font-size:11.5px;color:var(--ink-faint);line-height:1.5">Vale subito per tutte le app installate. Apple mostra il foglio al massimo tre volte l'anno per persona, e non dice se ha scritto la recensione.</div>
+        <div class="rec">
+          <div class="numeri">
+            <div class="box">
+              <div class="k">La richiesta</div>
+              <div class="seg2"><span class="on">Spenta</span><span>Accesa</span></div>
+              <div class="nota">Vale subito per tutte le app installate. Apple mostra il foglio al massimo tre volte l'anno per persona, e non dice se ha scritto la recensione.</div>
+            </div>
+            <div class="box">
+              <div class="k">Quando</div>
+              <div class="campo"><b>5</b><span>giornate salvate, poi si chiede</span></div>
+              <div class="nota">Nel momento in cui la giornata e appena salvata, mai all'avvio. Non piu di una richiesta ogni 120 giorni per telefono.</div>
             </div>
           </div>
-          <div class="box">
-            <div class="k">Quando</div>
-            <div class="n" style="font-size:22px;margin-top:8px">dopo <b style="font-weight:500">5</b> giornate <small>salvate</small></div>
-            <div class="nota" style="font-size:11.5px;color:var(--ink-faint);line-height:1.5;margin-top:6px">Al momento in cui la giornata e appena salvata, mai all'avvio. Non piu di una richiesta ogni 120 giorni per telefono.</div>
+          <div class="numeri tre">
+            <div class="box"><div class="k">Richieste</div><div class="n">0<small>da sempre</small></div></div>
+            <div class="box"><div class="k">Questo mese</div><div class="n">0<small>settembre</small></div></div>
+            <div class="box"><div class="k">Ultima</div><div class="n">&ndash;<small>nessuna richiesta</small></div></div>
           </div>
+          <div class="azioni"><div class="s">Salva</div><div class="g">Annulla</div><span class="nota">Nessuna modifica</span></div>
         </div>
-        <div class="numeri" style="grid-template-columns:1fr 1fr 1fr;max-width:640px;margin-top:12px">
-          <div class="box"><div class="k">Richieste</div><div class="n">0 <small>da sempre</small></div></div>
-          <div class="box"><div class="k">Questo mese</div><div class="n">0</div></div>
-          <div class="box"><div class="k">Ultima</div><div class="n" style="font-size:20px;margin-top:9px">mai</div></div>
-        </div>
-        <div class="pie" style="margin-top:22px">Salva . Annulla</div>
       </main>
     </div>
   </div>
@@ -258,12 +281,12 @@ td.no{color:var(--no)}
 <script>
 (function(){
   var P=[
-    {n:"luca.p@esempio.it",m:"",dal:"12 settembre 2026, 21:03",acc:"mai entrato",piano:"free",fonte:"",g:"0",ai:"0,00 EUR",osp:"no",cass:"aperta"},
-    {n:"appreview@dayalogue.com",m:"",dal:"11 settembre 2026",acc:"13 settembre, 03:15",piano:"free",fonte:"",g:"2",ai:"0,00 EUR",osp:"no",cass:"aperta"},
-    {n:"Marco T.",m:"marco.t@esempio.it",dal:"10 settembre 2026",acc:"ieri, 22:40",piano:"prova",fonte:"apple",apple:"Production, mensile. Prova fino al 24 set. Ultimo avviso: SUBSCRIBED",g:"3",ai:"0,08 EUR",osp:"no",cass:"chiusa dal 10 set"},
-    {n:"Giulia R.",m:"giulia.r@esempio.it",dal:"2 settembre 2026",acc:"oggi, 09:12",piano:"premium",fonte:"apple",apple:"Production, mensile. Rinnova il 2 ott. Ultimo avviso: DID_RENEW (2 set)",g:"11",ai:"0,31 EUR",osp:"si, dal 30 ago (4 giornate in regalo)",cass:"chiusa dal 2 set"},
-    {n:"Sara B.",m:"sara.b@esempio.it",dal:"28 agosto 2026",acc:"6 settembre",piano:"free",fonte:"apple",apple:"Production, mensile. Scaduto il 6 set. Ultimo avviso: EXPIRED",g:"9",ai:"0,00 EUR",osp:"no",cass:"chiusa dal 28 ago"},
-    {n:"Manuel",m:"madh52@gmail.com",dal:"12 agosto 2026",acc:"oggi, 13:20",piano:"premium",fonte:"manual",g:"31",ai:"1,92 EUR",osp:"no",cass:"chiusa dal 3 set"}
+    {n:"luca.p@esempio.it",m:"",dal:"12 set 2026, 21:03",acc:"mai",piano:"free",fonte:"",g:"0",ai:"0,00 EUR",osp:"no",cass:"aperta"},
+    {n:"appreview@dayalogue.com",m:"",dal:"11 set 2026",acc:"13 set, 03:15",piano:"free",fonte:"",g:"2",ai:"0,00 EUR",osp:"no",cass:"aperta"},
+    {n:"Marco T.",m:"marco.t@esempio.it",dal:"10 set 2026",acc:"ieri, 22:40",piano:"prova",fonte:"apple",apple:"Production, mensile. In prova fino al 24 set. Ultimo avviso SUBSCRIBED.",g:"3",ai:"0,08 EUR",osp:"no",cass:"chiusa dal 10 set"},
+    {n:"Giulia R.",m:"giulia.r@esempio.it",dal:"2 set 2026",acc:"oggi, 09:12",piano:"premium",fonte:"apple",apple:"Production, mensile. Rinnova il 2 ott. Ultimo avviso DID_RENEW, 2 set.",g:"11",ai:"0,31 EUR",osp:"si, dal 30 ago",cass:"chiusa dal 2 set"},
+    {n:"Sara B.",m:"sara.b@esempio.it",dal:"28 ago 2026",acc:"6 set",piano:"free",fonte:"apple",apple:"Production, mensile. Scaduto il 6 set. Ultimo avviso EXPIRED.",g:"9",ai:"0,00 EUR",osp:"no",cass:"chiusa dal 28 ago"},
+    {n:"Manuel",m:"madh52@gmail.com",dal:"12 ago 2026",acc:"oggi, 13:20",piano:"premium",fonte:"manual",g:"31",ai:"1,92 EUR",osp:"no",cass:"chiusa dal 3 set"}
   ];
   var isp=document.getElementById('isp');
   function seg(p){
@@ -275,9 +298,10 @@ td.no{color:var(--no)}
   }
   function mostra(i){
     var p=P[i];
-    var h='<div><h2>'+p.n+'</h2>'+(p.m?'<div class="mail">'+p.m+'</div>':'')+'</div>';
-    h+='<div class="sez kv"><b>Iscritto</b><span>'+p.dal+'</span><b>Ultimo accesso</b><span>'+p.acc+'</span><b>Giornate</b><span>'+p.g+', cassaforte '+p.cass+'</span><b>AI settembre</b><span>'+p.ai+'</span><b>Ospite prima</b><span>'+p.osp+'</span>'+(p.apple?'<b>Apple</b><span>'+p.apple+'</span>':'')+'</div>';
-    h+='<div class="sez piano"><div class="kv"><b>Piano</b><span></span></div>'+seg(p)+'</div>';
+    var h='<div><h2>'+p.n+'</h2><div class="mail">'+(p.m||'senza nome')+'</div></div>';
+    h+='<div class="sez kv"><div><b>Iscritto</b><span>'+p.dal+'</span></div><div><b>Accesso</b><span>'+p.acc+'</span></div><div><b>Giornate</b><span>'+p.g+'</span></div><div><b>AI, settembre</b><span>'+p.ai+'</span></div><div><b>Cassaforte</b><span>'+p.cass+'</span></div><div><b>Da ospite</b><span>'+p.osp+'</span></div></div>';
+    if(p.apple)h+='<div class="sez kv una"><div><b>Apple</b><span>'+p.apple+'</span></div></div>';
+    h+='<div class="sez"><b style="display:block;color:var(--ink-faint);font-weight:650;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;line-height:1">Piano</b>'+seg(p)+'</div>';
     isp.innerHTML=h;
   }
   var righe=document.querySelectorAll('#tbl-acc .tr[data-p]');
