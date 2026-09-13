@@ -130,15 +130,13 @@ async function salvaGiornata(page, testo) {
   await page.waitForTimeout(1500);
 }
 
-async function aggiungi(page, testo) {
-  // Dalla giornata piena si torna all'editor con "scrivi altro" (desktop: il bottone nella colonna).
+/** Un'altra giornata su questo telefono: si svuota il locale, si tiene il contatore. */
+async function altraGiornata(page) {
+  await page.evaluate(() => new Promise((resolve) => {
+    const req = indexedDB.deleteDatabase("journalme");
+    req.onsuccess = req.onerror = req.onblocked = () => resolve();
+  }));
   await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
-  await page.locator(".jm-ed-ta, .jm-fv-h").first().waitFor({ state: "visible", timeout: 30_000 });
-  if ((await page.locator(".jm-ed-ta").count()) === 0) {
-    const tasto = page.getByRole("button", { name: /scrivi altro|aggiungi|Aggiungi/i }).first();
-    await tasto.click();
-  }
-  await salvaGiornata(page, testo);
 }
 
 {
@@ -148,12 +146,16 @@ async function aggiungi(page, testo) {
   const chiamate = () => page.evaluate(() => window.__jmRecensioneChiamate);
   check("3 dopo la PRIMA giornata salvata non si chiede (servono 2)", (await chiamate()) === 0, String(await chiamate()));
   check("3 il contatore locale dice 1", (await page.evaluate(() => localStorage.getItem("jm.recensione.giornate"))) === "1");
-  await aggiungi(page, " Seconda giornata, ancora meglio.");
+  await altraGiornata(page);
+  await salvaGiornata(page, "Seconda giornata, ancora meglio.");
   check("3 dopo la SECONDA si chiede il foglio (una chiamata al plugin)", (await chiamate()) === 1, String(await chiamate()));
+  check("3 il contatore locale dice 2 e l'ultima richiesta e segnata", (await page.evaluate(() => localStorage.getItem("jm.recensione.giornate"))) === "2" && !!(await page.evaluate(() => localStorage.getItem("jm.recensione.ultima"))));
   await page.waitForTimeout(800);
   check("3 il server ha contato la richiesta (recensione_richieste +1)", sb.tab("recensione_richieste").length === richiestePrima + 1, String(sb.tab("recensione_richieste").length));
-  await aggiungi(page, " Terza giornata.");
-  check("3 alla TERZA non si chiede piu (una ogni 120 giorni)", (await chiamate()) === 1, String(await chiamate()));
+  await altraGiornata(page);
+  await salvaGiornata(page, "Terza giornata.");
+  // Il contatore delle chiamate riparte a ogni caricamento (init script): qui deve restare a zero.
+  check("3 alla TERZA non si chiede piu (una ogni 120 giorni)", (await chiamate()) === 0, String(await chiamate()));
   check("7 zero errori pagina (telefono)", errors.length === 0, errors.slice(0, 2).join(" | "));
   await ctx.close();
 
@@ -168,8 +170,10 @@ async function aggiungi(page, testo) {
   await fetch(BASE + "/api/admin/recensione", { method: "PUT", headers: { authorization: "Bearer " + TOKEN, "content-type": "application/json" }, body: JSON.stringify({ attiva: false }) });
   const { ctx, page } = await telefono({ conPlugin: true });
   await salvaGiornata(page, "Uno.");
-  await aggiungi(page, " Due.");
-  await aggiungi(page, " Tre.");
+  await altraGiornata(page);
+  await salvaGiornata(page, "Due.");
+  await altraGiornata(page);
+  await salvaGiornata(page, "Tre.");
   check("4 con l'interruttore spento un telefono nuovo non chiede mai", (await page.evaluate(() => window.__jmRecensioneChiamate)) === 0);
   await ctx.close();
 }
