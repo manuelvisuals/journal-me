@@ -23,6 +23,38 @@ localStorage per il contatore e per il silenzio. La soglia della casella e
 - Banco prima del push: `verify-pr10` — il locale non fa MAI rete, e la
   promessa piu importante dell'app (piu tsc, eslint, verify-i18n).
 
+## La linguetta Feedback porta all'assistenza (13 settembre 2026)
+
+`components/linguetta.tsx` piu `assistenza-url.ts` (puro) e `assistenza.ts`
+(i due hook). Scelta di Manuel sul mockup
+`MOCKUP-supporto-e-feedback.html`, opzione C.
+
+Cosa era e cosa e. La destinazione della linguetta si legge dal pannello
+admin (la riga in fondo al Messaggio di benvenuto) e il valore DI FABBRICA
+e gia `/support`: quindi la linguetta un indirizzo ce l'aveva, ma nudo — e
+dentro il guscio iOS **rotto**, perche le pagine del sito non entrano nel
+pacchetto (si chiamano `page.web.tsx` apposta) e li `/support` non esiste.
+Da oggi: se il pannello dice una cosa DIVERSA dalle nostre pagine si va li
+e non si tocca niente; se dice `/support`, `/en/support` o niente,
+l'indirizzo lo rifacciamo noi con
+- la lingua dell'app (`/support` o `/en/support`),
+- il sito intero quando siamo nel guscio (e allora si apre il browser),
+- `da=app`, l'email della sessione, la versione del pacchetto e la
+  schermata di partenza.
+
+Due cose da non rompere. (1) **In locale non si tocca la rete**: l'email si
+chiede solo in cloud, e `getSession()` legge la copia locale
+(`verify-pr10`). (2) **Cio che finisce nell'indirizzo non prova niente**:
+e un campo in meno da riempire, la pagina lo tratta come tale e il server
+non ci fonda nessuna decisione. Dal telefono e l'unico bagaglio possibile,
+perche il browser e un altro programma e la sessione dell'app li non
+esiste.
+
+Banco: `node --experimental-strip-types scripts/verify-linguetta-assistenza.mjs`
+(col dev server su :3100). Il caso "sessione in tasca" non si prova dal
+vivo coi finti: la linguetta non arriva a montarsi in cloud, ed e cosi
+anche su main (`verify-linguetta-revisore`, caso 2).
+
 ## Face ID: la proposta vive qui (1 settembre 2026)
 
 Face ID e OPT-IN e si propone SOLO dopo un codice a sei cifre giusto, mai
