@@ -78,9 +78,42 @@ async function delta(selettore, s0) {
   return y.slice(1).map((v, i) => v - y[i]);
 }
 
+/**
+ * DOVE GUARDARE: si CERCA, non si scrive a mano.
+ *
+ * La prima versione aveva due valori di --s fissi (0.13 e 0.33). Il 13
+ * settembre la pista e passata da 660 a 920svh per fare posto all'ultimo
+ * atto, tutti i tempi si sono spostati, e quei due numeri sono finiti in
+ * momenti in cui non si muoveva piu niente: il banco e diventato rosso
+ * senza che ci fosse un difetto. Adesso il momento buono lo trova lui,
+ * scorrendo la pista finche il pezzo non si muove davvero.
+ */
+async function primoMovimento(selettore, da, a) {
+  for (let s = da; s <= a; s += 0.02) {
+    await pagina.evaluate((v) => window.scrollTo(0, v), aS(s));
+    await pagina.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+    const y1 = await pagina.evaluate((q) => [
+      document.querySelector(q).getBoundingClientRect().y,
+      document.querySelector(".jm-sito12-scena").getBoundingClientRect().y,
+    ], selettore);
+    await pagina.evaluate((v) => window.scrollTo(0, v), aS(s) + 8);
+    await pagina.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+    const y2 = await pagina.evaluate((q) => [
+      document.querySelector(q).getBoundingClientRect().y,
+      document.querySelector(".jm-sito12-scena").getBoundingClientRect().y,
+    ], selettore);
+    // La scena deve essere gia incollata: prima di allora si muove tutta la
+    // pagina, il pezzo "avanza di 1 pixel per pixel" e la misura non dice
+    // niente sull'animazione.
+    if (Math.abs(y2[1] - y1[1]) > 0.5) continue;
+    if (Math.abs(y2[0] - y1[0]) > 1) return s;
+  }
+  return null;
+}
+
 const casi = [
-  ["il telefono, mentre esce", ".jm-sito12-telefono", 0.13],
-  ["la carta, mentre sale", ".jm-sito12-carta", 0.33],
+  ["il telefono, mentre esce", ".jm-sito12-telefono", 0.06, 0.30],
+  ["la carta, mentre sale", ".jm-sito12-carta", 0.16, 0.40],
 ];
 
 /**
@@ -144,7 +177,11 @@ async function bordoFermo(s0, passi) {
   const d = buoni.slice(1).map((v, i) => Math.abs(v - buoni[i]));
   return { fermi: d.filter((v) => v < 0.02).length, totale: d.length, max: Math.max(...d), min: Math.min(...d) };
 }
-for (const [nome, sel, s0] of casi) {
+for (const [nome, sel, da, a] of casi) {
+  const s0 = await primoMovimento(sel, da, a);
+  check(`${nome}: si muove da qualche parte fra ${da} e ${a}`, s0 !== null,
+    s0 === null ? "mai" : `da --s ${s0.toFixed(2)}`);
+  if (s0 === null) continue;
   const d = await delta(sel, s0);
   const mossi = d.filter((v) => Math.abs(v) > 0.001);
   const min = Math.min(...mossi.map(Math.abs));
@@ -155,7 +192,8 @@ for (const [nome, sel, s0] of casi) {
   check(`${nome}: nessuna inversione di marcia`, inversioni === 0, String(inversioni));
 }
 
-const bordo = await bordoFermo(0.33, 14);
+const sCarta = await primoMovimento(".jm-sito12-carta", 0.16, 0.40);
+const bordo = await bordoFermo(sCarta === null ? 0.33 : sCarta, 14);
 check("il bordo DISEGNATO della carta avanza a ogni fotogramma (niente scatto al pixel intero)",
   bordo.fermi === 0,
   `fermi ${bordo.fermi} su ${bordo.totale}, passo fra ${bordo.min.toFixed(3)} e ${bordo.max.toFixed(3)}px`);

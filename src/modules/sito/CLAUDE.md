@@ -97,6 +97,43 @@ vale 0 in partenza, 1 mentre e fuori e 0 di nuovo alla fine, e da li
 escono larghezza, `left` e `top`. Sotto i 900px non cambia niente: la
 coreografia del telefono e quella di prima.
 
+**L'ultimo atto: il lucchetto davanti (13 settembre).** Dopo che il
+telefono e tornato al centro con la frase, continuando a scorrere il
+telefono si DISSOLVE — non si gira e non viene toccato — e davanti a lui
+si forma un lucchetto fatto con i tre punti del marchio: salgono a
+triangolo, dal punto in alto scendono i due tratti dell'arco fino ai due
+esterni, compare la serratura e l'arco ci scatta dentro. Poi la frase
+cambia in `t.prova.chiude`.
+
+Tre cose che conviene sapere prima di rimetterci mano:
+
+- **Perche davanti e non sopra il telefono.** Manuel voleva il lucchetto
+  al posto della mela, e poi sul retro di un iPhone vero. Non si puo:
+  Apple vieta per iscritto qualunque variazione del suo logo, e sulle sue
+  immagini prodotto vieta rotazioni, animazioni, ritagli e sovrapposizioni
+  (developer.apple.com/app-store/marketing/guidelines). Il lucchetto che
+  finisce di formarsi quando il telefono se n'e gia andato e l'unica
+  strada che resta, ed e quella scelta (mockup `retro-lucchetto.html`,
+  strada B). Se qualcuno riprova a metterlo sopra il telefono, sta
+  rifacendo un giro gia fatto tre volte.
+- **La pista e passata da 660 a 920svh, e tutti i tempi precedenti sono
+  stati moltiplicati per 660/920 = 0,7174.** In pixel di scorrimento cio
+  che c'era prima dura esattamente quanto prima: era la condizione per non
+  rimettere in discussione una scena gia approvata. Chi allunga ancora la
+  pista rifa la moltiplicazione su TUTTI i numeri, non su alcuni.
+- **Non serve una riga di JavaScript.** I tre punti si muovono solo in
+  verticale (le x non cambiano mai), quindi bastano tre `translateY` legati
+  a `--sali`; l'arco e disegnato con `stroke-dashoffset` su una lunghezza
+  di 102, che e mezzo arco misurato con `getTotalLength` (101,69,
+  arrotondato per eccesso: un avanzo di tre decimi non si vede, un difetto
+  lascerebbe il tratto aperto). Il buco della chiave e una MASCHERA, non
+  una toppa color fondo: sotto passa la sfumatura della scena e una toppa
+  si vedrebbe; la maschera sta dentro un `<g>` perche la serratura si
+  ingrandisce entrando.
+
+Sotto i 901px l'ultimo atto non esiste (`display: none`), e nemmeno con
+`prefers-reduced-motion`: e tutto movimento, e fermo non racconta niente.
+
 **La pista lunga ha rotto la precisione di `--s`, e questa e la regola
 che ne esce.** Manuel, sull'anteprima: "quando scrollo, tremola in su e
 giu, un CLS di pochi pixel". Non era CLS — l'altezza del documento non

@@ -604,6 +604,43 @@ export function HomeSito({
                 </div>
               ))}
               <h2 className="jm-sito12-titolo fine" id="jm-sito12-fine">{t.prova.finale}</h2>
+              {/* L'ULTIMO ATTO, SOLO SUL DESKTOP (13 settembre 2026, strada B
+                  del mockup design/mockups/retro-lucchetto.html, scelta da
+                  Manuel). Il telefono NON si gira: resta di faccia e intatto,
+                  e il lucchetto gli si forma davanti come strato a se mentre
+                  lui si dissolve. I tre punti del marchio salgono a triangolo,
+                  da quello in alto scendono i due tratti dell'arco fino ai due
+                  esterni, compare la serratura e l'arco ci scatta dentro.
+                  Sotto i 901px questo blocco non si vede: la scena del
+                  telefono finisce come prima. */}
+              <h2 className="jm-sito12-titolo chiude">{t.prova.chiude}</h2>
+              <div className="jm-sito12-lucchetto" aria-hidden="true">
+                <svg viewBox="0 0 200 240">
+                  {/* L'arco in DUE META che partono dal punto in alto: tutto
+                      d'un pezzo cresce da un lato solo e per mezzo secondo si
+                      legge una lettera "r" con un punto a fianco, invece dei
+                      tre punti che diventano un lucchetto. */}
+                  <path className="jm-sito12-arco" d="M100 70 A38 38 0 0 0 62 108 L62 150" />
+                  <path className="jm-sito12-arco" d="M100 70 A38 38 0 0 1 138 108 L138 150" />
+                  <circle className="jm-sito12-punto uno" cx="62" cy="128" r="9" />
+                  <circle className="jm-sito12-punto due" cx="100" cy="128" r="9" />
+                  <circle className="jm-sito12-punto tre" cx="138" cy="128" r="9" />
+                  {/* Il buco della chiave e un BUCO, non una macchia del colore
+                      del fondo: sotto la serratura passa la sfumatura della
+                      scena, e una toppa tinta di --jm-bg si vedrebbe. Da qui la
+                      maschera. Sta dentro un <g> perche la serratura si
+                      ingrandisce entrando: con la maschera sul rettangolo, il
+                      buco resterebbe fermo mentre il corpo cresce. */}
+                  <mask id="jm-sito12-chiave">
+                    <rect x="46" y="146" width="108" height="84" rx="20" fill="#fff" />
+                    <circle cx="100" cy="182" r="9" fill="#000" />
+                    <rect x="96" y="182" width="8" height="22" rx="4" fill="#000" />
+                  </mask>
+                  <g className="jm-sito12-serratura">
+                    <rect x="46" y="146" width="108" height="84" rx="20" mask="url(#jm-sito12-chiave)" />
+                  </g>
+                </svg>
+              </div>
               {/* Il telefono sta in fondo nel documento, non in cima: nella
                   scena e posizionato in assoluto e l'ordine non conta (lo
                   decide lo z-index), ma senza JavaScript la sezione si legge

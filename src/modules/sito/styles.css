@@ -5609,6 +5609,13 @@ textarea.jm-sito-in {
   -webkit-mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 76%, transparent 100%);
 }
+/* L'ULTIMO ATTO (il lucchetto) vive solo sul desktop e solo con JavaScript:
+   senza, la sezione e una colonna normale e un lucchetto grande in mezzo non
+   racconterebbe niente. Si accende nel blocco `min-width: 901px` piu sotto. */
+.jm-sito12-lucchetto,
+.jm-sito12-titolo.chiude {
+  display: none;
+}
 .jm-sito12-telefono {
   display: block;
   width: min(320px, 76vw);
@@ -5838,14 +5845,23 @@ textarea.jm-sito-in {
    con un pezzo davanti, quindi la pista si allunga da 500 a 620svh per
    NON pagare l'aggiunta con il tempo di lettura delle carte:
 
-     (fino a .09)          la pista scorre ma la scena non si e ancora
+     (fino a .065)         la pista scorre ma la scena non si e ancora
                            incollata: qui non deve succedere niente
-     --esci   .10 -> .25   il telefono va da centro-piccolo a meta fuori
-     carta 1  .25 -> .43   (finestre da .18, fattore 5.5556)
-     carta 2  .43 -> .61
-     carta 3  .61 -> .79
-     --fine   .82 -> .89   compare la frase che chiude
-     --centro .82 -> .95   il telefono torna al centro
+     --esci    .0717 -> .1793   il telefono da centro-piccolo a meta fuori
+     carta 1   .1793 -> .3085   (finestre da .1291, fattore 7.7459)
+     carta 2   .3085 -> .4376
+     carta 3   .4376 -> .5668
+     --fine    .5883 -> .6385   compare la frase che chiude
+     --centro  .5883 -> .6815   il telefono torna al centro
+     poi L'ULTIMO ATTO, vedi il blocco in fondo a questo media query.
+
+   I NUMERI SONO CAMBIATI IL 13 SETTEMBRE, e non per gusto: la pista e
+   passata da 660 a 920svh per fare posto all'ultimo atto, e i tempi di
+   prima sono stati moltiplicati per 660/920 = 0,7174. In pixel di
+   scorrimento tutto cio che c'era prima dura ESATTAMENTE quanto prima:
+   e la condizione per non rimettere in discussione una cosa gia
+   approvata. Chi cambia l'altezza della pista rifa questa moltiplicazione
+   su tutti i numeri, non su alcuni
 
    Il .09 iniziale non e un margine di comodo, e una misura: con
    `data-pista="avanti"` il cursore parte quando la pista e scesa al 55%
@@ -5874,24 +5890,24 @@ textarea.jm-sito-in {
    ===================================================================== */
 @media (min-width: 901px) {
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-pista {
-    height: 660svh;
+    height: 920svh;
   }
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-scena {
-    --esci: clamp(0, calc((var(--s, 0) - .10) * 6.6667), 1);
-    --fine: clamp(0, calc((var(--s, 0) - .82) * 14.2857), 1);
-    --centro: clamp(0, calc((var(--s, 0) - .82) * 7.6923), 1);
+    --esci: clamp(0, calc((var(--s, 0) - .0717) * 9.2937), 1);
+    --fine: clamp(0, calc((var(--s, 0) - .5883) * 19.9203), 1);
+    --centro: clamp(0, calc((var(--s, 0) - .5883) * 10.7181), 1);
   }
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-titolo,
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-carta {
-    --u: clamp(0, calc((var(--s, 0) - .25) * 5.5556), 1);
+    --u: clamp(0, calc((var(--s, 0) - .1793) * 7.7459), 1);
   }
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(2) .jm-sito12-titolo,
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(2) .jm-sito12-carta {
-    --u: clamp(0, calc((var(--s, 0) - .43) * 5.5556), 1);
+    --u: clamp(0, calc((var(--s, 0) - .3085) * 7.7459), 1);
   }
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-titolo,
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-carta {
-    --u: clamp(0, calc((var(--s, 0) - .61) * 5.5556), 1);
+    --u: clamp(0, calc((var(--s, 0) - .4376) * 7.7459), 1);
   }
   /* LA CARTA NON HA PIU IL VETRO, E SI MUOVE DI TRANSFORM (12 settembre
      2026, Manuel: "trema ancora, forse qualche effetto vetro?").
@@ -5939,11 +5955,110 @@ textarea.jm-sito-in {
     left: calc(50% - 48% * (var(--esci) - var(--centro)));
     top: calc(58% - 8% * (var(--esci) - var(--centro)));
   }
+
+  /* ===================================================================
+     L'ULTIMO ATTO: IL LUCCHETTO DAVANTI (13 settembre 2026, strada B del
+     mockup design/mockups/retro-lucchetto.html, scelta da Manuel).
+
+     Il telefono NON si gira e non viene toccato: resta di faccia, intatto,
+     e si dissolve mentre davanti a lui si forma il lucchetto. E anche
+     l'unica strada pulita: le linee guida Apple sulle immagini prodotto
+     vietano rotazioni e sovrapposizioni, e qui il lucchetto e uno strato a
+     se che finisce di formarsi quando il telefono se n'e gia andato.
+
+     Il lucchetto lo fanno i TRE PUNTI del marchio, che il visitatore ha
+     gia visto in cima alla pagina: salgono a triangolo, dal punto in alto
+     scendono i due tratti dell'arco fino ai due esterni, compare la
+     serratura e l'arco ci scatta dentro.
+
+     I tempi:
+       --velo     .70 -> .78   il lucchetto entra (opacita e scala)
+       --sali     .72 -> .80   i tre punti vanno al loro posto
+       --svanisce .76 -> .88   il telefono si dissolve
+       --traccia  .78 -> .87   l'arco si disegna e i punti si fondono
+       --scocca   .86 -> .92   compare la serratura
+       --scatto   .91 -> .95   l'arco scende e scatta dentro
+       --fine2    .93 -> .98   la frase cambia
+     =================================================================== */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-scena {
+    --velo: clamp(0, calc((var(--s, 0) - .70) * 12.5), 1);
+    --sali: clamp(0, calc((var(--s, 0) - .72) * 12.5), 1);
+    --svanisce: clamp(0, calc((var(--s, 0) - .76) * 8.3333), 1);
+    --traccia: clamp(0, calc((var(--s, 0) - .78) * 11.1111), 1);
+    --scocca: clamp(0, calc((var(--s, 0) - .86) * 16.6667), 1);
+    --scatto: clamp(0, calc((var(--s, 0) - .91) * 25), 1);
+    --fine2: clamp(0, calc((var(--s, 0) - .93) * 20), 1);
+  }
+  /* Il telefono se ne va SENZA muoversi: e il lucchetto che entra, non lui
+     che esce. Due movimenti insieme si contendono l'occhio e non si capisce
+     piu quale dei due sta raccontando. */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-telefono {
+    opacity: calc(1 - var(--svanisce, 0));
+  }
+  /* Una frase finisce e l'altra comincia: non si incrociano, se no per
+     mezzo secondo se ne leggono due sovrapposte. */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-titolo.fine {
+    opacity: calc(var(--fine) * (1 - var(--velo, 0)));
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-titolo.chiude {
+    display: block;
+    font-size: clamp(32px, 5.6vw, 58px);
+    opacity: var(--fine2, 0);
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-lucchetto {
+    display: block;
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 58%;
+    translate: -50% -50%;
+    width: min(260px, calc(var(--dentro) * .62));
+    opacity: var(--velo, 0);
+    scale: calc(.72 + .28 * var(--velo, 0));
+    pointer-events: none;
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-lucchetto svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  /* I tre punti si muovono SOLO in verticale: partono in fila e arrivano ai
+     vertici, e le x non cambiano mai. Per questo bastano tre translateY e
+     non serve una riga di JavaScript. */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-punto {
+    fill: var(--jm-accent);
+    opacity: calc(1 - var(--traccia, 0));
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-punto.uno,
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-punto.tre { transform: translateY(calc(22px * var(--sali, 0))); }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-punto.due { transform: translateY(calc(-58px * var(--sali, 0))); }
+  /* 102 e la lunghezza di mezzo arco, misurata con getTotalLength (101,69
+     arrotondato per eccesso: un avanzo di tre decimi di unita non si vede,
+     un difetto lascerebbe il tratto aperto). */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-arco {
+    fill: none;
+    stroke: var(--jm-accent);
+    stroke-width: 9;
+    stroke-linecap: round;
+    stroke-dasharray: 102;
+    stroke-dashoffset: calc(102px * (1 - var(--traccia, 0)));
+    transform: translateY(calc(-13px * (1 - var(--scatto, 0))));
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-serratura {
+    fill: var(--jm-accent);
+    opacity: var(--scocca, 0);
+    transform: scale(calc(.86 + .14 * var(--scocca, 0)));
+    transform-origin: 50% 78%;
+  }
 }
 /* Chi ha chiesto meno movimento vede la scena ferma sull'ultimo quadro:
    telefono al centro e la frase, cioe cio che la scena voleva dire. */
 @media (prefers-reduced-motion: reduce) {
   .jm-sito7[data-js] .jm-sito12-pista { height: auto; }
+  /* l'ultimo atto e tutto movimento: qui non si disfa, si spegne */
+  .jm-sito7[data-js] .jm-sito12-lucchetto,
+  .jm-sito7[data-js] .jm-sito12-titolo.chiude { display: none; }
   .jm-sito7[data-js] .jm-sito12-scena {
     position: static;
     height: auto;

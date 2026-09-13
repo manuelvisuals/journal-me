@@ -125,7 +125,7 @@ export type Testi = {
   sera: { titolo: string; testo: string };
   passi: { etichetta: string; titolo: string; voci: { titolo: string; testo: string }[] };
   /** La frase che chiude la scena bloccata, quando il telefono torna al centro. */
-  prova: { finale: string };
+  prova: { finale: string; chiude: string };
   mentre: { etichetta: string; titolo: string; testo: string; didascalie: string[] };
   cassaforte: {
     etichetta: string;
@@ -425,6 +425,12 @@ const it: Testi = {
   },
   prova: {
     finale: "Il tuo diario, sempre con te.",
+    // La frase che prende il posto della prima quando il lucchetto si chiude
+    // (13 settembre 2026, mockup "retro-lucchetto", strada B scelta da
+    // Manuel). Non ripete "Solo tu hai la chiave": quella e il titolo della
+    // sezione che viene subito dopo, e dirla due volte a due schermate di
+    // distanza la spegne.
+    chiude: "E resta tuo.",
   },
   mentre: {
     etichetta: "Mentre fai altro",
@@ -865,6 +871,7 @@ const en: Testi = {
   },
   prova: {
     finale: "Your journal, always with you.",
+    chiude: "And it stays yours.",
   },
   mentre: {
     etichetta: "While you do something else",
