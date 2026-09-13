@@ -1442,7 +1442,15 @@ summary:active {
   font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--color-ink);
-  padding: 0 10px calc(24px * var(--jm-space));
+  /* 13 settembre 2026 (Manuel): il marchio al CENTRO ESATTO del suo
+     riquadro, in orizzontale e in verticale. Prima stava appoggiato a
+     sinistra con 10px di rientro e tutto lo spazio sotto: sembrava un
+     titolo di colonna, non un marchio. Il riquadro ha la stessa aria sopra
+     e sotto; la distanza dal vassoio la da il margine, non il padding. */
+  display: grid;
+  place-items: center;
+  padding: calc(6px * var(--jm-space)) 0;
+  margin-bottom: calc(18px * var(--jm-space));
 }
 
 
