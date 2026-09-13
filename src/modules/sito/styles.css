@@ -5893,6 +5893,43 @@ textarea.jm-sito-in {
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-carta {
     --u: clamp(0, calc((var(--s, 0) - .61) * 5.5556), 1);
   }
+  /* LA CARTA NON HA PIU IL VETRO, E SI MUOVE DI TRANSFORM (12 settembre
+     2026, Manuel: "trema ancora, forse qualche effetto vetro?").
+
+     Due cose insieme, tutte e due a costo visivo zero qui.
+
+     1. VIA IL BACKDROP-FILTER. Sul desktop sotto questa carta non passa
+        niente: il telefono e a sinistra e finisce a 300 pixel, la carta
+        comincia a 570, e dietro ci sono solo il fondo e la sfumatura
+        radiale della scena. La sfocatura sfocava una tinta piatta, cioe
+        non si vedeva — ma costava: fotografando la STESSA striscia dentro
+        la carta a ogni pixel di scorrimento (ritaglio agganciato alla
+        carta, quindi il contenuto dovrebbe essere identico) i fotogrammi
+        differiscono di 0,017 livelli di grigio col vetro e di 0,000
+        esatti senza. E' il ricampionamento dello sfondo sfocato a ogni
+        frame, cioe lo stesso difetto gia pagato sul dock: "una sticky col
+        vetro trema di un pixel a ogni frame, perche lo sfondo sfocato
+        viene ricalcolato un frame dopo lo spostamento". Il fondo passa da
+        88% a 96% cosi la carta resta una lastra e non un buco.
+        Sotto i 900px il vetro RESTA: li la carta passa davvero sopra il
+        telefono, e serve.
+
+     2. IL MOVIMENTO PASSA DA `top` A `transform`. Muovere `top` su un
+        elemento di mille pixel per lato vuol dire rifare il layout a ogni
+        frame; `transform` sta sul compositore ed e esatto sotto il pixel.
+        Il conto e identico perche la scena e alta esattamente 100svh:
+        il vecchio `top: calc(108% - 76% * u)` e il nuovo
+        `translateY(calc(108svh - 76svh * u))` sono lo stesso numero.
+        `translate: -50% -50%` resta dov'era: e una proprieta separata e
+        si applica prima di `transform`, quindi il centraggio non cambia. */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-carta {
+    top: 0;
+    transform: translateY(calc(108svh - 76svh * var(--u, 0)));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--jm-surface) 96%, transparent);
+    will-change: transform, opacity;
+  }
   /* Il telefono adesso fa due viaggi, e sono lo stesso viaggio in due
      versi: `--esci` lo porta fuori, `--centro` lo riporta dentro. Un solo
      termine, `(esci - centro)`, che vale 0 all'inizio, 1 in mezzo e 0
