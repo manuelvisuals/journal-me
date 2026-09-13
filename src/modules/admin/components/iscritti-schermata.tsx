@@ -29,7 +29,7 @@ import { conferma } from "@/components/ui/conferma";
 import { toast } from "@/components/ui/toast";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
-import type { AccountIscritto, OspiteIscritto } from "@/modules/admin/server/iscritti";
+import type { AccountIscritto, OspiteIscritto, Percorso } from "@/modules/admin/server/iscritti";
 
 type Numeri = {
   account: number;
@@ -45,7 +45,7 @@ type Risposta = { numeri?: Numeri; account?: AccountIscritto[]; ospiti?: OspiteI
 
 type Scheda = "account" | "ospiti";
 type ColonnaAccount = "chi" | "iscritto" | "accesso" | "piano" | "giornate";
-type ColonnaOspite = "chi" | "dal" | "uso" | "regalo" | "esito";
+type ColonnaOspite = "chi" | "dal" | "uso" | "percorso";
 type Verso = "su" | "giu";
 
 const GIORNO = 86_400_000;
@@ -76,6 +76,57 @@ function quandoLungo(iso: string | null, t: (s: string) => string): string {
   return `${formatDate(iso, stessoAnno ? { day: "numeric", month: "short" } : { day: "numeric", month: "short", year: "numeric" })}, ${ora}`;
 }
 
+/** Quante tappe sono raggiunte (per ordinare la colonna Percorso). */
+function tappeRaggiunte(p: Percorso): number {
+  return (p.prova ? 1 : 0) + (p.provaCompletata ? 1 : 0) + (p.account ? 1 : 0) + (p.premium ? 1 : 0);
+}
+
+/**
+ * LA LINEA DELLA METROPOLITANA (mockup sez. 07, richiesta di Manuel:
+ * "capire esattamente a che punto sono"). Quattro fermate fisse; pallino
+ * pieno e tratto continuo fino a dove la persona e arrivata, tratteggio e
+ * pallini vuoti per quello che manca. L'ultima fermata dice come e finita:
+ * Premium, Premium a mano (pallino con l'anello), oppure Inattivo in grigio
+ * quando la linea si e fermata prima della fine. `grande` = la versione
+ * dell'ispettore, con le date sotto le fermate raggiunte.
+ */
+function LineaPercorso({ p, grande, t }: { p: Percorso; grande?: boolean; t: (s: string) => string }) {
+  const data = (iso: string | null) => (grande && iso ? `, ${formatDate(iso, { day: "numeric", month: "short" })}` : "");
+  const inattivo = p.fine === "inattivo";
+  type Fermata = { nome: string; raggiunta: boolean; stile: "" | "vuota" | "grigia" | "mano"; forte?: boolean };
+  const fermate: Fermata[] = [
+    { nome: `${t("Prova")}${data(p.prova)}`, raggiunta: !!p.prova, stile: p.prova ? "" : "vuota" },
+    { nome: `${t("Prova completata")}${data(p.provaCompletata)}`, raggiunta: !!p.provaCompletata, stile: p.provaCompletata ? "" : "vuota" },
+  ];
+  if (inattivo) {
+    // La linea si e fermata: l'ultima fermata e grigia e si chiama col suo nome.
+    fermate.push({ nome: t("Inattivo"), raggiunta: true, stile: "grigia", forte: true });
+  } else {
+    fermate.push({ nome: `${t("Account")}${data(p.account)}`, raggiunta: !!p.account, stile: p.account ? "" : "vuota" });
+    fermate.push({
+      nome: p.fine === "mano" ? t("Premium a mano") : t("Premium"),
+      raggiunta: !!p.premium || p.fine === "premium" || p.fine === "mano",
+      stile: p.fine === "mano" ? "mano" : p.premium || p.fine === "premium" ? "" : "vuota",
+      forte: p.fine === "premium" || p.fine === "mano",
+    });
+  }
+  return (
+    <div className={`jm-adm-metro${grande ? " grande" : ""}`} aria-label={t("Percorso")}>
+      {fermate.map((f, i) => {
+        const prossima = fermate[i + 1];
+        // Continuo solo fra due fermate raggiunte; grigio verso "Inattivo"; tratteggio altrimenti.
+        const segmento = prossima ? (prossima.stile === "grigia" ? "grigio" : prossima.raggiunta && f.raggiunta ? "" : "tratt") : null;
+        return (
+          <span key={f.nome} className="jm-adm-metro-f">
+            <span className={`st ${f.stile}`}><i /><span className={f.forte ? "forte" : ""}>{f.nome}</span></span>
+            {segmento !== null && <span className={`seg ${segmento}`} />}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 /** L'ordine del piano quando si clicca quella colonna: gratis, poi scaduto, poi premium. */
 function pesoPiano(a: AccountIscritto): number {
   if (a.piano === "premium") return a.fonte === "apple" ? 3 : 2;
@@ -100,6 +151,14 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
   const [cerca, setCerca] = useState("");
   const [ordAccount, setOrdAccount] = useState<{ col: ColonnaAccount; verso: Verso }>({ col: "iscritto", verso: "giu" });
   const [ordOspiti, setOrdOspiti] = useState<{ col: ColonnaOspite; verso: Verso }>({ col: "dal", verso: "giu" });
+  // I numeri della scheda Ospiti sono le fermate: si contano qui, dalla lista.
+  const tappe = useMemo(() => ({
+    inProva: ospiti.filter((o) => o.percorso.prova && !o.percorso.provaCompletata && !o.percorso.account && o.percorso.fine !== "inattivo").length,
+    completata: ospiti.filter((o) => o.percorso.provaCompletata && !o.percorso.account && o.percorso.fine !== "inattivo").length,
+    conAccount: ospiti.filter((o) => !!o.percorso.account).length,
+    premium: ospiti.filter((o) => o.percorso.fine === "premium" || o.percorso.fine === "mano").length,
+    inattivi: ospiti.filter((o) => o.percorso.fine === "inattivo").length,
+  }), [ospiti]);
   const [scelto, setScelto] = useState<string | null>(null);
   const [cambio, setCambio] = useState<"" | "in-corso">("");
   const [modificaPiano, setModificaPiano] = useState(false);
@@ -163,8 +222,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
         case "chi": return o.id;
         case "dal": return Date.parse(o.dal) || 0;
         case "uso": return Date.parse(o.ultimoUso) || 0;
-        case "regalo": return o.usate;
-        case "esito": return o.esito.tipo === "account" ? 2 : o.esito.tipo === "finito" ? 1 : 0;
+        case "percorso": return tappeRaggiunte(o.percorso) + (o.percorso.fine === "inattivo" ? -0.5 : 0);
       }
     };
     lista.sort((x, y) => {
@@ -293,8 +351,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
     { col: "chi", testo: t("Ospite") },
     { col: "dal", testo: t("Dal") },
     { col: "uso", testo: t("Ultimo uso") },
-    { col: "regalo", testo: t("Regalo") },
-    { col: "esito", testo: t("Esito") },
+    { col: "percorso", testo: t("Percorso") },
   ];
 
   const freccia = (attiva: boolean, verso: Verso) => (attiva ? (verso === "su" ? " ▴" : " ▾") : "");
@@ -324,11 +381,6 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
     if (a.fonte === "stripe") return "Stripe";
     return "";
   };
-  const esito = (o: OspiteIscritto): string => {
-    if (o.esito.tipo === "account") return `${t("con account")} ${o.esito.email || "—"}`;
-    if (o.esito.tipo === "finito") return t("finito, senza account");
-    return t("in corso");
-  };
 
   const governatoDaApple = !!persona && persona.fonte === "apple" && persona.piano === "premium";
 
@@ -354,24 +406,45 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
         />
       </div>
 
-      <div className="jm-adm-isc-numeri">
-        <div className="jm-adm-isc-box">
-          <div className="k">{t("Account")}</div>
-          <div className="n">{numeri.account}<small>{numeri.nuoviSettimana} {t("in piu questa settimana")}</small></div>
+      {scheda === "account" ? (
+        <div className="jm-adm-isc-numeri">
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("Account")}</div>
+            <div className="n">{numeri.account}<small>{numeri.nuoviSettimana} {t("in piu questa settimana")}</small></div>
+          </div>
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("Premium")}</div>
+            <div className="n">{numeri.premium}<small>{numeri.premiumApple} Apple, {numeri.premiumMano} {t("a mano")}</small></div>
+          </div>
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("Ospiti attivi")}</div>
+            <div className="n">{numeri.ospitiAttivi}<small>{t("su")} {numeri.ospiti}, {t("negli ultimi 30 giorni")}</small></div>
+          </div>
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("AI, questo mese")}</div>
+            <div className="n">{eur(numeri.aiEurMese)}<small>{t("tutti gli utenti, stima")}</small></div>
+          </div>
         </div>
-        <div className="jm-adm-isc-box">
-          <div className="k">{t("Premium")}</div>
-          <div className="n">{numeri.premium}<small>{numeri.premiumApple} Apple, {numeri.premiumMano} {t("a mano")}</small></div>
+      ) : (
+        <div className="jm-adm-isc-numeri">
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("In prova")}</div>
+            <div className="n">{tappe.inProva}<small>{t("hanno ancora giornate in regalo")}</small></div>
+          </div>
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("Prova completata")}</div>
+            <div className="n">{tappe.completata}<small>{t("senza account")}</small></div>
+          </div>
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("Con account")}</div>
+            <div className="n">{tappe.conAccount}<small>{t("di cui")} {tappe.premium} Premium</small></div>
+          </div>
+          <div className="jm-adm-isc-box">
+            <div className="k">{t("Inattivi")}</div>
+            <div className="n">{tappe.inattivi}<small>{t("niente da 30 giorni")}</small></div>
+          </div>
         </div>
-        <div className="jm-adm-isc-box">
-          <div className="k">{t("Ospiti attivi")}</div>
-          <div className="n">{numeri.ospitiAttivi}<small>{t("su")} {numeri.ospiti}, {t("negli ultimi 30 giorni")}</small></div>
-        </div>
-        <div className="jm-adm-isc-box">
-          <div className="k">{t("AI, questo mese")}</div>
-          <div className="n">{eur(numeri.aiEurMese)}<small>{t("tutti gli utenti, stima")}</small></div>
-        </div>
-      </div>
+      )}
 
       <div className="jm-adm-isc-corpo">
         {scheda === "account" && (
@@ -425,8 +498,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
                 <div className="chi"><b>{o.id.slice(0, 4)}&hellip;{o.id.slice(-2)}</b><span>{o.devicecheck ? "iPhone" : t("senza DeviceCheck")}</span></div>
                 <div className="num">{quando(o.dal, t)}</div>
                 <div className="num">{quando(o.ultimoUso, t)}</div>
-                <div className="num">{o.usate} {t("di")} {o.max}</div>
-                <div className="num">{esito(o)}</div>
+                <div><LineaPercorso p={o.percorso} t={t} /></div>
               </div>
             ))}
             {ospitiVisti.length === 0 && <div className="jm-adm-isc-vuoto">{t("Nessun ospite corrisponde.")}</div>}
@@ -443,7 +515,6 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
               <div className="r"><b>{t("Giornate")}</b><span>{persona.giornate}</span></div>
               <div className="r"><b>{t("AI, mese")}</b><span>{eur(persona.aiEurMese)}</span></div>
               <div className="r"><b>{t("Cassaforte")}</b><span>{persona.cassaforte ? t("chiusa") : t("aperta")}</span></div>
-              <div className="r"><b>{t("Da ospite")}</b><span className={persona.ospitePrima ? "" : "mut"}>{persona.ospitePrima ? `${t("si, dal")} ${quando(persona.ospitePrima, t)}` : t("mai ospite")}</span></div>
               {persona.apple && (
                 <div className="r">
                   <b>Apple</b>
@@ -452,6 +523,10 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
                   </span>
                 </div>
               )}
+            </div>
+            <div className="sez-percorso">
+              <b className="k">{t("Percorso")}</b>
+              <LineaPercorso p={persona.percorso} grande t={t} />
             </div>
             <div className="piano">
               <b className="k">{t("Piano")}</b>

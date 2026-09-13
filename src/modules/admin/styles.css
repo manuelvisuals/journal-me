@@ -1080,3 +1080,112 @@
 .jm-adm-rec .jm-adm-actions { justify-content: flex-start; align-items: center; margin-top: calc(24px * var(--jm-space)); }
 .jm-adm-rec .jm-adm-actions .jm-adm-esito,
 .jm-adm-rec .jm-adm-actions .jm-adm-ultima { margin: 0 0 0 calc(8px * var(--jm-space)); }
+
+/* ---- Il percorso, come una linea della metropolitana (13 settembre, sera;
+   mockup admin-iscritti.html sez. 07). Fermate fisse, pallino pieno e tratto
+   continuo fino a dove si e arrivati, tratteggio verso cio che manca. ---- */
+
+.jm-adm-isc-tr.osp { grid-template-columns: minmax(0, 1.2fr) 72px 88px minmax(320px, 2.2fr); }
+
+.jm-adm-metro {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 40px;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.jm-adm-metro-f { display: contents; }
+
+.jm-adm-metro .st {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  width: 0;
+}
+
+.jm-adm-metro .st i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  background: var(--color-accent);
+  box-sizing: border-box;
+  flex: none;
+}
+
+.jm-adm-metro .st.vuota i { background: var(--color-surface); border-color: color-mix(in oklab, var(--color-ink) 22%, transparent); }
+.jm-adm-metro .st.grigia i { background: color-mix(in oklab, var(--color-ink) 22%, transparent); border-color: transparent; }
+.jm-adm-metro .st.mano i { background: var(--color-surface); border-width: 3px; }
+
+.jm-adm-metro .st > span {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: calc(10.5px * var(--jm-ui-scale));
+  color: var(--color-ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.jm-adm-metro .st.vuota > span { color: var(--color-ink-faint); }
+.jm-adm-metro .st > span.forte { color: var(--color-ink); font-weight: 600; }
+.jm-adm-metro .jm-adm-metro-f:first-child .st > span { left: 0; transform: none; }
+.jm-adm-metro .jm-adm-metro-f:last-child .st > span { left: auto; right: 0; transform: none; }
+
+.jm-adm-metro .seg { flex: 1; height: 2px; background: var(--color-accent); }
+.jm-adm-metro .seg.tratt { background: none; border-top: 2px dashed color-mix(in oklab, var(--color-ink) 22%, transparent); height: 0; }
+.jm-adm-metro .seg.grigio { background: color-mix(in oklab, var(--color-ink) 22%, transparent); }
+
+/* Nell'ispettore la colonna e stretta: la linea corre in VERTICALE, una
+   fermata per riga, col nome e la data accanto al pallino. */
+.jm-adm-metro.grande {
+  flex-direction: column;
+  align-items: stretch;
+  height: auto;
+  padding: 0;
+  margin-top: calc(12px * var(--jm-space));
+}
+
+.jm-adm-metro.grande .st {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  width: auto;
+  height: 22px;
+}
+
+.jm-adm-metro.grande .st i { width: 12px; height: 12px; }
+
+.jm-adm-metro.grande .st > span,
+.jm-adm-metro.grande .jm-adm-metro-f:first-child .st > span,
+.jm-adm-metro.grande .jm-adm-metro-f:last-child .st > span {
+  position: static;
+  transform: none;
+  font-size: calc(13px * var(--jm-ui-scale));
+  letter-spacing: 0;
+}
+
+.jm-adm-metro.grande .seg {
+  flex: none;
+  width: 2px;
+  height: 18px;
+  margin-left: 5px;
+}
+
+.jm-adm-metro.grande .seg.tratt {
+  width: 0;
+  height: 18px;
+  border-top: 0;
+  border-left: 2px dashed color-mix(in oklab, var(--color-ink) 22%, transparent);
+}
+
+.jm-adm-isc-isp .sez-percorso {
+  border-top: 1px solid var(--color-line);
+  margin-top: calc(10px * var(--jm-space));
+  padding-top: calc(16px * var(--jm-space));
+}

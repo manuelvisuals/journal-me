@@ -100,3 +100,18 @@ conta le volte in cui un'app ha CHIESTO il foglio: se e comparso e se la
 persona ha scritto, Apple non lo dice. Schermata
 `components/recensione-schermata.tsx`, prefisso `jm-adm-rec-*` (riusa i
 riquadri `jm-adm-isc-box`). Banco: `scripts/verify-recensione.mjs`.
+
+## Il percorso (13 settembre 2026, notte; branch `percorso-ospiti`)
+
+Mockup `design/mockups/admin-iscritti.html`, sezione 07 (scelta di Manuel:
+"come il diagramma della metropolitana", niente imbuto). Il server calcola
+per ogni ospite e per ogni account un `Percorso` (prova, provaCompletata,
+account, premium: date o null; `fine`: premium / mano / inattivo / null).
+La data di "prova completata" e quella dell'ultima giornata del regalo
+(braccialetto_giornate.creato_il, la N-esima). Inattivo = niente da 30
+giorni senza essere arrivato in fondo. La schermata: `LineaPercorso`
+(orizzontale in lista, verticale nell'ispettore dove la colonna e
+stretta), segmento continuo solo fra due fermate raggiunte, tratteggio
+verso cio che manca, grigio verso "Inattivo"; i quattro numeri della
+scheda Ospiti sono le fermate. Le colonne Regalo/Esito non esistono piu.
+CSS `jm-adm-metro*`. Banco: verify-iscritti (52).

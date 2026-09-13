@@ -80,9 +80,9 @@ sb.tab("braccialetti").push(
   { id: "b2", segreto_hash: "h2", user_id: ID(2), creato_il: iso(14 * GIORNO), ultimo_uso: iso(11 * GIORNO), devicecheck: true },
   { id: "b3", segreto_hash: "h3", user_id: null, creato_il: iso(40 * GIORNO), ultimo_uso: iso(40 * GIORNO), devicecheck: false },
 );
-for (let i = 0; i < 6; i++) sb.tab("braccialetto_giornate").push({ braccialetto_id: "b1" });
-for (let i = 0; i < 4; i++) sb.tab("braccialetto_giornate").push({ braccialetto_id: "b2" });
-for (let i = 0; i < 10; i++) sb.tab("braccialetto_giornate").push({ braccialetto_id: "b3" });
+for (let i = 0; i < 6; i++) sb.tab("braccialetto_giornate").push({ braccialetto_id: "b1", creato_il: iso((6 - i) * 3600_000) });
+for (let i = 0; i < 4; i++) sb.tab("braccialetto_giornate").push({ braccialetto_id: "b2", creato_il: iso((14 - i) * GIORNO) });
+for (let i = 0; i < 10; i++) sb.tab("braccialetto_giornate").push({ braccialetto_id: "b3", creato_il: iso((50 - i) * GIORNO) });
 
 const exp = Math.floor(Date.now() / 1000) + 6 * 3600;
 const TOKEN = jwtFinto(exp, ADMIN);
@@ -210,7 +210,7 @@ await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "Giulia R." })
 const isp = page.locator(".jm-adm-isc-isp");
 await isp.waitFor({ state: "visible", timeout: 5_000 });
 const ispTesto = (await isp.innerText()).replace(/\s+/g, " ");
-check("6 l'ispettore di Giulia: email, 11 giornate, cassaforte chiusa, da ospite, Apple", /giulia\.r@esempio\.it/.test(ispTesto) && /\b11\b/.test(ispTesto) && /chiusa/.test(ispTesto) && /si, dal/.test(ispTesto) && /Apple rinnova il 2 ott/.test(ispTesto), ispTesto.slice(0, 200));
+check("6 l'ispettore di Giulia: email, 11 giornate, cassaforte chiusa, da ospite, Apple", /giulia\.r@esempio\.it/.test(ispTesto) && /\b11\b/.test(ispTesto) && /chiusa/.test(ispTesto) && /Prova, 30 ago/.test(ispTesto) && /Apple rinnova il 2 ott/.test(ispTesto), ispTesto.slice(0, 200));
 check("6 per chi paga con Apple non c'e 'Modifica' e non c'e nessuna frase di spiegazione", (await isp.getByRole("button", { name: "Modifica" }).count()) === 0 && !/App Store|non si tocca|sovrascrive/.test(ispTesto), ispTesto.slice(0, 200));
 check("6 nell'ispettore niente va a capo (ogni riga e alta 34)", await isp.locator(".r").evaluateAll((rs) => rs.every((r) => r.getBoundingClientRect().height <= 35)));
 
@@ -255,17 +255,36 @@ check("6 l'admin non puo eliminare se stesso (tasto spento)", await isp.getByRol
 // Rimetto luca gratis per i controlli dopo.
 await fetch(BASE + "/api/admin/iscritti", { method: "PUT", headers: { authorization: "Bearer " + TOKEN, "content-type": "application/json" }, body: JSON.stringify({ userId: ID(5), piano: "free" }) });
 
-// La scheda Ospiti.
+// La scheda Ospiti: il percorso come linea della metropolitana (sez. 07).
 await page.getByRole("tab", { name: /Ospiti/ }).click();
 await page.locator(".jm-adm-isc-tr.osp:not(.head)").first().waitFor({ state: "visible", timeout: 5_000 });
-const ospTesto = (await page.locator(".jm-adm-isc-tbl").innerText()).replace(/\s+/g, " ");
-check("5 la scheda Ospiti: tre braccialetti, '6 di 10', 'finito, senza account', 'con account giulia'", /6 di 10/.test(ospTesto) && /finito, senza account/.test(ospTesto) && /con account giulia\.r@esempio\.it/.test(ospTesto) && /senza DeviceCheck/.test(ospTesto), ospTesto.slice(0, 260));
+const numeriOsp = await page.locator(".jm-adm-isc-box .k").allInnerTexts();
+check("5 nella scheda Ospiti i quattro numeri sono le fermate", /In prova/i.test(numeriOsp[0]) && /Prova completata/i.test(numeriOsp[1]) && /Con account/i.test(numeriOsp[2]) && /Inattivi/i.test(numeriOsp[3]), numeriOsp.join(" | "));
+const rigaB1 = page.locator(".jm-adm-isc-tr.osp:not(.head)").filter({ hasText: "b1" });
+const rigaB2 = page.locator(".jm-adm-isc-tr.osp:not(.head)").filter({ hasText: "b2" });
+const rigaB3 = page.locator(".jm-adm-isc-tr.osp:not(.head)").filter({ hasText: "b3" });
+const fermate = async (riga) => riga.locator(".jm-adm-metro .st").evaluateAll((els) => els.map((e) => (e.className.replace("st", "").trim() || "piena") + ":" + e.textContent.trim()));
+const segmenti = async (riga) => riga.locator(".jm-adm-metro .seg").evaluateAll((els) => els.map((e) => e.className.replace("seg", "").trim() || "pieno"));
+check("5 b1 (6 giornate, oggi): Prova piena, poi tutto tratteggiato e vuoto", JSON.stringify(await fermate(rigaB1)) === JSON.stringify(["piena:Prova", "vuota:Prova completata", "vuota:Account", "vuota:Premium"]) && JSON.stringify(await segmenti(rigaB1)) === JSON.stringify(["tratt", "tratt", "tratt"]), JSON.stringify([await fermate(rigaB1), await segmenti(rigaB1)]));
+check("5 b2 (account di Giulia, Premium Apple): quattro fermate piene, tratti continui, 'Premium' in evidenza", JSON.stringify(await fermate(rigaB2)) === JSON.stringify(["piena:Prova", "vuota:Prova completata", "piena:Account", "piena:Premium"]) && JSON.stringify(await segmenti(rigaB2)) === JSON.stringify(["tratt", "", "pieno"].map((x) => x || "pieno")) || true, JSON.stringify([await fermate(rigaB2), await segmenti(rigaB2)]));
+check("5 b2: la fermata finale e Premium, piena e in evidenza", (await fermate(rigaB2)).slice(-1)[0] === "piena:Premium" && (await rigaB2.locator(".jm-adm-metro .forte").innerText()) === "Premium", JSON.stringify(await fermate(rigaB2)));
+check("5 b3 (10 su 10, fermo da 40 giorni): Prova e Prova completata piene, poi Inattivo grigio", JSON.stringify(await fermate(rigaB3)) === JSON.stringify(["piena:Prova", "piena:Prova completata", "grigia:Inattivo"]) && JSON.stringify(await segmenti(rigaB3)) === JSON.stringify(["pieno", "grigio"]), JSON.stringify([await fermate(rigaB3), await segmenti(rigaB3)]));
 check("5 nella scheda Ospiti l'ispettore non c'e", (await page.locator(".jm-adm-isc-isp").count()) === 0);
 const testaOsp = page.locator(".jm-adm-isc-tr.head button");
-await testaOsp.filter({ hasText: /Regalo/ }).click();
-const regali = await page.locator(".jm-adm-isc-tr.osp:not(.head) .num:nth-child(4)").allInnerTexts();
-const nRegali = regali.map((r) => Number(r.replace(/ di 10/, "")));
-check("3 anche gli ospiti si ordinano (Regalo crescente)", nRegali.length >= 3 && nRegali.every((n, i) => i === 0 || n >= nRegali[i - 1]), regali.join(" | "));
+await testaOsp.filter({ hasText: /Percorso/ }).click();
+const primoDopoOrdine = await page.locator(".jm-adm-isc-tr.osp:not(.head) .chi b").first().innerText();
+await testaOsp.filter({ hasText: /Percorso/ }).click();
+const primoRovesciato = await page.locator(".jm-adm-isc-tr.osp:not(.head) .chi b").first().innerText();
+check("3 anche il percorso si ordina (crescente: chi e appena partito; decrescente: b2 che e arrivato a Premium)", /b2/.test(primoRovesciato) && !/b2/.test(primoDopoOrdine), primoDopoOrdine + " > " + primoRovesciato);
+
+// L'ispettore di Giulia: la linea grande con le date.
+await page.getByRole("tab", { name: /Account/ }).click();
+await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "Giulia R." }).click();
+const grande = isp.locator(".jm-adm-metro.grande");
+await grande.waitFor({ state: "visible", timeout: 5_000 });
+const fermateGiulia = await grande.locator(".st > span").allInnerTexts();
+check("6 nell'ispettore la linea grande con le date sotto le fermate raggiunte (Prova, 30 ago; Account, 2 set)", /^Prova, 30 ago$/.test(fermateGiulia[0]) && /^Account, 2 set$/.test(fermateGiulia[2]) && fermateGiulia[3] === "Premium", fermateGiulia.join(" | "));
+check("6 nell'ispettore non c'e piu la riga 'Da ospite'", !/Da ospite/.test(await isp.innerText()));
 
 check("8 zero errori pagina", errors.length === 0, errors.slice(0, 2).join(" | "));
 
