@@ -226,12 +226,24 @@ export class SupabaseFintoServer {
     const singolo = /vnd\.pgrst\.object/.test(accept);
 
     if (req.method === "GET" || req.method === "HEAD") {
-      const trovate = this.proietta(this.filtra(righe, params), params.get("select"));
+      let filtrate = this.filtra(righe, params);
+      // order=colonna.desc / .asc e limit=N, quanto basta per "l'ultima riga".
+      const ordine = params.get("order");
+      if (ordine) {
+        const [col, verso] = ordine.split(".");
+        filtrate = filtrate.slice().sort((a, b) => (String(a[col] ?? "") < String(b[col] ?? "") ? -1 : 1) * (verso === "desc" ? -1 : 1));
+      }
+      const limite = Number(params.get("limit"));
+      if (limite > 0) filtrate = filtrate.slice(0, limite);
+      const trovate = this.proietta(filtrate, params.get("select"));
+      // count=exact (Prefer): il conteggio va nel content-range, come PostgREST.
+      const extra = /count=exact/.test(prefer) ? { "content-range": `0-${Math.max(0, trovate.length - 1)}/${trovate.length}` } : {};
+      if (req.method === "HEAD") { res.writeHead(200, { "content-type": "application/json", ...extra }); return res.end(); }
       if (singolo) {
         if (trovate.length === 0) return rispondi(406, { code: "PGRST116", message: "0 rows" });
-        return rispondi(200, trovate[0]);
+        return rispondi(200, trovate[0], extra);
       }
-      return rispondi(200, trovate);
+      return rispondi(200, trovate, extra);
     }
     if (req.method === "POST") {
       const dati = JSON.parse(corpo || "[]");

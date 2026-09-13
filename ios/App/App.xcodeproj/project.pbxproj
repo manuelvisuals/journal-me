@@ -20,6 +20,7 @@
 		D0C1E5A931AA00020072D4E8 /* Cassaforte.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C1E5A831AA00020072D4E8 /* Cassaforte.swift */; };
 		D0C1E5AB31AA00020072D4E8 /* Abbonamento.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C1E5AA31AA00020072D4E8 /* Abbonamento.swift */; };
 		D0C1E5AD31AA00020072D4E8 /* DeviceCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C1E5AC31AA00020072D4E8 /* DeviceCheck.swift */; };
+		D0C1E5AF31AA00020072D4E8 /* Recensione.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C1E5AE31AA00020072D4E8 /* Recensione.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		D0C1E5A831AA00020072D4E8 /* Cassaforte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cassaforte.swift; sourceTree = "<group>"; };
 		D0C1E5AA31AA00020072D4E8 /* Abbonamento.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Abbonamento.swift; sourceTree = "<group>"; };
 		D0C1E5AC31AA00020072D4E8 /* DeviceCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCheck.swift; sourceTree = "<group>"; };
+		D0C1E5AE31AA00020072D4E8 /* Recensione.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recensione.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -77,6 +79,7 @@
 				D0C1E5A831AA00020072D4E8 /* Cassaforte.swift */,
 				D0C1E5AA31AA00020072D4E8 /* Abbonamento.swift */,
 				D0C1E5AC31AA00020072D4E8 /* DeviceCheck.swift */,
+				D0C1E5AE31AA00020072D4E8 /* Recensione.swift */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
@@ -176,6 +179,7 @@
 				D0C1E5A931AA00020072D4E8 /* Cassaforte.swift in Sources */,
 				D0C1E5AB31AA00020072D4E8 /* Abbonamento.swift in Sources */,
 				D0C1E5AD31AA00020072D4E8 /* DeviceCheck.swift in Sources */,
+				D0C1E5AF31AA00020072D4E8 /* Recensione.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

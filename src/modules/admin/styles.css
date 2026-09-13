@@ -898,3 +898,44 @@
   font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
+
+/* ---- Recensione (13 settembre 2026; mockup admin-iscritti.html, 04) ---- */
+
+.jm-adm-rec { max-width: 680px; }
+.jm-adm-isc-numeri.due { grid-template-columns: 1fr 1fr; margin-bottom: calc(12px * var(--jm-space)); }
+.jm-adm-isc-numeri.tre { grid-template-columns: 1fr 1fr 1fr; }
+.jm-adm-rec .jm-adm-isc-box .nota {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.45;
+  margin-top: calc(10px * var(--jm-space));
+}
+.jm-adm-rec .jm-adm-isc-seg2 { margin-top: calc(10px * var(--jm-space)); }
+
+.jm-adm-rec-campo {
+  display: flex;
+  align-items: center;
+  gap: calc(10px * var(--jm-space));
+  margin-top: calc(10px * var(--jm-space));
+  height: 32px;
+}
+
+.jm-adm-rec-campo input {
+  width: 56px;
+  height: 32px;
+  border-radius: var(--radius-t-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  text-align: center;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-adm-rec-campo span { font-size: calc(13px * var(--jm-ui-scale)); color: var(--color-ink-muted); }
+
+.jm-adm-rec .jm-adm-actions { justify-content: flex-start; align-items: center; margin-top: calc(24px * var(--jm-space)); }
+.jm-adm-rec .jm-adm-actions .jm-adm-esito,
+.jm-adm-rec .jm-adm-actions .jm-adm-ultima { margin: 0 0 0 calc(8px * var(--jm-space)); }

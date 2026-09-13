@@ -317,6 +317,9 @@ class AppViewController: CAPBridgeViewController {
         // DeviceCheck (DeviceCheck.swift): il token con cui il braccialetto
         // del regalo nasce sul server (decisione 2A, 10 settembre 2026).
         bridge?.registerPluginInstance(DeviceCheckPlugin())
+        // La recensione (Recensione.swift): il foglio delle stelle di Apple,
+        // dormiente finche /admin non lo accende (13 settembre 2026).
+        bridge?.registerPluginInstance(RecensionePlugin())
     }
 
     override open func router() -> Router {

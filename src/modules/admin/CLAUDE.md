@@ -68,3 +68,18 @@ intestazioni (crescente, poi decrescente; di fabbrica ultimo iscritto in
 cima), ricerca, ispettore a destra con il piano. Prefisso CSS
 `jm-adm-isc-*`. Banco: `scripts/verify-iscritti.mjs` (il finto serve
 `/auth/v1/admin/users` da `sb.accountAuth`).
+
+## Recensione (13 settembre 2026, branch `recensione`)
+
+Mockup `design/mockups/admin-iscritti.html`, sezione 04. Il foglio delle
+stelle di Apple e gia nel binario (`ios/App/App/Recensione.swift`, dalla
+build 4) ma DORME: lo sveglia la riga `recensione` (migration 030), che
+questo pannello scrive (`server/recensione.ts` -> GET/PUT
+/api/admin/recensione) e che l'app legge una volta al giorno da
+`GET /api/recensione` (scheletro: `src/lib/server/recensione.ts`, cache
+30 s; `src/lib/recensione.ts` la regola sul telefono; il gancio e in
+`modules/oggi` a giornata chiusa). Il contatore `recensione_richieste`
+conta le volte in cui un'app ha CHIESTO il foglio: se e comparso e se la
+persona ha scritto, Apple non lo dice. Schermata
+`components/recensione-schermata.tsx`, prefisso `jm-adm-rec-*` (riusa i
+riquadri `jm-adm-isc-box`). Banco: `scripts/verify-recensione.mjs`.

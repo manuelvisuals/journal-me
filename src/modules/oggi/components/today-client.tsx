@@ -27,6 +27,7 @@ import { formatNumber, todayISO } from "@/lib/format";
 import { warmRealtime } from "@/lib/realtime/prewarm";
 import { useStorageMode } from "@/lib/data/store";
 import { aggiornaStatoOspite, regaloFinito, useStatoOspite } from "@/lib/ospite/stato";
+import { forseChiediRecensione, segnaGiornataSalvata } from "@/lib/recensione";
 import {
   deleteEntry,
   loadEntryForDate,
@@ -210,6 +211,20 @@ export function TodayClient({
   useEffect(() => {
     viewRef.current = view;
   }, [view]);
+
+  // LA RECENSIONE (13 settembre 2026, dormiente finche /admin non la
+  // accende): si chiede a giornata appena chiusa, quando la schermata e
+  // TORNATA PIENA, cioe dopo chiarimenti e rubrica — mai sopra un foglio
+  // aperto, mai all'avvio. `runSave` alza il segnale; questo effetto lo
+  // spende alla prima vista "filled". La regola (interruttore sul server,
+  // giornate salvate su questo telefono, una ogni 120 giorni) sta in
+  // src/lib/recensione.ts; sul web non succede niente.
+  const recensioneInAttesa = useRef(false);
+  useEffect(() => {
+    if (view !== "filled" || !recensioneInAttesa.current) return;
+    recensioneInAttesa.current = false;
+    void forseChiediRecensione(storageMode);
+  }, [view, storageMode]);
   useEffect(() => {
     edWordsRef.current = edWords;
   }, [edWords]);
@@ -506,6 +521,10 @@ export function TodayClient({
       }
       // Giornata salvata davvero: SOLO ora la bozza si cancella (§6).
       await clearDraft(opts.targetDate);
+      // ...e il contatore delle giornate salvate su questo telefono cresce:
+      // e cio che decide se e ora di chiedere la recensione (vedi sopra).
+      segnaGiornataSalvata();
+      recensioneInAttesa.current = true;
       setDraftInitial("");
       setDraftNotice(null);
       setEdWords(0);

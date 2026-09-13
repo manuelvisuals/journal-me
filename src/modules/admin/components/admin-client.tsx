@@ -34,9 +34,10 @@ import { AreeSchermata, type Riga } from "@/modules/admin/components/aree-scherm
 import { IscrittiSchermata } from "@/modules/admin/components/iscritti-schermata";
 import { BenvenutoSchermata } from "@/modules/admin/components/benvenuto-schermata";
 import { RegaloSchermata } from "@/modules/admin/components/regalo-schermata";
+import { RecensioneSchermata } from "@/modules/admin/components/recensione-schermata";
 
 type Stato = "carico" | "negato" | "pronto";
-type Voce = "aree" | "iscritti" | "sito" | "benvenuto" | "regalo";
+type Voce = "aree" | "iscritti" | "sito" | "benvenuto" | "regalo" | "recensione";
 
 export function AdminClient() {
   const t = useT();
@@ -116,6 +117,9 @@ export function AdminClient() {
           <button type="button" className={vai("regalo")} onClick={() => setVoce("regalo")}>
             {t("Regalo AI")}
           </button>
+          <button type="button" className={vai("recensione")} onClick={() => setVoce("recensione")}>
+            {t("Recensione")}
+          </button>
           <span className="jm-adm-nav-off">{t("Obiettivi di default")}</span>
           <span className="jm-adm-nav-off">{t("Modelli AI")}</span>
         </nav>
@@ -129,6 +133,7 @@ export function AdminClient() {
       {voce === "iscritti" && <IscrittiSchermata onConteggio={setIscritti} />}
       {voce === "benvenuto" && <BenvenutoSchermata />}
       {voce === "regalo" && <RegaloSchermata />}
+      {voce === "recensione" && <RecensioneSchermata />}
       {voce === "sito" && (
         <main className="jm-adm-main">
           <div className="jm-adm-bar">

@@ -150,4 +150,21 @@ export const ADMIN: Record<string, string> = {
   "Premium a mano, senza scadenza. Se un giorno paga con Apple, Apple sovrascrive.": "Premium by hand, no expiry. If they ever pay through Apple, Apple overrides.",
   "Cambiarlo scrive il piano a mano, senza scadenza.": "Changing it sets the plan by hand, with no expiry.",
   "Le giornate sono chiuse nella cassaforte: qui si contano, non si leggono.": "Days are locked in the vault: here they are counted, never read.",
+
+  // Recensione (13 settembre 2026)
+  "Recensione": "Review",
+  "Non sono riuscito a leggere la recensione.": "I could not read the review settings.",
+  "La richiesta": "The prompt",
+  "Accesa": "On",
+  "Vale subito per tutte le app installate. Apple mostra il foglio al massimo tre volte l'anno per persona, e non dice se ha scritto la recensione.": "Takes effect right away for every installed app. Apple shows the sheet at most three times a year per person, and never says whether they wrote a review.",
+  "Quando": "When",
+  "Giornate salvate prima di chiedere": "Days saved before asking",
+  "giornate salvate, poi si chiede": "days saved, then we ask",
+  "Nel momento in cui la giornata e appena salvata, mai all'avvio. Non piu di una richiesta ogni 120 giorni per telefono.": "Right after a day is saved, never at launch. No more than one prompt every 120 days per phone.",
+  "Richieste": "Prompts",
+  "da sempre": "all time",
+  "Questo mese": "This month",
+  "Ultima": "Latest",
+  "nessuna richiesta": "no prompt yet",
+  "Salvato. Le app la rileggono entro un giorno.": "Saved. Apps pick it up within a day.",
 };
