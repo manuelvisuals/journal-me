@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminClient, requireAdmin } from "@/lib/server/entitlement";
+import {
+  CAMPO_ESCA,
+  MAX_BYTE_IMMAGINE,
+  MAX_IMMAGINI,
+  contestoPulito,
+  setaccio,
+} from "@/modules/sito/supporto-regole";
+import { notificaSupporto } from "@/modules/sito/server/posta-supporto";
 
 /**
  * Le richieste di assistenza che arrivano da dayalogue.com/support.
@@ -15,7 +23,18 @@ import { getAdminClient, requireAdmin } from "@/lib/server/entitlement";
  *   - le immagini devono essere JPEG in data URL, al massimo tre, ognuna
  *     sotto i 400 KB di testo. Il browser le riduce gia (supporto.tsx);
  *     questo controllo esiste per chi non passa dal browser;
+ *   - due trappole per i robot che non costano un clic a nessuno (campo
+ *     esca e orologio), in `supporto-regole.ts` perche le legge anche il
+ *     modulo nel browser;
  *   - un tetto di richieste per indirizzo IP.
+ *
+ * DAL 13 SETTEMBRE 2026 IL MESSAGGIO AVVISA ANCHE PER EMAIL. L'ordine e
+ * quello e non si inverte: prima si SALVA, poi si prova a mandare. Se la
+ * posta non parte il messaggio esiste comunque, e l'anomalia si legge nei
+ * log; se si invertisse, una chiave scaduta farebbe sparire le
+ * segnalazioni. Per questo la risposta e "ok" anche quando l'email
+ * fallisce: chi ha scritto non puo farci niente, e scoraggiarlo non aiuta
+ * nessuno.
  *
  * IL TETTO PER IP E' UNA PORTA, NON UN MURO. Vive nella memoria
  * dell'istanza, e su Vercel le istanze sono piu di una: uno che ci tiene
@@ -28,8 +47,6 @@ import { getAdminClient, requireAdmin } from "@/lib/server/entitlement";
  * GET e per il pannello: la legge solo l'amministratore.
  */
 
-const MAX_IMMAGINI = 3;
-const MAX_BYTE_IMMAGINE = 400_000;
 const TETTO_PER_IP = 5;
 const FINESTRA_MS = 60 * 60 * 1000;
 
@@ -91,6 +108,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  // Le trappole PRIMA di tutto il resto: un robot non arriva nemmeno a
+  // farsi validare i campi, e non consuma una query.
+  const verdetto = setaccio({
+    esca: body[CAMPO_ESCA],
+    msDaApertura: body.msDaApertura,
+  });
+  if (!verdetto.ok) {
+    // Niente contenuto nel log: sarebbe scrivere lo spam nei nostri registri.
+    console.warn("[supporto] scartato:", verdetto.perche);
+    // Si risponde "grazie" lo stesso: vedi il commento in supporto-regole.ts.
+    return NextResponse.json({ ok: true });
+  }
+
   const oggetto = typeof body.oggetto === "string" ? body.oggetto.trim() : "";
   const descrizione =
     typeof body.descrizione === "string" ? body.descrizione.trim() : "";
@@ -115,19 +145,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Immagini non valide" }, { status: 400 });
   }
 
-  // Del contesto si tiene solo cio che serve a rispondere, e per un numero
-  // fisso di chiavi: cosi il campo non diventa un imbuto dove il client puo
-  // infilare qualunque cosa.
-  const c = (body.contesto ?? {}) as Record<string, unknown>;
-  const stringa = (v: unknown, max: number) =>
-    typeof v === "string" ? v.slice(0, max) : "";
-  const contesto = {
-    ua: stringa(c.ua, 400),
-    schermo: stringa(c.schermo, 40),
-    lingua_browser: stringa(c.lingua_browser, 20),
-  };
+  const contesto = contestoPulito(body.contesto);
 
-  const { error } = await supabase.from("supporto").insert({
+  // L'id torna indietro perche finisce nell'email come riferimento: e cio
+  // che lega la riga in tabella al messaggio che Manuel sta leggendo.
+  const { data, error } = await supabase
+    .from("supporto")
+    .insert({
+      oggetto,
+      descrizione,
+      email,
+      lingua,
+      immagini: grezze,
+      contesto,
+    })
+    .select("id")
+    .single();
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const esito = await notificaSupporto({
+    id: (data?.id as string | undefined) ?? null,
     oggetto,
     descrizione,
     email,
@@ -135,9 +174,9 @@ export async function POST(req: NextRequest) {
     immagini: grezze,
     contesto,
   });
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  // Il messaggio e salvato: l'email che non parte e un guasto nostro, non
+  // suo. Lo si legge qui, non lo si scarica su chi ha chiesto aiuto.
+  if (!esito.inviata) console.error("[supporto] email non inviata:", esito.errore);
 
   return NextResponse.json({ ok: true });
 }

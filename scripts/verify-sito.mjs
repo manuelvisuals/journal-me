@@ -256,11 +256,12 @@ async function apri(percorso, w, h) {
   return { ctx, page, errori };
 }
 
-for (const [percorso, w, h, nome] of [
-  ["/", 1440, 900, "desktop"],
-  ["/", 390, 844, "telefono"],
-  ["/support", 390, 844, "supporto telefono"],
-  ["/en", 1440, 900, "inglese desktop"],
+for (const [percorso, w, h, nome, nudo] of [
+  ["/", 1440, 900, "desktop", false],
+  ["/", 390, 844, "telefono", false],
+  ["/support", 390, 844, "supporto telefono", true],
+  ["/support", 1440, 900, "supporto desktop", true],
+  ["/en", 1440, 900, "inglese desktop", false],
 ]) {
   const { ctx, page, errori } = await apri(percorso, w, h);
   const m = await page.evaluate(() => {
@@ -275,15 +276,31 @@ for (const [percorso, w, h, nome] of [
           : null,
       accedi: !!document.querySelector(".jm-sito-nav-accedi")?.getClientRects().length,
       nav: !!nav,
+      testataNuda: !!document.querySelector(".jm-sito-sup-testata"),
+      marchio: !!document.querySelector(".jm-sito-sup-testata .jm-marchio"),
+      lingue: !!document.querySelector(".jm-sito-sup-testata .jm-sito-lang"),
     };
   });
   check(`${nome}: la pagina non scorre di lato`, m.scrollOrizzontale === 0, String(m.scrollOrizzontale));
-  check(`${nome}: la barra in alto c'e`, m.nav === true);
-  check(`${nome}: il tasto principale non sborda dalla barra`, m.sbordo !== null && m.sbordo <= 0, String(m.sbordo));
-  if (w < 560) {
-    check(`${nome}: "Accedi" sparisce dove non ci sta`, m.accedi === false);
+  if (nudo) {
+    // DAL 13 SETTEMBRE 2026 /support NON HA LA BARRA DEL SITO (scelta di
+    // Manuel, mockup MOCKUP-supporto-e-feedback.html): chi apre questa
+    // pagina ha un problema, e "Inizia ora" gli proponeva di iscriversi
+    // mentre cercava aiuto. Restano il marchio (chi arriva dall'App Store
+    // deve sapere a chi scrive) e le due lingue, che sono due indirizzi
+    // veri. Questi tre controlli sono quelli che si accorgerebbero di un
+    // ritorno indietro per distrazione.
+    check(`${nome}: la testata nuda c'e`, m.testataNuda === true);
+    check(`${nome}: la testata nuda ha marchio e lingue`, m.marchio === true && m.lingue === true);
+    check(`${nome}: la barra del sito NON c'e`, m.nav === false);
   } else {
-    check(`${nome}: "Accedi" c'e dove ci sta`, m.accedi === true);
+    check(`${nome}: la barra in alto c'e`, m.nav === true);
+    check(`${nome}: il tasto principale non sborda dalla barra`, m.sbordo !== null && m.sbordo <= 0, String(m.sbordo));
+    if (w < 560) {
+      check(`${nome}: "Accedi" sparisce dove non ci sta`, m.accedi === false);
+    } else {
+      check(`${nome}: "Accedi" c'e dove ci sta`, m.accedi === true);
+    }
   }
   check(`${nome}: zero errori console`, errori.length === 0, errori.slice(0, 2).join(" | "));
   await ctx.close();

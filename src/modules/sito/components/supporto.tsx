@@ -1,9 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { LinguaSito } from "@/modules/sito/seo";
 import { testiDi } from "@/modules/sito/testi";
+import {
+  CAMPO_ESCA,
+  MAX_IMMAGINI,
+  MIN_MS_COMPILAZIONE,
+} from "@/modules/sito/supporto-regole";
 
 /**
  * Il modulo di assistenza di dayalogue.com/support.
@@ -20,13 +25,27 @@ import { testiDi } from "@/modules/sito/testi";
  * questa taglia un deposito file con le sue policy e i suoi URL firmati e
  * piu infrastruttura di quanta ne risparmi.
  *
+ * LE DUE TRAPPOLE PER I ROBOT NON SI VEDONO E NON COSTANO UN CLIC (13
+ * settembre 2026, scelta di Manuel: niente captcha). Un campo esca fuori
+ * campo che solo un programma compila, e l'orologio: meno di tre secondi
+ * dall'apertura non e una persona. Le regole NON vivono qui ma in
+ * supporto-regole.ts, condivise con la rotta: se stessero in due posti
+ * divergerebbero, e divergerebbero nel modo peggiore (il modulo dice "ok" e
+ * il server dice "no").
+ *
+ * QUANDO SI ARRIVA DALLA LINGUETTA FEEDBACK DELL'APP la pagina riceve
+ * l'email di chi sta scrivendo, la versione e la schermata di partenza:
+ * arrivano dall'indirizzo e la PAGINA li passa qui come proprieta, gia
+ * scritti nell'HTML del server. Leggerli qui dal browser vorrebbe dire un
+ * primo render diverso fra server e client, cioe il difetto di idratazione
+ * che si paga con una schermata che sfarfalla.
+ *
  * COSA VIAGGIA OLTRE A CIO CHE SI SCRIVE: browser e misura dello schermo.
  * Non e profilazione, e la meta delle risposte: "non si vede il tasto"
  * quasi sempre vuol dire una larghezza che non avevamo previsto. Non c'e
  * nessun identificativo, nessun cookie, nessuna analisi.
  */
 
-const MAX_IMMAGINI = 3;
 const LATO_MAX = 1280;
 const QUALITA = 0.72;
 
@@ -55,13 +74,38 @@ function emailPlausibile(v: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
 }
 
-export function ModuloSupporto({ lingua }: { lingua: LinguaSito }) {
+/** Cio che la linguetta dell'app sa gia di chi scrive. Tutto facoltativo:
+ *  chi arriva da Google non ha niente di tutto questo. */
+export type Precompilato = {
+  email?: string;
+  /** "app" quando si arriva dalla linguetta Feedback. */
+  da?: string;
+  versione?: string;
+  schermata?: string;
+};
+
+export function ModuloSupporto({
+  lingua,
+  precompilato,
+}: {
+  lingua: LinguaSito;
+  precompilato?: Precompilato;
+}) {
   const t = testiDi(lingua).supporto;
   const inputFile = useRef<HTMLInputElement | null>(null);
 
   const [oggetto, setOggetto] = useState("");
   const [descrizione, setDescrizione] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(precompilato?.email ?? "");
+  const [esca, setEsca] = useState("");
+
+  // L'orologio parte al MONTAGGIO, non al primo tasto premuto: un robot che
+  // compila e spedisce non preme niente, e una persona che apre la pagina e
+  // legge sta gia consumando quel tempo senza accorgersene.
+  const apertura = useRef<number>(0);
+  useEffect(() => {
+    apertura.current = Date.now();
+  }, []);
   const [immagini, setImmagini] = useState<string[]>([]);
   const [stato, setStato] = useState<"" | "invio" | "fatto">("");
   const [errore, setErrore] = useState("");
@@ -99,6 +143,13 @@ export function ModuloSupporto({ lingua }: { lingua: LinguaSito }) {
     }
     setErrore("");
     setStato("invio");
+    // Se una persona velocissima arriva prima della soglia non si rifiuta:
+    // si aspetta il pezzetto che manca e si spedisce lo stesso. Il freno e
+    // contro i robot, e un robot non aspetta.
+    const passato = Date.now() - apertura.current;
+    if (passato < MIN_MS_COMPILAZIONE) {
+      await new Promise((r) => setTimeout(r, MIN_MS_COMPILAZIONE - passato + 60));
+    }
     try {
       const resp = await fetch("/api/sito/supporto", {
         method: "POST",
@@ -109,10 +160,15 @@ export function ModuloSupporto({ lingua }: { lingua: LinguaSito }) {
           email: email.trim(),
           lingua,
           immagini,
+          msDaApertura: Date.now() - apertura.current,
+          [CAMPO_ESCA]: esca,
           contesto: {
             ua: navigator.userAgent,
             schermo: `${window.innerWidth}x${window.innerHeight}`,
             lingua_browser: navigator.language,
+            da: precompilato?.da ?? "",
+            versione: precompilato?.versione ?? "",
+            schermata: precompilato?.schermata ?? "",
           },
         }),
       });
@@ -205,6 +261,24 @@ export function ModuloSupporto({ lingua }: { lingua: LinguaSito }) {
           onChange={(e) => setEmail(e.target.value)}
         />
         <p className="jm-sito-aiuto">{t.emailAiuto}</p>
+      </div>
+
+      {/* IL CAMPO ESCA. Non e display:none e non e hidden: alcuni robot
+          saltano cio che e spento. E fuori campo, non raggiungibile col
+          tabulatore e dichiarato invisibile ai lettori di schermo, quindi
+          per una persona non esiste in nessuno dei modi in cui si usa una
+          pagina. */}
+      <div className="jm-sito-esca" aria-hidden="true">
+        <label htmlFor={CAMPO_ESCA}>Azienda</label>
+        <input
+          id={CAMPO_ESCA}
+          name={CAMPO_ESCA}
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={esca}
+          onChange={(e) => setEsca(e.target.value)}
+        />
       </div>
 
       <div className="jm-sito-azioni">

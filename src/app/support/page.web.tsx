@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { PaginaSupporto } from "@/modules/sito/components/pagina-supporto";
 import { metadataSito, viewportSito } from "@/modules/sito/metadata";
+import { precompilatoDaIndirizzo, type ParametriPagina } from "@/modules/sito/supporto-indirizzo";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return metadataSito("support", "it");
 }
 
-export default function Pagina() {
-  return <PaginaSupporto lingua="it" altraLingua="/en/support" />;
+export default async function Pagina({ searchParams }: { searchParams: ParametriPagina }) {
+  return (
+    <PaginaSupporto
+      lingua="it"
+      altraLingua="/en/support"
+      precompilato={precompilatoDaIndirizzo(await searchParams)}
+    />
+  );
 }
