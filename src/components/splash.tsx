@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Marchio } from "@/components/brand/marchio";
 import { isReady, onReady } from "@/lib/app-ready";
 
 /**
@@ -74,7 +73,25 @@ export function Splash() {
     >
       <div className="jm-splash-halo" />
       <div className="jm-splash-mark">
-        <Marchio />
+        {/* PROVA DEL 13 SETTEMBRE 2026 (Manuel: "mettimi questo logo
+            animato al posto di quello statico, per prova"): SOLO qui, nella
+            splash, il marchio e un'animazione — i tre pallini che diventano
+            germoglio, fiore, nuvola e tornano pallini — invece del
+            componente <Marchio />. Tutte le altre schermate restano col
+            marchio statico. Per tornare indietro: rimettere <Marchio />,
+            togliere public/marchio-animato.webp e la classe .jm-splash-anim
+            (base.css), e rimettere la splash nella lista del banco
+            verify-marchio. L'immagine ha l'inchiostro scuro e i pallini
+            terracotta DISEGNATI DENTRO: sui temi scuri e il CSS a
+            ribaltarla (vedi .jm-splash-anim in base.css). */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="jm-splash-anim"
+          src="/marchio-animato.webp"
+          alt=""
+          width={600}
+          height={380}
+        />
       </div>
       <div className="jm-splash-bar">
         <i />

@@ -114,7 +114,12 @@ export function RailLeft() {
             qui lo spazio c'e (sul telefono la barra ne mostra uno solo).
             Sono sotto le voci fisse, dentro il vassoio: sono sezioni,
             non azioni. */}
-        {moduli.map((m) => (
+        {moduli
+          /* Un modulo che e GIA una voce fissa qui sopra (il Recap, che dal
+             4 settembre e anche un modulo acceso di fabbrica) non si
+             ripete: il 13 settembre la rail mostrava "Recap" due volte. */
+          .filter((m) => !NAV_ITEMS.some((n) => n.href === m.href))
+          .map((m) => (
           <Link
             key={m.id}
             href={m.href}

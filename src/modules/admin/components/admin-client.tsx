@@ -31,11 +31,12 @@ import { useStorageMode } from "@/lib/data/store";
 import { useT } from "@/lib/i18n";
 import { PannelloSeo } from "@/modules/sito";
 import { AreeSchermata, type Riga } from "@/modules/admin/components/aree-schermata";
+import { IscrittiSchermata } from "@/modules/admin/components/iscritti-schermata";
 import { BenvenutoSchermata } from "@/modules/admin/components/benvenuto-schermata";
 import { RegaloSchermata } from "@/modules/admin/components/regalo-schermata";
 
 type Stato = "carico" | "negato" | "pronto";
-type Voce = "aree" | "sito" | "benvenuto" | "regalo";
+type Voce = "aree" | "iscritti" | "sito" | "benvenuto" | "regalo";
 
 export function AdminClient() {
   const t = useT();
@@ -43,6 +44,8 @@ export function AdminClient() {
   const [stato, setStato] = useState<Stato>("carico");
   const [righe, setRighe] = useState<Riga[]>([]);
   const [voce, setVoce] = useState<Voce>("aree");
+  // Il numero accanto a "Iscritti": lo dice la schermata quando ha letto.
+  const [iscritti, setIscritti] = useState<number | null>(null);
 
   // Il pannello esiste solo per un account cloud: in modalita locale non si
   // fa NEMMENO UNA richiesta di rete (SPEC-v2 §1), e senza sessione non c'e
@@ -101,6 +104,9 @@ export function AdminClient() {
           <button type="button" className={vai("aree")} onClick={() => setVoce("aree")}>
             {t("Aree")} <em>{righe.length}</em>
           </button>
+          <button type="button" className={vai("iscritti")} onClick={() => setVoce("iscritti")}>
+            {t("Iscritti")} {iscritti !== null && <em>{iscritti}</em>}
+          </button>
           <button type="button" className={vai("sito")} onClick={() => setVoce("sito")}>
             {t("Sito")}
           </button>
@@ -120,6 +126,7 @@ export function AdminClient() {
       </aside>
 
       {voce === "aree" && <AreeSchermata righe={righe} setRighe={setRighe} />}
+      {voce === "iscritti" && <IscrittiSchermata onConteggio={setIscritti} />}
       {voce === "benvenuto" && <BenvenutoSchermata />}
       {voce === "regalo" && <RegaloSchermata />}
       {voce === "sito" && (
