@@ -25,7 +25,9 @@ cancellare quando la 2.0 e approvata. Le classi nuove hanno prefisso
   `support/page.web.tsx`, `en/support/page.web.tsx`, piu `robots.ts`,
   `sitemap.ts` e i gusci `api/sito/seo/` e `api/sito/supporto/`.
 - Prefisso CSS: `jm-sito`.
-- Banchi prima del push: `verify-sito` (piu tsc, eslint, verify-i18n).
+- Banchi prima del push: `verify-sito` e `verify-scorrimento-fluido`
+  (piu tsc, eslint, verify-i18n; e `verify-v7` ogni volta che si tocca il
+  CSS del sito).
 
 ## Dall'11 settembre 2026: solo telefono, e /v7 e il metro
 
@@ -52,6 +54,67 @@ impronta posizione e misura di 23 pezzi di /v7 a 1440x900 e 393x852 e le
 confronta con `scripts/verify-v7.impronta.json`. Se qualcosa si e mosso lo
 dice e mostra cosa. Quando il cambiamento e voluto — cioe quasi mai — si
 risalva con `--scrivi`.
+
+**Dal 12 settembre 2026 la regola ha una deroga, e va letta insieme.**
+Manuel ha chiesto una modifica al DESKTOP (la scena "come funziona", qui
+sotto). "Il desktop non si tocca" resta il default, non e piu un divieto:
+si tocca quando lo chiede lui, e allora valgono le due regole di sempre
+alla rovescia — la regola nuova sta dentro `@media (min-width: 901px)` per
+non toccare il telefono, ed esclude comunque l'archivio. `/v7` resta il
+metro: dopo ogni modifica al desktop, `verify-v7` deve dire "identico". Se
+dice qualcos'altro, non hai cambiato la home: hai cambiato anche
+l'archivio.
+
+## La scena "come funziona" (jm-sito12): sul desktop il telefono parte al centro
+
+12 settembre 2026, Manuel: "ora mostra il telefono di lato in partenza e
+poi alla fine va al centro; vorrei provarla col telefono al centro in
+partenza, poi va di lato e appaiono i fumetti" (mockup di riferimento
+`scena-bloccata.html`). **Cambia l'ordine, non i pezzi**: i fumetti
+restano identici — misura, schermo dentro, dissolvenza — perche erano gia
+stati tarati due volte l'11 settembre ("falli il doppio piu grandi", poi
+"spariscono troppo presto"), e ritoccarli sarebbe rifare un lavoro
+approvato.
+
+Le due cose da sapere prima di rimettere le mani qui:
+
+1. **La scena non si vede finche non si incolla.** Con
+   `data-pista="avanti"` il cursore `--s` parte quando la pista scende al
+   55% della finestra, ma lo `position: sticky` morde solo quando la pista
+   tocca il bordo alto: su 660svh a 900px sono 495 pixel, cioe `--s` = .09.
+   Il primo tentativo faceva partire il telefono a .02 e il quadro
+   d'apertura — telefono al centro — non si vedeva mai. Qualunque
+   movimento nuovo comincia DOPO quel numero, e quel numero si ricalcola
+   se cambia l'altezza della pista.
+2. **La pista si e allungata da 500 a 660svh per non pagare l'aggiunta
+   con il tempo di lettura.** Ogni carta ha una finestra piu stretta in
+   percentuale (.18 invece di .2333) ma piu lunga in pixel (119svh invece
+   di 117). Chi accorcia la pista senza rifare questo conto rimette in
+   piedi il difetto di cui Manuel si era gia lamentato.
+
+Il telefono fa un viaggio solo, scritto una volta: `(--esci - --centro)`
+vale 0 in partenza, 1 mentre e fuori e 0 di nuovo alla fine, e da li
+escono larghezza, `left` e `top`. Sotto i 900px non cambia niente: la
+coreografia del telefono e quella di prima.
+
+**La pista lunga ha rotto la precisione di `--s`, e questa e la regola
+che ne esce.** Manuel, sull'anteprima: "quando scrollo, tremola in su e
+giu, un CLS di pochi pixel". Non era CLS — l'altezza del documento non
+cambiava di un pixel, misurato lungo tutta la pagina. Era
+l'arrotondamento: `scorrimento.tsx` scriveva `--s` con quattro decimali,
+e su 6574 pixel di pista uno scatto vale 0,66 pixel di scorrimento
+mentre la carta si sposta di 0,42 pixel per scatto. Un pixel di rotella
+avanzava di uno o di due scatti a seconda di dove cadeva
+l'arrotondamento, e la carta alternava 0,42 e 0,84 pixel: tremolio.
+Adesso i decimali sono sei (scatto = 0,004 pixel).
+
+REGOLA: la precisione di `--s` deve stare sotto il pixel PER LA PISTA
+PIU LUNGA del sito, non per quella media. Chi allunga una pista rifa
+questo conto. Banco: `node scripts/verify-scorrimento-fluido.mjs`, che
+scorre di un pixel per volta e pretende che lo spostamento per pixel non
+vari piu di 0,10 (oggi varia di 0,031, che e la quantizzazione a 1/64 di
+pixel del browser). Provato a mordere: con quattro decimali lo scarto
+sale a 0,422 e il banco diventa rosso.
 
 ## La prima schermata sul telefono (jm-sito14)
 
