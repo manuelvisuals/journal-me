@@ -5812,6 +5812,97 @@ textarea.jm-sito-in {
     top: calc(58% - 0.5% * var(--centro));
   }
 }
+/* =====================================================================
+   LA SCENA AL CONTRARIO, SUL DESKTOP (12 settembre 2026, Manuel: "ora
+   mostra il telefono di lato in partenza e poi alla fine va al centro;
+   vorrei provarla col telefono al centro in partenza, poi va di lato e
+   appaiono i fumetti", mockup scena-bloccata.html).
+
+   Cambia l'ORDINE, non i pezzi. I fumetti restano quelli di adesso —
+   stessa misura, stesso schermo dentro, stessa dissolvenza — perche sono
+   gia tarati (giro dell'11 settembre: "falli il doppio piu grandi", poi
+   "spariscono troppo presto"). Quello che si aggiunge e un tempo prima
+   di tutti: il telefono parte al CENTRO, piccolo, e scivola fuori dal
+   bordo sinistro crescendo. Solo dopo entrano le carte.
+
+   Perche solo qui e non anche sul telefono: la richiesta e sul desktop, e
+   sotto i 900px la scena ha una coreografia sua (telefono piccolo al 58%
+   dell'altezza, carta quadrata nella meta destra) tarata su quello
+   schermo. Toccarla non era chiesto. Da qui il `min-width: 901px`.
+
+   Perche `:not(.jm-sito4-archivio-v7)`: /v7 usa QUESTE classi e questo
+   foglio, e senza l'esclusione l'archivio del desktop approvato
+   cambierebbe insieme alla home. Il banco verify-v7 lo misura.
+
+   I NUMERI, e la ragione di ognuno. La corsa e la stessa cosa di prima,
+   con un pezzo davanti, quindi la pista si allunga da 500 a 620svh per
+   NON pagare l'aggiunta con il tempo di lettura delle carte:
+
+     (fino a .09)          la pista scorre ma la scena non si e ancora
+                           incollata: qui non deve succedere niente
+     --esci   .10 -> .25   il telefono va da centro-piccolo a meta fuori
+     carta 1  .25 -> .43   (finestre da .18, fattore 5.5556)
+     carta 2  .43 -> .61
+     carta 3  .61 -> .79
+     --fine   .82 -> .89   compare la frase che chiude
+     --centro .82 -> .95   il telefono torna al centro
+
+   Il .09 iniziale non e un margine di comodo, e una misura: con
+   `data-pista="avanti"` il cursore parte quando la pista e scesa al 55%
+   della finestra, ma la scena si INCOLLA solo quando la pista tocca il
+   bordo alto. Su 660svh a 900px di finestra sono 495 pixel di
+   scorrimento, cioe s = .089. Un movimento che comincia prima di li
+   avviene fuori dallo schermo: il primo tentativo faceva partire il
+   telefono a .02 e il quadro d'apertura — telefono al centro — non si
+   vedeva mai.
+
+   Ogni finestra di carta vale .18 x 660svh = 119svh contro i .2333 x
+   500svh = 117svh di prima: la carta si legge per qualche pixel IN PIU,
+   non in meno. Era il vincolo da rispettare, e la ragione per cui la
+   pista passa da 500 a 660svh invece di stringere le carte.
+
+   Il primo titolo resta acceso da subito (la sua regola non ha
+   dissolvenza in entrata) e questo qui e voluto: la scena si apre su un
+   quadro fermo — occhiello, titolo, telefono al centro — e il movimento
+   comincia quando si scorre. La carta no: la sua dissolvenza in entrata
+   la tiene invisibile, e il suo `top` la tiene sotto il bordo.
+
+   La prima carta parte a .25, cioe nell'istante in cui il telefono
+   finisce di uscire, e non piu tardi: con due centesimi di stacco si
+   vedeva un quadro con il telefono gia fuori e la meta destra vuota, che
+   e il momento in cui una scena sembra rotta.
+   ===================================================================== */
+@media (min-width: 901px) {
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-pista {
+    height: 660svh;
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-scena {
+    --esci: clamp(0, calc((var(--s, 0) - .10) * 6.6667), 1);
+    --fine: clamp(0, calc((var(--s, 0) - .82) * 14.2857), 1);
+    --centro: clamp(0, calc((var(--s, 0) - .82) * 7.6923), 1);
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-titolo,
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-carta {
+    --u: clamp(0, calc((var(--s, 0) - .25) * 5.5556), 1);
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(2) .jm-sito12-titolo,
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(2) .jm-sito12-carta {
+    --u: clamp(0, calc((var(--s, 0) - .43) * 5.5556), 1);
+  }
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-titolo,
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(3) .jm-sito12-carta {
+    --u: clamp(0, calc((var(--s, 0) - .61) * 5.5556), 1);
+  }
+  /* Il telefono adesso fa due viaggi, e sono lo stesso viaggio in due
+     versi: `--esci` lo porta fuori, `--centro` lo riporta dentro. Un solo
+     termine, `(esci - centro)`, che vale 0 all'inizio, 1 in mezzo e 0
+     alla fine: cosi non esiste uno stato in cui i due si contraddicono. */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-telefono {
+    width: calc(var(--dentro) + (var(--fuori) - var(--dentro)) * (var(--esci) - var(--centro)));
+    left: calc(50% - 48% * (var(--esci) - var(--centro)));
+    top: calc(58% - 8% * (var(--esci) - var(--centro)));
+  }
+}
 /* Chi ha chiesto meno movimento vede la scena ferma sull'ultimo quadro:
    telefono al centro e la frase, cioe cio che la scena voleva dire. */
 @media (prefers-reduced-motion: reduce) {
