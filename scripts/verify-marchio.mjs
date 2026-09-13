@@ -99,7 +99,8 @@ check(
 
 const POSTI = [
   ["la rail del desktop", "src/components/desktop/rail-left.tsx"],
-  ["la splash", "src/components/splash.tsx"],
+  /* "la splash" e FUORI dalla lista dal 13 settembre 2026: e in prova
+     col marchio animato (public/marchio-animato.webp), controllato sotto. */
   ["lo sblocco biometrico", "src/components/biometric-lock.tsx"],
   ["il login", "src/app/(app)/login/page.tsx"],
   ["la privacy", "src/app/(app)/privacy/page.tsx"],
@@ -112,6 +113,20 @@ for (const [nome, file] of POSTI) {
   check(
     `${nome}: monta <Marchio /> e non scrive il nome a mano`,
     src.includes("<Marchio") && !/jm-marchio"|>\s*dayalogue\s*<|<span[^>]*>day<\/span>alogue/.test(src),
+  );
+}
+
+/* PROVA DEL 13 SETTEMBRE 2026: la splash monta il marchio ANIMATO e non
+   scrive il nome a mano. Quando la prova finisce, la splash torna nella
+   lista qui sopra e questo blocco sparisce. */
+{
+  const s = readFileSync("src/components/splash.tsx", "utf8");
+  check(
+    "la splash (in prova): monta il marchio animato, file presente, e non scrive il nome a mano",
+    /jm-splash-anim/.test(s) &&
+      /\/marchio-animato\.webp/.test(s) &&
+      existsSync("public/marchio-animato.webp") &&
+      !/>\s*dayalogue\s*<|<span[^>]*>day<\/span>alogue/.test(s),
   );
 }
 
