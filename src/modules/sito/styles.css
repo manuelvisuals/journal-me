@@ -5043,6 +5043,15 @@ textarea.jm-sito-in {
           mask-image: linear-gradient(180deg, transparent calc(var(--fronte) - 7px), #000 calc(var(--fronte) + 7px));
 }
 @media (max-width: 900px) {
+  /* `data-fx` sull'intro serve al DESKTOP, dove quella frase si prende una
+     schermata sua ed entra ed esce col cursore. Qui sotto no: Manuel ha
+     chiesto di lasciare il telefono com'era, e con `data-fx` la frase
+     comincerebbe invisibile e comparirebbe entrando in vista. Si rimette
+     ferma e visibile. */
+  .jm-sito7[data-js] .jm-sito9-intro {
+    opacity: 1;
+    transform: none;
+  }
   .jm-sito7[data-js] .jm-sito9-pista { height: 360svh; }
   .jm-sito7[data-js] .jm-sito9-scena {
     height: var(--scena-h, calc(540px * var(--jm-ui-scale)));
@@ -6111,6 +6120,53 @@ textarea.jm-sito-in {
      niente, ed e il tipo di errore che si cerca per mezz'ora. */
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] #come {
     padding-bottom: 0;
+  }
+
+  /* ===================================================================
+     LA FRASE DELLA CASSAFORTE SI PRENDE UNA SCHERMATA (13 settembre 2026,
+     Manuel: "questa sezione non si vede bene perche non sta centrata
+     nella pagina; poi sparisce e diventa 'Solo tu hai la chiave', che
+     resta fisso, e sotto vedi l'animazione dei box").
+
+     Prima era un paragrafo qualunque appoggiato sopra la scena: piccolo in
+     mezzo a una sezione altissima, e quando la scena si incollava restava
+     li in cima, mezzo tagliato, insieme al titolo. Due frasi nello stesso
+     quadro, e nessuna delle due si legge.
+
+     Adesso e un quadro suo: alta una schermata, la frase al centro esatto,
+     piu grande. Si legge, esce, e solo dopo il titolo si incolla con
+     l'animazione sotto. Non e stato spostato niente nel documento: e la
+     stessa frase, con intorno lo spazio che le mancava.
+     =================================================================== */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito9-intro {
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    max-width: 30ch;
+    font-size: calc(26px * var(--jm-ui-scale));
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--jm-bg) 82%, transparent);
+    /* ENTRA E SE NE VA COL CURSORE, non con una transizione a tempo. Il
+       blocco e alto una schermata, quindi `--p` (che vale 0 quando il suo
+       bordo alto tocca il fondo della finestra e 1 quando il bordo basso
+       esce in cima) passa per 0,5 quando riempie lo schermo: entra fra
+       .18 e .36, esce fra .58 e .74. La dissolvenza in uscita e il punto
+       di tutto: senza, la frase resta in cima mentre il titolo si incolla
+       sotto, e nel quadro ci sono due frasi che si contendono l'occhio —
+       il difetto che Manuel ha visto.
+       La transizione a tempo della regola generale va spenta: legata al
+       cursore darebbe 0,9 secondi di ritardo su ogni pixel di rotella. */
+    opacity: min(
+      clamp(0, calc((var(--p, 0) - .18) * 5.5556), 1),
+      calc(1 - clamp(0, calc((var(--p, 0) - .58) * 6.25), 1))
+    );
+    transition: none;
+  }
+  /* Il riempimento in cima alla cassaforte serviva a staccarla dalla
+     sezione chiara di prima. Adesso sopra c'e il cioccolato della scena
+     fusa, e quei 118px sono solo un buco nero prima della frase. */
+  .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito9-chiave {
+    padding-top: 0;
   }
 }
 /* Chi ha chiesto meno movimento vede la scena ferma sull'ultimo quadro:

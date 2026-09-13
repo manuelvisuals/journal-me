@@ -159,6 +159,21 @@ Non serve toccare il fondo della pista con una transizione a parte: la
 scena e alta 100svh e resta incollata fino al fondo della pista, quindi
 negli ultimi pixel non si scopre mai la crema sotto di lei.
 
+**La frase della cassaforte si prende una schermata (13 settembre).**
+Manuel: "non si vede bene perche non sta centrata nella pagina; poi
+sparisce e diventa 'Solo tu hai la chiave', che resta fisso, e sotto vedi
+l'animazione dei box". Prima era un paragrafo appoggiato sopra la scena:
+piccolo dentro una sezione altissima, e quando la scena si incollava
+restava in cima insieme al titolo — due frasi nello stesso quadro, e non
+si legge nessuna delle due. Adesso e alta `100svh` con la frase al centro,
+piu grande, e soprattutto ENTRA ED ESCE col cursore: `--p` di `data-fx`
+vale 0,5 quando il blocco riempie lo schermo, quindi entra fra .18 e .36 ed
+esce fra .58 e .74. La dissolvenza in USCITA e il punto di tutto. La
+transizione a tempo della regola generale va spenta (`transition: none`),
+se no ogni pixel di rotella arriva con 0,9 secondi di ritardo.
+Sotto i 900px `data-fx` viene neutralizzato (`opacity: 1`): la frase li
+resta ferma e visibile com'era.
+
 Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
 rosso una volta perche il server di sviluppo sta ancora ricompilando.
 Rilancialo: se e verde tre volte di fila, era la ricompilazione.

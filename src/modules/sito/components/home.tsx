@@ -658,7 +658,11 @@ export function HomeSito({
             archivi /v1../v6. */}
         <section className="jm-sito9-chiave" id="cassaforte" aria-labelledby="jm-sito9-titolo">
           <div className="jm-sito9-cont">
-            <p className="jm-sito9-intro">{t.chiave.testo}</p>
+            {/* `data-fx` le da l'entrata in dissolvenza dal basso come agli
+                altri blocchi di testo: sul desktop questa frase occupa una
+                schermata sua (vedi styles.css) e senza entrata sembrerebbe
+                gia li da sempre. */}
+            <p className="jm-sito9-intro" data-fx="testo">{t.chiave.testo}</p>
 
             <div className="jm-sito9-pista" data-pista="avanti">
               <div className="jm-sito9-scena" data-misura>

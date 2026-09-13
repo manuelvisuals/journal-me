@@ -871,7 +871,7 @@ const en: Testi = {
   },
   prova: {
     finale: "Your journal, always with you.",
-    chiude: "And it stays yours.",
+    chiude: "And it's private.",
   },
   mentre: {
     etichetta: "While you do something else",
