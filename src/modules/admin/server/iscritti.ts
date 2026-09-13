@@ -61,6 +61,23 @@ export type AccountIscritto = {
   aiEurMese: number;
   cassaforte: boolean;
   ospitePrima: string | null;
+  percorso: Percorso;
+};
+
+/**
+ * IL PERCORSO (13 settembre 2026, sera; mockup admin-iscritti.html sez. 07,
+ * "come una linea della metropolitana"): quattro tappe fisse — prova,
+ * prova completata, account, premium — ognuna con la data in cui e stata
+ * raggiunta, o null se non lo e. `fine` dice come si legge l'ultima tappa:
+ * "premium" (pagato), "mano" (premium messo a mano), "inattivo" (niente
+ * da 30 giorni senza essere arrivato in fondo), oppure null (in cammino).
+ */
+export type Percorso = {
+  prova: string | null;
+  provaCompletata: string | null;
+  account: string | null;
+  premium: string | null;
+  fine: "premium" | "mano" | "inattivo" | null;
 };
 
 export type OspiteIscritto = {
@@ -72,6 +89,7 @@ export type OspiteIscritto = {
   max: number;
   aiEurMese: number;
   esito: { tipo: "in-corso" | "finito" | "account"; email?: string };
+  percorso: Percorso;
 };
 
 function inizioMeseUtc(): string {
@@ -108,7 +126,7 @@ export async function GET(req: NextRequest) {
     supabase.from("cassaforte_utente").select("user_id"),
     supabase.from("ai_usage").select("user_id, braccialetto_id, costo_usd").gte("created_at", daMese),
     supabase.from("braccialetti").select("id, user_id, creato_il, ultimo_uso, devicecheck"),
-    supabase.from("braccialetto_giornate").select("braccialetto_id"),
+    supabase.from("braccialetto_giornate").select("braccialetto_id, creato_il"),
     supabase.from("regalo").select("giornate_per_ospite, cambio_usd_eur").eq("id", 1).maybeSingle(),
   ]);
   for (const r of [profili, entries, cassettine, cassaforte, usage, braccialetti, giornateOspiti]) {
@@ -143,23 +161,54 @@ export async function GET(req: NextRequest) {
   for (const p of (profili.data ?? []) as Profilo[]) profiloDi.set(p.user_id, p);
 
   const usatePerBraccialetto = new Map<string, number>();
-  for (const r of (giornateOspiti.data ?? []) as { braccialetto_id: string }[]) {
+  const giornateDiBraccialetto = new Map<string, string[]>();
+  for (const r of (giornateOspiti.data ?? []) as { braccialetto_id: string; creato_il?: string }[]) {
     usatePerBraccialetto.set(r.braccialetto_id, (usatePerBraccialetto.get(r.braccialetto_id) ?? 0) + 1);
+    if (r.creato_il) {
+      const l = giornateDiBraccialetto.get(r.braccialetto_id) ?? [];
+      l.push(r.creato_il);
+      giornateDiBraccialetto.set(r.braccialetto_id, l);
+    }
   }
+  /** La data in cui il regalo e finito: quella dell'ultima giornata che ci stava dentro. */
+  const completataIl = (id: string): string | null => {
+    const l = giornateDiBraccialetto.get(id);
+    if (!l || maxRegalo <= 0 || l.length < maxRegalo) return null;
+    return l.slice().sort()[maxRegalo - 1] ?? null;
+  };
+  const adesso = Date.now();
+  const trentaGiorni = adesso - 30 * 86_400_000;
+  const utenteDi = new Map<string, Utente>();
+  for (const u of utenti) utenteDi.set(u.id, u);
   const emailDi = new Map<string, string>();
   for (const u of utenti) if (u.email) emailDi.set(u.id, u.email);
   const braccialettoDiUtente = new Map<string, string>();
+  const braccialettoIdDiUtente = new Map<string, string>();
 
   const ospiti: OspiteIscritto[] = ((braccialetti.data ?? []) as {
     id: string; user_id?: string | null; creato_il: string; ultimo_uso: string; devicecheck?: boolean | null;
   }[]).map((b) => {
     const usate = usatePerBraccialetto.get(b.id) ?? 0;
-    if (b.user_id && !braccialettoDiUtente.has(b.user_id)) braccialettoDiUtente.set(b.user_id, b.creato_il);
+    if (b.user_id && !braccialettoDiUtente.has(b.user_id)) {
+      braccialettoDiUtente.set(b.user_id, b.creato_il);
+      braccialettoIdDiUtente.set(b.user_id, b.id);
+    }
     const esito: OspiteIscritto["esito"] = b.user_id
       ? { tipo: "account", email: emailDi.get(b.user_id) ?? "" }
       : usate >= maxRegalo && maxRegalo > 0
         ? { tipo: "finito" }
         : { tipo: "in-corso" };
+    const profiloAccount = b.user_id ? profiloDi.get(b.user_id) : undefined;
+    const pianoAccount = pianoEffettivo(profiloAccount ?? null);
+    const percorso: Percorso = {
+      prova: usate > 0 ? b.creato_il : null,
+      provaCompletata: completataIl(b.id),
+      account: b.user_id ? utenteDi.get(b.user_id)?.created_at ?? b.ultimo_uso : null,
+      premium: pianoAccount === "premium" ? profiloAccount?.current_period_end ?? null : null,
+      fine: pianoAccount === "premium"
+        ? (profiloAccount?.plan_source === "manual" ? "mano" : "premium")
+        : Date.parse(b.ultimo_uso) < trentaGiorni ? "inattivo" : null,
+    };
     return {
       id: b.id,
       devicecheck: Boolean(b.devicecheck),
@@ -169,6 +218,7 @@ export async function GET(req: NextRequest) {
       max: maxRegalo,
       aiEurMese: eurPerBraccialetto.get(b.id) ?? 0,
       esito,
+      percorso,
     };
   });
 
@@ -196,12 +246,19 @@ export async function GET(req: NextRequest) {
         aiEurMese: eurPerUtente.get(u.id) ?? 0,
         cassaforte: conCassaforte.has(u.id),
         ospitePrima: braccialettoDiUtente.get(u.id) ?? null,
+        percorso: {
+          prova: braccialettoDiUtente.get(u.id) ?? null,
+          provaCompletata: braccialettoIdDiUtente.has(u.id) ? completataIl(braccialettoIdDiUtente.get(u.id) as string) : null,
+          account: u.created_at ?? null,
+          premium: piano === "premium" ? p?.current_period_end ?? null : null,
+          fine: piano === "premium"
+            ? (fonte === "manual" ? "mano" : "premium")
+            : u.last_sign_in_at && Date.parse(u.last_sign_in_at) < trentaGiorni ? "inattivo" : null,
+        },
       };
     });
 
-  const adesso = Date.now();
   const setteGiorni = adesso - 7 * 86_400_000;
-  const trentaGiorni = adesso - 30 * 86_400_000;
   const premium = account.filter((a) => a.piano === "premium");
   const numeri = {
     account: account.length,
