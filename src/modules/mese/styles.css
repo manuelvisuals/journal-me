@@ -613,9 +613,20 @@
   flex: 1;
 }
 .jm-mese-mini-prev .h {
-  display: block;
+  /* SEMPRE DUE RIGHE DI ALTEZZA (13 settembre 2026, Manuel: "la sezione si
+     alza e si abbassa a seconda del contenuto"). La riga sta appoggiata in
+     fondo, quindi un titolo di una riga la faceva salire e uno di due la
+     faceva scendere, e passando da un giorno all'altro tutto ballava.
+     L'altezza e riservata a prescindere: un titolo corto lascia aria, uno
+     piu lungo si ferma alla seconda riga coi puntini (il giorno si apre
+     comunque). */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-size: calc(15px * var(--jm-ui-scale));
   line-height: 1.4;
+  height: calc(15px * var(--jm-ui-scale) * 1.4 * 2);
   color: var(--color-ink);
 }
 .jm-mese-mini-prev .h.vuota {
@@ -647,6 +658,10 @@
   border-top: 1px solid var(--color-line);
   font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
+  /* Alta quanto la riga del giorno (due righe di titolo + la porta): cosi
+     il primo tocco su un giorno non fa saltare niente. */
+  box-sizing: border-box;
+  min-height: calc(1px + 16px * var(--jm-space) + 15px * var(--jm-ui-scale) * 1.4 * 2 + 8px * var(--jm-space) + 12px * var(--jm-ui-scale) * 1.5);
 }
 
 /* Il tasto che scambia lista e scacchiera. Dal 30 agosto 2026 non sta

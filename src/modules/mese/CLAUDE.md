@@ -18,7 +18,8 @@ Le scambia l'icona nell'intestazione; la scelta vive in `vista.ts`
 
 - Prefissi CSS (misurati): `jm-mese`, `jm-month`, `jm-dots`, `jm-picker`.
 - Banchi prima del push: `verify-pr9`, `verify-mese-nav`,
-  `verify-barra-alto`, `verify-mese-riprova` (piu tsc, eslint, verify-i18n).
+  `verify-barra-alto`, `verify-mese-riprova`, `verify-mese-riga-fissa` (piu
+  tsc, eslint, verify-i18n).
 
 La barra in alto (30 agosto 2026, scheletro): il nome della schermata e il
 pallino dell'account NON stanno piu nell'intestazione di questo modulo, ma
@@ -37,3 +38,15 @@ lettura fallita si ritenta una volta e poi mostra "Riprova" al posto dei
 puntini, e il mese fallito esce dai "gia chiesti". Banco:
 `verify-mese-riprova` (10 controlli, morso provato: col vecchio codice 4
 rossi, compreso lo sfoglia-mentre-arriva).
+
+## La riga del giorno sotto la scacchiera non balla (13 settembre 2026)
+
+Sul telefono la riga in fondo (numero, titolo, "apri la giornata") sta
+appoggiata al bordo basso (`margin-top: auto`), quindi la sua altezza
+decideva dove stava il bordo superiore: un titolo di una riga la alzava, uno
+di due la abbassava, e cambiando giorno tutto saltava. Ora il titolo
+(`.jm-mese-mini-prev .h`) riserva SEMPRE due righe e si ferma alla seconda
+coi puntini (`-webkit-line-clamp: 2`), e la riga di aiuto (nessun giorno
+scelto) ha la stessa altezza minima: il primo tocco non sposta niente.
+Banco: `verify-mese-riga-fissa` (5 controlli, misura il `top` della riga fra
+titolo corto e lungo: deve essere lo stesso pixel).
