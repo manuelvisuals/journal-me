@@ -73,6 +73,8 @@ export class SupabaseFintoServer {
     };
     /** Gli utenti che il finto riconosce dal gettone: token -> { id, email }. */
     this.utenti = new Map();
+    /** Gli account come li da auth.admin.listUsers: { id, email, created_at, last_sign_in_at }. */
+    this.accountAuth = [];
     this.registro = [];
     this.server = null;
     this.porta = 0;
@@ -178,6 +180,16 @@ export class SupabaseFintoServer {
       res.end(body === undefined ? "" : JSON.stringify(body));
     };
 
+    // L'elenco degli account (auth.admin.listUsers), per il pannello
+    // Iscritti (13 settembre 2026): la lista in `this.accountAuth`, a pagine
+    // come fa Supabase. Vuota finche un banco non la riempie.
+    if (url.pathname === "/auth/v1/admin/users" && req.method === "GET") {
+      const page = Number(url.searchParams.get("page") ?? 1) || 1;
+      const perPage = Number(url.searchParams.get("per_page") ?? 50) || 50;
+      const tutti = this.accountAuth ?? [];
+      const fetta = tutti.slice((page - 1) * perPage, page * perPage);
+      return rispondi(200, { users: fetta, aud: "authenticated" }, { "x-total-count": String(tutti.length) });
+    }
     if (url.pathname.startsWith("/auth/v1/user")) {
       const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
       const u = this.utenti.get(token);

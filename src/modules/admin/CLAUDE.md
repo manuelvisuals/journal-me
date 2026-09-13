@@ -50,3 +50,21 @@ per ospite, tetto mensile, speso del mese (sola lettura, con la barra) e
 l'interruttore "Annuale in vendita" (migration 024). Si salva con UNA
 scrittura (PUT), "Annulla" rimette la bozza. Banco:
 `scripts/verify-ospite-schermate.mjs` (05).
+
+## Iscritti (13 settembre 2026, branch `admin-iscritti`)
+
+Mockup `design/mockups/admin-iscritti.html` (v2, dopo il controaudit e il
+polish; scelte di Manuel A2 B2 C2). `server/iscritti.ts` -> GET/PUT
+/api/admin/iscritti (guscio in `src/app/api/admin/iscritti/route.ts`).
+Il GET legge auth.users (listUsers, a pagine), profiles, braccialetti,
+braccialetto_giornate, regalo, e CONTA entries + cassettine e somma
+ai_usage del mese: tutto col service role, aggregato in JS (le tabelle
+sono piccole; a migliaia di iscritti si passa a una funzione SQL). Il
+contenuto delle giornate non si vede mai: e cifrato sul telefono.
+Il PUT scrive plan + plan_source = 'manual' (o free) e RIFIUTA con 409 un
+piano che governa Apple. `components/iscritti-schermata.tsx`: segmented
+Account/Ospiti, quattro numeri, elenco ordinabile cliccando le
+intestazioni (crescente, poi decrescente; di fabbrica ultimo iscritto in
+cima), ricerca, ispettore a destra con il piano. Prefisso CSS
+`jm-adm-isc-*`. Banco: `scripts/verify-iscritti.mjs` (il finto serve
+`/auth/v1/admin/users` da `sb.accountAuth`).
