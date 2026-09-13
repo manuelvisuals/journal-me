@@ -51,7 +51,7 @@ import {
   type Domanda,
   type Risposta,
 } from "@/lib/chiarimenti";
-import { indicizza, risolviLista } from "@/lib/aliases";
+import { indicizza, indicizzaGrafie, risolviLista } from "@/lib/aliases";
 import {
   scansionaArchivio,
   scansioneGiaFatta,
@@ -604,7 +604,9 @@ export function TodayClient({
       ]);
       // I soprannomi appena chiariti valgono da subito: se hai appena detto
       // che "mio fratello" e Daniele, in rubrica ci va Daniele.
-      const veri = risolviLista(found, "persona", indicizza(aliasList));
+      // E la grafia e quella della rubrica: "KARYA" nel racconto e Karya
+      // in rubrica, e in questa schermata si legge Karya.
+      const veri = risolviLista(found, "persona", indicizza(aliasList), indicizzaGrafie(roster));
       const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
       const declined = declinedPeople();
       const existing = veri.filter((p) => rosterLower.has(p.toLowerCase()));
