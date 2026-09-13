@@ -208,12 +208,45 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
     })();
   };
 
+  /**
+   * La seconda riga della testata: in locale il sottotitolo; nel cloud
+   * l'email e, dopo un puntino, IL PIANO (Manuel, 13 settembre 2026:
+   * "madh52@gmail.com . Free >" oppure "madh52@gmail.com . Premium").
+   * "Premium" e una parola ferma; "Gratis" ha la freccina ed e un tasto:
+   * toccarlo e come toccare "Scopri Premium" (stesso muro, stessa
+   * funzione). La riga "Scopri Premium" resta comunque: la pillola e una
+   * scorciatoia in piu, non la sostituisce. Finche il piano non e noto
+   * (account ancora in arrivo) si stampa solo l'email, senza saltare dopo.
+   */
+  const secondaRiga = locale ? (
+    sottotitoloLocale
+  ) : (
+    <>
+      {account?.email ?? ""}
+      {account && (
+        <>
+          <span className="jm-acct-punto" aria-hidden="true">
+            {"\u00B7"}
+          </span>
+          {plan === "premium" ? (
+            <span className="jm-acct-piano prem">{t("Premium")}</span>
+          ) : (
+            <button type="button" className="jm-acct-piano" onClick={vaiPremium}>
+              {t("Gratis")}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" />
+              </svg>
+            </button>
+          )}
+        </>
+      )}
+    </>
+  );
+
   const testata = (
     <div className="jm-acct-head">
       <div className="n">{mostrato}</div>
-      <div className="e">
-        {locale ? sottotitoloLocale : (account?.email ?? "")}
-      </div>
+      <div className="e">{secondaRiga}</div>
     </div>
   );
 
@@ -292,9 +325,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
                       </svg>
                     </button>
                 </span>
-                <span className="e">
-                  {locale ? sottotitoloLocale : (account?.email ?? "")}
-                </span>
+                <span className="e">{secondaRiga}</span>
               </span>
             </div>
             {voci({ i: "jm-sheet-row jm-acct-row", sep: "jm-acct-sheet-sep" })}
