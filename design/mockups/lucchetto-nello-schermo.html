@@ -1,17 +1,22 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Il lucchetto dentro lo schermo</title>
+<title>Il telefono vero che gira, e il lucchetto dentro</title>
 <style>
 @font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
 @font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:200 800;font-display:block}
-
 :root{
   --bg:#F7F2E9; --bg2:#EDE6DA; --ink:#241C17; --surface:#FFFDF8;
   --muted:#55473D; --faint:#7B6C5F; --acc:#A8542E; --line:rgba(36,28,23,.10);
   --app:#F7F2E9; --app-carta:#FFFDF8;
   --serif:Newsreader,"Iowan Old Style",Palatino,Georgia,serif;
   --sans:Inter,system-ui,-apple-system,"Helvetica Neue",sans-serif;
+  /* LE MISURE, PRESE DALLA FOTOGRAFIA UFFICIALE, NON A OCCHIO.
+     Nel file di Manuel il corpo misura 337 x 692 px e il fianco 38: quindi
+     altezza = 2,0534 larghezze e spessore = 0,1128 larghezze. Da qui il
+     corpo 3D: 300 x 616 x 34. Se un giorno cambia la fotografia, si
+     rimisura e si cambiano questi tre numeri, non gli altri. */
+  --W:300px; --H:616px; --D:34px; --R:48px;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
@@ -31,63 +36,67 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-web
 .f1{opacity:calc(1 - var(--esce,0))}
 .f2{position:absolute;left:0;right:0;top:0;opacity:var(--chiuso,0)}
 
-/* IL DISPOSITIVO E NOSTRO. Costruito a 400x566, poi scalato: cosi si puo
-   girare, animare e cambiare cio che ha dentro, che con la fotografia di un
-   telefono altrui non si potrebbe fare ne legalmente ne tecnicamente. */
+/* L'OMBRA STA QUI, sul contenitore che NON ruota. Trappola gia pagata: un
+   `filter` su un elemento con transform-style: preserve-3d appiattisce il
+   3D e la faccia dietro non compare mai. */
 .telaio{position:absolute;z-index:2;left:50%;top:calc(54% - 2% * var(--chiuso,0));translate:-50% -50%;
-  width:300px;height:650px;perspective:1700px;scale:var(--k,1)}
-.telefono{position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  width:var(--W);height:var(--H);perspective:1800px;scale:var(--k,1);
+  filter:drop-shadow(0 30px 46px rgba(36,28,23,.30))}
+.corpo{position:relative;width:100%;height:100%;transform-style:preserve-3d;
   transform:rotateY(calc(360deg * var(--gira,0)))}
-.faccia{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  border-radius:44px;
-  filter:drop-shadow(0 2px 3px rgba(36,28,23,.16)) drop-shadow(0 26px 44px rgba(36,28,23,.26))}
+.f{position:absolute;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 
-/* la scocca: bordo scuro sottile, come ogni telefono moderno */
-.fronte{background:linear-gradient(160deg,#3A3A3C,#141416 40%,#2B2B2D);padding:8px}
-.schermo{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:var(--app)}
+/* le due facce grandi, separate dallo spessore vero */
+.f-fronte,.f-retro{inset:0;border-radius:var(--R)}
+.f-fronte{transform:translateZ(calc(var(--D) / 2));overflow:hidden;
+  background:linear-gradient(140deg,#F2F2F0,#B9BAB6 30%,#EDEDEB 52%,#A9AAA6 74%,#E9E9E7);
+  padding:5px}
+.f-retro{transform:rotateY(180deg) translateZ(calc(var(--D) / 2));
+  background:url("../../public/sito/iphone-retro.png") center/100% 100% no-repeat}
 
-/* il retro argento, nostro */
-.retro{transform:rotateY(180deg);overflow:hidden;
-  background:linear-gradient(114deg,#FBFBF9 0%,#DCDDD9 16%,#F1F2EE 30%,#C6C7C3 52%,#EDEEEA 68%,#D2D3CF 86%,#F4F5F1 100%);
-  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85), inset 0 0 0 4px rgba(120,122,118,.42),
-    inset 0 0 0 5.5px rgba(255,255,255,.35)}
-.retro::before{content:"";position:absolute;inset:-20%;
-  background:linear-gradient(102deg,transparent 34%,rgba(255,255,255,.72) 47%,transparent 60%);
-  transform:translateX(calc(-40% + 80% * var(--gira,0)))}
-.camera{position:absolute;top:26px;left:22px;width:92px;height:92px;border-radius:24px;
-  background:linear-gradient(150deg,#E7E8E4,#C3C4C0 60%,#DDDED9);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.7), 0 1px 3px rgba(0,0,0,.18)}
-.lente{position:absolute;width:35px;height:35px;border-radius:50%;
-  background:radial-gradient(circle at 36% 32%,#5A5D60 0%,#212326 46%,#0D0E10 100%);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.30), 0 1px 2px rgba(0,0,0,.35)}
-.lente.a{top:10px;left:10px} .lente.b{bottom:10px;right:10px}
-.flash{position:absolute;top:16px;right:16px;width:13px;height:13px;border-radius:50%;
-  background:radial-gradient(circle,#FFF6D8,#E9C877)}
+/* LE SPONDE: lo spessore vero. Quelle laterali sono la FOTOGRAFIA del
+   fianco, alla sua misura naturale; quelle in alto e in basso sono un
+   gradiente costruito sui colori misurati su quella stessa fotografia
+   (141 al bordo, 200-211 in mezzo, 243 sul filo lucido, 166 sull'altro
+   bordo). Sono accorciate di 40px e con le punte tonde perche non
+   spuntino oltre gli angoli arrotondati delle facce. */
+.f-dx,.f-sx{width:var(--D);height:calc(var(--H) - 40px);top:20px;left:calc(50% - var(--D) / 2);
+  background:url("../../public/sito/iphone-fianco.png") center/100% 100% no-repeat;border-radius:3px}
+.f-dx{transform:rotateY(90deg) translateZ(calc(var(--W) / 2))}
+.f-sx{transform:rotateY(-90deg) translateZ(calc(var(--W) / 2)) scaleX(-1)}
+.f-alto,.f-basso{width:calc(var(--W) - 40px);height:var(--D);left:20px;top:calc(50% - var(--D) / 2);
+  border-radius:3px;
+  background:linear-gradient(180deg,#8D8D8D 0%,#C8C9C6 14%,#D3D3D1 46%,#F3F3F1 74%,#A6A7A6 100%)}
+.f-alto{transform:rotateX(90deg) translateZ(calc(var(--H) / 2))}
+.f-basso{transform:rotateX(-90deg) translateZ(calc(var(--H) / 2))}
+
+.schermo{position:relative;width:100%;height:100%;border-radius:calc(var(--R) - 5px);
+  overflow:hidden;background:var(--app)}
 
 /* --------------------------------------------- la giornata, dentro */
-.pagina{position:absolute;inset:0;padding:0 16px;opacity:calc(1 - var(--via,0));
+.pagina{position:absolute;inset:0;padding:0 14px;opacity:calc(1 - var(--via,0));
   transform:translateY(calc(-10px * var(--via,0)))}
-.ora{display:flex;justify-content:space-between;align-items:center;height:34px;
-  font-size:11px;font-weight:600;color:var(--ink);padding:0 6px}
-.ora b{font-weight:600} .ora i{font-style:normal;letter-spacing:1px}
-.barra{display:flex;align-items:center;gap:8px;height:38px;border-bottom:1px solid var(--line)}
-.barra .t{font-family:var(--serif);font-size:14px;flex:1}
-.tondo{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;
+.ora{display:flex;justify-content:space-between;align-items:center;height:32px;
+  font-size:10.5px;font-weight:600;padding:0 6px}
+.ora i{font-style:normal;letter-spacing:1px}
+.barra{display:flex;align-items:center;gap:8px;height:36px;border-bottom:1px solid var(--line)}
+.barra .t{font-family:var(--serif);font-size:13.5px;flex:1}
+.tondo{width:21px;height:21px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;
   font-size:9px;color:var(--muted)}
-.faccina{width:22px;height:22px;border-radius:50%;background-size:cover;background-position:center}
-h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;margin:12px 0 6px;letter-spacing:-.01em}
-.righe{display:grid;gap:5px;margin-bottom:12px}
+.faccina{width:21px;height:21px;border-radius:50%;background-size:cover;background-position:center}
+h4.tit{font-weight:700;font-size:13.5px;line-height:1.22;margin:11px 0 6px;letter-spacing:-.01em}
+.righe{display:grid;gap:5px;margin-bottom:11px}
 .righe i{display:block;height:5px;border-radius:3px;background:rgba(36,28,23,.13)}
 .righe i:nth-child(4){width:88%} .righe i:nth-child(7){width:62%}
-.et{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:700;margin:0 0 6px}
-.foto{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.et{font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:700;margin:0 0 6px}
+.foto{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:11px}
 .foto b{display:block;aspect-ratio:1/1;border-radius:8px;background-size:cover;background-position:center}
-.area{border-top:1px solid var(--line);padding:9px 0}
-.area p{margin:0;font-size:9.5px;color:var(--muted);line-height:1.35}
-.dock{position:absolute;left:12px;right:12px;bottom:10px;height:40px;border-radius:20px;
+.area{border-top:1px solid var(--line);padding:8px 0}
+.area p{margin:0;font-size:9px;color:var(--muted);line-height:1.35}
+.dock{position:absolute;left:12px;right:12px;bottom:10px;height:38px;border-radius:19px;
   background:rgba(255,253,248,.92);border:1px solid var(--line);display:flex;align-items:center;
-  justify-content:space-around;font-size:7.5px;letter-spacing:.1em;color:var(--faint);font-weight:700}
-.mic{width:30px;height:30px;border-radius:50%;background:#7C3247}
+  justify-content:space-around;font-size:7px;letter-spacing:.1em;color:var(--faint);font-weight:700}
+.mic{width:27px;height:27px;border-radius:50%;background:#7C3247}
 
 /* --------------------------------------------- il lucchetto, dentro */
 .chiusura{position:absolute;inset:0;display:grid;place-items:center;opacity:var(--via,0)}
@@ -96,15 +105,14 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
 .arco{fill:none;stroke:var(--acc);stroke-width:9;stroke-linecap:round;
   stroke-dasharray:var(--len,200);stroke-dashoffset:calc(var(--len,200) * (1 - var(--disegna,0)));
   transform:translateY(calc(-13px * (1 - var(--scatta,0))));transform-origin:center}
-.corpo{fill:var(--acc);opacity:var(--corpo,0);
+.serratura{fill:var(--acc);opacity:var(--corpo,0);
   transform:scale(calc(.86 + .14 * var(--corpo,0)));transform-origin:50% 78%}
 .buco{fill:var(--app-carta);opacity:var(--corpo,0)}
 
 .sotto{position:absolute;z-index:5;left:50%;translate:-50% 0;bottom:clamp(24px,4.5svh,56px);
   width:min(620px,86vw);text-align:center;opacity:var(--chiuso,0)}
 .sotto p{margin:0;font-family:var(--serif);font-size:clamp(20px,2.6vw,30px);line-height:1.2}
-.sotto span{display:block;margin-top:10px;font-family:var(--sans);font-size:14px;color:var(--muted)}
-
+.sotto span{display:block;margin-top:10px;font-size:14px;color:var(--muted)}
 .spia{position:fixed;left:0;right:0;bottom:0;height:3px;background:rgba(36,28,23,.10);z-index:40}
 .spia i{display:block;height:100%;width:0;background:var(--acc)}
 
@@ -127,13 +135,14 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
 
 <div class="intro">
   <p class="kick">dayalogue &middot; mockup &middot; 13 settembre</p>
-  <h1>Si gira, torna di fronte, e dentro c&rsquo;e&rsquo; il lucchetto</h1>
-  <p>La tua idea, e risolve tutto: il telefono ruota, mostra il retro, torna di faccia &mdash; e
-  stavolta lo schermo non e&rsquo; piu&rsquo; la giornata, e&rsquo; il lucchetto che si chiude. Il
-  lucchetto sta DENTRO l&rsquo;app, cioe&rsquo; dentro una cosa nostra, e non tocca niente di nessuno.</p>
-  <p class="nota">Il telefono qui e&rsquo; disegnato, non fotografato, e non e&rsquo; un ripiego: per far
-  succedere qualcosa dentro lo schermo lo schermo deve essere vivo. Con una fotografia piatta il
-  lucchetto dentro non si puo&rsquo; fare, qualunque telefono sia.</p>
+  <h1>Il telefono vero, con lo spessore, e il lucchetto dentro</h1>
+  <p>Il retro e il fianco sono la tua fotografia ufficiale, ritagliata dal fondo e nient&rsquo;altro:
+  non ho ridisegnato niente. Il corpo adesso e&rsquo; un solido con sei superfici &mdash; fronte,
+  retro e quattro sponde &mdash; quindi girando si vede il fianco, con i tasti al loro posto.</p>
+  <p class="nota">Le misure non sono a occhio: nel tuo file il corpo e&rsquo; 337 x 692 e il fianco
+  38, cioe&rsquo; altezza 2,0534 larghezze e spessore 0,1128. Il solido qui e&rsquo; 300 x 616 x 34,
+  gli stessi rapporti. Le sponde in alto e in basso sono un gradiente costruito sui colori
+  misurati sulla tua stessa fotografia.</p>
 </div>
 
 <div class="pista" data-pista>
@@ -144,8 +153,13 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
     </div>
 
     <div class="telaio">
-      <div class="telefono">
-        <div class="faccia fronte">
+      <div class="corpo">
+        <div class="f f-dx"></div>
+        <div class="f f-sx"></div>
+        <div class="f f-alto"></div>
+        <div class="f f-basso"></div>
+        <div class="f f-retro"></div>
+        <div class="f f-fronte">
           <div class="schermo">
             <div class="pagina">
               <div class="ora"><b>00:54</b><i>&#9679;&#9679;&#9679;</i></div>
@@ -176,15 +190,12 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
                 <circle class="punto" cx="62" cy="128" r="9"/>
                 <circle class="punto" cx="100" cy="128" r="9"/>
                 <circle class="punto" cx="138" cy="128" r="9"/>
-                <rect class="corpo" x="46" y="146" width="108" height="84" rx="20"/>
+                <rect class="serratura" x="46" y="146" width="108" height="84" rx="20"/>
                 <circle class="buco" cx="100" cy="182" r="9"/>
                 <rect class="buco" x="96" y="182" width="8" height="22" rx="4"/>
               </svg>
             </div>
           </div>
-        </div>
-        <div class="faccia retro">
-          <span class="camera"><i class="lente a"></i><i class="lente b"></i><i class="flash"></i></span>
         </div>
       </div>
     </div>
@@ -203,14 +214,13 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
 
 <div class="quiz">
   <h3>Una domanda</h3>
-  <p>Il telefono qui e&rsquo; disegnato: scocca scura, schermo vivo, retro d&rsquo;argento nostro.
-  La giornata dentro lo schermo e&rsquo; una riduzione &mdash; in produzione ci va la schermata vera
-  dell&rsquo;app, che il sito sa gia&rsquo; disegnare.</p>
-  <p class="dom">Il giro o il telefono vero? Le due cose insieme non si possono avere.</p>
+  <p>La giornata dentro lo schermo e&rsquo; una riduzione disegnata a mano: in produzione ci va la
+  schermata vera dell&rsquo;app, che il modulo sito sa gia&rsquo; disegnare.</p>
+  <p class="dom">Il movimento va bene cosi&rsquo;?</p>
   <div class="scelte" data-g="a">
-    <button class="scelta" aria-pressed="false" data-e="Va bene cosi: si porta in produzione questa coreografia, con dentro la schermata vera dell app."><span class="n">A</span><span><b>Va bene cosi&rsquo;</b> &mdash; la porto in produzione con dentro la schermata vera</span></button>
-    <button class="scelta" aria-pressed="false" data-e="Il giro completo e troppo: il telefono si gira, mostra il retro e resta di spalle, e il lucchetto compare sul retro."><span class="n">B</span><span><b>Meno giro</b> &mdash; si ferma sul retro e il lucchetto compare li&rsquo;, senza tornare di faccia</span></button>
-    <button class="scelta" aria-pressed="false" data-e="iPhone autentico (bezel ufficiale Apple) fermo, senza rotazione, e dentro lo schermo il lucchetto che si chiude: e l uso per cui quei bezel esistono."><span class="n">C</span><span><b>iPhone autentico, fermo</b> &mdash; niente giro, ma il telefono e quello vero (bezel ufficiale) e il lucchetto si chiude dentro lo schermo</span></button>
+    <button class="scelta" aria-pressed="false" data-e="Va bene cosi: si porta in produzione, con dentro la schermata vera dell app."><span class="n">A</span><span><b>Va bene</b> &mdash; portala in produzione con dentro la schermata vera</span></button>
+    <button class="scelta" aria-pressed="false" data-e="Il giro e troppo veloce: allungare la rotazione e la pausa sul retro."><span class="n">B</span><span><b>Piu&rsquo; lento</b> &mdash; allunga la rotazione e la sosta sul retro</span></button>
+    <button class="scelta" aria-pressed="false" data-e="Il telefono deve restare girato piu a lungo e mostrare meglio il fianco: aggiungere una rotazione che si ferma di tre quarti."><span class="n">C</span><span><b>Fermati di tre quarti</b> &mdash; una sosta in obliquo, dove il fianco si vede meglio</span></button>
   </div>
   <div class="esito" id="esito"></div>
 </div>
@@ -228,7 +238,6 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
   Array.prototype.forEach.call(document.querySelectorAll('.arco'), function (a) {
     a.style.setProperty('--len', Math.ceil(a.getTotalLength()));
   });
-
   function fra(x, a, b) { var v = (x - a) / (b - a); return v < 0 ? 0 : v > 1 ? 1 : v; }
   function morbido(t) { return t * t * (3 - 2 * t); }
 
@@ -239,31 +248,27 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
     var s = (0 - r.top) / (r.height - H);
     s = s < 0 ? 0 : s > 1 ? 1 : s;
 
-    /* IL GIRO COMPLETO IN DUE TEMPI, con una pausa in mezzo: senza la pausa
-       il retro passa e non lo vedi, e il gesto diventa uno sfarfallio. */
-    var meta = morbido(fra(s, 0.08, 0.28));            /* di faccia -> di spalle */
-    var meta2 = morbido(fra(s, 0.38, 0.58));           /* di spalle -> di faccia */
-    var gira = (meta + meta2) / 2;                      /* 0 -> .5 -> 1 = 0 -> 360deg */
-
-    var via     = morbido(fra(s, 0.56, 0.68));          /* la giornata lascia il posto */
-    var salgono = morbido(fra(s, 0.60, 0.70));
-    var disegna = morbido(fra(s, 0.66, 0.80));
-    var corpo   = morbido(fra(s, 0.76, 0.86));
-    var scatta  = morbido(fra(s, 0.84, 0.91));
+    /* il giro in due tempi con una sosta sul retro: senza la sosta il retro
+       passa e non lo vedi, e il gesto diventa uno sfarfallio */
+    var gira = (morbido(fra(s, 0.08, 0.28)) + morbido(fra(s, 0.38, 0.58))) / 2;
+    var via     = morbido(fra(s, 0.58, 0.70));
+    var salgono = morbido(fra(s, 0.62, 0.72));
+    var disegna = morbido(fra(s, 0.68, 0.82));
+    var corpo   = morbido(fra(s, 0.78, 0.87));
+    var scatta  = morbido(fra(s, 0.85, 0.91));
     var esce    = morbido(fra(s, 0.84, 0.90));
     var chiuso  = morbido(fra(s, 0.90, 0.96));
 
-    scena.style.setProperty('--gira', gira.toFixed(4));
-    scena.style.setProperty('--via', via.toFixed(4));
-    scena.style.setProperty('--esce', esce.toFixed(4));
-    scena.style.setProperty('--chiuso', chiuso.toFixed(4));
-    /* il telefono e costruito a 400x566: qui si adatta alla finestra */
-    telaio.style.setProperty('--k', Math.min(1, (H - 320) / 650, (L - 80) / 300).toFixed(3));
+    scena.style.setProperty('--gira', gira.toFixed(6));
+    scena.style.setProperty('--via', via.toFixed(6));
+    scena.style.setProperty('--esce', esce.toFixed(6));
+    scena.style.setProperty('--chiuso', chiuso.toFixed(6));
+    telaio.style.setProperty('--k', Math.min(1, (H - 320) / 616, (L - 80) / 300).toFixed(3));
 
     var archi = pista.querySelectorAll('.arco');
     for (var j = 0; j < archi.length; j++) {
-      archi[j].style.setProperty('--disegna', disegna.toFixed(4));
-      archi[j].style.setProperty('--scatta', scatta.toFixed(4));
+      archi[j].style.setProperty('--disegna', disegna.toFixed(6));
+      archi[j].style.setProperty('--scatta', scatta.toFixed(6));
     }
     var DA = [[62, 128], [100, 128], [138, 128]];
     var A  = [[62, 150], [100, 70],  [138, 150]];
@@ -271,11 +276,11 @@ h4.tit{font-family:var(--sans);font-weight:700;font-size:14px;line-height:1.22;m
     for (var i = 0; i < punti.length; i++) {
       punti[i].setAttribute('cx', (DA[i][0] + (A[i][0] - DA[i][0]) * salgono).toFixed(2));
       punti[i].setAttribute('cy', (DA[i][1] + (A[i][1] - DA[i][1]) * salgono).toFixed(2));
-      punti[i].style.setProperty('--fondi', disegna.toFixed(4));
+      punti[i].style.setProperty('--fondi', disegna.toFixed(6));
     }
-    pista.querySelector('.corpo').style.setProperty('--corpo', corpo.toFixed(4));
+    pista.querySelector('.serratura').style.setProperty('--corpo', corpo.toFixed(6));
     var buchi = pista.querySelectorAll('.buco');
-    for (var k = 0; k < buchi.length; k++) buchi[k].style.setProperty('--corpo', corpo.toFixed(4));
+    for (var k = 0; k < buchi.length; k++) buchi[k].style.setProperty('--corpo', corpo.toFixed(6));
     if (spia) spia.style.width = (s * 100).toFixed(1) + '%';
   }
   function chiedi() { if (!quadro) quadro = requestAnimationFrame(misura); }
