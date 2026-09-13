@@ -5570,6 +5570,23 @@ textarea.jm-sito-in {
    ===================================================================== */
 .jm-sito12 {
   position: relative;
+  /* LA SCENA INCOLLATA VUOLE UN CONTENITORE CHE RITAGLIA (13 settembre
+     2026, Manuel: "quando scrolli su Safari il sito vibra verticalmente,
+     dall'inizio fino alla frase della cassaforte").
+
+     Misurato su WebKit, non dedotto: con la scena incollata dentro una
+     sezione SENZA ritaglio, il motore la dipingeva ogni quattro pixel di
+     rotella due pixel piu in alto e poi di nuovo al suo posto (-2, +2),
+     anche a cursore fermo, anche coi conti del DOM perfetti. Non era
+     l'animazione: era la geometria del livello incollato. Le sezioni che
+     gia ritagliano (#cassaforte, #giornata: `overflow: clip`) non
+     tremano mai, ed e proprio li che Manuel vedeva finire la vibrazione.
+     Con `overflow: clip` anche qui il passo torna esatto (0, 0, 0, 0).
+
+     `clip` e non `hidden`: `hidden` fa della sezione un contenitore di
+     scorrimento e la scena si incollerebbe a lui invece che alla pagina.
+     Niente cambia nel disegno: la scena ritaglia gia da sola. */
+  overflow: clip;
 }
 /* SENZA JAVASCRIPT: colonna normale. Le regole della scena stanno tutte
    sotto [data-js], quindi qui non c'e niente da disfare. */
@@ -6269,6 +6286,11 @@ textarea.jm-sito-in {
 .jm-sito7[data-js] .jm-sito13-pista {
   position: relative;
   height: 250svh;
+  /* Stesso ritaglio della sezione "come funziona" (vedi .jm-sito12):
+     l'eroe incollato dentro una pista che non ritaglia e la stessa
+     geometria che su WebKit faceva tremare la scena. L'eroe ha gia
+     `overflow: hidden` suo, quindi qui non si ritaglia niente di nuovo. */
+  overflow: clip;
   /* le tre corse */
   --via: clamp(0, calc((var(--s, 0) - .05) / .33), 1);
   --pil: clamp(0, calc((var(--s, 0) - .30) / .40), 1);
