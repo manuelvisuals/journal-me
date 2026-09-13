@@ -90,8 +90,29 @@ export function Scorrimento() {
      * al sistema meno animazioni: l'uscita anticipata qui sotto se lo
      * portava via insieme al parallasse.
      */
+    /**
+     * SI SCRIVE SOLO QUANDO CAMBIA (13 settembre 2026, Manuel: "trema su
+     * safari").
+     *
+     * Prima `meta.content` veniva riscritto a OGNI evento di scorrimento,
+     * anche quando il colore era gia quello giusto — cioe centinaia di
+     * volte per scrollata, per scrivere sempre lo stesso valore. Su Chrome
+     * non si nota. Su Safari `theme-color` non e una proprieta della
+     * pagina: e il colore della cornice del browser, che vive in un altro
+     * processo, e ogni scrittura e un messaggio a quel processo. Centinaia
+     * di messaggi al secondo durante lo scorrimento fanno perdere
+     * fotogrammi, e quando si perdono fotogrammi trema tutto quello che si
+     * muove, in ogni sezione della pagina.
+     *
+     * `giu` ricorda l'ultimo stato: dentro una scrollata si scrive due
+     * volte in tutto, quando si passa la soglia dei 24 pixel in giu e
+     * quando si torna su.
+     */
+    let giuPrima: boolean | null = null;
     const tingi = () => {
       const giu = window.scrollY > 24;
+      if (giu === giuPrima) return;
+      giuPrima = giu;
       radice.toggleAttribute("data-scorso", giu);
       if (meta) meta.content = giu ? tonoPagina : "#60554b";
     };

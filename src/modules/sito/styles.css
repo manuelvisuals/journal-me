@@ -6098,8 +6098,33 @@ textarea.jm-sito-in {
      =================================================================== */
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-pista {
     --buio: clamp(0, calc((var(--s, 0) - .86) * 9.0909), 1);
-    background:
-      color-mix(in srgb, var(--jm-ink) calc(var(--buio) * 100%), var(--jm-bg));
+    /* IL FONDO DELLA PISTA NON SI ANIMA PIU, ED E' QUI CHE STAVA IL
+       TREMOLIO SU SAFARI (13 settembre 2026, Manuel: "trema su safari, e
+       ha ricominciato con le ultime modifiche").
+
+       C'era `background: color-mix(...)` legato a --buio. Sembra
+       innocuo, ma questo elemento e alto 920svh — 8280 pixel su uno
+       schermo da 900 — e cambiargli il colore di fondo a OGNI fotogramma
+       di scorrimento vuol dire chiedere al browser di ridipingere una
+       superficie enorme sessanta volte al secondo. Chrome se la cava
+       componendo; Safari ridipinge, perde fotogrammi, e quando si
+       perdono fotogrammi trema TUTTO quello che si muove nella pagina,
+       anche le scene che nessuno ha toccato. E' esattamente il sintomo:
+       "trema tutto il sito", comparso con le ultime modifiche.
+
+       Il fondo qui non serviva nemmeno: la scena e alta 100svh e resta
+       incollata fino in fondo alla pista, quindi sotto di lei non si
+       vede mai niente. L'avevo messo come rete di sicurezza contro un
+       pixel di arrotondamento, e mi e costato il tremolio. La rete
+       adesso e una sfumatura FERMA: crema fin quasi in fondo, poi il
+       cioccolato, dipinta una volta sola. */
+    background: linear-gradient(
+      to bottom,
+      var(--jm-bg) 0%,
+      var(--jm-bg) 88%,
+      var(--jm-ink) 96%,
+      var(--jm-ink) 100%
+    );
   }
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-scena::after {
     content: "";
@@ -6108,6 +6133,16 @@ textarea.jm-sito-in {
     z-index: 1;
     pointer-events: none;
     opacity: var(--buio, 0);
+    /* QUESTO STRATO E' GRANDE QUANTO LO SCHERMO E CAMBIA A OGNI
+       FOTOGRAMMA. Cambia solo l'opacita, che e la cosa piu economica che
+       si possa animare — ma economica lo diventa solo se il browser tiene
+       lo strato da parte, dipinto una volta, e poi lo miscela. Senza
+       questa riga Safari ridipinge la sfumatura per intero a ogni
+       fotogramma, e con essa tutto cio che le sta sopra.
+       `will-change: opacity` e la riga che dice al browser di tenerlo da
+       parte. Costa un po' di memoria video, uno strato solo, e vale la
+       pena. */
+    will-change: opacity;
     /* la STESSA ricetta di .jm-sito9-chiave: se una delle due cambia,
        cambiano tutte e due, se no la cucitura torna a vedersi */
     background:
@@ -6115,8 +6150,13 @@ textarea.jm-sito-in {
       var(--jm-ink);
   }
   /* la frase passa da inchiostro a crema insieme al fondo */
+  /* Il colore del titolo cambiava a ogni fotogramma con un color-mix: e un
+     ridisegno del testo per frame, piccolo ma inutile. Il fondo sotto la
+     frase e gia scuro quando la frase compare (--fine2 parte a .93, --buio
+     e finito a .97 ed e oltre .8 gia a .95), quindi si scrive crema e
+     basta. */
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-titolo.chiude {
-    color: color-mix(in srgb, var(--jm-bg) calc(var(--buio, 0) * 100%), var(--jm-ink));
+    color: var(--jm-bg);
   }
   /* IL RIEMPIMENTO IN FONDO ALLA SEZIONE ERA LA CUCITURA. La sezione e
      alta 132px piu della pista: quel margine sotto restava color crema e

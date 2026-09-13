@@ -193,9 +193,61 @@ modo soft con un fade in"): sale da zero nei primi sei centesimi di corsa
 invece di essere gia acceso al primo fotogramma. L'uscita verso la seconda
 frase non e cambiata.
 
+**IL TREMOLIO CHE SI VEDE SOLO SU SAFARI E' UN ALTRO ANIMALE: non e
+geometria, e fotogrammi persi.** 13 settembre 2026, Manuel: "trema su
+safari", "trema tutto il sito", "fino a poco fa non tremava, e ha
+ricominciato con le ultime modifiche".
+
+Come si riconosce dalle altre due qui sopra: se trema UNA cosa (la carta,
+il paragrafo) e un difetto di quel pezzo — arrotondamento o deriva. Se
+trema TUTTO, comprese sezioni che nessuno ha toccato, non c'e un pezzo
+rotto: il browser non sta stando dietro allo scorrimento. Allora non si
+cerca il pixel, si cerca cosa costa a ogni fotogramma. E si guarda cosa e
+stato aggiunto DA QUANDO non tremava piu, perche il costo e sempre
+qualcosa di nuovo.
+
+Le tre cose che costavano, tolte tutte e tre:
+
+1. `.jm-sito12-pista` cambiava il colore di FONDO a ogni fotogramma
+   (`background: color-mix(..., var(--buio) ...)`). Sembra una riga
+   innocua. Quell'elemento e alto 920svh, cioe piu di ottomila pixel:
+   cambiargli il fondo vuol dire ridipingere una superficie enorme
+   sessanta volte al secondo. Chrome compone, Safari ridipinge. Adesso e
+   una sfumatura FERMA, dipinta una volta. Si puo fare perche la scena e
+   alta 100svh, sta incollata fino in fondo alla pista e sotto di lei quel
+   fondo non si vede mai — misurato: 0 righe chiare su 249 campionate in
+   undici punti attorno alla cucitura.
+2. `.jm-sito12-scena::after` e grande quanto lo schermo e cambia opacita a
+   ogni fotogramma. L'opacita e la cosa piu economica che si possa
+   animare, ma solo se il browser tiene lo strato da parte gia dipinto:
+   `will-change: opacity`. Senza, Safari ridisegna la sfumatura ogni
+   volta.
+3. `scorrimento.tsx` riscriveva `meta[name=theme-color]` a OGNI evento di
+   scorrimento, anche per rimetterci lo stesso valore. Su Safari
+   `theme-color` non e una proprieta della pagina: e il colore della
+   cornice del browser, che vive in un altro processo, e ogni scrittura e
+   un messaggio a quel processo. Adesso si scrive solo quando lo stato
+   cambia davvero (due volte per scrollata invece di centinaia).
+
+REGOLA: niente puo cambiare a ogni fotogramma su una superficie piu grande
+dello schermo. Se deve cambiare, cambia l'OPACITA di uno strato con
+`will-change: opacity`, non il colore. E nessun listener di scorrimento
+scrive nel DOM quando non c'e niente da cambiare: prima si confronta con
+l'ultimo stato, poi si scrive.
+
+Attenzione: questi tre difetti NON si vedono dai banchi, che girano su
+Chromium in un contenitore senza schermo. Il banco misura la geometria
+(quanti pixel si sposta ogni cosa), e la geometria era giusta. Il costo di
+disegno si ragiona, e si verifica su Safari vero.
+
 Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
 rosso una volta perche il server di sviluppo sta ancora ricompilando.
 Rilancialo: se e verde tre volte di fila, era la ricompilazione.
+
+Nota su Playwright in locale: i banchi puntano a `http://localhost:3100`.
+Con `http://127.0.0.1:3100` la pagina si carica ma NON si idrata
+(`data-js` non arriva) e si misura la versione senza JavaScript, che e
+tutta un'altra cosa. Usa `localhost`.
 
 **La pista lunga ha rotto la precisione di `--s`, e questa e la regola
 che ne esce.** Manuel, sull'anteprima: "quando scrollo, tremola in su e
