@@ -66,7 +66,14 @@ function quandoLungo(iso: string | null, t: (s: string) => string): string {
   if (!iso) return t("mai");
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return t("mai");
-  return formatDate(iso, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  const ora = formatDate(iso, { hour: "2-digit", minute: "2-digit" });
+  const oggi = new Date();
+  const inizioOggi = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate()).getTime();
+  if (ms >= inizioOggi) return `${t("oggi")}, ${ora}`;
+  if (ms >= inizioOggi - GIORNO) return `${t("ieri")}, ${ora}`;
+  // L'anno solo se non e questo: la riga dell'ispettore e una sola.
+  const stessoAnno = new Date(ms).getFullYear() === oggi.getFullYear();
+  return `${formatDate(iso, stessoAnno ? { day: "numeric", month: "short" } : { day: "numeric", month: "short", year: "numeric" })}, ${ora}`;
 }
 
 /** L'ordine del piano quando si clicca quella colonna: gratis, poi scaduto, poi premium. */
@@ -441,7 +448,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
                 <div className="r">
                   <b>Apple</b>
                   <span title={[persona.apple.ambiente, persona.apple.prodotto, persona.apple.avviso].filter(Boolean).join(", ")}>
-                    {[persona.apple.ambiente, persona.scadenza ? `${persona.piano === "premium" ? t("rinnova il") : t("scaduto il")} ${formatDate(persona.scadenza, { day: "numeric", month: "short" })}` : null].filter(Boolean).join(", ")}
+                    {[persona.apple.ambiente && persona.apple.ambiente !== "Production" ? persona.apple.ambiente : null, persona.scadenza ? `${persona.piano === "premium" ? t("rinnova il") : t("scaduto il")} ${formatDate(persona.scadenza, { day: "numeric", month: "short" })}` : null].filter(Boolean).join(", ") || "—"}
                   </span>
                 </div>
               )}
@@ -481,7 +488,6 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
           </aside>
         )}
       </div>
-      <p className="jm-adm-isc-pie">{t("Le giornate sono chiuse nella cassaforte: qui si contano, non si leggono.")}</p>
     </main>
   );
 }

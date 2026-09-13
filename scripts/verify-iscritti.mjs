@@ -210,7 +210,7 @@ await page.locator(".jm-adm-isc-tr:not(.head)").filter({ hasText: "Giulia R." })
 const isp = page.locator(".jm-adm-isc-isp");
 await isp.waitFor({ state: "visible", timeout: 5_000 });
 const ispTesto = (await isp.innerText()).replace(/\s+/g, " ");
-check("6 l'ispettore di Giulia: email, 11 giornate, cassaforte chiusa, da ospite, Apple", /giulia\.r@esempio\.it/.test(ispTesto) && /\b11\b/.test(ispTesto) && /chiusa/.test(ispTesto) && /si, dal/.test(ispTesto) && /Production/.test(ispTesto), ispTesto.slice(0, 200));
+check("6 l'ispettore di Giulia: email, 11 giornate, cassaforte chiusa, da ospite, Apple", /giulia\.r@esempio\.it/.test(ispTesto) && /\b11\b/.test(ispTesto) && /chiusa/.test(ispTesto) && /si, dal/.test(ispTesto) && /Apple rinnova il 2 ott/.test(ispTesto), ispTesto.slice(0, 200));
 check("6 per chi paga con Apple non c'e 'Modifica' e non c'e nessuna frase di spiegazione", (await isp.getByRole("button", { name: "Modifica" }).count()) === 0 && !/App Store|non si tocca|sovrascrive/.test(ispTesto), ispTesto.slice(0, 200));
 check("6 nell'ispettore niente va a capo (ogni riga e alta 34)", await isp.locator(".r").evaluateAll((rs) => rs.every((r) => r.getBoundingClientRect().height <= 35)));
 

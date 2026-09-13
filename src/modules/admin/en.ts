@@ -163,6 +163,5 @@ export const ADMIN: Record<string, string> = {
   "Account eliminato.": "Account deleted.",
   "Elimina l'account...": "Delete the account...",
   "Ultimo accesso": "Last seen",
-  "Le giornate sono chiuse nella cassaforte: qui si contano, non si leggono.": "Days are locked in the vault: here they are counted, never read.",
   "Entra con il tuo account": "Sign in with your account",
 };
