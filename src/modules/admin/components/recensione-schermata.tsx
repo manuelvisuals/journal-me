@@ -124,7 +124,6 @@ export function RecensioneSchermata() {
               {t("Accesa")}
             </button>
           </div>
-          <p className="nota">{t("Vale subito per tutte le app installate. Apple mostra il foglio al massimo tre volte l'anno per persona, e non dice se ha scritto la recensione.")}</p>
         </div>
         <div className="jm-adm-isc-box">
           <div className="k">{t("Quando")}</div>
@@ -139,7 +138,6 @@ export function RecensioneSchermata() {
             />
             <span>{t("giornate salvate, poi si chiede")}</span>
           </label>
-          <p className="nota">{t("Nel momento in cui la giornata e appena salvata, mai all'avvio. Non piu di una richiesta ogni 120 giorni per telefono.")}</p>
         </div>
       </div>
 

@@ -59,7 +59,7 @@ LOG="$HOME/Desktop/unisci-giro-log.txt"
 if [ "$#" -gt 0 ]; then
   RAMI="$*"
 else
-  RAMI="admin-v3"
+  RAMI="rilascio-testflight"
 fi
 
 printf "${B}dayalogue - unisco in main, in fila:${V}\n"
