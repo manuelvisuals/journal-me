@@ -8,7 +8,7 @@
 #
 # Uso:
 #   clear; bash "$HOME/Developer/journal-me/unisci-giro.command"
-#     -> i rami del giro del 13 settembre 2026 (elenco RAMI qui sotto)
+#     -> i rami del giro in corso (elenco RAMI qui sotto; il 13 sera: admin-v3, che contiene recensione)
 #   clear; bash "$HOME/Developer/journal-me/unisci-giro.command" ramo-a ramo-b
 #     -> altri rami, nell'ordine dato
 #
@@ -59,7 +59,7 @@ LOG="$HOME/Desktop/unisci-giro-log.txt"
 if [ "$#" -gt 0 ]; then
   RAMI="$*"
 else
-  RAMI="nome-app-maiuscolo splash-marchio-animato rail-marchio-centrato admin-iscritti-mockup admin-iscritti"
+  RAMI="admin-v3"
 fi
 
 printf "${B}dayalogue - unisco in main, in fila:${V}\n"
