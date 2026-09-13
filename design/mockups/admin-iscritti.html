@@ -3,38 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mockup . /admin: la voce "Iscritti"</title>
+<title>Mockup . /admin: Iscritti (v2) e la Recensione dormiente</title>
 <style>
 /* I font arrivano da src/fonts, non da Google (HANDOVER, trappola dei mockup). */
 @font-face{font-family:"Inter";src:url("../../src/fonts/inter-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
 @font-face{font-family:"Newsreader";src:url("../../src/fonts/newsreader-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-display:block}
-@font-face{font-family:"Plex Mono";src:url("../../src/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:block}
 :root{
   --font:"Inter",system-ui,-apple-system,"SF Pro Text",sans-serif;
   --serif:"Newsreader","Iowan Old Style",Palatino,Georgia,serif;
-  --mono:"Plex Mono",ui-monospace,Menlo,monospace;
   --pg:#17171A;--pg-2:#202024;--pg-line:rgba(255,255,255,.10);
-  --pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;
-  --ok:#4ADE80;--no:#F87171;--hot:#FBBF24;
+  --pg-ink:#EDEDF0;--pg-mut:#A9A9B2;--pg-faint:#77777F;--ok:#4ADE80;--no:#F87171;--hot:#FBBF24;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52px 24px 120px;-webkit-font-smoothing:antialiased;line-height:1.5}
 .wrap{max-width:1400px;margin:0 auto}
 .page-title{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-.02em;text-align:center;color:var(--pg-ink);line-height:1.15}
-.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:880px}
-.page-sub b,.caption b,.prose b,.under b{color:var(--pg-mut);font-weight:600}
+.page-sub{font-size:14px;color:var(--pg-faint);text-align:center;margin:14px auto 0;line-height:1.7;max-width:820px}
+.page-sub b,.caption b,.under b,td b{color:var(--pg-ink);font-weight:600}
 .divider{height:1px;background:var(--pg-line);margin:52px auto}
 .label{font-size:11px;font-weight:650;color:var(--pg-faint);letter-spacing:.22em;text-transform:uppercase;text-align:center;margin:0 0 10px}
-.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 30px;max-width:960px;line-height:1.75}
+.caption{font-size:13.5px;color:var(--pg-faint);text-align:center;margin:14px auto 28px;max-width:860px;line-height:1.75}
 .row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
 .under{font-size:12.5px;color:var(--pg-faint);text-align:center;max-width:820px;line-height:1.7;margin:16px auto 0}
-.prose{max-width:880px;margin:0 auto;font-size:14.5px;line-height:1.8;color:var(--pg-mut)}
-.prose p{margin:0 0 14px}
-.prose h3{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:26px 0 8px;letter-spacing:-.01em}
+table{border-collapse:collapse;width:100%;max-width:960px;margin:0 auto;font-size:13.5px}
+th,td{border-top:1px solid var(--pg-line);padding:11px 12px;text-align:left;vertical-align:top;line-height:1.55}
+th{color:var(--pg-faint);font-weight:650;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+td.no{color:var(--no)}
 
 /* ---------------- il desktop, tema minimal chiaro ---------------- */
-.desk{width:1180px;max-width:100%;min-height:720px;border-radius:18px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;
-  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;--verde:#2E7D4F;
+.desk{width:1180px;max-width:100%;min-height:740px;border-radius:18px;overflow:hidden;border:1px solid var(--pg-line);box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;display:flex;
+  --bg:#EFE9E1;--surface:#FBF8F4;--ink:#1F1B18;--ink-muted:#4A433D;--ink-faint:#8A817A;--line:rgba(0,0,0,.10);--accent:#A6512F;--danger:#B3261E;
   background:var(--bg);color:var(--ink);font-family:var(--font)}
 .desk aside{width:240px;flex:none;border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column}
 .desk .brand{font-family:var(--serif);font-size:22px;color:var(--ink);letter-spacing:-.01em}
@@ -47,94 +45,80 @@ body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52
 .desk nav span.off{color:#B9AFA6}
 .desk .who{margin-top:auto;font-size:12px;color:var(--ink-faint);line-height:1.5}
 .desk .who b{display:block;color:var(--ink);font-weight:600}
-.desk main{flex:1;padding:34px 40px 40px;min-width:0}
+.desk main{flex:1;padding:30px 36px;min-width:0;display:flex;flex-direction:column}
+
+.desk .testa{display:flex;align-items:center;gap:16px}
 .desk h1{font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.015em;color:var(--ink)}
-.desk .sub{font-size:14px;color:var(--ink-muted);margin-top:6px;max-width:680px;line-height:1.55}
+.desk .seg{display:inline-flex;background:rgba(0,0,0,.06);border-radius:9px;padding:2px;margin-left:8px}
+.desk .seg span{padding:5px 14px;border-radius:7px;font-size:13px;color:var(--ink-muted);cursor:pointer}
+.desk .seg span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.desk .seg span em{font-style:normal;color:var(--ink-faint);font-size:11.5px;margin-left:5px}
+.desk .cerca{margin-left:auto;height:32px;width:220px;border-radius:8px;background:rgba(0,0,0,.06);display:flex;align-items:center;padding:0 10px;font-size:13px;color:var(--ink-faint);gap:8px}
 
-/* i numeri in cima */
-.desk .numeri{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
-.desk .box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
-.desk .box .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
-.desk .box .n{font-family:var(--serif);font-size:34px;color:var(--ink);margin-top:6px;line-height:1.1;letter-spacing:-.02em}
-.desk .box .n small{font-family:var(--font);font-size:12px;white-space:nowrap;color:var(--ink-faint);margin-left:6px;letter-spacing:0}
-.desk .box .p{font-size:12.5px;color:var(--ink-muted);margin-top:6px;line-height:1.5}
+.desk .numeri{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.desk .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.desk .box .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.desk .box .n{font-family:var(--serif);font-size:30px;color:var(--ink);margin-top:4px;line-height:1.1;letter-spacing:-.02em}
+.desk .box .n small{font-family:var(--font);font-size:12px;color:var(--ink-faint);margin-left:6px;letter-spacing:0;white-space:nowrap}
 
-/* le due schede + filtro */
-.desk .schede{display:flex;align-items:center;gap:6px;margin-top:26px}
-.desk .scheda{padding:8px 14px;border-radius:999px;font-size:13.5px;color:var(--ink-muted);border:1px solid transparent;cursor:pointer}
-.desk .scheda.on{background:var(--surface);border-color:var(--line);color:var(--ink);font-weight:600}
-.desk .scheda em{font-style:normal;color:var(--ink-faint);font-size:12px;margin-left:6px}
-.desk .cerca{margin-left:auto;height:36px;width:260px;border:1px solid var(--line);border-radius:10px;background:var(--surface);display:flex;align-items:center;padding:0 12px;font-size:13px;color:var(--ink-faint);gap:8px}
-.desk .ordina{height:36px;border:1px solid var(--line);border-radius:10px;background:var(--surface);display:flex;align-items:center;padding:0 12px;font-size:13px;color:var(--ink-muted);gap:6px}
-
-/* la tabella */
-.desk .tbl{margin-top:14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
-.desk .tr{display:grid;grid-template-columns:2.2fr 1fr 1.1fr 1.2fr .8fr .8fr .9fr;gap:12px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);font-size:13px;cursor:pointer}
+.desk .corpo{display:flex;gap:14px;margin-top:18px;flex:1;min-height:0}
+.desk .tbl{flex:1;min-width:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);align-self:flex-start}
+.desk .tr{display:grid;grid-template-columns:2fr 1fr 1.1fr 1.3fr .7fr;gap:12px;align-items:center;padding:11px 16px;border-top:1px solid var(--line);font-size:13px;cursor:pointer}
+.desk .tr.osp{grid-template-columns:1.6fr 1fr 1fr 1fr 1.4fr}
 .desk .tr:first-child{border-top:none}
 .desk .tr.head{background:var(--bg);cursor:default}
-.desk .tr.head div{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
-.desk .tr:hover:not(.head){background:#F3EEE7}
-.desk .tr.sel{background:#F3EEE7}
+.desk .tr.head div{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650}
+.desk .tr:hover:not(.head){background:#F5F0E9}
+.desk .tr.sel{background:#EFE7DD}
 .desk .chi b{display:block;color:var(--ink);font-weight:600;font-size:13.5px}
 .desk .chi span{color:var(--ink-faint);font-size:12px}
 .desk .num{font-variant-numeric:tabular-nums;color:var(--ink-muted)}
-.desk .pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-muted)}
+.desk .num.r{text-align:right}
+.desk .pill{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-muted);white-space:nowrap}
 .desk .pill.prem{color:var(--accent);border-color:rgba(166,81,47,.45);background:rgba(166,81,47,.07)}
 .desk .pill.prova{color:#7A5A1F;border-color:rgba(122,90,31,.4);background:rgba(251,191,36,.10)}
-.desk .pill.scaduto{color:var(--danger);border-color:rgba(179,38,30,.35)}
+.desk .pill.scad{color:var(--danger);border-color:rgba(179,38,30,.35)}
 .desk .pill i{width:6px;height:6px;border-radius:50%;background:currentColor}
-.desk .fonte{display:block;font-size:11px;color:var(--ink-faint);margin-top:3px;letter-spacing:0;text-transform:none;font-weight:500}
-.desk .lucch{font-size:12px;color:var(--ink-faint)}
-.desk .lucch.si{color:var(--verde)}
+.desk .fonte{display:block;font-size:11px;color:var(--ink-faint);margin-top:3px}
 
-/* il dettaglio a destra della riga scelta */
-.desk .dett{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px 20px;display:grid;grid-template-columns:1.2fr 1fr;gap:22px}
-.desk .dett h2{font-family:var(--serif);font-size:20px;font-weight:420;color:var(--ink);letter-spacing:-.01em}
-.desk .dett .kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;margin-top:12px;font-size:13px}
-.desk .dett .kv b{color:var(--ink-faint);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding-top:2px}
-.desk .dett .kv span{color:var(--ink)}
-.desk .dett .azioni{display:flex;flex-direction:column;gap:8px;align-self:start}
-.desk .dett .btn{height:40px;padding:0 16px;border-radius:11px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px}
-.desk .dett .btn.p{background:var(--ink);color:#fff;border-color:var(--ink)}
-.desk .dett .btn.d{color:var(--danger)}
-.desk .dett .nota{font-size:12px;color:var(--ink-faint);line-height:1.5;margin-top:4px}
+.desk .isp{width:300px;flex:none;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px;align-self:flex-start}
+.desk .isp h2{font-family:var(--serif);font-size:21px;font-weight:420;color:var(--ink);letter-spacing:-.01em;line-height:1.2}
+.desk .isp .mail{font-size:12.5px;color:var(--ink-faint);margin-top:2px;word-break:break-all}
+.desk .isp .sez{border-top:1px solid var(--line);padding-top:12px}
+.desk .isp .kv{display:grid;grid-template-columns:96px 1fr;gap:5px 10px;font-size:12.5px}
+.desk .isp .kv b{color:var(--ink-faint);font-weight:600;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding-top:2px}
+.desk .isp .kv span{color:var(--ink);line-height:1.4}
+.desk .isp .piano{display:flex;flex-direction:column;gap:8px}
+.desk .isp .seg2{display:inline-flex;background:rgba(0,0,0,.06);border-radius:9px;padding:2px;align-self:flex-start}
+.desk .isp .seg2 span{padding:6px 14px;border-radius:7px;font-size:13px;color:var(--ink-muted)}
+.desk .isp .seg2 span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.desk .isp .seg2.spento{opacity:.45}
+.desk .isp .nota{font-size:11.5px;color:var(--ink-faint);line-height:1.5}
+.desk .isp .vuoto{color:var(--ink-faint);font-size:13px;text-align:center;padding:40px 10px}
+.desk .pie{margin-top:12px;font-size:11.5px;color:var(--ink-faint)}
 
-/* annotazioni */
-.ann{position:absolute;background:#FBBF24;color:#1a1a1a;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.3;max-width:230px}
-.ann.ok{background:#4ADE80}
+.ann{position:absolute;background:#FBBF24;color:#1a1a1a;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.3;max-width:240px}
 
-/* ---------------- il quiz ---------------- */
-.quiz{max-width:900px;margin:0 auto;display:grid;gap:22px}
-.q{background:var(--pg-2);border:1px solid var(--pg-line);border-radius:16px;padding:22px 24px}
-.q .qn{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--hot);font-weight:650}
-.q h4{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:6px 0 14px;letter-spacing:-.01em}
-.q .opz{display:grid;gap:8px}
-.q .o{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--pg-line);border-radius:12px;cursor:pointer;color:var(--pg-mut);font-size:14px;line-height:1.55}
-.q .o:hover{border-color:rgba(255,255,255,.28)}
-.q .o.on{border-color:var(--ok);background:rgba(74,222,128,.06);color:var(--pg-ink)}
+.q{max-width:760px;margin:0 auto;background:var(--pg-2);border:1px solid var(--pg-line);border-radius:16px;padding:22px 24px}
+.q h4{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--pg-ink);margin:0 0 14px;letter-spacing:-.01em}
+.q .o{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--pg-line);border-radius:12px;color:var(--pg-mut);font-size:14px;line-height:1.55;margin-bottom:8px}
 .q .o i{font-style:normal;flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--pg-line);display:grid;place-items:center;font-size:12px;font-weight:650;color:var(--pg-ink)}
-.q .o.on i{background:var(--ok);color:#111;border-color:var(--ok)}
 .q .o b{color:var(--pg-ink);font-weight:600}
-.q .o .cons{font-size:11px;color:var(--ok);font-weight:650;letter-spacing:.14em;text-transform:uppercase;margin-left:6px}
-.risp{max-width:900px;margin:26px auto 0;background:var(--pg-2);border:1px dashed rgba(255,255,255,.25);border-radius:14px;padding:18px 22px;font-size:14px;color:var(--pg-mut);line-height:1.7}
-.risp b{color:var(--pg-ink)}
-.risp code{font-family:var(--mono);color:var(--hot);font-size:14px}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <h1 class="page-title">/admin: la voce "Iscritti"</h1>
-  <p class="page-sub">Oggi il pannello ha Aree, Sito, Messaggio di benvenuto e Regalo AI. <b>Non esiste una schermata che elenchi chi si e iscritto</b>:
-    gli account stanno in Supabase e si vedono solo dal suo dashboard. Questa e la proposta per portarli dentro /admin,
-    con un dettaglio per persona e (se lo vuoi) due azioni a mano. Sotto ci sono <b>tre domande</b>: rispondi in chat con le lettere (es. "A2 B1 C1").</p>
+  <h1 class="page-title">/admin: Iscritti, seconda versione</h1>
+  <p class="page-sub">Con le tue scelte (A2 B2 C2) e dopo il controaudit della prima. La prima versione aveva <b>tre errori veri</b> e troppa prosa dentro la schermata:
+    qui la schermata rifatta, poi l'elenco di cosa ho corretto. La schermata risponde: le schede e le righe si cliccano.</p>
 
   <div class="divider"></div>
-  <p class="label">01 . La schermata: i numeri in cima, poi l'elenco</p>
-  <p class="caption">Voce nuova nella rail, "Iscritti", col numero accanto come "Aree". In cima quattro numeri che dicono come sta andando; sotto l'elenco,
-    con due schede: <b>Account</b> (chi ha un'email) e <b>Ospiti</b> (i telefoni senza account che usano il regalo AI). Le email e i nomi qui sono inventati.</p>
+  <p class="label">01 . La schermata</p>
+  <p class="caption">Una riga di testata (titolo, le due schede, la ricerca), quattro numeri, l'elenco a cinque colonne e un ispettore a destra per la riga scelta.
+    Nessuna frase dentro la schermata: l'unica nota sta in fondo, in una riga. Ordine di fabbrica: <b>ultimo iscritto in cima</b> (C2). Nomi ed email inventati.</p>
   <div class="row">
-    <div class="desk">
+    <div class="desk" id="desk">
       <aside>
         <div class="brand"><b>day</b>alogue</div>
         <div class="brand-sub">Admin</div>
@@ -150,199 +134,167 @@ body{background:var(--pg);color:var(--pg-mut);font-family:var(--font);padding:52
         <div class="who"><b>madh52@gmail.com</b>l'unico che entra qui</div>
       </aside>
       <main>
-        <h1>Iscritti</h1>
-        <p class="sub">Chi ha un account e chi usa l'app da ospite. Le giornate sono chiuse nella cassaforte: qui si vede quante sono, mai cosa dicono.</p>
+        <div class="testa">
+          <h1>Iscritti</h1>
+          <div class="seg"><span class="on" data-scheda="acc">Account<em>27</em></span><span data-scheda="osp">Ospiti<em>61</em></span></div>
+          <div class="cerca">&#128269; Cerca</div>
+        </div>
 
         <div class="numeri">
-          <div class="box"><div class="k">Account</div><div class="n">27 <small>+4 in 7 giorni</small></div><div class="p">Email confermate, compreso il revisore Apple.</div></div>
-          <div class="box"><div class="k">Premium</div><div class="n">6 <small>di cui 3 in prova</small></div><div class="p">Abbonati veri (Apple), piu chi e nelle 2 settimane gratis.</div></div>
-          <div class="box"><div class="k">Ospiti attivi</div><div class="n">48 <small>ultimi 30 giorni</small></div><div class="p">Telefoni senza account che hanno scritto almeno una giornata.</div></div>
-          <div class="box"><div class="k">AI questo mese</div><div class="n">12,40 <small>EUR . 214 giornate</small></div><div class="p">Stessa somma della voce Regalo AI, piu gli abbonati.</div></div>
+          <div class="box"><div class="k">Account</div><div class="n">27 <small>+4 in 7 giorni</small></div></div>
+          <div class="box"><div class="k">Premium</div><div class="n">6 <small>3 in prova</small></div></div>
+          <div class="box"><div class="k">Ospiti attivi</div><div class="n">48 <small>su 61, 30 giorni</small></div></div>
+          <div class="box"><div class="k">AI, settembre</div><div class="n">12,40 <small>EUR</small></div></div>
         </div>
 
-        <div class="schede">
-          <span class="scheda on">Account <em>27</em></span>
-          <span class="scheda">Ospiti <em>48</em></span>
-          <span class="ordina">Ordina: ultimo accesso &#9662;</span>
-          <span class="cerca">&#128269; cerca per email o nome</span>
-        </div>
+        <div class="corpo">
+          <div class="tbl" id="tbl-acc">
+            <div class="tr head"><div>Account</div><div>Iscritto</div><div>Ultimo accesso</div><div>Piano</div><div class="num r">Giornate</div></div>
+            <div class="tr" data-p="0"><div class="chi"><b>luca.p@esempio.it</b></div><div class="num">12 set</div><div class="num">mai</div><div><span class="pill"><i></i>Gratis</span></div><div class="num r">0</div></div>
+            <div class="tr" data-p="1"><div class="chi"><b>appreview@dayalogue.com</b></div><div class="num">11 set</div><div class="num">13 set</div><div><span class="pill"><i></i>Gratis</span></div><div class="num r">2</div></div>
+            <div class="tr" data-p="2"><div class="chi"><b>Marco T.</b><span>marco.t@esempio.it</span></div><div class="num">10 set</div><div class="num">ieri</div><div><span class="pill prova"><i></i>Prova</span><span class="fonte">Apple, fino al 24 set</span></div><div class="num r">3</div></div>
+            <div class="tr sel" data-p="3"><div class="chi"><b>Giulia R.</b><span>giulia.r@esempio.it</span></div><div class="num">2 set</div><div class="num">oggi</div><div><span class="pill prem"><i></i>Premium</span><span class="fonte">Apple, rinnova il 2 ott</span></div><div class="num r">11</div></div>
+            <div class="tr" data-p="4"><div class="chi"><b>Sara B.</b><span>sara.b@esempio.it</span></div><div class="num">28 ago</div><div class="num">6 set</div><div><span class="pill scad"><i></i>Scaduto</span><span class="fonte">Apple, dal 6 set</span></div><div class="num r">9</div></div>
+            <div class="tr" data-p="5"><div class="chi"><b>Manuel</b><span>madh52@gmail.com</span></div><div class="num">12 ago</div><div class="num">oggi</div><div><span class="pill prem"><i></i>Premium</span><span class="fonte">a mano</span></div><div class="num r">31</div></div>
+          </div>
 
-        <div class="tbl">
-          <div class="tr head"><div>Chi</div><div>Iscritto dal</div><div>Ultimo accesso</div><div>Piano</div><div>Giornate</div><div>AI mese</div><div>Cassaforte</div></div>
-          <div class="tr sel">
-            <div class="chi"><b>Giulia R.</b><span>giulia.r@esempio.it</span></div>
-            <div class="num">2 set 2026</div><div class="num">oggi, 09:12</div>
-            <div><span class="pill prem"><i></i>Premium</span><span class="fonte">Apple . mensile . rinnova il 2 ott</span></div>
-            <div class="num">11</div><div class="num">0,31 EUR</div><div class="lucch si">&#128274; chiusa</div>
+          <div class="tbl" id="tbl-osp" style="display:none">
+            <div class="tr head osp"><div>Ospite</div><div>Dal</div><div>Ultimo uso</div><div>Regalo</div><div>Esito</div></div>
+            <div class="tr osp"><div class="chi"><b>a91f&hellip;c3</b><span>iPhone</span></div><div class="num">11 set</div><div class="num">oggi</div><div class="num">6 di 10</div><div class="num">in corso</div></div>
+            <div class="tr osp"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 di 10</div><div class="num">account: giulia.r@&hellip;</div></div>
+            <div class="tr osp"><div class="chi"><b>e5d8&hellip;41</b><span>browser</span></div><div class="num">9 set</div><div class="num">9 set</div><div class="num">10 di 10</div><div class="num">finito, senza account</div></div>
+            <div class="tr osp"><div class="chi"><b>0b77&hellip;d0</b><span>iPhone, senza DeviceCheck</span></div><div class="num">8 set</div><div class="num">8 set</div><div class="num">1 di 10</div><div class="num">in corso</div></div>
           </div>
-          <div class="tr">
-            <div class="chi"><b>Marco T.</b><span>marco.t@esempio.it</span></div>
-            <div class="num">10 set 2026</div><div class="num">ieri, 22:40</div>
-            <div><span class="pill prova"><i></i>In prova</span><span class="fonte">Apple . gratis fino al 24 set</span></div>
-            <div class="num">3</div><div class="num">0,08 EUR</div><div class="lucch si">&#128274; chiusa</div>
-          </div>
-          <div class="tr">
-            <div class="chi"><b>Il tuo nome</b><span>appreview@dayalogue.com</span></div>
-            <div class="num">11 set 2026</div><div class="num">13 set, 03:15</div>
-            <div><span class="pill"><i></i>Gratis</span><span class="fonte">revisore Apple</span></div>
-            <div class="num">2</div><div class="num">0,00 EUR</div><div class="lucch">aperta</div>
-          </div>
-          <div class="tr">
-            <div class="chi"><b>Sara B.</b><span>sara.b@esempio.it</span></div>
-            <div class="num">28 ago 2026</div><div class="num">6 set</div>
-            <div><span class="pill scaduto"><i></i>Scaduto</span><span class="fonte">Apple . non rinnovato il 6 set</span></div>
-            <div class="num">9</div><div class="num">0,00 EUR</div><div class="lucch si">&#128274; chiusa</div>
-          </div>
-          <div class="tr">
-            <div class="chi"><b>Manuel</b><span>madh52@gmail.com</span></div>
-            <div class="num">12 ago 2026</div><div class="num">oggi, 13:20</div>
-            <div><span class="pill prem"><i></i>Premium</span><span class="fonte">a mano . senza scadenza</span></div>
-            <div class="num">31</div><div class="num">1,92 EUR</div><div class="lucch si">&#128274; chiusa</div>
-          </div>
-          <div class="tr">
-            <div class="chi"><b>Il tuo nome</b><span>luca.p@esempio.it</span></div>
-            <div class="num">12 set 2026</div><div class="num">mai entrato</div>
-            <div><span class="pill"><i></i>Gratis</span><span class="fonte">email confermata, zero giornate</span></div>
-            <div class="num">0</div><div class="num">0,00 EUR</div><div class="lucch">aperta</div>
-          </div>
-        </div>
 
-        <div class="dett">
-          <div>
-            <h2>Giulia R. <span style="font-family:var(--font);font-size:13px;color:var(--ink-faint);font-weight:500">giulia.r@esempio.it</span></h2>
-            <div class="kv">
-              <b>Account</b><span>creato il 2 settembre 2026, 18:04 . email confermata</span>
-              <b>Accessi</b><span>ultimo oggi alle 09:12 . 14 giorni su 11 con una giornata</span>
-              <b>Piano</b><span>Premium via Apple, mensile (0,99 EUR) . iniziato in prova il 2 set, pagante dal 16 set . rinnova il 2 ottobre</span>
-              <b>Apple</b><span>ambiente Production . ultimo avviso: DID_RENEW (2 ott non ancora) . transazione 2000000123456</span>
-              <b>Giornate</b><span>11 nella cassaforte (chiusa dal 2 set) . 3 foto</span>
-              <b>AI</b><span>0,31 EUR questo mese . 38 chiamate . 1,04 EUR da sempre</span>
-              <b>Ospite prima</b><span>si: braccialetto dal 30 agosto, 4 giornate in regalo, poi ha aperto l'account</span>
-            </div>
-          </div>
-          <div class="azioni">
-            <div class="btn p">Rendi premium a mano</div>
-            <div class="btn">Togli il premium a mano</div>
-            <div class="btn d">Cancella l'account...</div>
-            <p class="nota">Le azioni scrivono in <i>profiles</i> col service role, mai dal browser. "Cancella" chiede conferma due volte e cancella tutto: account, cassaforte, foto.</p>
-          </div>
+          <div class="isp" id="isp"></div>
         </div>
+        <div class="pie">Le giornate sono chiuse nella cassaforte: qui si contano, non si leggono.</div>
       </main>
-      <div class="ann ok" style="top:440px;left:12px">"Iscritti": voce nuova nella rail, col numero come "Aree"</div>
-      <div class="ann" style="top:16px;right:16px">ultimo accesso: da auth.users, lato server</div>
-      <div class="ann" style="top:52px;right:16px">Piano + fonte: Apple / a mano / prova / scaduto</div>
-      <div class="ann" style="top:88px;right:16px">le azioni in basso ci sono solo con B2 o B3</div>
     </div>
   </div>
-  <p class="under">Cosa NON si vede e non si vedra mai: il testo delle giornate, i titoli, le persone, i memo. Sono nella cassaforte, cifrati con la chiave dell'utente;
-    il server (e quindi anche tu) ha solo delle buste chiuse. Qui si contano le buste. L'email e il nome mostrato si leggono da <i>auth.users</i> e <i>profiles</i>.</p>
+  <p class="under">Il piano si cambia dal segmented "Gratis / Premium" nell'ispettore, e <b>solo se il piano non viene da Apple</b>: chi paga con Apple ha il segmented spento, perche lo governa l'App Store (il server lo riscriverebbe al primo avviso). Il cambio a mano scrive <i>plan</i> e <i>plan_source = manual</i> in <i>profiles</i>, come la SQL che hai gia usato per il revisore.</p>
 
   <div class="divider"></div>
-  <p class="label">02 . La scheda "Ospiti"</p>
-  <p class="caption">Gli ospiti non hanno email: si vedono come braccialetti (un numero per telefono). Serve a capire quanti provano l'app senza iscriversi,
-    quanti finiscono il regalo, e quanti poi aprono un account.</p>
+  <p class="label">02 . Il controaudit: cosa non andava nella prima versione</p>
+  <table>
+    <tr><th style="width:40%">Prima</th><th>Adesso</th></tr>
+    <tr><td class="no"><b>Errore</b>: nel dettaglio c'era "14 giorni su 11 con una giornata", una frase senza senso.</td><td>Nell'ispettore solo numeri che il database sa dare: iscritto il, ultimo accesso, giornate, AI del mese.</td></tr>
+    <tr><td class="no"><b>Errore</b>: "ultimo avviso Apple: DID_RENEW (2 ott non ancora)", un rinnovo futuro dato per avvenuto.</td><td>La riga Apple mostra l'ultimo avviso ricevuto e la scadenza. Basta.</td></tr>
+    <tr><td class="no"><b>Errore di logica</b>: "Rendi premium" e "Togli premium" anche per chi paga con Apple. Il server li avrebbe sovrascritti al primo avviso di Apple.</td><td>Un segmented solo, spento (con la ragione scritta) quando la fonte e Apple.</td></tr>
+    <tr><td class="no">"revisore Apple" come fonte del piano: il sistema non sa chi e il revisore, era un'etichetta finta.</td><td>Tolta. E un account gratis come gli altri: lo riconosci dall'email.</td></tr>
+    <tr><td class="no">Sette colonne, e ogni numero in cima con un paragrafo sotto.</td><td>Cinque colonne; AI e cassaforte stanno nell'ispettore. I quattro numeri hanno un'etichetta e una parola.</td></tr>
+    <tr><td class="no">"Ospiti attivi 48" in cima e scheda "Ospiti 48": due cose diverse, lo stesso numero.</td><td>In cima "48 attivi su 61"; la scheda elenca tutti e 61.</td></tr>
+    <tr><td class="no">Colonne degli ospiti "Telefono vero" e "Poi"; "sparito" era un giudizio.</td><td>"Regalo" (6 di 10) ed "Esito" (in corso / finito, senza account / account: email). DeviceCheck e una nota sotto l'id, solo quando manca.</td></tr>
+    <tr><td class="no">Sottotitolo di due righe, dettaglio sotto la tabella che spinge tutto giu, "Cancella account" che non hai scelto.</td><td>Testata a una riga, ispettore a destra a larghezza fissa, nessuna cancellazione (B2).</td></tr>
+    <tr><td class="no">"Il tuo nome" mostrato come nome di chi non l'ha scritto.</td><td>Chi non ha un nome mostra solo l'email, in grassetto.</td></tr>
+  </table>
+  <p class="under">Rimasto uguale perche era giusto: la voce nella rail col numero, i quattro numeri, il fatto che nulla del contenuto delle giornate si veda, e che ogni dato arrivi
+    dal server con la chiave di servizio (<i>GET /api/admin/iscritti</i> dietro <i>requireAdmin</i>, piu un <i>PUT</i> per il piano). Nessuna migration.</p>
+
+  <div class="divider"></div>
+  <p class="label">04 . La recensione: gia nell'app, ma dormiente</p>
+  <p class="caption">Una voce nuova in /admin, "Recensione", spenta di fabbrica. Quando la accendi, <b>tutte le app gia installate</b> cominciano a chiedere la recensione
+    senza aggiornamento: il pezzo nativo e gia nel binario, e un interruttore letto dal server. Apple decide se e quando mostrare davvero il foglio (al massimo tre volte l'anno per persona).</p>
   <div class="row">
-    <div class="desk" style="min-height:0">
+    <div class="desk" style="min-height:0;height:520px">
       <aside>
         <div class="brand"><b>day</b>alogue</div>
         <div class="brand-sub">Admin</div>
         <nav>
           <span>Aree <em>6</em></span>
-          <span class="on">Iscritti <em>27</em></span>
+          <span>Iscritti <em>27</em></span>
           <span>Sito</span>
           <span>Messaggio di benvenuto</span>
           <span>Regalo AI</span>
+          <span class="on">Recensione</span>
           <span class="off">Obiettivi di default</span>
-          <span class="off">Modelli AI</span>
         </nav>
         <div class="who"><b>madh52@gmail.com</b>l'unico che entra qui</div>
       </aside>
       <main>
-        <h1>Iscritti</h1>
-        <p class="sub">Chi ha un account e chi usa l'app da ospite.</p>
-        <div class="schede">
-          <span class="scheda">Account <em>27</em></span>
-          <span class="scheda on">Ospiti <em>48</em></span>
-          <span class="ordina">Ordina: ultimo uso &#9662;</span>
+        <div class="testa"><h1>Recensione</h1></div>
+        <div class="numeri" style="grid-template-columns:1fr 1fr;max-width:640px">
+          <div class="box">
+            <div class="k">La richiesta</div>
+            <div class="piano" style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+              <div class="seg2" style="display:inline-flex;background:rgba(0,0,0,.06);border-radius:9px;padding:2px;align-self:flex-start"><span class="on" style="padding:6px 14px;border-radius:7px;font-size:13px;background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)">Spenta</span><span style="padding:6px 14px;font-size:13px;color:var(--ink-muted)">Accesa</span></div>
+              <div class="nota" style="font-size:11.5px;color:var(--ink-faint);line-height:1.5">Vale subito per tutte le app installate. Apple mostra il foglio al massimo tre volte l'anno per persona, e non dice se ha scritto la recensione.</div>
+            </div>
+          </div>
+          <div class="box">
+            <div class="k">Quando</div>
+            <div class="n" style="font-size:22px;margin-top:8px">dopo <b style="font-weight:500">5</b> giornate <small>salvate</small></div>
+            <div class="nota" style="font-size:11.5px;color:var(--ink-faint);line-height:1.5;margin-top:6px">Al momento in cui la giornata e appena salvata, mai all'avvio. Non piu di una richiesta ogni 120 giorni per telefono.</div>
+          </div>
         </div>
-        <div class="tbl">
-          <div class="tr head" style="grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1.2fr 1fr"><div>Braccialetto</div><div>Dal</div><div>Ultimo uso</div><div>Giornate regalo</div><div>AI mese</div><div>Telefono vero</div><div>Poi</div></div>
-          <div class="tr" style="grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1.2fr 1fr"><div class="chi"><b>a91f...c3</b><span>iPhone, DeviceCheck ok</span></div><div class="num">11 set</div><div class="num">oggi</div><div class="num">6 su 10</div><div class="num">0,12 EUR</div><div class="lucch si">si</div><div class="num">ancora ospite</div></div>
-          <div class="tr" style="grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1.2fr 1fr"><div class="chi"><b>7c02...9e</b><span>iPhone, DeviceCheck ok</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 su 10</div><div class="num">0,00 EUR</div><div class="lucch si">si</div><div class="num">account: giulia.r@...</div></div>
-          <div class="tr" style="grid-template-columns:1.6fr 1fr 1fr 1fr 1fr 1.2fr 1fr"><div class="chi"><b>e5d8...41</b><span>browser (IndexedDB)</span></div><div class="num">9 set</div><div class="num">9 set</div><div class="num">10 su 10</div><div class="num">0,19 EUR</div><div class="lucch">no</div><div class="num">regalo finito, sparito</div></div>
+        <div class="numeri" style="grid-template-columns:1fr 1fr 1fr;max-width:640px;margin-top:12px">
+          <div class="box"><div class="k">Richieste</div><div class="n">0 <small>da sempre</small></div></div>
+          <div class="box"><div class="k">Questo mese</div><div class="n">0</div></div>
+          <div class="box"><div class="k">Ultima</div><div class="n" style="font-size:20px;margin-top:9px">mai</div></div>
         </div>
+        <div class="pie" style="margin-top:22px">Salva . Annulla</div>
       </main>
-      <div class="ann" style="top:16px;right:16px">un ospite che apre l'account resta in lista: e la storia della quota</div>
     </div>
   </div>
+  <table style="margin-top:26px">
+    <tr><th style="width:26%">Pezzo</th><th>Cosa fa</th></tr>
+    <tr><td><b>Nel binario</b> (build 4 in poi)</td><td>Un plugin nativo di tre righe, <i>Recensione.swift</i>, che chiama il foglio di Apple (<i>SKStoreReviewController</i>). Nessuna libreria esterna. <b>La build 2 in revisione non ce l'ha</b>: la richiesta potra partire solo sui telefoni con la build 4 o piu.</td></tr>
+    <tr><td><b>Sul server</b></td><td>Una tabella a una riga, <i>recensione</i> (accesa, giornate minime), come <i>regalo</i>. La legge la rotta <i>GET /api/recensione</i>, con cache di 30 secondi. Il pannello la scrive con un <i>PUT</i> dietro <i>requireAdmin</i>.</td></tr>
+    <tr><td><b>Nell'app</b></td><td>Appena una giornata e salvata, se l'interruttore e acceso, le giornate sono almeno N e sul telefono non e stata fatta una richiesta negli ultimi 120 giorni, l'app chiama il foglio. L'app chiede l'interruttore al server una volta al giorno, e solo in cloud o da ospite: chi e in locale puro non fa rete e non viene chiesto.</td></tr>
+    <tr><td><b>Il contatore</b></td><td>Ogni richiesta fatta viene segnata sul server (una riga in <i>ai_usage</i> no: una tabella sua, <i>recensione_richieste</i>, senza chi). E il numero di volte in cui l'app ha CHIESTO ad Apple; se il foglio e comparso e se la persona ha scritto, Apple non lo dice a nessuno.</td></tr>
+    <tr><td><b>Sul web</b></td><td>Niente: il foglio esiste solo su iPhone. Una migration nuova (030), la prima di questo giro.</td></tr>
+  </table>
 
   <div class="divider"></div>
-  <p class="label">03 . Le domande</p>
-  <div class="quiz">
-    <div class="q">
-      <div class="qn">Domanda A</div>
-      <h4>Cosa vuoi vedere nell'elenco?</h4>
-      <div class="opz">
-        <div class="o" data-q="A" data-v="1"><i>1</i><div><b>Solo gli account</b> (chi ha un'email). Gli ospiti restano un numero nella voce Regalo AI, come oggi.</div></div>
-        <div class="o" data-q="A" data-v="2"><i>2</i><div><b>Account e ospiti, in due schede</b> come nel mockup.<span class="cons">consigliata</span><br>Gli ospiti sono la parte alta dell'imbuto: quanti provano, quanti restano.</div></div>
-        <div class="o" data-q="A" data-v="3"><i>3</i><div><b>Tutti in una lista sola</b>, ospiti e account mescolati, ordinati per ultimo uso.</div></div>
-      </div>
-    </div>
-    <div class="q">
-      <div class="qn">Domanda B</div>
-      <h4>Il pannello deve anche FARE qualcosa, o solo mostrare?</h4>
-      <div class="opz">
-        <div class="o" data-q="B" data-v="1"><i>1</i><div><b>Solo lettura.</b> Per rendere premium qualcuno a mano continui a scrivere la SQL su Supabase, come oggi con il revisore.</div></div>
-        <div class="o" data-q="B" data-v="2"><i>2</i><div><b>Lettura + premium a mano</b> (dare e togliere).<span class="cons">consigliata</span><br>E la cosa che hai gia fatto due volte a mano. Si scrive in <i>profiles</i> con <i>plan_source = manual</i>; se un giorno quella persona paga davvero, Apple sovrascrive.</div></div>
-        <div class="o" data-q="B" data-v="3"><i>3</i><div><b>Lettura + premium a mano + cancella account.</b> Cancellare butta tutto (cassaforte compresa): doppia conferma scrivendo l'email.</div></div>
-      </div>
-    </div>
-    <div class="q">
-      <div class="qn">Domanda C</div>
-      <h4>Come li ordino di fabbrica?</h4>
-      <div class="opz">
-        <div class="o" data-q="C" data-v="1"><i>1</i><div><b>Ultimo accesso</b> in cima: vedi subito chi sta usando l'app adesso.<span class="cons">consigliata</span></div></div>
-        <div class="o" data-q="C" data-v="2"><i>2</i><div><b>Ultimo iscritto</b> in cima: vedi subito chi e arrivato.</div></div>
-        <div class="o" data-q="C" data-v="3"><i>3</i><div><b>Premium prima</b>, poi gli altri per ultimo accesso.</div></div>
-      </div>
-    </div>
-  </div>
-  <div class="risp" id="risp">Scegli sopra: qui compare la riga da copiare in chat.</div>
-
-  <div class="divider"></div>
-  <p class="label">04 . Come si fa, in parole semplici</p>
-  <div class="prose">
-    <h3>Da dove arrivano i dati</h3>
-    <p>Da tre posti, tutti letti <b>dal server con la chiave di servizio</b>, mai dal browser: <b>auth.users</b> (email, quando si e iscritto, ultimo accesso),
-      <b>profiles</b> (piano, fonte del piano, scadenza, dati Apple, nome mostrato) e <b>braccialetti</b> (gli ospiti, con le giornate del regalo).
-      Le giornate si contano da <b>cassettine</b> (le buste chiuse) e la spesa AI da <b>ai_usage</b>, come fa gia la voce Regalo AI.</p>
-    <h3>Cosa si costruisce</h3>
-    <p>Una rotta nuova <i>GET /api/admin/iscritti</i> dietro la stessa guardia delle altre (<i>requireAdmin</i>: a chiunque altro risponde 404),
-      una schermata <i>iscritti-schermata.tsx</i> nel modulo admin, e la voce nella rail. Se scegli B2 o B3, anche <i>PUT</i> e <i>DELETE</i> sulla stessa rotta.
-      Nessuna migration: le tabelle ci sono tutte.</p>
-    <h3>Cosa non si puo vedere</h3>
-    <p>Il contenuto delle giornate. E cifrato con la chiave che sta solo sul telefono dell'utente: il server ha le buste e non sa aprirle.
-      Il pannello mostra <b>quante</b> giornate, non cosa dicono. E voluto, ed e la promessa scritta sul sito ("solo tu hai la chiave").</p>
+  <p class="label">05 . Una domanda sola</p>
+  <div class="q">
+    <h4>Costruisco questa?</h4>
+    <div class="o"><i>1</i><div><b>Si, costruisci tutte e due:</b> Iscritti e Recensione (dormiente).</div></div>
+    <div class="o"><i>2</i><div><b>Prima Iscritti, la Recensione dopo.</b></div></div>
+    <div class="o"><i>3</i><div><b>Cambia qualcosa prima.</b> Dimmi cosa, in chat.</div></div>
   </div>
 
 </div>
 <script>
 (function(){
-  var scelte={};
-  var opz=document.querySelectorAll('.o');
-  for(var i=0;i<opz.length;i++){
-    opz[i].addEventListener('click',function(){
-      var q=this.getAttribute('data-q'),v=this.getAttribute('data-v');
-      scelte[q]=v;
-      var fratelli=document.querySelectorAll('.o[data-q="'+q+'"]');
-      for(var k=0;k<fratelli.length;k++)fratelli[k].classList.remove('on');
-      this.classList.add('on');
-      var parti=[];
-      ['A','B','C'].forEach(function(l){if(scelte[l])parti.push(l+scelte[l]);});
-      var manca=['A','B','C'].filter(function(l){return !scelte[l];});
-      document.getElementById('risp').innerHTML='Da copiare in chat: <code>'+parti.join(' ')+'</code>'+(manca.length?' <b>(manca ancora '+manca.join(', ')+')</b>':' <b>. tutte e tre risposte.</b>');
-    });
+  var P=[
+    {n:"luca.p@esempio.it",m:"",dal:"12 settembre 2026, 21:03",acc:"mai entrato",piano:"free",fonte:"",g:"0",ai:"0,00 EUR",osp:"no",cass:"aperta"},
+    {n:"appreview@dayalogue.com",m:"",dal:"11 settembre 2026",acc:"13 settembre, 03:15",piano:"free",fonte:"",g:"2",ai:"0,00 EUR",osp:"no",cass:"aperta"},
+    {n:"Marco T.",m:"marco.t@esempio.it",dal:"10 settembre 2026",acc:"ieri, 22:40",piano:"prova",fonte:"apple",apple:"Production, mensile. Prova fino al 24 set. Ultimo avviso: SUBSCRIBED",g:"3",ai:"0,08 EUR",osp:"no",cass:"chiusa dal 10 set"},
+    {n:"Giulia R.",m:"giulia.r@esempio.it",dal:"2 settembre 2026",acc:"oggi, 09:12",piano:"premium",fonte:"apple",apple:"Production, mensile. Rinnova il 2 ott. Ultimo avviso: DID_RENEW (2 set)",g:"11",ai:"0,31 EUR",osp:"si, dal 30 ago (4 giornate in regalo)",cass:"chiusa dal 2 set"},
+    {n:"Sara B.",m:"sara.b@esempio.it",dal:"28 agosto 2026",acc:"6 settembre",piano:"free",fonte:"apple",apple:"Production, mensile. Scaduto il 6 set. Ultimo avviso: EXPIRED",g:"9",ai:"0,00 EUR",osp:"no",cass:"chiusa dal 28 ago"},
+    {n:"Manuel",m:"madh52@gmail.com",dal:"12 agosto 2026",acc:"oggi, 13:20",piano:"premium",fonte:"manual",g:"31",ai:"1,92 EUR",osp:"no",cass:"chiusa dal 3 set"}
+  ];
+  var isp=document.getElementById('isp');
+  function seg(p){
+    var apple=p.fonte==='apple';
+    var on=p.piano==='free'?0:1;
+    var html='<div class="seg2'+(apple?' spento':'')+'"><span class="'+(on===0?'on':'')+'">Gratis</span><span class="'+(on===1?'on':'')+'">Premium</span></div>';
+    var nota=apple?'Lo governa l\'App Store: qui non si tocca.':(p.fonte==='manual'?'Premium a mano, senza scadenza. Se un giorno paga con Apple, Apple sovrascrive.':'Cambiarlo scrive plan e plan_source = manual.');
+    return html+'<div class="nota">'+nota+'</div>';
   }
+  function mostra(i){
+    var p=P[i];
+    var h='<div><h2>'+p.n+'</h2>'+(p.m?'<div class="mail">'+p.m+'</div>':'')+'</div>';
+    h+='<div class="sez kv"><b>Iscritto</b><span>'+p.dal+'</span><b>Ultimo accesso</b><span>'+p.acc+'</span><b>Giornate</b><span>'+p.g+', cassaforte '+p.cass+'</span><b>AI settembre</b><span>'+p.ai+'</span><b>Ospite prima</b><span>'+p.osp+'</span>'+(p.apple?'<b>Apple</b><span>'+p.apple+'</span>':'')+'</div>';
+    h+='<div class="sez piano"><div class="kv"><b>Piano</b><span></span></div>'+seg(p)+'</div>';
+    isp.innerHTML=h;
+  }
+  var righe=document.querySelectorAll('#tbl-acc .tr[data-p]');
+  for(var i=0;i<righe.length;i++)righe[i].addEventListener('click',function(){
+    for(var k=0;k<righe.length;k++)righe[k].classList.remove('sel');
+    this.classList.add('sel');mostra(+this.getAttribute('data-p'));
+  });
+  mostra(3);
+  var schede=document.querySelectorAll('.seg [data-scheda]');
+  for(var s=0;s<schede.length;s++)schede[s].addEventListener('click',function(){
+    for(var k=0;k<schede.length;k++)schede[k].classList.remove('on');
+    this.classList.add('on');
+    var osp=this.getAttribute('data-scheda')==='osp';
+    document.getElementById('tbl-acc').style.display=osp?'none':'';
+    document.getElementById('tbl-osp').style.display=osp?'':'none';
+    if(osp)isp.innerHTML='<div class="vuoto">Un ospite e un numero, non una persona: qui non c\'e niente da aprire.</div>';else mostra(3);
+  });
 })();
 </script>
 </body>
