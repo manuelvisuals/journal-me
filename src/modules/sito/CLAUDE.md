@@ -134,6 +134,35 @@ Tre cose che conviene sapere prima di rimetterci mano:
 Sotto i 901px l'ultimo atto non esiste (`display: none`), e nemmeno con
 `prefers-reduced-motion`: e tutto movimento, e fermo non racconta niente.
 
+**Le due sezioni sono diventate una (13 settembre).** Manuel: "quando
+appare il lucchetto e continui a scorrere lo sfondo diventa cioccolato e
+appaiono le animazioni della cassaforte; di due sezioni ne fai una
+lunga". Nel documento restano DUE sezioni — non si e spostato niente, e
+sotto i 901px si comportano come prima. Quello che sparisce e la
+cucitura:
+
+- `--buio` (.86 -> .97, sulla pista perche li vive `--s`) porta il fondo
+  della scena a quello della cassaforte. La ricetta e copiata identica da
+  `.jm-sito9-chiave` — sfumatura d'accento al 7% sopra l'inchiostro — e se
+  una delle due cambia devono cambiare tutte e due, se no il bordo tra le
+  sezioni torna a vedersi.
+- La frase finale passa da inchiostro a crema con lo stesso cursore.
+- **La fascia chiara che restava in mezzo era un riempimento, e la regola
+  che lo mette ha un ID.** Misurato: sezione 2250-10794, pista 2382-10662,
+  cioe 132px sopra e 132px sotto, e quelli sotto restavano color crema fra
+  il lucchetto sul cioccolato e la cassaforte. Il riempimento arriva da
+  `.jm-sito4 #come`: per toglierlo il selettore deve contenere anche lui
+  un ID (`... [data-js] #come`), se no la regola c'e e non fa niente. E il
+  tipo di errore che si cerca per mezz'ora.
+
+Non serve toccare il fondo della pista con una transizione a parte: la
+scena e alta 100svh e resta incollata fino al fondo della pista, quindi
+negli ultimi pixel non si scopre mai la crema sotto di lei.
+
+Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
+rosso una volta perche il server di sviluppo sta ancora ricompilando.
+Rilancialo: se e verde tre volte di fila, era la ricompilazione.
+
 **La pista lunga ha rotto la precisione di `--s`, e questa e la regola
 che ne esce.** Manuel, sull'anteprima: "quando scrollo, tremola in su e
 giu, un CLS di pochi pixel". Non era CLS — l'altezza del documento non
