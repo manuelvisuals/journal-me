@@ -192,6 +192,56 @@ for (const [nome, sel, da, a] of casi) {
   check(`${nome}: nessuna inversione di marcia`, inversioni === 0, String(inversioni));
 }
 
+/**
+ * I BLOCCHI DI TESTO SENZA TRANSIZIONE NON DEVONO DERIVARE (13 settembre).
+ *
+ * La regola generale di [data-fx] fa derivare il testo di 14px mentre
+ * attraversa lo schermo. Con la sua transizione di 0,9s quella deriva non
+ * insegue lo scorrimento e non si vede. Se pero qualcuno spegne la
+ * transizione — e a volte serve — la deriva diventa un movimento legato
+ * allo scorrimento, scritto dal JavaScript, che arriva un fotogramma dopo
+ * quello della pagina: il blocco balla contro il resto. E' successo il 13
+ * settembre col paragrafo della cassaforte, e Manuel l'ha visto subito.
+ *
+ * Qui si misura la cosa giusta: un blocco che non deve muoversi da solo
+ * avanza di ESATTAMENTE un pixel per ogni pixel di rotella. Se avanza di
+ * 0,993 sta derivando.
+ */
+async function derive() {
+  const elenco = await pagina.evaluate(() =>
+    [...document.querySelectorAll("[data-fx]")]
+      .map((e, i) => {
+        e.dataset.jmSonda = String(i);
+        return { i, fermo: getComputedStyle(e).transitionDuration === "0s" };
+      })
+      .filter((x) => x.fermo)
+      .map((x) => x.i),
+  );
+  const colpevoli = [];
+  for (const i of elenco) {
+    const y0 = await pagina.evaluate(
+      (k) => document.querySelector(`[data-jm-sonda="${k}"]`).getBoundingClientRect().top + scrollY,
+      i,
+    );
+    const passi = [];
+    for (let j = 0; j < 6; j++) {
+      await pagina.evaluate((v) => window.scrollTo(0, v), Math.round(y0) - 300 + j);
+      await pagina.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+      passi.push(await pagina.evaluate(
+        (k) => document.querySelector(`[data-jm-sonda="${k}"]`).getBoundingClientRect().y,
+        i,
+      ));
+    }
+    const d = passi.slice(1).map((v, k) => v - passi[k]);
+    const peggio = Math.max(...d.map((v) => Math.abs(v + 1)));
+    if (peggio > 0.02) colpevoli.push(`blocco ${i}: ${(-1 - peggio).toFixed(3)}px per pixel`);
+  }
+  return { quanti: elenco.length, colpevoli };
+}
+const der = await derive();
+check(`i blocchi [data-fx] senza transizione non derivano (${der.quanti} controllati)`,
+  der.colpevoli.length === 0, der.colpevoli.slice(0, 3).join(" | "));
+
 const sCarta = await primoMovimento(".jm-sito12-carta", 0.16, 0.40);
 const bordo = await bordoFermo(sCarta === null ? 0.33 : sCarta, 14);
 check("il bordo DISEGNATO della carta avanza a ogni fotogramma (niente scatto al pixel intero)",

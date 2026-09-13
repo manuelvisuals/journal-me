@@ -5000,7 +5000,17 @@ textarea.jm-sito-in {
 }
 .jm-sito7[data-js] .jm-sito9-titolo > .due,
 .jm-sito7[data-js] .jm-sito9-titolo > .tre { display: flex; }
-.jm-sito7[data-js] .jm-sito9-titolo > .uno { opacity: clamp(0, calc((.24 - var(--s)) / .05), 1); }
+/* "Solo tu hai la chiave" ENTRA in dissolvenza (13 settembre 2026, Manuel:
+   "deve apparire in modo soft con un fade in"). Prima era gia acceso al
+   primo fotogramma: la scena si incollava e la frase era li di colpo, come
+   un cartello. Adesso sale da zero nei primi sei centesimi di corsa, cioe
+   mentre la scena finisce di arrivare. L'uscita verso la seconda frase non
+   e cambiata. */
+.jm-sito7[data-js] .jm-sito9-titolo > .uno {
+  opacity: calc(
+    clamp(0, calc(var(--s) / .06), 1) * clamp(0, calc((.24 - var(--s)) / .05), 1)
+  );
+}
 .jm-sito7[data-js] .jm-sito9-titolo > .due {
   opacity: calc(clamp(0, calc((var(--s) - .24) / .05), 1) * clamp(0, calc((.58 - var(--s)) / .05), 1));
 }
@@ -6161,6 +6171,29 @@ textarea.jm-sito-in {
       calc(1 - clamp(0, calc((var(--p, 0) - .58) * 6.25), 1))
     );
     transition: none;
+    /* NIENTE DERIVA, ED E' LA RIGA CHE TOGLIE IL TREMOLIO (13 settembre,
+       Manuel: "ora trema di nuovo").
+
+       La regola generale di [data-fx] fa derivare il testo di 14px mentre
+       attraversa lo schermo: `translateY((--p - .5) * 14px)`. Finche
+       c'era la transizione di 0,9s quella deriva non inseguiva lo
+       scorrimento, restava indietro come una mollica e non si vedeva.
+       Spenta la transizione — che qui serviva, se no ogni pixel di
+       rotella arrivava con un secondo di ritardo — la deriva e diventata
+       un movimento legato allo scorrimento, e un movimento scritto dal
+       JavaScript arriva sempre un fotogramma dopo quello della pagina:
+       il testo balla contro il resto.
+
+       Misurato: il blocco avanzava di 0,993 pixel per ogni pixel di
+       rotella invece di 1,000 — sono i 14px spalmati sui 1992 di corsa,
+       0,00703 per pixel. Con la deriva a zero il passo torna esatto e il
+       paragrafo sta fermo nel flusso: si muove solo la sua opacita, che
+       non ha un posto da sbagliare.
+
+       REGOLA GENERALE: `transition: none` su un blocco [data-fx] non si
+       mette mai da solo. O si spegne anche la deriva, o il blocco comincia
+       a inseguire lo scorrimento con un fotogramma di ritardo. */
+    --jm-sito7-deriva: 0px;
   }
   /* Il riempimento in cima alla cassaforte serviva a staccarla dalla
      sezione chiara di prima. Adesso sopra c'e il cioccolato della scena

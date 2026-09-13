@@ -174,6 +174,25 @@ se no ogni pixel di rotella arriva con 0,9 secondi di ritardo.
 Sotto i 900px `data-fx` viene neutralizzato (`opacity: 1`): la frase li
 resta ferma e visibile com'era.
 
+**REGOLA CHE E' COSTATA UN GIRO: `transition: none` su un blocco
+`[data-fx]` non si mette mai da solo.** La regola generale fa derivare quei
+blocchi di 14px mentre attraversano lo schermo
+(`translateY((--p - .5) * 14px)`). Con la transizione di 0,9s la deriva non
+insegue lo scorrimento e non si vede; spenta la transizione diventa un
+movimento legato allo scorrimento, scritto dal JavaScript, che arriva un
+fotogramma dopo quello della pagina — e il blocco balla contro il resto.
+Manuel: "ora trema di nuovo". Misurato: il paragrafo avanzava di 0,993
+pixel per pixel di rotella invece di 1,000, cioe i 14px spalmati sui 1992
+di corsa. Cura: `--jm-sito7-deriva: 0px` insieme a `transition: none`.
+Il banco lo controlla adesso da solo (`verify-scorrimento-fluido`: ogni
+blocco `[data-fx]` con transizione a zero deve avanzare di esattamente un
+pixel per pixel), e il morso e provato.
+
+**"Solo tu hai la chiave" entra in dissolvenza** (Manuel: "deve apparire in
+modo soft con un fade in"): sale da zero nei primi sei centesimi di corsa
+invece di essere gia acceso al primo fotogramma. L'uscita verso la seconda
+frase non e cambiata.
+
 Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
 rosso una volta perche il server di sviluppo sta ancora ricompilando.
 Rilancialo: se e verde tre volte di fila, era la ricompilazione.
