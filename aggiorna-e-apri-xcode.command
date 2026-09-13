@@ -394,8 +394,14 @@ grep -rql "jm-appbar" "$BUNDLE" 2>/dev/null \
   || wr "Manca la barra in alto: dillo a Claude"
 
 # ---------- 7. Xcode ----------
+# JM_SENZA_XCODE=1: lo chiama rilascio-testflight.command, che subito dopo
+# archivia da riga di comando; aprire Xcode sarebbe solo una finestra in piu.
 if [ -d "ios/App/App.xcodeproj" ]; then
-  open "ios/App/App.xcodeproj" && ok "Xcode si sta aprendo" || ko "Non riesco ad aprire Xcode"
+  if [ -n "$JM_SENZA_XCODE" ]; then
+    ok "Xcode non serve: il pacchetto e pronto per l'archivio"
+  else
+    open "ios/App/App.xcodeproj" && ok "Xcode si sta aprendo" || ko "Non riesco ad aprire Xcode"
+  fi
 else
   ko "Non trovo ios/App/App.xcodeproj"
 fi
