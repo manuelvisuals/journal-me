@@ -365,7 +365,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
               <div><b>{t("Iscritto")}</b><span>{quandoLungo(persona.iscrittoIl, t)}</span></div>
               <div><b>{t("Accesso")}</b><span>{quandoLungo(persona.ultimoAccesso, t)}</span></div>
               <div><b>{t("Giornate")}</b><span>{persona.giornate}</span></div>
-              <div><b>{t("AI, questo mese")}</b><span>{eur(persona.aiEurMese)}</span></div>
+              <div><b>{t("AI, mese")}</b><span>{eur(persona.aiEurMese)}</span></div>
               <div><b>{t("Cassaforte")}</b><span>{persona.cassaforte ? t("chiusa") : t("aperta")}</span></div>
               <div><b>{t("Da ospite")}</b><span>{persona.ospitePrima ? `${t("si, dal")} ${quando(persona.ospitePrima, t)}` : t("mai ospite")}</span></div>
             </div>
@@ -374,7 +374,11 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
                 <div>
                   <b>Apple</b>
                   <span>
-                    {[persona.apple.ambiente, persona.apple.prodotto?.split(".").pop(), persona.scadenza ? `${persona.piano === "premium" ? t("rinnova il") : t("scaduto il")} ${formatDate(persona.scadenza, { day: "numeric", month: "short" })}` : null, persona.apple.avviso ? `${t("ultimo avviso")} ${persona.apple.avviso}` : null]
+                    {[
+                      [persona.apple.ambiente, persona.apple.prodotto?.split(".").pop()].filter(Boolean).join(", "),
+                      persona.scadenza ? `${persona.piano === "premium" ? t("Rinnova il") : t("Scaduto il")} ${formatDate(persona.scadenza, { day: "numeric", month: "short" })}` : null,
+                      persona.apple.avviso ? `${t("Ultimo avviso:")} ${persona.apple.avviso}` : null,
+                    ]
                       .filter(Boolean)
                       .join(". ")}
                   </span>
