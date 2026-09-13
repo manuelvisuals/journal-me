@@ -5915,6 +5915,10 @@ textarea.jm-sito-in {
     --esci: clamp(0, calc((var(--s, 0) - .0717) * 9.2937), 1);
     --fine: clamp(0, calc((var(--s, 0) - .5883) * 19.9203), 1);
     --centro: clamp(0, calc((var(--s, 0) - .5883) * 10.7181), 1);
+    /* Un termine solo per i due viaggi del telefono: 0 al centro, 1 di
+       lato. `--esci` lo porta fuori, `--centro` lo riporta dentro, e la
+       differenza vale 0 all'inizio, 1 in mezzo e 0 alla fine. */
+    --m: calc(var(--esci, 0) - var(--centro, 0));
   }
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-titolo,
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-passo:nth-of-type(1) .jm-sito12-carta {
@@ -5969,10 +5973,39 @@ textarea.jm-sito-in {
      versi: `--esci` lo porta fuori, `--centro` lo riporta dentro. Un solo
      termine, `(esci - centro)`, che vale 0 all'inizio, 1 in mezzo e 0
      alla fine: cosi non esiste uno stato in cui i due si contraddicono. */
+  /* IL TELEFONO NON CAMBIA PIU' MISURA NE' POSIZIONE: SI TRASFORMA
+     (13 settembre 2026, Manuel: "trema su come funziona ... fino alla fine
+     dell'animazione del lucchetto").
+
+     Prima erano `width`, `left` e `top` legate al cursore. Tutte e tre
+     sono proprieta di IMPAGINAZIONE: a ogni fotogramma il browser rifa i
+     conti di dove sta e quanto e grande, e poi ridisegna le due ombre
+     sfocate che il telefono si porta dietro (26 e 46 pixel di raggio) alla
+     misura nuova. E' la stessa lezione della carta, che era gia passata da
+     `top` a `transform`, applicata al pezzo piu grande della scena.
+
+     Adesso la misura e una sola e ferma (`--fuori`) e il movimento e tutto
+     dentro `transform`, che sta sul compositore. I tre numeri che servono
+     — quanto rimpicciolire, di quanto spostarsi di lato, di quanto salire
+     — li misura `scorrimento.tsx` a ogni ridimensionamento, perche in CSS
+     non si puo dividere una lunghezza per un'altra e le percentuali dentro
+     `transform` sono dell'elemento, non della scena.
+
+     `translate: -50% -50%` resta dov'e: e una proprieta separata, si
+     applica DOPO `transform`, e centra il telefono sulla sua misura
+     originale — quindi la scala non sposta il centro, e i due spostamenti
+     si sommano al centraggio senza interferire. */
   .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito12-telefono {
-    width: calc(var(--dentro) + (var(--fuori) - var(--dentro)) * (var(--esci) - var(--centro)));
-    left: calc(50% - 48% * (var(--esci) - var(--centro)));
-    top: calc(58% - 8% * (var(--esci) - var(--centro)));
+    width: var(--fuori);
+    left: 50%;
+    top: 58%;
+    transform:
+      translate(
+        calc(-1 * var(--tel-corsa, 0px) * var(--m, 0)),
+        calc(-1 * var(--tel-salita, 0px) * var(--m, 0))
+      )
+      scale(calc(var(--tel-k, 1) + (1 - var(--tel-k, 1)) * var(--m, 0)));
+    will-change: transform, opacity;
   }
 
   /* ===================================================================

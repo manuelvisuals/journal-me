@@ -240,6 +240,61 @@ Chromium in un contenitore senza schermo. Il banco misura la geometria
 (quanti pixel si sposta ogni cosa), e la geometria era giusta. Il costo di
 disegno si ragiona, e si verifica su Safari vero.
 
+**SECONDO GIRO SULLO STESSO TREMOLIO, e qui c'era la causa vera.** Con le
+tre cose qui sopra tolte, Manuel: "trema su come funziona, si scrive da
+sola, fino alla fine dell'animazione del lucchetto". Cioe non tutto il
+sito: quella scena, tutta, dal primo titolo all'ultimo fotogramma. Un
+sintomo cosi non e un disegno che costa, e il MOTORE che non sta dietro.
+Tre difetti nel motore, tutti e tre veri:
+
+1. **`misura()` leggeva e scriveva alternati.** Per ognuno dei ventiquattro
+   elementi: `getBoundingClientRect()`, poi `setProperty`. Ogni scrittura
+   sporca lo stile, e la misura subito dopo pretende un valore aggiornato,
+   quindi obbliga il browser a rifare stile e impaginazione SUBITO.
+   Ventiquattro ricalcoli forzati per fotogramma. Chrome non lo paga
+   (misurato qui: 0,097ms contro 0,065ms, cioe niente) perche sa che una
+   variabile personalizzata non cambia l'impaginazione; Safari quel trucco
+   non ce l'ha e invalida il sottoalbero. Ecco perche nessun banco lo
+   vedeva. Adesso e in due tempi: prima tutte le misure in un array, poi
+   tutte le scritture.
+   REGOLA: in un ciclo che tocca il DOM, mai una lettura dopo una
+   scrittura. Prima si legge tutto, poi si scrive tutto.
+2. **Si riscrivevano tutti e venti i `--p` a ogni fotogramma**, anche i
+   diciotto gia inchiodati a 0 o a 1. Per Safari ognuna di quelle e
+   un'invalidazione di stile. Adesso si confronta con l'ultimo valore
+   scritto: una o due scritture per fotogramma invece di ventiquattro.
+3. **Il fotogramma si chiedeva dall'evento di scorrimento.** Su Safari
+   quegli eventi non arrivano uno per fotogramma — lo scorrimento vive su
+   un altro thread — quindi capitava un fotogramma senza misura (scena
+   ferma) e quello dopo con due (salto doppio). Fermo-doppio-fermo-doppio
+   e come si vede il tremolio. Adesso il primo evento accende un giro che
+   si rimette in coda da solo a ogni fotogramma e si spegne dopo dieci
+   fotogrammi fermi: una misura per fotogramma dipinto, sempre. Il ritardo
+   su Safari resta ma diventa costante, e un ritardo costante non si vede.
+
+**E il telefono si muoveva ancora con `width`, `left` e `top`.** La carta
+era gia passata a `transform` l'11 settembre; il telefono no, ed e il pezzo
+piu grande della scena, con due ombre sfocate da 26 e 46 pixel che il
+browser ridisegnava alla misura nuova a ogni fotogramma. Il banco lo
+vedeva gia senza saperlo: il passo del telefono era "min 0,203px max
+0,242px, scarto 0,039" — cioe l'aggancio al pixel intero dell'impaginazione
+— e dopo il passaggio a `transform` e "min 0,217 max 0,219, scarto 0,002".
+Venti volte piu regolare, su Chromium; su Safari il pixel dell'impaginazione
+e piu grosso.
+
+Il passaggio non e diretto, perche `transform` ragiona in unita sue: le
+percentuali sono dell'elemento e non della scena, e `scale` vuole un numero
+puro mentre in CSS non si puo dividere una lunghezza per un'altra. Quindi
+`scorrimento.tsx` MISURA tre numeri a ogni ridimensionamento
+(`misuraTelefono`): `--tel-k` (dentro/fuori), `--tel-corsa` (48% della
+larghezza della scena in pixel), `--tel-salita` (8% dell'altezza).
+Verificato che la coreografia non e cambiata: la posizione e la misura del
+telefono coincidono con quelle di prima entro 0,1px in tutti e quattordici
+i punti campionati fra --s 0 e --s 0,80.
+
+REGOLA GENERALE, ormai pagata tre volte: **dentro una scena che si incolla,
+niente si muove con `top`, `left` o `width`. Solo `transform` e `opacity`.**
+
 Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
 rosso una volta perche il server di sviluppo sta ancora ricompilando.
 Rilancialo: se e verde tre volte di fila, era la ricompilazione.

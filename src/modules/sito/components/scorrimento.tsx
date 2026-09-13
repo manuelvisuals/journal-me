@@ -171,19 +171,99 @@ export function Scorrimento() {
       }
     };
 
+    /**
+     * LE TRE MISURE DEL TELEFONO DELLA SCENA "come funziona".
+     *
+     * Il telefono si muoveva cambiando `width`, `left` e `top` a ogni
+     * fotogramma. Sono tre proprieta di IMPAGINAZIONE: il browser rifa i
+     * conti di posizione e dimensione, e poi ridisegna le due ombre
+     * sfocate (26 e 46 pixel di raggio) alla misura nuova. Sessanta volte
+     * al secondo, su un elemento alto mezza finestra. Su Safari e la cosa
+     * piu cara della scena.
+     *
+     * Adesso il telefono ha una misura sola e ferma, e si muove con
+     * `transform`, che sta sul compositore e non tocca l'impaginazione. Ma
+     * `transform` ragiona in unita sue: le percentuali sono dell'elemento,
+     * non del riquadro che lo contiene, e `scale` vuole un numero puro,
+     * mentre in CSS non si puo dividere una lunghezza per un'altra. Quindi
+     * i tre numeri si MISURANO qui, una volta per ridimensionamento:
+     *
+     *   --tel-k       quanto e piccolo al centro rispetto a quanto e
+     *                 grande di lato (dentro / fuori), numero puro
+     *   --tel-corsa   il 48% della larghezza della scena, in pixel
+     *   --tel-salita  l'8% dell'altezza della scena, in pixel
+     *
+     * `getComputedStyle().width` e non `getBoundingClientRect()`: il
+     * secondo restituisce la misura DOPO il transform, e con una scala
+     * addosso darebbe il numero sbagliato.
+     */
+    const misuraTelefono = () => {
+      const tel = radice.querySelector<HTMLElement>(".jm-sito12-telefono");
+      const scena = radice.querySelector<HTMLElement>(".jm-sito12-scena");
+      if (!tel || !scena) return;
+      const fuori = parseFloat(getComputedStyle(tel).width);
+      tel.style.width = "var(--dentro)";
+      const dentro = parseFloat(getComputedStyle(tel).width);
+      tel.style.removeProperty("width");
+      if (fuori > 0 && dentro > 0) {
+        scena.style.setProperty("--tel-k", (dentro / fuori).toFixed(5));
+      }
+      const r = scena.getBoundingClientRect();
+      scena.style.setProperty("--tel-corsa", `${(r.width * 0.48).toFixed(1)}px`);
+      scena.style.setProperty("--tel-salita", `${(r.height * 0.08).toFixed(1)}px`);
+    };
+
+    /**
+     * PRIMA TUTTE LE MISURE, POI TUTTE LE SCRITTURE (13 settembre 2026,
+     * Manuel: "trema su come funziona fino alla fine del lucchetto").
+     *
+     * Il ciclo di prima faceva, per ognuno dei ventiquattro blocchi:
+     * misura -> scrivi -> misura -> scrivi. Sembra ovvio scritto cosi, ed e
+     * il difetto piu vecchio del mestiere. Ogni scrittura di una variabile
+     * CSS sporca lo stile; la misura subito dopo pretende un valore
+     * aggiornato, quindi obbliga il browser a rifare stile e impaginazione
+     * SUBITO, prima di restituire il numero. Ventiquattro volte per
+     * fotogramma.
+     *
+     * Chrome non lo paga: sa che una variabile personalizzata non cambia
+     * l'impaginazione e non ricalcola niente (misurato qui: 0,097ms contro
+     * 0,065ms, cioe niente). Safari quel trucco non ce l'ha: una variabile
+     * ereditata che cambia invalida tutto il sottoalbero, e la misura
+     * successiva paga il conto intero. E' il motivo per cui il difetto si
+     * vede su Safari e su nessun banco.
+     *
+     * Adesso e in due tempi: si misura tutto, poi si scrive tutto. Zero
+     * ricalcoli forzati per fotogramma invece di ventiquattro.
+     *
+     * E SI SCRIVE SOLO CIO CHE E' CAMBIATO. Dei venti blocchi `data-fx`,
+     * in un dato momento se ne muovono uno o due: gli altri hanno `--p`
+     * gia inchiodato a 0 o a 1 e riscriverglielo uguale, per Safari, e
+     * comunque un'invalidazione di stile. Il confronto con l'ultimo valore
+     * scritto porta le scritture per fotogramma da ventiquattro a una o
+     * due.
+     */
+    const ultimo = new Map<HTMLElement, string>();
+    const scrivi = (el: HTMLElement, nome: string, valore: string) => {
+      const chiave = `${nome}${valore}`;
+      if (ultimo.get(el) === chiave) return;
+      ultimo.set(el, chiave);
+      el.style.setProperty(nome, valore);
+    };
+
     const misura = () => {
       quadro = 0;
       const H = window.innerHeight;
+      // --- primo tempo: solo misure, nessuna scrittura ---
+      const pBlocchi: number[] = [];
+      const topBlocchi: number[] = [];
       for (const el of blocchi) {
         const r = el.getBoundingClientRect();
         let p = (H - r.top) / (H + r.height);
         p = p < 0 ? 0 : p > 1 ? 1 : p;
-        el.style.setProperty("--p", p.toFixed(6));
-        if (!visti.has(el) && r.top < H * 0.86) {
-          visti.add(el);
-          el.style.setProperty("--v", "1");
-        }
+        pBlocchi.push(p);
+        topBlocchi.push(r.top);
       }
+      const sPiste: number[] = [];
       for (const el of piste) {
         const r = el.getBoundingClientRect();
         // Di norma il cursore parte quando la pista esce dallo schermo in
@@ -194,20 +274,67 @@ export function Scorrimento() {
         const av = el.dataset.pista === "avanti" ? H * 0.55 : 0;
         let s = (av - r.top) / (r.height - H + av);
         s = s < 0 ? 0 : s > 1 ? 1 : s;
-        el.style.setProperty("--s", s.toFixed(6));
+        sPiste.push(s);
+      }
+      // --- secondo tempo: solo scritture, nessuna misura ---
+      for (let i = 0; i < blocchi.length; i++) {
+        const el = blocchi[i];
+        scrivi(el, "--p", pBlocchi[i].toFixed(6));
+        if (!visti.has(el) && topBlocchi[i] < H * 0.86) {
+          visti.add(el);
+          el.style.setProperty("--v", "1");
+        }
+      }
+      for (let i = 0; i < piste.length; i++) {
+        scrivi(piste[i], "--s", sPiste[i].toFixed(6));
       }
     };
+    /**
+     * UN GIRO PER FOTOGRAMMA FINCHE' LA PAGINA SCORRE, non uno per evento
+     * di scorrimento.
+     *
+     * Su Safari gli eventi di scorrimento non arrivano uno per fotogramma:
+     * lo scorrimento vive su un altro thread e gli eventi si accavallano o
+     * si saltano. Chiedendo il fotogramma dall'evento, capitava che un
+     * fotogramma non ricevesse nessuna misura (la scena resta ferma) e
+     * quello dopo ne ricevesse due (la scena fa un salto doppio). Un
+     * fermo-doppio-fermo-doppio e esattamente quello che l'occhio chiama
+     * tremolio.
+     *
+     * Adesso il primo evento accende un giro che si rimette in coda da
+     * solo a ogni fotogramma, e si spegne dopo dieci fotogrammi con la
+     * pagina ferma. Cosi la cadenza e una misura per fotogramma dipinto,
+     * sempre, e il ritardo — che su Safari resta — diventa COSTANTE, e un
+     * ritardo costante non si vede.
+     */
+    let fermi = 0;
+    let ultimoY = -1;
+    const giro = () => {
+      quadro = 0;
+      const y = window.scrollY;
+      if (y === ultimoY) {
+        fermi++;
+      } else {
+        fermi = 0;
+        ultimoY = y;
+      }
+      misura();
+      if (fermi < 10) quadro = requestAnimationFrame(giro);
+    };
     const chiedi = () => {
-      if (!quadro) quadro = requestAnimationFrame(misura);
+      fermi = 0;
+      if (!quadro) quadro = requestAnimationFrame(giro);
     };
 
     // Prima misura, POI la classe che accende gli stati "nascosto": cosi i
     // blocchi gia in vista hanno --v=1 nello stesso frame e non lampeggiano.
     misuraScene();
+    misuraTelefono();
     misura();
     radice.setAttribute("data-js", "");
     const rimisura = () => {
       misuraScene();
+      misuraTelefono();
       chiedi();
     };
     window.addEventListener("scroll", chiedi, { passive: true });
