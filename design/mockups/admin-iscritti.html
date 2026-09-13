@@ -101,7 +101,6 @@ td.no{color:var(--no)}
 .desk .isp .seg2 span.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
 .desk .isp .seg2.spento{opacity:.45}
 .desk .isp .nota{font-size:12px;color:var(--ink-faint);line-height:1.45;margin-top:10px}
-.desk .isp .vuoto{color:var(--ink-faint);font-size:13px;text-align:center;padding:48px 8px 32px;line-height:1.5}
 .desk .pie{margin-top:16px;font-size:12px;color:var(--ink-faint)}
 
 /* la schermata Recensione */
@@ -119,6 +118,40 @@ td.no{color:var(--no)}
 .desk .azioni .s{height:36px;padding:0 16px;border-radius:8px;background:var(--ink);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center}
 .desk .azioni .g{height:36px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;display:flex;align-items:center}
 .desk .azioni .nota{margin-left:8px;font-size:12px;color:var(--ink-faint)}
+
+/* ---- v3: l'ispettore a righe, il popup di conferma ---- */
+.desk .isp3{width:288px;flex:none;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:20px;align-self:flex-start}
+.desk .isp3 .nome{font-family:var(--serif);font-size:22px;font-weight:420;color:var(--ink);letter-spacing:-.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desk .isp3 .mail{font-size:12px;color:var(--ink-faint);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desk .isp3 .righe{border-top:1px solid var(--line);margin-top:16px;padding-top:6px}
+.desk .isp3 .r{display:flex;justify-content:space-between;align-items:baseline;gap:12px;height:34px;font-size:13px}
+.desk .isp3 .r b{color:var(--ink-faint);font-weight:500;flex:none}
+.desk .isp3 .r span{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;font-variant-numeric:tabular-nums}
+.desk .isp3 .r span.mut{color:var(--ink-muted)}
+.desk .isp3 .piano{border-top:1px solid var(--line);margin-top:10px;padding-top:16px}
+.desk .isp3 .piano .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;line-height:1}
+.desk .isp3 .piano .v{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:10px;font-size:13px;color:var(--ink)}
+.desk .isp3 .piano .v > div{min-width:0}
+.desk .isp3 .piano .v small{display:block;font-size:12px;color:var(--ink-faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desk .isp3 .lnk{font-size:13px;color:var(--accent);font-weight:600;cursor:pointer;flex:none}
+.desk .isp3 .lnk.off{color:var(--ink-faint);font-weight:500;cursor:default}
+.desk .isp3 .sel{margin-top:10px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:13px;color:var(--ink)}
+.desk .isp3 .sel span{color:var(--ink-faint)}
+.desk .isp3 .azioni{border-top:1px solid var(--line);margin-top:16px;padding-top:16px;display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.desk .isp3 .btn{height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.desk .isp3 .btn.d{color:var(--danger);border-color:rgba(179,38,30,.3)}
+/* il popup */
+.desk .velo{position:absolute;inset:0;background:rgba(31,27,24,.28);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.desk .pop{width:360px;background:var(--surface);border-radius:16px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.28);border:1px solid var(--line)}
+.desk .pop h3{font-family:var(--serif);font-size:22px;font-weight:420;color:var(--ink);letter-spacing:-.01em;line-height:1.15}
+.desk .pop p{font-size:13.5px;color:var(--ink-muted);line-height:1.5;margin-top:10px}
+.desk .pop p b{color:var(--ink);font-weight:600}
+.desk .pop .campo{margin-top:14px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--bg);display:flex;align-items:center;padding:0 12px;font-size:13px;color:var(--ink-faint)}
+.desk .pop .tasti{display:flex;gap:8px;margin-top:20px;justify-content:flex-end}
+.desk .pop .tasti .g{height:36px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;display:flex;align-items:center}
+.desk .pop .tasti .p{height:36px;padding:0 16px;border-radius:8px;background:var(--ink);color:#fff;font-weight:600;font-size:13px;display:flex;align-items:center}
+.desk .pop .tasti .p.d{background:var(--danger)}
+.desk .pop .tasti .p.off{opacity:.4}
 
 .ann{position:absolute;background:#FBBF24;color:#1a1a1a;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.3;max-width:240px}
 
@@ -186,7 +219,7 @@ td.no{color:var(--no)}
             <div class="tr osp"><div class="chi"><b>a91f&hellip;c3</b><span>iPhone</span></div><div class="num">11 set</div><div class="num">oggi</div><div class="num">6 di 10</div><div class="num">in corso</div></div>
             <div class="tr osp"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 di 10</div><div class="num">account: giulia.r@esempio.it</div></div>
             <div class="tr osp"><div class="chi"><b>e5d8&hellip;41</b><span>browser</span></div><div class="num">9 set</div><div class="num">9 set</div><div class="num">10 di 10</div><div class="num">finito, senza account</div></div>
-            <div class="tr osp"><div class="chi"><b>0b77&hellip;d0</b><span>iPhone, senza DeviceCheck</span></div><div class="num">8 set</div><div class="num">8 set</div><div class="num">1 di 10</div><div class="num">in corso</div></div>
+            <div class="tr osp"><div class="chi"><b>0b77&hellip;d0</b><span>iPhone, no DeviceCheck</span></div><div class="num">8 set</div><div class="num">8 set</div><div class="num">1 di 10</div><div class="num">in corso</div></div>
           </div>
 
           <div class="isp" id="isp"></div>
@@ -269,11 +302,116 @@ td.no{color:var(--no)}
   </table>
 
   <div class="divider"></div>
-  <p class="label">05 . Una domanda sola</p>
+  <p class="label">05 . Terza versione: l'ispettore a righe, il piano con "Modifica", le azioni, il popup di conferma</p>
+  <p class="caption">Richieste di Manuel del 13 settembre, sera. Ogni riga dell'ispettore e UNA riga: etichetta a sinistra, valore a destra, niente che vada a capo
+    (l'email lunga si tronca con i puntini e si legge intera passando sopra). Il piano si legge come un fatto ("Premium, a mano") e si cambia con <b>Modifica</b>,
+    che apre un menu a tendina; ogni cambio passa dal <b>popup di conferma</b>, lo stesso per tutte le azioni del pannello (e domani dell'app). In fondo le azioni
+    sull'account; "Elimina" chiede di scrivere l'email.</p>
+  <div class="row">
+    <div class="desk" style="min-height:0;height:600px;width:1000px">
+      <main style="display:flex;flex-direction:row;gap:24px;align-items:flex-start;padding:24px">
+        <div class="isp3">
+          <div class="nome">Manu</div>
+          <div class="mail" title="madh52@gmail.com">madh52@gmail.com</div>
+          <div class="righe">
+            <div class="r"><b>Iscritto</b><span>20 ago 2026, 12:03</span></div>
+            <div class="r"><b>Ultimo accesso</b><span>oggi, 10:00</span></div>
+            <div class="r"><b>Giornate</b><span>14</span></div>
+            <div class="r"><b>AI, settembre</b><span>0,12 EUR</span></div>
+            <div class="r"><b>Cassaforte</b><span>chiusa dal 3 set</span></div>
+            <div class="r"><b>Da ospite</b><span class="mut">no</span></div>
+            <div class="r"><b>Apple</b><span title="Production, mensile. Scaduto il 10 set. Ultimo avviso: EXPIRED">Production, scaduto il 10 set</span></div>
+          </div>
+          <div class="piano">
+            <div class="k">Piano</div>
+            <div class="v"><div>Gratis<small>Apple, scaduto il 10 set</small></div><span class="lnk">Modifica</span></div>
+          </div>
+          <div class="azioni">
+            <div class="btn">Manda un codice di accesso</div>
+            <div class="btn d">Elimina l'account&hellip;</div>
+          </div>
+        </div>
+
+        <div class="isp3">
+          <div class="nome">Giulia R.</div>
+          <div class="mail">giulia.r@esempio.it</div>
+          <div class="righe">
+            <div class="r"><b>Iscritto</b><span>2 set 2026, 18:04</span></div>
+            <div class="r"><b>Ultimo accesso</b><span>oggi, 09:12</span></div>
+            <div class="r"><b>Giornate</b><span>11</span></div>
+            <div class="r"><b>AI, settembre</b><span>0,31 EUR</span></div>
+            <div class="r"><b>Cassaforte</b><span>chiusa dal 2 set</span></div>
+            <div class="r"><b>Da ospite</b><span>si, dal 30 ago</span></div>
+            <div class="r"><b>Apple</b><span>Production, rinnova il 2 ott</span></div>
+          </div>
+          <div class="piano">
+            <div class="k">Piano</div>
+            <div class="v"><div>Premium<small>Apple, rinnova il 2 ott. Lo governa l'App Store.</small></div></div>
+          </div>
+          <div class="azioni">
+            <div class="btn">Manda un codice di accesso</div>
+            <div class="btn d">Elimina l'account&hellip;</div>
+          </div>
+        </div>
+
+        <div class="isp3">
+          <div class="nome">spamming.madh52@gmail.com</div>
+          <div class="mail">senza nome</div>
+          <div class="righe">
+            <div class="r"><b>Iscritto</b><span>12 ago 2026, 18:23</span></div>
+            <div class="r"><b>Ultimo accesso</b><span>25 ago, 16:31</span></div>
+            <div class="r"><b>Giornate</b><span>10</span></div>
+            <div class="r"><b>AI, settembre</b><span>0,00 EUR</span></div>
+            <div class="r"><b>Cassaforte</b><span>chiusa</span></div>
+            <div class="r"><b>Da ospite</b><span class="mut">no</span></div>
+          </div>
+          <div class="piano">
+            <div class="k">Piano</div>
+            <div class="v"><div>Premium<small>a mano, senza scadenza</small></div><span class="lnk">Annulla</span></div>
+            <div class="sel">Gratis <span>&#9662;</span></div>
+          </div>
+          <div class="azioni">
+            <div class="btn">Manda un codice di accesso</div>
+            <div class="btn d">Elimina l'account&hellip;</div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <p class="under">Tre stati dello stesso ispettore: il tuo account (Apple scaduto: si puo cambiare a mano), Giulia (Apple attivo: "Modifica" non c'e, lo dice il perche),
+    e spamming (con "Modifica" premuto: compare la tendina; scegliere "Gratis" apre il popup qui sotto).</p>
+
+  <div class="row" style="margin-top:28px">
+    <div class="desk" style="min-height:0;height:340px;width:520px">
+      <div class="velo">
+        <div class="pop">
+          <h3>Passare a Gratis?</h3>
+          <p><b>spamming.madh52@gmail.com</b> perde subito l'AI e il cloud. Le giornate restano sue. Si puo rimettere Premium in qualunque momento.</p>
+          <div class="tasti"><div class="g">Annulla</div><div class="p">Passa a Gratis</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="desk" style="min-height:0;height:340px;width:520px">
+      <div class="velo">
+        <div class="pop">
+          <h3>Eliminare l'account?</h3>
+          <p>Cancella <b>spamming.madh52@gmail.com</b>: account, giornate, cassaforte, foto. Non si torna indietro. Per confermare scrivi l'email.</p>
+          <div class="campo">scrivi l'email qui</div>
+          <div class="tasti"><div class="g">Annulla</div><div class="p d off">Elimina</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="under"><b>Il popup di conferma, uno per tutto</b> (scheletro, <i>src/components/ui/conferma.tsx</i>): titolo come domanda, una frase che dice cosa succede
+    e se si torna indietro, "Annulla" a sinistra e l'azione a destra col suo nome vero (mai "OK"). Rosso solo quando distrugge. Quando distrugge davvero chiede di
+    scrivere qualcosa, e il tasto resta spento finche non torna. Esc e il velo chiudono come Annulla.</p>
+
+  <div class="divider"></div>
+  <p class="label">06 . Una domanda sola</p>
   <div class="q">
-    <h4>Costruisco questa?</h4>
-    <div class="o"><i>1</i><div><b>Si, costruisci tutte e due:</b> Iscritti e Recensione (dormiente).</div></div>
-    <div class="o"><i>2</i><div><b>Prima Iscritti, la Recensione dopo.</b></div></div>
+    <h4>Costruisco la terza versione (ispettore, Modifica, popup, azioni) e stacco /admin dall'app?</h4>
+    <div class="o"><i>1</i><div><b>Si, cosi.</b></div></div>
+    <div class="o"><i>2</i><div><b>Si, ma senza "Manda un codice di accesso"</b> (e l'unica azione in piu che ho proposto io).</div></div>
     <div class="o"><i>3</i><div><b>Cambia qualcosa prima.</b> Dimmi cosa, in chat.</div></div>
   </div>
 
@@ -317,7 +455,7 @@ td.no{color:var(--no)}
     var osp=this.getAttribute('data-scheda')==='osp';
     document.getElementById('tbl-acc').style.display=osp?'none':'';
     document.getElementById('tbl-osp').style.display=osp?'':'none';
-    if(osp)isp.innerHTML='<div class="vuoto">Un ospite e un numero, non una persona: qui non c\'e niente da aprire.</div>';else mostra(3);
+    isp.style.display=osp?'none':'';if(!osp)mostra(3);
   });
 })();
 </script>

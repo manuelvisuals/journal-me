@@ -22,7 +22,10 @@
 }
 
 .jm-adm-brand {
-  padding: 0 calc(10px * var(--jm-space)) calc(4px * var(--jm-space));
+  /* 13 settembre 2026: centrato nel suo riquadro, come nella rail dell'app. */
+  display: grid;
+  place-items: center;
+  padding: 0 0 calc(4px * var(--jm-space));
   font-size: calc(17px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: -0.02em;
@@ -30,7 +33,8 @@
 }
 
 .jm-adm-brand-sub {
-  padding: 0 calc(10px * var(--jm-space));
+  text-align: center;
+  padding: 0;
   font-size: calc(9.5px * var(--jm-ui-scale));
   font-weight: 650;
   letter-spacing: 0.24em;
@@ -898,3 +902,181 @@
   font-size: calc(12px * var(--jm-ui-scale));
   color: var(--color-ink-faint);
 }
+
+/* ---- Iscritti v3 (13 settembre 2026, sera): l'ispettore a righe ----
+   Etichetta a sinistra, valore a destra, MAI a capo: cio che non entra si
+   tronca coi puntini e si legge intero passando sopra (title). Niente
+   frasi di spiegazione dentro l'interfaccia. */
+
+.jm-adm-isc-isp h2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+}
+
+.jm-adm-isc-isp .mail {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+}
+
+.jm-adm-isc-isp .righe {
+  border-top: 1px solid var(--color-line);
+  margin-top: calc(16px * var(--jm-space));
+  padding-top: calc(6px * var(--jm-space));
+}
+
+.jm-adm-isc-isp .r {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  height: 34px;
+  font-size: calc(13px * var(--jm-ui-scale));
+}
+
+.jm-adm-isc-isp .r b { color: var(--color-ink-faint); font-weight: 500; flex: none; }
+
+.jm-adm-isc-isp .r span {
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-adm-isc-isp .r span.mut { color: var(--color-ink-muted); }
+
+.jm-adm-isc-isp .piano {
+  border-top: 1px solid var(--color-line);
+  margin-top: calc(10px * var(--jm-space));
+  padding-top: calc(16px * var(--jm-space));
+}
+
+.jm-adm-isc-isp .piano .v {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: calc(10px * var(--jm-space));
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+
+.jm-adm-isc-isp .piano .v > div { min-width: 0; }
+
+.jm-adm-isc-isp .piano small {
+  display: block;
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-adm-isc-isp .lnk {
+  flex: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-family: inherit;
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  color: var(--color-accent);
+  cursor: pointer;
+}
+
+.jm-adm-isc-isp .sel {
+  margin-top: calc(10px * var(--jm-space));
+  width: 100%;
+  height: 34px;
+  border-radius: var(--radius-t-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: calc(13px * var(--jm-ui-scale));
+  color: var(--color-ink);
+}
+
+.jm-adm-isc-isp .azioni {
+  border-top: 1px solid var(--color-line);
+  margin-top: calc(16px * var(--jm-space));
+  padding-top: calc(16px * var(--jm-space));
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.jm-adm-isc-isp .btn {
+  height: 36px;
+  border-radius: var(--radius-t-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: calc(13px * var(--jm-ui-scale));
+  cursor: pointer;
+}
+
+.jm-adm-isc-isp .btn.d { color: var(--color-danger); border-color: color-mix(in oklab, var(--color-danger) 30%, transparent); }
+.jm-adm-isc-isp .btn:disabled { opacity: 0.4; cursor: default; }
+
+/* La porta di /admin senza sessione (13 settembre 2026): il marchio e un tasto. */
+.jm-adm-porta {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(24px * var(--jm-space));
+  background: var(--color-bg);
+}
+
+.jm-adm-porta .jm-adm-btn { text-decoration: none; }
+/* ---- Recensione (13 settembre 2026; mockup admin-iscritti.html, 04) ---- */
+
+.jm-adm-rec { max-width: 680px; }
+.jm-adm-isc-numeri.due { grid-template-columns: 1fr 1fr; margin-bottom: calc(12px * var(--jm-space)); }
+.jm-adm-isc-numeri.tre { grid-template-columns: 1fr 1fr 1fr; }
+.jm-adm-rec .jm-adm-isc-box .nota {
+  font-size: calc(12px * var(--jm-ui-scale));
+  color: var(--color-ink-faint);
+  line-height: 1.45;
+  margin-top: calc(10px * var(--jm-space));
+}
+.jm-adm-rec .jm-adm-isc-seg2 { margin-top: calc(10px * var(--jm-space)); }
+
+.jm-adm-rec-campo {
+  display: flex;
+  align-items: center;
+  gap: calc(10px * var(--jm-space));
+  margin-top: calc(10px * var(--jm-space));
+  height: 32px;
+}
+
+.jm-adm-rec-campo input {
+  width: 56px;
+  height: 32px;
+  border-radius: var(--radius-t-sm);
+  border: 1px solid var(--color-line);
+  background: var(--color-bg);
+  text-align: center;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: calc(14px * var(--jm-ui-scale));
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.jm-adm-rec-campo span { font-size: calc(13px * var(--jm-ui-scale)); color: var(--color-ink-muted); }
+
+.jm-adm-rec .jm-adm-actions { justify-content: flex-start; align-items: center; margin-top: calc(24px * var(--jm-space)); }
+.jm-adm-rec .jm-adm-actions .jm-adm-esito,
+.jm-adm-rec .jm-adm-actions .jm-adm-ultima { margin: 0 0 0 calc(8px * var(--jm-space)); }

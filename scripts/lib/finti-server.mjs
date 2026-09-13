@@ -190,6 +190,21 @@ export class SupabaseFintoServer {
       const fetta = tutti.slice((page - 1) * perPage, page * perPage);
       return rispondi(200, { users: fetta, aud: "authenticated" }, { "x-total-count": String(tutti.length) });
     }
+    // auth.admin.deleteUser (pannello Iscritti, 13 settembre sera): via
+    // l'account e, come le cascade vere, le sue righe; i braccialetti
+    // restano con user_id a null.
+    const mDel = /^\/auth\/v1\/admin\/users\/([^/]+)$/.exec(url.pathname);
+    if (mDel && req.method === "DELETE") {
+      const id = mDel[1];
+      const prima = (this.accountAuth ?? []).length;
+      this.accountAuth = (this.accountAuth ?? []).filter((u) => u.id !== id);
+      if (this.accountAuth.length === prima) return rispondi(404, { message: "User not found" });
+      for (const nome of ["profiles", "entries", "cassettine", "cassaforte_utente", "ai_usage"]) {
+        this.tabelle[nome] = this.tab(nome).filter((r) => r.user_id !== id);
+      }
+      for (const b of this.tab("braccialetti")) if (b.user_id === id) b.user_id = null;
+      return rispondi(200, {});
+    }
     if (url.pathname.startsWith("/auth/v1/user")) {
       const token = (req.headers.authorization ?? "").replace(/^Bearer\s+/i, "");
       const u = this.utenti.get(token);
@@ -226,12 +241,24 @@ export class SupabaseFintoServer {
     const singolo = /vnd\.pgrst\.object/.test(accept);
 
     if (req.method === "GET" || req.method === "HEAD") {
-      const trovate = this.proietta(this.filtra(righe, params), params.get("select"));
+      let filtrate = this.filtra(righe, params);
+      // order=colonna.desc / .asc e limit=N, quanto basta per "l'ultima riga".
+      const ordine = params.get("order");
+      if (ordine) {
+        const [col, verso] = ordine.split(".");
+        filtrate = filtrate.slice().sort((a, b) => (String(a[col] ?? "") < String(b[col] ?? "") ? -1 : 1) * (verso === "desc" ? -1 : 1));
+      }
+      const limite = Number(params.get("limit"));
+      if (limite > 0) filtrate = filtrate.slice(0, limite);
+      const trovate = this.proietta(filtrate, params.get("select"));
+      // count=exact (Prefer): il conteggio va nel content-range, come PostgREST.
+      const extra = /count=exact/.test(prefer) ? { "content-range": `0-${Math.max(0, trovate.length - 1)}/${trovate.length}` } : {};
+      if (req.method === "HEAD") { res.writeHead(200, { "content-type": "application/json", ...extra }); return res.end(); }
       if (singolo) {
         if (trovate.length === 0) return rispondi(406, { code: "PGRST116", message: "0 rows" });
-        return rispondi(200, trovate[0]);
+        return rispondi(200, trovate[0], extra);
       }
-      return rispondi(200, trovate);
+      return rispondi(200, trovate, extra);
     }
     if (req.method === "POST") {
       const dati = JSON.parse(corpo || "[]");

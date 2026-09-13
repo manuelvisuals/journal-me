@@ -68,3 +68,35 @@ intestazioni (crescente, poi decrescente; di fabbrica ultimo iscritto in
 cima), ricerca, ispettore a destra con il piano. Prefisso CSS
 `jm-adm-isc-*`. Banco: `scripts/verify-iscritti.mjs` (il finto serve
 `/auth/v1/admin/users` da `sb.accountAuth`).
+
+## 13 settembre 2026, sera (branch `admin-v3`): fuori dal guscio, ispettore a righe, popup
+
+- `/admin` sta nel gruppo di rotte `src/app/(admin)/` con un layout suo
+  (Toaster + ConfermaHost e basta): niente rail dell'app, splash, Face ID,
+  saluto, cancello della cassaforte. Senza sessione cloud mostra la porta
+  (`.jm-adm-porta`, "Entra con il tuo account" -> /login); chi e entrato e
+  non e admin continua a non vedere niente.
+- Ispettore di Iscritti a righe singole (etichetta/valore, niente a capo,
+  `title` per il testo intero), piano come fatto + "Modifica" -> tendina ->
+  popup; per chi paga con Apple nessun "Modifica" e nessuna frase.
+  "Elimina l'account..." -> popup rosso con l'email da riscrivere ->
+  DELETE /api/admin/iscritti (auth.admin.deleteUser; mai se stesso, 409).
+- REGOLA DI MANUEL: niente note o frasi di spiegazione dentro l'interfaccia
+  del pannello. Le spiegazioni stanno nel codice e nei mockup.
+- Il popup di conferma e dello SCHELETRO: `src/components/ui/conferma.tsx`
+  (`conferma({titolo, testo, azione, pericolo?, scrivi?})` -> Promise<boolean>,
+  `<ConfermaHost />` montato una volta nel layout), CSS `jm-conf-*` in base.css.
+## Recensione (13 settembre 2026, branch `recensione`)
+
+Mockup `design/mockups/admin-iscritti.html`, sezione 04. Il foglio delle
+stelle di Apple e gia nel binario (`ios/App/App/Recensione.swift`, dalla
+build 4) ma DORME: lo sveglia la riga `recensione` (migration 030), che
+questo pannello scrive (`server/recensione.ts` -> GET/PUT
+/api/admin/recensione) e che l'app legge una volta al giorno da
+`GET /api/recensione` (scheletro: `src/lib/server/recensione.ts`, cache
+30 s; `src/lib/recensione.ts` la regola sul telefono; il gancio e in
+`modules/oggi` a giornata chiusa). Il contatore `recensione_richieste`
+conta le volte in cui un'app ha CHIESTO il foglio: se e comparso e se la
+persona ha scritto, Apple non lo dice. Schermata
+`components/recensione-schermata.tsx`, prefisso `jm-adm-rec-*` (riusa i
+riquadri `jm-adm-isc-box`). Banco: `scripts/verify-recensione.mjs`.

@@ -25,6 +25,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { conferma } from "@/components/ui/conferma";
+import { toast } from "@/components/ui/toast";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useT } from "@/lib/i18n";
 import type { AccountIscritto, OspiteIscritto } from "@/modules/admin/server/iscritti";
@@ -64,7 +66,14 @@ function quandoLungo(iso: string | null, t: (s: string) => string): string {
   if (!iso) return t("mai");
   const ms = Date.parse(iso);
   if (!Number.isFinite(ms)) return t("mai");
-  return formatDate(iso, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  const ora = formatDate(iso, { hour: "2-digit", minute: "2-digit" });
+  const oggi = new Date();
+  const inizioOggi = new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate()).getTime();
+  if (ms >= inizioOggi) return `${t("oggi")}, ${ora}`;
+  if (ms >= inizioOggi - GIORNO) return `${t("ieri")}, ${ora}`;
+  // L'anno solo se non e questo: la riga dell'ispettore e una sola.
+  const stessoAnno = new Date(ms).getFullYear() === oggi.getFullYear();
+  return `${formatDate(iso, stessoAnno ? { day: "numeric", month: "short" } : { day: "numeric", month: "short", year: "numeric" })}, ${ora}`;
 }
 
 /** L'ordine del piano quando si clicca quella colonna: gratis, poi scaduto, poi premium. */
@@ -92,8 +101,8 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
   const [ordAccount, setOrdAccount] = useState<{ col: ColonnaAccount; verso: Verso }>({ col: "iscritto", verso: "giu" });
   const [ordOspiti, setOrdOspiti] = useState<{ col: ColonnaOspite; verso: Verso }>({ col: "dal", verso: "giu" });
   const [scelto, setScelto] = useState<string | null>(null);
-  const [cambio, setCambio] = useState<"" | "in-corso" | "errore">("");
-  const [cambioTesto, setCambioTesto] = useState("");
+  const [cambio, setCambio] = useState<"" | "in-corso">("");
+  const [modificaPiano, setModificaPiano] = useState(false);
 
   useEffect(() => {
     let vivo = true;
@@ -175,9 +184,28 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
   }
 
   async function cambiaPiano(piano: "free" | "premium") {
-    if (!persona || persona.piano === piano) return;
+    if (!persona || persona.piano === piano) {
+      setModificaPiano(false);
+      return;
+    }
+    const ok = await conferma(
+      piano === "free"
+        ? {
+            titolo: t("Passare a Gratis?"),
+            testo: <><b>{persona.email}</b> {t("perde subito l'AI e il cloud. Le giornate restano sue. Si puo rimettere Premium in qualunque momento.")}</>,
+            azione: t("Passa a Gratis"),
+          }
+        : {
+            titolo: t("Passare a Premium?"),
+            testo: <><b>{persona.email}</b> {t("ha subito l'AI e il cloud, senza scadenza e senza pagare. Si puo togliere in qualunque momento.")}</>,
+            azione: t("Passa a Premium"),
+          },
+    );
+    if (!ok) {
+      setModificaPiano(false);
+      return;
+    }
     setCambio("in-corso");
-    setCambioTesto("");
     try {
       const resp = await apiFetch("/api/admin/iscritti", {
         method: "PUT",
@@ -186,8 +214,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
       });
       const body = (await resp.json().catch(() => null)) as { piano?: "free" | "premium"; fonte?: string | null; messaggio?: string; error?: string } | null;
       if (!resp.ok || !body?.piano) {
-        setCambio("errore");
-        setCambioTesto(body?.messaggio ?? body?.error ?? t("Il salvataggio non e riuscito. Riprova."));
+        toast.error(body?.messaggio ?? body?.error ?? t("Il salvataggio non e riuscito. Riprova."));
         return;
       }
       const fonte = body.fonte === "apple" || body.fonte === "manual" || body.fonte === "stripe" ? body.fonte : null;
@@ -197,10 +224,49 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
         const delta = piano === "premium" ? 1 : -1;
         return { ...prev, premium: prev.premium + delta, premiumMano: Math.max(0, prev.premiumMano + delta) };
       });
-      setCambio("");
+      toast.ok(piano === "premium" ? t("Ora e Premium.") : t("Ora e Gratis."));
     } catch {
-      setCambio("errore");
-      setCambioTesto(t("Il salvataggio non e riuscito. Riprova."));
+      toast.error(t("Il salvataggio non e riuscito. Riprova."));
+    } finally {
+      setCambio("");
+      setModificaPiano(false);
+    }
+  }
+
+  async function eliminaAccount() {
+    if (!persona) return;
+    const email = persona.email;
+    const ok = await conferma({
+      titolo: t("Eliminare l'account?"),
+      testo: <>{t("Cancella")} <b>{email}</b>{t(": account, giornate, cassaforte, foto. Non si torna indietro. Per confermare scrivi l'email.")}</>,
+      azione: t("Elimina"),
+      pericolo: true,
+      scrivi: email,
+      scriviAiuto: t("scrivi l'email qui"),
+    });
+    if (!ok) return;
+    const id = toast.loading(t("Elimino..."));
+    try {
+      const resp = await apiFetch("/api/admin/iscritti", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: persona.id }),
+      });
+      const body = (await resp.json().catch(() => null)) as { ok?: boolean; messaggio?: string; error?: string } | null;
+      if (!resp.ok || !body?.ok) {
+        toast.error(body?.messaggio ?? body?.error ?? t("Non sono riuscito a eliminare l'account."));
+        return;
+      }
+      const eraPremium = persona.piano === "premium";
+      setAccount((prev) => prev.filter((a) => a.id !== persona.id));
+      setNumeri((prev) => (prev ? { ...prev, account: prev.account - 1, premium: prev.premium - (eraPremium ? 1 : 0) } : prev));
+      onConteggio?.(account.length - 1);
+      setScelto(null);
+      toast.ok(t("Account eliminato."));
+    } catch {
+      toast.error(t("Non sono riuscito a eliminare l'account."));
+    } finally {
+      toast.hide(id);
     }
   }
 
@@ -245,6 +311,16 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
       return "Apple";
     }
     if (a.fonte === "manual" && a.piano === "premium") return t("a mano");
+    if (a.fonte === "stripe") return "Stripe";
+    return "";
+  };
+  const fonteLunga = (a: AccountIscritto): string => {
+    if (a.fonte === "apple") {
+      const data = a.scadenza ? formatDate(a.scadenza, { day: "numeric", month: "short" }) : "";
+      if (a.piano === "premium") return data ? `${t("Apple, rinnova il")} ${data}` : "Apple";
+      return data ? `${t("Apple, scaduto il")} ${data}` : t("Apple, scaduto");
+    }
+    if (a.fonte === "manual" && a.piano === "premium") return t("a mano, senza scadenza");
     if (a.fonte === "stripe") return "Stripe";
     return "";
   };
@@ -317,7 +393,7 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
                 key={a.id}
                 role="row"
                 className={`jm-adm-isc-tr${scelto === a.id ? " sel" : ""}`}
-                onClick={() => { setScelto(a.id); setCambio(""); setCambioTesto(""); }}
+                onClick={() => { setScelto(a.id); setModificaPiano(false); }}
               >
                 <div className="chi"><b>{a.nome ?? a.email}</b><span>{a.nome ? a.email : t("senza nome")}</span></div>
                 <div className="num">{quando(a.iscrittoIl, t)}</div>
@@ -359,56 +435,59 @@ export function IscrittiSchermata({ onConteggio }: { onConteggio?: (n: number) =
 
         {scheda === "account" && persona && (
           <aside className="jm-adm-isc-isp">
-            <h2>{persona.nome ?? persona.email}</h2>
-            <div className="mail">{persona.nome ? persona.email : t("senza nome")}</div>
-            <div className="sez kv">
-              <div><b>{t("Iscritto")}</b><span>{quandoLungo(persona.iscrittoIl, t)}</span></div>
-              <div><b>{t("Accesso")}</b><span>{quandoLungo(persona.ultimoAccesso, t)}</span></div>
-              <div><b>{t("Giornate")}</b><span>{persona.giornate}</span></div>
-              <div><b>{t("AI, mese")}</b><span>{eur(persona.aiEurMese)}</span></div>
-              <div><b>{t("Cassaforte")}</b><span>{persona.cassaforte ? t("chiusa") : t("aperta")}</span></div>
-              <div><b>{t("Da ospite")}</b><span>{persona.ospitePrima ? `${t("si, dal")} ${quando(persona.ospitePrima, t)}` : t("mai ospite")}</span></div>
-            </div>
-            {persona.apple && (
-              <div className="sez kv una">
-                <div>
+            <h2 title={persona.nome ?? persona.email}>{persona.nome ?? persona.email}</h2>
+            <div className="mail" title={persona.email}>{persona.nome ? persona.email : t("senza nome")}</div>
+            <div className="righe">
+              <div className="r"><b>{t("Iscritto")}</b><span>{quandoLungo(persona.iscrittoIl, t)}</span></div>
+              <div className="r"><b>{t("Ultimo accesso")}</b><span>{quandoLungo(persona.ultimoAccesso, t)}</span></div>
+              <div className="r"><b>{t("Giornate")}</b><span>{persona.giornate}</span></div>
+              <div className="r"><b>{t("AI, mese")}</b><span>{eur(persona.aiEurMese)}</span></div>
+              <div className="r"><b>{t("Cassaforte")}</b><span>{persona.cassaforte ? t("chiusa") : t("aperta")}</span></div>
+              <div className="r"><b>{t("Da ospite")}</b><span className={persona.ospitePrima ? "" : "mut"}>{persona.ospitePrima ? `${t("si, dal")} ${quando(persona.ospitePrima, t)}` : t("mai ospite")}</span></div>
+              {persona.apple && (
+                <div className="r">
                   <b>Apple</b>
-                  <span>
-                    {[
-                      [persona.apple.ambiente, persona.apple.prodotto?.split(".").pop()].filter(Boolean).join(", "),
-                      persona.scadenza ? `${persona.piano === "premium" ? t("Rinnova il") : t("Scaduto il")} ${formatDate(persona.scadenza, { day: "numeric", month: "short" })}` : null,
-                      persona.apple.avviso ? `${t("Ultimo avviso:")} ${persona.apple.avviso}` : null,
-                    ]
-                      .filter(Boolean)
-                      .join(". ")}
+                  <span title={[persona.apple.ambiente, persona.apple.prodotto, persona.apple.avviso].filter(Boolean).join(", ")}>
+                    {[persona.apple.ambiente && persona.apple.ambiente !== "Production" ? persona.apple.ambiente : null, persona.scadenza ? `${persona.piano === "premium" ? t("rinnova il") : t("scaduto il")} ${formatDate(persona.scadenza, { day: "numeric", month: "short" })}` : null].filter(Boolean).join(", ") || "—"}
                   </span>
                 </div>
-              </div>
-            )}
-            <div className="sez">
+              )}
+            </div>
+            <div className="piano">
               <b className="k">{t("Piano")}</b>
-              <div className={`jm-adm-isc-seg2${governatoDaApple ? " spento" : ""}`} role="radiogroup" aria-label={t("Piano")}>
-                <button type="button" role="radio" aria-checked={persona.piano === "free"} className={persona.piano === "free" ? "on" : ""} disabled={governatoDaApple || cambio === "in-corso"} onClick={() => cambiaPiano("free")}>
-                  {t("Gratis")}
-                </button>
-                <button type="button" role="radio" aria-checked={persona.piano === "premium"} className={persona.piano === "premium" ? "on" : ""} disabled={governatoDaApple || cambio === "in-corso"} onClick={() => cambiaPiano("premium")}>
-                  {t("Premium")}
-                </button>
+              <div className="v">
+                <div>
+                  {persona.piano === "premium" ? t("Premium") : t("Gratis")}
+                  <small>{fonteLunga(persona)}</small>
+                </div>
+                {!governatoDaApple && !modificaPiano && (
+                  <button type="button" className="lnk" onClick={() => setModificaPiano(true)}>{t("Modifica")}</button>
+                )}
+                {!governatoDaApple && modificaPiano && (
+                  <button type="button" className="lnk" onClick={() => setModificaPiano(false)}>{t("Annulla")}</button>
+                )}
               </div>
-              <p className={`nota${cambio === "errore" ? " no" : ""}`}>
-                {cambio === "errore"
-                  ? cambioTesto
-                  : governatoDaApple
-                    ? t("Lo governa l'App Store: qui non si tocca.")
-                    : persona.piano === "premium"
-                      ? t("Premium a mano, senza scadenza. Se un giorno paga con Apple, Apple sovrascrive.")
-                      : t("Cambiarlo scrive il piano a mano, senza scadenza.")}
-              </p>
+              {modificaPiano && (
+                <select
+                  className="sel"
+                  aria-label={t("Piano")}
+                  value={persona.piano}
+                  disabled={cambio === "in-corso"}
+                  onChange={(e) => void cambiaPiano(e.target.value === "premium" ? "premium" : "free")}
+                >
+                  <option value="free">{t("Gratis")}</option>
+                  <option value="premium">{t("Premium")}</option>
+                </select>
+              )}
+            </div>
+            <div className="azioni">
+              <button type="button" className="btn d" disabled={persona.email.toLowerCase() === "madh52@gmail.com"} onClick={() => void eliminaAccount()}>
+                {t("Elimina l'account...")}
+              </button>
             </div>
           </aside>
         )}
       </div>
-      <p className="jm-adm-isc-pie">{t("Le giornate sono chiuse nella cassaforte: qui si contano, non si leggono.")}</p>
     </main>
   );
 }

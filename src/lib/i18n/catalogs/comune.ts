@@ -96,4 +96,6 @@ export const COMUNE: Record<string, string> = {
   "Molto piccolo": "Smallest",
   "1 giornata con l'AI in regalo": "1 gift AI day",
   "{n} giornate con l'AI in regalo": "{n} gift AI days",
+  // Il popup di conferma (components/ui/conferma.tsx, 13 settembre 2026)
+  "Scrivi qui per confermare": "Type here to confirm",
 };

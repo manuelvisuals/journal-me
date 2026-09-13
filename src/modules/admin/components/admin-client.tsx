@@ -34,9 +34,10 @@ import { AreeSchermata, type Riga } from "@/modules/admin/components/aree-scherm
 import { IscrittiSchermata } from "@/modules/admin/components/iscritti-schermata";
 import { BenvenutoSchermata } from "@/modules/admin/components/benvenuto-schermata";
 import { RegaloSchermata } from "@/modules/admin/components/regalo-schermata";
+import { RecensioneSchermata } from "@/modules/admin/components/recensione-schermata";
 
 type Stato = "carico" | "negato" | "pronto";
-type Voce = "aree" | "iscritti" | "sito" | "benvenuto" | "regalo";
+type Voce = "aree" | "iscritti" | "sito" | "benvenuto" | "regalo" | "recensione";
 
 export function AdminClient() {
   const t = useT();
@@ -89,7 +90,19 @@ export function AdminClient() {
 
   // La pagina di chi non e admin: niente. Anche mentre carica: comparire e
   // poi sparire direbbe comunque che qui c'era qualcosa.
-  if (negatoSenzaCloud || stato !== "pronto") return null;
+  // Senza sessione cloud (dal 13 settembre /admin e fuori dal guscio
+  // dell'app, quindi nessun cancello lo porta al login): l'invito a
+  // entrare, e basta. Chi e entrato e non e admin continua a non vedere
+  // niente: la porta non dice a nessuno che esiste.
+  if (negatoSenzaCloud) {
+    return (
+      <div className="jm-adm-porta">
+        <div className="jm-adm-brand"><Marchio /></div>
+        <a className="jm-adm-btn" href="/login">{t("Entra con il tuo account")}</a>
+      </div>
+    );
+  }
+  if (stato !== "pronto") return null;
 
   const vai = (v: Voce) => (voce === v ? "jm-adm-nav-on" : "jm-adm-nav-off vivo");
 
@@ -116,6 +129,9 @@ export function AdminClient() {
           <button type="button" className={vai("regalo")} onClick={() => setVoce("regalo")}>
             {t("Regalo AI")}
           </button>
+          <button type="button" className={vai("recensione")} onClick={() => setVoce("recensione")}>
+            {t("Recensione")}
+          </button>
           <span className="jm-adm-nav-off">{t("Obiettivi di default")}</span>
           <span className="jm-adm-nav-off">{t("Modelli AI")}</span>
         </nav>
@@ -129,6 +145,7 @@ export function AdminClient() {
       {voce === "iscritti" && <IscrittiSchermata onConteggio={setIscritti} />}
       {voce === "benvenuto" && <BenvenutoSchermata />}
       {voce === "regalo" && <RegaloSchermata />}
+      {voce === "recensione" && <RecensioneSchermata />}
       {voce === "sito" && (
         <main className="jm-adm-main">
           <div className="jm-adm-bar">
