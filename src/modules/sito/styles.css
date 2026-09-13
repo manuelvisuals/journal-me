@@ -3960,6 +3960,120 @@ textarea.jm-sito-in {
    ===================================================================== */
 .jm-sito7 [data-fx] { --p: 0; --v: 0; }
 .jm-sito7 [data-pista] { --s: 0; } /* NON su [data-fx]: la scena e un data-fx dentro la pista e azzererebbe --s */
+
+/* =====================================================================
+   IL CURSORE LO MUOVE IL BROWSER, NON IL JAVASCRIPT (13 settembre 2026,
+   Manuel: "trema sempre", terza volta, dopo aver tolto i ridisegni
+   costosi e aver rifatto il motore).
+
+   Perche i due giri precedenti non potevano bastare. Su Safari lo
+   scorrimento vive su un thread suo: la pagina si sposta li, e il
+   JavaScript gira sul thread principale, che viene avvisato DOPO. Per
+   quanto si renda leggero quel codice — e ora lo e — il numero che
+   scrive arriva sempre riferito a una posizione di scorrimento vecchia
+   di un fotogramma o due. Se il ritardo fosse fisso non si vedrebbe;
+   ma dipende da quanto lavoro c'e in quel momento, quindi oscilla, e un
+   ritardo che oscilla e esattamente il tremolio. Non e un difetto da
+   togliere: e come funziona il mestiere di misurare lo scorrimento da
+   JavaScript.
+
+   L'unico modo di finirla e non misurarlo piu. Le animazioni legate allo
+   scorrimento (`animation-timeline`) sono la stessa cosa fatta dentro il
+   browser: il cursore lo calcola lui, per la posizione di scorrimento del
+   fotogramma che sta per disegnare, senza passare da nessun evento e
+   senza nessun ritardo possibile.
+
+   IL PUNTO PIU BELLO: non cambia una riga della coreografia. Tutto il CSS
+   della home e scritto in funzione di `--p` e di `--s`; qui cambia solo
+   CHI li scrive. `@property` li dichiara come numeri veri (senza,
+   il browser li tratta come testo e non li sa interpolare), e due
+   fotogrammi soli — da 0 a 1 — li portano da capo a fondo.
+
+   LE DUE FINESTRE, che sono le stesse formule di scorrimento.tsx:
+     --p  `cover 0%` -> `cover 100%`, cioe la finestra predefinita: 0
+          quando il bordo alto del blocco tocca il fondo dello schermo, 1
+          quando il bordo basso e uscito in cima. Identico a
+          (H - top) / (H + altezza).
+     --s  `contain 0%` -> `contain 100%`: 0 quando il bordo alto della
+          pista tocca la cima dello schermo, 1 quando il bordo basso
+          arriva al fondo. Identico a (0 - top) / (altezza - H).
+          Con `data-pista="avanti"` il cursore parte 55vh prima, che e il
+          `H * 0.55` del JavaScript: qui si scrive `contain -55vh`.
+
+   PERCHE' SOLO SOPRA I 901px: la finestra `contain` esiste solo se la
+   pista e piu alta dello schermo. Sul telefono `jm-sito12-pista` e alta
+   `auto` e puo essere piu bassa, e li la finestra si rovescerebbe. Sul
+   telefono continua a scrivere il JavaScript, che li non ha mai dato
+   problemi.
+
+   LA RETE: `@supports` spegne tutto dove `animation-timeline` non
+   esiste, e li scrive il JavaScript come sempre. Dove esiste, le
+   animazioni CSS battono lo stile in linea nella cascata, quindi
+   vincono loro; e `scorrimento.tsx` se ne accorge da solo
+   (`getAnimations()`) e smette di misurare quei blocchi.
+   ===================================================================== */
+@property --p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --s {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@keyframes jm-sito7-cursore {
+  from { --p: 0; }
+  to { --p: 1; }
+}
+@keyframes jm-sito7-corsa {
+  from { --s: 0; }
+  to { --s: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (min-width: 901px) {
+    .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] [data-fx] {
+      animation-name: jm-sito7-cursore;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+    }
+    .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] [data-pista] {
+      animation-name: jm-sito7-corsa;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: contain 0% contain 100%;
+    }
+    .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] [data-pista="avanti"] {
+      animation-range: contain -55vh contain 100%;
+    }
+    /* QUESTI QUATTRO TORNANO AL JAVASCRIPT, e la ragione e precisa.
+       `view()` misura dove sta il blocco NELL'IMPAGINAZIONE;
+       `getBoundingClientRect()` misura dove sta DOPO essere stato
+       spostato. Per quasi tutti i blocchi e la stessa cosa. Non lo e per
+       chi vive dentro una scena incollata: li il blocco e inchiodato allo
+       schermo mentre la sua casella nell'impaginazione continua a
+       scorrere, e i due numeri divergono fino a mezzo cursore (misurato:
+       0,598 e 0,586 di scarto massimo, contro 0,000 di .jm-sito9-intro e
+       .jm-sito-banda).
+       Il numero giusto e quello di prima, perche e su quello che la
+       coreografia e stata regolata. Quindi qui si spegne l'animazione e
+       `scorrimento.tsx` se ne riprende carico da solo: non lo vede piu
+       fra i nativi e torna a misurarli.
+       Gli altri blocchi differiscono al massimo di 0,018, che sono i 14px
+       di deriva del testo: la misura vecchia comprendeva lo spostamento
+       che lei stessa provocava — un cane che si morde la coda — e quella
+       nuova no. Meglio la nuova, e in ogni caso quei blocchi hanno una
+       transizione di 0,9s che se la mangia. */
+    .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] [data-pista] [data-fx],
+    .jm-sito7:not(.jm-sito4-archivio-v7)[data-js] .jm-sito-banda .ft {
+      animation-name: none;
+    }
+  }
+}
 .jm-sito7[data-js] [data-fx="testo"],
 .jm-sito7[data-js] [data-fx="foto"] {
   opacity: var(--v);

@@ -295,6 +295,79 @@ i punti campionati fra --s 0 e --s 0,80.
 REGOLA GENERALE, ormai pagata tre volte: **dentro una scena che si incolla,
 niente si muove con `top`, `left` o `width`. Solo `transform` e `opacity`.**
 
+**TERZO E ULTIMO GIRO: IL CURSORE NON LO SCRIVE PIU' IL JAVASCRIPT.**
+Manuel, dopo i due giri qui sopra: "trema sempre". Aveva ragione, e i due
+giri precedenti non potevano bastare — hanno tolto lavoro inutile, ma non
+la causa.
+
+La causa e strutturale. Su Safari lo scorrimento vive su un thread suo: la
+pagina si sposta li, e il thread principale — dove gira il JavaScript —
+viene avvisato dopo. Per quanto si renda leggero quel codice, il numero che
+scrive si riferisce sempre a una posizione di scorrimento vecchia di un
+fotogramma o due. Se il ritardo fosse fisso non si vedrebbe. Ma dipende da
+quanto lavoro c'e in quel momento, quindi oscilla — e un ritardo che
+oscilla E' il tremolio. Non e un difetto da correggere: e il limite del
+misurare lo scorrimento da JavaScript.
+
+Adesso `--p` e `--s` li scrive il browser, con `animation-timeline`. Due
+`@property` (senza, le variabili sono testo e non si interpolano), due
+`@keyframes` da 0 a 1, e la finestra giusta:
+
+    --p   `cover 0%` -> `cover 100%` (la finestra predefinita di view())
+          identico a (H - top) / (H + altezza)
+    --s   `contain 0%` -> `contain 100%`
+          identico a (0 - top) / (altezza - H)
+    --s con data-pista="avanti": `contain -55vh contain 100%`
+          il -55vh e l'`H * 0.55` del JavaScript
+
+Non e cambiata una riga di coreografia: tutto il CSS era gia scritto in
+funzione di quelle due variabili, e cambia solo chi le scrive.
+
+**Provato, non dedotto.** Il banco confronta il valore nativo con la
+formula di prima a ogni 211 pixel per tutta la pagina: scarto massimo
+0,000005 su tutte e quattro le piste. E il passo del telefono, che era
+0,039px di scarto a marzo e 0,002 dopo il passaggio a `transform`, adesso e
+**0,000**. Confronto a pixel di 69 fotogrammi con la versione di prima: 54
+identici, 15 diversi al massimo dello 0,65% dei pixel, ed e un pixel di
+sfasamento della deriva del testo — invisibile, e piu corretto di prima
+(vedi sotto).
+
+**LE QUATTRO ESCLUSIONI, e la ragione e una sola.** `view()` misura dove
+sta il blocco NELL'IMPAGINAZIONE; `getBoundingClientRect()` misura dove sta
+DOPO essere stato spostato. Per quasi tutti e la stessa cosa. Non lo e per
+chi vive dentro una scena incollata — il blocco e inchiodato allo schermo
+mentre la sua casella continua a scorrere — e li i due numeri divergono
+fino a mezzo cursore (misurato: 0,598 su `.jm-sito8-testa`, 0,586 su
+`.ft`, contro 0,000 di `.jm-sito9-intro` e `.jm-sito-banda`). Il numero
+giusto e quello vecchio, perche e su quello che la coreografia e stata
+regolata: `[data-pista] [data-fx]` e `.jm-sito-banda .ft` hanno
+`animation-name: none` e tornano al JavaScript, che se ne riprende carico
+da solo.
+
+Gli altri blocchi differiscono al massimo di 0,018, e sono i 14px di
+deriva del testo: la misura vecchia comprendeva lo spostamento che lei
+stessa provocava, un cane che si morde la coda. La nuova no.
+
+**SOLO SOPRA I 901px.** La finestra `contain` esiste solo se la pista e
+piu alta dello schermo; sul telefono `jm-sito12-pista` e alta `auto` e puo
+essere piu bassa, e li si rovescerebbe. Sul telefono continua a scrivere il
+JavaScript (verificato: 0/4 piste native a 390px, `--s` che avanza
+regolare), che li non ha mai dato problemi.
+
+**LE RETI.** `@supports (animation-timeline: view())` spegne tutto dove il
+browser non sa farlo, e li scrive il JavaScript come sempre. Dove sa farlo,
+le animazioni CSS battono lo stile in linea nella cascata, quindi vincono
+loro comunque; e `scorrimento.tsx` chiede a ogni elemento se ha addosso
+un'animazione di nome `jm-sito7-cursore`/`jm-sito7-corsa` e smette di
+misurare quelli che ce l'hanno. `prefers-reduced-motion` esce prima che
+venga messo `data-js`, quindi li non si accende niente, come prima.
+
+Il banco difende due cose separate (`verify-scorrimento-fluido`, 12/12):
+che le animazioni ci siano davvero — basta una regola nuova che dichiari
+`animation` su quei selettori per spegnerle in silenzio — e che il numero
+coincida con la formula. Se un giorno si aggiunge una pista, si aggiunge
+al conto delle quattro.
+
 Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
 rosso una volta perche il server di sviluppo sta ancora ricompilando.
 Rilancialo: se e verde tre volte di fila, era la ricompilazione.

@@ -242,6 +242,34 @@ export function Scorrimento() {
      * scritto porta le scritture per fotogramma da ventiquattro a una o
      * due.
      */
+    /**
+     * CHI SE LO MUOVE DA SOLO NON SI MISURA (13 settembre 2026).
+     *
+     * Sopra i 901px, dove il browser sa fare le animazioni legate allo
+     * scorrimento, `--p` e `--s` li scrive il CSS con
+     * `animation-timeline` (vedi il commento lungo in styles.css). Le
+     * animazioni CSS battono lo stile in linea nella cascata, quindi
+     * anche continuando a scrivere non si romperebbe niente — ma si
+     * pagherebbe il conto per niente, ed e proprio il conto che stiamo
+     * togliendo. Quindi si chiede a ogni elemento se ha addosso la nostra
+     * animazione, e chi ce l'ha esce dal giro.
+     *
+     * Si guarda il NOME dell'animazione e non solo la presenza di una:
+     * `getAnimations()` restituisce anche le transizioni, e i blocchi
+     * `data-fx` ne hanno tutti una.
+     */
+    const NOMI = ["jm-sito7-cursore", "jm-sito7-corsa"];
+    const nativo = (el: HTMLElement) =>
+      el
+        .getAnimations()
+        .some((a) => NOMI.includes((a as CSSAnimation).animationName));
+    let bloccoJs: HTMLElement[] = blocchi;
+    let pistaJs: HTMLElement[] = piste;
+    const dividi = () => {
+      bloccoJs = blocchi.filter((el) => !nativo(el));
+      pistaJs = piste.filter((el) => !nativo(el));
+    };
+
     const ultimo = new Map<HTMLElement, string>();
     const scrivi = (el: HTMLElement, nome: string, valore: string) => {
       const chiave = `${nome}${valore}`;
@@ -255,16 +283,19 @@ export function Scorrimento() {
       const H = window.innerHeight;
       // --- primo tempo: solo misure, nessuna scrittura ---
       const pBlocchi: number[] = [];
-      const topBlocchi: number[] = [];
-      for (const el of blocchi) {
+      for (const el of bloccoJs) {
         const r = el.getBoundingClientRect();
         let p = (H - r.top) / (H + r.height);
         p = p < 0 ? 0 : p > 1 ? 1 : p;
         pBlocchi.push(p);
-        topBlocchi.push(r.top);
       }
+      // `--v` e uno scatto che avviene una volta sola, non un cursore: il
+      // CSS non lo puo fare, quindi resta qui anche per i blocchi nativi.
+      // Ma appena e scattato quel blocco non si misura mai piu.
+      const daVedere = blocchi.filter((el) => !visti.has(el));
+      const topDaVedere = daVedere.map((el) => el.getBoundingClientRect().top);
       const sPiste: number[] = [];
-      for (const el of piste) {
+      for (const el of pistaJs) {
         const r = el.getBoundingClientRect();
         // Di norma il cursore parte quando la pista esce dallo schermo in
         // cima. Con `data-pista="avanti"` parte prima, quando la pista e
@@ -277,16 +308,17 @@ export function Scorrimento() {
         sPiste.push(s);
       }
       // --- secondo tempo: solo scritture, nessuna misura ---
-      for (let i = 0; i < blocchi.length; i++) {
-        const el = blocchi[i];
-        scrivi(el, "--p", pBlocchi[i].toFixed(6));
-        if (!visti.has(el) && topBlocchi[i] < H * 0.86) {
-          visti.add(el);
-          el.style.setProperty("--v", "1");
+      for (let i = 0; i < bloccoJs.length; i++) {
+        scrivi(bloccoJs[i], "--p", pBlocchi[i].toFixed(6));
+      }
+      for (let i = 0; i < daVedere.length; i++) {
+        if (topDaVedere[i] < H * 0.86) {
+          visti.add(daVedere[i]);
+          daVedere[i].style.setProperty("--v", "1");
         }
       }
-      for (let i = 0; i < piste.length; i++) {
-        scrivi(piste[i], "--s", sPiste[i].toFixed(6));
+      for (let i = 0; i < pistaJs.length; i++) {
+        scrivi(pistaJs[i], "--s", sPiste[i].toFixed(6));
       }
     };
     /**
@@ -332,9 +364,15 @@ export function Scorrimento() {
     misuraTelefono();
     misura();
     radice.setAttribute("data-js", "");
+    // Solo adesso il CSS ha attaccato le animazioni: prima di questa riga
+    // `getAnimations()` non avrebbe visto niente.
+    dividi();
     const rimisura = () => {
       misuraScene();
       misuraTelefono();
+      // La finestra puo aver attraversato i 901px: chi si muove da solo
+      // e chi no cambia.
+      dividi();
       chiedi();
     };
     window.addEventListener("scroll", chiedi, { passive: true });

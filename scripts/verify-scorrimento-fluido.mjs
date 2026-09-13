@@ -248,6 +248,77 @@ check("il bordo DISEGNATO della carta avanza a ogni fotogramma (niente scatto al
   bordo.fermi === 0,
   `fermi ${bordo.fermi} su ${bordo.totale}, passo fra ${bordo.min.toFixed(3)} e ${bordo.max.toFixed(3)}px`);
 
+/* ---------------------------------------------------------------------
+   IL CURSORE E' NATIVO, E DA' GLI STESSI NUMERI DI PRIMA.
+
+   Dal 13 settembre 2026 `--s` e `--p` non li scrive piu il JavaScript ma
+   il browser, con `animation-timeline` (vedi styles.css). E' la cura del
+   tremolio su Safari: il numero viene calcolato per la posizione di
+   scorrimento del fotogramma che si sta disegnando, non per quella di uno
+   o due fotogrammi fa.
+
+   Due cose vanno difese, e sono diverse fra loro:
+   1. che le animazioni ci siano davvero. Basta una regola nuova che
+      dichiari `animation` su quei selettori per spegnerle senza un
+      errore, e si tornerebbe al tremolio senza che niente diventi rosso.
+   2. che il numero coincida con la formula di prima. Se la finestra
+      (`animation-range`) e sbagliata la coreografia si sposta tutta, e a
+      occhio non si vede finche non e tardi.
+
+   I quattro blocchi dentro le scene incollate sono esclusi apposta e
+   restano al JavaScript: la spiegazione sta in styles.css.
+   --------------------------------------------------------------------- */
+const nat = await pagina.evaluate(() => {
+  const NOMI = ["jm-sito7-cursore", "jm-sito7-corsa"];
+  const r = document.querySelector(".jm-sito7");
+  const ha = (el) => el.getAnimations().some((a) => NOMI.includes(a.animationName));
+  const piste = [...r.querySelectorAll("[data-pista]")];
+  const blocchi = [...r.querySelectorAll("[data-fx]")].filter(
+    // Le due esclusioni volute: chi vive dentro una scena incollata, e
+    // `.ft` dentro la banda, che e incollata anche lei.
+    (el) =>
+      el.getBoundingClientRect().height > 0 &&
+      !el.closest("[data-pista]") &&
+      !el.closest(".jm-sito-banda .ft"),
+  );
+  return {
+    piste: piste.length,
+    pisteNat: piste.filter(ha).length,
+    blocchi: blocchi.length,
+    blocchiNat: blocchi.filter(ha).length,
+  };
+});
+check("il cursore --s delle piste lo muove il browser, non il JavaScript",
+  nat.pisteNat === nat.piste && nat.piste === 4, `${nat.pisteNat}/${nat.piste} piste`);
+check("il cursore --p dei blocchi fuori dalle scene incollate e nativo",
+  nat.blocchiNat === nat.blocchi && nat.blocchi > 8, `${nat.blocchiNat}/${nat.blocchi} blocchi`);
+
+let scartoS = 0;
+let doveS = "";
+const alto = await pagina.evaluate(() => document.body.scrollHeight);
+for (let y = 0; y < alto - 1000; y += 211) {
+  await pagina.evaluate((v) => window.scrollTo(0, v), y);
+  await pagina.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+  const peggio = await pagina.evaluate(() => {
+    const H = innerHeight;
+    let max = 0;
+    let chi = "";
+    for (const el of document.querySelectorAll(".jm-sito7 [data-pista]")) {
+      const q = el.getBoundingClientRect();
+      const av = el.dataset.pista === "avanti" ? H * 0.55 : 0;
+      let atteso = (av - q.top) / (q.height - H + av);
+      atteso = atteso < 0 ? 0 : atteso > 1 ? 1 : atteso;
+      const vero = parseFloat(getComputedStyle(el).getPropertyValue("--s"));
+      const e = Math.abs(vero - atteso);
+      if (e > max) { max = e; chi = String(el.className).split(" ")[0]; }
+    }
+    return { max, chi };
+  });
+  if (peggio.max > scartoS) { scartoS = peggio.max; doveS = `${peggio.chi} a y=${y}`; }
+}
+check("il cursore nativo coincide con la formula di prima (scarto sotto 0,0005)",
+  scartoS < 0.0005, `scarto massimo ${scartoS.toFixed(6)} (${doveS})`);
+
 await browser.close();
 const ko = esiti.filter((e) => !e.ok).length;
 console.log(`\n${esiti.length - ko}/${esiti.length} passati`);
