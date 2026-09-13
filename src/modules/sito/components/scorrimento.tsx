@@ -15,6 +15,24 @@ import { useEffect } from "react";
  *               alto tocca il fondo; 1: il bordo basso e uscito in cima)
  *   --v  0 | 1  "visto": scatta quando il blocco entra per l'86% e resta
  *
+ * SEI DECIMALI, NON QUATTRO (12 settembre 2026, Manuel: "quando scrollo
+ * tremola in su e giu, pochi pixel, fastidioso").
+ *
+ * Erano quattro, e per anni sono bastati perche le piste erano corte. Con
+ * la pista della scena "come funziona" portata a 660svh il conto si e
+ * rotto: su 6574 pixel di corsa, un centesimo di millesimo di --s vale
+ * 0,66 pixel di scorrimento, mentre la carta dentro quella scena si sposta
+ * di 0,42 pixel per ogni scatto. Un pixel di rotella avanza dunque di UNO
+ * o di DUE scatti a seconda di dove cade l'arrotondamento, e la carta si
+ * muove alternando 0,42 e 0,84 pixel: non e uno scatto, e un tremolio,
+ * ed e esattamente cio che si vede. Misurato scorrendo di un pixel per
+ * volta e guardando i delta, non dedotto.
+ *
+ * A sei decimali lo scatto vale 0,004 pixel, cioe sotto la soglia di
+ * qualunque schermo. Regola generale: la precisione di --s deve stare
+ * sotto il pixel PER LA PISTA PIU LUNGA del sito, non per quella media.
+ * Se un giorno una pista arriva a 2000svh, si rifa questo conto.
+ *
  * e sulla pista della scena (`data-pista`) il progresso `--s` 0 → 1 mentre
  * la scena sta ferma; sulla radice, `data-scorso` quando la pagina non e
  * piu in cima (la barra diventa di vetro). Il resto — quanto sale, quanto sfuma, il parallasse
@@ -139,7 +157,7 @@ export function Scorrimento() {
         const r = el.getBoundingClientRect();
         let p = (H - r.top) / (H + r.height);
         p = p < 0 ? 0 : p > 1 ? 1 : p;
-        el.style.setProperty("--p", p.toFixed(4));
+        el.style.setProperty("--p", p.toFixed(6));
         if (!visti.has(el) && r.top < H * 0.86) {
           visti.add(el);
           el.style.setProperty("--v", "1");
@@ -155,7 +173,7 @@ export function Scorrimento() {
         const av = el.dataset.pista === "avanti" ? H * 0.55 : 0;
         let s = (av - r.top) / (r.height - H + av);
         s = s < 0 ? 0 : s > 1 ? 1 : s;
-        el.style.setProperty("--s", s.toFixed(4));
+        el.style.setProperty("--s", s.toFixed(6));
       }
     };
     const chiedi = () => {

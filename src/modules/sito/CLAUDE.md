@@ -25,7 +25,9 @@ cancellare quando la 2.0 e approvata. Le classi nuove hanno prefisso
   `support/page.web.tsx`, `en/support/page.web.tsx`, piu `robots.ts`,
   `sitemap.ts` e i gusci `api/sito/seo/` e `api/sito/supporto/`.
 - Prefisso CSS: `jm-sito`.
-- Banchi prima del push: `verify-sito` (piu tsc, eslint, verify-i18n).
+- Banchi prima del push: `verify-sito` e `verify-scorrimento-fluido`
+  (piu tsc, eslint, verify-i18n; e `verify-v7` ogni volta che si tocca il
+  CSS del sito).
 
 ## Dall'11 settembre 2026: solo telefono, e /v7 e il metro
 
@@ -94,6 +96,25 @@ Il telefono fa un viaggio solo, scritto una volta: `(--esci - --centro)`
 vale 0 in partenza, 1 mentre e fuori e 0 di nuovo alla fine, e da li
 escono larghezza, `left` e `top`. Sotto i 900px non cambia niente: la
 coreografia del telefono e quella di prima.
+
+**La pista lunga ha rotto la precisione di `--s`, e questa e la regola
+che ne esce.** Manuel, sull'anteprima: "quando scrollo, tremola in su e
+giu, un CLS di pochi pixel". Non era CLS — l'altezza del documento non
+cambiava di un pixel, misurato lungo tutta la pagina. Era
+l'arrotondamento: `scorrimento.tsx` scriveva `--s` con quattro decimali,
+e su 6574 pixel di pista uno scatto vale 0,66 pixel di scorrimento
+mentre la carta si sposta di 0,42 pixel per scatto. Un pixel di rotella
+avanzava di uno o di due scatti a seconda di dove cadeva
+l'arrotondamento, e la carta alternava 0,42 e 0,84 pixel: tremolio.
+Adesso i decimali sono sei (scatto = 0,004 pixel).
+
+REGOLA: la precisione di `--s` deve stare sotto il pixel PER LA PISTA
+PIU LUNGA del sito, non per quella media. Chi allunga una pista rifa
+questo conto. Banco: `node scripts/verify-scorrimento-fluido.mjs`, che
+scorre di un pixel per volta e pretende che lo spostamento per pixel non
+vari piu di 0,10 (oggi varia di 0,031, che e la quantizzazione a 1/64 di
+pixel del browser). Provato a mordere: con quattro decimali lo scarto
+sale a 0,422 e il banco diventa rosso.
 
 ## La prima schermata sul telefono (jm-sito14)
 
