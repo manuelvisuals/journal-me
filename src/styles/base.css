@@ -361,6 +361,23 @@ body > * {
   animation: jm-splash-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
 
+/* PROVA DEL 13 SETTEMBRE 2026: il marchio animato nella splash (vedi
+   splash.tsx). La larghezza e in px scalati come il resto del marchio (la
+   parola disegnata a 34px era larga circa cosi); l'altezza viene dal
+   rapporto dell'immagine. Sui temi scuri l'inchiostro disegnato dentro
+   l'immagine sparirebbe sul fondo: invert + hue-rotate lo porta a crema e
+   i pallini terracotta a un terracotta chiaro (misurato: (157,88,55) ->
+   (211,142,109)), non azzurro. */
+.jm-splash-anim {
+  display: block;
+  width: calc(190px * var(--jm-ui-scale));
+  height: auto;
+}
+
+html[data-mode="dark"] .jm-splash-anim {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 .jm-splash-halo {
   position: absolute;
   width: 230px;
