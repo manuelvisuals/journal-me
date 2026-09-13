@@ -153,6 +153,21 @@ td.no{color:var(--no)}
 .desk .pop .tasti .p.d{background:var(--danger)}
 .desk .pop .tasti .p.off{opacity:.4}
 
+/* ---- 07: l'imbuto degli ospiti ---- */
+.desk .imbuto{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 16px;margin-top:24px}
+.desk .imbuto .k{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);font-weight:650;line-height:1}
+.desk .imbuto .passi{display:grid;grid-template-columns:200px 1fr 56px 64px;gap:0 16px;align-items:center;margin-top:14px}
+.desk .imbuto .passo{display:contents}
+.desk .imbuto .passo > *{height:40px;display:flex;align-items:center;border-top:1px solid var(--line)}
+.desk .imbuto .passo:first-child > *{border-top:none}
+.desk .imbuto .nome{font-size:13px;color:var(--ink);white-space:nowrap}
+.desk .imbuto .barra{position:relative}
+.desk .imbuto .barra i{display:block;height:18px;border-radius:4px;background:var(--accent);opacity:.9}
+.desk .imbuto .barra i.p2{opacity:.72}.desk .imbuto .barra i.p3{opacity:.54}.desk .imbuto .barra i.p4{opacity:.4}.desk .imbuto .barra i.p5{opacity:.28}
+.desk .imbuto .n{font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;justify-content:flex-end;font-family:var(--serif);font-size:20px}
+.desk .imbuto .pc{font-size:12px;color:var(--ink-faint);font-variant-numeric:tabular-nums;justify-content:flex-end}
+.desk .imbuto .pc b{color:var(--ink-muted);font-weight:500}
+
 .ann{position:absolute;background:#FBBF24;color:#1a1a1a;font-size:11.5px;font-weight:600;padding:5px 9px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.35);line-height:1.3;max-width:240px}
 
 .q{max-width:760px;margin:0 auto;background:var(--pg-2);border:1px solid var(--pg-line);border-radius:16px;padding:22px 24px}
@@ -407,11 +422,64 @@ td.no{color:var(--no)}
     scrivere qualcosa, e il tasto resta spento finche non torna. Esc e il velo chiudono come Annulla.</p>
 
   <div class="divider"></div>
-  <p class="label">06 . Una domanda sola</p>
+  <p class="label">07 . La scheda Ospiti come imbuto</p>
+  <p class="caption">Richiesta di Manuel: "possiamo rappresentarlo tramite un funnel?". Nella scheda <b>Ospiti</b>, al posto dei quattro numeri, l'imbuto: cinque passi
+    dall'installazione all'abbonamento, ogni riga con la barra in proporzione, il numero e la percentuale sul passo precedente. Sotto resta l'elenco di prima.
+    Tutti i numeri escono dai dati che il server ha gia (braccialetti, giornate del regalo, account collegato, piano).</p>
+  <div class="row">
+    <div class="desk" style="min-height:0;height:640px">
+      <aside>
+        <div class="brand"><b>day</b>alogue</div>
+        <div class="brand-sub">Admin</div>
+        <nav>
+          <span>Aree <em>6</em></span>
+          <span class="on">Iscritti <em>27</em></span>
+          <span>Sito</span>
+          <span>Messaggio di benvenuto</span>
+          <span>Regalo AI</span>
+          <span>Recensione</span>
+          <span class="off">Obiettivi di default</span>
+        </nav>
+        <div class="who"><b>madh52@gmail.com</b>l'unico che entra qui</div>
+      </aside>
+      <main>
+        <div class="testa">
+          <h1>Iscritti</h1>
+          <div class="seg"><span>Account<em>27</em></span><span class="on">Ospiti<em>61</em></span></div>
+          <div class="cerca">&#128269; Cerca</div>
+        </div>
+        <div class="imbuto">
+          <div class="k">Dall'installazione all'abbonamento, negli ultimi 30 giorni</div>
+          <div class="passi">
+            <div class="passo"><div class="nome">Hanno aperto l'app</div><div class="barra"><i style="width:100%"></i></div><div class="n">61</div><div class="pc"></div></div>
+            <div class="passo"><div class="nome">Hanno scritto una giornata</div><div class="barra"><i class="p2" style="width:79%"></i></div><div class="n">48</div><div class="pc"><b>79%</b></div></div>
+            <div class="passo"><div class="nome">Hanno finito il regalo</div><div class="barra"><i class="p3" style="width:31%"></i></div><div class="n">19</div><div class="pc"><b>40%</b></div></div>
+            <div class="passo"><div class="nome">Hanno creato un account</div><div class="barra"><i class="p4" style="width:11.5%"></i></div><div class="n">7</div><div class="pc"><b>37%</b></div></div>
+            <div class="passo"><div class="nome">Sono passati a Premium</div><div class="barra"><i class="p5" style="width:3.3%"></i></div><div class="n">2</div><div class="pc"><b>29%</b></div></div>
+          </div>
+        </div>
+        <div class="corpo" style="margin-top:16px">
+          <div class="tbl">
+            <div class="tr head osp"><div>Ospite</div><div>Dal</div><div>Ultimo uso</div><div>Regalo</div><div>Esito</div></div>
+            <div class="tr osp"><div class="chi"><b>a91f&hellip;c3</b><span>iPhone</span></div><div class="num">11 set</div><div class="num">oggi</div><div class="num">6 di 10</div><div class="num">in corso</div></div>
+            <div class="tr osp"><div class="chi"><b>7c02&hellip;9e</b><span>iPhone</span></div><div class="num">30 ago</div><div class="num">2 set</div><div class="num">4 di 10</div><div class="num">con account giulia.r@esempio.it</div></div>
+            <div class="tr osp"><div class="chi"><b>e5d8&hellip;41</b><span>browser</span></div><div class="num">9 set</div><div class="num">9 set</div><div class="num">10 di 10</div><div class="num">finito, senza account</div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <p class="under">La percentuale e sempre <b>sul passo prima</b> (79% di chi ha aperto ha scritto; 40% di chi ha scritto ha finito il regalo), perche e la domanda utile:
+    dove si perde la gente. La barra invece e in proporzione al primo passo, cosi la forma dell'imbuto si vede a colpo d'occhio. Un solo colore, che sbiadisce
+    a ogni passo; niente frasi dentro: la riga in alto dice solo il periodo. "Hanno creato un account" conta i braccialetti che poi hanno un'email; "Premium"
+    quelli fra questi con un piano attivo. Il periodo (30 giorni) e quello dei numeri di oggi; volendo diventa un selettore (30 / 90 / da sempre).</p>
+
+  <div class="divider"></div>
+  <p class="label">08 . Una domanda sola</p>
   <div class="q">
-    <h4>Costruisco la terza versione (ispettore, Modifica, popup, azioni) e stacco /admin dall'app?</h4>
-    <div class="o"><i>1</i><div><b>Si, cosi.</b></div></div>
-    <div class="o"><i>2</i><div><b>Si, ma senza "Manda un codice di accesso"</b> (e l'unica azione in piu che ho proposto io).</div></div>
+    <h4>Costruisco l'imbuto nella scheda Ospiti?</h4>
+    <div class="o"><i>1</i><div><b>Si, cosi</b> (periodo fisso: ultimi 30 giorni).</div></div>
+    <div class="o"><i>2</i><div><b>Si, con il selettore del periodo</b> (30 giorni / 90 giorni / da sempre).</div></div>
     <div class="o"><i>3</i><div><b>Cambia qualcosa prima.</b> Dimmi cosa, in chat.</div></div>
   </div>
 
