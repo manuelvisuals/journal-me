@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { umoreDaSalvare } from "./umore-detto";
 import { requireOspiteOPremium } from "@/lib/server/ospite";
 import { openaiUrl } from "@/lib/server/openai";
 import { logAiUsage, type ChatUsage } from "@/lib/server/ai-usage";
@@ -165,7 +166,7 @@ export async function POST(req: NextRequest) {
     // garantita dal codice, sotto (titoloInSentenceCase).
     `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}. Maiuscola iniziale come una frase normale, poi minuscolo tranne i nomi propri (persone, luoghi), che vanno SEMPRE con la maiuscola. Niente punto finale. Cattura il tema dominante della giornata.`,
     regolaSnippet,
-    "  - metrics: le misure del risveglio, SOLO se dette esplicitamente nel testo. weightKg: il peso corporeo in kg (numero, es. 83.3), se l'utente dice quanto pesava. sleepHours: le ore di sonno in ore frazionarie (8, 7.5), SOLO se dice un numero esatto di ore dormite: 'ho dormito poco' NON e un numero e resta null. mood: l'umore al risveglio o dell'inizio giornata, mappato su uno di 'great' (fantastico, euforico, alla grande), 'good' (bene, sereno, tranquillo), 'neutral' (normale, cosi cosi), 'low' (giu, stanco, triste), 'bad' (malissimo, pessimo). Esempio: 'mi sono svegliato alle 10, dopo 8 ore di sonno, pesavo 83.3kg e di mood sereno' -> weightKg 83.3, sleepHours 8, mood 'good'. Ogni campo che il testo non dice esplicitamente e null: qui NON SI INDOVINA MAI, un dato inventato in un diario e un danno.",
+    "  - metrics: le misure del risveglio, SOLO se dette esplicitamente nel testo. weightKg: il peso corporeo in kg (numero, es. 83.3), se l'utente dice quanto pesava. sleepHours: le ore di sonno in ore frazionarie (8, 7.5), SOLO se dice un numero esatto di ore dormite: 'ho dormito poco' NON e un numero e resta null. mood: l'umore, SOLO se la persona dice come si sente, mappato su uno di 'great' (fantastico, euforico, alla grande), 'good' (sereno, tranquillo, sto bene), 'neutral' (SOLO se dice di sentirsi cosi cosi, nella media, ne bene ne male), 'low' (giu, stanco, triste), 'bad' (malissimo, pessimo). Una giornata raccontata senza nessuna parola su come si sente NON e 'neutral': e null, anche se sembra una giornata tranquilla o normale. Esempio: 'mi sono svegliato alle 10, dopo 8 ore di sonno, pesavo 83.3kg e di mood sereno' -> weightKg 83.3, sleepHours 8, mood 'good'. Esempio: 'riunione alle 9, pranzo con Marco, spesa' -> weightKg null, sleepHours null, mood null. Ogni campo che il testo non dice esplicitamente e null: qui NON SI INDOVINA MAI, un dato inventato in un diario e un danno.",
     `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e NON si traducono MAI, nemmeno se scrivi in ${lingua}, perche sono valori salvati a database: ${elencoChiavi}. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,
     "",
     "Cosa va in quale area, quando c'e il dubbio:",
@@ -312,6 +313,11 @@ export async function POST(req: NextRequest) {
   }
 
   parsed.headline = titoloInSentenceCase(parsed.headline);
+  // L'umore lo tiene solo chi ne ha parlato (umore-detto.ts): il modello
+  // scriveva 'neutral' su giornate che dell'umore non dicevano niente.
+  if (parsed.metrics) {
+    parsed.metrics.mood = umoreDaSalvare(parsed.metrics.mood, transcript);
+  }
   return NextResponse.json(parsed);
 }
 
