@@ -224,7 +224,7 @@ export default function LoginPage() {
         return;
       } catch {
         setVerifying(false);
-        setError("Codice non valido. Ricontrolla le sei cifre.");
+        setError(t("Codice non valido. Ricontrolla le sei cifre."));
         return;
       }
     }
@@ -237,10 +237,12 @@ export default function LoginPage() {
     });
     setVerifying(false);
     if (authError) {
+      // Bilingue via t(): il 13 settembre 2026 "Codice scaduto" usciva in
+      // italiano dentro l'app inglese (segnalato da Manuel dal telefono).
       setError(
         authError.message.toLowerCase().includes("expired")
-          ? "Codice scaduto. Chiedine uno nuovo."
-          : "Codice non valido. Ricontrolla le sei cifre.",
+          ? t("Codice scaduto. Chiedine uno nuovo.")
+          : t("Codice non valido. Ricontrolla le sei cifre."),
       );
       return;
     }

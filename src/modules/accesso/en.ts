@@ -27,6 +27,9 @@ export const ACCESSO: Record<string, string> = {
   "invio...": "sending...",
   "chiedine un altro": "ask for another one",
   "Cambia email": "Change email",
+  // Gli errori del codice (13 settembre 2026): prima erano stringhe fisse in italiano.
+  "Codice scaduto. Chiedine uno nuovo.": "Code expired. Ask for a new one.",
+  "Codice non valido. Ricontrolla le sei cifre.": "Invalid code. Check the six digits.",
   "Bentornato": "Welcome back",
   "Inserisci l'email che hai usato l'ultima volta: ti mando un codice.": "Enter the email you used last time: I will send you a code.",
   "tu@dominio.com": "you@domain.com",
