@@ -383,11 +383,14 @@ Tre cose insieme, scelte da Manuel sul mockup
    parte — il messaggio c'e comunque, e chi ha scritto non puo farci
    niente. Serve `RESEND_API_KEY` su Vercel; senza, la rotta funziona
    uguale e il log dice "RESEND_API_KEY assente". Il destinatario di
-   fabbrica e l'indirizzo dell'account Resend (lo stesso dell'assistenza
-   di Stoqfolio): finche il mittente e `onboarding@resend.dev`, Resend
-   consegna SOLO li. Per liberarlo: verificare dayalogue.com su Resend,
-   poi `SUPPORT_FROM_EMAIL`, e allora `SUPPORT_TO_EMAIL` puo essere
-   qualunque indirizzo.
+   fabbrica e `spamming.madh52@gmail.com` e NON e una preferenza: finche
+   il mittente e `onboarding@resend.dev`, Resend consegna SOLO alla casella
+   del titolare dell'account, e quello e l'account a cui si arriva dal
+   GitHub di Manuel (verificato il 14 settembre 2026; l'account di
+   Stoqfolio, aidev.madh52@gmail.com, chiede un SMS a un numero che Manuel
+   non ha piu). Per liberarlo: verificare dayalogue.com su Resend, poi
+   `SUPPORT_FROM_EMAIL`, e allora `SUPPORT_TO_EMAIL` puo essere qualunque
+   indirizzo.
 3. **Due trappole per i robot, zero clic** (`supporto-regole.ts`, lette sia
    dal modulo che dalla rotta perche in due posti divergerebbero): un campo
    esca fuori campo — non `display:none`, che alcuni robot saltano — e

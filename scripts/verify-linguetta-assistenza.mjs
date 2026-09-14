@@ -22,7 +22,6 @@
 import { readFileSync } from "node:fs";
 import { chromium } from "playwright-core";
 import { indirizzoAssistenza, destinazioneLinguetta, SITO } from "../src/modules/accesso/assistenza-url.ts";
-import { SupabaseFinto, jwtFinto, montaSupabaseFinto, UTENTE_ID } from "./lib/supabase-finto.mjs";
 
 const EXE = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const BASE = process.env.JM_BASE ?? "http://localhost:3100";
@@ -47,32 +46,6 @@ check("1 i campi vuoti valgono come assenti", vuoti === "/support?da=app", vuoti
 
 /* ============ 2. dal vivo, coi finti ============ */
 const browser = await chromium.launch({ executablePath: EXE, args: ["--no-sandbox"] });
-const TOKEN = jwtFinto(Math.floor(Date.now() / 1000) + 3600, UTENTE_ID);
-
-async function cloud(email) {
-  const finto = new SupabaseFinto();
-  const ctx = await browser.newContext({ viewport: { width: 430, height: 932 }, locale: "it-IT" });
-  await montaSupabaseFinto(ctx, finto);
-  await ctx.addInitScript(({ token, email }) => {
-    try {
-      window.localStorage.setItem("jm.plan", "free");
-      const s = JSON.parse(window.localStorage.getItem("sb-sbfinto-auth-token") || "{}");
-      s.access_token = token;
-      s.user = { ...(s.user ?? {}), email };
-      window.localStorage.setItem("sb-sbfinto-auth-token", JSON.stringify(s));
-    } catch {}
-  }, { token: TOKEN, email });
-  const page = await ctx.newPage();
-  await page.goto(BASE + "/app", { waitUntil: "domcontentloaded" });
-  const parole = page.locator(".jm-login-cassa-check input");
-  if (await parole.waitFor({ state: "visible", timeout: 15_000 }).then(() => true, () => false)) {
-    await parole.check();
-    await page.locator("button.btn-primary").click();
-  }
-  await page.locator(".jm-tabbar, nav").first().waitFor({ state: "visible", timeout: 30_000 }).catch(() => undefined);
-  await page.waitForTimeout(2500);
-  return { ctx, page };
-}
 
 const ling = (page) => page.locator(".jm-benv-ling");
 
