@@ -364,5 +364,44 @@ nel file, perche nessuno si creda protetto piu di quanto sia).
 
 Le richieste si leggono dalla stessa rotta in GET, che invece e solo
 dell'amministratore. **La schermata che le mostra dentro /admin non e
-ancora scritta**: oggi arrivano e restano in tabella. E il prossimo passo
-di questo modulo.
+ancora scritta**: la rotta c'e, la schermata no.
+
+### Dal 13 settembre 2026: la pagina e nuda, e il messaggio avvisa
+
+Tre cose insieme, scelte da Manuel sul mockup
+`MOCKUP-supporto-e-feedback.html` (1A, 2C, 3C):
+
+1. **La pagina non ha piu la barra del sito.** Solo il marchio e le due
+   lingue (`.jm-sito-sup-testata`). Chi apre /support ha un problema, e
+   "Inizia ora" gli proponeva di iscriversi mentre cercava aiuto; e il
+   revisore di Apple apre questo indirizzo a freddo, perche e il Support
+   URL della scheda. Se qualcuno rimette `NavSito` qui, `verify-sito`
+   diventa rosso su "la barra del sito NON c'e".
+2. **Il messaggio manda un'email** (`server/posta-supporto.ts`, Resend via
+   una fetch, nessuna libreria). L'ordine non si inverte: prima si SALVA,
+   poi si prova a mandare, e la risposta resta "ok" anche se la posta non
+   parte — il messaggio c'e comunque, e chi ha scritto non puo farci
+   niente. Serve `RESEND_API_KEY` su Vercel; senza, la rotta funziona
+   uguale e il log dice "RESEND_API_KEY assente". Il destinatario di
+   fabbrica e l'indirizzo dell'account Resend (lo stesso dell'assistenza
+   di Stoqfolio): finche il mittente e `onboarding@resend.dev`, Resend
+   consegna SOLO li. Per liberarlo: verificare dayalogue.com su Resend,
+   poi `SUPPORT_FROM_EMAIL`, e allora `SUPPORT_TO_EMAIL` puo essere
+   qualunque indirizzo.
+3. **Due trappole per i robot, zero clic** (`supporto-regole.ts`, lette sia
+   dal modulo che dalla rotta perche in due posti divergerebbero): un campo
+   esca fuori campo — non `display:none`, che alcuni robot saltano — e
+   l'orologio, meno di tre secondi dall'apertura. Chi viene scartato riceve
+   "grazie" lo stesso: dirgli che e stato riconosciuto e spiegargli come
+   non farsi riconoscere.
+
+`supporto-indirizzo.ts` legge cio che la linguetta Feedback dell'app mette
+nell'indirizzo (`email`, `da`, `v`, `s`): la PAGINA li legge e li passa al
+modulo come proprieta, cosi il primo render e uguale fra server e client.
+Dal telefono la linguetta apre il browser, che e un altro programma: la
+sessione dell'app li non esiste, e l'indirizzo e l'unico bagaglio che passa
+quel confine. Non e una prova di identita e non ci si fonda niente: e un
+campo in meno da riempire.
+
+Banco: `node --experimental-strip-types scripts/verify-supporto-trappole.mjs`
+(codice puro, non serve il dev server) piu `verify-sito` come sempre.
