@@ -96,7 +96,10 @@ nella nota di consegna, non dimenticarlo quando si tocca il backup.
 - Banchi prima del push: `verify-cassaforte` (R6 R7 R8 R12: la giornata esce
   chiusa a chiave, il conflitto di versione, il dispositivo nuovo),
   `verify-rete-spenta` (R11: senza rete la trascrizione
-  mostra un messaggio, mai un'attesa infinita), `verify-foto`, `verify-chiarimenti`, `verify-chiarimenti-vivo`,
+  mostra un messaggio, mai un'attesa infinita), `verify-registrazione-blocchi`
+  (strip-types, la matematica dei blocchi) e `verify-registrazione-blocchi-vivo`
+  (Playwright su :3100; `JM_LUNGO=1` per il blocco che si chiude a 3 minuti),
+  `verify-foto`, `verify-chiarimenti`, `verify-chiarimenti-vivo`,
   `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,
@@ -374,3 +377,57 @@ del riassunto dell'AI, cosi si capisce che e per quello". In
 `filled-view.tsx` lo slot `avvisoSlot` (l'`AvvisoRegalo`) sta subito
 dopo lo snippet e prima del footer ("Aggiungi a questa giornata"), non
 piu in fondo dopo le aree. Banco: `verify-ospite-schermate` 02.
+
+## La registrazione a blocchi (14 settembre 2026)
+
+Manuel, 23:45: 3'52" di racconto, la schermata dice ERROR e la riga di
+diagnosi `n=226 b=6717776 http=413`. L'audio c'era tutto (6,7 MB a 29,7
+KB/s, la qualita di fabbrica del browser); il server no: su Vercel il corpo
+di una richiesta si ferma a ~4,5 MB, e `/api/transcribe-fallback` ha 60 s
+di esecuzione. Peso E tempo. Prompt completo in
+`PROMPT-REGISTRAZIONE-A-BLOCCHI.md` (radice).
+
+Decisione: si registra A BLOCCHI, come le note vocali, e la persona lo sa
+prima di cominciare (la barra dice "Blocco 1, 00:00 / 03:00").
+
+- `blocchi.ts` (puro, zero import, come pezzi.ts): un blocco si chiude
+  quando arriva PRIMA uno fra 3 minuti di parlato INCISO (`BLOCCO_TETTO_MS`,
+  scelta di Manuel) e 3,5 MB (`BLOCCO_TETTO_BYTE`, la rete di sicurezza
+  se il telefono ignora la qualita chiesta). Il tempo inciso e quello col
+  tasto premuto (`Orologio`: premi/lascia/incisoMs), non l'orologio a muro.
+  La barra e `avanzamento` = il maggiore fra frazione di tempo e di byte
+  VERI. `SOGLIA_CHIUSURA_AL_RILASCIO` (0,9): oltre, il blocco si chiude
+  quando la persona lascia il tasto, cioe in un silenzio; chi parla senza
+  mai lasciare arriva al limite e li si taglia lo stesso, e una sillaba si
+  perde (prezzo dichiarato). `unisciTesti` cuce IN ORDINE DI INDICE con uno
+  spazio (NON `\n---\n`, che e dei giorni), un blocco fallito (`testo:
+  null`) lascia un segnaposto tradotto e non porta via gli altri, zero
+  blocchi o solo blocchi muti = testo vuoto e zero guasti.
+- Un blob audio NON si taglia dopo: i blocchi si fanno mentre si registra,
+  `chiudiBlocco` in recording-overlay.tsx ferma il MediaRecorder e ne apre
+  un altro sulla stessa traccia (`startTape(stream, attivo)`: attivo se il
+  tasto e ancora premuto). Il limite si controlla a ogni `ondataavailable`.
+  ATTENZIONE: non guardare `cleanedUpRef` dentro chiudiBlocco: in sviluppo
+  StrictMode smonta e rimonta e quel flag resta acceso; il segno vero e
+  `localStreamRef`.
+- Qualita: `channelCount: 1` in getUserMedia; `audioBitsPerSecond` da
+  `bitrateRichiesto(mime)`: Opus 32 kbit/s, AAC (iPhone) 64. E una richiesta,
+  non un ordine: il ritmo reale si legge in `bps=` nella riga di diagnosi
+  (che ora stampa anche `k=` blocchi). Misurato in Chromium: 4.125-4.430
+  B/s (~35 kbit/s), un blocco pieno = 742 KB; prima 29.724 B/s.
+- Trascrizione: i blocchi in ordine, ognuno col glossario e la coda (40
+  parole, `codaDelTesto`) del blocco prima nel campo multipart `contesto`,
+  che il server accoda al prompt come continuazione. Il tetto
+  `TRASCRIZIONE_TETTO_MS` (120 s) e PER BLOCCO. `transcribeBlocco` torna
+  `null` su guasto (diverso da "" muto). Un blocco fallito, se almeno un
+  altro e riuscito, ha un secondo tentativo, poi resta il segnaposto e il
+  racconto si salva con il buco dichiarato. Nessun blocco riuscito e
+  almeno un guasto = schermata di errore, i blocchi restano (`blocchiRef`,
+  `esitiRef`) e un secondo Fine ritrascrive SOLO cio che manca.
+- Il 413 dice cosa e successo (troppo pesante, X MB) e che ripremere Fine
+  non cambia niente. Il vecchio "controlla la connessione" non c'e piu.
+- NON provato dal vivo: iPhone (WebKit, mp4/AAC, se rispetta i 64 kbit/s,
+  se `pause()` durante il cambio di blocco si comporta). Serve TestFlight.
+- Da decidere con Manuel: trascrivere un blocco MENTRE si registra il
+  successivo (attesa quasi zero a fine racconto). `unisciTesti` e gia
+  pronto (ordina per indice, non per arrivo).
