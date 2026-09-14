@@ -20,10 +20,14 @@
  * Il selettore e esportato: e il contratto fra questo pezzo e chi lo cerca.
  */
 
-import { useT } from "@/lib/i18n";
+import { usePathname } from "next/navigation";
+import { useLang, useT } from "@/lib/i18n";
 import { contattoUrlNoto } from "@/lib/benvenuto-client";
 import { useDentroApp } from "@/components/ui/tab-bar";
 import { useRevisore } from "@/modules/accesso/revisore";
+import { isNative } from "@/lib/native/platform";
+import { destinazioneLinguetta } from "@/modules/accesso/assistenza-url";
+import { useEmailInTasca, useVersioneApp } from "@/modules/accesso/assistenza";
 
 export const SELETTORE_LINGUETTA = ".jm-benv-ling";
 
@@ -37,37 +41,49 @@ export function Linguetta() {
   // Il saluto non si rompe quando manca: ha gia la chiusura secca di
   // ripiego (saluto-avvio.tsx), e comunque compare solo da dentro.
   const dentro = useDentroApp();
+  // I tre pezzi che la linguetta si porta dietro. Si chiedono SEMPRE, anche
+  // quando poi non si montera niente: le regole dei hook non ammettono un
+  // "se" davanti, e nessuno dei tre tocca la rete.
+  const lingua = useLang();
+  const email = useEmailInTasca();
+  const versione = useVersioneApp();
+  const schermata = usePathname();
   // Sull'account di revisione Apple (appreview@...) la linguetta non c'e:
   // decisione di Manuel del 9 settembre 2026, per gli screenshot dello
   // store e per non mettere un bottone in piu sotto gli occhi del revisore.
   // Il saluto non ne soffre: senza bersaglio ha la chiusura secca.
   const revisore = useRevisore();
   if (!dentro || revisore) return null;
-  // LA DESTINAZIONE ARRIVA DAL PANNELLO ADMIN, non dal codice: e il campo
-  // "Indirizzo della riga in fondo" del Messaggio di benvenuto. Finche e
-  // vuoto la linguetta resta un bottone che non apre nulla, esattamente
-  // com'era; appena Manuel incolla un indirizzo (il giorno che il sito ha
-  // la pagina dei contatti) diventa un link, senza toccare una riga di
-  // codice. Un href finto sarebbe una promessa rotta al primo tocco, e il
-  // messaggio di benvenuto dice proprio "scrivimi": l'animazione di
-  // chiusura vola dentro questa linguetta, quindi e qui che uno ci prova.
+  // LA DESTINAZIONE PUO ARRIVARE DAL PANNELLO ADMIN: e il campo "Indirizzo
+  // della riga in fondo" del Messaggio di benvenuto, e quando c'e vince.
+  // Quando manca si usa l'assistenza del sito: il messaggio di benvenuto
+  // dice proprio "scrivimi", e l'animazione di chiusura del saluto vola
+  // dentro questa linguetta, quindi e qui che uno ci prova.
   //
-  // La lettura e sincrona e senza rete (legge la copia gia in cache): la
-  // linguetta non deve MAI accendere una richiesta per conto suo, o in
-  // modalita locale la promessa "nemmeno una richiesta" cadrebbe.
+  // La lettura del pannello e sincrona e senza rete (legge la copia gia in
+  // cache): la linguetta non deve MAI accendere una richiesta per conto
+  // suo, o in modalita locale la promessa "nemmeno una richiesta" cadrebbe.
   // Si monta solo dentro l'app e dopo l'idratazione (useDentroApp torna
   // false sul server), quindi qui localStorage c'e sempre.
   //
   // Al meccanismo del saluto serve solo un elemento fisso e misurabile con
-  // un selettore stabile: la classe resta la stessa in tutti e due i casi.
-  const url = contattoUrlNoto();
-  if (url === "") {
-    return (
-      <button type="button" className="jm-benv-ling">
-        {t("Feedback")}
-      </button>
-    );
-  }
+  // un selettore stabile: la classe non cambia mai.
+  //
+  // DAL 13 SETTEMBRE 2026 LA LINGUETTA PORTA ALL'ASSISTENZA PER DAVVERO.
+  // Il pannello vince ancora, ma solo se dice qualcosa di DIVERSO dalle
+  // nostre pagine: il valore di fabbrica e gia "/support", cioe un
+  // indirizzo nudo che dentro il guscio iOS non esiste nemmeno (li le
+  // pagine del sito non entrano nel pacchetto). Quando punta a casa nostra
+  // lo rifacciamo noi, con la lingua giusta, il sito intero se siamo nel
+  // guscio, e cio che l'app sa gia di chi scrive
+  // (modules/accesso/assistenza-url.ts).
+  const url = destinazioneLinguetta(contattoUrlNoto(), {
+    nativo: isNative(),
+    lingua,
+    email,
+    versione,
+    schermata,
+  });
   // Una pagina del sito si apre dove sei; solo un indirizzo di fuori merita
   // una scheda nuova. Sbattere fuori dall'app chi voleva scrivere due righe
   // sarebbe il modo piu veloce di fargli perdere il filo.
