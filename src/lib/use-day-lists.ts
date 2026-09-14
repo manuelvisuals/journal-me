@@ -11,7 +11,9 @@
  *   2. i SOPRANNOMI: "mio fratello" diventa Daniele, "da Charlie" esce dalle
  *      persone perche e un posto (src/lib/aliases.ts);
  *   3. le cose TOLTE a mano da quella giornata: hai nominato Marco ma non
- *      l'hai incontrato (migrazione 013).
+ *      l'hai incontrato (migrazione 013);
+ *   4. la GRAFIA: "KARYA" nel racconto si mostra "Karya", com'e scritta in
+ *      rubrica (Ricorda > Persone). Vedi indicizzaGrafie in aliases.ts.
  *
  * Prima si risolve, poi si toglie: cosi se togli "Daniele" resta tolto anche
  * quando il racconto lo chiama "mio fratello". Al contrario, la X avrebbe
@@ -23,7 +25,14 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { indicizza, chiaveAlias, risolviLista, type IndiceAlias } from "@/lib/aliases";
+import {
+  indicizza,
+  indicizzaGrafie,
+  chiaveAlias,
+  risolviLista,
+  type Grafie,
+  type IndiceAlias,
+} from "@/lib/aliases";
 import {
   addExclusion,
   loadAliases,
@@ -31,6 +40,7 @@ import {
   loadFactsForDate,
   removeExclusion,
 } from "@/lib/data/facts";
+import { loadPersonaNames } from "@/lib/data/remembers";
 import type { DataMode } from "@/lib/data/entries";
 import type { DayExclusion, FactKind } from "@/lib/types";
 
@@ -44,6 +54,7 @@ export type DayLists = {
 };
 
 const VUOTO: IndiceAlias = new Map();
+const NESSUNA_GRAFIA: Grafie = new Map();
 
 export function useDayLists(
   mode: DataMode,
@@ -53,6 +64,7 @@ export function useDayLists(
   revision: string | number | null,
 ): DayLists {
   const [aliases, setAliases] = useState<IndiceAlias>(VUOTO);
+  const [grafie, setGrafie] = useState<Grafie>(NESSUNA_GRAFIA);
   const [luoghiGrezzi, setLuoghiGrezzi] = useState<string[]>([]);
   const [escluse, setEscluse] = useState<Set<string>>(new Set());
   const [giro, setGiro] = useState(0);
@@ -60,13 +72,17 @@ export function useDayLists(
   useEffect(() => {
     let vivo = true;
     void (async () => {
-      const [ali, fatti, esc] = await Promise.all([
+      const [ali, fatti, esc, rubrica] = await Promise.all([
         loadAliases(mode).catch(() => []),
         loadFactsForDate(mode, dateISO).catch(() => []),
         loadExclusions(mode, dateISO).catch(() => []),
+        // La rubrica e solo per la grafia: se non arriva, i nomi escono
+        // come sono scritti nel racconto, non spariscono.
+        loadPersonaNames(mode).catch(() => [] as string[]),
       ]);
       if (!vivo) return;
       setAliases(indicizza(ali));
+      setGrafie(indicizzaGrafie(rubrica));
       setLuoghiGrezzi(
         fatti
           .filter((f) => f.kind === "luogo")
@@ -112,8 +128,10 @@ export function useDayLists(
     [mode, dateISO],
   );
 
+  // La grafia della rubrica vale per le persone: i luoghi non hanno una
+  // rubrica, e restano come sono scritti.
   const fuori = (nomi: string[], kind: FactKind) =>
-    risolviLista(nomi, kind, aliases).filter(
+    risolviLista(nomi, kind, aliases, kind === "persona" ? grafie : undefined).filter(
       (n) => !escluse.has(`${kind}|${chiaveAlias(n)}`),
     );
 

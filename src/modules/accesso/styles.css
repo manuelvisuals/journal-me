@@ -920,3 +920,21 @@
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* ---------- /login: la colonna sta ferma fra un passo e l'altro ----------
+   Il margine vale quanto il centro del passo email (colonna 530px in un
+   main con 40px di padding: 50dvh - 265 - 40). Cosi il primo passo e
+   esattamente dov'era quando la colonna era centrata, e il passo del codice
+   e quello di Face ID partono dalla STESSA riga invece di ricentrarsi sulla
+   propria altezza. Sotto i 610px di altezza il margine e zero: la colonna
+   scorre, non si schiaccia. Banco: verify-login-fermo. */
+.jm-login-colonna {
+  margin-top: clamp(0px, calc(50dvh - 305px), 50dvh);
+}
+
+/* La riga sotto il titolo e alta due righe in ogni passo (email, codice,
+   Face ID) e ha lo stesso margine: cosi anche la casella e il tasto stanno
+   sulla stessa riga da un passo all'altro, non solo il marchio. */
+.jm-login-intro {
+  min-height: calc(2 * 1.55 * 0.875rem);
+}

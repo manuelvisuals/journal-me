@@ -8,6 +8,22 @@
  * "chiave": "valore", — verify-i18n legge questo formato.
  */
 export const OGGI: Record<string, string> = {
+  "Sposta su un altro giorno": "Move to another day",
+  "Sposto su": "Move to",
+  "Si sposta l'ultimo pezzo di questa giornata.": "The last piece of this day is what moves.",
+  "Quel giorno ha gia un racconto: questo va in fondo, sotto un separatore.": "That day already has a story: this goes at the end, under a separator.",
+  "Quel giorno e vuoto: questo diventa il suo racconto.": "That day is empty: this becomes its story.",
+  "Il giorno che riceve viene riscritto da capo: titolo, sintesi e aree.": "The day that receives it is rewritten from scratch: headline, summary and areas.",
+  "Tutti e due i giorni vengono riscritti da capo: titolo, sintesi e aree.": "Both days are rewritten from scratch: headline, summary and areas.",
+  "Sposta": "Move",
+  "Sto spostando...": "Moving...",
+  "Spostato.": "Moved.",
+  "Non sono riuscito a spostarlo. Riprova fra poco.": "I could not move it. Try again shortly.",
+  "Il giorno di partenza resta senza racconto": "The day it leaves is left with no story",
+  "Qui non resta nessun racconto": "No story is left here",
+  "Foto, peso, sonno e umore restano dove sono: sono del giorno, non del racconto.": "Photos, weight, sleep and mood stay where they are: they belong to the day, not to the story.",
+  "Lasciala vuota": "Leave it empty",
+  "Cancella la giornata": "Delete the day",
   "Cambia gli obiettivi": "Edit your goals",
   "Errore": "Error",
   "Conferma": "Confirm",

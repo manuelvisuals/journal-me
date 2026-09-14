@@ -2313,6 +2313,41 @@ summary:active {
 }
 .jm-acct-sheet-sep { height: 1px; background: var(--color-line); margin: 6px 10px; }
 
+/* Il piano in linea con l'email (Manuel, 13 settembre 2026): "email . Free >"
+   oppure "email . Premium". Vale per il foglio del telefono e per il
+   popover della rail, che condividono la seconda riga della testata.
+   L'email puo spezzarsi (word-break sopra): il puntino e il piano restano
+   attaccati tra loro e alla fine. Il tasto "Gratis" e alto quanto la riga:
+   la freccina e l'invito, l'area di tocco e la parola intera. */
+.jm-acct-punto { margin: 0 6px; }
+.jm-acct-piano {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+  vertical-align: baseline;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.jm-acct-piano.prem { color: var(--color-accent-hi); cursor: default; }
+.jm-acct-piano svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+
 /* La pennina nella testata del menu dell'account (strada A del mockup
    nome-profilo.html): non modifica qui, porta alla schermata del nome
    dentro le Impostazioni. Un menu apre le cose, non le contiene. */

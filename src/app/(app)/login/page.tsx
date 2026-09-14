@@ -250,8 +250,17 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-7 py-10">
-      <div className="w-full max-w-sm">
+    // Niente `justify-center` (Manuel, 13 settembre 2026, su desktop: "logo e
+    // box per la mail sono in una posizione, poi logo e box per il codice
+    // sono posizionati in modo diverso"). La colonna era centrata in
+    // verticale, e i due passi non sono alti uguali (email: 530px, codice:
+    // 460px): a ogni cambio di passo il marchio saltava di 35px. Ora la
+    // colonna parte da un margine fisso (.jm-login-colonna in
+    // modules/accesso/styles.css) che vale quanto il centro del passo email:
+    // il primo passo non si muove di un pixel, gli altri si allineano a lui.
+    // Banco: verify-login-fermo.
+    <main className="min-h-screen flex flex-col items-center px-7 py-10">
+      <div className="w-full max-w-sm jm-login-colonna">
         <p className="text-center mb-16">
           <Marchio className="jm-marchio-22" />
         </p>
@@ -270,7 +279,7 @@ export default function LoginPage() {
                 ? t("Vuoi usare Face ID?")
                 : t("Non te lo chiederemo piu")}
             </h1>
-            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-9 px-3">
+            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3 jm-login-intro">
               {faceIdFase === "proposta"
                 ? t(
                     "Il diario si apre col tuo volto, senza codice. Puoi cambiare idea quando vuoi dalle Impostazioni.",
@@ -314,7 +323,7 @@ export default function LoginPage() {
             >
               {t("Il codice")}
             </h1>
-            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-9 px-3">
+            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3 jm-login-intro">
               {t("Sei cifre inviate a")}{" "}
               <span className="text-accent font-semibold">{email}</span>.
             </p>
@@ -392,7 +401,7 @@ export default function LoginPage() {
                   393 e 430px con testo Normale e Grande: sta su una riga. */}
               {isReturning ? t("Bentornato") : t("Ovunque tu sia.")}
             </h1>
-            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3">
+            <p className="text-center text-sm text-ink-muted leading-[1.55] mb-11 px-3 jm-login-intro">
               {isReturning
                 ? t(
                     "Inserisci l'email che hai usato l'ultima volta: ti mando un codice.",

@@ -39,6 +39,7 @@ import {
 import { saveRecording } from "@/lib/actions/save-recording";
 import { addPersonas, loadPersonaNames } from "@/lib/data/remembers";
 import { useT } from "@/lib/i18n";
+import { toast } from "@/components/ui/toast";
 import {
   AttesaElaborazione,
   type PassoElaborazione,
@@ -51,7 +52,7 @@ import {
   type Domanda,
   type Risposta,
 } from "@/lib/chiarimenti";
-import { indicizza, risolviLista } from "@/lib/aliases";
+import { indicizza, indicizzaGrafie, risolviLista } from "@/lib/aliases";
 import {
   scansionaArchivio,
   scansioneGiaFatta,
@@ -86,6 +87,14 @@ type PendingRecording = {
   transcript: string;
   durationSeconds: number;
   targetDate: string;
+  /**
+   * La data l'ha scelta una persona nella rilettura (14 settembre 2026).
+   * Quando e vero lo split per data NON deve girare: il testo va dove ha
+   * detto lei, e una frase come "ieri sera" non deve portarselo altrove.
+   * E la stessa ragione per cui /giorno passa skipSplit (vedi
+   * save-recording.ts).
+   */
+  dataScelta?: boolean;
 };
 
 type PeopleData = {
@@ -482,7 +491,13 @@ export function TodayClient({
   // resta com'e, la prima riga fa da titolo, zero chiamate AI.
   const runSave = async (
     text: string,
-    opts: { withAI: boolean; durationSeconds: number; targetDate: string },
+    opts: {
+      withAI: boolean;
+      durationSeconds: number;
+      targetDate: string;
+      /** La data l'ha scelta una persona: il testo non si smista da solo. */
+      skipSplit?: boolean;
+    },
   ) => {
     setPassoAttesa("lettura");
     setView("processing");
@@ -499,6 +514,7 @@ export function TodayClient({
         durationSeconds: opts.durationSeconds,
         defaultDate: opts.targetDate,
         skipAI: !opts.withAI,
+        skipSplit: opts.skipSplit,
         onAnalisi: (a) => {
           setPassoAttesa("salvataggio");
           if (!canAI || chiarimentiInCorso.has(a.date)) return;
@@ -604,7 +620,9 @@ export function TodayClient({
       ]);
       // I soprannomi appena chiariti valgono da subito: se hai appena detto
       // che "mio fratello" e Daniele, in rubrica ci va Daniele.
-      const veri = risolviLista(found, "persona", indicizza(aliasList));
+      // E la grafia e quella della rubrica: "KARYA" nel racconto e Karya
+      // in rubrica, e in questa schermata si legge Karya.
+      const veri = risolviLista(found, "persona", indicizza(aliasList), indicizzaGrafie(roster));
       const rosterLower = new Set(roster.map((r) => r.toLowerCase()));
       const declined = declinedPeople();
       const existing = veri.filter((p) => rosterLower.has(p.toLowerCase()));
@@ -672,6 +690,7 @@ export function TodayClient({
       withAI: true,
       durationSeconds: pending.durationSeconds,
       targetDate: pending.targetDate,
+      skipSplit: pending.dataScelta,
     });
   };
 
@@ -1185,6 +1204,9 @@ export function TodayClient({
           initialTranscript={pending.transcript}
           durationSeconds={pending.durationSeconds}
           targetDate={pending.targetDate}
+          onTargetDateChange={(iso) =>
+            setPending((p) => (p ? { ...p, targetDate: iso, dataScelta: true } : p))
+          }
           onConfirm={handleConfirmReview}
           onCancel={handleCancelReview}
         />
@@ -1296,6 +1318,17 @@ export function TodayClient({
           onSave={handleEditorSave}
           onCancel={() => setEditorOpen(false)}
           onDelete={handleEditorDelete}
+          date={entry.entryDate}
+          onSpostato={(esito) => {
+            setEditorOpen(false);
+            /* Qui si guarda OGGI: se il pezzo se n'e andato e la giornata
+               di oggi e sparita, la schermata torna vuota invece di
+               mostrare un racconto che non c'e piu. */
+            setEntry(esito.partenza);
+            setView(esito.partenza?.transcript?.trim() ? "filled" : "empty");
+            toast.ok(t("Spostato."));
+          }}
+          onError={setSaveError}
         />
       )}
     </main>

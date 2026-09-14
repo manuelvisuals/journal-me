@@ -328,6 +328,8 @@ export class OpenAIFinto {
     this.porta = 0;
     /** Il testo che la trascrizione finta restituisce. */
     this.trascrizione = "Oggi ho passato la giornata a provare l'app come ospite.";
+    /** L'umore che il riassunto finto scrive (verify-umore-non-detto). */
+    this.mood = null;
   }
 
   rispostaPer(body) {
@@ -340,7 +342,7 @@ export class OpenAIFinto {
           headline: "giornata da ospite, AI accesa",
           snippet: String(ultimo).slice(0, 120) || "Una giornata di prova.",
           areas: [{ label: "Lavoro", text: "Ha provato l'app." }],
-          metrics: { weightKg: null, sleepHours: null, mood: null },
+          metrics: { weightKg: null, sleepHours: null, mood: this.mood },
         };
       case "date_segments":
         return { segments: [{ date: oggi, text: String(ultimo) }] };

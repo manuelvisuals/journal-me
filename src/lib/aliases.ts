@@ -128,6 +128,39 @@ const TUTTE_LE_SPECIE: FactKind[] = [
 ];
 
 /**
+ * IL QUARTO MESTIERE: la grafia (13 settembre 2026, Manuel: "nel testo e
+ * scritto KARYA tutto maiuscolo, viene riconosciuta come Karya, ma nella
+ * pastiglia c'e scritto KARYA: deve chiamarsi col nome salvato").
+ *
+ * "KARYA" e "Karya" hanno gia la stessa chiave (chiaveAlias mette in
+ * minuscolo): la scheda della persona le conta insieme da sempre. Ma
+ * nessuno sceglieva QUALE delle due mostrare, e la pastiglia usciva con la
+ * grafia di quel giorno. Le grafie ufficiali sono i nomi come li ha
+ * scritti la persona in rubrica (Ricorda > Persone): un indice
+ * chiave -> nome, e chi mostra lo consulta dopo i soprannomi. Un nome che
+ * in rubrica non c'e resta com'e scritto: non si inventa una maiuscola.
+ */
+export type Grafie = Map<string, string>;
+
+export function indicizzaGrafie(nomi: string[]): Grafie {
+  const m: Grafie = new Map();
+  for (const n of nomi) {
+    const t = n.trim();
+    const k = chiaveAlias(t);
+    // Il primo vince: loadPersonaNames li da dal piu recente, e la rubrica
+    // non tiene due grafie della stessa persona comunque.
+    if (k && !m.has(k)) m.set(k, t);
+  }
+  return m;
+}
+
+/** Il nome come sta in rubrica, se c'e; altrimenti com'e arrivato. */
+export function grafiaUfficiale(nome: string, grafie?: Grafie): string {
+  if (!grafie) return nome;
+  return grafie.get(chiaveAlias(nome)) ?? nome;
+}
+
+/**
  * Una lista intera. Toglie le voci che appartengono a un altro tipo, applica
  * i nomi veri, e non lascia doppioni: se in una giornata compaiono sia
  * "mio fratello" sia "Daniele", dopo la risoluzione sono la stessa persona e
@@ -136,11 +169,15 @@ const TUTTE_LE_SPECIE: FactKind[] = [
  * Una voce puo uscirne in DUE: "i miei amici" diventa Hoda e Liana. E lo
  * stesso motivo per cui il doppione va tolto qui e non a monte — se la
  * giornata dice sia "i miei amici" sia "Liana", Liana resta una sola.
+ *
+ * `grafie`, quando c'e, e l'ultima parola sulla forma del nome: dopo i
+ * soprannomi, ogni nome esce come sta in rubrica (vedi sopra).
  */
 export function risolviLista(
   nomi: string[],
   kind: FactKind,
   indice: IndiceAlias,
+  grafie?: Grafie,
 ): string[] {
   const visti = new Set<string>();
   const fuori: string[] = [];
@@ -149,7 +186,7 @@ export function risolviLista(
       const k = chiaveAlias(mostra);
       if (visti.has(k)) continue;
       visti.add(k);
-      fuori.push(mostra);
+      fuori.push(grafiaUfficiale(mostra, grafie));
     }
   }
   return fuori;
