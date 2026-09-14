@@ -10,13 +10,23 @@
  * mandare. Se la posta non parte il messaggio esiste comunque; se si
  * invertisse, una chiave scaduta farebbe sparire le segnalazioni.
  *
- * IL DESTINATARIO. Di fabbrica e l'indirizzo dell'account Resend, ed e una
- * scelta obbligata finche il mittente e quello di prova: onboarding@resend.dev
- * consegna SOLTANTO al titolare dell'account Resend, e qualunque altro
- * indirizzo torna un errore. E lo stesso indirizzo a cui arriva l'assistenza
- * di Stoqfolio (13 settembre 2026, scelta di Manuel: "lo stesso").
- * Per liberarlo servono due cose, in quest'ordine: verificare dayalogue.com
- * su Resend, poi mettere SUPPORT_FROM_EMAIL su Vercel (per esempio
+ * IL DESTINATARIO NON E UNA SCELTA LIBERA, ed e la cosa che sorprende di
+ * questo file. Finche si spedisce dal mittente di prova, onboarding@resend.dev
+ * consegna SOLTANTO alla casella del titolare dell'account Resend: qualunque
+ * altro indirizzo torna 403 e l'email non parte. Quindi il destinatario di
+ * fabbrica non e "quello che vorremmo", e "quello che l'account puo
+ * raggiungere".
+ *
+ * 14 settembre 2026: l'account Resend di Manuel a cui si arriva dal suo
+ * GitHub e intestato a spamming.madh52@gmail.com, ed e quello. L'altro
+ * account — quello da cui scrive l'assistenza di Stoqfolio,
+ * aidev.madh52@gmail.com — non e raggiungibile: l'accesso chiede un SMS a un
+ * numero che Manuel non ha piu. Se un giorno ci rientra, basta
+ * SUPPORT_TO_EMAIL su Vercel e questo valore non conta piu.
+ *
+ * Per liberare davvero il destinatario servono due cose, in quest'ordine:
+ * verificare dayalogue.com su Resend (con i record DNS), poi mettere
+ * SUPPORT_FROM_EMAIL su Vercel (per esempio
  * "dayalogue <assistenza@dayalogue.com>"). Da quel momento SUPPORT_TO_EMAIL
  * puo essere qualunque indirizzo.
  *
@@ -24,7 +34,7 @@
  * piu nel pacchetto del server, per tre campi, non si ripaga.
  */
 
-const A_CHI_DI_FABBRICA = "aidev.madh52@gmail.com";
+const A_CHI_DI_FABBRICA = "spamming.madh52@gmail.com";
 const MITTENTE_DI_RIPIEGO = "dayalogue <onboarding@resend.dev>";
 
 export type EsitoPosta = { inviata: boolean; errore?: string };
