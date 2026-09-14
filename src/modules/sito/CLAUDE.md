@@ -193,6 +193,50 @@ modo soft con un fade in"): sale da zero nei primi sei centesimi di corsa
 invece di essere gia acceso al primo fotogramma. L'uscita verso la seconda
 frase non e cambiata.
 
+**IL SITO TIENE SEMPRE I SUOI COLORI, e non e una scelta estetica ma un
+difetto riparato** (14 settembre 2026, Manuel: "perche fa schifo con questi
+colori strani se imposto il telefono in modalita scura?").
+
+Il sito e l'app dividono la stessa tavolozza, e in scuro due token si
+SCAMBIANO: `--jm-bg` da crema (#EDE6DA) a quasi nero (#12100E), `--jm-ink`
+da cioccolato (#241C17) a crema (#EFE7DA). Per l'app e giusto. Per il sito
+no, e la ragione e questa: **il sito non usa quei due come "fondo e testo",
+li usa come MATERIALI**. Il velo sotto la fotografia dell'eroe e cioccolato
+trasparente; scambiato diventa crema trasparente, la fotografia si sbianca
+e sopra ci restano parole color crema. Il sito non ha mai avuto una
+modalita scura: indossava quella dell'app.
+
+La cura sta in `src/themes/boot.ts` (`sitoLuceCss`), non in questo foglio,
+e il commento lungo e li. In due righe: sulle pagine del sito la tavolozza
+e quella del tema di default in chiaro, sempre. Dentro l'app non cambia
+niente.
+
+Le due stranezze di quella regola, spiegate perche non sembrino sciatteria:
+`html:has(.jm-sito)` e non `.jm-sito` perche il fondo che si vede facendo
+rimbalzare lo scorrimento — e che Safari campiona per la fascia dell'ora —
+lo dipinge `<html>`; e `!important` perche lo script di boot scrive i token
+come stile IN LINEA su `<html>`, che batte qualunque selettore. Il
+`html:has(...)` non e un'invenzione: questo foglio lo usa dal 5 settembre
+(riga 808) per la stessa ragione.
+
+Provato: sedici schermate (home IT, home EN, assistenza, archivio /v7; a
+390px e a 1440px; in cima e all'85%) confrontate a pixel fra telefono
+chiaro e telefono scuro, tutte identiche. E /login e /privacy continuano ad
+andare scure. Il banco `verify-sito` guarda tutte e due le meta della
+regola — che sul sito i colori non si muovano E che nell'app la modalita
+scura funzioni ancora — perche e facile romperne una sola. Provato a
+mordere: cambiando il selettore in uno che non esiste il banco passa da
+56/60 a 54/60.
+
+Quello che si paga, ed e voluto: chi dentro l'app ha scelto un tema diverso,
+sul sito vede comunque i colori di casa.
+
+DIFETTO SEPARATO, TROVATO CERCANDO QUESTO E NON ANCORA RIPARATO: il badge
+"Coming to the App Store" dentro `.jm-sito4-store-banner` e scritta scura
+su lastra chiara sopra una fotografia scura, e si legge male. NON e un
+difetto della modalita scura — e identico in chiaro, verificato — ma e il
+badge dell'App Store, quindi vale la pena.
+
 Nota sui banchi: subito dopo aver salvato il CSS, `verify-v7` puo uscire
 rosso una volta perche il server di sviluppo sta ancora ricompilando.
 Rilancialo: se e verde tre volte di fila, era la ricompilazione.

@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeWatcher } from "@/components/theme-watcher";
 import { LangWatcher } from "@/components/lang-watcher";
-import { defaultThemeCss, themeBootScript } from "@/themes/boot";
+import { defaultThemeCss, sitoLuceCss, themeBootScript } from "@/themes/boot";
 
 /**
  * Fonts ship with the app instead of coming from next/font/google.
@@ -170,6 +170,13 @@ export default function RootLayout({
             nel guscio iOS il 24 agosto). Stessa fonte, due forme. */}
         <style dangerouslySetInnerHTML={{ __html: defaultThemeCss() }} />
         <script dangerouslySetInnerHTML={{ __html: themeBootScript() }} />
+        {/* Le pagine del sito tengono sempre la tavolozza di casa in
+            chiaro, qualunque cosa dica la modalita scura del telefono:
+            il perche, per esteso, sta in src/themes/boot.ts. Dentro
+            l'app la modalita scura non cambia di una virgola. Viene
+            DOPO lo script di boot apposta: cosi chi legge questo file
+            vede l'ordine vero, prima il tema, poi l'eccezione. */}
+        <style dangerouslySetInnerHTML={{ __html: sitoLuceCss() }} />
         <ThemeWatcher />
         <LangWatcher />
         {/* Da qui in giu, fino al 31 agosto 2026, c'era il guscio dell'app

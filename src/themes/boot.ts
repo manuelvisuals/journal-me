@@ -83,6 +83,55 @@ e.style.setProperty("--jm-ui-scale",String(z));
  * non e un secondo elenco da tenere in sync, e la stessa funzione resa in
  * due forme.
  */
+/**
+ * IL SITO TIENE SEMPRE I SUOI COLORI (14 settembre 2026, Manuel: "perche
+ * fa schifo con questi colori strani se imposto il telefono in modalita
+ * scura?").
+ *
+ * IL DIFETTO. Il sito e l'app condividono la tavolozza. L'app ha la
+ * modalita scura, e in scuro due token si SCAMBIANO: `--jm-bg` passa da
+ * crema a quasi nero e `--jm-ink` da cioccolato a crema. Per l'app e
+ * giusto — fondo e testo si invertono e il diario si legge al buio.
+ *
+ * Per il sito e un disastro, perche il sito non li usa come "fondo e
+ * testo" ma come MATERIALI. Il velo sotto la fotografia dell'eroe e
+ * cioccolato trasparente: scambiato, diventa crema trasparente, e la
+ * fotografia si sbianca con sopra parole color crema. Il badge Apple, che
+ * e una lastra scura con la scritta chiara, diventa scritta scura su
+ * lastra scura: illeggibile. Il sito non ha mai avuto una modalita scura,
+ * indossava quella dell'app.
+ *
+ * LA CURA. Sulle pagine del sito la tavolozza e quella del tema di
+ * default in CHIARO, sempre, qualunque cosa dica il telefono. Dentro
+ * l'app non cambia niente: la modalita scura resta.
+ *
+ * PERCHE' `html:has(.jm-sito)` E PERCHE' `!important`, che non sono
+ * eleganti e vanno spiegati. Lo script di boot scrive i token come STILE
+ * IN LINEA su <html>, e lo stile in linea batte qualunque selettore: una
+ * regola normale non lo tocca. `!important` lo batte, ed e l'unico modo
+ * senza riscrivere il boot. Va su <html> e non su .jm-sito perche il
+ * fondo della pagina — quello che si vede facendo rimbalzare lo scorrimento
+ * su iPhone, e quello che Safari campiona per colorare la fascia dell'ora
+ * — lo dipinge <html>, non il sito. Il selettore `html:has(...)` e gia lo
+ * strumento di casa: styles.css del sito lo usa dal 5 settembre per la
+ * stessa ragione.
+ *
+ * SI PAGA UNA COSA, ed e voluta: chi dentro l'app ha scelto un tema
+ * diverso, sul sito vede comunque i colori di casa. Una vetrina che cambia
+ * colore a seconda di chi guarda non e piu una vetrina.
+ */
+export function sitoLuceCss(): string {
+  const theme = THEMES.find((t) => t.id === DEFAULT_THEME_ID) ?? THEMES[0];
+  const luce = cssVarsFor(theme, "light");
+  const corpo = Object.entries(luce)
+    .map(([k, v]) => `${k}:${v} !important`)
+    .join(";");
+  // `color-scheme` lo scrive anche lui il boot, in linea: senza !important
+  // resterebbe "dark" e Safari disegnerebbe scuri i controlli di modulo
+  // della pagina di assistenza e la barra di scorrimento.
+  return `html:has(.jm-sito){${corpo};color-scheme:light !important}`;
+}
+
 export function defaultThemeCss(): string {
   const theme = THEMES.find((t) => t.id === DEFAULT_THEME_ID) ?? THEMES[0];
   const render = (vars: Record<string, string>) =>

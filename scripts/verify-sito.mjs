@@ -326,6 +326,63 @@ for (const [percorso, w, h, nome] of [
   await ctx.close();
 }
 
+/* ---------------------------------------------------------------------
+   IL SITO NON CAMBIA COLORI CON LA MODALITA' SCURA DEL TELEFONO
+   (14 settembre 2026, Manuel: "perche fa schifo con questi colori strani
+   se imposto il telefono in modalita scura?").
+
+   Il sito e l'app condividono la tavolozza, e in scuro l'app SCAMBIA due
+   token: --jm-bg da crema a quasi nero e --jm-ink da cioccolato a crema.
+   L'app fa bene; il sito quei due li usa come materiali — il velo sotto
+   la fotografia e "cioccolato trasparente" — e scambiati sbiancano la
+   pagina. Cura in src/themes/boot.ts (sitoLuceCss).
+
+   Il banco controlla le DUE meta della regola, che e facile romperne una
+   sola: che sul sito i colori non si muovano, e che dentro l'app la
+   modalita scura continui a funzionare. Chi un giorno togliesse
+   `html:has(.jm-sito)` romperebbe la prima; chi allargasse troppo quel
+   selettore romperebbe la seconda, e l'app non andrebbe piu scura.
+   --------------------------------------------------------------------- */
+{
+  const leggi = async (rotta, modo) => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: modo });
+    const page = await ctx.newPage();
+    await page.goto(BASE + rotta, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(900);
+    const v = await page.evaluate(() => {
+      const h = getComputedStyle(document.documentElement);
+      return {
+        bg: h.getPropertyValue("--jm-bg").trim(),
+        ink: h.getPropertyValue("--jm-ink").trim(),
+        schema: h.colorScheme,
+      };
+    });
+    await ctx.close();
+    return v;
+  };
+
+  const sitoChiaro = await leggi("/", "light");
+  const sitoScuro = await leggi("/", "dark");
+  check(
+    "il sito ha gli stessi colori col telefono chiaro e col telefono scuro",
+    sitoChiaro.bg === sitoScuro.bg && sitoChiaro.ink === sitoScuro.ink,
+    `chiaro bg ${sitoChiaro.bg} ink ${sitoChiaro.ink} / scuro bg ${sitoScuro.bg} ink ${sitoScuro.ink}`,
+  );
+  check(
+    "e il sito si dichiara chiaro, cosi i controlli di modulo non escono scuri",
+    sitoScuro.schema === "light",
+    sitoScuro.schema,
+  );
+
+  const appChiaro = await leggi("/login", "light");
+  const appScuro = await leggi("/login", "dark");
+  check(
+    "l'app invece va ancora scura quando il telefono e scuro",
+    appChiaro.bg !== appScuro.bg && appScuro.schema === "dark",
+    `chiaro ${appChiaro.bg} / scuro ${appScuro.bg} (${appScuro.schema})`,
+  );
+}
+
 /* la rotta admin del SEO non si apre a mani vuote */
 {
   const resp = await fetch(BASE + "/api/sito/seo");
