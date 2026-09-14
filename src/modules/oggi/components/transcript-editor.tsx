@@ -2,12 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
+import { ChipData } from "@/modules/oggi/components/chip-data";
+import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
+import { FoglioSposta } from "@/modules/oggi/components/foglio-sposta";
+import type { EsitoSposta } from "@/modules/oggi/sposta-giorno";
 
 type Props = {
   initialTranscript: string;
   onSave: (newTranscript: string) => void | Promise<void>;
   onCancel: () => void;
   onDelete?: () => void | Promise<void>;
+  /**
+   * La data della giornata aperta. Quando c'e — insieme a onSpostato — la
+   * data diventa toccabile e il racconto si puo portare su un altro
+   * giorno (14 settembre 2026). Senza, l'editor e esattamente quello di
+   * prima: nessun chiamante e obbligato ad aggiornarsi.
+   */
+  date?: string;
+  onSpostato?: (esito: EsitoSposta) => void;
+  onError?: (messaggio: string) => void;
 };
 
 /**
@@ -21,10 +34,18 @@ export function TranscriptEditor({
   onSave,
   onCancel,
   onDelete,
+  date,
+  onSpostato,
+  onError,
 }: Props) {
   const t = useT();
   const [value, setValue] = useState<string>(initialTranscript);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [calendario, setCalendario] = useState<boolean>(false);
+  /* La destinazione scelta: finche e null il foglio di conferma non
+     esiste. Si sposta SEMPRE passando di li, mai al tocco sul giorno. */
+  const [destinazione, setDestinazione] = useState<string | null>(null);
+  const spostabile = !!date && !!onSpostato;
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -47,7 +68,14 @@ export function TranscriptEditor({
     <div className="jm-editor-overlay" role="dialog" aria-modal="true">
       <div className="jm-editor-card">
         <div className="jm-editor-header">
-          <span className="jm-editor-title">{t("Modifica transcript")}</span>
+          <div>
+            <span className="jm-editor-title">{t("Modifica transcript")}</span>
+            {spostabile ? (
+              <div>
+                <ChipData iso={date} onClick={() => setCalendario(true)} />
+              </div>
+            ) : null}
+          </div>
           <div className="jm-editor-actions">
             <button
               type="button"
@@ -100,6 +128,39 @@ export function TranscriptEditor({
           </span>
         </div>
       </div>
+
+      {spostabile && date ? (
+        <DatePickerPopover
+          open={calendario}
+          selected={date}
+          onSelect={(iso) => {
+            setCalendario(false);
+            /* Lo stesso giorno non e uno spostamento: si chiude e basta,
+               senza aprire un foglio che poi non avrebbe niente da fare. */
+            if (iso !== date) setDestinazione(iso);
+          }}
+          onClose={() => setCalendario(false)}
+        />
+      ) : null}
+
+      {spostabile && date && destinazione ? (
+        <FoglioSposta
+          da={date}
+          a={destinazione}
+          /* Il testo com'e ADESSO nell'editor, correzioni comprese: vedi
+             il commento in testa a foglio-sposta.tsx. */
+          transcript={value}
+          onAnnulla={() => setDestinazione(null)}
+          onFatto={(esito) => {
+            setDestinazione(null);
+            onSpostato?.(esito);
+          }}
+          onErrore={(m) => {
+            setDestinazione(null);
+            onError?.(m);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
