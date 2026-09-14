@@ -34,6 +34,33 @@ dire riscrivere l'editor e la registrazione.
 - La porta esporta RecordingOverlay (lo usa Ricorda per la cattura a voce).
 - Orchestrazione del salvataggio: `src/lib/actions/save-recording.ts`
   (scheletro: si cambia solo d'accordo con Manuel).
+## Spostare un racconto sul giorno giusto (14 settembre 2026)
+
+Manuel: "se quando registro sbaglio la data, non posso correggerla".
+Mockup `MOCKUP-sposta-giorno.html`, risposte 1B 2C 3C.
+
+Due strade, e sono diverse sotto il cofano anche se si somigliano:
+
+- **Nella rilettura** (`review-screen.tsx`, subito dopo aver parlato) la
+  giornata NON e ancora salvata: non c'e niente da spostare, si scrive
+  direttamente sul giorno giusto. Scegliere la data a mano mette
+  `dataScelta` e quindi `skipSplit`: il testo va dove ha detto lei, e un
+  "ieri sera" dentro il racconto non se lo porta altrove.
+- **Nel "Modifica transcript"** (`transcript-editor.tsx`, anche da /giorno)
+  la giornata esiste gia: li si SPOSTA per davvero
+  (`sposta-giorno.ts` + `foglio-sposta.tsx`).
+
+Le tre regole dello spostamento, tutte nel commento in testa a
+`sposta-giorno.ts`: si stacca solo l'ULTIMO pezzo (i pezzi sono separati da
+`\n---\n`, lo stesso separatore che scrive save-recording); foto, peso,
+sonno e umore NON si spostano perche sono del giorno; si scrive PRIMA il
+giorno che riceve, cosi un guasto a meta duplica invece di perdere. La
+domanda su cosa fare del giorno rimasto vuoto (cancellarlo o lasciarlo con
+le sue foto) si fa PRIMA di scrivere, non dopo.
+
+La parte pura sta in `pezzi.ts`, senza un solo import, ed e li che il banco
+la prova: `node --experimental-strip-types scripts/verify-sposta-giorno.mjs`.
+
 I chiarimenti (31 agosto 2026, mockup `design/mockups/chiarimenti-multi.html`):
 una domanda sulle PERSONE accetta piu risposte — "i miei amici" possono
 essere Hoda e Liana, e sceglierne una sola era far scrivere al diario una

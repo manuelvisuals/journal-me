@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
 import { formatDurationMmSs } from "@/lib/format";
 import { useT } from "@/lib/i18n";
+import { ChipData } from "@/modules/oggi/components/chip-data";
+import { DatePickerPopover } from "@/modules/oggi/components/date-picker-popover";
 
 type Props = {
   initialTranscript: string;
@@ -11,6 +13,15 @@ type Props = {
   targetDate: string;
   onConfirm: (finalTranscript: string) => void;
   onCancel: () => void;
+  /**
+   * Cambiare giorno QUI e la strada corta (14 settembre 2026, risposta 3C
+   * di Manuel): la giornata non e ancora salvata, quindi non c'e niente da
+   * spostare — basta scriverla sul giorno giusto. Chi se ne accorge dopo
+   * passa invece dal "Modifica transcript", che sposta davvero.
+   *
+   * Senza questa prop la schermata resta quella di prima.
+   */
+  onTargetDateChange?: (iso: string) => void;
 };
 
 /**
@@ -21,10 +32,13 @@ type Props = {
 export function ReviewScreen({
   initialTranscript,
   durationSeconds,
+  targetDate,
   onConfirm,
   onCancel,
+  onTargetDateChange,
 }: Props) {
   const t = useT();
+  const [calendario, setCalendario] = useState<boolean>(false);
   /* Superficie a schermo pieno: il dock non esiste finche e aperta
      (dock-sipario.ts). */
   useRitiraDock();
@@ -39,6 +53,11 @@ export function ReviewScreen({
         <div className="jm-editor-header">
           <div>
             <div className="jm-editor-title">{t("Rileggi prima di processare")}</div>
+            {onTargetDateChange ? (
+              <div>
+                <ChipData iso={targetDate} onClick={() => setCalendario(true)} />
+              </div>
+            ) : null}
             <div
               style={{
                 fontSize: "calc(11px * var(--jm-ui-scale))",
@@ -94,6 +113,18 @@ export function ReviewScreen({
           {t("conferma . l'ai genera headline e aree macro sul testo corretto")}
         </div>
       </div>
+
+      {onTargetDateChange ? (
+        <DatePickerPopover
+          open={calendario}
+          selected={targetDate}
+          onSelect={(iso) => {
+            setCalendario(false);
+            onTargetDateChange(iso);
+          }}
+          onClose={() => setCalendario(false)}
+        />
+      ) : null}
     </div>
   );
 }

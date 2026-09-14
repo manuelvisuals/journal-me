@@ -559,6 +559,16 @@ export function DayClient({ mode, date: dataIniziale, initialEntry }: Props) {
           initialTranscript={entry.transcript}
           onSave={handleTranscriptSave}
           onCancel={() => setEditorOpen(false)}
+          date={entry.entryDate}
+          onSpostato={(esito) => {
+            setEditorOpen(false);
+            /* Questa schermata guarda UN giorno solo, quello
+               dell'indirizzo: dopo lo spostamento mostra cosa ne e
+               rimasto (o niente, se la giornata e stata cancellata). */
+            setEntry(esito.partenza);
+            toast.ok(t("Spostato."));
+          }}
+          onError={setSaveError}
         />
       )}
 
