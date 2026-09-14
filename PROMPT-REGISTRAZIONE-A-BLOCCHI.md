@@ -58,10 +58,12 @@ quando e troppo tardi.
 - Quando il blocco e pieno: si chiude da solo, l'utente vede che e chiuso e
   sa che puo cominciarne un altro. I blocchi si sommano in un racconto solo.
 
-**Il numero N e da confermare con Manuel: la proposta e 3 minuti** (vedi
-§4: e il valore che sta comodo sia sotto il peso sia sotto il tempo del
-server). Instagram usa 1 minuto; per una giornata raccontata 1 minuto e
-corto, 3 sta in due-tre blocchi.
+**N = 3 minuti**, deciso da Manuel il 14 settembre 2026. E il valore che
+sta comodo sotto tutti e due i tetti (vedi §4) senza spezzettare il
+racconto: Instagram usa 1 minuto, ma per una giornata raccontata un minuto
+costringerebbe a cinque blocchi. Se durante il lavoro scopri un motivo
+tecnico per cui 3 minuti non stanno sotto i tetti su un dispositivo vero,
+NON cambiarlo da sola: fermati e dillo a Manuel col numero misurato.
 
 ---
 
@@ -84,7 +86,7 @@ una sillaba si perde: e il prezzo, va scritto nel codice e non nascosto.
 
 Un blocco si chiude quando arriva **per primo** uno di questi:
 
-1. **il tempo inciso** supera N minuti (proposta: 3);
+1. **il tempo inciso** supera **3 minuti**;
 2. **i byte incisi** superano **3,5 MB** (margine sotto i 4,5 del server:
    la multipart aggiunge intestazioni, e il margine serve anche se il
    browser ignora la qualita richiesta — vedi sotto).
