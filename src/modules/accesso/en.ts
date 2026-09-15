@@ -95,7 +95,7 @@ export const ACCESSO: Record<string, string> = {
   "Le giornate scritte qui salgono.": "The days written here go up.",
   // La porta del giorno (porta-giorno.tsx, 10 settembre 2026; hero e lettera
   // rifatte il 15 settembre 2026).
-  "{n} giorni di funzioni premium in regalo": "{n} days of premium features as a gift",
+  "{n} giorni di funzioni premium in regalo": "{n} days are on me!",
   "Comincia a scrivere": "Start writing",
   "uno,due,tre,quattro,cinque,sei,sette,otto,nove,dieci": "one,two,three,four,five,six,seven,eight,nine,ten",
   "1 giornata Ai ancora in regalo.": "1 AI day still a gift.",

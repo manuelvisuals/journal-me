@@ -55,7 +55,8 @@ export const FOTO_DI_FABBRICA = "/foto-benvenuto.jpg";
 /**
  * Copia esatta del seed della migration 018, salvo `testo`/`testoEn` e
  * `versione`: aggiornati il 15 settembre 2026 con la lettera vera di Manuel
- * (approvata via mockup, dayalogue-benvenuto-mockup.html v3). E' solo la
+ * (approvata via mockup, dayalogue-benvenuto-mockup.html v3; testoEn
+ * riscritto di suo pugno lo stesso giorno, non tradotto da me). E' solo la
  * rete di sicurezza offline: chi ha il cloud legge la riga vera dalla
  * tabella `benvenuto` (pannello admin), che questo file non tocca.
  */
@@ -81,7 +82,7 @@ export const BENVENUTO_DI_FABBRICA: Benvenuto = {
     "Tell your day out loud, just as it comes. dayalogue writes it down, gives it a headline, splits it into areas, and hands it back in Month and Recaps.",
   evidenzaEn: "No ads. Your days are never sold.",
   testoEn:
-    "I wanted an app to tell my day to in the evening, one able to listen, summarize and organize everything by area. That is how Dayalogue was born, first as my own personal journal, later opened up to everyone.\n\nYou can use it for free forever, like a normal diary you write by hand, or turn on the AI and let it listen, write and organize your memories for you. I think that is the real strength of the app.\n\nSo you can try it properly, I am giving you 10 days of AI as a gift. After that, you freely choose whether to keep going for free or move to Premium.\n\nIf you find a bug, run into a problem, or something does not convince you, write to me before giving up. I read and reply to everyone personally.\n\nIf you are an influencer or coach and want to collaborate with Dayalogue, or have a custom app built for your needs, write to me and let us talk about it.\n\nHappy journaling,",
+    "I wanted an app I could talk to at the end of the day, something that could listen, summarize everything, and organize it into different areas of my life. That's how Dayalogue was born, first as my personal journal, then as something I felt to share with everyone.\n\nYou can use it for free forever as a normal journal and write everything yourself, or turn on the AI and let it listen, write, and organize your memories for you: I think that's really where Dayalogue shines.\n\nTo let you experience it properly, I'm giving you *10 days of AI features for free*. After that, you can freely choose whether to keep using the free version or upgrade to Premium.\n\nIf you find a bug, run into a problem, or something just doesn't feel right, write to me before giving up. I personally read and reply to everyone.\n\nIf you're an influencer or coach and would like to collaborate with Dayalogue, or create a custom app for your own needs, get in touch and let's talk.\n\nHappy journaling,",
   firmaEn: "Manuel",
   bottoneEn: "Get started",
   contattoRigaEn: "Already have something in mind? Tell me here",
