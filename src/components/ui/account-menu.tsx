@@ -45,9 +45,11 @@ import { openPremiumWall } from "@/modules/abbonamento";
 // abbonamento.
 import {
   apriPannelloNome,
+  useIniziale,
   useNomeMostrato,
   useProfilo,
 } from "@/modules/impostazioni";
+import { IconaPersona } from "@/components/ui/icona-persona";
 import { Sheet } from "@/components/ui/sheet";
 import { useT } from "@/lib/i18n";
 
@@ -149,11 +151,16 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const mostrato = useNomeMostrato(locale ? null : account?.email);
   // L'iniziale segue il NOME mostrato, non l'email: chi si chiama Manuel
   // vede una M perche si chiama Manuel, non per come e fatto il suo
-  // indirizzo.
-  const iniziale = account ? mostrato.slice(0, 1).toUpperCase() : "•";
+  // indirizzo. Ma `useIniziale` (a differenza di `mostrato.slice(0,1)`)
+  // torna `null` quando quel nome e solo il riempimento di fabbrica: una
+  // lettera vera non si prende MAI dal segnaposto "Il tuo nome"/"Your
+  // name" — e cosi che nasceva la "Y" del 15 settembre 2026.
+  const inizialeVera = useIniziale(locale ? null : account?.email);
 
   /**
-   * Cosa si vede nel cerchio: la foto se c'e, altrimenti l'iniziale. Un
+   * Cosa si vede nel cerchio: la foto se c'e; altrimenti l'iniziale VERA
+   * se c'e; altrimenti — nessun account ancora arrivato, o un ospite senza
+   * nome scelto — un placeholder onesto invece di una lettera finta. Un
    * pezzo solo, usato in tutti e tre i posti (pallino del telefono, testata
    * del foglio, blocco della rail), cosi non possono divergere.
    * `alt=""`: il nome e scritto accanto in chiaro, e uno screen reader che
@@ -163,8 +170,10 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const ritratto = foto ? (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={foto} alt="" />
+  ) : !account ? (
+    "•"
   ) : (
-    iniziale
+    inizialeVera ?? <IconaPersona />
   );
 
   /** Chiusura con ritorno del fuoco: e il contratto, non una cortesia. */

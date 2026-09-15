@@ -15,6 +15,7 @@
 export {
   useProfilo,
   useNomeMostrato,
+  useIniziale,
   apriPannelloNome,
   svuotaProfilo,
 } from "@/modules/impostazioni/profilo";

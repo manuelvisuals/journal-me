@@ -56,6 +56,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { useStorageMode } from "@/lib/data/store";
 import { apiFetch } from "@/lib/api";
+import { apriEsterno } from "@/lib/native/apri-esterno";
 import { APP_STORE_URL, PREMIUM_PRICE_LABEL, PREMIUM_PROVA_GIORNI } from "@/lib/pricing";
 import { fakeCheckoutEnabled } from "@/lib/dev-checkout";
 import { useT } from "@/lib/i18n";
@@ -450,7 +451,22 @@ export function PremiumWall() {
           </div>
         ))}
 
-        {errore && <div className="jm-wall-note" role="alert">{errore}</div>}
+        {/* Un vero allarme, non una notarella (Manuel, 15 settembre 2026:
+            "il messaggio di errore e quasi impossibile da leggere" — riusava
+            .jm-wall-note, la STESSA classe della nota decorativa in corsivo
+            sotto il prezzo: nessuna icona, nessun peso, nessun colore
+            d'allarme). Icona + colore + peso propri, sans-serif diritto:
+            si legge come un errore, non come una didascalia. */}
+        {errore && (
+          <div className="jm-wall-errore" role="alert">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 8v5" />
+              <circle cx="12" cy="15.5" r="0.6" fill="currentColor" stroke="none" />
+            </svg>
+            <span>{errore}</span>
+          </div>
+        )}
         {cloudNote && (
           <div className="jm-wall-note">
             {t("L'app per iPhone sta arrivando sull'App Store: premium si attiva da li.")}
@@ -517,12 +533,20 @@ export function PremiumWall() {
                   prezzo: prodotto.prezzo,
                   periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
                 })}{" "}
-            <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot;{" "}
-            {/* Dentro il guscio /privacy e una pagina SENZA dock ne barra:
-                un vicolo cieco senza tasto indietro (controaudit 5.1.1 del
-                15 settembre 2026). Li si apre il sito in Safari, come i
-                Termini; sul web la pagina interna va benissimo. */}
-            <a href={negozio ? "https://www.dayalogue.com/privacy" : "/privacy"} target={negozio ? "_blank" : undefined} rel={negozio ? "noreferrer" : undefined}>{t("Privacy")}</a>
+            {/* Dentro questo `if` `negozio` e sempre vero (e nel blocco): il
+                muro con le schede esiste solo nel guscio. Quindi qui non
+                serve un bivio web/nativo, serve SOLO Safari — che prima
+                (controaudit 5.1.1, 15 settembre 2026) l'app prometteva nel
+                commento e non faceva: un <a target="_blank"> nudo in una
+                WKWebView di Capacitor non apre niente senza
+                @capacitor/browser, che non c'era. Ora c'e, e passa da
+                apriEsterno (unico punto per tutta l'app). */}
+            <button type="button" onClick={() => void apriEsterno("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")}>
+              {t("Termini")}
+            </button>{" "}&middot;{" "}
+            <button type="button" onClick={() => void apriEsterno("https://www.dayalogue.com/privacy")}>
+              {t("Privacy")}
+            </button>
           </div>
         )}
       </div>

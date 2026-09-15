@@ -24,6 +24,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { IconaPersona } from "@/components/ui/icona-persona";
 import { Sheet } from "@/components/ui/sheet";
 import { useT } from "@/lib/i18n";
 import { SetRow } from "@/modules/impostazioni/components/rows";
@@ -41,8 +42,13 @@ import {
 } from "@/modules/impostazioni/profilo-contract";
 
 type Props = {
-  /** L'iniziale da mostrare quando la foto non c'e. */
-  iniziale: string;
+  /**
+   * L'iniziale da mostrare quando la foto non c'e; `null` quando non c'e
+   * nemmeno un nome vero da cui prenderla (RIPIEGO_NOME, non un nome) —
+   * in quel caso si disegna la sagoma generica (IconaPersona), non una
+   * lettera finta (vedi useIniziale, modulo impostazioni).
+   */
+  iniziale: string | null;
   /** Per far comparire l'esito nella nota che le Impostazioni hanno gia. */
   onNota?: (testo: string, errore?: boolean) => void;
   /**
@@ -57,6 +63,15 @@ type Props = {
 export function FotoProfiloRow({ iniziale, onNota, variant = "riga" }: Props) {
   const t = useT();
   const foto = useProfilo()?.foto ?? null;
+  // Un pezzo solo per i tre posti che disegnano il cerchio qui sotto: la
+  // foto se c'è, altrimenti l'iniziale vera, altrimenti la sagoma —
+  // MAI una lettera presa dal riempimento di fabbrica (la "Y").
+  const ritratto = foto ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={foto} alt="" />
+  ) : (
+    iniziale ?? <IconaPersona />
+  );
   const [foglio, setFoglio] = useState(false);
   const [sorgente, setSorgente] = useState<string | null>(null);
   const [salvo, setSalvo] = useState(false);
@@ -105,12 +120,7 @@ export function FotoProfiloRow({ iniziale, onNota, variant = "riga" }: Props) {
           desc={t("Come ti vedi nel pallino in alto.")}
           control={
             <span className="jm-foto-mini" aria-hidden="true">
-              {foto ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={foto} alt="" />
-              ) : (
-                iniziale
-              )}
+              {ritratto}
             </span>
           }
           onClick={() => setFoglio(true)}
@@ -126,12 +136,7 @@ export function FotoProfiloRow({ iniziale, onNota, variant = "riga" }: Props) {
           aria-label={t("Foto profilo")}
         >
           <span className="jm-st-av" aria-hidden="true">
-            {foto ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={foto} alt="" />
-            ) : (
-              iniziale
-            )}
+            {ritratto}
           </span>
           <span className="jm-foto-avhov" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -163,12 +168,7 @@ export function FotoProfiloRow({ iniziale, onNota, variant = "riga" }: Props) {
         <Sheet label={t("Foto profilo")} onClose={() => setFoglio(false)}>
           <div className="jm-foto-shhead">
             <span className="jm-foto-shav" aria-hidden="true">
-              {foto ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={foto} alt="" />
-              ) : (
-                iniziale
-              )}
+              {ritratto}
             </span>
             <span className="jm-foto-shtxt">
               <span className="n">{t("Foto profilo")}</span>

@@ -53,7 +53,8 @@ import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/reg
 import { ospiteAttivo } from "@/lib/ospite/flag";
 import { premiumDispositivoFino, regaloFinito, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
 import { useRegaloInGioco } from "@/lib/capabilities";
-import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
+import { useIniziale, useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
+import { apriEsterno } from "@/lib/native/apri-esterno";
 import { useActiveModules } from "@/lib/modules";
 import {
   ConsumiPanel,
@@ -471,6 +472,11 @@ export function SettingsClient({
   // "Il tuo nome" sta in profilo-contract.ts (RIPIEGO_NOME) e lo traduce il
   // hook; qui non si scrive nessuna parola di ripiego.
   const accountName = useNomeMostrato(isLocal ? null : email);
+  // L'iniziale VERA per il pallino della foto: null quando non c'e un nome
+  // scelto ne un'email, per non prendere una lettera dal riempimento di
+  // fabbrica "Il tuo nome" (la "Y", 15 settembre 2026). FotoProfiloRow
+  // disegna la sagoma generica quando arriva null.
+  const iniziale = useIniziale(isLocal ? null : email);
 
   return (
     <main
@@ -538,7 +544,7 @@ export function SettingsClient({
                 {ospite ? (
                   <>
                     <FotoProfiloRow
-                      iniziale={accountName.slice(0, 1).toUpperCase()}
+                      iniziale={iniziale}
                       onNota={say}
                     />
                     {/* Primo utilizzo (Manuel, 12 settembre 2026): senza un
@@ -613,7 +619,7 @@ export function SettingsClient({
                 ) : isLocal ? (
                   <>
                     <FotoProfiloRow
-                      iniziale={accountName.slice(0, 1).toUpperCase()}
+                      iniziale={iniziale}
                       onNota={say}
                     />
                     <SetRow
@@ -649,7 +655,7 @@ export function SettingsClient({
                         attuale, come tutte le righe di questo elenco
                         mostrano il proprio valore. */}
                     <FotoProfiloRow
-                      iniziale={accountName.slice(0, 1).toUpperCase()}
+                      iniziale={iniziale}
                       onNota={say}
                     />
                     {email && <SetRow title={t("Email")} value={email} />}
@@ -875,6 +881,25 @@ export function SettingsClient({
                 {/* La riga che risponde a "quale codice ho davvero addosso":
                     il commit da cui e nato questo pacchetto. */}
                 <SetRow title={t("Pacchetto")} value={BUILD_INFO} chevron={false} />
+                {/* Controaudit Apple 5.1.1 (15 settembre 2026): Termini e
+                    Privacy esistevano solo nella nota del muro premium, non
+                    in Impostazioni. Stessi URL di premium-wall.tsx, aperti
+                    con apriEsterno (Safari nel guscio, la pagina interna sul
+                    web) — non piu un <a target="_blank"> nudo che nel
+                    guscio non fa niente. */}
+                <SetRow
+                  title={t("Termini")}
+                  onClick={() =>
+                    void apriEsterno("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+                  }
+                />
+                <SetRow
+                  title={t("Privacy")}
+                  onClick={() => {
+                    if (isNative()) void apriEsterno("https://www.dayalogue.com/privacy");
+                    else router.push("/privacy");
+                  }}
+                />
                 {!isLocal && (
                   <SetRow
                     title={t("Esci dall'account")}
@@ -967,7 +992,7 @@ export function SettingsClient({
               cambiarla. */}
           <FotoProfiloRow
             variant="avatar"
-            iniziale={accountName.slice(0, 1).toUpperCase()}
+            iniziale={iniziale}
             onNota={say}
           />
           <NomeRiga mostrato={accountName} onNota={say} email={email} />
@@ -1015,6 +1040,25 @@ export function SettingsClient({
             <span className="k">{t("Pacchetto")}</span>
             <span className="v">{BUILD_INFO}</span>
           </div>
+          <button
+            type="button"
+            className="jm-st-rrow jm-st-rrow-btn"
+            onClick={() =>
+              void apriEsterno("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+            }
+          >
+            <span className="k">{t("Termini")}</span>
+          </button>
+          <button
+            type="button"
+            className="jm-st-rrow jm-st-rrow-btn"
+            onClick={() => {
+              if (isNative()) void apriEsterno("https://www.dayalogue.com/privacy");
+              else router.push("/privacy");
+            }}
+          >
+            <span className="k">{t("Privacy")}</span>
+          </button>
 
           {ospite && (
             <button

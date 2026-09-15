@@ -178,3 +178,28 @@ export function nomeMostrato(
  * dispositivo" nel menu, "Il tuo nome" nella riga) e sembravano due dati.
  */
 export const RIPIEGO_NOME = "Il tuo nome";
+
+/**
+ * L'iniziale per il pallino — ma SOLO se c'è un nome VERO (scelto
+ * dall'utente, o preso dall'email) da cui prenderla. `null` vuol dire
+ * "nessuna iniziale vera": chi chiama disegna la sagoma generica
+ * (IconaPersona) invece di una lettera.
+ *
+ * PERCHÉ NON BASTA "la prima lettera di nomeMostrato()" (Manuel, 15
+ * settembre 2026: la "Y" del pallino). Il riempimento di fabbrica
+ * RIPIEGO_NOME non è un nome: è una frase-segnaposto ("Il tuo nome" /
+ * "Your name" in inglese), e prendere la SUA prima lettera mostra una
+ * lettera vera per un'identità che non esiste — in inglese, per giunta,
+ * una lettera diversa da quella italiana. Questa funzione non guarda mai
+ * il ripiego: guarda solo lo stesso `scelto` ed `email` che nomeMostrato()
+ * userebbe, e si ferma a `null` dove nomeMostrato() cadrebbe sul ripiego.
+ */
+export function inizialeMostrata(
+  scelto: string | null | undefined,
+  email: string | null | undefined,
+): string | null {
+  const pulito = normalizzaNome(scelto);
+  if (pulito) return pulito.slice(0, 1).toUpperCase();
+  if (email && email.includes("@")) return email.split("@")[0].slice(0, 1).toUpperCase();
+  return null;
+}

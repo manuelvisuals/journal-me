@@ -229,9 +229,56 @@
   line-height: 1.5;
 }
 
-.jm-wall-nota a {
+.jm-wall-nota a,
+.jm-wall-nota button {
   color: var(--color-ink-muted);
   text-decoration: underline;
+}
+
+/* Il bottone di Termini/Privacy (15 settembre 2026: prima erano <a>, ora
+   apriEsterno per aprire davvero Safari nel guscio) reset ai valori di
+   .jm-wall-nota a, cosi resta identico all'occhio a prima. */
+.jm-wall-nota button {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  display: inline;
+}
+
+/* Un vero allarme (15 settembre 2026, Manuel: il messaggio "legato a un
+   altro account" era quasi illeggibile — riusava .jm-wall-nota, la nota
+   decorativa in corsivo). Sans-serif diritto, icona, tinta d'allarme: si
+   legge come un errore al primo sguardo, non come una didascalia. */
+.jm-wall-errore {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  padding: 10px 12px;
+  border-radius: var(--jm-radius-md);
+  background: color-mix(in oklab, var(--color-danger) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-danger) 25%, transparent);
+  font-family: var(--font-sans);
+  font-size: calc(13px * var(--jm-ui-scale));
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-danger);
+}
+
+.jm-wall-errore svg {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ============================================================

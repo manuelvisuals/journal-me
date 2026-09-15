@@ -23,6 +23,7 @@ import { apiFetch } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { resolveStorageMode } from "@/lib/data/store";
 import {
+  inizialeMostrata,
   nomeMostrato,
   normalizzaNome,
   RIPIEGO_NOME,
@@ -231,6 +232,19 @@ export function useNomeMostrato(email: string | null | undefined): string {
   // Senza nome scelto e senza email la casella dice "Il tuo nome"
   // (RIPIEGO_NOME, tradotto qui e in nessun altro posto).
   return nomeMostrato(p?.nome, email, t(RIPIEGO_NOME));
+}
+
+/**
+ * L'iniziale per il pallino, `null` se non ce n'è una vera. Gemella di
+ * useNomeMostrato ma SENZA ripiego: guarda apposta lo stesso `p?.nome` ed
+ * `email`, prima che nomeMostrato() li faccia cadere sulla frase-segnaposto
+ * (vedi inizialeMostrata in profilo-contract.ts — la "Y" del 15 settembre
+ * 2026 nasceva proprio da lì). Chi chiama disegna la sagoma generica
+ * (IconaPersona) quando torna `null`.
+ */
+export function useIniziale(email: string | null | undefined): string | null {
+  const p = useProfilo();
+  return inizialeMostrata(p?.nome, email);
 }
 
 /** Al logout e alla cancellazione dell'account: il prossimo e un altro. */
