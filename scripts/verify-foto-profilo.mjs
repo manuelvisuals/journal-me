@@ -187,14 +187,18 @@ const vicino = (a, b, eps = 0.0001) => Math.abs(a - b) < eps;
     /<FotoProfiloRow\s+iniziale=/.test(client));
   check("sul computer la porta e il ritratto della rail",
     /<FotoProfiloRow\s+variant="avatar"/.test(client));
-  check("in locale il ritratto NON e cliccabile (non c'e nessun account)",
-    /isLocal \? \([\s\S]{0,200}className="jm-st-av"/.test(client));
+  // Deciso da Manuel il 7 settembre 2026: nome e foto anche da ospite,
+  // salvati SOLO in locale (vedi ProfiloLocale.daOspite in profilo.ts).
+  // Il ritratto in locale e quindi cliccabile come altrove — non piu il
+  // muto <div className="jm-st-av"> di prima di quella scelta.
+  check("in locale il ritratto e cliccabile come altrove (foto anche da ospite, dal 7 settembre 2026)",
+    /isLocal \? \([\s\S]{0,200}<FotoProfiloRow/.test(client));
 
   const store = leggi("src/modules/impostazioni/profilo.ts");
   check("il profilo si legge una volta sola anche con tre pallini montati",
     /if \(lettura\) return lettura;/.test(store));
-  check("in modalita locale non si interroga nessun server",
-    /=== "local"\)[\s\S]{0,80}profilo = VUOTO/.test(store));
+  check("in modalita locale si esce prima di interrogare il server",
+    /=== "local"\)[\s\S]{0,60}return;/.test(store));
   check("se il salvataggio fallisce, il pallino torna com'era",
     /catch \(err\) \{[\s\S]{0,80}profilo = prima;/.test(store));
 }

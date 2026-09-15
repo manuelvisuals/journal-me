@@ -46,6 +46,7 @@ import { useBenvenuto } from "@/lib/benvenuto-client";
 import { useStorageMode } from "@/lib/data/store";
 import { useT, useLang } from "@/lib/i18n";
 import { useRitiraDock } from "@/components/ui/dock-sipario";
+import { SELETTORE_LINGUETTA } from "@/modules/accesso/components/linguetta";
 import { usePianoNoto } from "@/lib/plan";
 import { ospiteAttivo } from "@/lib/ospite/flag";
 import { useStatoOspite } from "@/lib/ospite/stato";
@@ -126,6 +127,29 @@ export function PortaGiorno() {
   const [aperta, setAperta] = useState<Aperta | null>(null);
   useRitiraDock(aperta !== null && !pubblica);
 
+  /* La chiusura si risucchia nella linguetta Feedback (eredita da
+     saluto-avvio.tsx, commit 841bec6): due tocchi rapidi non devono
+     accavallare due animazioni, e la scheda che va in secondo piano non
+     deve lasciare la porta aperta per sempre. `chiudendo` e lo STATO che fa
+     scattare la misura e l'animazione dentro un effetto, e fa ANCHE da
+     guardia contro il doppio tocco: un ref (inChiusura, tentato prima)
+     letto dentro il tasto stesso viola react-hooks/refs, anche se non e
+     mai attaccato a un elemento — la regola vale per QUALSIASI ref, non
+     solo per quelli del DOM (misurato qui il 15 settembre 2026: un ref
+     boolean nudo dentro l'onClick bastava a far scattare l'errore, lo
+     stesso identico ref letto dentro un useEffect no). Da qui la regola
+     per questo file: boxRef/veloRef si LEGGONO solo nell'effetto qui
+     sotto, mai nei tasti — coerente con dock-vetro.ts e foto-row.tsx. */
+  const [chiudendo, setChiudendo] = useState<boolean>(false);
+  const veloRef = useRef<HTMLDivElement | null>(null);
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const reteDiSicurezza = useRef<number | null>(null);
+  useEffect(() => {
+    return () => {
+      if (reteDiSicurezza.current !== null) window.clearTimeout(reteDiSicurezza.current);
+    };
+  }, []);
+
   // Il conto del regalo serve solo se la porta di oggi non e gia passata e
   // non e il primo avvio: cosi il primo avvio non aspetta il server.
   const oggi = giornoLocale();
@@ -170,6 +194,7 @@ export function PortaGiorno() {
       // Con l'ospite spento (i banchi del locale "puro") la sola porta e la lettera.
       if (variante !== "lettera" && !ospiteAttivo()) return;
       segnaMostrato();
+      setChiudendo(false);
       setAperta({ variante, rimaste: regalo?.rimaste ?? 0, max: regalo?.max ?? REGALO_DI_FABBRICA.giornatePerOspite });
     })();
     return () => {
@@ -204,23 +229,136 @@ export function PortaGiorno() {
     };
   }, [aperta, testi.testo]);
 
-  const chiudi = useCallback(() => {
-    if (!aperta) return;
-    if (aperta.variante === "lettera") scrivi(K_LETTERA, String(benvenuto.versione));
+  // Le tre scritture in localStorage, in un posto solo: le usano sia la
+  // chiusura animata (i tasti diretti) sia quella secca (premium/account,
+  // che aprono un'altra superficie a schermo pieno subito dopo — vedi
+  // sotto — e per cui il risucchio si accavallerebbe con quella).
+  const scriviMemoria = useCallback((a: Aperta) => {
+    if (a.variante === "lettera") scrivi(K_LETTERA, String(benvenuto.versione));
     scrivi(K_GIORNO, oggi);
-    if (aperta.variante !== "lettera" && aperta.variante !== "proposta") scrivi(K_RIMASTE, String(aperta.rimaste));
-    setAperta(null);
-  }, [aperta, benvenuto.versione, oggi]);
+    if (a.variante !== "lettera" && a.variante !== "proposta") scrivi(K_RIMASTE, String(a.rimaste));
+  }, [benvenuto.versione, oggi]);
 
+  const chiudiSecco = useCallback(() => {
+    if (!aperta) return;
+    scriviMemoria(aperta);
+    setAperta(null);
+  }, [aperta, scriviMemoria]);
+
+  /**
+   * La chiusura diretta: scrive la memoria e chiede l'animazione — la
+   * misura e il risucchio vero stanno nell'effetto sotto, MAI qui. La
+   * guardia contro il doppio tocco e lo stesso stato `chiudendo`, non un
+   * ref: un ref letto qui (fosse anche un semplice booleano, mai attaccato
+   * a un elemento) violerebbe react-hooks/refs allo stesso modo di
+   * boxRef/veloRef.
+   */
+  const chiudi = useCallback(() => {
+    if (!aperta || chiudendo) return;
+    scriviMemoria(aperta);
+    setChiudendo(true);
+  }, [aperta, chiudendo, scriviMemoria]);
+
+  /**
+   * Il risucchio vero: la porta si anima dentro la linguetta Feedback.
+   *
+   * Stessa coreografia del vecchio saluto-avvio.tsx (commit 841bec6, "La
+   * chiusura del saluto: il messaggio si risucchia nella linguetta"), che
+   * qui non era piu partita — la porta del giorno (10 settembre) aveva
+   * preso il suo posto senza portarsi dietro l'animazione, e "Comincia a
+   * scrivere" chiudeva a secco. Si misurano dal vivo i due rettangoli, si
+   * anima il messaggio verso la linguetta con la Web Animations API (una
+   * transizione CSS con lo stesso giro di JS del nuovo transform parte "a
+   * volte") e si lascia il velo con solo fondo/sfocatura animati — mai la
+   * sua opacita, che si porterebbe via anche il figlio. Vive in un effetto
+   * innescato da `chiudendo`, non nel tasto: e proprio quel confine a
+   * rendere legale leggere boxRef/veloRef.
+   */
+  useEffect(() => {
+    if (!chiudendo) return;
+    const box = boxRef.current;
+    const velo = veloRef.current;
+    const ling = document.querySelector<HTMLElement>(SELETTORE_LINGUETTA);
+    // Ripieghi obbligatori: senza linguetta, o senza animate(), chiusura
+    // secca. Mai un crash, mai una porta che resta aperta.
+    if (!box || !ling || typeof box.animate !== "function") {
+      setAperta(null);
+      return;
+    }
+
+    const b = box.getBoundingClientRect();
+    const l = ling.getBoundingClientRect();
+    const dx = l.left + l.width / 2 - (b.left + b.width / 2);
+    const dy = l.top + l.height / 2 - (b.top + b.height / 2);
+    // Pavimento sulla scala: senza, un riquadro molto piu grande della
+    // linguetta collassa a zero e sparisce prima di arrivare.
+    const fine = Math.max(Math.min(l.width / b.width, l.height / b.height), 0.04);
+    const versoFine = (q: number) => 1 + (fine - 1) * q;
+    // Lo sbilanciamento fra X e Y durante il viaggio e cio che da la
+    // sensazione del risucchio: una scala uniforme sembra solo un
+    // rimpicciolimento.
+    const s55 = versoFine(0.55);
+    const s82 = versoFine(0.82);
+
+    box.animate(
+      [
+        { transform: "translate(0px, 0px) scale(1, 1)", borderRadius: "30px", opacity: 1 },
+        {
+          transform: `translate(${dx * 0.55}px, ${dy * 0.55}px) scale(${s55 * 1.12}, ${s55 * 0.84})`,
+          borderRadius: "40px",
+          opacity: 1,
+        },
+        {
+          transform: `translate(${dx * 0.82}px, ${dy * 0.82}px) scale(${s82 * 0.74}, ${s82 * 1.24})`,
+          borderRadius: "50px",
+          opacity: 0.98,
+        },
+        { transform: `translate(${dx}px, ${dy}px) scale(${fine}, ${fine})`, borderRadius: "60px", opacity: 0.25 },
+      ],
+      { duration: 480, easing: "cubic-bezier(.55,0,.72,.3)", fill: "forwards" },
+    );
+
+    if (velo && typeof velo.animate === "function") {
+      const fondo = getComputedStyle(velo).backgroundColor;
+      velo.animate(
+        [
+          { backgroundColor: fondo, WebkitBackdropFilter: "blur(14px)", backdropFilter: "blur(14px)" },
+          { backgroundColor: "rgba(0, 0, 0, 0)", WebkitBackdropFilter: "blur(0px)", backdropFilter: "blur(0px)" },
+        ],
+        { duration: 440, easing: "ease-out", fill: "forwards" },
+      );
+    }
+
+    // Il ricevimento: la linguetta batte quando il messaggio arriva. Il
+    // translateY(-50%) va ripetuto in OGNI fotogramma, o al primo salta di
+    // posto (styles.css, .jm-benv-ling).
+    if (typeof ling.animate === "function") {
+      ling.animate(
+        [
+          { transform: "translateY(-50%) scale(1)" },
+          { transform: "translateY(-50%) scale(1.22)" },
+          { transform: "translateY(-50%) scale(1)" },
+        ],
+        { duration: 300, delay: 400, easing: "ease-out" },
+      );
+    }
+
+    // Cintura: onfinish non arriva se la scheda finisce in secondo piano.
+    reteDiSicurezza.current = window.setTimeout(() => setAperta(null), 900);
+  }, [chiudendo]);
+
+  // Secca, non animata: qui sotto si apre un'ALTRA superficie a schermo
+  // pieno nello stesso istante (il muro premium, il login), e il risucchio
+  // ci arriverebbe sotto senza che nessuno lo veda.
   const premium = useCallback(() => {
-    chiudi();
+    chiudiSecco();
     openPremiumWall("aiSummary");
-  }, [chiudi]);
+  }, [chiudiSecco]);
 
   const account = useCallback(() => {
-    chiudi();
+    chiudiSecco();
     router.push("/login");
-  }, [chiudi, router]);
+  }, [chiudiSecco, router]);
 
   if (!aperta || pubblica) return null;
 
@@ -321,8 +459,8 @@ export function PortaGiorno() {
   const mostraPallini = variante === "cambiata" || variante === "uguale" || variante === "finite" || variante === "pausa";
 
   return (
-    <div className="jm-benv-sal" role="dialog" aria-modal="true" data-variante={variante}>
-      <div className="jm-benv-sal-box">
+    <div className="jm-benv-sal" role="dialog" aria-modal="true" data-variante={variante} ref={veloRef}>
+      <div className="jm-benv-sal-box" ref={boxRef}>
         <div className="jm-benv-sal-testa">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

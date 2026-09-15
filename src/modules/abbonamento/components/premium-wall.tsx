@@ -504,12 +504,9 @@ export function PremiumWall() {
             </button>
           )}
           {negozio && senzaAccount && (
-            <>
-              <span aria-hidden="true">&middot;</span>
-              <button type="button" onClick={vaiAlLogin}>
-                {t("Ho gia un account")}
-              </button>
-            </>
+            <button type="button" onClick={vaiAlLogin}>
+              {t("Ho gia un account")}
+            </button>
           )}
         </div>
 
