@@ -468,3 +468,15 @@
   line-height: 1.45;
   color: var(--color-ink-muted);
 }
+
+/* --- il foglio di benvenuto da ospite: l'offerta dell'email (Apple 5.1.1,
+   15 settembre 2026). Una riga in piu sopra i due tasti; "Non ora" e il
+   tasto fantasma, come "non ora" nel muro. --- */
+.jm-cong-email {
+  margin-top: 0;
+  margin-bottom: calc(18px * var(--jm-space));
+}
+
+.jm-cong .btn-ghost {
+  margin-top: calc(8px * var(--jm-space));
+}

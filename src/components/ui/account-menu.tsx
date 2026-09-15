@@ -36,7 +36,8 @@ import { resolveStorageMode, useStorageMode } from "@/lib/data/store";
 import { usePlan } from "@/lib/plan";
 import { isNative } from "@/lib/native/platform";
 import { ospiteAttivo } from "@/lib/ospite/flag";
-import { useStatoOspite } from "@/lib/ospite/stato";
+import { formatDate } from "@/lib/format";
+import { premiumDispositivoFino, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
 import { eseguiLogout } from "@/lib/auth/logout";
 import { openPremiumWall } from "@/modules/abbonamento";
 // Nome e foto li SA il modulo impostazioni (e li che si cambiano), li
@@ -120,16 +121,20 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
   const ospite = locale && ospiteAttivo();
   // L'ospite (mockup premium-senza-password, 01): il sottotitolo dice il
   // regalo che resta; il menu ha la voce Premium anche per lui, e "Ho gia
-  // un account" al posto di "Accedi". Dal 10 settembre 2026 qui non c'e piu
-  // il ramo "premium sul dispositivo": premium vuole un account, quindi un
-  // ospite premium non esiste.
+  // un account" al posto di "Accedi". Il "premium sul dispositivo" (comprato
+  // senza email) e tornato il 15 settembre 2026 (Apple 5.1.1(v)): il
+  // sottotitolo dice fino a quando, e la voce Premium non c'e.
   // Lo stato si chiede al server SOLO quando il menu e aperto.
   const statoOspite = useStatoOspite(ospite && open);
+  const premiumSulDispositivo = usePremiumDispositivo();
+  const finoPremium = premiumSulDispositivo ? premiumDispositivoFino() : null;
   // Con l'AI in regalo il testo esce dal dispositivo nel momento in cui
   // l'AI ci lavora: "non escono di qui" non sarebbe vero (divieto 7).
   const sottotitoloLocale = !ospite
     ? t("Le giornate non escono di qui")
-    : statoOspite && statoOspite.attivo && !statoOspite.sopraIlTetto && statoOspite.rimaste > 0
+    : premiumSulDispositivo && finoPremium
+      ? t("Premium fino al {data}", { data: formatDate(new Date(finoPremium), { day: "numeric", month: "long" }) })
+      : statoOspite && statoOspite.attivo && !statoOspite.sopraIlTetto && statoOspite.rimaste > 0
         ? statoOspite.rimaste === 1
           ? t("1 giornata con l'AI in regalo")
           : t("{n} giornate con l'AI in regalo", { n: String(statoOspite.rimaste) })
@@ -256,7 +261,7 @@ export function AccountMenu({ variant }: { variant: "rail" | "testata" }) {
         <IconaIngranaggio />
         {t("Impostazioni")}
       </button>
-      {((!locale && plan !== "premium") || ospite) && (
+      {((!locale && plan !== "premium") || (ospite && !premiumSulDispositivo)) && (
         <button type="button" className={classi.i} role="menuitem" onClick={vaiPremium}>
           <IconaStella />
           {ospite ? t("Premium") : native ? t("Scopri Premium") : t("Passa a Premium")}

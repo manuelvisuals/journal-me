@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminClient, requireUser } from "@/lib/server/entitlement";
+import { braccialettoDaSegreto, segretoDalla } from "@/lib/server/ospite";
 import {
   corpoNonVerificato,
   pianoDaTransazione,
@@ -14,35 +15,48 @@ import {
  * Il telefono ha comprato (o ripristinato) e manda la transazione. Qui:
  *   1. si legge dal JWS l'id della transazione, SENZA fidarsi;
  *   2. si chiede ad Apple quella transazione (apple-api.ts): e la verita;
- *   3. se e nostra, non revocata e non scaduta, l'account che ha fatto la
- *      chiamata diventa premium con plan_source 'apple', la transazione
- *      originale (l'identita dell'abbonamento presso Apple) e la scadenza.
+ *   3. se e nostra, non revocata e non scaduta, chi ha fatto la chiamata
+ *      diventa premium con plan_source 'apple', la transazione originale
+ *      (l'identita dell'abbonamento presso Apple) e la scadenza.
  *
- * Una transazione originale appartiene a UN account: se e gia legata a un
- * altro (chi ripristina con un account diverso da quello con cui ha
- * comprato) si risponde 409 e si dice quale strada c'e: entrare con quello.
+ * COMPRARE SENZA ACCOUNT (Apple, bocciatura del 14 settembre 2026, linea
+ * guida 5.1.1(v); decisione di Manuel del 15 settembre). Dal 10 settembre
+ * questa route voleva il gettone: "premium vende il cloud, e il cloud vuole
+ * un account". Apple ha risposto prima che glielo dicessimo: un acquisto
+ * in-app che non e legato a un account non puo pretendere una
+ * registrazione, e l'obbligo di rendere l'abbonamento disponibile su tutti
+ * i dispositivi NON autorizza a imporla. Quindi:
  *
- * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026). Dal 4 settembre
- * questa route accettava anche il solo braccialetto e scriveva il premium
- * sul BRACCIALETTO (migration 025): si comprava senza email. Adesso no.
- * L'abbonamento vende la copia cifrata nel cloud e il diario su tutti i
- * dispositivi: senza un account non c'e dove metterlo, e chi paga si
- * ritroverebbe un premium legato a un telefono. Quindi qui serve il
- * gettone, e senza si risponde 401: e il client a mandare la persona al
- * login PRIMA di aprire il foglio di Apple, cosi non si prendono soldi per
- * una cosa che non si puo consegnare.
+ *   - con il gettone, il premium si scrive sul PROFILO (come sempre);
+ *   - senza gettone ma con il braccialetto (x-jm-braccialetto), il premium
+ *     si scrive sulla riga di `braccialetti` (migration 025: le colonne ci
+ *     sono ancora). Il braccialetto DEVE gia esistere: dal 10 settembre
+ *     (DeviceCheck) nasce solo da registraBraccialetto, al primo avvio,
+ *     quindi qui non si crea niente e un braccialetto sconosciuto e un 401.
+ *     Quando la persona mettera una email, adotta_braccialetto (migration
+ *     025) portera il premium sul profilo.
  *
- * Chi aveva gia comprato senza email non perde niente: la riga sul
- * braccialetto resta e adotta_braccialetto la sposta sul profilo al primo
- * accesso. E se ripristina da qui con l'account, il ramo qui sotto libera
- * quella riga e scrive il premium sul profilo.
+ * Due regole ferme, in entrambe le strade:
+ *   - una transazione originale gia legata a un PROFILO non torna su un
+ *     braccialetto ne su un altro profilo: 409, "entra con quell'account";
+ *   - una gia su un ALTRO braccialetto lo lascia (stesso Apple ID, telefono
+ *     nuovo senza email, ripristino): l'ultimo vince, l'indice e unico.
  *
+ * La risposta dice `dove` e finito: "account" o "dispositivo".
  * Il piano si scrive SOLO qui e nelle notifiche di Apple: mai dal client.
  */
 export async function POST(req: NextRequest) {
-  const user = await requireUser(req);
-  if (user instanceof NextResponse) return user;
-  const userId = user.userId;
+  const conGettone = (req.headers.get("authorization") ?? "").startsWith("Bearer ");
+  let userId: string | null = null;
+  if (conGettone) {
+    const user = await requireUser(req);
+    if (user instanceof NextResponse) return user;
+    userId = user.userId;
+  }
+  const segreto = segretoDalla(req);
+  if (!userId && !segreto) {
+    return NextResponse.json({ error: "Missing bearer token" }, { status: 401 });
+  }
 
   const supabase = getAdminClient();
   if (!supabase) {
@@ -112,29 +126,52 @@ export async function POST(req: NextRequest) {
     current_period_end: scadenza,
   };
 
-  // La stessa transazione ferma su un braccialetto (comprata prima del 10
-  // settembre 2026, quando si poteva comprare senza email): si libera, che
-  // l'indice e unico, e il premium passa al profilo. E il ripristino di chi
-  // aveva comprato da ospite e ora ha messo l'email.
+  // La stessa transazione su un braccialetto: si libera (l'indice e unico).
+  // Vale per l'ospite che cambia telefono e per l'ospite che ha appena
+  // messo l'email e ripristina: da quel momento il premium sta sul profilo.
   const { data: suBraccialetto } = await supabase
     .from("braccialetti")
     .select("id")
     .eq("apple_original_transaction_id", originale)
     .maybeSingle();
+  const rigaLibera = {
+    plan: "free",
+    plan_source: null,
+    current_period_end: null,
+    apple_original_transaction_id: null,
+    apple_product_id: null,
+    apple_environment: null,
+  };
 
-  if (suBraccialetto) {
-    await supabase
-      .from("braccialetti")
-      .update({ plan: "free", plan_source: null, current_period_end: null, apple_original_transaction_id: null, apple_product_id: null, apple_environment: null })
-      .eq("id", suBraccialetto.id);
+  if (userId) {
+    if (suBraccialetto) {
+      await supabase.from("braccialetti").update(rigaLibera).eq("id", suBraccialetto.id);
+    }
+    const { error } = await supabase.from("profiles").upsert({ user_id: userId, ...campi }, { onConflict: "user_id" });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  } else {
+    // Senza gettone: il braccialetto deve esistere gia (nasce con
+    // DeviceCheck al primo avvio, mai qui).
+    const braccialettoId = await braccialettoDaSegreto(segreto as string, null, { crea: false });
+    if (!braccialettoId) {
+      return NextResponse.json(
+        { error: "braccialetto_sconosciuto", messaggio: "Questo dispositivo non e ancora registrato: riapri l'app e riprova." },
+        { status: 401 },
+      );
+    }
+    if (suBraccialetto && suBraccialetto.id !== braccialettoId) {
+      await supabase.from("braccialetti").update(rigaLibera).eq("id", suBraccialetto.id);
+    }
+    const { error } = await supabase.from("braccialetti").update(campi).eq("id", braccialettoId);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  const { error } = await supabase.from("profiles").upsert({ user_id: userId, ...campi }, { onConflict: "user_id" });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({
     plan: piano,
     productId: t.productId,
     expiresAt: scadenza,
     environment: t.environment ?? null,
+    // Dove e finito: "account" (il profilo) o "dispositivo" (il braccialetto).
+    dove: userId ? "account" : "dispositivo",
   });
 }

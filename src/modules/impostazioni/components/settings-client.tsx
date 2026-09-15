@@ -51,7 +51,7 @@ import { FotoProfiloRow } from "@/modules/impostazioni/components/foto-row";
 import { NomePanel, NomeRiga } from "@/modules/impostazioni/components/nome-riga";
 import { RegaloPanel, valoreRegalo } from "@/modules/impostazioni/components/regalo-panel";
 import { ospiteAttivo } from "@/lib/ospite/flag";
-import { regaloFinito, useStatoOspite } from "@/lib/ospite/stato";
+import { premiumDispositivoFino, regaloFinito, usePremiumDispositivo, useStatoOspite } from "@/lib/ospite/stato";
 import { useRegaloInGioco } from "@/lib/capabilities";
 import { useNomeMostrato, useRichiestaNome } from "@/modules/impostazioni/profilo";
 import { useActiveModules } from "@/lib/modules";
@@ -186,11 +186,15 @@ export function SettingsClient({
   // esiste ed e meglio si chiama con il suo nome: la copia cifrata nel
   // cloud, che si aggiorna a ogni modifica.
   //
-  // PREMIUM VUOLE UN ACCOUNT (10 settembre 2026): qui c'erano tre rami per
-  // il "premium sul dispositivo" (la riga Piano, Gestisci abbonamento, il
-  // tasto Passa a Premium che spariva). Non servono piu: un ospite premium
-  // non esiste, quindi da ospite le voci dell'abbonamento sono sempre
-  // quelle di chi non ha ancora comprato.
+  // IL PREMIUM SUL DISPOSITIVO (tornato il 15 settembre 2026, bocciatura
+  // Apple 5.1.1(v) del 14: si compra senza account, l'email si offre dopo).
+  // Da ospite premium le voci dell'abbonamento sono quelle di chi ha
+  // comprato: la riga Piano con la scadenza, Gestisci abbonamento, e la
+  // porta all'email detta per quello che fa (porta premium e il diario su
+  // tutti i dispositivi). "Ripristina acquisti" c'e SEMPRE, anche da
+  // ospite, e chiama davvero Apple: non e piu la porta del login.
+  const premiumSulDispositivo = usePremiumDispositivo();
+  const finoDispositivo = premiumSulDispositivo ? premiumDispositivoFino() : null;
   const plan = usePlan();
   const dettaglioPiano = useDettaglioPiano();
   const themeId = useThemeId();
@@ -545,30 +549,66 @@ export function SettingsClient({
                       value={accountName}
                       onClick={() => setPanel("nome")}
                     />
+                    {premiumSulDispositivo ? (
+                      <SetRow
+                        title={t("Piano")}
+                        value={
+                          finoDispositivo
+                            ? t("Premium fino al {data}", {
+                                data: formatDate(new Date(finoDispositivo), { day: "numeric", month: "long" }),
+                              })
+                            : t("Premium")
+                        }
+                        desc={t("Su questo telefono. Il diario resta qui finche non metti una email.")}
+                        chevron={false}
+                      />
+                    ) : (
+                      <SetRow
+                        title={t("AI in regalo")}
+                        value={valoreRegalo(t, statoOspite)}
+                        onClick={() => setPanel("regalo")}
+                      />
+                    )}
+                    {!premiumSulDispositivo && (
+                      <SetRow
+                        title={t("Passa a Premium")}
+                        value={rigaPrezzo(t).prova || undefined}
+                        desc={`${rigaPrezzo(t).poi}. ${t("AI senza limiti, i recap. Con una email, anche la copia nel cloud.")}`}
+                        onClick={() => openPremiumWall("aiSummary")}
+                      />
+                    )}
+                    {negozioDisponibile() && premiumSulDispositivo && (
+                      <SetRow
+                        title={t("Gestisci abbonamento")}
+                        value={t("Apple")}
+                        onClick={() => void gestisciAbbonamento()}
+                      />
+                    )}
+                    {/* Una porta sola all'email (Manuel, 12 settembre 2026),
+                        ma detta per quello che fa: da ospite premium e la
+                        strada di adotta_braccialetto (migration 025), che
+                        porta il premium sul profilo appena si entra. "Copia
+                        nel cloud" e "Dove sono le mie giornate" sono scese
+                        in "I tuoi dati": parlano delle giornate, non di chi
+                        sei. */}
                     <SetRow
-                      title={t("AI in regalo")}
-                      value={valoreRegalo(t, statoOspite)}
-                      onClick={() => setPanel("regalo")}
-                    />
-                    <SetRow
-                      title={t("Passa a Premium")}
-                      value={rigaPrezzo(t).prova || undefined}
-                      desc={`${rigaPrezzo(t).poi}. ${t("AI senza limiti, la copia nel cloud, i recap.")}`}
-                      onClick={() => openPremiumWall("aiSummary")}
-                    />
-                    {/* Una porta sola all'email (Manuel, 12 settembre 2026).
-                        Qui c'era anche "Ho gia un abbonamento": portava allo
-                        stesso /login di questa riga, e due righe per la
-                        stessa porta fanno solo lista. Il ripristino di Apple
-                        resta raggiungibile: si entra, e nell'account c'e
-                        "Ripristina acquisti". "Copia nel cloud" e "Dove sono
-                        le mie giornate" sono scese in "I tuoi dati": parlano
-                        delle giornate, non di chi sei. */}
-                    <SetRow
-                      title={t("Ho gia un account")}
-                      desc={t("Accedi su questo dispositivo.")}
+                      title={premiumSulDispositivo ? t("Premium su tutti i dispositivi") : t("Ho gia un account")}
+                      desc={
+                        premiumSulDispositivo
+                          ? t("Metti la tua email: premium ti segue ovunque e il diario ha una copia nel cloud.")
+                          : t("Accedi su questo dispositivo.")
+                      }
                       onClick={() => router.push("/login")}
                     />
+                    {/* Apple vuole il ripristino sempre raggiungibile, anche
+                        senza account (5.1.1): chiama davvero StoreKit e il
+                        server scrive il premium sul braccialetto. */}
+                    {negozioDisponibile() && (
+                      <SetRow
+                        title={t("Ripristina acquisti")}
+                        onClick={() => void ripristina()}
+                      />
+                    )}
                   </>
                 ) : isLocal ? (
                   <>

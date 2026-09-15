@@ -252,6 +252,11 @@ export const IMPOSTAZIONI: Record<string, string> = {
   "AI in regalo": "AI gift",
   "Poi": "Then",
   "AI senza limiti, la copia nel cloud, i recap.": "Unlimited AI, the cloud copy, recaps.",
+  // Da ospite (Apple 5.1.1(v), 15 settembre 2026): niente cloud promesso senza email.
+  "AI senza limiti, i recap. Con una email, anche la copia nel cloud.": "Unlimited AI, recaps. With an email, the cloud copy too.",
+  "Su questo telefono. Il diario resta qui finche non metti una email.": "On this phone. Your diary stays here until you add an email.",
+  "Premium su tutti i dispositivi": "Premium on all your devices",
+  "Metti la tua email: premium ti segue ovunque e il diario ha una copia nel cloud.": "Add your email: premium follows you everywhere and your diary gets a cloud copy.",
   "Copia nel cloud": "Cloud copy",
   "Spenta": "Off",
   "Con una email. Chiusa a chiave, su tutti i tuoi dispositivi.": "With an email. Locked, on all your devices.",

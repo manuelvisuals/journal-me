@@ -17,12 +17,30 @@
  * volta sola: cosi vale da qualunque schermata si torni. Lo store sta nel
  * modulo, stesso schema di premium-wall e dell'avviso: chi lo apre non deve
  * passare nessuna prop attraverso mezza app.
+ *
+ * L'EMAIL SI OFFRE QUI, DOPO L'ACQUISTO (Apple 5.1.1(v), bocciatura del 14
+ * settembre 2026; decisione di Manuel del 15). Quando il premium e finito
+ * sul DISPOSITIVO (comprato da ospite, senza email: `dove` =
+ * "dispositivo") il foglio dice la cosa vera, che premium e attivo su
+ * questo telefono, e offre l'email per portarlo su tutti i dispositivi con
+ * la copia nel cloud. E un'offerta, non un pedaggio: "Non ora" chiude e
+ * basta, niente seconda finestra, niente funzione che resta chiusa. La
+ * strada resta aperta per sempre in Impostazioni ("Premium su tutti i
+ * dispositivi"), e quando la persona entra e adotta_braccialetto (migration
+ * 025) a portare il premium sul profilo. Nelle parole di Apple: "You may
+ * explain to the user that registering will enable them to access the
+ * purchased content from any of their supported devices and provide them a
+ * way to register at any time."
  */
 
 import { useEffect, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import { useT } from "@/lib/i18n";
 
-let open = false;
+/** Dove e finito il premium appena attivato: sul profilo o su questo telefono. */
+export type DovePremium = "account" | "dispositivo";
+
+let open: DovePremium | null = null;
 const listeners = new Set<() => void>();
 
 function emit(): void {
@@ -30,17 +48,17 @@ function emit(): void {
 }
 
 /** Da chiamare subito PRIMA di tornare nel diario. */
-export function openPremiumWelcome(): void {
-  open = true;
+export function openPremiumWelcome(dove: DovePremium = "account"): void {
+  open = dove;
   emit();
 }
 
 function close(): void {
-  open = false;
+  open = null;
   emit();
 }
 
-function useOpen(): boolean {
+function useOpen(): DovePremium | null {
   return useSyncExternalStore(
     (l) => {
       listeners.add(l);
@@ -49,7 +67,7 @@ function useOpen(): boolean {
       };
     },
     () => open,
-    () => false,
+    () => null,
   );
 }
 
@@ -61,7 +79,16 @@ const FEATURES: string[] = [
 
 export function PremiumWelcome() {
   const t = useT();
-  const isOpen = useOpen();
+  const router = useRouter();
+  const dove = useOpen();
+  const isOpen = dove !== null;
+  const sulDispositivo = dove === "dispositivo";
+
+  /** L'offerta accettata: si entra con l'email. Il premium segue da solo. */
+  const mettiEmail = () => {
+    close();
+    router.push("/login");
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -90,7 +117,9 @@ export function PremiumWelcome() {
         </div>
         <div className="jm-cong-t">{t("Sei premium")}</div>
         <div className="jm-cong-p">
-          {t("Da adesso l'app lavora insieme a te. Ecco cosa e cambiato.")}
+          {sulDispositivo
+            ? t("Premium e attivo su questo telefono. Ecco cosa e cambiato.")
+            : t("Da adesso l'app lavora insieme a te. Ecco cosa e cambiato.")}
         </div>
         <div className="jm-cong-list">
           {FEATURES.map((f) => (
@@ -100,9 +129,23 @@ export function PremiumWelcome() {
             </div>
           ))}
         </div>
-        <button type="button" className="btn-primary" onClick={close}>
-          {t("Provalo adesso")}
-        </button>
+        {sulDispositivo ? (
+          <>
+            <div className="jm-cong-p jm-cong-email">
+              {t("Con una email lo porti su tutti i tuoi dispositivi e il diario ha una copia cifrata nel cloud. Puoi farlo anche dopo, da Impostazioni.")}
+            </div>
+            <button type="button" className="btn-primary" onClick={mettiEmail} data-testid="jm-cong-email">
+              {t("Metti la tua email")}
+            </button>
+            <button type="button" className="btn-ghost" onClick={close} data-testid="jm-cong-non-ora">
+              {t("Non ora")}
+            </button>
+          </>
+        ) : (
+          <button type="button" className="btn-primary" onClick={close}>
+            {t("Provalo adesso")}
+          </button>
+        )}
       </div>
     </div>
   );

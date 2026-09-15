@@ -26,14 +26,18 @@ export const ABBONAMENTO: Record<string, string> = {
   "Scarica dayalogue per iPhone": "Get dayalogue for iPhone",
   "Continua senza AI": "Continue without AI",
   "Ripristina acquisti": "Restore purchases",
-  // Premium vuole un account (10 settembre 2026): il muro visto da un ospite.
-  "Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi.":
-    "Voice, title, summary, recaps, and your diary on all your devices.",
-  "Premium ha bisogno di un account: e li che vive la copia cifrata nel cloud, ed e cosi che ti segue su tutti i dispositivi.":
-    "Premium needs an account: that is where the encrypted cloud copy lives, and it is how it follows you across devices.",
-  "Entra con la tua email": "Continue with your email",
-  "Ho gia un abbonamento": "I already have a subscription",
-  "{prezzo} {periodo}. Disdici quando vuoi.": "{prezzo} {periodo}. Cancel anytime.",
+  // Comprare senza account (Apple 5.1.1(v), 15 settembre 2026): il muro e il
+  // benvenuto visti da un ospite, senza promettere il cloud che non ha.
+  "Prova tutto, gratis. Il diario resta su questo telefono finche non metti una email.":
+    "Try everything, free. Your diary stays on this phone until you add an email.",
+  "Su questo telefono, subito": "On this phone, right away",
+  "Con una email, quando vuoi, anche su tutti i dispositivi e con la copia nel cloud.":
+    "With an email, whenever you want, on all your devices too, with the cloud copy.",
+  "Premium e attivo su questo telefono. Ecco cosa e cambiato.":
+    "Premium is active on this phone. Here is what changed.",
+  "Con una email lo porti su tutti i tuoi dispositivi e il diario ha una copia cifrata nel cloud. Puoi farlo anche dopo, da Impostazioni.":
+    "With an email you take it to all your devices and your diary gets an encrypted cloud copy. You can do it later too, from Settings.",
+  "Metti la tua email": "Add your email",
   // Il muro del regalo che non copre, per motivo (audit 10 settembre 2026, C4).
   "L'AI in regalo\nsi accende dall'app": "The AI gift\nturns on in the app",
   "Per oggi l'AI\nha fatto abbastanza": "The AI has done\nenough for today",
@@ -44,8 +48,6 @@ export const ABBONAMENTO: Record<string, string> = {
     "This day has already had many requests. Your days are safe: tomorrow it resumes, or go premium.",
   "Il regalo del mese e stato usato tutto, per tutti. Le tue giornate restano: torna domani, o passa a premium.":
     "This month's gift has been used up, for everyone. Your days are safe: come back tomorrow, or go premium.",
-  "Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.":
-    "No password: you get a six-digit code. The days you have already written come with you.",
   "Termini": "Terms",
   "Privacy": "Privacy policy",
   "Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.": "Then it renews automatically at {prezzo} {periodo}. Cancel anytime.",

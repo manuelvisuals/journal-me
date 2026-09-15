@@ -16,6 +16,7 @@
 import { getStore, useStorageMode } from "@/lib/data/store";
 import { getPlanSync, usePlan } from "@/lib/plan";
 import { ospiteAttivo } from "@/lib/ospite/flag";
+import { premiumDispositivo, usePremiumDispositivo } from "@/lib/ospite/stato";
 
 /**
  * L'OSPITE (SPEC-ospite-e-cassaforte R2): tiene le giornate sul dispositivo
@@ -45,15 +46,19 @@ function regaloConAccountPuo(c: Capability, plan: string | null | undefined): bo
 }
 
 /**
- * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026). Qui c'era una terza
- * strada: `dispositivoPremiumPuo`, cioe l'ospite che aveva comprato dal
- * foglio di Apple senza email e teneva il premium sul telefono. Non c'e
- * piu. In locale si puo solo quello che il regalo concede; tutto il resto
- * vuole un account, perche e li che vive la copia cifrata nel cloud.
+ * IL PREMIUM SUL DISPOSITIVO (mockup premium-senza-password, B1): l'ospite
+ * che ha comprato con il foglio di Apple senza mettere una email. Tutto
+ * tranne `sync`, che vuole un account per definizione. Chiuso il 10
+ * settembre 2026 ("premium vuole un account"), riaperto il 15 dopo la
+ * bocciatura Apple 5.1.1(v): l'email si offre DOPO l'acquisto, facoltativa.
  */
+function dispositivoPremiumPuo(c: Capability): boolean {
+  return c !== "sync" && premiumDispositivo();
+}
+
 export function can(c: Capability): boolean {
   if (getStore().mode !== "cloud") {
-    return getStore().mode === "local" && ospitePuo(c);
+    return getStore().mode === "local" && (ospitePuo(c) || dispositivoPremiumPuo(c));
   }
   if (c === "sync") return true;
   return getPlanSync() === "premium" || regaloConAccountPuo(c, getPlanSync());
@@ -63,8 +68,9 @@ export function can(c: Capability): boolean {
 export function useRegaloInGioco(): boolean {
   const plan = usePlan();
   const mode = useStorageMode();
+  const premiumSulDispositivo = usePremiumDispositivo();
   if (!ospiteAttivo()) return false;
-  if (mode === "local") return true;
+  if (mode === "local") return !premiumSulDispositivo;
   if (mode === "cloud") return plan !== "premium";
   return false;
 }
@@ -76,9 +82,10 @@ export function useRegaloInGioco(): boolean {
 export function useCan(c: Capability): boolean {
   const plan = usePlan();
   const mode = useStorageMode();
+  const premiumSulDispositivo = usePremiumDispositivo();
   // Stessa semantica di can(): finche la modalita non e risolta risponde
   // il ramo cloud (le schermate dati stanno comunque dietro AuthGate).
-  if (mode === "local") return ospitePuo(c);
+  if (mode === "local") return ospitePuo(c) || (c !== "sync" && premiumSulDispositivo);
   if (c === "sync") return true;
   return plan === "premium" || regaloConAccountPuo(c, plan);
 }

@@ -19,17 +19,27 @@
  * si compra: il muro rimanda all'App Store. Il codice Stripe resta
  * (fakeCheckout per l'ambiente di prova) ma non e piu la strada del web.
  *
- * PREMIUM VUOLE UN ACCOUNT (Manuel, 10 settembre 2026; mockup
- * MOCKUP-riga-abbonamento.html). Dal 4 settembre l'ospite comprava di qui
- * con un tocco e il premium restava sul telefono. Adesso no: quello che si
- * vende e la copia cifrata nel cloud e il diario su tutti i dispositivi, e
- * senza un account non c'e dove metterlo. Quindi all'ospite il muro NON
- * mostra un prezzo che non puo pagare da qui: dice perche serve l'email e
- * apre quella porta. Il prezzo lo trova subito dopo, entrato.
+ * COMPRARE SENZA ACCOUNT (Apple, bocciatura del 14 settembre 2026, linea
+ * guida 5.1.1(v); decisione di Manuel del 15). Dal 10 settembre il muro
+ * mandava l'ospite al login PRIMA del foglio di Apple ("premium vende il
+ * cloud, e il cloud vuole un account"). Apple: un acquisto in-app che non
+ * e legato a un account non puo pretendere una registrazione, e l'obbligo
+ * di rendere l'abbonamento disponibile su tutti i dispositivi non
+ * autorizza a imporla. Quindi all'ospite dentro il guscio tornano le
+ * schede, il prezzo e il tasto che compra; il premium vive sul braccialetto
+ * del telefono (migration 025) e l'email si OFFRE dopo l'acquisto
+ * (premium-welcome), facoltativa e raggiungibile sempre da Impostazioni.
+ * La porta dell'email resta qui come riga secondaria ("Ho gia un
+ * account"), non come condizione.
  *
- * "Ho gia un abbonamento" e il ripristino visto da un ospite: Apple vuole
- * che il ripristino sia sempre raggiungibile, e per chi non ha un account
- * ripristinare vuol dire prima ritrovare il proprio. Porta al login.
+ * ONESTA: a un premium senza account non si promette la copia nel cloud,
+ * perche non ce l'ha (capabilities: tutto tranne `sync`). Le parole del
+ * muro da ospite dicono che il diario resta su questo telefono finche non
+ * c'e un'email.
+ *
+ * "Ripristina acquisti" e sempre raggiungibile, con account e senza: da
+ * ospite chiama davvero StoreKit e il server scrive il premium sul
+ * braccialetto.
  *
  * SUL WEB VINCE L'APP STORE. Il browser e un accompagnatore dell'app, non
  * il posto dove si compra: li il negozio non esiste per nessuno, con o
@@ -144,6 +154,22 @@ const FEATURES: { t: string; p: string }[] = [
   },
 ];
 
+/**
+ * Le stesse due righe per l'OSPITE, senza promettere il cloud: un premium
+ * comprato senza email vive su questo telefono (capabilities: tutto tranne
+ * sync). L'email si offre dopo, ed e questo che la seconda riga dice.
+ */
+const FEATURES_OSPITE: { t: string; p: string }[] = [
+  {
+    t: "Racconti e basta",
+    p: "Voce, titolo, sintesi, aree, persone, recap.",
+  },
+  {
+    t: "Su questo telefono, subito",
+    p: "Con una email, quando vuoi, anche su tutti i dispositivi e con la copia nel cloud.",
+  },
+];
+
 /** Il nome del periodo per il tasto e la nota ("al mese", "all'anno"). */
 const PERIODI: Record<string, string> = {
   mese: "al mese",
@@ -156,10 +182,9 @@ export function PremiumWall() {
   const t = useT();
   const wall = useWallState();
   const router = useRouter();
-  // Senza account non si compra (10 settembre 2026): il muro cambia mestiere
-  // e diventa la porta dell'email. Non e il negozio a mancare, e l'account:
-  // sul web senza account valgono tutte e due le cose, e vince questa, che
-  // e il primo passo comunque.
+  // L'ospite (modalita locale) compra come tutti (Apple 5.1.1(v), 15
+  // settembre 2026): `senzaAccount` cambia solo le PAROLE (niente cloud
+  // promesso) e la riga secondaria dell'email, non le schede ne il tasto.
   const senzaAccount = useStorageMode() === "local";
   const [cloudNote, setCloudNote] = useState<boolean>(false);
   const [busy, setBusy] = useState<boolean>(false);
@@ -258,9 +283,9 @@ export function PremiumWall() {
   const prova = prodotto && prodotto.provaGiorni && prodotto.provaDisponibile !== false ? prodotto.provaGiorni : 0;
 
   /**
-   * L'ospite: premium vuole un account, quindi prima l'email. Il muro si
-   * riapre da solo dopo il codice (auth-gate legge il promemoria): chi
-   * voleva comprare trova le schede con il prezzo, non la giornata vuota.
+   * La porta dell'email, secondaria: chi ha gia un account (e magari gia un
+   * abbonamento sopra) entra. Il muro si riapre da solo dopo il codice
+   * (auth-gate legge il promemoria), con le schede.
    */
   const vaiAlLogin = () => {
     if (wall) segnaMuroDaRiaprire(wall.feature);
@@ -278,7 +303,8 @@ export function PremiumWall() {
     setBusy(false);
     if (esito.esito === "premium") {
       closePremiumWall();
-      openPremiumWelcome();
+      // Da ospite il foglio di benvenuto OFFRE l'email (facoltativa).
+      openPremiumWelcome(esito.dove === "dispositivo" ? "dispositivo" : "account");
       return;
     }
     dimenticaProdotti();
@@ -298,7 +324,7 @@ export function PremiumWall() {
     setBusy(false);
     if (esito.esito === "premium") {
       closePremiumWall();
-      openPremiumWelcome();
+      openPremiumWelcome(esito.dove === "dispositivo" ? "dispositivo" : "account");
       return;
     }
     if (esito.esito === "serve_account" || esito.esito === "errore") setErrore(esito.messaggio);
@@ -346,7 +372,7 @@ export function PremiumWall() {
           : regalo
             ? t("Continua a scrivere. Manca solo l'AI.")
       : negozio && senzaAccount
-        ? t("Voce, titolo, sintesi, recap, e il diario su tutti i tuoi dispositivi.")
+        ? t("Prova tutto, gratis. Il diario resta su questo telefono finche non metti una email.")
         : negozio
           ? t("Prova tutto, gratis. Poi decidi.")
         : t("Si attiva dall'app per iPhone. {n} giorni gratis, poi {prezzo}.", {
@@ -366,15 +392,7 @@ export function PremiumWall() {
         <div className="jm-wall-t">{titolo}</div>
         <div className="jm-wall-p">{sottotitolo}</div>
 
-        {negozio && senzaAccount && (
-          <div className="jm-wall-note">
-            {t(
-              "Premium ha bisogno di un account: e li che vive la copia cifrata nel cloud, ed e cosi che ti segue su tutti i dispositivi.",
-            )}
-          </div>
-        )}
-
-        {negozio && !senzaAccount && (
+        {negozio && (
           <div className="jm-wall-schede" data-testid="jm-wall-schede">
             {prodotti === null && (
               // Il fantasma della scheda: STESSA struttura e stesse
@@ -422,7 +440,7 @@ export function PremiumWall() {
           </div>
         )}
 
-        {FEATURES.map((f) => (
+        {(senzaAccount ? FEATURES_OSPITE : FEATURES).map((f) => (
           <div key={f.t} className="jm-wall-feat">
             <i />
             <div>
@@ -442,10 +460,6 @@ export function PremiumWall() {
         {!negozio ? (
           <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
             {t("Scarica dayalogue per iPhone")}
-          </button>
-        ) : senzaAccount ? (
-          <button type="button" className="btn-primary" onClick={vaiAlLogin}>
-            {t("Entra con la tua email")}
           </button>
         ) : (
           <button
@@ -468,19 +482,22 @@ export function PremiumWall() {
         </button>
 
         <div className="jm-wall-quiet">
-          {negozio &&
-            (senzaAccount ? (
+          {negozio && (
+            <button type="button" onClick={() => void ripristina()} disabled={busy}>
+              {t("Ripristina acquisti")}
+            </button>
+          )}
+          {negozio && senzaAccount && (
+            <>
+              <span aria-hidden="true">&middot;</span>
               <button type="button" onClick={vaiAlLogin}>
-                {t("Ho gia un abbonamento")}
+                {t("Ho gia un account")}
               </button>
-            ) : (
-              <button type="button" onClick={() => void ripristina()} disabled={busy}>
-                {t("Ripristina acquisti")}
-              </button>
-            ))}
+            </>
+          )}
         </div>
 
-        {negozio && !senzaAccount && !prodotto && (
+        {negozio && !prodotto && (
           // Il posto della nota, gia occupato con lo stesso testo (sbiadito):
           // il foglio e ancorato in basso e una riga che compare dopo
           // alzerebbe tutto il resto.
@@ -489,7 +506,7 @@ export function PremiumWall() {
             <a>{t("Termini")}</a> &middot; <a>{t("Privacy")}</a>
           </div>
         )}
-        {negozio && !senzaAccount && prodotto && (
+        {negozio && prodotto && (
           <div className="jm-wall-nota">
             {prova > 0
               ? t("Poi si rinnova da solo a {prezzo} {periodo}. Disdici quando vuoi.", {
@@ -501,30 +518,6 @@ export function PremiumWall() {
                   periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
                 })}{" "}
             <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot; <a href="/privacy">{t("Privacy")}</a>
-          </div>
-        )}
-        {negozio && senzaAccount && (
-          <div className="jm-wall-nota">
-            {/* Il prezzo PRIMA dell'email (decisione 3A di Manuel, 10 settembre
-                2026): chiedere un indirizzo senza dire quanto costa e il tipo di
-                cosa che fa disinstallare. Lo dice Apple (prodotti in cache),
-                quindi e quello che vedra nel foglio; se non e ancora arrivato
-                si tace, non si inventa. */}
-            {prodotto && (
-              <>
-                {prova > 0
-                  ? t("{n} giorni gratis, poi {prezzo} {periodo}. Disdici quando vuoi.", {
-                      n: String(prova),
-                      prezzo: prodotto.prezzo,
-                      periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
-                    })
-                  : t("{prezzo} {periodo}. Disdici quando vuoi.", {
-                      prezzo: prodotto.prezzo,
-                      periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
-                    })}{" "}
-              </>
-            )}
-            {t("Nessuna password: ti arriva un codice a sei cifre. Le giornate che hai gia scritto salgono con te.")}
           </div>
         )}
       </div>

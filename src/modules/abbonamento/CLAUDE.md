@@ -166,3 +166,64 @@ base.css, usato da btn-primary, dal "Genera" del Recap e da "Fine e salva".
 - Il muro "regalo" parla per motivo (`MotivoRegaloFinito`): quota = finite;
   tetto/spento = in pausa, le giornate restano; solo_app = si accende
   dall'app; chiamate = per oggi ha fatto abbastanza.
+
+## COMPRARE SENZA ACCOUNT (15 settembre 2026, branch `apple-511-comprare-senza-account`)
+
+**Il 14 settembre 2026 Apple ha bocciato dayalogue 1.0 (build 2)**, linea
+guida 5.1.1(v): "Apps cannot require user registration prior to allowing
+access to app content and features that are not associated specifically to
+the user", e l'obbligo di rendere l'abbonamento disponibile su tutti i
+dispositivi "is not appropriate to force user registration to meet". La
+sezione "PREMIUM VUOLE UN ACCOUNT" qui sopra e SUPERATA: resta come storia.
+Prompt completo: `PROMPT-APPLE-511-COMPRARE-SENZA-ACCOUNT.md` (radice).
+
+Decisione di Manuel: si torna a comprare senza account, e l'email si OFFRE
+dopo l'acquisto, facoltativa e raggiungibile sempre. Revert A MANO di
+`9739d05` (non `git revert`: la porta del giorno, DeviceCheck e il prezzo
+all'ospite dovevano sopravvivere), piu un pezzo nuovo.
+
+- `server/apple-verifica.ts`: accetta anche SENZA gettone se c'e il
+  braccialetto e scrive il premium su `braccialetti` (migration 025).
+  DIFFERENZA dal 4 settembre: il braccialetto deve gia esistere (`crea:
+  false`), perche dal 10 settembre nasce solo da registraBraccialetto con
+  DeviceCheck; un braccialetto sconosciuto e un 401 `braccialetto_sconosciuto`.
+  Risponde `dove: "account" | "dispositivo"`. Le due regole ferme: una
+  transazione gia di un PROFILO non torna su un braccialetto ne su un altro
+  profilo (409); una gia su un altro braccialetto lo lascia (l'ultimo vince).
+- Scheletro rimesso com'era (accordo nel prompt): `entitlement.ts` seconda
+  porta (braccialetto con premium valido = premium, import dinamico di
+  ospite.ts per il ciclo), `server/ospite.ts` `premiumDelBraccialetto` +
+  ramo nella guardia + `premiumFino` in /api/ospite/stato,
+  `ospite/stato.ts` (premium sul dispositivo, `jm.premium.dispositivo`;
+  TRAPPOLA: `dimenticaPremiumVecchio` cancellava la chiave a ogni avvio, e
+  via), `capabilities.ts` `dispositivoPremiumPuo` (tutto tranne `sync`),
+  `ospite/migrazione.ts` dimentica il premium del dispositivo dopo
+  l'adozione. `recap/server/generate.ts` una riga (braccialettoId nel log).
+- `negozio-ios.ts`: ramo `dove === "dispositivo"` (setPremiumDispositivo);
+  `serve_account` resta come esito del 401 ma il messaggio dice la strada
+  vera (Ripristina acquisti), non "serve il tuo account".
+- `premium-wall.tsx`: all'ospite dentro il guscio tornano schede, prezzo e
+  il tasto che compra; "Ripristina acquisti" chiama Apple anche da ospite;
+  "Ho gia un account" e una riga secondaria (vaiAlLogin, il muro si riapre
+  dopo il codice). ONESTA: `FEATURES_OSPITE` non promette il cloud ("Su
+  questo telefono, subito"), il sottotitolo dice che il diario resta sul
+  telefono finche non c'e un'email. La nota legale (rinnovo, Termini,
+  Privacy) c'e anche da ospite (3.1.2).
+- IL PEZZO NUOVO, `premium-welcome.tsx`: `openPremiumWelcome(dove)`. Con
+  `dove === "dispositivo"` il foglio dice "Premium e attivo su questo
+  telefono", offre l'email ("Metti la tua email" -> /login; l'adozione fa
+  il resto) e ha "Non ora", che chiude e basta: nessuna seconda finestra,
+  nessuna funzione che resta chiusa. Nelle parole di Apple: "provide them a
+  way to register at any time".
+- Impostazioni da ospite premium: riga Piano ("Premium fino al", "Su
+  questo telefono..."), Gestisci abbonamento, "Premium su tutti i
+  dispositivi" (la porta all'email detta per quello che fa, due tocchi),
+  "Ripristina acquisti" sempre. Menu account: sottotitolo con la scadenza.
+- Banco: `verify-abbonamento` sezione 9 riscritta CON LA STORIA (tre
+  cambi di idea in dieci giorni), 73/73; morso provato 10 volte (gettone
+  obbligatorio, 409 sparito, seconda porta chiusa, guardia che spende,
+  can/useCan senza dispositivo, trappola di stato.ts, "Non ora" che manda
+  al login, ripristino che porta al login). verify-ospite 56, -schermate 59,
+  pr10 26, i18n 7/7, tsc/eslint puliti.
+- NON provato dal vivo: l'acquisto vero da ospite (iPhone + TestFlight +
+  Apple ID sandbox), Termini/Privacy dal muro dentro il guscio.
