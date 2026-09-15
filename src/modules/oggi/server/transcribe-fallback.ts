@@ -82,12 +82,26 @@ export async function POST(req: NextRequest) {
         : ` Nomi propri ricorrenti (rispettare scrittura esatta): ${glossary.trim()}.`
       : "";
 
+  // La registrazione arriva A BLOCCHI (14 settembre 2026, blocchi.ts): il
+  // client manda la coda del testo del blocco precedente come contesto, e
+  // il modello riprende il filo del racconto ai bordi del taglio. Senza,
+  // ogni blocco sarebbe un frammento isolato, cioe la condizione che fece
+  // abbandonare il realtime (i nomi propri ne soffrivano). Si accoda al
+  // prompt come testo di continuazione, che e l'uso previsto del campo.
+  const contesto = inForm.get("contesto");
+  const contestoHint =
+    typeof contesto === "string" && contesto.trim().length > 0
+      ? (lang === "en"
+          ? " The story continues from here: "
+          : " Il racconto continua da qui: ") + contesto.trim().slice(0, 600)
+      : "";
+
   const upstream = new FormData();
   upstream.set("file", file, file.name || "audio.webm");
   upstream.set("model", "gpt-4o-transcribe");
   upstream.set("language", lang);
   upstream.set("response_format", "json");
-  upstream.set("prompt", ANTI_HALLUCINATION[lang] + glossaryHint);
+  upstream.set("prompt", ANTI_HALLUCINATION[lang] + glossaryHint + contestoHint);
 
   let resp: Response;
   try {

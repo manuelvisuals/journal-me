@@ -103,7 +103,8 @@ export const OGGI: Record<string, string> = {
   "Sto mandando la registrazione intera: cosi i nomi propri vengono scritti giusti.": "I am sending the whole recording: that way proper names come out right.",
   "Errore sconosciuto.": "Unknown error.",
   "Tieni premuto per parlare": "Press and hold to talk",
-  "Le parole arrivano quando premi Fine.": "The words arrive when you press Done.",
+  "Le parole arrivano quando premi Fine. Ogni blocco dura al massimo {min} minuti di parlato: quando e pieno si chiude da solo e continui nel prossimo.":
+    "The words arrive when you press Done. Each block holds at most {min} minutes of speech: when it is full it closes by itself and you carry on in the next one.",
   "Fine e salva": "Done and save",
   "Scrivi a mano": "Type it",
   "Rileggi prima di processare": "Read it back before processing",
@@ -187,8 +188,20 @@ export const OGGI: Record<string, string> = {
     "The recording is there, but I could not turn it into words.",
   "Sembra che non ci sia connessione.": "It looks like there is no connection.",
   "La rete non ha risposto in tempo.": "The network did not answer in time.",
-  "Il racconto e ancora qui: controlla la connessione e premi di nuovo Fine.":
-    "Your story is still here: check the connection and tap Done and save again.",
+  "Il racconto e ancora qui: premi di nuovo Fine per riprovare.":
+    "Your story is still here: tap Done and save again to retry.",
+  "Il server ha risposto con un errore ({http}).": "The server answered with an error ({http}).",
+  "Il server ha rifiutato la registrazione perche troppo pesante ({mb} MB) e non l'ha nemmeno ascoltata.":
+    "The server refused the recording because it was too heavy ({mb} MB) and never even listened to it.",
+  "Premere di nuovo Fine non cambia niente: annulla e racconta di nuovo, a blocchi piu corti.":
+    "Tapping Done again changes nothing: cancel and tell it again, in shorter blocks.",
+  "[qui manca un pezzo del racconto: la trascrizione di questo blocco non e riuscita]":
+    "[a piece of the story is missing here: this block could not be transcribed]",
+  "Il microfono si e fermato a meta racconto. Premi Fine per tenere quello che hai detto.":
+    "The microphone stopped halfway through. Tap Done to keep what you said so far.",
+  "Blocco {n} chiuso: e al sicuro. Continua pure, il prossimo e gia aperto.":
+    "Block {n} closed: it is safe. Carry on, the next one is already open.",
+  "Blocco {n}": "Block {n}",
   "Giorno prima": "Previous day",
   "Giorno dopo": "Next day",
   "Scegli il giorno": "Choose the day",
