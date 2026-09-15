@@ -254,6 +254,16 @@ export function RecordingOverlay({
   // Gli esiti gia ottenuti, per indice di blocco: un secondo Fine dopo un
   // errore ritrascrive SOLO i blocchi che mancano, non quelli riusciti.
   const esitiRef = useRef<Map<number, string>>(new Map());
+  // LA CATENA: la trascrizione di un blocco parte appena il blocco si chiude,
+  // MENTRE si registra il successivo (scelta di Manuel, 15 settembre 2026),
+  // cosi a Fine l'attesa e quasi zero. E una catena e non un ventaglio: il
+  // blocco N+1 vuole la coda del testo di N come contesto, quindi parte
+  // quando N ha risposto. Un blocco si registra in 3 minuti e si trascrive
+  // in 10-20 s: la catena non resta mai indietro. L'ordine dei testi non
+  // dipende comunque dall'ordine di arrivo (unisciTesti ordina per indice).
+  const catenaRef = useRef<Promise<void>>(Promise.resolve());
+  // Il glossario si legge UNA volta per registrazione, alla prima chiamata.
+  const glossarioRef = useRef<Promise<string> | null>(null);
   // L'orologio del blocco in corso (blocchi.ts): cresce solo col tasto premuto.
   const orologioRef = useRef<Orologio>(orologioNuovo());
   // I byte davvero consegnati per il blocco in corso.
@@ -647,7 +657,10 @@ export function RecordingOverlay({
         `blocco ${blocchiRef.current.length + 1} chiuso (${motivo}) inciso=${chiuso.incisoMs}ms byte=${byteBloccoRef.current}`,
       );
       const blob = await stopTape();
-      if (blob && blob.size > BLOCCO_VUOTO_BYTE) blocchiRef.current.push(blob);
+      if (blob && blob.size > BLOCCO_VUOTO_BYTE) {
+        blocchiRef.current.push(blob);
+        accodaTrascrizione(blocchiRef.current.length - 1);
+      }
       // Nel frattempo Fine o Annulla possono aver smontato il microfono.
       if (localStreamRef.current !== stream) return;
       // Il tasto puo essere stato lasciato (o premuto) durante lo stop: si
@@ -796,20 +809,48 @@ export function RecordingOverlay({
    * la rete c'e), ha un secondo tentativo; se fallisce ancora lascia il
    * segnaposto e il resto del racconto si salva lo stesso.
    */
-  async function trascriviBlocchi(blocchi: Blob[]) {
-    let glossario = "";
-    try {
+  function caricaGlossario(): Promise<string> {
+    if (!glossarioRef.current) {
       // Il glossario e un aiuto, non una condizione: pochi secondi e poi si
       // parte senza. Era QUESTA l'attesa senza fondo del 3 settembre 2026.
-      const terms = await conTetto(
+      glossarioRef.current = conTetto(
         loadPersonaNames(mode ?? "auth"),
         GLOSSARIO_TETTO_MS,
         "glossario",
-      );
-      if (terms.length > 0) glossario = terms.join(", ");
-    } catch {
-      // glossary hint is best-effort
+      )
+        .then((terms) => (terms.length > 0 ? terms.join(", ") : ""))
+        .catch(() => "");
     }
+    return glossarioRef.current;
+  }
+
+  /**
+   * Mette in coda la trascrizione del blocco `indice` sulla catena. Un
+   * guasto qui non si mostra (la persona sta ancora parlando): resta un
+   * buco in esitiRef e a Fine si riprova con calma.
+   */
+  function accodaTrascrizione(indice: number) {
+    catenaRef.current = catenaRef.current.then(async () => {
+      if (esitiRef.current.has(indice)) return;
+      const blob = blocchiRef.current[indice];
+      if (!blob) return;
+      const glossario = await caricaGlossario();
+      const prima = indice > 0 ? esitiRef.current.get(indice - 1) : undefined;
+      const testo = await transcribeBlocco(
+        blob,
+        glossario,
+        prima ? codaDelTesto(prima) : "",
+      );
+      if (testo !== null) esitiRef.current.set(indice, testo);
+      dbg(`catena: blocco ${indice + 1} ${testo === null ? "fallito" : "trascritto"} durante la registrazione`);
+    });
+  }
+
+  async function trascriviBlocchi(blocchi: Blob[]) {
+    // Prima si aspetta la catena: i blocchi chiusi durante la registrazione
+    // sono quasi sempre gia trascritti, e resta da fare solo l'ultimo.
+    await catenaRef.current;
+    const glossario = await caricaGlossario();
     const esiti: EsitoBlocco[] = [];
     let coda = "";
     for (let i = 0; i < blocchi.length; i++) {
@@ -941,6 +982,7 @@ export function RecordingOverlay({
     }
     blocchiRef.current = [];
     esitiRef.current = new Map();
+    glossarioRef.current = null;
     setState("connecting"); // transient; the parent switches the view away
     onStop(racconto.testo, durata, targetDate);
   }

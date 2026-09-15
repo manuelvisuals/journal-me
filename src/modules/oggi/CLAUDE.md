@@ -428,6 +428,12 @@ prima di cominciare (la barra dice "Blocco 1, 00:00 / 03:00").
   non cambia niente. Il vecchio "controlla la connessione" non c'e piu.
 - NON provato dal vivo: iPhone (WebKit, mp4/AAC, se rispetta i 64 kbit/s,
   se `pause()` durante il cambio di blocco si comporta). Serve TestFlight.
-- Da decidere con Manuel: trascrivere un blocco MENTRE si registra il
-  successivo (attesa quasi zero a fine racconto). `unisciTesti` e gia
-  pronto (ordina per indice, non per arrivo).
+- LA CATENA (scelta di Manuel, 15 settembre): la trascrizione di un blocco
+  parte appena il blocco si chiude, mentre si registra il successivo
+  (`accodaTrascrizione`, `catenaRef`). E una catena, non un ventaglio: N+1
+  parte quando N ha risposto, perche vuole la sua coda come contesto; 3
+  minuti di registrazione contro 10-20 s di trascrizione, non resta mai
+  indietro. Un guasto in catena non si mostra (la persona sta parlando):
+  a Fine si aspetta la catena e si riprova cio che manca. Annulla dopo
+  blocchi gia trascritti spreca ~1 centesimo a blocco: accettato. Il
+  tetto CHIAMATE_PER_GIORNATA dell'ospite e 60: cinque blocchi ne usano 5.

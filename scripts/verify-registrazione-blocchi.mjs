@@ -185,6 +185,9 @@ check("7 il tasto premuto/lasciato muove l'orologio dei blocchi", /premi\(orolog
 check("7 il limite si controlla a ogni pezzo del registratore", /ondataavailable[\s\S]{0,900}limiteRaggiunto\(/.test(overlay));
 check("7 al rilascio col blocco quasi pieno si chiude in un silenzio", /chiudereAlRilascio\(/.test(overlay) && /chiudiBlocco\("rilascio"\)/.test(overlay));
 check("7 il blocco nuovo si apre sulla STESSA traccia (startTape dentro chiudiBlocco)", /async function chiudiBlocco[\s\S]*?startTape\(stream, ancoraPremuto\)/.test(overlay));
+check("7 la trascrizione di un blocco parte appena si chiude, in catena", /accodaTrascrizione\(blocchiRef\.current\.length - 1\)/.test(overlay) && /catenaRef\.current = catenaRef\.current\.then/.test(overlay));
+check("7 a Fine si aspetta la catena prima di trascrivere il resto", /async function trascriviBlocchi[\s\S]{0,400}await catenaRef\.current/.test(overlay));
+check("7 il blocco N+1 riceve la coda di N anche in catena", /esitiRef\.current\.get\(indice - 1\)/.test(overlay));
 check("7 il tetto della trascrizione e PER BLOCCO", /timeoutMs:\s*TRASCRIZIONE_TETTO_MS/.test(overlay) && !/TRASCRIZIONE_TETTO_MS - \(Date\.now\(\)/.test(overlay));
 check("7 ogni blocco riceve glossario e contesto", /fd\.set\("glossary", glossario\)/.test(overlay) && /fd\.set\("contesto", contesto\)/.test(overlay));
 check("7 la coda del blocco prima diventa il contesto del dopo", /coda = codaDelTesto\(testo\)/.test(overlay));

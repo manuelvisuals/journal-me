@@ -73,7 +73,7 @@ async function pagina() {
     const corpo = req.postDataBuffer()?.toString("latin1") ?? "";
     const m = corpo.match(/name="contesto"\r\n\r\n([\s\S]*?)\r\n--/);
     const peso = corpo.length;
-    chiamate.push({ contesto: m ? m[1] : null, peso });
+    chiamate.push({ contesto: m ? m[1] : null, peso, quando: Date.now() });
     const n = chiamate.length;
     return route.fulfill({
       status: 200,
@@ -200,8 +200,12 @@ if (LUNGO) {
   console.log(`  blocco pieno (180 s a Opus 32): ${byte1} byte = ${(byte1 / 1_000_000).toFixed(2)} MB, ${Math.round(byte1 / 180)} B/s`);
   check("un blocco pieno pesa molto meno del tetto di 3,5 MB", byte1 > 0 && byte1 < 1_500_000, `${byte1} byte`);
 
+  // La catena: il blocco 1 deve essere gia stato mandato PRIMA di Fine.
+  check("il blocco 1 e stato trascritto MENTRE si registrava il 2 (prima di Fine)", chiamate.length === 1, `${chiamate.length} chiamate prima di Fine`);
+  const tFine = Date.now();
   await page.getByRole("button", { name: /Fine e salva/ }).click();
   await page.waitForFunction(() => /blocco 2/.test(document.querySelector("textarea")?.value ?? ""), null, { timeout: 60_000 }).catch(() => {});
+  check("a Fine parte solo l'ultimo blocco", chiamate.length === 2 && chiamate[1].quando >= tFine && chiamate[0].quando < tFine);
   const testo = await page.evaluate(() => document.querySelector("textarea")?.value ?? "");
   check("due blocchi: due chiamate", chiamate.length === 2, String(chiamate.length));
   check("la seconda chiamata porta la coda del primo testo come contesto", chiamate[1] && /Karya/.test(chiamate[1].contesto ?? ""), JSON.stringify(chiamate[1]));
