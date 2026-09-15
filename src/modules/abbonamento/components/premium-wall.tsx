@@ -517,7 +517,12 @@ export function PremiumWall() {
                   prezzo: prodotto.prezzo,
                   periodo: t(PERIODI[prodotto.periodo] ?? "al mese"),
                 })}{" "}
-            <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot; <a href="/privacy">{t("Privacy")}</a>
+            <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noreferrer">{t("Termini")}</a> &middot;{" "}
+            {/* Dentro il guscio /privacy e una pagina SENZA dock ne barra:
+                un vicolo cieco senza tasto indietro (controaudit 5.1.1 del
+                15 settembre 2026). Li si apre il sito in Safari, come i
+                Termini; sul web la pagina interna va benissimo. */}
+            <a href={negozio ? "https://www.dayalogue.com/privacy" : "/privacy"} target={negozio ? "_blank" : undefined} rel={negozio ? "noreferrer" : undefined}>{t("Privacy")}</a>
           </div>
         )}
       </div>

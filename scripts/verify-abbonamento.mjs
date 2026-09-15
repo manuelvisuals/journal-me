@@ -480,6 +480,10 @@ const NEGOZIO = {
   check("ospite: il muro non promette il cloud a chi non ce l'ha", /su questo telefono/i.test(muro) && !/la copia nel cloud si aggiorna da sola/.test(muro), muro.replace(/\s+/g, " ").slice(0, 200));
   check("ospite: il ripristino nel muro si chiama 'Ripristina acquisti' (e chiama Apple, non il login)", /Ripristina acquisti/.test(muro) && !/Ho gia un abbonamento/.test(muro));
   check("ospite: la nota legale (rinnovo, Termini, Privacy) c'e anche da ospite (3.1.2)", /Disdici quando vuoi/.test(muro) && /Termini/.test(muro) && /Privacy/.test(muro));
+  // Dentro il guscio i due link legali aprono il sito (Safari), non la
+  // pagina /privacy del bundle, che non ha dock ne barra: un vicolo cieco.
+  const legali = await page.locator(".jm-wall-nota a").evaluateAll((as) => as.map((a) => ({ href: a.getAttribute("href"), target: a.getAttribute("target") })));
+  check("guscio: Termini e Privacy sono link assoluti che si aprono fuori (niente vicolo cieco senza indietro)", legali.length === 2 && legali.every((l) => /^https:\/\//.test(l.href ?? "") && l.target === "_blank"), JSON.stringify(legali));
   await page.locator(".jm-wall .btn-primary").click();
   await page.locator(".jm-cong").waitFor({ state: "visible", timeout: 15_000 }).catch(() => {});
   check("ospite: dopo 'Prova gratis' si apre direttamente il foglio di Apple (compra) e poi il benvenuto, nessun login", (await page.evaluate(() => window.__jmNegozioFinto.__chiamate.some((c) => c.m === "compra"))) && (await page.locator(".jm-cong").count()) === 1 && !page.url().includes("/login"));
