@@ -22,6 +22,7 @@ import { registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 import { apiFetch } from "@/lib/api";
 import { isNative } from "@/lib/native/platform";
 import { forcePlanRefresh, setPlanNow } from "@/lib/plan";
+import { aggiornaStatoOspite, setPremiumDispositivo } from "@/lib/ospite/stato";
 import { PRODOTTI_IOS, type ProdottoIos } from "@/lib/pricing";
 
 export type ProdottoNegozio = {
@@ -168,10 +169,15 @@ export async function prodottiPremium(annualeAttivo: boolean): Promise<ProdottoN
 }
 
 export type EsitoAcquisto =
-  | { esito: "premium"; expiresAt: string | null }
+  | { esito: "premium"; expiresAt: string | null; dove: "account" | "dispositivo" }
   | { esito: "annullato" }
   | { esito: "in_attesa" }
-  /** Il server non ha visto un account: premium non si puo attivare senza. */
+  /**
+   * Il server ha risposto 401: ne gettone ne braccialetto riconosciuto.
+   * Dal 15 settembre 2026 non e piu "serve un account" (si compra senza,
+   * Apple 5.1.1(v)); il nome resta per i chiamanti, il messaggio dice la
+   * strada vera: Ripristina acquisti.
+   */
   | { esito: "serve_account"; messaggio: string }
   | { esito: "errore"; messaggio: string };
 
@@ -208,16 +214,13 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     }
   }
   if (resp.status === 401) {
-    // PREMIUM VUOLE UN ACCOUNT (10 settembre 2026): il server risponde 401 a
-    // chi non ha un gettone. Non dovrebbe succedere, perche il muro manda al
-    // login PRIMA di aprire il foglio di Apple; se succede lo stesso (un
-    // gettone scaduto proprio in quell'istante) l'acquisto e comunque al
-    // sicuro presso Apple e si recupera entrando e ripristinando.
-    // Chi legge questo testo e senza account, e da ospite la riga si
-    // chiama "Ho gia un abbonamento", non "Ripristina acquisti" (audit del
-    // 10 settembre 2026): si dice la strada vera, non il nome di una riga
-    // che comparira solo dopo il login.
-    return { esito: "serve_account", messaggio: "Per attivare premium serve il tuo account: entra con la tua email. L'acquisto e al sicuro presso Apple e si riattiva da Impostazioni." };
+    // Dal 15 settembre 2026 il server accetta anche il solo braccialetto
+    // (Apple 5.1.1(v): si compra senza account), quindi un 401 qui e raro:
+    // un braccialetto che il server non conosce (dispositivo non ancora
+    // registrato) o un gettone scaduto proprio in quell'istante. L'acquisto
+    // e comunque al sicuro presso Apple: si recupera con Ripristina
+    // acquisti, che funziona anche senza account.
+    return { esito: "serve_account", messaggio: "Il server non ha riconosciuto questo dispositivo. L'acquisto e al sicuro presso Apple: riapri l'app e tocca Ripristina acquisti." };
   }
   if (resp.status === 409) {
     return { esito: "errore", messaggio: "Questo abbonamento e legato a un altro account: entra con quello." };
@@ -233,11 +236,19 @@ async function consegnaAlServer(t: Transazione): Promise<EsitoAcquisto> {
     }
     return { esito: "errore", messaggio: m };
   }
-  const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null };
+  const dati = (await resp.json()) as { plan?: string; expiresAt?: string | null; dove?: string };
   if (dati.plan === "premium") {
-    setPlanNow("premium");
-    void forcePlanRefresh();
-    return { esito: "premium", expiresAt: dati.expiresAt ?? null };
+    if (dati.dove === "dispositivo") {
+      // Comprato senza email (Apple 5.1.1(v)): il premium vive sul
+      // braccialetto del telefono. Si ricorda la scadenza e si rilegge lo
+      // stato, che ora dice premiumFino.
+      setPremiumDispositivo(dati.expiresAt ?? null);
+      void aggiornaStatoOspite();
+    } else {
+      setPlanNow("premium");
+      void forcePlanRefresh();
+    }
+    return { esito: "premium", expiresAt: dati.expiresAt ?? null, dove: dati.dove === "dispositivo" ? "dispositivo" : "account" };
   }
   return { esito: "errore", messaggio: "Questo abbonamento e scaduto: puoi riattivarlo da qui." };
 }

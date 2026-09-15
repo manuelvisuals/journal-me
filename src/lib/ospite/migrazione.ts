@@ -24,6 +24,7 @@ import { getStore } from "@/lib/data/store";
 import { LocalStore } from "@/lib/data/store/local";
 import { eDiFabbrica } from "@/lib/data/store/default-goals";
 import { forcePlanRefresh } from "@/lib/plan";
+import { dimenticaPremiumDispositivo } from "@/lib/ospite/stato";
 import { utenteDalDispositivo } from "@/lib/supabase/client";
 
 const CHIAVE = "jm.migrazione.locale";
@@ -126,9 +127,10 @@ export async function migraSePromesso(): Promise<EsitoMigrazione> {
       // senza rete si riprova al prossimo avvio: il promemoria resta
       return;
     }
-    // Se il braccialetto portava un premium comprato senza email (prima del
-    // 10 settembre 2026), adotta_braccialetto l'ha appena messo sul profilo:
-    // il piano si rilegge, e da qui in poi vale su ogni dispositivo.
+    // Da ora il premium (se c'era) e dell'account: adotta_braccialetto l'ha
+    // appena messo sul profilo, il telefono non ne ha piu uno suo, e il
+    // piano si rilegge cosi vale su ogni dispositivo.
+    dimenticaPremiumDispositivo();
     if (premiumSpostato) void forcePlanRefresh();
 
     // 2. Le giornate salgono, chiuse a chiave.

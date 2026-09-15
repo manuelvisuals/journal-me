@@ -47,7 +47,9 @@ const DINAMICHE = {
     "Copia criptata nel cloud, si aggiorna da sola",
     "Su tutti i tuoi dispositivi, con la tua chiave",
   ],
-  "modules/abbonamento/components/premium-wall.tsx (TITLES, FEATURES, PERIODI)": [
+  "modules/abbonamento/components/premium-wall.tsx (TITLES, FEATURES, FEATURES_OSPITE, PERIODI)": [
+    "Su questo telefono, subito",
+    "Con una email, quando vuoi, anche su tutti i dispositivi e con la copia nel cloud.",
     "Per raccontare a voce\nserve premium",
     "Per il titolo e la sintesi\nserve premium",
     "Per i recap del mese\nserve premium",
