@@ -1,0 +1,9 @@
+/* Le frasi dei permessi in inglese. Info.plist tiene l'inglese (la lingua base,
+   quella che vede il revisore di Apple); questo file vince quando il
+   telefono e in inglese. Linea guida 5.1.1(ii)/4: bocciatura del 14 settembre
+   2026, frasi solo in italiano su un iPhone in inglese. */
+
+"NSMicrophoneUsageDescription" = "dayalogue uses the microphone when you record the story of your day. The audio is sent only to be turned into text and is not kept: only the text is saved.";
+"NSFaceIDUsageDescription" = "dayalogue uses Face ID so that only you can open your diary.";
+"NSCameraUsageDescription" = "dayalogue uses the camera only when you choose to take a photo for your profile or for your day. No photo is ever taken on its own.";
+"NSPhotoLibraryUsageDescription" = "dayalogue opens your photo library only when you choose a photo for your profile or for your day. Only the photos you pick are read.";

@@ -6,6 +6,11 @@
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>it</string>
+	</array>
 	<key>CFBundleDisplayName</key>
         <string>Dayalogue</string>
 	<key>CFBundleExecutable</key>
@@ -40,13 +45,13 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>dayalogue usa il microfono per registrare il racconto della tua giornata. L'audio resta sul telefono: viene trascritto e poi scartato, si salva solo il testo.</string>
+	<string>dayalogue uses the microphone when you record the story of your day. The audio is sent only to be turned into text and is not kept: only the text is saved.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>dayalogue usa Face ID per aprire il diario solo a te.</string>
+	<string>dayalogue uses Face ID so that only you can open your diary.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>dayalogue usa la fotocamera solo quando scegli di scattare una foto per il profilo o per la giornata. Nessuna foto viene scattata da sola.</string>
+	<string>dayalogue uses the camera only when you choose to take a photo for your profile or for your day. No photo is ever taken on its own.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>dayalogue accede al rullino solo quando scegli una foto per il profilo o per la giornata. Vengono lette solo le foto che scegli tu.</string>
+	<string>dayalogue opens your photo library only when you choose a photo for your profile or for your day. Only the photos you pick are read.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

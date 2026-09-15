@@ -38,7 +38,18 @@ const RICHIESTE = [
 for (const [chiave, cosa] of RICHIESTE) {
   const f = frase(chiave);
   check(`Info.plist spiega ${cosa}`, f !== null && f.length >= 30, f ? `"${f.slice(0, 60)}..."` : "MANCA");
-  check(`${chiave}: la frase dice "dayalogue" e dice quando`, f !== null && /dayalogue/.test(f) && /quando|per /.test(f));
+  check(`${chiave}: la frase dice "dayalogue" e dice quando`, f !== null && /dayalogue/.test(f) && /quando|per |when|only /.test(f));
+  // Bocciatura Apple del 14 settembre 2026 (linea guida 4 / 5.1.1(ii)): le
+  // frasi erano solo in italiano su un iPhone in inglese. Info.plist tiene
+  // l'INGLESE (la lingua base e quella del revisore) e it.lproj/InfoPlist.strings
+  // l'italiano; tutte e due le lingue devono avere ogni chiave.
+  check(`${chiave}: Info.plist e in inglese (la lingua base)`, f !== null && /\b(uses|opens|when|your)\b/.test(f) && !/\b(usa|quando|scegli)\b/.test(f), f ? `"${f.slice(0, 50)}"` : "");
+  for (const lingua of ["en", "it"]) {
+    const strings = readFileSync(`ios/App/App/${lingua}.lproj/InfoPlist.strings`, "utf8");
+    const r = new RegExp(`"${chiave}"\\s*=\\s*"([^"]{30,})";`);
+    const m = strings.match(r);
+    check(`${chiave}: ${lingua}.lproj/InfoPlist.strings la traduce`, m !== null && /dayalogue/.test(m[1]));
+  }
 }
 
 /* I due punti d'ingresso che rendono le frasi necessarie esistono davvero:
@@ -81,6 +92,14 @@ check("reminders: sincronizza NON chiede mai il permesso", proponi.length > 0 &&
 const gate = readFileSync("src/components/auth-gate.tsx", "utf8");
 check("il cancello all'avvio risincronizza soltanto", /sincronizzaPromemoriaSerale\(\)/.test(gate) && !/proponiPromemoriaSerale|ensureEveningReminder/.test(gate));
 const salva = readFileSync("src/lib/actions/save-recording.ts", "utf8");
+/* ---- il manifesto della privacy e il progetto Xcode (best practice 2024+) ---- */
+const pbx = readFileSync("ios/App/App.xcodeproj/project.pbxproj", "utf8");
+check("PrivacyInfo.xcprivacy esiste e dice niente tracciamento", /<key>NSPrivacyTracking<\/key>\s*<false\/>/.test(readFileSync("ios/App/App/PrivacyInfo.xcprivacy", "utf8")));
+check("PrivacyInfo.xcprivacy e nelle Resources del progetto Xcode", /PrivacyInfo\.xcprivacy in Resources/.test(pbx));
+check("InfoPlist.strings (en + it) e nelle Resources del progetto Xcode, e 'it' e fra le regioni note", /InfoPlist\.strings in Resources/.test(pbx) && /knownRegions = \(\s*en,\s*it,\s*Base,/.test(pbx) && /path = it\.lproj\/InfoPlist\.strings/.test(pbx) && /path = en\.lproj\/InfoPlist\.strings/.test(pbx));
+check("Info.plist dichiara le lingue (CFBundleLocalizations: en, it)", /<key>CFBundleLocalizations<\/key>\s*<array>\s*<string>en<\/string>\s*<string>it<\/string>/.test(plist));
+check("la frase del microfono non mente: l'audio viene inviato per la trascrizione, non 'resta sul telefono'", !/resta sul telefono|stays on the phone/.test(plist) && /sent only|inviato solo/.test(plist + readFileSync("ios/App/App/it.lproj/InfoPlist.strings", "utf8")));
+
 check("il salvataggio della giornata propone la notifica (saved.length > 0)", /if \(saved\.length > 0\) void proponiPromemoriaSerale\(\)/.test(salva));
 const chiedono = tsx("src").filter((f) => /proponiPromemoriaSerale/.test(readFileSync(f, "utf8")));
 check("nessun componente .tsx chiede il permesso notifiche da solo", chiedono.length === 0, chiedono.join(", "));
