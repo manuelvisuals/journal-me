@@ -93,15 +93,10 @@ export const ACCESSO: Record<string, string> = {
   "Ovunque tu sia.": "Wherever you are.",
   "Backup chiuso a chiave, su iPad e computer. Ti mando un codice. Mai una password.": "Locked backup, on iPad and computer. I will send you a code. Never a password.",
   "Le giornate scritte qui salgono.": "The days written here go up.",
-  // La porta del giorno (porta-giorno.tsx, 10 settembre 2026).
-  "{n} giornate,\ncon l'AI accesa": "{n} days,\nwith the AI on",
-  "Racconti a voce e lei trascrive, scrive il titolo e la sintesi della giornata. Sono in regalo: non serve nessuna email.":
-    "Speak your day and it transcribes, writes the title and the summary. They are a gift: no email needed.",
+  // La porta del giorno (porta-giorno.tsx, 10 settembre 2026; hero e lettera
+  // rifatte il 15 settembre 2026).
+  "{n} giorni di funzioni premium in regalo": "{n} days of premium features as a gift",
   "Comincia a scrivere": "Start writing",
-  "Una giornata si conta quando l'AI lavora. Tutto il resto di quel giorno e compreso.":
-    "A day counts when the AI works. Everything else on that day is included.",
-  "Le tue giornate restano su questo dispositivo. Nel cloud salgono solo chiuse a chiave, quando lo vorrai tu.":
-    "Your days stay on this device. They go to the cloud only locked, and only when you want.",
   "uno,due,tre,quattro,cinque,sei,sette,otto,nove,dieci": "one,two,three,four,five,six,seven,eight,nine,ten",
   "1 giornata Ai ancora in regalo.": "1 AI day still a gift.",
   "{n} giornate Ai ancora in regalo.": "{n} AI days still a gift.",

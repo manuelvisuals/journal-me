@@ -857,14 +857,6 @@
   text-transform: capitalize;
 }
 
-.jm-benv-sal-oltre {
-  margin-top: calc(10px * var(--jm-space));
-  text-align: center;
-  font-size: calc(12px * var(--jm-ui-scale));
-  line-height: 1.5;
-  color: var(--color-ink-faint);
-}
-
 .jm-benv-sal-pallini {
   display: flex;
   justify-content: center;

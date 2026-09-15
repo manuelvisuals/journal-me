@@ -52,17 +52,23 @@ export type Benvenuto = {
 /** La foto committata nel repo: e' il valore di riserva di `fotoData`. */
 export const FOTO_DI_FABBRICA = "/foto-benvenuto.jpg";
 
-/** Copia esatta del seed della migration 018. */
+/**
+ * Copia esatta del seed della migration 018, salvo `testo`/`testoEn` e
+ * `versione`: aggiornati il 15 settembre 2026 con la lettera vera di Manuel
+ * (approvata via mockup, dayalogue-benvenuto-mockup.html v3). E' solo la
+ * rete di sicurezza offline: chi ha il cloud legge la riga vera dalla
+ * tabella `benvenuto` (pannello admin), che questo file non tocca.
+ */
 export const BENVENUTO_DI_FABBRICA: Benvenuto = {
   attivo: true,
-  versione: 1,
+  versione: 2,
 
   occhiello: "Benvenuto in",
   promessa:
     "Racconti la giornata a voce, come viene. dayalogue la scrive, le da un titolo e la divide in aree, e te la rida nel Mese e nei Recap.",
   evidenza: "Nessuna pubblicita. Le tue giornate non si vendono.",
   testo:
-    "Ho fatto dayalogue come il diario che volevo per me: cinque minuti a fine giornata, e mesi dopo ritrovarci qualcosa.\n\nE' ancora il progetto di una persona sola, agli inizi: quello che mi scrivi cambia davvero cosa arriva dopo.\n\nSe qualcosa e confuso, rotto o manca, *scrivimi prima di lasciar perdere*. Leggo tutti i messaggi e rispondo io.",
+    "Volevo un'app a cui raccontare la mia giornata la sera, capace di ascoltare, riassumere e organizzare tutto per aree. Cosi e nata Dayalogue, prima come journal personale, poi aperta a tutti.\n\nPuoi usarla gratis per sempre come un normale diario che scrivi a mano, oppure attivare l'AI e lasciare che sia lei ad ascoltare, scrivere e organizzare i tuoi ricordi. Penso che sia questo il punto forte dell'app.\n\nPer fartela provare appieno, ti regalo 10 giorni di AI. Poi decidi tu liberamente se continuare gratis, o passare a Premium.\n\nSe trovi un bug, hai un problema o qualcosa non ti convince, scrivimi prima di arrenderti. Leggo e rispondo personalmente a tutti.\n\nSe sei un influencer o coach e vuoi collaborare con Dayalogue, oppure creare un'app personalizzata per le tue esigenze, scrivimi e parliamone.\n\nBuon journaling,",
   firma: "Manuel",
   bottone: "Inizia",
   contattoRiga: "Hai gia qualcosa in mente? Scrivimi qui",
@@ -75,7 +81,7 @@ export const BENVENUTO_DI_FABBRICA: Benvenuto = {
     "Tell your day out loud, just as it comes. dayalogue writes it down, gives it a headline, splits it into areas, and hands it back in Month and Recaps.",
   evidenzaEn: "No ads. Your days are never sold.",
   testoEn:
-    "I built dayalogue as the diary I wanted for myself: five minutes at the end of the day, and something worth finding again months later.\n\nIt is still an early-stage, one-person project, so what you write me genuinely shapes what comes next.\n\nIf something feels confusing, broken or missing, *please message me before giving up*. I read every message and reply personally.",
+    "I wanted an app to tell my day to in the evening, one able to listen, summarize and organize everything by area. That is how Dayalogue was born, first as my own personal journal, later opened up to everyone.\n\nYou can use it for free forever, like a normal diary you write by hand, or turn on the AI and let it listen, write and organize your memories for you. I think that is the real strength of the app.\n\nSo you can try it properly, I am giving you 10 days of AI as a gift. After that, you freely choose whether to keep going for free or move to Premium.\n\nIf you find a bug, run into a problem, or something does not convince you, write to me before giving up. I read and reply to everyone personally.\n\nIf you are an influencer or coach and want to collaborate with Dayalogue, or have a custom app built for your needs, write to me and let us talk about it.\n\nHappy journaling,",
   firmaEn: "Manuel",
   bottoneEn: "Get started",
   contattoRigaEn: "Already have something in mind? Tell me here",

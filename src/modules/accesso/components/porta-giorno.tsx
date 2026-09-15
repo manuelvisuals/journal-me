@@ -12,12 +12,14 @@
  * sono le memorie, la rete e il disegno.
  *
  * Cosa mostra, per variante (porta-stato.ts):
- *  - lettera:  il primo avvio. Nel guscio iOS il regalo in testa ("N
- *              giornate, con l'AI accesa", "Comincia a scrivere") e sotto la
- *              lettera di Manuel (dal pannello admin, src/lib/benvenuto.ts);
- *              sul web solo la lettera, perche li il regalo non c'e. In
- *              locale c'e "Ho gia un account" (B5): chi cambia telefono e
- *              il revisore Apple devono vedere la porta del ritorno subito.
+ *  - lettera:  il primo avvio. Nel guscio iOS il regalo in testa ("N giorni
+ *              di funzioni premium in regalo") e sotto la lettera di Manuel
+ *              (dal pannello admin, src/lib/benvenuto.ts), coi tasti alla
+ *              fine dello scroll invece che in un piede fermo (15 settembre
+ *              2026: si legge prima di scegliere); sul web solo la lettera,
+ *              perche li il regalo non c'e. In locale c'e "Ho gia un
+ *              account" (B5): chi cambia telefono e il revisore Apple
+ *              devono vedere la porta del ritorno subito.
  *  - cambiata: "N giornate Ai ancora in regalo.", i pallini, "Passa a premium".
  *  - uguale:   il giorno, non il numero: chi scrive a mano per un mese non
  *              legge trenta volte la stessa frase (5A). Premium resta a un
@@ -241,11 +243,15 @@ export function PortaGiorno() {
   const contenuto = ((): { hero: string; corpo: string; primario: Tasto; secondario?: Tasto; quieto?: Tasto } => {
     switch (variante) {
       case "lettera":
+        // Hero + lettera (Manuel, 15 settembre 2026): non piu "N giornate,
+        // con l'AI accesa" + una promessa breve. Il regalo si dice in una
+        // riga sola ("N giorni di funzioni premium in regalo") e sotto
+        // scorre la lettera vera (pannello admin, src/lib/benvenuto.ts). I
+        // tasti stanno alla fine della lettera, non in un piede fermo: si
+        // legge prima, si sceglie dopo (vedi il rendering piu sotto).
         return {
-          hero: nativo ? t("{n} giornate,\ncon l'AI accesa", { n: formatNumber(max) }) : "",
-          corpo: nativo
-            ? t("Racconti a voce e lei trascrive, scrive il titolo e la sintesi della giornata. Sono in regalo: non serve nessuna email.")
-            : "",
+          hero: nativo ? t("{n} giorni di funzioni premium in regalo", { n: formatNumber(max) }) : "",
+          corpo: "",
           primario: { testo: t("Comincia a scrivere"), azione: chiudi },
           quieto: mode === "local" ? { testo: t("Ho gia un account"), azione: account } : undefined,
         };
@@ -335,9 +341,6 @@ export function PortaGiorno() {
         <div className="jm-benv-sal-corpo" ref={corpoRef}>
           {hero !== "" && <p className="jm-benv-sal-hero">{hero}</p>}
           {corpo !== "" && <p className="jm-benv-sal-promessa">{corpo}</p>}
-          {lettera && nativo && (
-            <p className="jm-benv-sal-oltre">{t("Una giornata si conta quando l'AI lavora. Tutto il resto di quel giorno e compreso.")}</p>
-          )}
           {mostraPallini && pallini}
 
           {lettera && (
@@ -357,35 +360,48 @@ export function PortaGiorno() {
                 </p>
               ))}
               {testi.firma.trim() !== "" && <p className="jm-benv-sal-firma">{testi.firma}</p>}
+
+              {/* I tasti chiudono la lettera invece di stare in un piede
+                  fermo (Manuel, 15 settembre 2026): cosi si legge prima di
+                  scegliere. La sfumatura "c'e altro sotto" (data-altro, qui
+                  sopra su jm-benv-sal-corpo) resta il segnale che si deve
+                  scorrere fino in fondo per trovarli. */}
+              <button type="button" className="jm-benv-sal-b" onClick={primario.azione}>
+                {primario.testo}
+              </button>
+              {quieto && (
+                <button type="button" className="jm-benv-sal-quieto" onClick={quieto.azione}>
+                  {quieto.testo}
+                </button>
+              )}
+              {contatto && (
+                <p className="jm-benv-sal-sotto">
+                  <a href={contatto.url} {...(/^https?:/i.test(contatto.url) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                    {contatto.riga}
+                  </a>
+                </p>
+              )}
             </>
           )}
         </div>
 
-        <div className="jm-benv-sal-piede">
-          <button type="button" className="jm-benv-sal-b" onClick={primario.azione}>
-            {primario.testo}
-          </button>
-          {secondario && (
-            <button type="button" className="jm-benv-sal-ghost" onClick={secondario.azione}>
-              {secondario.testo}
+        {!lettera && (
+          <div className="jm-benv-sal-piede">
+            <button type="button" className="jm-benv-sal-b" onClick={primario.azione}>
+              {primario.testo}
             </button>
-          )}
-          {quieto && (
-            <button type="button" className="jm-benv-sal-quieto" onClick={quieto.azione}>
-              {quieto.testo}
-            </button>
-          )}
-          {lettera && nativo && (
-            <p className="jm-benv-sal-sotto">{t("Le tue giornate restano su questo dispositivo. Nel cloud salgono solo chiuse a chiave, quando lo vorrai tu.")}</p>
-          )}
-          {lettera && contatto && (
-            <p className="jm-benv-sal-sotto">
-              <a href={contatto.url} {...(/^https?:/i.test(contatto.url) ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-                {contatto.riga}
-              </a>
-            </p>
-          )}
-        </div>
+            {secondario && (
+              <button type="button" className="jm-benv-sal-ghost" onClick={secondario.azione}>
+                {secondario.testo}
+              </button>
+            )}
+            {quieto && (
+              <button type="button" className="jm-benv-sal-quieto" onClick={quieto.azione}>
+                {quieto.testo}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
