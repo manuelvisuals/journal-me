@@ -76,6 +76,10 @@ async function seed(page) {
   await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
   await seed(page);
+  // Questo blocco verifica il CSS del feed verticale (nascosto da lg), non
+  // la preferenza del telefono: si forza "lista" cosi il controllo non
+  // dipende dal default di vista.ts (dal 15 settembre 2026 e griglia).
+  await page.evaluate(() => { try { window.localStorage.setItem("jm.mese.vista", "lista"); } catch {} });
   await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
@@ -181,6 +185,10 @@ async function seed(page) {
   await page.goto(BASE + "/app", { waitUntil: "networkidle" });
   await page.waitForTimeout(800);
   await seed(page);
+  // Questo blocco verifica lo stile del feed a lista (invariato), non il
+  // default: si forza "lista" a mano, il default vero si controlla piu
+  // sotto, in "Mese a griglia sul telefono".
+  await page.evaluate(() => { try { window.localStorage.setItem("jm.mese.vista", "lista"); } catch {} });
   await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
   await page.waitForTimeout(1200);
 
@@ -244,6 +252,9 @@ async function seed(page) {
     // L'icona vive nell'intestazione di /mese: i controlli della
     // FilledView qui sopra hanno lasciato la pagina su "/", e senza
     // questo ritorno il blocco cercava l'icona nella pagina sbagliata.
+    // Si cancella la scelta forzata "lista" del blocco precedente: da qui
+    // in poi si verifica il VERO default (griglia, dal 15 settembre 2026).
+    await page.evaluate(() => { try { window.localStorage.removeItem("jm.mese.vista"); } catch {} });
     await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
     await page.waitForTimeout(800);
     const icona = page.locator(".jm-mese-vista");
@@ -254,12 +265,11 @@ async function seed(page) {
       Math.round(areaIcona?.width ?? 0) >= 44 && Math.round(areaIcona?.height ?? 0) >= 44,
       `${Math.round(areaIcona?.width ?? 0)}x${Math.round(areaIcona?.height ?? 0)}`,
     );
-    check("phone: si parte dalla lista", (await page.locator(".jm-mese-mini").count()) === 0);
-
-    await icona.click();
-    await page.waitForTimeout(400);
-    check("phone: l'icona accende la griglia", (await page.locator(".jm-mese-mini").count()) > 0);
-    check("phone: la lista sparisce", (await page.locator(".jm-day-row").count()) === 0);
+    // Deciso da Manuel il 15 settembre 2026: si parte dalla griglia (a
+    // scacchiera), non piu dalla lista. Niente tocco iniziale sull'icona:
+    // la griglia deve essere gia li al primo giro.
+    check("phone: si parte dalla griglia", (await page.locator(".jm-mese-mini").count()) > 0);
+    check("phone: la lista non c'e", (await page.locator(".jm-day-row").count()) === 0);
     // UN mese per schermata: il feed non e nascosto, non e proprio montato,
     // e sotto non sbava il mese dopo (difetto visto sul telefono il 23 ago).
     check("phone: un mese solo", (await page.locator(".jm-mese-mini").count()) === 1);
@@ -311,16 +321,21 @@ async function seed(page) {
     await page.waitForTimeout(1200);
     check("phone: l'anteprima apre la giornata", page.url().includes("/app/giorno?d="), page.url());
 
-    // La scelta si ricorda.
+    // Si passa alla lista (scelta esplicita) e si controlla che sopravviva
+    // al giro: ora e la lista l'eccezione da ricordare, non piu la griglia.
+    await page.locator(".jm-mese-vista").click();
+    await page.waitForTimeout(400);
+    check("phone: l'icona porta alla lista", (await page.locator(".jm-day-row").count()) > 0);
+
     await page.goto(BASE + "/app/mese", { waitUntil: "networkidle" });
     await page.waitForTimeout(900);
     check(
-      "phone: la griglia si ricorda dopo un giro",
-      (await page.locator(".jm-mese-mini").count()) > 0,
+      "phone: la lista si ricorda dopo un giro",
+      (await page.locator(".jm-day-row").count()) > 0,
     );
     await page.locator(".jm-mese-vista").click();
     await page.waitForTimeout(400);
-    check("phone: l'icona riporta alla lista", (await page.locator(".jm-day-row").count()) > 0);
+    check("phone: l'icona riporta alla griglia", (await page.locator(".jm-mese-mini").count()) > 0);
   }
 
   check("phone: zero errori console", errors.length === 0, errors.join(" | ").slice(0, 200));
