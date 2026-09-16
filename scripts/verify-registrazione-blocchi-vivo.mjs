@@ -1,9 +1,14 @@
-// La registrazione a blocchi DAL VIVO, nel browser: la barra e l'orologio
+// La registrazione a blocchi DAL VIVO, nel browser: l'anello e il numero
 // del blocco seguono il tasto premuto (si fermano quando lo lasci), il
 // ritmo reale in byte al secondo si misura dai pezzi del MediaRecorder, e
 // con JM_LUNGO=1 si tiene premuto oltre i 3 minuti per vedere il blocco
 // chiudersi da solo, il secondo aprirsi sulla stessa traccia, e i due
 // testi cucirsi in ordine con il contesto passato al secondo.
+//
+// L'anello (15 settembre 2026, PROMPT-REGISTRAZIONE-ANELLO.md) ha
+// sostituito la barra del blocco e i due orologi: qui si legge la sua
+// frazione (aria-valuenow) e il numero del conto alla rovescia, non piu
+// una barra e una riga di testo con "Blocco N".
 //
 // La matematica pura sta in verify-registrazione-blocchi.mjs: qui si prova
 // che l'overlay la usi davvero, con un microfono sintetico (oscillatore) e
@@ -112,25 +117,34 @@ async function apriAscolto(page) {
 
 const leggiBlocco = (page) =>
   page.evaluate(() => {
-    const barra = document.querySelector(".jm-rec-blocco-barra");
-    const riga = document.querySelector(".jm-rec-blocco-riga");
-    const wrap = document.querySelector(".jm-rec-blocco");
+    const anello = document.querySelector(".jm-rec-anello");
+    const resta = document.querySelector(".jm-rec-resta");
+    const pezzi = document.querySelectorAll(".jm-rec-pezzi span");
     return {
-      pct: barra ? Number(barra.getAttribute("aria-valuenow")) : -1,
-      riga: riga ? riga.textContent : "",
-      visibile: wrap ? !wrap.classList.contains("jm-rec-blocco-nascosta") : false,
-      orologio: document.body.innerText.match(/\b(\d\d:\d\d)\b/)?.[1] ?? "",
+      pct: anello ? Number(anello.getAttribute("aria-valuenow")) : -1,
+      resta: resta ? resta.textContent : "",
+      avviso: resta ? resta.classList.contains("jm-rec-resta-avviso") : false,
+      pezzi: pezzi.length,
     };
   });
 
-/* ============ 1. barra e orologio seguono il tasto ============ */
+// "2:37" -> 157 secondi. Confronta il conto alla rovescia con una
+// tolleranza di un paio di secondi, senza pretendere il millisecondo
+// esatto del browser (lo stesso spirito delle vecchie regex "00:04").
+function restaSecondi(testo) {
+  const m = /^(\d+):(\d\d)$/.exec(testo ?? "");
+  if (!m) return null;
+  return Number(m[1]) * 60 + Number(m[2]);
+}
+
+/* ============ 1. l'anello e il numero seguono il tasto ============ */
 {
   const { ctx, page, errors, log, chiamate } = await pagina();
   const ptt = await apriAscolto(page);
   const prima = await leggiBlocco(page);
-  check("la barra del blocco e visibile PRIMA di cominciare", prima.visibile);
-  check("...e dice blocco 1, 00:00 su 03:00", /Blocco 1/i.test(prima.riga) && /00:00/.test(prima.riga) && /03:00/.test(prima.riga), prima.riga);
-  check("...vuota", prima.pct === 0, String(prima.pct));
+  check("l'anello e il numero sono visibili PRIMA di cominciare, a 3:00", prima.resta === "3:00", prima.resta);
+  check("...vuoto (0%)", prima.pct === 0, String(prima.pct));
+  check("...zero pezzi chiusi", prima.pezzi === 0, String(prima.pezzi));
 
   const box = await ptt.boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -143,10 +157,12 @@ const leggiBlocco = (page) =>
   await page.waitForTimeout(2_500);
   const dopo = await leggiBlocco(page);
 
-  check("mentre e premuto l'orologio del blocco scorre (00:04)", /00:04/.test(durante.riga), durante.riga);
-  check("mentre e premuto la barra avanza", durante.pct >= 2, String(durante.pct));
-  check("lasciato il tasto la barra si FERMA", dopo.pct === lasciato.pct && dopo.riga === lasciato.riga, `${lasciato.pct} -> ${dopo.pct}`);
-  check("l'orologio grande segna il totale inciso, non quello a muro", /00:04/.test(dopo.orologio), dopo.orologio);
+  const restaDurante = restaSecondi(durante.resta);
+  check("mentre e premuto il numero scende (circa 176 s restanti su 180)", restaDurante !== null && restaDurante <= 178 && restaDurante >= 174, durante.resta);
+  check("mentre e premuto l'anello avanza", durante.pct >= 2, String(durante.pct));
+  check("lasciato il tasto l'anello e il numero si FERMANO", dopo.pct === lasciato.pct && dopo.resta === lasciato.resta, `${lasciato.pct}/${lasciato.resta} -> ${dopo.pct}/${dopo.resta}`);
+  const bodyDopo = await page.evaluate(() => document.body.innerText);
+  check("il totale non appare mentre si registra (decisione 5A)", !/hai raccontato/i.test(bodyDopo));
 
   // Secondo tratto: il tempo riparte da dove era.
   await page.mouse.down();
@@ -154,7 +170,8 @@ const leggiBlocco = (page) =>
   await page.mouse.up();
   await page.waitForTimeout(300);
   const secondo = await leggiBlocco(page);
-  check("ripremuto, riparte da dove era (00:06)", /00:06/.test(secondo.riga), secondo.riga);
+  const restaSecondo = restaSecondi(secondo.resta);
+  check("ripremuto, il numero riparte da dove era (circa 174 s restanti)", restaSecondo !== null && restaSecondo <= 176 && restaSecondo >= 172, secondo.resta);
 
   await page.getByRole("button", { name: /Fine e salva/ }).click();
   // La rilettura mette il testo in una textarea: innerText non lo vede.
@@ -194,7 +211,9 @@ if (LUNGO) {
   const chiusura = log.find((l) => /blocco 1 chiuso/.test(l)) ?? "";
   check("a 3 minuti il blocco 1 si chiude DA SOLO, per tempo", /chiuso \(tempo\)/.test(chiusura), chiusura);
   check("...intorno ai 180 s premuti", chiusoA !== null && chiusoA >= 179_000 && chiusoA <= 184_000, `${chiusoA} ms`);
-  check("il blocco 2 e aperto e l'orologio del blocco e ripartito", /Blocco 2/i.test(durante.riga) && /00:0\d/.test(durante.riga), durante.riga);
+  const restaDurante2 = restaSecondi(durante.resta);
+  check("il blocco 2 e aperto e il numero e ripartito da quasi 3:00", restaDurante2 !== null && restaDurante2 >= 170, durante.resta);
+  check("un trattino segna il blocco 1 chiuso", durante.pezzi === 1, String(durante.pezzi));
   check("il blocco 2 e stato armato ATTIVO (tasto ancora premuto)", log.some((l) => /armed .*state=recording blocco=2/.test(l)), log.filter((l) => /armed/.test(l)).join(" | "));
   const byte1 = Number(chiusura.match(/byte=(\d+)/)?.[1] ?? 0);
   console.log(`  blocco pieno (180 s a Opus 32): ${byte1} byte = ${(byte1 / 1_000_000).toFixed(2)} MB, ${Math.round(byte1 / 180)} B/s`);

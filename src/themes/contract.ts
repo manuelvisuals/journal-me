@@ -173,6 +173,14 @@ export function cssVarsFor(theme: Theme, mode: Mode): Record<string, string> {
        tutti i temi, chiaro e scuro, per lo stesso motivo per cui la batteria
        dell'iPhone non cambia colore con lo sfondo. */
     "--jm-live-ready": "#65C466",
+    /* L'AMBRA DEGLI ULTIMI VENTI SECONDI (15 settembre 2026, decisione 4A
+       di PROMPT-REGISTRAZIONE-ANELLO.md). Stesso schema di --jm-live-ready
+       qui sopra: un colore fisso, uguale in ogni tema, perche segnala uno
+       stato del microfono, non un accento del tema. A differenza di quel
+       verde pero questo NON e misurato da uno screenshot di Manuel: e una
+       scelta d'ambra ragionevole in attesa che lui dica se va bene o vuole
+       un valore preciso. */
+    "--jm-live-warn": "#F0A93B",
     "--jm-line": c.line,
     "--jm-shadow": c.shadow,
     "--jm-glow": c.glow,

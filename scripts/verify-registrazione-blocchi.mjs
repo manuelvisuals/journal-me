@@ -175,6 +175,7 @@ const server = readFileSync("src/modules/oggi/server/transcribe-fallback.ts", "u
 const puro = readFileSync("src/modules/oggi/blocchi.ts", "utf8");
 const css = readFileSync("src/modules/oggi/styles.css", "utf8");
 const catalogo = readFileSync("src/modules/oggi/en.ts", "utf8");
+const contract = readFileSync("src/themes/contract.ts", "utf8");
 
 check("7 blocchi.ts e puro: nessun import", !/^\s*import\s/m.test(puro));
 check("7 blocchi.ts non esporta niente che si chiami 'split' (e di split-by-date)", !/export\s+(const|function|type)\s+\w*split/i.test(puro) && !/export\s+(const|function|type)\s+\w*split/i.test(overlay));
@@ -201,7 +202,52 @@ check("7 il vecchio messaggio 'controlla la connessione' non c'e piu", !/control
 check("7 l'overlay non cuce i blocchi col separatore dei giorni", !/SEP_PEZZI/.test(overlay) && !/\\n---\\n/.test(overlay));
 check("7 la riga di diagnosi stampa k e bps", /k=\$\{k\} bps=/.test(overlay));
 check("7 il server legge il contesto e lo mette nel prompt", /inForm\.get\("contesto"\)/.test(server) && /glossaryHint \+ contestoHint/.test(server));
-check("7 la barra del blocco esiste, col prefisso del modulo", /jm-rec-blocco-barra/.test(overlay) && /\.jm-rec-blocco-barra \{/.test(css));
+check(
+  "7 l'anello esiste, col prefisso del modulo, e la sua frazione viene dal tempo INCISO (non un orologio a muro)",
+  /jm-rec-anello-wrap/.test(overlay) &&
+    /jm-rec-anello-traccia/.test(overlay) &&
+    /jm-rec-anello-riempi/.test(overlay) &&
+    /\.jm-rec-anello-wrap \{/.test(css) &&
+    /\.jm-rec-anello-riempi \{/.test(css) &&
+    /frazioneBlocco = Math\.min\(1, Math\.max\(0, blocco\.incisoMs \/ BLOCCO_TETTO_MS\)\)/.test(overlay),
+);
+check(
+  "7 l'anello e un progressbar accessibile, con aria-valuenow",
+  /role="progressbar"/.test(overlay) && /aria-valuenow=\{anelloPct\}/.test(overlay),
+);
+check(
+  "7 il numero sotto l'anello e un CONTO ALLA ROVESCIA (il tetto meno il tempo inciso), non un conto che sale",
+  /restaMs = Math\.max\(0, BLOCCO_TETTO_MS - blocco\.incisoMs\)/.test(overlay) &&
+    /jm-rec-resta/.test(overlay) &&
+    /\.jm-rec-resta \{/.test(css),
+);
+check(
+  "7 sotto i venti secondi il colore cambia, da un'unica soglia e un unico token",
+  /SOGLIA_AVVISO_MS = 20_000/.test(overlay) &&
+    /sottoVenti = restaMs <= SOGLIA_AVVISO_MS/.test(overlay) &&
+    /jm-rec-resta-avviso/.test(overlay) &&
+    /\.jm-rec-resta-avviso \{/.test(css) &&
+    /--jm-live-warn/.test(overlay) &&
+    /"--jm-live-warn":/.test(contract),
+);
+check(
+  "7 i trattini sono uno per blocco chiuso, e non portano numeri",
+  /jm-rec-pezzi/.test(overlay) &&
+    /Math\.min\(blocchiChiusi, PEZZI_MAX_VISIBILI\)/.test(overlay) &&
+    /<span key=\{i\} \/>/.test(overlay),
+);
+check(
+  "7 il totale non appare mai mentre si registra: c'e solo nell'attesa della trascrizione",
+  /Sto mandando la registrazione intera[\s\S]{0,700}Hai raccontato/.test(overlay),
+);
+check(
+  "7 nessun avanzo della vecchia barra, spia o pallino",
+  !/jm-rec-blocco-barra/.test(overlay) &&
+    !/jm-rec-blocco-barra/.test(css) &&
+    !/liveLabel/.test(overlay) &&
+    !/spiaVisibile/.test(overlay) &&
+    !/liveDotColor/.test(overlay),
+);
 check("7 il primer dice quanto dura un blocco PRIMA di cominciare", /Ogni blocco dura al massimo \{min\} minuti/.test(overlay));
 check("7 il percorso realtime non e tornato", !/realtime\/session/.test(overlay) && !/RTCPeerConnection/.test(overlay));
 check("7 nessun blob viene tagliato dopo (niente slice sui blocchi)", !/\.slice\(\s*\d+\s*,\s*[\w.]+\s*\)\s*;?\s*\/\/.*blob/i.test(overlay) && !/blob\.slice\(/.test(overlay));
