@@ -18,7 +18,6 @@ import { useT } from "@/lib/i18n";
 import type { DataMode } from "@/lib/data/entries";
 import {
   BLOCCO_TETTO_MS,
-  avanzamento,
   bitrateRichiesto,
   chiudereAlRilascio,
   codaDelTesto,
@@ -163,6 +162,37 @@ const TICK_MS = 250;
 /** Sotto questo peso un blocco e vuoto: non si manda a trascrivere. */
 const BLOCCO_VUOTO_BYTE = 1200;
 
+/*
+ * L'ANELLO (15 settembre 2026, decisione di Manuel dopo l'audit
+ * PROMPT-REGISTRAZIONE-ANELLO.md: sostituisce la barra del blocco, i due
+ * orologi e la spia di stato). Geometria FISSA, non legata a
+ * --jm-ui-scale: il tasto sotto (.rec-ptt, 128px, scheletro in
+ * src/styles/base.css) non scala, e un anello che scalasse da solo si
+ * staccherebbe da lui. 158px di diametro, 3px di spessore, 12px di aria
+ * dal bordo del tasto: raggio 77.5 = meta tasto (64) + aria (12) + meta
+ * spessore (1.5). Solo il numero sotto (un font-size) segue la scala,
+ * come da regola generale (AGENTS.md §4).
+ */
+const ANELLO_DIAMETRO = 158;
+const ANELLO_R = 77.5;
+const ANELLO_CIRC = 2 * Math.PI * ANELLO_R;
+/** Sotto questo tempo che resta, l'anello e il numero virano al colore d'attesa. */
+const SOGLIA_AVVISO_MS = 20_000;
+/** Oltre questi trattini la riga non cresce piu (succedera: si parla a lungo). */
+const PEZZI_MAX_VISIBILI = 8;
+
+/**
+ * "2:37", non "02:37": due cifre iniziali suggerirebbero ore che non ci
+ * sono in un pezzo che dura al massimo 3 minuti. Locale a questo file e
+ * non in lib/format.ts (scheletro): e una forma che serve solo qui.
+ */
+function formatMSs(ms: number): string {
+  const totale = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(totale / 60);
+  const s = totale % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 /**
  * Records the user's voice to a local clip and transcribes it in one shot when
  * he is done, via `/api/transcribe-fallback` (gpt-4o-transcribe).
@@ -209,10 +239,18 @@ export function RecordingOverlay({
   });
   // Quanti blocchi sono gia chiusi (il numero del blocco in corso e +1).
   const [blocchiChiusi, setBlocchiChiusi] = useState<number>(0);
+  // L'anello: la frazione e il tempo INCISO su quello massimo (non un
+  // orologio a muro), esattamente come si fermava la barra. Il numero e
+  // un CONTO ALLA ROVESCIA (quanto resta), non un conto che sale.
+  const frazioneBlocco = Math.min(1, Math.max(0, blocco.incisoMs / BLOCCO_TETTO_MS));
+  const anelloPct = Math.round(frazioneBlocco * 100);
+  const restaMs = Math.max(0, BLOCCO_TETTO_MS - blocco.incisoMs);
+  const restaTesto = formatMSs(restaMs);
+  const sottoVenti = restaMs <= SOGLIA_AVVISO_MS;
   // Acceso per qualche secondo dopo una chiusura automatica: la riga di
   // stato lo dice, cosi la persona vede che e chiuso e sa che puo
   // continuarne un altro.
-  const [avvisoChiuso, setAvvisoChiuso] = useState<number | null>(null);
+  const [avvisoChiuso, setAvvisoChiuso] = useState<boolean>(false);
   const [state, setState] = useState<RecState>("connecting");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [targetDate, setTargetDate] = useState<string>(
@@ -224,6 +262,11 @@ export function RecordingOverlay({
   const [micStream, setMicStream] = useState<MediaStream | null>(null);
   // True while the finished clip is being transcribed.
   const [recovering, setRecovering] = useState<boolean>(false);
+  // Il totale raccontato in tutto, mostrato SOLO nell'attesa della
+  // trascrizione ("hai raccontato 4:12"): mentre si registra questo
+  // numero non c'e da nessuna parte (decisione 5A del referto,
+  // PROMPT-REGISTRAZIONE-ANELLO.md).
+  const [totaleSec, setTotaleSec] = useState<number>(0);
   // Mount flag for the document.body portal — avoids SSR mismatch and
   // ensures the overlay escapes any ancestor stacking context (e.g. the
   // fixed-positioned quick-capture bar on /remember which would otherwise
@@ -501,6 +544,28 @@ export function RecordingOverlay({
     return () => document.removeEventListener("visibilitychange", onVisChange);
   }, [state]);
 
+  // Le due sole cose che questo schermo ANNUNCIA a un lettore di schermo
+  // (il numero stesso non e in aria-live: un annuncio ogni secondo sarebbe
+  // una tortura). Una regione nascosta, aggiornata solo ai due momenti che
+  // contano: quando restano venti secondi, e quando un pezzo si chiude.
+  const [annuncioSR, setAnnuncioSR] = useState<string>("");
+  const primaVoltaSottoVentiRef = useRef<boolean>(false);
+  const blocchiChiusiPrimaRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (sottoVenti && !primaVoltaSottoVentiRef.current) {
+      setAnnuncioSR(t("Restano venti secondi in questo pezzo."));
+    }
+    primaVoltaSottoVentiRef.current = sottoVenti;
+  }, [sottoVenti, t]);
+
+  useEffect(() => {
+    if (blocchiChiusi > blocchiChiusiPrimaRef.current) {
+      setAnnuncioSR(t("Pezzo chiuso: il prossimo e gia aperto."));
+    }
+    blocchiChiusiPrimaRef.current = blocchiChiusi;
+  }, [blocchiChiusi, t]);
+
   function cleanup() {
     if (cleanedUpRef.current) return;
     cleanedUpRef.current = true;
@@ -677,10 +742,10 @@ export function RecordingOverlay({
       aggiornaVista();
       if (motivo !== "rilascio") {
         // Chiuso da solo mentre parlava: dirlo per qualche secondo.
-        setAvvisoChiuso(blocchiRef.current.length);
+        setAvvisoChiuso(true);
         if (avvisoTimerRef.current) clearTimeout(avvisoTimerRef.current);
         avvisoTimerRef.current = setTimeout(
-          () => setAvvisoChiuso(null),
+          () => setAvvisoChiuso(false),
           AVVISO_BLOCCO_CHIUSO_MS,
         );
       }
@@ -937,6 +1002,7 @@ export function RecordingOverlay({
     const durata = Math.floor(
       (incisoPrimaMsRef.current + orologioRef.current.incisoMs) / 1000,
     );
+    setTotaleSec(durata);
     cleanup();
 
     const blocchi = blocchiRef.current;
@@ -1022,7 +1088,7 @@ export function RecordingOverlay({
     // Il tempo inciso parte ADESSO e cresce solo finche il tasto e premuto
     // (blocchi.ts): e il tempo vero di registrazione, non l'orologio a muro.
     orologioRef.current = premi(orologioRef.current, performance.now());
-    setAvvisoChiuso(null);
+    setAvvisoChiuso(false);
     startTimer();
     setState("recording");
   }
@@ -1072,72 +1138,13 @@ export function RecordingOverlay({
   const hint =
     state === "connecting"
       ? t("Preparo il microfono.")
-      : avvisoChiuso !== null
-        ? t("Blocco {n} chiuso: e al sicuro. Continua pure, il prossimo e gia aperto.", {
-            n: String(avvisoChiuso),
-          })
+      : avvisoChiuso
+        ? t("Pezzo chiuso: e al sicuro. Continua pure, il prossimo e gia aperto.")
         : state === "recording"
           ? t("Lascia per fermare.")
           : seconds > 0
             ? t("Riprendi quando vuoi.")
             : t("Tieni premuto e racconta.");
-
-  /* La barra del blocco: quanto e pieno (tempo inciso O byte veri, il
-     maggiore dei due: blocchi.ts) e il tempo inciso su quello massimo. Si
-     ferma quando lasci il tasto e riparte quando lo premi, perche il tempo
-     che conta e quello inciso. Visibile solo quando c'e un registratore. */
-  const bloccoVisibile =
-    !recovering && (state === "recording" || state === "paused");
-  const bloccoPct = Math.round(avanzamento(blocco) * 100);
-  const bloccoInciso = formatDurationMmSs(blocco.incisoMs / 1000);
-  const bloccoMax = formatDurationMmSs(BLOCCO_TETTO_MS / 1000);
-
-  const liveLabel =
-    state === "paused"
-      ? t("pronto")
-      : state === "connecting"
-        ? t("connetto")
-        : state === "error"
-          ? t("errore")
-          : t("in ascolto");
-  // Il pallino di "pronto" e ACCESO, non sbiadito: e una spia, e una spia a
-  // mezza opacita non dice niente (10 settembre 2026).
-  const liveDotOpacity =
-    state === "recording" || state === "paused" ? 1 : 0.6;
-  // Il rosso significa "sto catturando la tua voce", e nient'altro. Prima era
-  // rosso anche su "pronto" e su "connetto", cioe proprio quando il microfono e
-  // chiuso: un pallino rosso che lampeggia mentre non registra e una bugia, e
-  // per giunta litigava col rosso di Annulla. Fuori dalla registrazione il
-  // colore torna quello dei testi secondari, e l'errore resta rosso perche li
-  // il rosso vuol dire davvero qualcosa.
-  const liveColor =
-    state === "recording" || state === "error"
-      ? "var(--color-danger)"
-      : "var(--color-ink-faint)";
-  /**
-   * IL PALLINO ha un colore suo, la scritta no (richiesta di Manuel del 10
-   * settembre 2026). Su "pronto" e VERDE — lo stesso verde della batteria in
-   * carica di iOS, misurato dallo screenshot: --color-live-ready — perche li
-   * il microfono e armato e aspetta te, e una spia verde e la cosa che
-   * chiunque legge senza doverla imparare. Resta rosso mentre registra e
-   * sull'errore (il rosso vuol dire "sto catturando la tua voce", o
-   * "guasto"), e grigio mentre si connette, che non e ne l'uno ne l'altro.
-   * La scritta accanto resta del colore dei testi secondari: due cose verdi
-   * di fila diventerebbero un avviso, e qui non c'e niente da avvisare.
-   */
-  const liveDotColor = state === "paused" ? "var(--color-live-ready)" : liveColor;
-  /**
-   * MENTRE TRASCRIVE LA SPIA SE NE VA (11 settembre 2026, Manuel: "durante
-   * la trascrizione non dovrebbe dire READY"). Aveva ragione: in quel
-   * momento il microfono e chiuso e la registrazione e gia finita, quindi
-   * "pronto" e falso due volte, e il pallino verde dice "ti ascolto" mentre
-   * nessuno ascolta. La regola che si applica qui e quella di Apple: un
-   * elemento di stato che non ha piu niente di vero da dire SPARISCE, non si
-   * riempie di parole nuove. Cosa sta succedendo lo dice gia, in grande, il
-   * centro dello schermo. Resta solo la durata, spenta: e l'unico fatto
-   * ancora vero, cioe quanto hai registrato.
-   */
-  const spiaVisibile = !recovering;
 
   if (!portalReady || typeof document === "undefined") {
     return null;
@@ -1162,87 +1169,6 @@ export function RecordingOverlay({
         className="mx-auto flex w-full max-w-[440px] flex-1 flex-col"
         style={{ padding: "0 24px", paddingTop: "calc(24px + env(safe-area-inset-top, 0px))", minHeight: 0 }}
       >
-        {/* Live indicator + timer */}
-        <div
-          className="flex items-center justify-between shrink-0"
-          style={{ marginBottom: 20 }}
-        >
-          <div
-            className="flex items-center"
-            style={{ gap: 7, visibility: spiaVisibile ? "visible" : "hidden" }}
-            aria-hidden={spiaVisibile ? undefined : true}
-          >
-            <span
-              className="inline-block"
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: liveDotColor,
-                boxShadow:
-                  state === "recording" || state === "error"
-                    ? "0 0 10px color-mix(in oklab, var(--color-danger) 70%, transparent)"
-                    : state === "paused"
-                      ? "0 0 10px color-mix(in oklab, var(--color-live-ready) 55%, transparent)"
-                      : "none",
-                opacity: liveDotOpacity,
-              }}
-            />
-            <span
-              style={{
-                fontSize: "calc(11px * var(--jm-ui-scale))",
-                fontWeight: 650,
-                color: liveColor,
-                letterSpacing: "0.20em",
-                textTransform: "uppercase",
-              }}
-            >
-              {liveLabel}
-            </span>
-          </div>
-          <span
-            style={{
-              fontFamily:
-                "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-              fontSize: "calc(18px * var(--jm-ui-scale))",
-              fontWeight: 500,
-              color: "var(--color-ink)",
-              letterSpacing: "0.06em",
-              opacity: recovering ? 0.5 : 1,
-            }}
-          >
-            {formatDurationMmSs(seconds)}
-          </span>
-        </div>
-
-        {/* Il blocco in corso: barra + orologio del blocco. La persona sa
-            PRIMA di cominciare quanto dura un blocco (00:00 / 03:00), non lo
-            scopre quando e troppo tardi. */}
-        <div
-          className={
-            "jm-rec-blocco shrink-0" + (bloccoVisibile ? "" : " jm-rec-blocco-nascosta")
-          }
-          aria-hidden={bloccoVisibile ? undefined : true}
-        >
-          <div
-            className="jm-rec-blocco-barra"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={bloccoPct}
-            aria-label={t("Blocco {n}", { n: String(blocchiChiusi + 1) })}
-          >
-            <i style={{ width: `${bloccoPct}%` }} />
-          </div>
-          <div className="jm-rec-blocco-riga">
-            <span>{t("Blocco {n}", { n: String(blocchiChiusi + 1) })}</span>
-            <span className="jm-rec-blocco-tempo">
-              {bloccoInciso}
-              <span className="jm-rec-blocco-max">{" / " + bloccoMax}</span>
-            </span>
-          </div>
-        </div>
-
         {/* Date chip — defaults to today, tap to override */}
         <div
           className="flex justify-center shrink-0"
@@ -1318,6 +1244,18 @@ export function RecordingOverlay({
                 "Sto mandando la registrazione intera: cosi i nomi propri vengono scritti giusti.",
               )}
             </p>
+            {/* L'UNICO momento in cui il totale significa qualcosa
+                (decisione 5A del referto: mentre si registra non c'e). */}
+            <p
+              style={{
+                color: "var(--color-ink-faint)",
+                fontSize: "calc(12.5px * var(--jm-ui-scale))",
+                fontFamily:
+                  "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+              }}
+            >
+              {t("Hai raccontato {tempo}.", { tempo: formatDurationMmSs(totaleSec) })}
+            </p>
           </div>
         ) : state === "error" ? (
           <div
@@ -1341,39 +1279,104 @@ export function RecordingOverlay({
              davvero che il microfono ti sente. */
           <div
             className="flex flex-1 flex-col items-center justify-center"
-            style={{ gap: 26, minHeight: 0, width: "100%" }}
+            style={{ gap: 22, minHeight: 0, width: "100%" }}
           >
             <Waveform active={state === "recording"} stream={micStream} />
 
-            <button
-              type="button"
-              aria-label={t("Tieni premuto per parlare")}
-              className="rec-ptt"
-              disabled={state === "connecting"}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                beginTalk();
-              }}
-              onPointerUp={endTalk}
-              onPointerLeave={endTalk}
-              onPointerCancel={endTalk}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                width="46"
-                height="46"
-                aria-hidden="true"
+            {/* L'anello: il tempo INCISO del pezzo in corso, non un tempo
+                teorico (§4 del referto). Il tasto sotto e invariato
+                (.rec-ptt, 128px, scheletro): l'anello gli sta intorno con
+                12px di aria, non lo sostituisce. */}
+            <div className="flex flex-col items-center" style={{ gap: 12 }}>
+              <div className="jm-rec-anello-wrap">
+                <svg
+                  className="jm-rec-anello"
+                  viewBox={`0 0 ${ANELLO_DIAMETRO} ${ANELLO_DIAMETRO}`}
+                  width={ANELLO_DIAMETRO}
+                  height={ANELLO_DIAMETRO}
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={anelloPct}
+                  aria-label={t("Tempo che resta in questo pezzo")}
+                >
+                  <circle
+                    className="jm-rec-anello-traccia"
+                    cx={ANELLO_DIAMETRO / 2}
+                    cy={ANELLO_DIAMETRO / 2}
+                    r={ANELLO_R}
+                  />
+                  <circle
+                    className="jm-rec-anello-riempi"
+                    cx={ANELLO_DIAMETRO / 2}
+                    cy={ANELLO_DIAMETRO / 2}
+                    r={ANELLO_R}
+                    transform={`rotate(-90 ${ANELLO_DIAMETRO / 2} ${ANELLO_DIAMETRO / 2})`}
+                    style={{
+                      stroke: sottoVenti ? "var(--jm-live-warn)" : "var(--color-accent)",
+                      strokeDasharray: ANELLO_CIRC,
+                      strokeDashoffset: ANELLO_CIRC * (1 - frazioneBlocco),
+                    }}
+                  />
+                </svg>
+
+                <button
+                  type="button"
+                  aria-label={t("Tieni premuto per parlare")}
+                  className="rec-ptt"
+                  disabled={state === "connecting"}
+                  onPointerDown={(e) => {
+                    e.preventDefault();
+                    beginTalk();
+                  }}
+                  onPointerUp={endTalk}
+                  onPointerLeave={endTalk}
+                  onPointerCancel={endTalk}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    width="46"
+                    height="46"
+                    aria-hidden="true"
+                  >
+                    <rect x="9" y="3" width="6" height="12" rx="3" />
+                    <path d="M5 11a7 7 0 0 0 14 0" />
+                    <path d="M12 18v3" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Il numero: quanto RESTA, non quanto e passato (§4/§8 del
+                  referto). Non in aria-live: un annuncio ogni secondo
+                  sarebbe una tortura (§6). */}
+              <span
+                className={
+                  "jm-rec-resta" + (sottoVenti ? " jm-rec-resta-avviso" : "")
+                }
               >
-                <rect x="9" y="3" width="6" height="12" rx="3" />
-                <path d="M5 11a7 7 0 0 0 14 0" />
-                <path d="M12 18v3" />
-              </svg>
-            </button>
+                {restaTesto}
+              </span>
+
+              {/* I trattini: un pezzo gia chiuso, senza etichetta e senza
+                  numero (decisione 3A). Oltre PEZZI_MAX_VISIBILI la riga
+                  smette di crescere invece di stringersi o allargarsi. */}
+              <div className="jm-rec-pezzi" aria-hidden="true">
+                {Array.from({
+                  length: Math.min(blocchiChiusi, PEZZI_MAX_VISIBILI),
+                }).map((_, i) => (
+                  <span key={i} />
+                ))}
+              </div>
+
+              <div aria-live="polite" className="sr-only">
+                {annuncioSR}
+              </div>
+            </div>
 
             <div style={{ textAlign: "center", minHeight: 40 }}>
               <p

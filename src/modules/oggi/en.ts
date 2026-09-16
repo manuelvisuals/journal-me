@@ -95,14 +95,13 @@ export const OGGI: Record<string, string> = {
   "Lascia per fermare.": "Let go to stop.",
   "Riprendi quando vuoi.": "Pick it up again whenever you want.",
   "Tieni premuto e racconta.": "Press and hold, then talk.",
-  "pronto": "ready",
-  "connetto": "connecting",
-  "errore": "error",
-  "in ascolto": "listening",
   "Trascrivo quello che hai detto...": "Transcribing what you said...",
   "Sto mandando la registrazione intera: cosi i nomi propri vengono scritti giusti.": "I am sending the whole recording: that way proper names come out right.",
   "Errore sconosciuto.": "Unknown error.",
   "Tieni premuto per parlare": "Press and hold to talk",
+  "Tempo che resta in questo pezzo": "Time left in this piece",
+  "Restano venti secondi in questo pezzo.": "Twenty seconds left in this piece.",
+  "Hai raccontato {tempo}.": "You told {tempo}.",
   "Le parole arrivano quando premi Fine. Ogni blocco dura al massimo {min} minuti di parlato: quando e pieno si chiude da solo e continui nel prossimo.":
     "The words arrive when you press Done. Each block holds at most {min} minutes of speech: when it is full it closes by itself and you carry on in the next one.",
   "Fine e salva": "Done and save",
@@ -199,9 +198,10 @@ export const OGGI: Record<string, string> = {
     "[a piece of the story is missing here: this block could not be transcribed]",
   "Il microfono si e fermato a meta racconto. Premi Fine per tenere quello che hai detto.":
     "The microphone stopped halfway through. Tap Done to keep what you said so far.",
-  "Blocco {n} chiuso: e al sicuro. Continua pure, il prossimo e gia aperto.":
-    "Block {n} closed: it is safe. Carry on, the next one is already open.",
-  "Blocco {n}": "Block {n}",
+  "Pezzo chiuso: e al sicuro. Continua pure, il prossimo e gia aperto.":
+    "That piece is safe. Carry on, the next one is already open.",
+  "Pezzo chiuso: il prossimo e gia aperto.":
+    "That piece is closed: the next one is already open.",
   "Giorno prima": "Previous day",
   "Giorno dopo": "Next day",
   "Scegli il giorno": "Choose the day",
