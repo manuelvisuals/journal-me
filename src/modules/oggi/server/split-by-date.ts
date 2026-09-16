@@ -73,11 +73,20 @@ export async function POST(req: NextRequest) {
     ],
   };
 
+  // Bocciatura del 16 settembre 2026 (Manuel) su process-entry.ts: "il
+  // transcript e in ${lingua}" e una premessa falsa quando si detta in una
+  // lingua diversa da quella dell'app. Qui il rischio era piu serio che
+  // altrove: con i marker di UNA lingua sola, un racconto in italiano su
+  // un'app in inglese perdeva "ieri"/"stamattina" perche il modello
+  // cercava "yesterday"/"this morning". Si passano SEMPRE entrambi gli
+  // elenchi, indipendentemente da ${lingua}: i marker temporali possono
+  // comparire nella lingua in cui si e parlato, non in quella dell'app.
   const systemPrompt = [
-    `Sei un parser di un diario personale. Il transcript e in ${lingua}.`,
-    `La data di registrazione e ${defaultDate} (${weekday}).`,
-    `Ricevi un transcript di parlato libero. Devi splittarlo in segmenti per giornata, basandoti sui marker temporali in ${lingua}:`,
-    ...MARKERS[lang],
+    "Sei un parser di un diario personale. Il transcript di parlato libero che ricevi puo essere in QUALSIASI lingua, indipendente da quella dell'interfaccia.",
+    `La data di registrazione e ${defaultDate} (${weekday} in ${lingua}).`,
+    "Devi splittarlo in segmenti per giornata, basandoti sui marker temporali. Possono comparire in QUALSIASI lingua (anche mescolate nello stesso racconto): riconosci equivalenti dello stesso concetto anche se non sono nell'elenco. Esempi, in italiano e in inglese:",
+    ...MARKERS.it,
+    ...MARKERS.en,
     "",
     "Restituisci un OGGETTO JSON: { segments: [{ date, text }] }",
     "  - date: formato YYYY-MM-DD",

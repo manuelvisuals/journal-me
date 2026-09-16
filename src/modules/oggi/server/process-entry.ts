@@ -155,7 +155,19 @@ export async function POST(req: NextRequest) {
       : `  - snippet: un riassunto dei fatti principali della giornata, lungo in proporzione al racconto: da ${pavimentoParole} a ${tettoParole} parole. Il racconto che ricevi e' di circa ${paroleTranscript} parole: piu' cose ha raccontato, piu' il riassunto deve coprirle tutte. Non fermarti alla prima frase della giornata: tocca il mattino, il giorno e la sera se ci sono. Frasi intere, niente elenchi puntati.`;
 
   const systemPrompt = [
-    `Sei l'assistente di un diario personale. L'utente scrive in ${lingua} e tutto cio che produci va scritto in ${lingua}.`,
+    // Bocciatura del 16 settembre 2026 (Manuel): con l'app in inglese e il
+    // racconto dettato in italiano, la headline usciva in italiano mentre
+    // snippet e aree uscivano giuste, in inglese. Causa: questa riga diceva
+    // "l'utente scrive in ${lingua}", una premessa FALSA quando la lingua
+    // parlata non e quella dell'app — e la headline, un condensato di 4-12
+    // parole molto vicino al testo di partenza, e il campo che piu risente
+    // di una premessa sbagliata sulla lingua in ingresso. La lingua del
+    // transcript e quella dell'interfaccia sono due cose indipendenti: la
+    // prima e quella in cui l'utente ha PARLATO, la seconda (${lingua}) e
+    // quella in cui deve uscire TUTTO cio che scrivi, sempre, anche
+    // traducendo. Vale per headline, snippet e text delle aree allo stesso
+    // modo: non e un caso che valga solo per alcuni campi e non per altri.
+    `Sei l'assistente di un diario personale. Il transcript che ricevi puo essere in QUALSIASI lingua, indipendente da quella dell'interfaccia (puo dettare in una lingua e avere l'app in un'altra). Tutto cio che produci — headline, snippet e il testo delle aree, SENZA ECCEZIONI — va scritto in ${lingua}: se il transcript e in un'altra lingua, traduci, non ricalcare le sue parole o la sua costruzione di frase.`,
     "Ricevi il transcript di una persona che racconta la sua giornata a voce libera.",
     "Devi produrre un OGGETTO JSON con questi campi esatti:",
     // Sentence case, non tutto minuscolo (decisione di Manuel del 9
@@ -164,7 +176,7 @@ export async function POST(req: NextRequest) {
     // propri in minuscolo ("marco measures shop"), e accanto ai titoli
     // scritti a mano sembrava un refuso. La maiuscola iniziale e comunque
     // garantita dal codice, sotto (titoloInSentenceCase).
-    `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, in ${lingua}. Maiuscola iniziale come una frase normale, poi minuscolo tranne i nomi propri (persone, luoghi), che vanno SEMPRE con la maiuscola. Niente punto finale. Cattura il tema dominante della giornata.`,
+    `  - headline: una frase breve e densa, stile 'notizie di borsa', 4-12 parole, TASSATIVAMENTE in ${lingua} anche se il transcript e in un'altra lingua (e il campo dove capita piu spesso di sbagliare, perche e il piu vicino al testo originale: traduci il concetto, non le parole). Maiuscola iniziale come una frase normale, poi minuscolo tranne i nomi propri (persone, luoghi), che vanno SEMPRE con la maiuscola e restano nella lingua in cui sono stati detti (un nome non si traduce). Niente punto finale. Cattura il tema dominante della giornata.`,
     regolaSnippet,
     "  - metrics: le misure del risveglio, SOLO se dette esplicitamente nel testo. weightKg: il peso corporeo in kg (numero, es. 83.3), se l'utente dice quanto pesava. sleepHours: le ore di sonno in ore frazionarie (8, 7.5), SOLO se dice un numero esatto di ore dormite: 'ho dormito poco' NON e un numero e resta null. mood: l'umore, SOLO se la persona dice come si sente, mappato su uno di 'great' (fantastico, euforico, alla grande), 'good' (sereno, tranquillo, sto bene), 'neutral' (SOLO se dice di sentirsi cosi cosi, nella media, ne bene ne male), 'low' (giu, stanco, triste), 'bad' (malissimo, pessimo). Una giornata raccontata senza nessuna parola su come si sente NON e 'neutral': e null, anche se sembra una giornata tranquilla o normale. Esempio: 'mi sono svegliato alle 10, dopo 8 ore di sonno, pesavo 83.3kg e di mood sereno' -> weightKg 83.3, sleepHours 8, mood 'good'. Esempio: 'riunione alle 9, pranzo con Marco, spesa' -> weightKg null, sleepHours null, mood null. Ogni campo che il testo non dice esplicitamente e null: qui NON SI INDOVINA MAI, un dato inventato in un diario e un danno.",
     `  - areas: array di oggetti { label, text } per le aree macro presenti nella giornata. Le etichette sono un elenco chiuso e NON si traducono MAI, nemmeno se scrivi in ${lingua}, perche sono valori salvati a database: ${elencoChiavi}. Includi tutte le aree effettivamente menzionate, UNA SOLA VOLTA ciascuna. Il campo text va in ${lingua}: 1-2 frasi factual (cosa e successo, no interpretazioni psicologiche), max 30 parole.`,

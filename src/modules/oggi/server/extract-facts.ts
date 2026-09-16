@@ -108,7 +108,13 @@ export async function POST(req: NextRequest) {
   const known = (body.known ?? []).filter((k) => typeof k === "string").slice(0, 120);
 
   const systemPrompt = [
-    `Ricevi il racconto di una giornata, scritto o dettato in ${lingua}.`,
+    // Stessa premessa falsa trovata e tolta in process-entry.ts il 16
+    // settembre 2026: il transcript puo essere in QUALSIASI lingua, non
+    // necessariamente quella dell'interfaccia (${lingua}). Qui non cambia
+    // il risultato (le etichette restano comunque nella lingua del
+    // racconto, vedi sotto, non quella dell'app), ma la riga vecchia poteva
+    // far leggere male un racconto dettato in una lingua diversa dall'app.
+    `Ricevi il racconto di una giornata, scritto o dettato a voce: puo essere in qualsiasi lingua, anche diversa da quella dell'interfaccia (che e in ${lingua}).`,
     "Estrai i FATTI: cose concrete che sono successe quel giorno.",
     "",
     "Tipi (kind):",
