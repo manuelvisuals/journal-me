@@ -32,11 +32,42 @@ import {
   type MotivoChiusura,
   type Orologio,
 } from "@/modules/oggi/blocchi";
+import { isNative } from "@/lib/native/platform";
 
 // useSyncExternalStore needs a stable subscribe function; we never notify
 // because the snapshot is constant after hydration.
 function subscribeNoop(): () => void {
   return () => {};
+}
+
+/*
+ * L'ALTOPARLANTE MUTO: due colpi tattili, chiesti da Manuel il 16 settembre
+ * 2026 dopo aver visto l'anello. Import DINAMICO di @capacitor/haptics (come
+ * gia si fa in src/lib/native/reminders.ts): sul web il pacchetto non serve
+ * a niente e non deve appesantire quel bundle. isNative() e il primo
+ * cancello (su web non tenta nemmeno), il try/catch e il secondo (un colpo
+ * che fallisce sul telefono non deve MAI fermare la registrazione). Locali a
+ * questo file perche per ora solo questo schermo li usa: se un altro
+ * schermo ne avra bisogno, allora si spostano in src/lib/native/.
+ */
+async function hapticsInizio(): Promise<void> {
+  if (!isNative()) return;
+  try {
+    const { Haptics, ImpactStyle } = await import("@capacitor/haptics");
+    await Haptics.impact({ style: ImpactStyle.Light });
+  } catch {
+    // Un colpo che manca non deve fermare la registrazione.
+  }
+}
+
+async function hapticsAvviso(): Promise<void> {
+  if (!isNative()) return;
+  try {
+    const { Haptics, NotificationType } = await import("@capacitor/haptics");
+    await Haptics.notification({ type: NotificationType.Warning });
+  } catch {
+    // Idem: un avviso che manca non deve bloccare niente.
+  }
 }
 
 // We deliberately do NOT cache the MediaStream module-level. On iOS Safari
@@ -555,6 +586,7 @@ export function RecordingOverlay({
   useEffect(() => {
     if (sottoVenti && !primaVoltaSottoVentiRef.current) {
       setAnnuncioSR(t("Restano venti secondi in questo pezzo."));
+      void hapticsAvviso(); // stesso momento del colore che vira, non un evento in piu
     }
     primaVoltaSottoVentiRef.current = sottoVenti;
   }, [sottoVenti, t]);
@@ -1091,6 +1123,7 @@ export function RecordingOverlay({
     setAvvisoChiuso(false);
     startTimer();
     setState("recording");
+    void hapticsInizio(); // non puo mai rifiutare: vedi la funzione sopra
   }
 
   function endTalk() {

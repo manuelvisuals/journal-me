@@ -248,6 +248,23 @@ check(
     !/spiaVisibile/.test(overlay) &&
     !/liveDotColor/.test(overlay),
 );
+check(
+  "7 i due colpi tattili passano da isNative() e da un import DINAMICO (niente peso sul bundle web)",
+  /async function hapticsInizio[\s\S]{0,80}if \(!isNative\(\)\) return;[\s\S]{0,120}await import\("@capacitor\/haptics"\)/.test(overlay) &&
+    /async function hapticsAvviso[\s\S]{0,80}if \(!isNative\(\)\) return;[\s\S]{0,120}await import\("@capacitor\/haptics"\)/.test(overlay),
+);
+check(
+  "7 il colpo d'inizio parte quando si comincia (o si riprende) a parlare",
+  /setState\("recording"\);\s*\n\s*void hapticsInizio\(\);/.test(overlay),
+);
+check(
+  "7 il colpo dei venti secondi parte nello STESSO momento del colore che vira, non a ogni giro",
+  /if \(sottoVenti && !primaVoltaSottoVentiRef\.current\) \{\s*\n\s*setAnnuncioSR\(t\("Restano venti secondi in questo pezzo\."\)\);\s*\n\s*void hapticsAvviso\(\);[^\n]*\n\s*\}/.test(overlay),
+);
+check(
+  "7 @capacitor/haptics e dichiarato in package.json",
+  /"@capacitor\/haptics":\s*"\^?[\d.]+"/.test(readFileSync("package.json", "utf8")),
+);
 check("7 il primer dice quanto dura un blocco PRIMA di cominciare", /Ogni blocco dura al massimo \{min\} minuti/.test(overlay));
 check("7 il percorso realtime non e tornato", !/realtime\/session/.test(overlay) && !/RTCPeerConnection/.test(overlay));
 check("7 nessun blob viene tagliato dopo (niente slice sui blocchi)", !/\.slice\(\s*\d+\s*,\s*[\w.]+\s*\)\s*;?\s*\/\/.*blob/i.test(overlay) && !/blob\.slice\(/.test(overlay));
