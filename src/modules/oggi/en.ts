@@ -144,6 +144,7 @@ export const OGGI: Record<string, string> = {
   "Giornata eliminata": "Day deleted",
   "tuo": "yours",
   "tocca fuori per salvare": "tap outside to save",
+  "leggi tutto": "read more",
   "titolo della giornata": "day title",
   "modifica il titolo della giornata": "edit the day title",
   "non sono riuscito a salvare il titolo": "could not save the title",

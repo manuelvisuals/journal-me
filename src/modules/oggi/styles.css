@@ -1515,6 +1515,13 @@
    mockup desktop-v1 §03 — headline piu grande, snippet serif
    corsivo, aree macro su due colonne a card.
    ============================================================= */
+/* Due righe, sempre (17 settembre 2026, mockup giornata-altezze-fisse.html).
+   Il tetto e la riserva vanno insieme: -webkit-line-clamp taglia il titolo
+   lungo, min-height tiene lo spazio a quello corto. L'altezza e in "em" e
+   non in pixel perche l'em di QUESTO elemento porta gia dentro di se
+   --jm-ui-scale (sta nel font-size), quindi il riquadro cresce da solo
+   quando si ingrandisce il testo, senza una seconda matematica da tenere
+   allineata a mano. 2.3em = due righe di line-height 1.15. */
 .jm-fv-h {
   font-size: calc(26px * var(--jm-ui-scale));
   font-weight: 650;
@@ -1522,6 +1529,11 @@
   letter-spacing: -0.025em;
   color: var(--color-ink);
   margin: 4px 0 10px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(2 * 1.15em);
 }
 
 .jm-fv-h.placeholder {
@@ -1531,6 +1543,25 @@
   letter-spacing: normal;
   color: var(--color-ink-faint);
   font-style: italic;
+  min-height: calc(2 * 1.2em);
+}
+
+/* La riga della matita / della targhetta "tuo", uscita dal titolo perche
+   li dentro il taglio a due righe se la mangiava (headline-editable.tsx).
+   Altezza fissa: matita e targhetta sono alte in modo diverso, e senza
+   questa riga una giornata col titolo tuo sarebbe piu alta delle altre,
+   cioe il difetto che stiamo togliendo. */
+.jm-fv-hazione {
+  display: flex;
+  align-items: center;
+  height: calc(24px * var(--jm-ui-scale));
+  margin: -4px 0 6px;
+  cursor: text;
+}
+
+.jm-fv-hazione .jm-fv-hpen,
+.jm-fv-hazione .jm-fv-tuo {
+  margin-left: 0;
 }
 
 /* Il titolo si puo riscrivere a mano. La matita compare accanto finche il
@@ -1601,6 +1632,11 @@
 }
 
 .jm-fv-hedit {
+  /* Il campo porta la classe .jm-fv-h per avere la stessa voce, ma il
+     taglio a due righe li dentro impedirebbe di scrivere il titolo lungo
+     che si sta scrivendo. Qui si disfa. */
+  -webkit-line-clamp: none;
+  min-height: 0;
   display: block;
   width: calc(100% + 20px);
   resize: none;
@@ -1713,10 +1749,102 @@
   outline: none;
 }
 
+/* =============================================================
+   LA SINTESI PIEGATA (17 settembre 2026)
+   Mockup design/mockups/giornata-altezze-fisse.html, opzione 1.
+
+   Sei righe di tetto, e le sei righe si tengono ANCHE quando la sintesi e
+   piu corta: e il punto di tutto il lavoro, perche e cosi che il tasto
+   "aggiungi" e la striscia delle foto partono dalla stessa altezza in
+   ogni giornata. Il pezzo React e components/sintesi-piegata.tsx.
+
+   L'altezza in "em" sul riquadro: il riquadro prende il font-size della
+   sintesi solo per avere il suo em come unita di misura (il testo dentro
+   ha il proprio), cosi sei righe restano sei righe a ogni misura del
+   testo e su desktop basta cambiare qui sotto le due cifre.
+
+   La sfumatura e una MASCHERA e non un gradiente verso il colore di
+   fondo: cosi non deve indovinare su cosa sta appoggiata e viene giusta
+   in tutti i temi, chiari e scuri (stessa strada di porta-giorno.tsx).
+   ============================================================= */
+.jm-fv-piega {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.jm-fv-clip {
+  font-size: calc(16.5px * var(--jm-ui-scale));
+  height: calc(6 * 1.5em);
+  overflow: hidden;
+}
+
+/* Il margine della sintesi vive sul riquadro, non dentro: dentro
+   conterebbe nell'altezza e il tetto non sarebbe piu sei righe. */
+.jm-fv-clip .jm-fv-sn {
+  margin-bottom: 0;
+}
+
+.jm-fv-clip[data-troppo] {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - 76px),
+    transparent
+  );
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 76px), transparent);
+}
+
+/* Aperta dal tocco, oppure mentre ci si scrive dentro: il campo di
+   scrittura cresce con il testo e sotto il tetto verrebbe tagliato. */
+.jm-fv-piega.aperta .jm-fv-clip,
+.jm-fv-piega:focus-within .jm-fv-clip {
+  height: auto;
+  overflow: visible;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Il velo che prende il tocco finche la sintesi e piegata. Esiste solo
+   quando c'e davvero altro sotto: su una sintesi corta il tocco deve
+   arrivare alla sintesi, che si apre a riscrittura come sempre. */
+.jm-fv-apri {
+  display: none;
+}
+
+.jm-fv-clip[data-troppo] ~ .jm-fv-apri {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.jm-fv-apri span {
+  font-size: calc(12px * var(--jm-ui-scale));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--jm-radius-pill);
+  padding: 4px 12px;
+}
+
+.jm-fv-apri:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--jm-radius-md);
+}
+
 /* Il tasto "aggiungi" sta subito sotto la sintesi: meno aria sopra di
    quando chiudeva la pagina, o fra sintesi e foto si apre un buco. */
 .jm-fv-snbox + .jm-day-add,
-.jm-fv-sn + .jm-day-add {
+.jm-fv-sn + .jm-day-add,
+.jm-fv-piega + .jm-day-add {
   margin-top: calc(6px * var(--jm-space));
 }
 
@@ -1768,6 +1896,17 @@
     font-size: calc(17.5px * var(--jm-ui-scale));
     line-height: 1.55;
     margin-bottom: 30px;
+  }
+  /* Il tetto segue la misura di qui: sei righe restano sei righe. */
+  .jm-fv-clip {
+    font-size: calc(17.5px * var(--jm-ui-scale));
+    height: calc(6 * 1.55em);
+  }
+  .jm-fv-piega {
+    margin-bottom: 30px;
+  }
+  .jm-fv-h {
+    min-height: calc(2 * 1.22em);
   }
   .jm-fv-sep {
     display: none;

@@ -145,19 +145,29 @@ export function HeadlineEditable({
         {hasHeadline
           ? testo
           : t("giornata raccontata, l'AI non ha ancora generato un titolo")}
+      </h1>
+      {/* La matita (o la targhetta) sta FUORI dal titolo dal 17 settembre
+          2026. Il titolo ora si ferma a due righe (styles.css): restando
+          in fondo alla frase, su un titolo di due righe piene finirebbe
+          sulla terza, cioe sotto il taglio, e sparirebbe - e con lei
+          sparirebbe anche la targhetta "tuo", che non e un vezzo ma
+          l'unica cosa che dice che quel titolo l'AI non lo tocca piu.
+          La riga ha un'altezza fissa, uguale con la matita e con la
+          targhetta, o il titolo sarebbe alto in un modo per le giornate
+          scritte da te e in un altro per le altre.
+          E aria-hidden perche non aggiunge niente: il titolo qui sopra e
+          gia un bottone con la sua etichetta, questo e solo il segno
+          visibile e un secondo bersaglio per il dito. */}
+      <div className="jm-fv-hazione" aria-hidden="true" onClick={apri}>
         {locked ? (
           <span className="jm-fv-tuo">{t("tuo")}</span>
         ) : (
-          <svg
-            className="jm-fv-hpen"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
+          <svg className="jm-fv-hpen" viewBox="0 0 24 24">
             <path d="M12 20h9" />
             <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
           </svg>
         )}
-      </h1>
+      </div>
     </div>
   );
 }
