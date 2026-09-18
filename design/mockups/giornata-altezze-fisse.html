@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Altezze fisse - prima e dopo</title>
+<style>
+  :root{
+    --bg:#0B0B0D; --card:#141417; --tel:#0E0E11; --surf:#1C1C20; --surf2:#232329;
+    --line:rgba(255,255,255,.09);
+    --ink:#F3F3F6; --mid:#A6A6AE; --faint:#6E6E77;
+    --accent:#FF9B91; --accent-dim:#F08A7A;
+    --ok:#8FD4A8; --ko:#F0857A;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:28px 16px 80px}
+  h1{font-size:26px;line-height:1.2;margin:0 0 8px;letter-spacing:-.02em}
+  .sub{color:var(--mid);font-size:15px;line-height:1.55;margin:0 0 22px;max-width:62ch}
+  .barra-cmd{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 18px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .barra-cmd .et{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-right:4px}
+  button.g{appearance:none;border:1px solid var(--line);background:var(--surf);color:var(--ink);font-family:inherit;font-size:13px;padding:8px 13px;border-radius:999px;cursor:pointer;transition:transform .08s,background .15s}
+  button.g:hover{background:var(--surf2)}
+  button.g:active{transform:scale(.97)}
+  button.g[aria-pressed="true"]{background:var(--accent);color:#22110F;border-color:transparent;font-weight:600}
+  .sep{width:1px;height:22px;background:var(--line);margin:0 6px}
+
+  .griglia{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.griglia{grid-template-columns:1fr}}
+  .col{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+  .col h2{margin:2px 0 2px;font-size:14px;letter-spacing:.1em;text-transform:uppercase}
+  .col.prima h2{color:var(--ko)} .col.dopo h2{color:var(--ok)}
+  .col p.note{margin:4px 0 12px;font-size:12.5px;line-height:1.5;color:var(--mid);min-height:34px}
+
+  /* telefono */
+  .tel{position:relative;width:100%;max-width:340px;margin:0 auto;height:600px;background:var(--tel);border:1px solid var(--line);border-radius:26px;overflow:hidden}
+  .statusbar{height:26px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:11px;color:var(--mid)}
+  .appbar{display:flex;align-items:center;justify-content:space-between;padding:2px 14px 8px}
+  .appbar .marchio{font-family:var(--serif);font-size:19px}
+  .appbar .icone{display:flex;gap:8px;align-items:center}
+  .ic{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:10px;color:var(--mid)}
+  .ic.av{border:none;background:linear-gradient(140deg,#5a4a44,#2a2226)}
+  .datanav{display:flex;align-items:center;justify-content:center;gap:16px;padding:4px 14px 10px;border-bottom:1px solid var(--line)}
+  .datanav .fr{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--mid);font-size:11px}
+  .datanav .gg{text-align:center}
+  .datanav .gg b{display:block;font-family:var(--serif);font-size:16px;font-weight:400}
+  .datanav .gg span{font-size:10px;letter-spacing:.14em;color:var(--faint)}
+
+  .scroll{height:calc(600px - 26px - 34px - 45px);overflow-y:auto;padding:14px 16px 40px;scrollbar-width:none}
+  .scroll::-webkit-scrollbar{display:none}
+
+  .titolo{font-size:21px;line-height:1.16;letter-spacing:-.02em;margin:0 0 10px;font-weight:700}
+  .recap{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.62;color:var(--ink);margin:0}
+  .recap .sc{color:var(--accent);font-style:normal}
+  .recapwrap{position:relative;margin:0 0 14px}
+
+  .aggiungi{width:100%;padding:16px;border-radius:14px;background:var(--surf);border:1px solid var(--line);color:var(--mid);font-size:14px;text-align:center}
+  .lab{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-dim);margin:22px 0 10px;display:flex;align-items:center;gap:6px}
+  .thumbs{display:flex;gap:8px}
+  .th{width:58px;height:58px;border-radius:10px;background:linear-gradient(135deg,#3a3036,#241d22)}
+  .th:nth-child(2){background:linear-gradient(135deg,#2e3a36,#1d2422)}
+  .th:nth-child(3){background:linear-gradient(135deg,#3a3430,#242018)}
+  .areatxt{font-size:14px;line-height:1.5;color:var(--ink);margin:0}
+  .divi{height:1px;background:var(--line);margin:18px 0}
+
+  /* la guida: dove DOVREBBE stare la riga foto */
+  .guida{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(255,155,145,.55);pointer-events:none;z-index:5}
+  .guida::after{content:"linea di riferimento";position:absolute;right:6px;top:-15px;font-size:9px;letter-spacing:.08em;color:rgba(255,155,145,.75)}
+
+  .misura{margin-top:10px;font-size:12px;display:flex;align-items:center;gap:8px;justify-content:center}
+  .pill{padding:5px 11px;border-radius:999px;font-weight:600;font-size:11.5px;letter-spacing:.02em}
+  .pill.ko{background:rgba(240,133,122,.14);color:var(--ko)}
+  .pill.ok{background:rgba(143,212,168,.14);color:var(--ok)}
+
+  /* clamp dopo */
+  .dopo .titolo{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:calc(2 * 1.16em)}
+  .dopo .recapwrap{overflow:hidden;transition:max-height .32s ease}
+  .dopo .recapwrap.chiuso{max-height:var(--hrecap)}
+  .dopo .recapwrap.chiuso.riempi{height:var(--hrecap)}
+  .dopo .recapwrap.aperto{max-height:1200px}
+  .sfuma{position:absolute;left:0;right:0;bottom:0;height:62px;background:linear-gradient(to bottom,rgba(14,14,17,0),rgba(14,14,17,.86) 55%,var(--tel));display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;cursor:pointer}
+  .sfuma span{font-size:11px;letter-spacing:.06em;color:var(--accent);background:rgba(28,28,32,.9);border:1px solid var(--line);padding:3px 10px;border-radius:999px}
+  .recapwrap.aperto .sfuma{display:none}
+  .chiudi{display:none;margin:6px auto 0;font-size:11px;letter-spacing:.06em;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit}
+  .recapwrap.aperto + .chiudi{display:block}
+  .prima .sfuma,.prima .chiudi{display:none}
+
+  .spiega{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+  .spiega h3{margin:0 0 12px;font-size:15px}
+  .spiega ol{margin:0;padding-left:18px;color:var(--mid);font-size:14px;line-height:1.7}
+  .spiega ol b{color:var(--ink)}
+  .dom{margin-top:18px;background:linear-gradient(180deg,rgba(255,155,145,.08),rgba(255,155,145,.02));border:1px solid rgba(255,155,145,.28);border-radius:18px;padding:18px 20px}
+  .dom h3{margin:0 0 6px;font-size:15px;color:var(--accent)}
+  .dom p{margin:0 0 12px;font-size:14px;line-height:1.6;color:var(--mid)}
+  .dom ol{margin:0;padding-left:20px;font-size:14px;line-height:1.9}
+  .dom code{background:var(--surf);padding:2px 7px;border-radius:6px;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Altezze fisse: la riga delle foto sempre nello stesso punto</h1>
+  <p class="sub">Due telefoni affiancati, lo stesso giorno in tutti e due. A sinistra com'e adesso, a destra la proposta.
+  Cambia giorno con i tasti qui sotto e guarda la linea tratteggiata: e sempre nello stesso punto dello schermo, e serve
+  solo a far vedere quanto la riga FOTO DEL GIORNO si sposta. Nel telefono di destra puoi toccare il testo sfumato per aprirlo.</p>
+
+  <div class="barra-cmd">
+    <span class="et">Giorno</span>
+    <button class="g" data-g="0" aria-pressed="true">1 - titolo corto, racconto breve</button>
+    <button class="g" data-g="1" aria-pressed="false">2 - titolo 2 righe, racconto medio</button>
+    <button class="g" data-g="2" aria-pressed="false">3 - titolo 2 righe, racconto lungo</button>
+    <span class="sep"></span>
+    <span class="et">Racconto corto</span>
+    <button class="g" id="riempi" aria-pressed="true">tiene comunque lo spazio pieno</button>
+  </div>
+
+  <div class="griglia">
+    <div class="col prima">
+      <h2>Prima - come e adesso</h2>
+      <p class="note">Titolo e racconto sono liberi di crescere: ogni giorno ha un'altezza sua, e le foto ballano su e giu.</p>
+      <div class="tel prima" id="telA">
+        <div class="statusbar"><span>10:58</span><span>&#9679;&#9679;&#9679;</span></div>
+        <div class="appbar"><span class="marchio">Journal</span><span class="icone"><i class="ic">&#9998;</i><i class="ic">&#9866;</i><i class="ic av"></i></span></div>
+        <div class="datanav"><span class="fr">&#8249;</span><span class="gg"><b class="dnome">Tuesday</b><span class="ddata">15 SEP</span></span><span class="fr">&#8250;</span></div>
+        <div class="scroll">
+          <h3 class="titolo"></h3>
+          <div class="recapwrap"><p class="recap"><span class="sc">&#10022;</span> <span class="testo"></span></p></div>
+          <div class="aggiungi">+ Add to this day</div>
+          <div class="lab foto-lab">Photos of the day</div>
+          <div class="thumbs"><div class="th"></div><div class="th"></div><div class="th"></div></div>
+          <div class="divi"></div>
+          <div class="lab">&#9825; Relationships</div>
+          <p class="areatxt">Met Mor and my friend Ophir with her girlfriend Nitzan, feeling loved.</p>
+          <div class="divi"></div>
+          <div class="lab">&#8599; Movement</div>
+          <p class="areatxt">Walked for two hours and joined a meditation session.</p>
+        </div>
+        <div class="guida"></div>
+      </div>
+      <div class="misura"><span class="pill ko" id="mA">-</span></div>
+    </div>
+
+    <div class="col dopo">
+      <h2>Dopo - la proposta</h2>
+      <p class="note">Il titolo occupa sempre due righe, il racconto ha un tetto di sei righe e sfuma. La riga delle foto non si muove piu.</p>
+      <div class="tel dopo" id="telB">
+        <div class="statusbar"><span>10:58</span><span>&#9679;&#9679;&#9679;</span></div>
+        <div class="appbar"><span class="marchio">Journal</span><span class="icone"><i class="ic">&#9998;</i><i class="ic">&#9866;</i><i class="ic av"></i></span></div>
+        <div class="datanav"><span class="fr">&#8249;</span><span class="gg"><b class="dnome">Tuesday</b><span class="ddata">15 SEP</span></span><span class="fr">&#8250;</span></div>
+        <div class="scroll">
+          <h3 class="titolo"></h3>
+          <div class="recapwrap chiuso riempi" id="rw">
+            <p class="recap"><span class="sc">&#10022;</span> <span class="testo"></span></p>
+            <div class="sfuma" id="sfuma"><span>tocca per leggere tutto</span></div>
+          </div>
+          <button class="chiudi" id="chiudi">chiudi</button>
+          <div class="aggiungi">+ Add to this day</div>
+          <div class="lab foto-lab">Photos of the day</div>
+          <div class="thumbs"><div class="th"></div><div class="th"></div><div class="th"></div></div>
+          <div class="divi"></div>
+          <div class="lab">&#9825; Relationships</div>
+          <p class="areatxt">Met Mor and my friend Ophir with her girlfriend Nitzan, feeling loved.</p>
+          <div class="divi"></div>
+          <div class="lab">&#8599; Movement</div>
+          <p class="areatxt">Walked for two hours and joined a meditation session.</p>
+        </div>
+        <div class="guida"></div>
+      </div>
+      <div class="misura"><span class="pill ok" id="mB">-</span></div>
+    </div>
+  </div>
+
+  <div class="spiega">
+    <h3>Le tre regole, in chiaro</h3>
+    <ol>
+      <li><b>Titolo: sempre due righe.</b> Se il titolo e di una riga, la seconda resta vuota ma lo spazio e occupato lo stesso. Se e piu lungo di due righe, viene tagliato con i puntini.</li>
+      <li><b>Racconto: tetto di sei righe.</b> Se e piu lungo, le ultime righe sfumano verso il basso e compare "tocca per leggere tutto". Toccandolo si apre per intero e le foto scendono: e voluto, succede solo quando sei tu a chiederlo.</li>
+      <li><b>Conseguenza:</b> il tasto "Add to this day" e la riga delle foto partono sempre dallo stesso punto, quindi passando da un giorno all'altro niente salta.</li>
+    </ol>
+  </div>
+
+  <div class="dom">
+    <h3>Una cosa da decidere</h3>
+    <p>Quando il racconto e <b>piu corto</b> del tetto (giorno 1), ci sono due comportamenti possibili. Il tasto
+    <code>tiene comunque lo spazio pieno</code> qui sopra li accende e spegne: provalo sul giorno 1 e dimmi il numero.</p>
+    <ol>
+      <li><b>Spazio sempre pieno</b> (come adesso nel mockup): anche un racconto di tre righe occupa sei righe di spazio. Le foto sono nello stesso punto <i>in tutti i giorni, sempre</i>. Prezzo: un po' di vuoto sotto i racconti brevi.</li>
+      <li><b>Solo il tetto</b>: il racconto corto sta stretto e le foto salgono. Niente vuoto, ma i giorni brevi restano leggermente diversi dagli altri.</li>
+    </ol>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var giorni = [
+    { nome:"Monday", data:"14 SEP",
+      titolo:"Quiet day at home",
+      testo:"Slept in, cooked a simple lunch and read on the balcony for most of the afternoon. Nothing special happened and that was the point." },
+    { nome:"Tuesday", data:"15 SEP",
+      titolo:"Great day with friends and self-care activities",
+      testo:"Woke up at ten and had breakfast at Buba, enjoying avocado toast and two eggs. Walked for two hours to meditation, then relaxed a bit. At Plantasia, met Mor and my friend Ophir with her girlfriend Nitzan, feeling loved and happy about future plans." },
+    { nome:"Wednesday", data:"16 SEP",
+      titolo:"Productive day of work and long conversations",
+      testo:"Woke up late and took it slowly, then had breakfast at Seasalt and Sage with scrambled eggs and vegetables. Spent the whole morning at the desk working on the new catalogue, answering messages and putting the shipping list back in order. In the afternoon walked across the park to clear my head, then went to the gym for a long sauna session. Dinner with friends turned into a three hour conversation about work, plans and the year ahead. Came home late, tired in a good way, and stayed in bed listening to music before falling asleep." }
+  ];
+
+  var A = document.getElementById('telA'), B = document.getElementById('telB');
+  var rw = document.getElementById('rw');
+  var RIGHE = 6, LH = 15 * 1.62;                  // sei righe di racconto
+  rw.style.setProperty('--hrecap', Math.round(RIGHE*LH) + 'px');
+
+  var idx = 0, riempi = true;
+
+  function dipingi(tel, g){
+    tel.querySelector('.dnome').textContent = g.nome;
+    tel.querySelector('.ddata').textContent = g.data;
+    tel.querySelector('.titolo').textContent = g.titolo;
+    tel.querySelector('.testo').textContent = g.testo;
+  }
+
+  function chiudiRecap(){
+    rw.classList.add('chiuso'); rw.classList.remove('aperto');
+    rw.classList.toggle('riempi', riempi);
+  }
+
+  function misura(){
+    // posizione della riga FOTO dentro l'area che scorre
+    [[A,'mA'],[B,'mB']].forEach(function(p){
+      var tel = p[0], sc = tel.querySelector('.scroll');
+      var lab = tel.querySelector('.foto-lab');
+      var y = lab.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop;
+      tel.dataset.y = Math.round(y);
+    });
+    // la linea di riferimento: dove le foto stanno nel telefono "dopo"
+    var rif = parseInt(B.dataset.y,10);
+    [[A,'mA'],[B,'mB']].forEach(function(p){
+      var tel = p[0], sc = tel.querySelector('.scroll');
+      var top = sc.getBoundingClientRect().top - tel.getBoundingClientRect().top;
+      tel.querySelector('.guida').style.top = (top + rif) + 'px';
+    });
+    var dA = parseInt(A.dataset.y,10) - rif;
+    document.getElementById('mA').textContent = (dA === 0 ? 'in linea' : (dA>0?'+':'') + dA + ' px rispetto agli altri giorni');
+    document.getElementById('mB').textContent = rw.classList.contains('aperto')
+      ? 'aperto da te: le foto scendono'
+      : 'sempre nello stesso punto';
+  }
+
+  function rendi(){
+    var g = giorni[idx];
+    dipingi(A, g); dipingi(B, g);
+    chiudiRecap();
+    requestAnimationFrame(misura);
+  }
+
+  document.querySelectorAll('button.g[data-g]').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('button.g[data-g]').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      idx = parseInt(b.dataset.g,10); rendi();
+    });
+  });
+
+  var br = document.getElementById('riempi');
+  br.addEventListener('click', function(){
+    riempi = !riempi; br.setAttribute('aria-pressed', riempi ? 'true':'false');
+    br.textContent = riempi ? 'tiene comunque lo spazio pieno' : 'sta stretto quanto serve';
+    chiudiRecap(); requestAnimationFrame(misura);
+  });
+
+  document.getElementById('sfuma').addEventListener('click', function(){
+    rw.classList.remove('chiuso','riempi'); rw.classList.add('aperto');
+    setTimeout(misura, 340);
+  });
+  document.getElementById('chiudi').addEventListener('click', function(){
+    chiudiRecap(); setTimeout(misura, 340);
+  });
+
+  rendi();
+  window.addEventListener('resize', function(){ requestAnimationFrame(misura); });
+})();
+</script>
+</body>
+</html>

@@ -103,8 +103,8 @@ nella nota di consegna, non dimenticarlo quando si tocca il backup.
   `verify-pr7`, `verify-testo-giorno`, `verify-aree`,
   `verify-icone-aree`, `verify-titolo-vivo`, `verify-titolo-luoghi`,
   `verify-giornata-larghezze`, `verify-analisi-testo-re`,
-  `verify-nav-giorno`, `verify-barra-alto`, `verify-titolo-maiuscola` (piu tsc, eslint,
-  verify-i18n).
+  `verify-nav-giorno`, `verify-barra-alto`, `verify-titolo-maiuscola`,
+  `verify-altezze-fisse` (piu tsc, eslint, verify-i18n).
   Attenzione: `verify-icone-aree` e `verify-giornata-larghezze` hanno la
   porta 3200 scritta dentro, gli altri usano la 3100 (JM_BASE).
 - Le API del modulo (passo E): `src/modules/oggi/server/` — chiarimenti,
@@ -437,3 +437,55 @@ prima di cominciare (la barra dice "Blocco 1, 00:00 / 03:00").
   a Fine si aspetta la catena e si riprova cio che manca. Annulla dopo
   blocchi gia trascritti spreca ~1 centesimo a blocco: accettato. Il
   tetto CHIAMATE_PER_GIORNATA dell'ospite e 60: cinque blocchi ne usano 5.
+
+## Le altezze fisse della giornata (17 settembre 2026)
+
+Manuel, sfogliando i giorni sul telefono: "photos of the day e su due
+posizioni diverse verticalmente, e scrollando tra i giorni si nota".
+Vero, e misurato: il tasto "aggiungi" partiva a 159, 279 e 308 px a
+seconda di quanto erano lunghi titolo e sintesi, cioe 149 px di ballo.
+Mockup `design/mockups/giornata-altezze-fisse.html` (prima/dopo
+interattivo), opzione 1 scelta da Manuel.
+
+Due tetti, e tutti e due sono anche una RISERVA - il punto e questo, un
+tetto da solo non basta:
+
+- **Il titolo: due righe sempre** (`.jm-fv-h`). `-webkit-line-clamp: 2`
+  taglia quello lungo, `min-height: calc(2 * 1.15em)` tiene lo spazio a
+  quello corto. L'altezza e in `em` e non in pixel perche l'em di quel
+  nodo porta gia dentro `--jm-ui-scale`: cresce da solo con la misura del
+  testo, senza una seconda matematica da tenere allineata.
+- **La sintesi: sei righe sempre** (`components/sintesi-piegata.tsx` +
+  `.jm-fv-clip`). Anche una sintesi di una riga tiene l'altezza di sei.
+  E il prezzo dichiarato dell'opzione 1: un po' di vuoto sotto le sintesi
+  corte, in cambio delle foto sempre allo stesso punto.
+
+**La matita del titolo e uscita dall'h1** (`.jm-fv-hazione`). Stava in
+fondo alla frase: su un titolo di due righe piene sarebbe finita sulla
+terza, cioe sotto il taglio, e sarebbe sparita - e con lei la targhetta
+"tuo", che e l'unica cosa che dice che quel titolo l'AI non lo tocca piu.
+La riga ha altezza fissa, uguale con la matita e con la targhetta, o le
+giornate col titolo tuo sarebbero piu alte delle altre.
+
+**Il tocco, quando la sintesi e piegata, APRE e non riscrive** (scelta di
+Manuel fra tre proposte): non si corregge un testo che non si vede tutto.
+Da aperta torna tutto come prima, matita compresa. Il velo esiste solo
+dove il testo sfonda davvero; su una sintesi corta il tocco arriva alla
+sintesi e la riscrive come sempre.
+
+Due trappole gia pagate qui dentro:
+
+- Il `ResizeObserver` va sul CONTENUTO, non sul riquadro: il riquadro ha
+  altezza fissa e non cambia mai, quindi osservarlo non scatterebbe mai.
+- `:focus-within` libera l'altezza. Senza, il campo di scrittura della
+  sintesi (che cresce col testo) finirebbe tagliato dal tetto.
+
+La sfumatura e una MASCHERA, non un gradiente verso il colore di fondo:
+cosi non deve indovinare su cosa e appoggiata e viene giusta in tutti i
+temi, chiari e scuri (stessa strada di `porta-giorno.tsx`).
+
+Banco: `scripts/verify-altezze-fisse.mjs` (30 controlli a 390 e 1440 px).
+Non guarda il CSS: misura dove comincia il tasto "aggiungi" su tre
+giornate di lunghezza molto diversa e pretende lo stesso numero. Morso
+provato: togliendo `min-height` e mettendo `max-height` al posto di
+`height` il banco torna a vedere 159 / 279 / 308.

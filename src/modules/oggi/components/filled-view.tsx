@@ -6,6 +6,7 @@ import { GoalList } from "@/modules/oggi/components/goal-list";
 import { RailToday } from "@/modules/oggi/components/rail-today";
 import { HeadlineEditable } from "@/modules/oggi/components/headline-editable";
 import { SnippetEditable } from "@/modules/oggi/components/snippet-editable";
+import { SintesiPiegata } from "@/modules/oggi/components/sintesi-piegata";
 import { PillRow } from "@/modules/oggi/components/pill-row";
 import type {
   AreaSummary,
@@ -186,26 +187,34 @@ export function FilledView({
         </>
       ) : (
         <>
-          {editHeadline ? (
-            <SnippetEditable
-              snippet={snippet}
-              locked={editHeadline.snippetLocked === true}
-              dateISO={editHeadline.dateISO}
-              mode={editHeadline.mode}
-              onSaved={editHeadline.onSaved}
-              onError={editHeadline.onError}
-            />
-          ) : (
-            hasSnippet && (
-              <p className="jm-fv-sn">
-                <svg className="jm-fv-ai" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
-                  <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" />
-                  <path d="M5 2l.6 1.4L7 4l-1.4.6L5 6l-.6-1.4L3 4l1.4-.6z" />
-                </svg>
-                {snippet}
-              </p>
-            )
+          {/* La sintesi sta dentro il riquadro piegato: tetto di sei righe,
+              altezza tenuta anche quando e piu corta, e il tocco che la
+              apre (sintesi-piegata.tsx). La chiave e la data: sfogliando i
+              giorni ogni giornata riparte piegata, invece di ereditare
+              l'apertura di quella prima. Senza sintesi non si monta
+              niente, o resterebbe un riquadro vuoto alto sei righe. */}
+          {hasSnippet && (
+            <SintesiPiegata key={dateISO}>
+              {editHeadline ? (
+                <SnippetEditable
+                  snippet={snippet}
+                  locked={editHeadline.snippetLocked === true}
+                  dateISO={editHeadline.dateISO}
+                  mode={editHeadline.mode}
+                  onSaved={editHeadline.onSaved}
+                  onError={editHeadline.onError}
+                />
+              ) : (
+                <p className="jm-fv-sn">
+                  <svg className="jm-fv-ai" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+                    <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z" />
+                    <path d="M5 2l.6 1.4L7 4l-1.4.6L5 6l-.6-1.4L3 4l1.4-.6z" />
+                  </svg>
+                  {snippet}
+                </p>
+              )}
+            </SintesiPiegata>
           )}
 
           {/* L'avviso del regalo sta QUI, sotto il riassunto dell'AI e prima
