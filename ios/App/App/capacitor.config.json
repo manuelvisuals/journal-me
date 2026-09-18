@@ -18,6 +18,7 @@
 		"AppPlugin",
 		"CAPBrowserPlugin",
 		"FilesystemPlugin",
+		"HapticsPlugin",
 		"LocalNotificationsPlugin",
 		"SharePlugin"
 	]
