@@ -116,6 +116,25 @@ else
   NUOVA=$((ATTUALE+1))
 fi
 VER=$(grep -m1 "MARKETING_VERSION" "$PBX" | sed 's/.*= *//; s/;//' | tr -d ' ')
+# LA VERSIONE (18 settembre 2026, il giorno della pubblicazione). Appena una
+# versione esce sull'App Store, Apple CHIUDE quel binario: ogni build nuova
+# vuole un MARKETING_VERSION piu alto, o l'invio viene rifiutato con
+# "Invalid Pre-Release Train". Il numero non si alza da solo perche solo tu
+# sai se e una correzione (1.0.1) o roba nuova (1.1).
+#   ...rilascio-testflight.command 24 1.0.2   -> build 24, versione 1.0.2
+if [ -n "$2" ]; then
+  VERNUOVA="$2"
+  case "$VERNUOVA" in
+    ''|*[!0-9.]*) ko "la versione deve essere fatta di numeri e punti (hai scritto '$2')"; stop ;;
+  esac
+  if [ "$VERNUOVA" != "$VER" ]; then
+    sed -i '' "s/MARKETING_VERSION = $VER;/MARKETING_VERSION = $VERNUOVA;/g" "$PBX"
+    QUANTEV=$(grep -c "MARKETING_VERSION = $VERNUOVA;" "$PBX")
+    [ "$QUANTEV" -ge 1 ] || { ko "non sono riuscito a scrivere la versione nuova nel progetto"; stop; }
+    ok "versione da $VER a $VERNUOVA ($QUANTEV righe)"
+    VER="$VERNUOVA"
+  fi
+fi
 info "versione $VER: dalla build $ATTUALE alla $NUOVA"
 
 # Tutte le occorrenze (Debug e Release hanno la stessa riga).
@@ -145,6 +164,25 @@ if [ "$ESITO" -ne 0 ]; then
 fi
 ok "pacchetto pronto"
 
+# IL PACCHETTO RICOSTRUITO SI SALVA SUBITO (18 settembre 2026). Senza questo,
+# ogni rilascio lasciava nella cartella le centinaia di file di
+# ios/App/App/public riscritti dal build, e il rilascio DOPO si fermava al
+# primo controllo dicendo "ci sono modifiche non salvate". E successo, due
+# volte. Il repo quei file li versiona di proposito (HANDOVER 12).
+if [ -n "$(git status --porcelain -- ios)" ]; then
+  git add ios >>"$LOG" 2>&1
+  git -c user.email=spamming.madh52@gmail.com -c user.name="Manuel" \
+    commit -q -m "Pacchetto dell'app per la build $NUOVA (versione $VER)" >>"$LOG" 2>&1 \
+    || { ko "il commit del pacchetto non e riuscito. Git dice:"; tail -6 "$LOG"; stop; }
+  con_tetto 120 git push origin main >>"$LOG" 2>&1
+  ESITO=$?
+  if [ "$ESITO" -eq 124 ]; then ko "il push del pacchetto non e tornato entro due minuti."; tail -6 "$LOG"; stop; fi
+  if [ "$ESITO" -ne 0 ]; then ko "il push del pacchetto e stato rifiutato. Git dice:"; tail -8 "$LOG"; stop; fi
+  ok "pacchetto salvato su GitHub"
+else
+  info "il pacchetto non e cambiato: niente da salvare"
+fi
+
 # ---------- 4. archivio e caricamento ----------
 echo
 info "4/4 archivio e carico su App Store Connect (archivia-e-carica): 5-15 minuti..."
@@ -152,6 +190,13 @@ bash "$REPO/archivia-e-carica.command" < /dev/null
 ESITO=$?
 if [ "$ESITO" -ne 0 ]; then
   ko "l'archivio o il caricamento si sono fermati (vedi le righe rosse qui sopra)"
+  # La diagnosi la produce Apple, non questo script: qui si aggiunge solo la
+  # dritta, e solo quando il messaggio e davvero quello (REGOLE-TERMINALE 6).
+  if grep -qi "Pre-Release Train\|CFBundleShortVersionString" "$HOME/Desktop/archivia-e-carica-log.txt" 2>/dev/null; then
+    nota "Apple dice che la versione $VER e chiusa: e gia uscita sull'App Store."
+    info "Rilancia scegliendo una versione piu alta, per esempio:"
+    info "  clear; bash \"\$HOME/Developer/journal-me/rilascio-testflight.command\" $NUOVA 1.0.2"
+  fi
   stop
 fi
 
