@@ -392,6 +392,12 @@ grep -rql "jm-nome-penna" "$BUNDLE" 2>/dev/null \
 grep -rql "jm-appbar" "$BUNDLE" 2>/dev/null \
   && ok "C'e la barra in alto (il pallino su ogni schermata)" \
   || wr "Manca la barra in alto: dillo a Claude"
+# 17 settembre: le altezze fisse della giornata. Se manca questa classe il
+# pacchetto e stato costruito con un foglio di stile vecchio, e sul
+# telefono le foto tornerebbero a ballare fra un giorno e l'altro.
+grep -rql "jm-fv-clip" "$BUNDLE" 2>/dev/null \
+  && ok "C'e la giornata ad altezze fisse (le foto non ballano)" \
+  || wr "Mancano le altezze fisse della giornata: dillo a Claude"
 
 # ---------- 7. Xcode ----------
 # JM_SENZA_XCODE=1: lo chiama rilascio-testflight.command, che subito dopo
