@@ -82,8 +82,8 @@ function Foto({ nome, className, eager = false }: { nome: string; className?: st
  * (Manuel, 11 settembre 2026). Lo spezzone si fa qui e non in testi.ts per
  * due ragioni: la frase resta una frase sola da tradurre (e /v6 continua a
  * usarla come testo), e il nome accessibile del titolo non cambia — l'`alt`
- * del marchio e "dayalogue", quindi chi legge con la voce sente ancora
- * "Parli tu. dayalogue la scrive.".
+ * del marchio e "Dayalogue", quindi chi legge con la voce sente ancora
+ * "Parli tu. Dayalogue la scrive.".
  */
 function TitoloColMarchio({ testo }: { testo: string }) {
   const i = testo.indexOf("Dayalogue");
@@ -363,7 +363,7 @@ function Libro({ t }: { t: Testi }) {
       <div className="pag" />
       <div className="pag" />
       <div className="cop">
-        <span className="m">dayalogue</span>
+        <span className="m">Dayalogue</span>
         <span className="a">
           <small>{t.esempio.recap.etichetta}</small>
           {t.esempio.mese}
@@ -408,7 +408,7 @@ function Ritratto({
       <article className="jm-sito8-pagina" aria-label={g.titolo}>
         <header>
           <span>{g.data}</span>
-          <b>dayalogue</b>
+          <b>Dayalogue</b>
         </header>
         <h3>{g.titolo}</h3>
         <p>{g.prosa}</p>
@@ -963,7 +963,7 @@ export function HomeSito({
             "@graph": [
               {
                 "@type": "SoftwareApplication",
-                name: "dayalogue",
+                name: "Dayalogue",
                 applicationCategory: "LifestyleApplication",
                 operatingSystem: "Web, iOS",
                 url: `https://www.dayalogue.com${p}/`,

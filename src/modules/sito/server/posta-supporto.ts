@@ -27,7 +27,7 @@
  * Per liberare davvero il destinatario servono due cose, in quest'ordine:
  * verificare dayalogue.com su Resend (con i record DNS), poi mettere
  * SUPPORT_FROM_EMAIL su Vercel (per esempio
- * "dayalogue <assistenza@dayalogue.com>"). Da quel momento SUPPORT_TO_EMAIL
+ * "Dayalogue <assistenza@dayalogue.com>"). Da quel momento SUPPORT_TO_EMAIL
  * puo essere qualunque indirizzo.
  *
  * NIENTE LIBRERIA. Resend e una chiamata HTTP con un JSON: una dipendenza in
@@ -35,7 +35,7 @@
  */
 
 const A_CHI_DI_FABBRICA = "spamming.madh52@gmail.com";
-const MITTENTE_DI_RIPIEGO = "dayalogue <onboarding@resend.dev>";
+const MITTENTE_DI_RIPIEGO = "Dayalogue <onboarding@resend.dev>";
 
 export type EsitoPosta = { inviata: boolean; errore?: string };
 
@@ -103,7 +103,7 @@ export async function notificaSupporto(m: MessaggioSupporto): Promise<EsitoPosta
         reply_to: m.email,
         // Il titolo nell'oggetto: e l'unica cosa che si legge nell'elenco
         // della posta senza aprire niente.
-        subject: `[dayalogue] ${m.oggetto}`,
+        subject: `[Dayalogue] ${m.oggetto}`,
         text: corpo(m),
         ...(allegati.length ? { attachments: allegati } : {}),
       }),

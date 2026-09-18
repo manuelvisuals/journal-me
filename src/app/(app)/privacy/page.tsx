@@ -26,7 +26,7 @@ import { Marchio } from "@/components/brand/marchio";
  */
 
 export const metadata: Metadata = {
-  title: "Privacy · dayalogue",
+  title: "Privacy · Dayalogue",
   robots: { index: true },
 };
 
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
 
       <Sezione titolo="La cosa piu importante">
         <p>
-          dayalogue e un diario. Quello che scrivi e racconti e tuo: non lo
+          Dayalogue e un diario. Quello che scrivi e racconti e tuo: non lo
           leggiamo, non lo vendiamo, non lo usiamo per pubblicita e non lo
           diamo a nessuno per addestrare modelli. Non ci sono inserzioni, non
           ci sono tracciatori pubblicitari, non ci sono analytics di terze
@@ -196,7 +196,7 @@ export default function PrivacyPage() {
 
       <Sezione titolo="What matters most">
         <p>
-          dayalogue is a diary. What you write and tell is yours: we do not
+          Dayalogue is a diary. What you write and tell is yours: we do not
           read it, sell it, use it for advertising or hand it to anyone to
           train models. No ads, no ad trackers, no third-party analytics.
         </p>

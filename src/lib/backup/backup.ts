@@ -68,11 +68,11 @@ export async function readBackupFile(file: File): Promise<BackupFile> {
   try {
     parsed = JSON.parse(await file.text());
   } catch {
-    throw new Error(t("Questo file non e un backup di dayalogue."));
+    throw new Error(t("Questo file non e un backup di Dayalogue."));
   }
   const b = parsed as Partial<BackupFile> | null;
   if (!b || b.format !== BACKUP_FORMAT) {
-    throw new Error(t("Questo file non e un backup di dayalogue."));
+    throw new Error(t("Questo file non e un backup di Dayalogue."));
   }
   if (b.version !== BACKUP_VERSION) {
     throw new Error(

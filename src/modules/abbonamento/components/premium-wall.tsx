@@ -475,7 +475,7 @@ export function PremiumWall() {
 
         {!negozio ? (
           <button type="button" className="btn-primary" onClick={vaiAllAppStore} disabled={busy}>
-            {t("Scarica dayalogue per iPhone")}
+            {t("Scarica Dayalogue per iPhone")}
           </button>
         ) : (
           <button

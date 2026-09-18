@@ -90,7 +90,7 @@ export async function metadataSito(
       : { index: false, follow: true },
     openGraph: {
       type: "website",
-      siteName: "dayalogue",
+      siteName: "Dayalogue",
       locale: lingua === "it" ? "it_IT" : "en_US",
       url: `${SITO}${qui}`,
       title: ogTitoloDi(riga, lingua),

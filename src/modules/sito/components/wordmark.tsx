@@ -5,7 +5,7 @@ export function WordmarkSito({ className }: { className?: string }) {
     <img
       src="/sito/dayalogue.svg"
       className={className ? `jm-sito-wordmark ${className}` : "jm-sito-wordmark"}
-      alt="dayalogue"
+      alt="Dayalogue"
       draggable={false}
     />
   );

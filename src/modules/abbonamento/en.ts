@@ -23,7 +23,7 @@ export const ABBONAMENTO: Record<string, string> = {
   "Prova gratis {n} giorni": "Try {n} days free",
   "Abbonati": "Subscribe",
   "Passa a premium": "Go premium",
-  "Scarica dayalogue per iPhone": "Get dayalogue for iPhone",
+  "Scarica Dayalogue per iPhone": "Get Dayalogue for iPhone",
   "Continua senza AI": "Continue without AI",
   "Ripristina acquisti": "Restore purchases",
   // Comprare senza account (Apple 5.1.1(v), 15 settembre 2026): il muro e il
@@ -66,7 +66,6 @@ export const ABBONAMENTO: Record<string, string> = {
   "Su tutti i dispositivi": "On every device",
   "pagamento simulato . nessun addebito": "simulated payment . no charge",
   "ambiente di prova": "test environment",
-  "dayalogue\nPremium": "dayalogue\nPremium",
   "Questa pagina non e collegata a nessun sistema di pagamento. Serve a provare l'app come la vede chi ha pagato.": "This page is not connected to any payment system. It is here so you can try the app the way a paying user sees it.",
   "al mese": "per month",
   "Non verra addebitato nulla.": "Nothing will be charged.",

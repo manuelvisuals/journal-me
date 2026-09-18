@@ -11,10 +11,10 @@ import type { Theme } from "./contract";
  * freddo come dice la sua intenzione.
  *
  * Nota. Rinominato il 5 settembre 2026, scelta di Manuel. L autore lo definiva
- * come Vampire con l accento ammorbidito, ma Vampire non entra in dayalogue e
+ * come Vampire con l accento ammorbidito, ma Vampire non entra in Dayalogue e
  * due temi non possono chiamarsi Korall. "Ardesia" dice la cosa che davvero lo
  * distingue dall altro Korall: il fondo grigio-azzurro freddo contro il fondo
- * bruno caldo. Non si e usato "Korall scuro" perche in dayalogue "chiaro" e
+ * bruno caldo. Non si e usato "Korall scuro" perche in Dayalogue "chiaro" e
  * "scuro" sono i due modi di ogni tema, e un tema chiamato "scuro" acceso in
  * modo chiaro e una contraddizione a schermo.
  *

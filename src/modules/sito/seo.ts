@@ -37,12 +37,12 @@ export type RigaSeo = {
 export const SEO_DI_FABBRICA: Record<PaginaSito, RigaSeo> = {
   home: {
     pagina: "home",
-    titolo_it: "dayalogue - il diario che si racconta a voce",
+    titolo_it: "Dayalogue - il diario che si racconta a voce",
     descrizione_it:
-      "Parli due minuti a fine giornata: dayalogue trascrive, scrive il titolo e la sintesi, e tiene in ordine persone e ricordi.",
-    titolo_en: "dayalogue - the journal you tell out loud",
+      "Parli due minuti a fine giornata: Dayalogue trascrive, scrive il titolo e la sintesi, e tiene in ordine persone e ricordi.",
+    titolo_en: "Dayalogue - the journal you tell out loud",
     descrizione_en:
-      "Talk for two minutes at the end of the day: dayalogue transcribes it, writes the headline and the summary, and keeps your people and notes in order.",
+      "Talk for two minutes at the end of the day: Dayalogue transcribes it, writes the headline and the summary, and keeps your people and notes in order.",
     og_titolo_it: "Racconta la giornata. Il resto lo scrive lui.",
     og_titolo_en: "Tell your day. It writes the rest.",
     og_immagine: null,
@@ -50,10 +50,10 @@ export const SEO_DI_FABBRICA: Record<PaginaSito, RigaSeo> = {
   },
   support: {
     pagina: "support",
-    titolo_it: "Assistenza - dayalogue",
+    titolo_it: "Assistenza - Dayalogue",
     descrizione_it:
       "Qualcosa non funziona o hai una domanda? Scrivici da qui: rispondiamo a tutti.",
-    titolo_en: "Support - dayalogue",
+    titolo_en: "Support - Dayalogue",
     descrizione_en:
       "Something not working, or a question? Write to us here: we answer everyone.",
     og_titolo_it: "",

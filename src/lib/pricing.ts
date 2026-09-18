@@ -70,7 +70,7 @@ export type ProdottoIos = keyof typeof PRODOTTI_IOS;
 export const BUNDLE_ID_IOS = "com.manuelvisuals.dayalogue";
 
 /**
- * La pagina dell'App Store, per il muro del web ("Scarica dayalogue per
+ * La pagina dell'App Store, per il muro del web ("Scarica Dayalogue per
  * iPhone"). Vuota finche l'app non esiste su App Store Connect: il tasto
  * allora porta al sito (/), che e la cosa piu onesta che abbiamo.
  */

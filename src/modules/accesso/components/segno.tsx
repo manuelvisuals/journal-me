@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Il segno di dayalogue dentro l'app: la `d` del wordmark (Newsreader 600,
+ * Il segno di Dayalogue dentro l'app: la `d` del wordmark (Newsreader 600,
  * il GLIFO vero, gia ridotto a contorno) piu i tre punti delle aree.
  *
  * E' lo stesso disegno dell'icona sul telefono (design/immagini/icona-app.svg,

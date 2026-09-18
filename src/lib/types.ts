@@ -1,5 +1,5 @@
 /**
- * Domain types for dayalogue.
+ * Domain types for Dayalogue.
  * Kept minimal — only what the UI actually consumes today.
  */
 

@@ -1,5 +1,5 @@
 /**
- * Il foglio di Apple "Ti piace dayalogue?" (SKStoreReviewController), via
+ * Il foglio di Apple "Ti piace Dayalogue?" (SKStoreReviewController), via
  * il plugin ios/App/App/Recensione.swift, registrato a mano in
  * DockVetro.swift come gli altri che vivono dentro l'app.
  *

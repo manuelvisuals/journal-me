@@ -66,7 +66,7 @@ export const BENVENUTO_DI_FABBRICA: Benvenuto = {
 
   occhiello: "Benvenuto in",
   promessa:
-    "Racconti la giornata a voce, come viene. dayalogue la scrive, le da un titolo e la divide in aree, e te la rida nel Mese e nei Recap.",
+    "Racconti la giornata a voce, come viene. Dayalogue la scrive, le da un titolo e la divide in aree, e te la rida nel Mese e nei Recap.",
   evidenza: "Nessuna pubblicita. Le tue giornate non si vendono.",
   testo:
     "Volevo un'app a cui raccontare la mia giornata la sera, capace di ascoltare, riassumere e organizzare tutto per aree. Cosi e nata Dayalogue, prima come journal personale, poi aperta a tutti.\n\nPuoi usarla gratis per sempre come un normale diario che scrivi a mano, oppure attivare l'AI e lasciare che sia lei ad ascoltare, scrivere e organizzare i tuoi ricordi. Penso che sia questo il punto forte dell'app.\n\nPer fartela provare appieno, ti regalo 10 giorni di AI. Poi decidi tu liberamente se continuare gratis, o passare a Premium.\n\nSe trovi un bug, hai un problema o qualcosa non ti convince, scrivimi prima di arrenderti. Leggo e rispondo personalmente a tutti.\n\nSe sei un influencer o coach e vuoi collaborare con Dayalogue, oppure creare un'app personalizzata per le tue esigenze, scrivimi e parliamone.\n\nBuon journaling,",
@@ -79,7 +79,7 @@ export const BENVENUTO_DI_FABBRICA: Benvenuto = {
 
   occhielloEn: "Welcome to",
   promessaEn:
-    "Tell your day out loud, just as it comes. dayalogue writes it down, gives it a headline, splits it into areas, and hands it back in Month and Recaps.",
+    "Tell your day out loud, just as it comes. Dayalogue writes it down, gives it a headline, splits it into areas, and hands it back in Month and Recaps.",
   evidenzaEn: "No ads. Your days are never sold.",
   testoEn:
     "I wanted an app I could talk to at the end of the day, something that could listen, summarize everything, and organize it into different areas of my life. That's how Dayalogue was born, first as my personal journal, then as something I felt to share with everyone.\n\nYou can use it for free forever as a normal journal and write everything yourself, or turn on the AI and let it listen, write, and organize your memories for you: I think that's really where Dayalogue shines.\n\nTo let you experience it properly, I'm giving you *10 days of AI features for free*. After that, you can freely choose whether to keep using the free version or upgrade to Premium.\n\nIf you find a bug, run into a problem, or something just doesn't feel right, write to me before giving up. I personally read and reply to everyone.\n\nIf you're an influencer or coach and would like to collaborate with Dayalogue, or create a custom app for your own needs, get in touch and let's talk.\n\nHappy journaling,",

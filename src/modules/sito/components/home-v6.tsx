@@ -334,7 +334,7 @@ function Libro({ t }: { t: Testi }) {
       <div className="pag" />
       <div className="pag" />
       <div className="cop">
-        <span className="m">dayalogue</span>
+        <span className="m">Dayalogue</span>
         <span className="a">
           <small>{t.esempio.recap.etichetta}</small>
           {t.esempio.mese}
@@ -478,7 +478,7 @@ export function HomeSitoV6({
             <article className="jm-sito5-pagina" aria-label={t.esempio.titolo}>
               <header>
                 <span>{t.esempio.data}</span>
-                <b>dayalogue</b>
+                <b>Dayalogue</b>
               </header>
               <h3>{t.esempio.titolo}</h3>
               <p>{t.esempio.prosa}</p>
@@ -835,7 +835,7 @@ export function HomeSitoV6({
             "@graph": [
               {
                 "@type": "SoftwareApplication",
-                name: "dayalogue",
+                name: "Dayalogue",
                 applicationCategory: "LifestyleApplication",
                 operatingSystem: "Web, iOS",
                 url: `https://www.dayalogue.com${p}/`,

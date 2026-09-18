@@ -114,7 +114,7 @@ export function PiedeSito({
           <p className="nota">
             {t.piede.riga}
             <br />
-            &copy; 2026 dayalogue
+            &copy; 2026 Dayalogue
           </p>
         </div>
         <div>

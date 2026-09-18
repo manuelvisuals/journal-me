@@ -92,7 +92,12 @@ export function CheckoutFintoClient() {
           <i aria-hidden="true" />
           {t("ambiente di prova")}
         </span>
-        <h1 className="jm-ck-t">{t("dayalogue\nPremium")}</h1>
+        {/* Il marchio piu "Premium" si scrive uguale nelle due lingue: non
+            passa da t(), che serve a tradurre, non a ripetere. Finche era
+            "dayalogue" minuscolo la voce di catalogo aveva un senso (l'inglese
+            aveva gia la maiuscola); con la maiuscola anche in italiano le due
+            righe erano identiche, e verify-i18n lo segna - giustamente. */}
+        <h1 className="jm-ck-t">{"Dayalogue\nPremium"}</h1>
         <p className="jm-ck-p">
           {t(
             "Questa pagina non e collegata a nessun sistema di pagamento. Serve a provare l'app come la vede chi ha pagato.",

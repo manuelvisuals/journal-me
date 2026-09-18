@@ -560,7 +560,7 @@ const it: Testi = {
     nota: "Quando il regalo finisce, finisce solo l'AI: scrivere, salvare e rileggere restano gratis, per sempre. Nessuna pubblicita, mai.",
   },
   iphone: {
-    etichetta: "dayalogue per iPhone e iPad",
+    etichetta: "Dayalogue per iPhone e iPad",
     titolo: "Sul telefono, come un'app.",
     testo: "Oggi si usa dal browser e si installa sulla Home come un'app. L'app per iPhone e in arrivo sull'App Store.",
     home: "Da Safari: Condividi, poi \"Aggiungi alla schermata Home\"",
@@ -572,7 +572,7 @@ const it: Testi = {
     titolo: "Domande Frequenti",
     voci: [
       {
-        d: "dayalogue e gratis?",
+        d: "Dayalogue e gratis?",
         r: "Scrivere, salvare e rileggere e gratis per sempre. L'AI e in regalo per dieci giornate, poi senza limiti con premium.",
       },
       {
@@ -593,7 +593,7 @@ const it: Testi = {
       },
       {
         d: "C'e l'app per iPhone?",
-        r: "L'app per iPhone sta arrivando sull'App Store, ed e da li che si attiva premium. Ma dayalogue non vive solo dentro l'app: si usa anche dal browser, e si installa sulla schermata Home come se fosse un'app. L'account e lo stesso — con premium entri da qualunque browser, su qualunque dispositivo, e ritrovi il diario dove l'avevi lasciato.",
+        r: "L'app per iPhone sta arrivando sull'App Store, ed e da li che si attiva premium. Ma Dayalogue non vive solo dentro l'app: si usa anche dal browser, e si installa sulla schermata Home come se fosse un'app. L'account e lo stesso — con premium entri da qualunque browser, su qualunque dispositivo, e ritrovi il diario dove l'avevi lasciato.",
       },
     ],
   },
@@ -642,7 +642,7 @@ const it: Testi = {
     fatto: "Arrivata.",
     fattoTesto: "Ti rispondo all'indirizzo che hai scritto, di solito entro un giorno.",
     errore: "Non sono riuscito a inviarla. Riprova fra poco.",
-    tornaAlSito: "Torna a dayalogue",
+    tornaAlSito: "Torna a Dayalogue",
     serveOggetto: "Scrivi in due parole qual e il problema.",
     serveDescrizione: "Raccontamelo un po' meglio: bastano due righe.",
     serveEmail: "Serve un indirizzo email valido per poterti rispondere.",
@@ -1001,7 +1001,7 @@ const en: Testi = {
     nota: "When the gift ends, only the AI ends: writing, saving and reading back stay free, forever. No ads, ever.",
   },
   iphone: {
-    etichetta: "dayalogue for iPhone and iPad",
+    etichetta: "Dayalogue for iPhone and iPad",
     titolo: "On your phone, like an app.",
     testo: "Today it runs in the browser and installs on your Home screen like an app. The iPhone app is coming to the App Store.",
     home: "From Safari: Share, then \"Add to Home Screen\"",
@@ -1013,7 +1013,7 @@ const en: Testi = {
     titolo: "Frequently asked questions",
     voci: [
       {
-        d: "Is dayalogue free?",
+        d: "Is Dayalogue free?",
         r: "Writing, saving and reading back is free forever. The AI is a gift for ten days, then unlimited with premium.",
       },
       {
@@ -1034,7 +1034,7 @@ const en: Testi = {
       },
       {
         d: "Is there an iPhone app?",
-        r: "The iPhone app is coming to the App Store, and that is where premium is switched on. But dayalogue does not live only inside the app: it also runs in the browser, and installs on your Home screen as if it were one. The account is the same — with premium you sign in from any browser, on any device, and find the journal where you left it.",
+        r: "The iPhone app is coming to the App Store, and that is where premium is switched on. But Dayalogue does not live only inside the app: it also runs in the browser, and installs on your Home screen as if it were one. The account is the same — with premium you sign in from any browser, on any device, and find the journal where you left it.",
       },
     ],
   },
@@ -1083,7 +1083,7 @@ const en: Testi = {
     fatto: "Got it.",
     fattoTesto: "I will reply to the address you wrote, usually within a day.",
     errore: "I could not send it. Please try again shortly.",
-    tornaAlSito: "Back to dayalogue",
+    tornaAlSito: "Back to Dayalogue",
     serveOggetto: "Say in a couple of words what the problem is.",
     serveDescrizione: "Tell me a little more: two lines are enough.",
     serveEmail: "A valid email address is needed so I can reply.",

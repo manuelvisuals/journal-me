@@ -326,7 +326,7 @@ function Libro({ t }: { t: Testi }) {
       <div className="pag" />
       <div className="pag" />
       <div className="cop">
-        <span className="m">dayalogue</span>
+        <span className="m">Dayalogue</span>
         <span className="a">
           <small>{t.esempio.recap.etichetta}</small>
           {t.esempio.mese}
@@ -720,7 +720,7 @@ export function HomeSitoV2({
             "@graph": [
               {
                 "@type": "SoftwareApplication",
-                name: "dayalogue",
+                name: "Dayalogue",
                 applicationCategory: "LifestyleApplication",
                 operatingSystem: "Web, iOS",
                 url: `https://www.dayalogue.com${p}/`,

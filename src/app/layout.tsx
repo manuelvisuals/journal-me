@@ -109,13 +109,13 @@ const ibmPlexMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "dayalogue",
+  title: "Dayalogue",
   description: "Diario personale: voce, memoria, recap.",
-  applicationName: "dayalogue",
+  applicationName: "Dayalogue",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "dayalogue",
+    title: "Dayalogue",
     statusBarStyle: "black-translucent",
   },
   icons: {
